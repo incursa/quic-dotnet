@@ -12,6 +12,7 @@ namespace Incursa.Quic;
 
 internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 {
+    private static readonly uint[] ListenerSupportedVersions = [QuicVersionNegotiation.Version1];
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
     private const int RetryBootstrapTokenLength = 16;
@@ -289,6 +290,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                if (TrySendVersionNegotiationResponse(datagram, pathIdentity))
+                {
+                    continue;
+                }
+
                 if (TryParseInitialDatagram(datagram, out _)
                     && datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
                 {
@@ -373,9 +379,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     {
         try
         {
-            EndPoint remoteEndPoint = new IPEndPoint(
-                IPAddress.Parse(sendDatagramEffect.PathIdentity.RemoteAddress),
-                sendDatagramEffect.PathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
+            EndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
 
             int bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
             if (bytesSent != sendDatagramEffect.Datagram.Length)
@@ -391,6 +395,48 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             // Expected during shutdown.
         }
+    }
+
+    private bool TrySendVersionNegotiationResponse(ReadOnlySpan<byte> datagram, QuicConnectionPathIdentity pathIdentity)
+    {
+        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket longHeader)
+            || !QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                longHeader.Version,
+                datagram.Length,
+                ListenerSupportedVersions))
+        {
+            return false;
+        }
+
+        byte[] responseDatagram = new byte[datagram.Length];
+        if (!QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+                longHeader.Version,
+                longHeader.DestinationConnectionId,
+                longHeader.SourceConnectionId,
+                ListenerSupportedVersions,
+                responseDatagram,
+                out int bytesWritten))
+        {
+            return false;
+        }
+
+        try
+        {
+            EndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
+            int bytesSent = socket.SendTo(responseDatagram.AsSpan(0, bytesWritten), SocketFlags.None, remoteEndPoint);
+            return bytesSent == bytesWritten;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static EndPoint CreateRemoteEndPoint(QuicConnectionPathIdentity pathIdentity)
+    {
+        return new IPEndPoint(
+            IPAddress.Parse(pathIdentity.RemoteAddress),
+            pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
     }
 
     private static bool TryParseInitialDatagram(ReadOnlySpan<byte> datagram, out QuicLongHeaderPacket longHeader)

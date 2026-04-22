@@ -835,6 +835,20 @@ Notes:
 - The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
 - This slice does not add server-role peer transport-parameter commitment.
 
+## REQ-QUIC-CRT-0147 Emit one deterministic server-side HelloRetryRequest for the secp256r1 floor
+In the server role, when an initial peer `ClientHello` is otherwise within the supported TLS 1.3 subset, advertises `secp256r1` in `supported_groups`, and omits a usable `secp256r1` entry from `key_share`, the library MUST emit exactly one local TLS 1.3 `HelloRetryRequest` that requests `secp256r1` on the existing Handshake-crypto output seam instead of failing that first attempt, keep Handshake key material unavailable until a retried `ClientHello` carrying the requested `secp256r1` key share is accepted, and route repeated retry emission, missing `secp256r1` support, malformed or conflicting retried `ClientHello` progression, or retry branches that widen cipher-suite, `0-RTT`, endpoint-host, or interop-runner promises through the existing fatal/update path. When the retried `ClientHello` satisfies the requested `secp256r1` key-share branch, the library MUST continue through the existing `REQ-QUIC-CRT-0112` `ServerHello` and Handshake key-publication floor without widening the supported cryptographic subset.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Sections 4.1.2, 4.1.4, 4.2.8, and 7.1
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally server-role only and keeps the supported cryptographic subset pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
+- This slice does not add `x25519`, hybrid named-group acceptance, general TLS group negotiation, `EncryptedExtensions`, certificate flight, server `Finished`, `0-RTT`, `1-RTT`, key update, endpoint-host wiring, or interop-runner handshake support.
+- This slice does not add server-role peer transport-parameter commitment.
+
 ## REQ-QUIC-CRT-0113 Emit local server EncryptedExtensions on the permanent handshake seam
 In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.
 

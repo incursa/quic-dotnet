@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0045",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC server-role secp256r1 HelloRetryRequest verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests, preserved interop replay evidence, fuzzing, benchmark coverage, and SpecTrace render/validation checks.",
+  "scope": "Verify that the managed server-role handshake path emits exactly one HelloRetryRequest when the first ClientHello advertises secp256r1 in supported_groups but omits a usable secp256r1 key_share, keeps ServerHello plus Handshake key publication unavailable until the retried ClientHello is accepted, and then rejoins the landed REQ-QUIC-CRT-0112 ServerHello floor without widening the cryptographic subset.",
+  "preconditions": [
+    "The repository builds successfully on net10.0.",
+    "REQ-QUIC-CRT-0112 remains the landed server-role ServerHello and Handshake key-publication floor.",
+    "The preserved server-local quic-go handshake evidence remains available under `artifacts/interop-runner/20260422-110409619-server-nginx/`.",
+    "A permanent benchmark exists or is extended for the server-side handshake parser/protection path."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+    "benchmarks/README.md",
+    "artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt",
+    "artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "scripts/Validate-SpecTraceJson.ps1",
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+  ],
+  "procedure": [
+    "Run focused requirement-home tests for positive first-ClientHello HelloRetryRequest emission, positive retried-ClientHello handoff into REQ-QUIC-CRT-0112, and negative no-secp256r1-supported_groups, repeated-retry, and malformed/conflicting retried-ClientHello paths.",
+    "Replay the preserved first-ClientHello evidence from `artifacts/interop-runner/20260422-110409619-server-nginx/` so the retry branch is proven against the captured quic-go offer that previously failed with TLS alert 50.",
+    "Run fuzz coverage for supported_groups/key_share ordering, duplicate extension handling, and retry-branch state transitions.",
+    "Run the permanent benchmark for the server-side handshake parser/protection path.",
+    "Render the SpecTrace markdown from the canonical JSON and validate the generated artifacts."
+  ],
+  "expected_result": "The managed server-role path emits exactly one HelloRetryRequest requesting secp256r1 for the retry-eligible first ClientHello, keeps ServerHello and Handshake key publication unavailable until the retried ClientHello is accepted, rejoins REQ-QUIC-CRT-0112 on the retried secp256r1 branch, and does not widen the cryptographic subset to x25519, hybrid groups, general TLS group negotiation, or broader transport/runtime promises.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0043",
+    "WI-QUIC-CRT-0045"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Exactly one HelloRetryRequest is emitted for the retry-eligible first ClientHello.\n- ServerHello bytes and Handshake keys remain unavailable before the retried ClientHello is accepted.\n- The retried secp256r1 ClientHello rejoins the landed REQ-QUIC-CRT-0112 floor.\n- Missing secp256r1 support, repeated retry attempts, and malformed or conflicting retried ClientHello inputs fail deterministically.\n- The slice does not claim x25519 acceptance, hybrid group acceptance, general TLS group negotiation, or broader transport/runtime promises."
+    },
+    {
+      "heading": "Preserved Interop Evidence",
+      "content": "- Use the preserved server-local quic-go handshake rerun under [`artifacts/interop-runner/20260422-110409619-server-nginx/`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/) as the source replay bundle.\n- The captured first-ClientHello evidence lives in [`runner-logs/nginx_quic-go/handshake/output.txt`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt) and [`runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog)."
+    }
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0147"
+  ]
+}

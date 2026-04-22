@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0010",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Server-Role Managed TLS Crypto Floor Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -21,6 +21,7 @@
   "procedure": [
     "Run the CRT requirement-home tests that cover the supported server-role ClientHello path, outbound ServerHello exposure, Handshake key-availability publication ordering, malformed framing rejection, unsupported version or cipher-suite rejection, unsupported named-group or key-share rejection, and repeated or conflicting progression rejection.",
     "Run the RFC9001 requirement-home tests that still cover outbound Handshake packet emission, Handshake packet protection, transport-parameter staging, and deterministic rejection of malformed Handshake packet input on the bridge seam.",
+    "Inspect the preserved server-local quic-go handshake rerun at `artifacts/interop-runner/20260422-110409619-server-nginx/` together with the captured replay in `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs` to confirm the remaining live failure is a current-floor rejection of unsupported key-share input rather than a listener startup or report-capture issue.",
     "Inspect the bridge driver, transcript-progress owner, and key-schedule implementation to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback."
   ],
   "scope": "This slice verifies only the permanent server-role crypto floor from peer ClientHello through local ServerHello and Handshake packet-protection material availability. It does not prove EncryptedExtensions, certificate flight, server Finished, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
@@ -36,16 +37,19 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
-    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs",
+    "artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt",
+    "artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
     "The tests project can access internal library seams through the existing friend assembly relationship."
   ],
+  "status_summary": "Passed on 2026-04-22; focused requirement-home tests prove the supported server-role ClientHello to ServerHello floor, Handshake key-publication ordering, deterministic malformed-input rejection, and the intentional rejection of unsupported named-group or key-share input under the current `TLS_AES_128_GCM_SHA256` over `secp256r1` subset. The preserved server-local quic-go handshake rerun at `artifacts/interop-runner/20260422-110409619-server-nginx/` shows the listener now reaches the live handshake path, and the captured ClientHello replay from the preserved qlog demonstrates that the remaining peer offer carries key shares `0x11EC` and `0x001D`, which stays outside the current traced floor rather than indicating a leftover startup bug.",
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0109.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs\n- artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt\n- artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog"
     }
   ]
 }

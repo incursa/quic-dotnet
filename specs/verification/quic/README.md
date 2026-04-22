@@ -76,6 +76,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0042.json`](VER-QUIC-CRT-0042.json): canonical CRT client-side successor 1-RTT Key Phase install verification source
 - [`VER-QUIC-CRT-0043.json`](VER-QUIC-CRT-0043.json): canonical CRT remaining-work program partition and autopilot reset verification source
 - [`VER-QUIC-CRT-0044.json`](VER-QUIC-CRT-0044.json): canonical CRT client-side replacement peer Initial reset verification source
+- [`VER-QUIC-CRT-0045.json`](VER-QUIC-CRT-0045.json): canonical CRT server-role secp256r1 HelloRetryRequest verification source
 
 ## Notes
 
