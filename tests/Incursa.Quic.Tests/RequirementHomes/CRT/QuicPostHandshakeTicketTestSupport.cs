@@ -236,7 +236,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         byte[] localLeafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(localLeafCertificateKey);
 
         QuicConnectionRuntime runtime = new(
-            QuicConnectionStreamStateTestHelpers.CreateState(),
+            QuicConnectionStreamStateTestHelpers.CreateState(isServer: true),
             new FakeMonotonicClock(0),
             tlsRole: QuicTlsRole.Server,
             localHandshakePrivateKey: localHandshakePrivateKey,

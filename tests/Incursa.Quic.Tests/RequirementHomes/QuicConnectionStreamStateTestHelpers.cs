@@ -3,6 +3,7 @@ namespace Incursa.Quic.Tests;
 internal static class QuicConnectionStreamStateTestHelpers
 {
     internal static QuicConnectionStreamState CreateState(
+        bool isServer = false,
         ulong connectionReceiveLimit = 64,
         ulong connectionSendLimit = 64,
         ulong incomingBidirectionalStreamLimit = 4,
@@ -18,7 +19,7 @@ internal static class QuicConnectionStreamStateTestHelpers
     {
         return new QuicConnectionStreamState(
             new QuicConnectionStreamStateOptions(
-                IsServer: false,
+                IsServer: isServer,
                 InitialConnectionReceiveLimit: connectionReceiveLimit,
                 InitialConnectionSendLimit: connectionSendLimit,
                 InitialIncomingBidirectionalStreamLimit: incomingBidirectionalStreamLimit,
