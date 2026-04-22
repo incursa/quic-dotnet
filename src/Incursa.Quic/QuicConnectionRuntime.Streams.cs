@@ -1790,13 +1790,18 @@ internal sealed partial class QuicConnectionRuntime
         bool queueApplicationForRetry = true;
         try
         {
+            ReadOnlySpan<byte> handshakeDestinationConnectionIdOverride =
+                CurrentPeerDestinationConnectionId.IsEmpty
+                    ? ReadOnlySpan<byte>.Empty
+                    : CurrentPeerDestinationConnectionId.Span;
+
             if (!TryGetCryptoRetransmissionProtectionLevel(
                     handshakeRetransmission,
                     out QuicTlsEncryptionLevel handshakeProtectionLevel)
                 || handshakeProtectionLevel != QuicTlsEncryptionLevel.Handshake
-                || !TryBuildCryptoRetransmissionPacket(
+                || !TryBuildHandshakeCryptoRetransmissionPacketWithDestinationOverride(
                     handshakeRetransmission,
-                    out _,
+                    handshakeDestinationConnectionIdOverride,
                     out ulong rebuiltHandshakePacketNumber,
                     out byte[] rebuiltHandshakePacketBytes)
                 || !TryBuildApplicationRetransmissionPacket(
@@ -2166,6 +2171,57 @@ internal sealed partial class QuicConnectionRuntime
             minimumPacketNumberExclusive,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private bool TryBuildHandshakeCryptoRetransmissionPacketWithDestinationOverride(
+        QuicConnectionRetransmissionPlan retransmission,
+        ReadOnlySpan<byte> destinationConnectionIdOverride,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = [];
+
+        if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
+                retransmission.PacketBytes.Span,
+                handshakeMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+        {
+            return false;
+        }
+
+        if (!TryParseRetransmittableCryptoFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out ulong cryptoOffset,
+                out byte[] cryptoPayload))
+        {
+            return false;
+        }
+
+        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
+            ? longHeader.DestinationConnectionId
+            : destinationConnectionIdOverride;
+
+        return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+            cryptoPayload,
+            cryptoOffset,
+            destinationConnectionId,
+            longHeader.SourceConnectionId,
+            handshakeMaterial,
             out packetNumber,
             out protectedPacket);
     }
