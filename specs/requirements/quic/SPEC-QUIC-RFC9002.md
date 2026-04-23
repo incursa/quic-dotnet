@@ -3438,6 +3438,11 @@ Trace:
   - RFC 9002 §B.2 RFC9002-SB.2-B3-P0-S1
   - RFC 9002 §B.2 RFC9002-SB.2-B3-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs::ConstructorUsesThePathMtuForRecoveryMaxDatagramSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs::ConstructorDoesNotUseARecoveryMaxDatagramSizeBelowTheQuicMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs::UpdateMaxDatagramSizeClampsTheRecoveryFormulaWithoutChangingThePathValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs::NormalizeMaxDatagramSizeForRecoveryRejectsZero
 
 ## REQ-QUIC-RFC9002-SBP2-0002 Count eligible packets in bytes in flight
 bytes_in_flight MUST count sent packets that contain at least one ack-eliciting or PADDING frame and have not been acknowledged or declared lost.
@@ -3471,6 +3476,11 @@ Trace:
 - Source Refs:
   - RFC 9002 §B.2 RFC9002-SB.2-B5-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0003.cs::ComputeBytesInFlightBytes_IncludesQuicHeaderProtectedPayloadAndAeadOverhead
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0003.cs::ComputeBytesInFlightBytes_ExcludesIpAndUdpOverhead
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0003.cs::RegisterPacketSent_UsesTheComputedQuicPayloadBytesForBytesInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0003.cs::FuzzBytesInFlightAccountingNeverIncludesTransportOverhead
 
 ## REQ-QUIC-RFC9002-SBP2-0004 Exclude ACK-only packets from bytes in flight
 Packets containing only ACK frames MUST NOT count toward bytes_in_flight.

@@ -54,6 +54,11 @@ internal sealed class QuicCongestionControlState
     private const ulong MinimumCongestionWindowMultiplier = 2;
 
     /// <summary>
+    /// RFC 9002 does not use a max_datagram_size below QUIC v1's 1200-byte floor.
+    /// </summary>
+    internal const ulong MinimumMaxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
+
+    /// <summary>
     /// Stable array slot for the Initial packet number space.
     /// </summary>
     private const int InitialPacketNumberSpaceIndex = 0;
@@ -90,6 +95,11 @@ internal sealed class QuicCongestionControlState
     /// Gets the current maximum datagram size used for congestion-window computations.
     /// </summary>
     internal ulong MaxDatagramSizeBytes { get; private set; }
+
+    /// <summary>
+    /// Gets the max_datagram_size value used by RFC 9002 recovery formulas.
+    /// </summary>
+    internal ulong RecoveryMaxDatagramSizeBytes => NormalizeMaxDatagramSizeForRecovery(MaxDatagramSizeBytes);
 
     /// <summary>
     /// Gets the minimum congestion window in bytes.
@@ -136,13 +146,10 @@ internal sealed class QuicCongestionControlState
     /// </summary>
     internal static ulong ComputeInitialCongestionWindowBytes(ulong maxDatagramSizeBytes)
     {
-        if (maxDatagramSizeBytes == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
-        }
+        ulong normalizedMaxDatagramSizeBytes = NormalizeMaxDatagramSizeForRecovery(maxDatagramSizeBytes);
 
-        ulong tenDatagrams = MultiplySaturating(maxDatagramSizeBytes, InitialCongestionWindowDatagramCount);
-        ulong twoDatagrams = MultiplySaturating(maxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
+        ulong tenDatagrams = MultiplySaturating(normalizedMaxDatagramSizeBytes, InitialCongestionWindowDatagramCount);
+        ulong twoDatagrams = MultiplySaturating(normalizedMaxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
         ulong floor = Math.Max(twoDatagrams, MinimumInitialCongestionWindowBytes);
         return Math.Min(tenDatagrams, floor);
     }
@@ -152,12 +159,40 @@ internal sealed class QuicCongestionControlState
     /// </summary>
     internal static ulong ComputeMinimumCongestionWindowBytes(ulong maxDatagramSizeBytes)
     {
+        ulong normalizedMaxDatagramSizeBytes = NormalizeMaxDatagramSizeForRecovery(maxDatagramSizeBytes);
+
+        return MultiplySaturating(normalizedMaxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
+    }
+
+    /// <summary>
+    /// Clamps path-derived maximum datagram sizes for RFC 9002 recovery formulas.
+    /// </summary>
+    internal static ulong NormalizeMaxDatagramSizeForRecovery(ulong maxDatagramSizeBytes)
+    {
         if (maxDatagramSizeBytes == 0)
         {
             throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
         }
 
-        return MultiplySaturating(maxDatagramSizeBytes, MinimumCongestionWindowMultiplier);
+        return Math.Max(maxDatagramSizeBytes, MinimumMaxDatagramSizeBytes);
+    }
+
+    /// <summary>
+    /// Computes the QUIC payload bytes that count toward bytes_in_flight.
+    /// </summary>
+    internal static ulong ComputeBytesInFlightBytes(
+        ulong quicHeaderBytes,
+        ulong protectedPayloadBytes,
+        ulong aeadOverheadBytes,
+        ulong ipOverheadBytes = 0,
+        ulong udpOverheadBytes = 0)
+    {
+        _ = ipOverheadBytes;
+        _ = udpOverheadBytes;
+
+        return SaturatingAdd(
+            SaturatingAdd(quicHeaderBytes, protectedPayloadBytes),
+            aeadOverheadBytes);
     }
 
     /// <summary>
@@ -323,7 +358,7 @@ internal sealed class QuicCongestionControlState
             return true;
         }
 
-        ulong growthBytes = DivideSaturating(MultiplySaturating(MaxDatagramSizeBytes, sentBytes), CongestionWindowBytes);
+        ulong growthBytes = DivideSaturating(MultiplySaturating(RecoveryMaxDatagramSizeBytes, sentBytes), CongestionWindowBytes);
         CongestionWindowBytes = SaturatingAdd(CongestionWindowBytes, growthBytes);
         return true;
     }

@@ -33,6 +33,29 @@ public class QuicCongestionControlBenchmarks
     }
 
     /// <summary>
+    /// Measures recovery max_datagram_size floor normalization.
+    /// </summary>
+    [Benchmark]
+    public ulong NormalizeRecoveryMaxDatagramSize()
+    {
+        return QuicCongestionControlState.NormalizeMaxDatagramSizeForRecovery(1_199);
+    }
+
+    /// <summary>
+    /// Measures QUIC payload byte accounting for bytes in flight.
+    /// </summary>
+    [Benchmark]
+    public ulong ComputeBytesInFlightPayloadBytes()
+    {
+        return QuicCongestionControlState.ComputeBytesInFlightBytes(
+            quicHeaderBytes: 22,
+            protectedPayloadBytes: 1_000,
+            aeadOverheadBytes: 16,
+            ipOverheadBytes: 20,
+            udpOverheadBytes: 8);
+    }
+
+    /// <summary>
     /// Measures slow-start growth after a non-underutilized acknowledgment.
     /// </summary>
     [Benchmark]
