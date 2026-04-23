@@ -1527,6 +1527,12 @@
         "upstream_refs": [
           "RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveServerRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeDoesNotRaiseKeyUpdateErrorForALowerRecoveredOldKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::FuzzOldKeyPacketOrderingViolations_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes"
         ]
       }
     },
@@ -1547,6 +1553,11 @@
         "upstream_refs": [
           "RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveServerRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes"
         ]
       }
     },

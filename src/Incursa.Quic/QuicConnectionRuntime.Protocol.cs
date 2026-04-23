@@ -909,6 +909,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        bool openedWithRetainedOldOpenMaterial = false;
         if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
             packetReceivedEvent.Datagram.Span,
             tlsState.OneRttOpenPacketProtectionMaterial.Value,
@@ -917,35 +918,55 @@ internal sealed partial class QuicConnectionRuntime
             out int payloadLength,
             out bool keyPhase))
         {
-            // The first observed phase-1 packet may already require successor keys.
-            if (!tlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
-                    out QuicTlsPacketProtectionMaterial successorOpenMaterial,
-                    out bool retainedNextOpenMaterial))
-            {
-                return false;
-            }
-
-            stateChanged |= retainedNextOpenMaterial;
-            if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
-                    out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
-                    out QuicTlsPacketProtectionMaterial successorProtectMaterial)
-                || !derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
-                || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+            bool openedWithRetainedOldKeys = tlsState.KeyUpdateInstalled
+                && tlsState.CurrentOneRttKeyPhase == 1
+                && tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
+                && handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
                     packetReceivedEvent.Datagram.Span,
-                    successorOpenMaterial,
+                    tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.Value,
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
-                    out bool successorKeyPhase)
-                || !successorKeyPhase
-                || !tlsState.TryInstallOneRttKeyUpdate(successorOpenMaterial, successorProtectMaterial)
-                || !tlsBridgeDriver.TryDiscardOneRttApplicationTrafficSecrets())
-            {
-                return stateChanged;
-            }
+                    out bool oldKeyPhase)
+                && !oldKeyPhase;
 
-            keyPhase = true;
-            stateChanged = true;
+            if (openedWithRetainedOldKeys)
+            {
+                keyPhase = false;
+                openedWithRetainedOldOpenMaterial = true;
+            }
+            else
+            {
+                // The first observed phase-1 packet may already require successor keys.
+                if (!tlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
+                        out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+                        out bool retainedNextOpenMaterial))
+                {
+                    return false;
+                }
+
+                stateChanged |= retainedNextOpenMaterial;
+                if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                        out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
+                        out QuicTlsPacketProtectionMaterial successorProtectMaterial)
+                    || !derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
+                    || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+                        packetReceivedEvent.Datagram.Span,
+                        successorOpenMaterial,
+                        out openedPacket,
+                        out payloadOffset,
+                        out payloadLength,
+                        out bool successorKeyPhase)
+                    || !successorKeyPhase
+                    || !tlsState.TryInstallOneRttKeyUpdate(successorOpenMaterial, successorProtectMaterial)
+                    || !tlsBridgeDriver.TryDiscardOneRttApplicationTrafficSecrets())
+                {
+                    return stateChanged;
+                }
+
+                keyPhase = true;
+                stateChanged = true;
+            }
         }
 
         if (keyPhase
@@ -969,6 +990,17 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             return false;
+        }
+
+        if (openedWithRetainedOldOpenMaterial
+            && hasObservedCurrentOneRttKeyPhasePacketNumber
+            && packetNumber >= lowestObservedCurrentOneRttKeyPhasePacketNumber)
+        {
+            return HandleFatalTlsSignal(
+                packetReceivedEvent.ObservedAtTicks,
+                QuicTransportErrorCode.KeyUpdateError,
+                "The peer sent an old-key packet that violated packet-number ordering.",
+                ref effects);
         }
 
         bool packetNumberAdvancesTheHighestObservedValue = !hasObservedApplicationPacketNumber
@@ -1388,6 +1420,16 @@ internal sealed partial class QuicConnectionRuntime
             ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
             : packetNumber;
         hasObservedApplicationPacketNumber = true;
+        if (!openedWithRetainedOldOpenMaterial
+            && keyPhase
+            && tlsState.KeyUpdateInstalled
+            && tlsState.CurrentOneRttKeyPhase == 1)
+        {
+            lowestObservedCurrentOneRttKeyPhasePacketNumber = hasObservedCurrentOneRttKeyPhasePacketNumber
+                ? Math.Min(lowestObservedCurrentOneRttKeyPhasePacketNumber, packetNumber)
+                : packetNumber;
+            hasObservedCurrentOneRttKeyPhasePacketNumber = true;
+        }
 
         if (TrySendPendingApplicationAck(nowTicks, ref effects))
         {

@@ -1066,6 +1066,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveServerRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeDoesNotRaiseKeyUpdateErrorForALowerRecoveredOldKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::FuzzOldKeyPacketOrderingViolations_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0001 Use previous keys for lower recovered packet numbers
 When selecting receive keys across phases, a recovered packet number lower than any packet number from the current key phase MUST use the previous packet protection keys.
@@ -1080,6 +1085,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveServerRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0002 Use next keys for higher recovered packet numbers
 When selecting receive keys across phases, a recovered packet number higher than any packet number from the current key phase MUST use the next packet protection keys.

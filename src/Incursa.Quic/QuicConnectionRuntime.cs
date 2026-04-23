@@ -106,6 +106,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long lastTransitionTicks;
     private ulong transitionSequence;
     private ulong largestObservedApplicationPacketNumber;
+    private ulong lowestObservedCurrentOneRttKeyPhasePacketNumber;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;
@@ -113,6 +114,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
     private bool hasObservedApplicationPacketNumber;
+    private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
 
     private sealed record BufferedEstablishmentHandshakePacket(
         QuicConnectionPathIdentity PathIdentity,
