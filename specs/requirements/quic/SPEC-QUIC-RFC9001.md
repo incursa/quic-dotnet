@@ -1176,6 +1176,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveServerRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendTheRetentionTimerAfterAnotherNewKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedLocalKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedPeerKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseOneRetentionTimerAfterAnotherPhaseTwoPacket
 
 ## REQ-QUIC-RFC9001-S6P5-0005 Discard old read keys after retention expires
 After the old-read-key retention window expires, an endpoint SHOULD discard the old read keys and their corresponding secrets.
@@ -1196,6 +1199,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::RecoveryControllerDiscardsOnlyTheSpecifiedOneRttKeyPhase
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeKeepsOldReadKeysAndOldPhaseSendStateBeforeTheRetentionTimerExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzRetentionExpiry_DiscardsOnlyTheOldOneRttKeyPhaseAcrossRepresentativePacketSets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeDiscardsRetainedPhaseOneReadKeysAndPhaseOneSendStateAfterRepeatedLocalKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeDiscardsRetainedPhaseOneReadKeysAndPhaseOneSendStateAfterRepeatedPeerKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeKeepsRetainedPhaseOneStateBeforeRepeatedRetentionTimerExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzRepeatedRetentionExpiry_DiscardsOnlyRetainedPhaseOneAcrossRepresentativePacketSets
 
 ## REQ-QUIC-RFC9001-S6P6-0001 Count encrypted packets per key set
 Endpoints MUST count the number of encrypted packets for each set of packet protection keys.

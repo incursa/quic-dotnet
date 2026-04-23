@@ -15,13 +15,31 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
         QuicConnectionRuntime runtime,
         long observedAtTicks)
     {
+        return ReceiveCurrentPhasePacket(runtime, observedAtTicks, keyPhase: true);
+    }
+
+    internal static QuicConnectionTransitionResult ReceiveCurrentPhasePacket(
+        QuicConnectionRuntime runtime,
+        long observedAtTicks)
+    {
+        return ReceiveCurrentPhasePacket(
+            runtime,
+            observedAtTicks,
+            runtime.TlsState.CurrentOneRttKeyPhaseBit);
+    }
+
+    private static QuicConnectionTransitionResult ReceiveCurrentPhasePacket(
+        QuicConnectionRuntime runtime,
+        long observedAtTicks,
+        bool keyPhase)
+    {
         QuicTlsPacketProtectionMaterial currentOpenMaterial =
             runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
         QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
         Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
             QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
             currentOpenMaterial,
-            keyPhase: true,
+            keyPhase,
             out _,
             out byte[] protectedPacket));
 
