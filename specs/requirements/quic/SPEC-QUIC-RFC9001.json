@@ -1564,6 +1564,11 @@
         "upstream_refs": [
           "RFC 9001 §B RFC9001-SB-B10-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcm",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_RejectsTheLargerGcmConfidentialityLimitWithoutStrictPacketSizeLimiting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::Fuzz_TryGetUsageLimits_DoesNotGrantTheLargestGcmConfidentialityLimitOutsideTheStrictProfile"
         ]
       }
     },
@@ -1592,8 +1597,8 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds",
-          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_ComputesFiniteConfidentialityAndIntegrityLimitsForSupportedAeads",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations"
         ]
       }
     },
@@ -1620,6 +1625,11 @@
         "upstream_refs": [
           "RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmConfidentiality",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_DoesNotUseTheStrictGcmConfidentialityLimitForLargerPacketProfiles",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::Fuzz_TryGetUsageLimits_StrictGcmConfidentialityLimitIsOnlyAvailableForTheStrictProfile"
         ]
       }
     },
@@ -1646,6 +1656,11 @@
         "upstream_refs": [
           "RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmConfidentiality",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_RejectsUnrestrictedGcmConfidentialityForTheLargePacketLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::Fuzz_TryGetUsageLimits_LargePacketGcmConfidentialityLimitIsOnlyAvailableForTheLargePacketProfile"
         ]
       }
     },
@@ -1672,6 +1687,11 @@
         "upstream_refs": [
           "RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmIntegrity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_RejectsLargePacketProfileForGcmIntegrity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::Fuzz_TryGetUsageLimits_StrictGcmIntegrityLimitIsOnlyAvailableForTheStrictProfile"
         ]
       }
     },
@@ -1698,6 +1718,10 @@
         "upstream_refs": [
           "RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmIntegrity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_DoesNotUseTheUnrestrictedGcmIntegrityLimitForStrictIntegrityProfiles"
         ]
       }
     },
@@ -1726,7 +1750,7 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0003.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm"
         ]
       }
     },
@@ -1753,6 +1777,11 @@
         "upstream_refs": [
           "RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForCcm",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_RejectsMismatchedCcmProfilesForStrictPacketLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::Fuzz_TryGetUsageLimits_StrictCcmLimitIsOnlyAvailableForMatchedStrictProfiles"
         ]
       }
     },
@@ -1779,6 +1808,11 @@
         "upstream_refs": [
           "RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_UsesTheUnrestrictedPacketSizeProfileForCcm",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_RejectsMismatchedCcmProfilesForUnrestrictedPacketLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::Fuzz_TryGetUsageLimits_UnrestrictedCcmLimitIsOnlyAvailableForMatchedUnrestrictedProfiles"
         ]
       }
     }

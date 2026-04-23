@@ -29,6 +29,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicFrameCodecBenchmarks`
 - `QuicCryptoBufferBenchmarks`
 - `QuicDplpmtudStateBenchmarks`
+- `QuicAeadUsageLimitCalculatorBenchmarks`
 - `QuicTransportParametersBenchmarks`
 - `QuicHeaderParsingBenchmarks`
 - `QuicStreamParsingBenchmarks`

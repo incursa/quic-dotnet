@@ -883,6 +883,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §B RFC9001-SB-B10-P2-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcm
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::TryGetUsageLimits_RejectsTheLargerGcmConfidentialityLimitWithoutStrictPacketSizeLimiting
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs::Fuzz_TryGetUsageLimits_DoesNotGrantTheLargestGcmConfidentialityLimitOutsideTheStrictProfile
 
 ## REQ-QUIC-RFC9001-SB-0002 Require AEAD usage limits
 Any AEAD that is used with QUIC MUST have limits on use that ensure that both confidentiality and integrity are preserved.
@@ -898,8 +902,8 @@ Trace:
   - RFC 9001 §B RFC9001-SB-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_RespectsTheGcmPacketSizeThresholds
-  - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheCcmPacketSizeThresholds
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_ComputesFiniteConfidentialityAndIntegrityLimitsForSupportedAeads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs::TryGetUsageLimits_RejectsUnsupportedPolicyCombinations
 
 ## REQ-QUIC-RFC9001-SBP1P1-0001 Limit GCM confidentiality at 2^11 bytes
 Endpoints that do not send packets larger than 2^11 bytes MUST NOT protect more than 2^28 packets in a single connection.
@@ -914,6 +918,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmConfidentiality
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::TryGetUsageLimits_DoesNotUseTheStrictGcmConfidentialityLimitForLargerPacketProfiles
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs::Fuzz_TryGetUsageLimits_StrictGcmConfidentialityLimitIsOnlyAvailableForTheStrictProfile
 
 ## REQ-QUIC-RFC9001-SBP1P1-0002 Limit GCM confidentiality at 2^16 bytes
 Endpoints that allow packets as large as 2^16 bytes MUST NOT protect more than 2^23 packets in a single connection.
@@ -928,6 +936,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.1 RFC9001-SB.1.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmConfidentiality
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::TryGetUsageLimits_RejectsUnrestrictedGcmConfidentialityForTheLargePacketLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs::Fuzz_TryGetUsageLimits_LargePacketGcmConfidentialityLimitIsOnlyAvailableForTheLargePacketProfile
 
 ## REQ-QUIC-RFC9001-SBP1P2-0001 Limit GCM integrity at 2^11 bytes
 Endpoints that do not attempt to remove protection from packets larger than 2^11 bytes MUST NOT attempt to remove protection from more than 2^57 packets.
@@ -942,6 +954,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForGcmIntegrity
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::TryGetUsageLimits_RejectsLargePacketProfileForGcmIntegrity
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs::Fuzz_TryGetUsageLimits_StrictGcmIntegrityLimitIsOnlyAvailableForTheStrictProfile
 
 ## REQ-QUIC-RFC9001-SBP1P2-0002 Limit GCM integrity at unrestricted size
 Endpoints that do not restrict the size of processed packets MUST NOT attempt to remove protection from more than 2^52 packets.
@@ -956,6 +972,9 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_UsesTheLargePacketSizeProfileForGcmIntegrity
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs::TryGetUsageLimits_DoesNotUseTheUnrestrictedGcmIntegrityLimitForStrictIntegrityProfiles
 
 ## REQ-QUIC-RFC9001-SBP1P2-0003 Apply one GCM integrity limit to both functions
 The same integrity limit SHOULD be applied to AEAD_AES_128_GCM and AEAD_AES_256_GCM.
@@ -971,7 +990,7 @@ Trace:
   - RFC 9001 §B.1.2 RFC9001-SB.1.2-B9-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicAeadUsageLimitCalculatorTests.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0003.cs::TryGetUsageLimits_UsesTheSameIntegrityLimitForAes128AndAes256Gcm
 
 ## REQ-QUIC-RFC9001-SBP2-0001 Limit CCM at 2^11 bytes
 Endpoints that limit packets to 2^11 bytes MUST have both confidentiality and integrity limits of 2^26.5 packets.
@@ -986,6 +1005,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_UsesTheStrictPacketSizeProfileForCcm
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::TryGetUsageLimits_RejectsMismatchedCcmProfilesForStrictPacketLimits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs::Fuzz_TryGetUsageLimits_StrictCcmLimitIsOnlyAvailableForMatchedStrictProfiles
 
 ## REQ-QUIC-RFC9001-SBP2-0002 Limit CCM at unrestricted packet size
 Endpoints that do not restrict packet size MUST have a limit of 2^21.5 packets.
@@ -1000,3 +1023,7 @@ Trace:
 - Source Refs:
   - RFC 9001 §B.2 RFC9001-SB.2-B12-P8-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-appendix.b
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_UsesTheUnrestrictedPacketSizeProfileForCcm
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::TryGetUsageLimits_RejectsMismatchedCcmProfilesForUnrestrictedPacketLimits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs::Fuzz_TryGetUsageLimits_UnrestrictedCcmLimitIsOnlyAvailableForMatchedUnrestrictedProfiles

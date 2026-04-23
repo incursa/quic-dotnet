@@ -85,6 +85,7 @@ Keep the RFC 9001 packet-protection and TLS-coordination surface aligned with th
 Preserve the distinction between TLS-specific behavior and the transport and recovery slices that live in other specs.
 Add a narrow Handshake packet-protection helper that consumes QuicTlsPacketProtectionMaterial without broadening into a generic TLS backend.
 Keep Retry integrity isolated as a focused helper rather than broadening packet protection into a generic subsystem.
+Keep the Appendix B AEAD usage-limit calculator traced as a helper-backed proof surface rather than a generic AEAD policy engine.
 
 ## Requirements Addressed
 
@@ -158,6 +159,7 @@ Keep Retry integrity isolated as a focused helper rather than broadening packet 
 
 - Keep CRYPTO-frame handling, transport-parameter handling, and version-negotiation protection rules aligned with the RFC 9001 requirement set.
 - Add the Initial-only packet-protection helper, the narrow Handshake packet-protection helper, the focused Retry integrity helper, their requirement-home tests, and the companion benchmark slice.
+- Keep the Appendix B AEAD usage-limit helper covered by requirement-home positive, negative, edge, fuzz-style, and benchmark evidence without widening it into a generic AEAD policy engine.
 - Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.
 - Keep the trace links stable so the derived trace reports can backfill downstream proof automatically.
 
@@ -169,9 +171,9 @@ Keep Retry integrity isolated as a focused helper rather than broadening packet 
 
 ## Verification Plan
 
-Run the TLS-coordination, CRYPTO-frame, transport-parameter, version-negotiation, Initial packet-protection, Handshake packet-protection, and Retry-integrity tests that prove the RFC 9001 slice.
+Run the TLS-coordination, CRYPTO-frame, transport-parameter, version-negotiation, Initial packet-protection, Handshake packet-protection, Retry-integrity, and Appendix B AEAD usage-limit tests that prove the RFC 9001 slice.
 Run the non-Initial packet-protection material tests that prove AEAD binding, level typing, and bridge-state threading.
-Run the packet-format and benchmark evidence paths that exercise the CRYPTO, transport-parameter, Initial packet-protection, Handshake packet-protection, and Retry-integrity helpers.
+Run the packet-format and benchmark evidence paths that exercise the CRYPTO, transport-parameter, Initial packet-protection, Handshake packet-protection, Retry-integrity, and AEAD usage-limit helpers.
 Run the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links.
 
 ## Completion Notes
@@ -284,6 +286,15 @@ Verified By:
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0009.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0010.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SB-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P1-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP1P2-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-SBP2-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicInitialPacketProtectionTestData.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicHandshakePacketProtectionTestData.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicRetryPacketRequirementTestData.cs
@@ -292,3 +303,4 @@ Verified By:
 - benchmarks/QuicInitialPacketProtectionBenchmarks.cs
 - benchmarks/QuicHandshakePacketProtectionBenchmarks.cs
 - benchmarks/QuicRetryIntegrityBenchmarks.cs
+- benchmarks/QuicAeadUsageLimitCalculatorBenchmarks.cs
