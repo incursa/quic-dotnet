@@ -23,10 +23,34 @@ Run them through the launcher:
 baseline measurement for the current Incursa-only internal suites. It is not a
 public `System.Net.Quic` or MSQUIC comparison.
 
+## Public Comparison
+
+The benchmark project also carries a bounded public-facade comparison suite:
+
+- `QuicPublicApiLoopbackBenchmarks`
+
+Run it directly when the goal is a like-for-like local comparison between the
+Incursa public facade and `System.Net.Quic`:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiLoopbackBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter "*QuicPublicApiLoopbackBenchmarks*"
+```
+
+This suite is intentionally narrow. The current proven floor compares only
+public-facade loopback connection establishment plus disposal. Unsupported
+implementations are omitted when either public support marker
+(`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
+results must not be treated as equivalent to the repo's internal helper
+benchmarks or as full internet or HTTP/3 performance claims. A broader public
+stream-transfer comparison remains separately deferred until it has its own
+traced and proven workload boundary.
+
 ## Other Suites
 
 The benchmark project also contains the following permanent suites:
 
+- `QuicPublicApiLoopbackBenchmarks`
 - `QuicFrameCodecBenchmarks`
 - `QuicCryptoBufferBenchmarks`
 - `QuicDplpmtudStateBenchmarks`

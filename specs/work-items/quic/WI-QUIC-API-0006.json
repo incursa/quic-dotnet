@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0006",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Incursa.Quic Public Loopback Connection Comparison Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a bounded BenchmarkDotNet suite that compares the Incursa and `System.Net.Quic` public loopback connection facades at the same abstraction level.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0006"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0015"
+  ],
+  "planned_changes": "- Add a permanent BenchmarkDotNet suite that runs matched loopback public-facade connection-establishment workloads against Incursa.Quic and `System.Net.Quic`.\n- Keep the workload set limited to listener creation, connection accept and connect, and connection disposal on the same local machine.\n- Share certificate generation, client trust setup, and loopback endpoint allocation between both stack-specific paths so the comparison stays aligned.\n- Omit unsupported implementations via each stack's own `IsSupported` marker instead of synthesizing placeholder benchmark results.\n- Update the benchmark documentation and the owning public API trace artifacts so this connection-only comparison boundary is explicit and does not overlap the internal helper baselines or overclaim public stream-transfer support.",
+  "verification_plan": "Run the focused public API loopback requirement-home guards for listener/connect establishment and stream-entry regression safety, then run the new public loopback benchmark suite with BenchmarkDotNet `Dry` and `Short` if the harness is stable, and preserve the exported reports. Finish with repo-local SpecTrace render/check, `git diff --check`, and the known-baseline SpecTrace validation profile.",
+  "completion_notes": "Completed the permanent public-facade loopback connection benchmark suite and preserved Dry plus Short evidence under `artifacts/benchmark-baseline/20260423-public-api-loopback-connection-comparison/`. The current proven floor compares only connect/accept/dispose on the same machine and leaves public stream-transfer comparison out of scope until that workload has its own traced proof boundary.",
+  "out_of_scope": [
+    "Comparing internal helper, parser, recovery, or congestion benchmarks to public `System.Net.Quic` workloads.",
+    "HTTP/3 or interop-runner performance claims.",
+    "Public stream-transfer or throughput comparison.",
+    "Public API shape changes.",
+    "Broader transfer, retry, 0-RTT, or key-update support."
+  ]
+}
