@@ -66,6 +66,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicTlsServerFinishedPublicationBenchmarks`
 - `QuicTlsClientFinishedPublicationBenchmarks`
 - `QuicApplicationPacketKeyPhaseBenchmarks`
+- `QuicRepeatedKeyUpdateControlBenchmarks`
 - `QuicTlsClientZeroRttEmissionBenchmarks`
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`
 - `QuicStatelessResetBenchmarks`

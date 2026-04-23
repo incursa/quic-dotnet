@@ -5,11 +5,15 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicOneRttKeyUpdateLifecycle
 {
+    private const ulong ThreePtoMultiplier = 3;
+
     private QuicTlsPacketProtectionMaterial? retainedOldOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? retainedOldProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? retainedNextOpenPacketProtectionMaterial;
     private ulong? retainedOldPacketProtectionDiscardAtMicros;
     private uint? retainedOldPacketProtectionKeyPhase;
+    private ulong? repeatedLocalPacketProtectionUpdateNotBeforeMicros;
+    private uint? acknowledgedCurrentPacketProtectionKeyPhase;
 
     internal QuicTlsPacketProtectionMaterial? RetainedOldOpenPacketProtectionMaterial =>
         retainedOldOpenPacketProtectionMaterial;
@@ -26,6 +30,12 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     internal uint? RetainedOldPacketProtectionKeyPhase =>
         retainedOldPacketProtectionKeyPhase;
 
+    internal ulong? RepeatedLocalPacketProtectionUpdateNotBeforeMicros =>
+        repeatedLocalPacketProtectionUpdateNotBeforeMicros;
+
+    internal bool CurrentPacketProtectionPhaseAcknowledged =>
+        acknowledgedCurrentPacketProtectionKeyPhase.HasValue;
+
     internal bool HasRetainedOldPacketProtectionMaterial =>
         retainedOldOpenPacketProtectionMaterial.HasValue
         || retainedOldProtectPacketProtectionMaterial.HasValue;
@@ -40,6 +50,14 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
         HasRetainedOldPacketProtectionMaterial
         || HasRetainedNextOpenPacketProtectionMaterial;
 
+    internal bool CanInitiateRepeatedLocalPacketProtectionUpdate(uint keyPhase, ulong nowMicros)
+    {
+        return repeatedLocalPacketProtectionUpdateNotBeforeMicros.HasValue
+            && acknowledgedCurrentPacketProtectionKeyPhase.HasValue
+            && acknowledgedCurrentPacketProtectionKeyPhase.Value == keyPhase
+            && nowMicros >= repeatedLocalPacketProtectionUpdateNotBeforeMicros.Value;
+    }
+
     internal bool CanCommitNextOpenPacketProtectionMaterial(QuicTlsPacketProtectionMaterial openMaterial)
     {
         return !retainedNextOpenPacketProtectionMaterial.HasValue
@@ -49,6 +67,28 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     internal void ClearRetainedNextOpenPacketProtectionMaterial()
     {
         retainedNextOpenPacketProtectionMaterial = null;
+    }
+
+    internal void ResetRepeatedLocalPacketProtectionUpdateEligibility()
+    {
+        repeatedLocalPacketProtectionUpdateNotBeforeMicros = null;
+        acknowledgedCurrentPacketProtectionKeyPhase = null;
+    }
+
+    internal bool TryRecordCurrentPacketProtectionPhaseAcknowledgment(
+        uint keyPhase,
+        ulong acknowledgedAtMicros,
+        ulong probeTimeoutMicros)
+    {
+        if (acknowledgedCurrentPacketProtectionKeyPhase.HasValue)
+        {
+            return false;
+        }
+
+        acknowledgedCurrentPacketProtectionKeyPhase = keyPhase;
+        ulong cooldownMicros = MultiplySaturating(Math.Max(probeTimeoutMicros, 1UL), ThreePtoMultiplier);
+        repeatedLocalPacketProtectionUpdateNotBeforeMicros = SaturatingAdd(acknowledgedAtMicros, cooldownMicros);
+        return true;
     }
 
     internal bool TryRetainNextOpenPacketProtectionMaterial(
@@ -116,5 +156,24 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
         retainedNextOpenPacketProtectionMaterial = null;
         retainedOldPacketProtectionDiscardAtMicros = null;
         retainedOldPacketProtectionKeyPhase = null;
+        repeatedLocalPacketProtectionUpdateNotBeforeMicros = null;
+        acknowledgedCurrentPacketProtectionKeyPhase = null;
+    }
+
+    private static ulong MultiplySaturating(ulong value, ulong multiplier)
+    {
+        if (value == 0 || multiplier == 0)
+        {
+            return 0;
+        }
+
+        ulong product = value * multiplier;
+        return product / multiplier != value ? ulong.MaxValue : product;
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong sum = left + right;
+        return sum < left ? ulong.MaxValue : sum;
     }
 }

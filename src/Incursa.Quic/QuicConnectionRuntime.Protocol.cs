@@ -1557,6 +1557,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong ackReceivedAtMicros = GetElapsedMicros(nowTicks);
         HashSet<ulong> acknowledgedPacketNumbers = [];
         List<ulong> newlyAcknowledgedAckElicitingPacketNumbers = [];
+        bool acknowledgedCurrentOneRttKeyPhasePacket = false;
 
         foreach (ulong packetNumber in EnumerateAcknowledgedPacketNumbers(ackFrame))
         {
@@ -1578,6 +1579,13 @@ internal sealed partial class QuicConnectionRuntime
                         QuicTransportErrorCode.KeyUpdateError,
                         "The peer acknowledged a newer-key packet in an old-key packet.",
                         ref effects);
+                }
+
+                if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                    && tlsState.KeyUpdateInstalled
+                    && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
+                {
+                    acknowledgedCurrentOneRttKeyPhasePacket = true;
                 }
 
                 if (sentPacket.AckEliciting)
@@ -1611,6 +1619,11 @@ internal sealed partial class QuicConnectionRuntime
             peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
 
         stateChanged |= TryRegisterDetectedLosses(nowTicks);
+        if (acknowledgedCurrentOneRttKeyPhasePacket && TryRecordConfirmedCurrentOneRttKeyPhase(nowTicks))
+        {
+            stateChanged = true;
+        }
+
         if (TryFlushPendingRetransmissions(
             packetNumberSpace,
             nowTicks,
@@ -1621,6 +1634,19 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged;
+    }
+
+    private bool TryRecordConfirmedCurrentOneRttKeyPhase(long nowTicks)
+    {
+        if (!tlsState.KeyUpdateInstalled || tlsState.CurrentOneRttKeyPhase == 0)
+        {
+            return false;
+        }
+
+        RefreshCurrentProbeTimeoutMicros(nowTicks);
+        return tlsState.TryRecordCurrentOneRttKeyPhaseAcknowledgment(
+            GetElapsedMicros(nowTicks),
+            currentProbeTimeoutMicros);
     }
 
     private bool TrySendPendingApplicationAck(long nowTicks, ref List<QuicConnectionEffect>? effects)

@@ -1127,6 +1127,13 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.5 RFC9001-S6.5-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveServerRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotAllowARepeatedLocalKeyUpdateBeforeTheCurrentKeyPhaseIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotArmTheRepeatedUpdateCooldownWhenOnlyAnOldPhasePacketIsAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotExtendTheRepeatedUpdateCooldownAfterDuplicateAcknowledgments
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire
 
 ## REQ-QUIC-RFC9001-S6P5-0004 Limit old read key retention to three PTOs
 An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.

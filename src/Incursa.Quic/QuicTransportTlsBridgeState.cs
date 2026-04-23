@@ -93,6 +93,12 @@ internal sealed class QuicTransportTlsBridgeState
     public uint? RetainedOldOneRttPacketProtectionKeyPhase =>
         oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionKeyPhase;
 
+    internal bool CurrentOneRttKeyPhaseAcknowledged =>
+        oneRttKeyUpdateLifecycle.CurrentPacketProtectionPhaseAcknowledged;
+
+    internal ulong? RepeatedLocalOneRttKeyUpdateNotBeforeMicros =>
+        oneRttKeyUpdateLifecycle.RepeatedLocalPacketProtectionUpdateNotBeforeMicros;
+
     public ReadOnlyMemory<byte> PostHandshakeTicketBytes => postHandshakeTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
     public bool HasPostHandshakeTicket => postHandshakeTicketBytes is not null;
@@ -779,6 +785,7 @@ internal sealed class QuicTransportTlsBridgeState
         oneRttOpenPacketProtectionMaterial = openMaterial;
         oneRttProtectPacketProtectionMaterial = protectMaterial;
         oneRttKeyUpdateLifecycle.ClearRetainedNextOpenPacketProtectionMaterial();
+        oneRttKeyUpdateLifecycle.ResetRepeatedLocalPacketProtectionUpdateEligibility();
         KeyUpdateInstalled = true;
         return true;
     }
@@ -812,6 +819,29 @@ internal sealed class QuicTransportTlsBridgeState
             && oneRttKeyUpdateLifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(
                 discardAtMicros,
                 keyPhase);
+    }
+
+    internal bool TryRecordCurrentOneRttKeyPhaseAcknowledgment(
+        ulong acknowledgedAtMicros,
+        ulong probeTimeoutMicros)
+    {
+        return !IsTerminal
+            && KeyUpdateInstalled
+            && CurrentOneRttKeyPhase != 0
+            && oneRttKeyUpdateLifecycle.TryRecordCurrentPacketProtectionPhaseAcknowledgment(
+                CurrentOneRttKeyPhase,
+                acknowledgedAtMicros,
+                probeTimeoutMicros);
+    }
+
+    internal bool CanInitiateRepeatedLocalOneRttKeyUpdate(ulong nowMicros)
+    {
+        return !IsTerminal
+            && KeyUpdateInstalled
+            && CurrentOneRttKeyPhase != 0
+            && oneRttKeyUpdateLifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(
+                CurrentOneRttKeyPhase,
+                nowMicros);
     }
 
     public bool TryDiscardOldKeys()
@@ -1000,6 +1030,7 @@ internal sealed class QuicTransportTlsBridgeState
 
         CurrentOneRttKeyPhase = keyPhase;
         OneRttKeysAvailable = true;
+        oneRttKeyUpdateLifecycle.ResetRepeatedLocalPacketProtectionUpdateEligibility();
         KeyUpdateInstalled = true;
         return true;
     }
