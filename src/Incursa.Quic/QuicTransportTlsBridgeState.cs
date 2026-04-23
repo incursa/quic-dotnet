@@ -17,6 +17,10 @@ internal sealed class QuicTransportTlsBridgeState
     private QuicTlsPacketProtectionMaterial? handshakeProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? oneRttOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? oneRttProtectPacketProtectionMaterial;
+    private QuicAeadKeyLifecycle? currentOneRttOpenKeyLifecycle;
+    private QuicAeadKeyLifecycle? currentOneRttProtectKeyLifecycle;
+    private QuicAeadKeyLifecycle? retainedOldOneRttOpenKeyLifecycle;
+    private QuicAeadKeyLifecycle? retainedOldOneRttProtectKeyLifecycle;
     private byte[]? postHandshakeTicketBytes;
     private byte[]? postHandshakeTicketNonce;
     private uint? postHandshakeTicketLifetimeSeconds;
@@ -86,6 +90,14 @@ internal sealed class QuicTransportTlsBridgeState
 
     public QuicTlsPacketProtectionMaterial? RetainedNextOneRttOpenPacketProtectionMaterial =>
         oneRttKeyUpdateLifecycle.RetainedNextOpenPacketProtectionMaterial;
+
+    internal QuicAeadKeyLifecycle? CurrentOneRttOpenKeyLifecycle => currentOneRttOpenKeyLifecycle;
+
+    internal QuicAeadKeyLifecycle? CurrentOneRttProtectKeyLifecycle => currentOneRttProtectKeyLifecycle;
+
+    internal QuicAeadKeyLifecycle? RetainedOldOneRttOpenKeyLifecycle => retainedOldOneRttOpenKeyLifecycle;
+
+    internal QuicAeadKeyLifecycle? RetainedOldOneRttProtectKeyLifecycle => retainedOldOneRttProtectKeyLifecycle;
 
     public ulong? RetainedOldOneRttPacketProtectionDiscardAtMicros =>
         oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionDiscardAtMicros;
@@ -782,8 +794,12 @@ internal sealed class QuicTransportTlsBridgeState
 
         CurrentOneRttKeyPhase = 1;
         OneRttKeysAvailable = true;
+        retainedOldOneRttOpenKeyLifecycle = currentOneRttOpenKeyLifecycle;
+        retainedOldOneRttProtectKeyLifecycle = currentOneRttProtectKeyLifecycle;
         oneRttOpenPacketProtectionMaterial = openMaterial;
         oneRttProtectPacketProtectionMaterial = protectMaterial;
+        currentOneRttOpenKeyLifecycle = CreateActiveAeadKeyLifecycle(openMaterial);
+        currentOneRttProtectKeyLifecycle = CreateActiveAeadKeyLifecycle(protectMaterial);
         oneRttKeyUpdateLifecycle.ClearRetainedNextOpenPacketProtectionMaterial();
         oneRttKeyUpdateLifecycle.ResetRepeatedLocalPacketProtectionUpdateEligibility();
         KeyUpdateInstalled = true;
@@ -808,7 +824,14 @@ internal sealed class QuicTransportTlsBridgeState
 
     internal bool TryDiscardRetainedOneRttKeyUpdateMaterial()
     {
-        return oneRttKeyUpdateLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
+        if (!oneRttKeyUpdateLifecycle.TryDiscardRetainedOldPacketProtectionMaterial())
+        {
+            return false;
+        }
+
+        retainedOldOneRttOpenKeyLifecycle = null;
+        retainedOldOneRttProtectKeyLifecycle = null;
+        return true;
     }
 
     internal bool TryArmRetainedOneRttKeyUpdateMaterialDiscard(
@@ -844,6 +867,27 @@ internal sealed class QuicTransportTlsBridgeState
                 nowMicros);
     }
 
+    internal bool TryRecordCurrentOneRttProtectionUse()
+    {
+        return !IsTerminal
+            && currentOneRttProtectKeyLifecycle is not null
+            && currentOneRttProtectKeyLifecycle.TryUseForProtection();
+    }
+
+    internal bool TryRecordCurrentOneRttOpeningUse()
+    {
+        return !IsTerminal
+            && currentOneRttOpenKeyLifecycle is not null
+            && currentOneRttOpenKeyLifecycle.TryUseForOpening();
+    }
+
+    internal bool TryRecordRetainedOldOneRttOpeningUse()
+    {
+        return !IsTerminal
+            && retainedOldOneRttOpenKeyLifecycle is not null
+            && retainedOldOneRttOpenKeyLifecycle.TryUseForOpening();
+    }
+
     public bool TryDiscardOldKeys()
     {
         if (IsTerminal || OldKeysDiscarded)
@@ -853,6 +897,7 @@ internal sealed class QuicTransportTlsBridgeState
 
         OldKeysDiscarded = true;
         oneRttKeyUpdateLifecycle.Reset();
+        ResetOneRttAeadKeyLifecycles();
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -887,6 +932,7 @@ internal sealed class QuicTransportTlsBridgeState
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
         oneRttKeyUpdateLifecycle.Reset();
+        ResetOneRttAeadKeyLifecycles();
         oneRttIngressCryptoBuffer.DiscardFutureFrames();
         postHandshakeTicketBytes = null;
         postHandshakeTicketNonce = null;
@@ -1054,12 +1100,24 @@ internal sealed class QuicTransportTlsBridgeState
 
     private bool TryStoreOneRttOpenPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
     {
-        return TryStoreOneRttPacketProtectionMaterial(ref oneRttOpenPacketProtectionMaterial, material);
+        if (!TryStoreOneRttPacketProtectionMaterial(ref oneRttOpenPacketProtectionMaterial, material))
+        {
+            return false;
+        }
+
+        currentOneRttOpenKeyLifecycle = CreateActiveAeadKeyLifecycle(material);
+        return true;
     }
 
     private bool TryStoreOneRttProtectPacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)
     {
-        return TryStoreOneRttPacketProtectionMaterial(ref oneRttProtectPacketProtectionMaterial, material);
+        if (!TryStoreOneRttPacketProtectionMaterial(ref oneRttProtectPacketProtectionMaterial, material))
+        {
+            return false;
+        }
+
+        currentOneRttProtectKeyLifecycle = CreateActiveAeadKeyLifecycle(material);
+        return true;
     }
 
     internal bool TryStoreResumptionMasterSecret(ReadOnlyMemory<byte> masterSecret)
@@ -1141,6 +1199,7 @@ internal sealed class QuicTransportTlsBridgeState
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
         oneRttKeyUpdateLifecycle.Reset();
+        ResetOneRttAeadKeyLifecycles();
         initialIngressCryptoBuffer.Reset();
         handshakeIngressCryptoBuffer.Reset();
         oneRttIngressCryptoBuffer.Reset();
@@ -1291,10 +1350,15 @@ internal sealed class QuicTransportTlsBridgeState
     {
         bool discardedDirectionalMaterial = oneRttOpenPacketProtectionMaterial.HasValue
             || oneRttProtectPacketProtectionMaterial.HasValue
-            || oneRttKeyUpdateLifecycle.HasPacketProtectionMaterial;
+            || oneRttKeyUpdateLifecycle.HasPacketProtectionMaterial
+            || currentOneRttOpenKeyLifecycle is not null
+            || currentOneRttProtectKeyLifecycle is not null
+            || retainedOldOneRttOpenKeyLifecycle is not null
+            || retainedOldOneRttProtectKeyLifecycle is not null;
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
         oneRttKeyUpdateLifecycle.Reset();
+        ResetOneRttAeadKeyLifecycles();
         bool discardedLegacyMaterial = packetProtectionMaterials.Remove(QuicTlsEncryptionLevel.OneRtt);
         return discardedDirectionalMaterial || discardedLegacyMaterial;
     }
@@ -1375,6 +1439,21 @@ internal sealed class QuicTransportTlsBridgeState
 
         target = material;
         return true;
+    }
+
+    private static QuicAeadKeyLifecycle CreateActiveAeadKeyLifecycle(QuicTlsPacketProtectionMaterial material)
+    {
+        QuicAeadKeyLifecycle lifecycle = new(material.UsageLimits);
+        _ = lifecycle.TryActivate();
+        return lifecycle;
+    }
+
+    private void ResetOneRttAeadKeyLifecycles()
+    {
+        currentOneRttOpenKeyLifecycle = null;
+        currentOneRttProtectKeyLifecycle = null;
+        retainedOldOneRttOpenKeyLifecycle = null;
+        retainedOldOneRttProtectKeyLifecycle = null;
     }
 
     private static QuicTransportParameters CloneTransportParameters(QuicTransportParameters parameters)

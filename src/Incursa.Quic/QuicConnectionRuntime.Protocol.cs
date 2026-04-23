@@ -909,6 +909,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryStopUsingConnectionForOneRttOpenAeadLimit(
+                tlsState.CurrentOneRttOpenKeyLifecycle,
+                ref effects))
+        {
+            return true;
+        }
+
         bool stateChanged = false;
         bool openedWithCurrentOpenMaterial = false;
         bool openedWithRetainedOldOpenMaterial = false;
@@ -924,6 +931,13 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
+            if (TryStopUsingConnectionForOneRttOpenAeadLimit(
+                    tlsState.RetainedOldOneRttOpenKeyLifecycle,
+                    ref effects))
+            {
+                return true;
+            }
+
             bool openedWithRetainedOldKeys = tlsState.KeyUpdateInstalled
                 && tlsState.CurrentOneRttKeyPhase == 1
                 && tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
@@ -973,6 +987,31 @@ internal sealed partial class QuicConnectionRuntime
                 keyPhase = true;
                 stateChanged = true;
             }
+        }
+
+        QuicAeadKeyLifecycle? openedKeyLifecycle = openedWithRetainedOldOpenMaterial
+            ? tlsState.RetainedOldOneRttOpenKeyLifecycle
+            : tlsState.CurrentOneRttOpenKeyLifecycle;
+        bool recordedOpeningUse = openedWithRetainedOldOpenMaterial
+            ? tlsState.TryRecordRetainedOldOneRttOpeningUse()
+            : tlsState.TryRecordCurrentOneRttOpeningUse();
+        if (!recordedOpeningUse)
+        {
+            if (openedKeyLifecycle is null)
+            {
+                return false;
+            }
+
+            _ = StopUsingConnectionForAeadLimit(
+                "The connection reached the AEAD integrity limit.",
+                ref effects,
+                out _);
+            return true;
+        }
+
+        if (TryStopUsingConnectionForOneRttOpenAeadLimit(openedKeyLifecycle, ref effects))
+        {
+            return true;
         }
 
         if (openedWithCurrentOpenMaterial
@@ -1688,6 +1727,7 @@ internal sealed partial class QuicConnectionRuntime
             probePacket: false,
             ackOnlyPacket: true,
             streamIds: null,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -2321,6 +2361,7 @@ internal sealed partial class QuicConnectionRuntime
             applicationPayload,
             "The connection runtime could not protect the HANDSHAKE_DONE packet.",
             "The connection cannot send the HANDSHAKE_DONE packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -2466,6 +2507,7 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             "The connection runtime could not protect the NEW_TOKEN packet.",
             "The connection cannot send the NEW_TOKEN packet.",
+            ref effects,
             out QuicConnectionPathIdentity actualPathIdentity,
             out byte[] protectedPacket,
             out Exception? exception))

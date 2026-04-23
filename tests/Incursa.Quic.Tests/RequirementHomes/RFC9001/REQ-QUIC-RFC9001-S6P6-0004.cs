@@ -28,6 +28,45 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task RuntimeSendPathDiscardsConnectionWhenSuccessorConfidentialityLimitIsReached()
+    {
+        using QuicConnectionRuntime runtime = CreateConfirmedClientRuntimeWithAeadLimitHeadroom();
+        List<QuicConnectionEffect> outboundEffects = [];
+        DispatchRuntimeEvents(runtime, outboundEffects);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicAeadKeyLifecycle successorProtectLifecycle = runtime.TlsState.CurrentOneRttProtectKeyLifecycle!;
+        Assert.NotNull(successorProtectLifecycle);
+        byte[] payload = new byte[32];
+        while (successorProtectLifecycle.ProtectedPacketCount < 64d)
+        {
+            await stream.WriteAsync(payload, 0, payload.Length);
+            AcknowledgeTrackedPackets(runtime);
+            outboundEffects.Clear();
+        }
+
+        Assert.True(successorProtectLifecycle.HasReachedConfidentialityLimit);
+
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(
+            () => stream.WriteAsync(payload, 0, payload.Length));
+
+        Assert.Equal((long)QuicTransportErrorCode.AeadLimitReached, exception.TransportErrorCode);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+        Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Contains(outboundEffects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+        Assert.DoesNotContain(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void AeadLimitPolicyStopsConnectionWhenIntegrityLimitIsReached()
     {
         QuicAeadKeyLifecycle keyLifecycle = CreateActiveLifecycle(confidentialityLimit: 16, integrityLimit: 1);
@@ -95,5 +134,38 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0004
         QuicAeadKeyLifecycle keyLifecycle = new(new QuicAeadUsageLimits(confidentialityLimit, integrityLimit));
         Assert.True(keyLifecycle.TryActivate());
         return keyLifecycle;
+    }
+
+    private static QuicConnectionRuntime CreateConfirmedClientRuntimeWithAeadLimitHeadroom()
+    {
+        return QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 16_384,
+            connectionSendLimit: 16_384,
+            localBidirectionalSendLimit: 16_384,
+            localBidirectionalReceiveLimit: 16_384,
+            peerBidirectionalReceiveLimit: 16_384);
+    }
+
+    private static void DispatchRuntimeEvents(
+        QuicConnectionRuntime runtime,
+        List<QuicConnectionEffect> outboundEffects)
+    {
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+    }
+
+    private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+        }
     }
 }

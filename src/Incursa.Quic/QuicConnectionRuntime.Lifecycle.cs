@@ -61,7 +61,7 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        if (!TryFormatConnectionCloseDatagram(closeMetadata, out ReadOnlyMemory<byte> closeDatagram))
+        if (!TryFormatConnectionCloseDatagram(closeMetadata, ref effects, out ReadOnlyMemory<byte> closeDatagram))
         {
             return;
         }
@@ -86,6 +86,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryFormatConnectionCloseDatagram(
         QuicConnectionCloseMetadata closeMetadata,
+        ref List<QuicConnectionEffect>? effects,
         out ReadOnlyMemory<byte> closeDatagram)
     {
         ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
@@ -95,18 +96,110 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
+        if (!TryPrepareOneRttProtectionForAeadLimit(
+                "The connection runtime could not protect the CONNECTION_CLOSE packet.",
+                ref effects,
+                out _))
+        {
+            closeDatagram = default;
+            return false;
+        }
+
         if (handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             closePayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out byte[] protectedPacket))
         {
+            _ = tlsState.TryRecordCurrentOneRttProtectionUse();
             closeDatagram = protectedPacket;
             return true;
         }
 
         closeDatagram = default;
         return false;
+    }
+
+    private bool TryPrepareOneRttProtectionForAeadLimit(
+        string failureMessage,
+        ref List<QuicConnectionEffect>? effects,
+        out Exception? exception)
+    {
+        exception = null;
+        QuicAeadKeyLifecycle? keyLifecycle = tlsState.CurrentOneRttProtectKeyLifecycle;
+        if (keyLifecycle is null)
+        {
+            return true;
+        }
+
+        QuicAeadLimitDecision decision = QuicAeadLimitPolicy.EvaluateProtectionUse(
+            keyLifecycle,
+            keyUpdatePossible: CanInstallFirstOneRttKeyUpdateForAeadLimit());
+        return decision.Action switch
+        {
+            QuicAeadLimitAction.Continue => true,
+            QuicAeadLimitAction.InitiateKeyUpdate
+                when tlsBridgeDriver.TryInstallOneRttKeyUpdate() => true,
+            _ => StopUsingConnectionForAeadLimit(failureMessage, ref effects, out exception),
+        };
+    }
+
+    private bool TryStopUsingConnectionForOneRttOpenAeadLimit(
+        QuicAeadKeyLifecycle? keyLifecycle,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (keyLifecycle is null)
+        {
+            return false;
+        }
+
+        QuicAeadLimitDecision decision = QuicAeadLimitPolicy.EvaluateReceivedPacketResponse(
+            keyLifecycle,
+            connectionStoppedForAeadLimit: false);
+        if (!decision.AllowsOnlyStatelessReset)
+        {
+            return false;
+        }
+
+        _ = StopUsingConnectionForAeadLimit(
+            "The connection reached the AEAD integrity limit.",
+            ref effects,
+            out _);
+        return true;
+    }
+
+    private bool StopUsingConnectionForAeadLimit(
+        string reasonPhrase,
+        ref List<QuicConnectionEffect>? effects,
+        out Exception? exception)
+    {
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: QuicTransportErrorCode.AeadLimitReached,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: null,
+            ReasonPhrase: reasonPhrase);
+
+        _ = DiscardConnection(
+            lastTransitionTicks,
+            QuicConnectionCloseOrigin.Local,
+            closeMetadata,
+            ref effects);
+        exception = terminalState is QuicConnectionTerminalState terminalStateValue
+            ? CreateTerminalException(terminalStateValue)
+            : new QuicException(
+                QuicError.TransportError,
+                null,
+                (long)QuicTransportErrorCode.AeadLimitReached,
+                reasonPhrase);
+        return false;
+    }
+
+    private bool CanInstallFirstOneRttKeyUpdateForAeadLimit()
+    {
+        return phase == QuicConnectionPhase.Active
+            && HandshakeConfirmed
+            && !tlsState.KeyUpdateInstalled
+            && tlsState.CurrentOneRttKeyPhase == 0;
     }
 
     private static QuicConnectionCloseMetadata CreatePeerConnectionCloseReplyMetadata()

@@ -26,6 +26,94 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void RuntimeOpenPathDiscardsConnectionWhenIntegrityLimitIsReached()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+
+        QuicAeadKeyLifecycle openLifecycle = runtime.TlsState.CurrentOneRttOpenKeyLifecycle!;
+        Assert.NotNull(openLifecycle);
+        QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+        byte[] paddingPayload = [0x00];
+
+        QuicConnectionTransitionResult result = default;
+        for (int packet = 0; packet < 128; packet++)
+        {
+            Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+                paddingPayload,
+                runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+                keyPhase: false,
+                out _,
+                out byte[] protectedPacket));
+
+            result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: packet + 1,
+                    QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                    protectedPacket),
+                nowTicks: packet + 1);
+
+            if (packet < 127)
+            {
+                Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+                Assert.Equal(packet + 1d, openLifecycle.OpenedPacketCount);
+                Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+            }
+        }
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(128d, openLifecycle.OpenedPacketCount);
+        Assert.True(openLifecycle.HasReachedIntegrityLimit);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+        Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimeOpenPathDiscardsBeforeUsingExhaustedRetainedOldKeys()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+
+        QuicAeadKeyLifecycle retainedOldOpenLifecycle = runtime.TlsState.RetainedOldOneRttOpenKeyLifecycle!;
+        Assert.NotNull(retainedOldOpenLifecycle);
+        for (int packet = 0; packet < 128; packet++)
+        {
+            Assert.True(retainedOldOpenLifecycle.TryUseForOpening());
+        }
+
+        Assert.True(retainedOldOpenLifecycle.HasReachedIntegrityLimit);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+            [0x00],
+            runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value,
+            keyPhase: false,
+            out _,
+            out byte[] protectedPacket));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 129,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                protectedPacket),
+            nowTicks: 129);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(128d, retainedOldOpenLifecycle.OpenedPacketCount);
+        Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+        Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached()
     {
         QuicAeadKeyLifecycle keyLifecycle = CreateActiveLifecycle(confidentialityLimit: 16, integrityLimit: 1);

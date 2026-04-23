@@ -1158,12 +1158,25 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         QuicConnectionActivePathRecord currentPath = activePath.Value;
+        if (!TryPrepareOneRttProtectionForAeadLimit(
+                "The connection runtime could not protect the recovery PING probe packet.",
+                ref effects,
+                out _))
+        {
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             applicationPayload[..bytesWritten],
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out ulong packetNumber,
             out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        if (!tlsState.TryRecordCurrentOneRttProtectionUse())
         {
             return false;
         }

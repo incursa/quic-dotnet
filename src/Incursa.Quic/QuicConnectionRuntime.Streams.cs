@@ -171,6 +171,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream open packet.",
             "The connection cannot send the stream open packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -333,6 +334,7 @@ internal sealed partial class QuicConnectionRuntime
             "The connection runtime could not protect the stream write packet.",
             "The connection cannot send the stream write packet.",
             new[] { streamId },
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -477,6 +479,7 @@ internal sealed partial class QuicConnectionRuntime
             probePacket,
             ackOnlyPacket: false,
             streamIds,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -649,6 +652,7 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             protectFailureMessage,
             amplificationFailureMessage,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -684,6 +688,7 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             protectFailureMessage,
             amplificationFailureMessage,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -719,6 +724,7 @@ internal sealed partial class QuicConnectionRuntime
             blockedPayload,
             protectFailureMessage,
             amplificationFailureMessage,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -755,6 +761,7 @@ internal sealed partial class QuicConnectionRuntime
             blockedPayload,
             protectFailureMessage,
             amplificationFailureMessage,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -791,6 +798,7 @@ internal sealed partial class QuicConnectionRuntime
             blockedPayload,
             protectFailureMessage,
             amplificationFailureMessage,
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -856,6 +864,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream reset packet.",
             "The connection cannot send the stream reset packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -913,6 +922,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream stop-sending packet.",
             "The connection cannot send the stream stop-sending packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -1019,6 +1029,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream capacity release packet.",
             "The connection cannot send the stream capacity release packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -1062,6 +1073,7 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             "The connection runtime could not protect the connection ID retirement packet.",
             "The connection cannot send the connection ID retirement packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
@@ -1087,6 +1099,7 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out byte[] protectedPacket,
@@ -1099,6 +1112,7 @@ internal sealed partial class QuicConnectionRuntime
             probePacket: false,
             ackOnlyPacket: false,
             streamIds: null,
+            ref effects,
             out currentPath,
             out updatedAmplificationState,
             out protectedPacket,
@@ -1110,6 +1124,7 @@ internal sealed partial class QuicConnectionRuntime
         string protectFailureMessage,
         string amplificationFailureMessage,
         ulong[]? streamIds,
+        ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out byte[] protectedPacket,
@@ -1122,6 +1137,7 @@ internal sealed partial class QuicConnectionRuntime
             probePacket: false,
             ackOnlyPacket: false,
             streamIds,
+            ref effects,
             out currentPath,
             out updatedAmplificationState,
             out protectedPacket,
@@ -1135,6 +1151,7 @@ internal sealed partial class QuicConnectionRuntime
         bool probePacket,
         bool ackOnlyPacket,
         ulong[]? streamIds,
+        ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out byte[] protectedPacket,
@@ -1151,12 +1168,23 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (!TryPrepareOneRttProtectionForAeadLimit(protectFailureMessage, ref effects, out exception))
+        {
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out ulong packetNumber,
             out protectedPacket))
+        {
+            exception = new InvalidOperationException(protectFailureMessage);
+            return false;
+        }
+
+        if (!tlsState.TryRecordCurrentOneRttProtectionUse())
         {
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
@@ -1204,6 +1232,7 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects,
         out QuicConnectionPathIdentity sendPathIdentity,
         out byte[] protectedPacket,
         out Exception? exception)
@@ -1216,12 +1245,23 @@ internal sealed partial class QuicConnectionRuntime
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
+        if (!TryPrepareOneRttProtectionForAeadLimit(protectFailureMessage, ref effects, out exception))
+        {
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out ulong packetNumber,
             out protectedPacket))
+        {
+            exception = new InvalidOperationException(protectFailureMessage);
+            return false;
+        }
+
+        if (!tlsState.TryRecordCurrentOneRttProtectionUse())
         {
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
@@ -1340,6 +1380,7 @@ internal sealed partial class QuicConnectionRuntime
                 || (rebuildableApplicationRetransmission
                     && !TryBuildApplicationRetransmissionPacket(
                         probeRetransmission,
+                        ref effects,
                         out rebuiltPacketNumber,
                         out rebuiltDatagram,
                         out rebuiltApplicationPayload)))
@@ -1447,6 +1488,7 @@ internal sealed partial class QuicConnectionRuntime
                 || (rebuildableApplicationRetransmission
                     && !TryBuildApplicationRetransmissionPacket(
                         retransmission,
+                        ref effects,
                         out rebuiltPacketNumber,
                         out rebuiltDatagram,
                         out rebuiltApplicationPayload)))
@@ -1969,6 +2011,7 @@ internal sealed partial class QuicConnectionRuntime
                     out byte[] rebuiltHandshakePacketBytes)
                 || !TryBuildApplicationRetransmissionPacket(
                     applicationRetransmission,
+                    ref effects,
                     out ulong rebuiltApplicationPacketNumber,
                     out byte[] rebuiltApplicationPacketBytes,
                     out ReadOnlyMemory<byte> rebuiltApplicationPayload))
@@ -2441,6 +2484,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryBuildApplicationRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
+        ref List<QuicConnectionEffect>? effects,
         out ulong packetNumber,
         out byte[] protectedPacket,
         out ReadOnlyMemory<byte> plaintextPayload)
@@ -2490,13 +2534,26 @@ internal sealed partial class QuicConnectionRuntime
                 largestTrackedPacketNumber.Value);
         }
 
-        return handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+        if (!TryPrepareOneRttProtectionForAeadLimit(
+                "The connection runtime could not protect the retransmitted application packet.",
+                ref effects,
+                out _))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
             plaintextPayload.Span,
             minimumPacketNumberExclusive,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhase == 1,
             out packetNumber,
-            out protectedPacket);
+            out protectedPacket))
+        {
+            return false;
+        }
+
+        return tlsState.TryRecordCurrentOneRttProtectionUse();
     }
 
     private bool TryBuildHandshakeCryptoRetransmissionPacketWithDestinationOverride(
@@ -3205,6 +3262,7 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             "The connection runtime could not protect the stream reset packet.",
             "The connection cannot send the stream reset packet.",
+            ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,

@@ -1236,6 +1236,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::RuntimeSendPathInstallsFirstKeyUpdateBeforeProtectingBeyondConfidentialityLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection
 
@@ -1254,6 +1255,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenConfidentialityLimitIsReachedAndKeyUpdateIsImpossible
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::RuntimeSendPathDiscardsConnectionWhenSuccessorConfidentialityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenIntegrityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyDoesNotStopConnectionWhileLimitsRemainAvailable
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::FuzzIntegrityLimitPolicy_RandomizedLimitsStopConnectionAtTheLimit
@@ -1273,6 +1275,8 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterConnectionStoppedForAeadLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::RuntimeOpenPathDiscardsConnectionWhenIntegrityLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::RuntimeOpenPathDiscardsBeforeUsingExhaustedRetainedOldKeys
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyKeepsOrdinaryResponsesBeforeAeadStop
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzStatelessResetOnlyPolicy_RandomizedIntegrityLimitsChooseStatelessResetOnly

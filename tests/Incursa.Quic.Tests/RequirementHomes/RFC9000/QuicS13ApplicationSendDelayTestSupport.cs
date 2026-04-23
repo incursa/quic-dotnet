@@ -20,8 +20,10 @@ internal static class QuicS13ApplicationSendDelayTestSupport
     internal static QuicConnectionRuntime CreateFinishedClientRuntimeWithValidatedActivePath(
         IMonotonicClock? clock = null,
         ulong connectionReceiveLimit = 64,
+        ulong connectionSendLimit = 64,
         ulong localBidirectionalSendLimit = 32,
         ulong localBidirectionalReceiveLimit = 8,
+        ulong peerBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8)
     {
@@ -45,7 +47,9 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(
                 connectionReceiveLimit: connectionReceiveLimit,
+                connectionSendLimit: connectionSendLimit,
                 localBidirectionalReceiveLimit: localBidirectionalReceiveLimit,
+                peerBidirectionalReceiveLimit: peerBidirectionalReceiveLimit,
                 localBidirectionalSendLimit: localBidirectionalSendLimit),
             clock ?? new FakeMonotonicClock(0),
             maximumCandidatePaths: maximumCandidatePaths,
@@ -163,16 +167,20 @@ internal static class QuicS13ApplicationSendDelayTestSupport
     internal static QuicConnectionRuntime CreateConfirmedClientRuntimeWithValidatedActivePath(
         IMonotonicClock? clock = null,
         ulong connectionReceiveLimit = 64,
+        ulong connectionSendLimit = 64,
         ulong localBidirectionalSendLimit = 32,
         ulong localBidirectionalReceiveLimit = 8,
+        ulong peerBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8)
     {
         QuicConnectionRuntime runtime = CreateFinishedClientRuntimeWithValidatedActivePath(
             clock,
             connectionReceiveLimit,
+            connectionSendLimit,
             localBidirectionalSendLimit,
             localBidirectionalReceiveLimit,
+            peerBidirectionalReceiveLimit,
             maximumCandidatePaths,
             maximumRecentlyValidatedPaths);
 
