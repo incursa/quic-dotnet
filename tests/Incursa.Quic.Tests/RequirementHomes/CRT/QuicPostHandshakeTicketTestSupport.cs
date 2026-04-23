@@ -212,7 +212,13 @@ internal static class QuicPostHandshakeTicketTestSupport
         return runtime;
     }
 
-    internal static QuicConnectionRuntime CreateFinishedServerRuntime()
+    internal static QuicConnectionRuntime CreateFinishedServerRuntime(
+        ulong connectionReceiveLimit = DefaultConnectionFlowControlLimit,
+        ulong connectionSendLimit = DefaultConnectionFlowControlLimit,
+        ulong incomingBidirectionalStreamReceiveLimit = DefaultStreamFlowControlLimit,
+        ulong outgoingBidirectionalStreamReceiveLimit = DefaultStreamFlowControlLimit,
+        ulong peerConnectionFlowControlLimit = DefaultConnectionFlowControlLimit,
+        ulong peerStreamFlowControlLimit = DefaultStreamFlowControlLimit)
     {
         byte[] clientHandshakePrivateKey = CreateScalar(0x11);
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
@@ -222,7 +228,8 @@ internal static class QuicPostHandshakeTicketTestSupport
         QuicTlsTransportBridgeDriver clientDriver = new(
             QuicTlsRole.Client,
             localHandshakePrivateKey: clientHandshakePrivateKey);
-        IReadOnlyList<QuicTlsStateUpdate> clientBootstrapUpdates = clientDriver.StartHandshake(CreateClientTransportParameters());
+        IReadOnlyList<QuicTlsStateUpdate> clientBootstrapUpdates = clientDriver.StartHandshake(
+            CreateClientTransportParameters(peerConnectionFlowControlLimit, peerStreamFlowControlLimit));
         Assert.Equal(2, clientBootstrapUpdates.Count);
         byte[] clientHelloBytes = clientBootstrapUpdates[1].CryptoData.ToArray();
 
@@ -236,7 +243,14 @@ internal static class QuicPostHandshakeTicketTestSupport
         byte[] localLeafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(localLeafCertificateKey);
 
         QuicConnectionRuntime runtime = new(
-            QuicConnectionStreamStateTestHelpers.CreateState(isServer: true),
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: true,
+                connectionReceiveLimit: connectionReceiveLimit,
+                connectionSendLimit: connectionSendLimit,
+                localBidirectionalReceiveLimit: outgoingBidirectionalStreamReceiveLimit,
+                peerBidirectionalReceiveLimit: incomingBidirectionalStreamReceiveLimit,
+                localBidirectionalSendLimit: outgoingBidirectionalStreamReceiveLimit,
+                peerBidirectionalSendLimit: incomingBidirectionalStreamReceiveLimit),
             new FakeMonotonicClock(0),
             tlsRole: QuicTlsRole.Server,
             localHandshakePrivateKey: localHandshakePrivateKey,
@@ -592,17 +606,19 @@ internal static class QuicPostHandshakeTicketTestSupport
         };
     }
 
-    private static QuicTransportParameters CreateClientTransportParameters()
+    private static QuicTransportParameters CreateClientTransportParameters(
+        ulong connectionFlowControlLimit = DefaultConnectionFlowControlLimit,
+        ulong streamFlowControlLimit = DefaultStreamFlowControlLimit)
     {
         return new QuicTransportParameters
         {
             MaxIdleTimeout = 21,
             DisableActiveMigration = true,
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
-            InitialMaxData = DefaultConnectionFlowControlLimit,
-            InitialMaxStreamDataBidiLocal = DefaultStreamFlowControlLimit,
-            InitialMaxStreamDataBidiRemote = DefaultStreamFlowControlLimit,
-            InitialMaxStreamDataUni = DefaultStreamFlowControlLimit,
+            InitialMaxData = connectionFlowControlLimit,
+            InitialMaxStreamDataBidiLocal = streamFlowControlLimit,
+            InitialMaxStreamDataBidiRemote = streamFlowControlLimit,
+            InitialMaxStreamDataUni = streamFlowControlLimit,
         };
     }
 

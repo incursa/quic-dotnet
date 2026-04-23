@@ -272,6 +272,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs
@@ -282,7 +283,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Status
 
-planned
+Focused SAP9 verification now includes preserved server-role handshakeloss replay coverage proving live-sized FIN-only close repair through runtime selection and endpoint-host recovery delivery. Broader RFC 9002 verification remains planned.
 
 ## Related Artifacts
 

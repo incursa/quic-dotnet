@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 
 namespace Incursa.Quic.Tests;
@@ -939,6 +940,586 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.True(trackedPtoFinRepairPacket.Key.PacketNumber > trackedImmediateFinRepairPacket.Key.PacketNumber);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterPreBodyCreditPacketsAreAcknowledged()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-162814565-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
+        //     the second connection ACKed the preceding server credit packets plus packet 56 carrying the
+        //     1024-byte response body and packet 58 carrying MAX_STREAMS, but not the missing packet 57
+        //     carrying the FIN-only close.
+        //   runner-logs\nginx_quic-go\handshakeloss\output.txt:
+        //     the simulator forwarded the 1077-byte body, dropped the following 53-byte server->client
+        //     datagram, and forwarded the later 85-byte server->client datagram before quic-go timed out.
+        // This replay keeps the server-side pre-body application send history instead of clearing it, so the
+        // selective ACK shape matches the live gap more closely than the distilled repair test above.
+        using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
+            connectionFlowControlLimit: 4096,
+            streamFlowControlLimit: 4096,
+            validateActivePath: true);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty));
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+        AcknowledgeTrackedPackets(
+            runtime,
+            static key => key.PacketNumberSpace is not QuicPacketNumberSpace.ApplicationData);
+
+        byte[] requestPayload = Encoding.ASCII.GetBytes("GET /tiny-unlimited-paper\r\n");
+        byte[] requestPacket = BuildProtectedPeerStreamPacket(
+            runtime,
+            streamId: 0,
+            streamData: requestPayload,
+            offset: 0,
+            fin: true);
+
+        QuicConnectionTransitionResult requestResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                requestPacket),
+            nowTicks: 10);
+        Assert.True(requestResult.StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot requestSnapshot));
+        Assert.Equal(requestPayload.Length, checked((int)requestSnapshot.BufferedReadableBytes));
+
+        await using QuicStream requestStream = new(runtime.StreamRegistry.Bookkeeping, 0, runtime);
+        byte[] readBuffer = new byte[64];
+        int totalRead = 0;
+        int bytesRead;
+        do
+        {
+            bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            totalRead += bytesRead;
+        }
+        while (bytesRead > 0);
+
+        Assert.Equal(requestPayload.Length, totalRead);
+        QuicConnectionSentPacketKey[] preBodyApplicationPacketKeys = runtime.SendRuntime.SentPackets.Keys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .OrderBy(static key => key.PacketNumber)
+            .ToArray();
+        string[] preBodyDescriptions = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(preBodyApplicationPacketKeys);
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_data(", StringComparison.Ordinal));
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_stream_data(", StringComparison.Ordinal));
+        outboundEffects.Clear();
+
+        byte[] responsePayload = CreateSequentialPayload(0x44, 1024);
+        await requestStream.WriteAsync(responsePayload, 0, responsePayload.Length);
+        QuicConnectionSendDatagramEffect bodyEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedBodyPacket = FindTrackedPacket(runtime, bodyEffect.Datagram);
+        outboundEffects.Clear();
+
+        await requestStream.CompleteWritesAsync().AsTask();
+        QuicConnectionSendDatagramEffect[] completionEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] completionDescriptions = completionEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        QuicConnectionSendDatagramEffect finEffect = FindFinOnlyCloseEffect(
+            runtime,
+            completionEffects,
+            streamId: 0,
+            offset: (ulong)responsePayload.Length,
+            out bool finKeyPhase);
+        QuicConnectionSendDatagramEffect maxStreamsEffect = FindMaxStreamsEffect(completionEffects, completionDescriptions);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedFinPacket = FindTrackedPacket(runtime, finEffect.Datagram);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
+
+        Assert.False(finKeyPhase);
+        Assert.Equal(1077, bodyEffect.Datagram.Length);
+        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(85, maxStreamsEffect.Datagram.Length);
+        Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
+        Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);
+
+        ulong[] acknowledgedPacketNumbers = preBodyApplicationPacketKeys
+            .Select(static key => key.PacketNumber)
+            .Append(trackedBodyPacket.Key.PacketNumber)
+            .Append(trackedMaxStreamsPacket.Key.PacketNumber)
+            .Distinct()
+            .OrderBy(static packetNumber => packetNumber)
+            .ToArray();
+        Assert.DoesNotContain(trackedFinPacket.Key.PacketNumber, acknowledgedPacketNumbers);
+
+        byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
+            runtime,
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            acknowledgedPacketNumbers);
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+        QuicConnectionSendDatagramEffect[] ackSendEffects = ackResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] ackSendDescriptions = ackSendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        AssertOnlyFlowControlRepairs(runtime, ackSendEffects, ackSendDescriptions);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedBodyPacket.Key.PacketNumber);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+
+        QuicConnectionSendDatagramEffect finRepairEffect = FindFinOnlyCloseEffect(
+            runtime,
+            sendEffects,
+            streamId: 0,
+            offset: (ulong)responsePayload.Length,
+            out bool finRepairKeyPhase);
+        QuicStreamFrame finRepairFrame = OpenSingleStreamFrame(runtime, finRepairEffect.Datagram, out finRepairKeyPhase);
+
+        Assert.False(finRepairKeyPhase);
+        Assert.Equal(0UL, finRepairFrame.StreamId.Value);
+        Assert.Equal((ulong)responsePayload.Length, finRepairFrame.Offset);
+        Assert.True(finRepairFrame.IsFin);
+        Assert.Equal(0, finRepairFrame.StreamDataLength);
+        Assert.True(
+            sendEffectDescriptions.Any(description => description.Contains("stream(id=0,off=1024,len=0,fin=True)", StringComparison.Ordinal)),
+            $"Expected PTO to retransmit the dropped live-sized FIN-only close, but ACK response sent {string.Join(" || ", ackSendDescriptions)} and PTO sent {string.Join(" || ", sendEffectDescriptions)}.");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterLiveSparseCreditAckRanges()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-162814565-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt lines 590-638:
+        //     packet 18 ACKed ranges 58, 56, 53-49, 47, 44-42, 38, 36-32, 29-23,
+        //     21, 17-16, 14-11, and 9-0 while omitting packet 57 carrying the
+        //     FIN-only close and also leaving multiple older credit packet holes.
+        //   runner-logs\nginx_quic-go\handshakeloss\output.txt lines 554-558:
+        //     the simulator forwarded the 1077-byte body, dropped the 53-byte FIN-only
+        //     datagram, and forwarded the later 85-byte MAX_STREAMS datagram.
+        using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
+            connectionFlowControlLimit: 4096,
+            streamFlowControlLimit: 4096,
+            validateActivePath: true);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty));
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+        AcknowledgeTrackedPackets(
+            runtime,
+            static key => key.PacketNumberSpace is not QuicPacketNumberSpace.ApplicationData);
+
+        byte[] requestPayload = Encoding.ASCII.GetBytes("GET /tiny-unlimited-paper\r\n");
+        byte[] requestPacket = BuildProtectedPeerStreamPacket(
+            runtime,
+            streamId: 0,
+            streamData: requestPayload,
+            offset: 0,
+            fin: true);
+
+        QuicConnectionTransitionResult requestResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                requestPacket),
+            nowTicks: 10);
+        Assert.True(requestResult.StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot requestSnapshot));
+        Assert.Equal(requestPayload.Length, checked((int)requestSnapshot.BufferedReadableBytes));
+
+        await using QuicStream requestStream = new(runtime.StreamRegistry.Bookkeeping, 0, runtime);
+        byte[] readBuffer = new byte[1];
+        int totalRead = 0;
+        int bytesRead;
+        do
+        {
+            bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            totalRead += bytesRead;
+        }
+        while (bytesRead > 0);
+
+        Assert.Equal(requestPayload.Length, totalRead);
+        QuicConnectionSentPacketKey[] preBodyApplicationPacketKeys = runtime.SendRuntime.SentPackets.Keys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .OrderBy(static key => key.PacketNumber)
+            .ToArray();
+        string[] preBodyDescriptions = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.True(
+            preBodyApplicationPacketKeys.Length >= 54,
+            $"Expected byte-wise request consumption to retain the live pre-body credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_data(", StringComparison.Ordinal));
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_stream_data(", StringComparison.Ordinal));
+        outboundEffects.Clear();
+
+        byte[] responsePayload = CreateSequentialPayload(0x44, 1024);
+        await requestStream.WriteAsync(responsePayload, 0, responsePayload.Length);
+        QuicConnectionSendDatagramEffect bodyEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedBodyPacket = FindTrackedPacket(runtime, bodyEffect.Datagram);
+        outboundEffects.Clear();
+
+        await requestStream.CompleteWritesAsync().AsTask();
+        QuicConnectionSendDatagramEffect[] completionEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] completionDescriptions = completionEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        QuicConnectionSendDatagramEffect finEffect = FindFinOnlyCloseEffect(
+            runtime,
+            completionEffects,
+            streamId: 0,
+            offset: (ulong)responsePayload.Length,
+            out bool finKeyPhase);
+        QuicConnectionSendDatagramEffect maxStreamsEffect = FindMaxStreamsEffect(completionEffects, completionDescriptions);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedFinPacket = FindTrackedPacket(runtime, finEffect.Datagram);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
+
+        Assert.False(finKeyPhase);
+        Assert.Equal(1077, bodyEffect.Datagram.Length);
+        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(85, maxStreamsEffect.Datagram.Length);
+        Assert.Equal(56UL, trackedBodyPacket.Key.PacketNumber);
+        Assert.Equal(57UL, trackedFinPacket.Key.PacketNumber);
+        Assert.Equal(58UL, trackedMaxStreamsPacket.Key.PacketNumber);
+
+        byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
+            runtime,
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            BuildLiveSparseCreditAckPacketNumbers());
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+        QuicConnectionSendDatagramEffect[] ackSendEffects = ackResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] ackSendDescriptions = ackSendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        AssertOnlyFlowControlRepairs(runtime, ackSendEffects, ackSendDescriptions);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedBodyPacket.Key.PacketNumber);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+
+        QuicConnectionSendDatagramEffect finRepairEffect = FindFinOnlyCloseEffect(
+            runtime,
+            sendEffects,
+            streamId: 0,
+            offset: (ulong)responsePayload.Length,
+            out bool finRepairKeyPhase);
+        QuicStreamFrame finRepairFrame = OpenSingleStreamFrame(runtime, finRepairEffect.Datagram, out finRepairKeyPhase);
+
+        Assert.False(finRepairKeyPhase);
+        Assert.Equal(0UL, finRepairFrame.StreamId.Value);
+        Assert.Equal((ulong)responsePayload.Length, finRepairFrame.Offset);
+        Assert.True(finRepairFrame.IsFin);
+        Assert.Equal(0, finRepairFrame.StreamDataLength);
+        Assert.True(
+            sendEffectDescriptions.Any(description => description.Contains("stream(id=0,off=1024,len=0,fin=True)", StringComparison.Ordinal)),
+            $"Expected PTO to retransmit the live sparse-ACK FIN-only close, but ACK response sent {string.Join(" || ", ackSendDescriptions)} and PTO sent {string.Join(" || ", sendEffectDescriptions)}.");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRoleHostSchedulerReissuesLiveSparseFinOnlyCloseAfterRecoveryDeadline()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-162814565-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt lines 590-638:
+        //     the live peer ACKed packets 58 and 56 while omitting packet 57, then left multiple older
+        //     credit-packet holes.
+        //   runner-logs\nginx_quic-go\handshakeloss\output.txt lines 554-596:
+        //     the simulator forwarded the 1077-byte body, dropped the 53-byte FIN-only datagram, forwarded
+        //     the later 85-byte MAX_STREAMS datagram, and then observed only client->server traffic until
+        //     the runner timed out.
+        using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
+            connectionFlowControlLimit: 4096,
+            streamFlowControlLimit: 4096,
+            validateActivePath: true);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty));
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+        AcknowledgeTrackedPackets(
+            runtime,
+            static key => key.PacketNumberSpace is not QuicPacketNumberSpace.ApplicationData);
+
+        byte[] requestPayload = Encoding.ASCII.GetBytes("GET /tiny-unlimited-paper\r\n");
+        byte[] requestPacket = BuildProtectedPeerStreamPacket(
+            runtime,
+            streamId: 0,
+            streamData: requestPayload,
+            offset: 0,
+            fin: true);
+
+        QuicConnectionTransitionResult requestResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                requestPacket),
+            nowTicks: 10);
+        Assert.True(requestResult.StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot requestSnapshot));
+        Assert.Equal(requestPayload.Length, checked((int)requestSnapshot.BufferedReadableBytes));
+
+        await using QuicStream requestStream = new(runtime.StreamRegistry.Bookkeeping, 0, runtime);
+        byte[] readBuffer = new byte[1];
+        int totalRead = 0;
+        int bytesRead;
+        do
+        {
+            bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            totalRead += bytesRead;
+        }
+        while (bytesRead > 0);
+
+        Assert.Equal(requestPayload.Length, totalRead);
+        QuicConnectionSentPacketKey[] preBodyApplicationPacketKeys = runtime.SendRuntime.SentPackets.Keys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .OrderBy(static key => key.PacketNumber)
+            .ToArray();
+        string[] preBodyDescriptions = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.True(
+            preBodyApplicationPacketKeys.Length >= 54,
+            $"Expected byte-wise request consumption to retain the live pre-body credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_data(", StringComparison.Ordinal));
+        Assert.Contains(preBodyDescriptions, description => description.Contains("max_stream_data(", StringComparison.Ordinal));
+        outboundEffects.Clear();
+
+        byte[] responsePayload = CreateSequentialPayload(0x44, 1024);
+        await requestStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        QuicConnectionSendDatagramEffect bodyEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedBodyPacket = FindTrackedPacket(runtime, bodyEffect.Datagram);
+        outboundEffects.Clear();
+
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        QuicConnectionSendDatagramEffect[] completionEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] completionDescriptions = completionEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        QuicConnectionSendDatagramEffect finEffect = FindFinOnlyCloseEffect(
+            runtime,
+            completionEffects,
+            streamId: 0,
+            offset: (ulong)responsePayload.Length,
+            out bool finKeyPhase);
+        QuicConnectionSendDatagramEffect maxStreamsEffect = FindMaxStreamsEffect(completionEffects, completionDescriptions);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedFinPacket = FindTrackedPacket(runtime, finEffect.Datagram);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
+
+        Assert.False(finKeyPhase);
+        Assert.Equal(1077, bodyEffect.Datagram.Length);
+        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(85, maxStreamsEffect.Datagram.Length);
+        Assert.Equal(56UL, trackedBodyPacket.Key.PacketNumber);
+        Assert.Equal(57UL, trackedFinPacket.Key.PacketNumber);
+        Assert.Equal(58UL, trackedMaxStreamsPacket.Key.PacketNumber);
+
+        FakeMonotonicClock hostClock = new(0);
+        await using QuicConnectionRuntimeEndpoint endpoint = new(1, hostClock);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        List<QuicConnectionSendDatagramEffect> observedSendEffects = [];
+        object observedSendEffectsGate = new();
+        int observedPacketReceivedTransitions = 0;
+
+        Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+        Assert.True(endpoint.TryRegisterConnectionId(handle, runtime.CurrentHandshakeSourceConnectionId.Span));
+        runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
+
+        using CancellationTokenSource cancellation = new();
+        Task consumer = endpoint.RunAsync(
+            (observedHandle, _, transition) =>
+            {
+                if (observedHandle == handle && transition.EventKind == QuicConnectionEventKind.PacketReceived)
+                {
+                    Interlocked.Increment(ref observedPacketReceivedTransitions);
+                }
+            },
+            (observedHandle, _, effect) =>
+            {
+                if (observedHandle == handle && effect is QuicConnectionSendDatagramEffect sendEffect)
+                {
+                    lock (observedSendEffectsGate)
+                    {
+                        observedSendEffects.Add(sendEffect);
+                    }
+                }
+            },
+            cancellation.Token);
+
+        try
+        {
+            byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
+                runtime,
+                runtime.CurrentHandshakeSourceConnectionId.Span,
+                BuildLiveSparseCreditAckPacketNumbers());
+
+            QuicConnectionIngressResult ackIngress = endpoint.ReceiveDatagram(
+                protectedAckPacket,
+                runtime.ActivePath.Value.Identity);
+
+            Assert.True(ackIngress.RoutedToConnection);
+            await WaitUntilAsync(
+                () => Volatile.Read(ref observedPacketReceivedTransitions) >= 1,
+                "Timed out waiting for the host to route the live sparse ACK packet.");
+
+            QuicConnectionSendDatagramEffect[] ackSendEffects = SnapshotSendEffects(observedSendEffects, observedSendEffectsGate)
+                .ToArray();
+            string[] ackSendDescriptions = ackSendEffects
+                .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+                .ToArray();
+
+            AssertOnlyFlowControlRepairs(runtime, ackSendEffects, ackSendDescriptions);
+            Assert.DoesNotContain(
+                runtime.SendRuntime.SentPackets,
+                entry => entry.Key.PacketNumber == trackedBodyPacket.Key.PacketNumber);
+            Assert.DoesNotContain(
+                runtime.SendRuntime.SentPackets,
+                entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
+            Assert.Contains(
+                runtime.SendRuntime.SentPackets,
+                entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
+
+            long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+            Assert.NotNull(recoveryDueTicks);
+            int recoveryBaseline = SnapshotSendEffects(observedSendEffects, observedSendEffectsGate).Length;
+            hostClock.Advance(Math.Max(0, recoveryDueTicks.Value - hostClock.Ticks));
+            Assert.True(endpoint.Host.TryPostEvent(
+                handle,
+                new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: hostClock.Ticks)));
+
+            await WaitUntilAsync(
+                () => SnapshotSendEffects(observedSendEffects, observedSendEffectsGate)
+                    .Skip(recoveryBaseline)
+                    .Any(sendEffect => IsFinOnlyCloseEffect(runtime, sendEffect, streamId: 0, offset: (ulong)responsePayload.Length)),
+                "Timed out waiting for the host scheduler to deliver the recovery timer and reissue the FIN-only close.");
+
+            QuicConnectionSendDatagramEffect[] recoverySendEffects = SnapshotSendEffects(observedSendEffects, observedSendEffectsGate)
+                .Skip(recoveryBaseline)
+                .ToArray();
+            string[] recoverySendDescriptions = recoverySendEffects
+                .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+                .ToArray();
+
+            Assert.DoesNotContain(recoverySendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+            Assert.Contains(
+                recoverySendDescriptions,
+                description => description.Contains("stream(id=0,off=1024,len=0,fin=True)", StringComparison.Ordinal));
+        }
+        finally
+        {
+            cancellation.Cancel();
+            await consumer;
+        }
+    }
+
     [Theory]
     [InlineData(22)]
     [InlineData(24)]
@@ -1225,6 +1806,33 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             additionalRanges: additionalRanges.ToArray());
     }
 
+    private static ulong[] BuildLiveSparseCreditAckPacketNumbers()
+    {
+        List<ulong> packetNumbers = [];
+        AddInclusiveRange(packetNumbers, 0, 9);
+        AddInclusiveRange(packetNumbers, 11, 14);
+        AddInclusiveRange(packetNumbers, 16, 17);
+        packetNumbers.Add(21);
+        AddInclusiveRange(packetNumbers, 23, 29);
+        AddInclusiveRange(packetNumbers, 32, 36);
+        packetNumbers.Add(38);
+        AddInclusiveRange(packetNumbers, 42, 44);
+        packetNumbers.Add(47);
+        AddInclusiveRange(packetNumbers, 49, 53);
+        packetNumbers.Add(56);
+        packetNumbers.Add(58);
+
+        return packetNumbers.ToArray();
+    }
+
+    private static void AddInclusiveRange(List<ulong> packetNumbers, ulong start, ulong end)
+    {
+        for (ulong packetNumber = start; packetNumber <= end; packetNumber++)
+        {
+            packetNumbers.Add(packetNumber);
+        }
+    }
+
     private static byte[] BuildProtectedPeerPingPacket(QuicConnectionRuntime runtime)
     {
         Span<byte> pingPayload = stackalloc byte[1];
@@ -1271,6 +1879,24 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         return Assert.Single(
             runtime.SendRuntime.SentPackets,
             entry => entry.Value.PacketBytes.Span.SequenceEqual(datagram.Span));
+    }
+
+    private static void AcknowledgeTrackedPackets(
+        QuicConnectionRuntime runtime,
+        Func<QuicConnectionSentPacketKey, bool> predicate)
+    {
+        foreach (QuicConnectionSentPacketKey key in runtime.SendRuntime.SentPackets.Keys.ToArray())
+        {
+            if (!predicate(key))
+            {
+                continue;
+            }
+
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                key.PacketNumberSpace,
+                key.PacketNumber,
+                handshakeConfirmed: runtime.HandshakeConfirmed));
+        }
     }
 
     private static QuicConnectionSendDatagramEffect FindInitialProbeEffect(
@@ -1544,6 +2170,19 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         return default!;
     }
 
+    private static bool IsFinOnlyCloseEffect(
+        QuicConnectionRuntime runtime,
+        QuicConnectionSendDatagramEffect sendEffect,
+        ulong streamId,
+        ulong offset)
+    {
+        return TryOpenSingleStreamFrame(runtime, sendEffect.Datagram, out QuicStreamFrame frame, out _)
+            && frame.StreamId.Value == streamId
+            && frame.Offset == offset
+            && frame.IsFin
+            && frame.StreamDataLength == 0;
+    }
+
     private static QuicConnectionSendDatagramEffect FindMaxStreamsEffect(
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,
         string[] descriptions)
@@ -1636,6 +2275,49 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         return true;
     }
 
+    private static void AssertOnlyFlowControlRepairs(
+        QuicConnectionRuntime runtime,
+        IReadOnlyCollection<QuicConnectionSendDatagramEffect> sendEffects,
+        IReadOnlyList<string> descriptions)
+    {
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+        Assert.All(
+            descriptions,
+            description => Assert.True(
+                description.Contains("max_data(", StringComparison.Ordinal)
+                    || description.Contains("max_stream_data(", StringComparison.Ordinal),
+                $"Expected only flow-control credit repairs, but ACK response included {description}."));
+        Assert.DoesNotContain(
+            descriptions,
+            description => description.Contains("stream(id=0,off=1024", StringComparison.Ordinal));
+    }
+
+    private static QuicConnectionSendDatagramEffect[] SnapshotSendEffects(
+        List<QuicConnectionSendDatagramEffect> sendEffects,
+        object gate)
+    {
+        lock (gate)
+        {
+            return sendEffects.ToArray();
+        }
+    }
+
+    private static async Task WaitUntilAsync(Func<bool> predicate, string failureMessage)
+    {
+        DateTime deadline = DateTime.UtcNow.AddSeconds(5);
+        while (DateTime.UtcNow < deadline)
+        {
+            if (predicate())
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(10));
+        }
+
+        Assert.True(predicate(), failureMessage);
+    }
+
     private static string DescribeApplicationPayload(QuicConnectionRuntime runtime, ReadOnlyMemory<byte> datagram)
     {
         QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
@@ -1723,9 +2405,18 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         return new QuicHandshakeFlowCoordinator(runtime.CurrentPeerDestinationConnectionId);
     }
 
-    private static QuicConnectionRuntime CreateFinishedServerRuntimeWithActivePath()
+    private static QuicConnectionRuntime CreateFinishedServerRuntimeWithActivePath(
+        ulong connectionFlowControlLimit = 64,
+        ulong streamFlowControlLimit = 8,
+        bool validateActivePath = false)
     {
-        QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(
+            connectionReceiveLimit: connectionFlowControlLimit,
+            connectionSendLimit: connectionFlowControlLimit,
+            incomingBidirectionalStreamReceiveLimit: streamFlowControlLimit,
+            outgoingBidirectionalStreamReceiveLimit: streamFlowControlLimit,
+            peerConnectionFlowControlLimit: connectionFlowControlLimit,
+            peerStreamFlowControlLimit: streamFlowControlLimit);
         QuicConnectionPathIdentity pathIdentity = new("203.0.113.10", RemotePort: 443);
 
         Assert.True(runtime.Transition(
@@ -1737,8 +2428,25 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(pathIdentity, runtime.ActivePath.Value.Identity);
 
+        if (validateActivePath)
+        {
+            MarkActivePathValidated(runtime, nowTicks: 9);
+        }
+
         return runtime;
     }
+
+    private static void MarkActivePathValidated(QuicConnectionRuntime runtime, long nowTicks)
+    {
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "TryMarkActivePathValidated",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        Assert.True((bool)method.Invoke(runtime, [nowTicks])!);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.ActivePath.Value.IsValidated);
+    }
+
     private static QuicConnectionRuntime CreateEstablishingRuntimeWithActivePath()
     {
         QuicConnectionRuntime runtime = new(
@@ -1782,8 +2490,13 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
 
     private sealed class FakeMonotonicClock(long ticks) : IMonotonicClock
     {
-        public long Ticks { get; } = ticks;
+        public long Ticks { get; private set; } = ticks;
 
         public double Seconds => Ticks / (double)TimeSpan.TicksPerSecond;
+
+        public void Advance(long ticks)
+        {
+            Ticks += ticks;
+        }
     }
 }

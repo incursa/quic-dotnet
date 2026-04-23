@@ -236,6 +236,7 @@
   ],
   "artifact_type": "verification",
   "status": "planned",
+  "status_summary": "Focused SAP9 verification now includes preserved server-role handshakeloss replay coverage proving live-sized FIN-only close repair through runtime selection and endpoint-host recovery delivery. Broader RFC 9002 verification remains planned.",
   "procedure": [
     "Run the relevant unit and property tests.",
     "Run the fuzz suites and any available benchmark evidence for the slice.",
@@ -258,6 +259,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs",
@@ -276,7 +278,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
+      "content": "- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml"
     }
   ],
   "domain": "quic"
