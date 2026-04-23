@@ -288,10 +288,16 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Status
 
-Focused verification now includes preserved server-role handshakeloss replay coverage for SAP9 FIN-only repair, S6P2P4 crypto PTO selection, and S6P4 server Initial recovery discard at peer transcript completion. Broader RFC 9002 verification remains planned.
+Focused verification now includes preserved server-role handshakeloss replay coverage for SAP9 FIN-only repair, S6P2P4 crypto PTO selection, S6P4 server Initial recovery discard at peer transcript completion, and the 2026-04-22 Appendix B helper-backed constants/examples proof for SBP1, SBP2-0002, SBP2-0004, SBP2-0005, SBP3, SBP4, SBP5, SBP6, SBP7, and SBP8. Broader RFC 9002 verification remains planned; Appendix B PMTU and key-discard runtime clauses remain excluded until traced runtime ownership exists.
 
 ## Related Artifacts
 
 - SPEC-QUIC-RFC9002
 - ARC-QUIC-RFC9002-0001
 - WI-QUIC-RFC9002-0001
+
+## Appendix B Helper-Backed Evidence
+
+On 2026-04-22, the helper-backed executable subset for `SBP1`, `SBP2-0002`, `SBP2-0004`, `SBP2-0005`, `SBP3`, `SBP4`, `SBP5`, `SBP6`, `SBP7`, and `SBP8` passed 47 targeted requirement-home tests. The preserved BenchmarkDotNet baseline for the same local state is under `artifacts/benchmark-baseline/20260422-230344-dry/` and `artifacts/benchmark-baseline/20260422-230945-short/`. This evidence excludes `REQ-QUIC-RFC9002-SBP2-0001`, `REQ-QUIC-RFC9002-SBP2-0003`, and `REQ-QUIC-RFC9002-SBP9-0001` through `REQ-QUIC-RFC9002-SBP9-0003`, which remain blocked on PMTU accounting and connection-owned key-discard cleanup.
+
+Command: `dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_SBP1|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0002|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0004|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0005|FullyQualifiedName~REQ_QUIC_RFC9002_SBP3|FullyQualifiedName~REQ_QUIC_RFC9002_SBP4|FullyQualifiedName~REQ_QUIC_RFC9002_SBP5|FullyQualifiedName~REQ_QUIC_RFC9002_SBP6|FullyQualifiedName~REQ_QUIC_RFC9002_SBP7|FullyQualifiedName~REQ_QUIC_RFC9002_SBP8"`
