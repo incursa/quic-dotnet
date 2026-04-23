@@ -20,7 +20,8 @@ Run them through the launcher:
 ```
 
 `Dry` validates the harness quickly. `Short` is the recommended repeatable
-baseline measurement.
+baseline measurement for the current Incursa-only internal suites. It is not a
+public `System.Net.Quic` or MSQUIC comparison.
 
 ## Other Suites
 
@@ -51,4 +52,7 @@ Target a specific suite with `--filter` when iterating locally:
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
 ```
 
-BenchmarkDotNet writes reports under `benchmarks/BenchmarkDotNet.Artifacts/results`.
+BenchmarkDotNet writes reports under `BenchmarkDotNet.Artifacts/results`
+relative to the current working directory. When you run the launcher from the
+repo root, reports land under the repo-root `BenchmarkDotNet.Artifacts/results`
+directory.

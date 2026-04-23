@@ -288,13 +288,21 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Status
 
-Focused verification now includes preserved server-role handshakeloss replay coverage for SAP9 FIN-only repair, S6P2P4 crypto PTO selection, S6P4 server Initial recovery discard at peer transcript completion, the 2026-04-22 Appendix B helper-backed constants/examples proof for SBP1, SBP2-0002, SBP2-0004, SBP2-0005, SBP3, SBP4, SBP5, SBP6, SBP7, and SBP8, the 2026-04-22 PMTU accounting topoff for SBP2-0001 and SBP2-0003, and the connection-owned key-discard proof for SBP9-0001 through SBP9-0003 plus the overlapping SAP11-0003 timer reset. Broader RFC 9002 verification remains planned.
+Focused verification now includes preserved server-role handshakeloss replay coverage for SAP9 FIN-only repair, S6P2P4 crypto PTO selection, S6P4 server Initial recovery discard at peer transcript completion, the 2026-04-22 Appendix B helper-backed constants/examples proof for SBP1, SBP2-0002, SBP2-0004, SBP2-0005, SBP3, SBP4, SBP5, SBP6, SBP7, and SBP8, the 2026-04-22 PMTU accounting topoff for SBP2-0001 and SBP2-0003, the connection-owned key-discard proof for SBP9-0001 through SBP9-0003 plus the overlapping SAP11-0003 timer reset, and a 2026-04-23 repo-baseline Dry plus Short refresh for `QuicCongestionControlBenchmarks`, `QuicRttEstimatorBenchmarks`, and `QuicConnectionStreamStateBenchmarks` preserved under `artifacts/benchmark-baseline/20260423-quic-baseline/`. The refreshed Short run shows the stream-state suite in the ~183 ns through ~429 ns range with 816 B through 1392 B allocations, while several congestion-control and RTT-estimator methods fall into BenchmarkDotNet `ZeroMeasurement` on this machine and therefore remain local harness evidence only rather than stable performance claims. Broader RFC 9002 verification remains planned.
 
 ## Related Artifacts
 
 - SPEC-QUIC-RFC9002
 - ARC-QUIC-RFC9002-0001
 - WI-QUIC-RFC9002-0001
+
+## 2026-04-23 Local Baseline Refresh
+
+On 2026-04-23, the repo baseline launcher completed both `Dry` and `Short` runs for `QuicCongestionControlBenchmarks`, `QuicRttEstimatorBenchmarks`, and `QuicConnectionStreamStateBenchmarks`, with copied BenchmarkDotNet reports preserved under `artifacts/benchmark-baseline/20260423-quic-baseline/Dry/` and `artifacts/benchmark-baseline/20260423-quic-baseline/Short/`. The refreshed Short run remains an Incursa-only local baseline. The stream-state suite was the clearest above-noise signal on this machine, ranging from about `182.8 ns` / `816 B` to `428.6 ns` / `1328 B`. RTT-estimator cases above the empty-method floor clustered around `2.0 ns` and `4.1 ns` with no allocations, while several congestion-control and RTT-estimator methods reported BenchmarkDotNet `ZeroMeasurement` under the Short job. Treat these results as local order-of-magnitude and obvious-hotspot evidence only rather than stable competitive numbers.
+
+Commands: `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/benchmarks/Invoke-QuicBaseline.ps1 -Job Dry`; `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/benchmarks/Invoke-QuicBaseline.ps1 -Job Short -NoRestore -NoBuild`.
+
+This verification artifact does not claim that the current internal helper benchmarks are comparable to public `System.Net.Quic` / MSQUIC connection or stream workloads.
 
 ## Appendix B Helper-Backed Evidence
 
