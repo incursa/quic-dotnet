@@ -56,4 +56,92 @@ public sealed class REQ_QUIC_RFC9002_SBP9_0003
 
         Assert.Equal(0UL, selectedTimerMicros);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-SAP11-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimeTlsInitialKeyDiscardResetsSendTimerStateAndClearsDiscardedSpace()
+    {
+        QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+        runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
+        Assert.True(runtime.SendRuntime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 300,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 250,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false));
+        Assert.Equal(1, runtime.SendRuntime.ProbeTimeoutCount);
+        Assert.NotNull(runtime.SendRuntime.LossDetectionDeadlineMicros);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 4,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.KeysDiscarded,
+                    QuicTlsEncryptionLevel.Initial)),
+            nowTicks: 4);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.TlsState.OldKeysDiscarded);
+        Assert.Equal(0, runtime.SendRuntime.ProbeTimeoutCount);
+        Assert.Null(runtime.SendRuntime.LossDetectionDeadlineMicros);
+        Assert.DoesNotContain(runtime.SendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Initial);
+        Assert.Contains(runtime.SendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-SAP11-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState()
+    {
+        QuicRecoveryController controller = new();
+        controller.RecordPacketSent(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 1,
+            sentAtMicros: 100,
+            isAckElicitingPacket: true,
+            packetProtectionLevel: QuicTlsEncryptionLevel.Initial);
+        controller.RecordProbeTimeoutExpired();
+        Assert.Equal(1, controller.ProbeTimeoutBackoffCount);
+        Assert.True(controller.TrySelectLossDetectionTimer(
+            nowMicros: 200,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out ulong selectedRecoveryTimerMicros,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.Initial, selectedPacketNumberSpace);
+        Assert.NotEqual(0UL, selectedRecoveryTimerMicros);
+
+        Assert.True(controller.TryDiscardPacketNumberSpace(
+            QuicPacketNumberSpace.Initial,
+            resetProbeTimeoutBackoff: true));
+
+        Assert.Equal(0, controller.ProbeTimeoutBackoffCount);
+        Assert.False(controller.TrySelectLossDetectionTimer(
+            nowMicros: 300,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: false,
+            handshakeKeysAvailable: true,
+            out _,
+            out _));
+    }
 }

@@ -5906,13 +5906,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1",
@@ -5921,7 +5924,9 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenKeysAreDiscarded",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::RuntimeTlsInitialKeyDiscardResetsSendTimerStateAndClearsDiscardedSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState"
         ]
       }
     },
@@ -6697,13 +6702,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §B.9 RFC9002-SB.9-B2-P1-S1",
@@ -6713,7 +6721,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesInitialPacketsFromBytesInFlightWhenKeysAreDiscarded",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_DoesNotRemoveInitialPacketsThatWereNotInFlight",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesHandshakePacketsAtTheFirstRttSampleBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesHandshakePacketsAtTheFirstRttSampleBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDiscardPacketNumberSpace_RemovesRuntimeInitialBytesInFlightWhenKeysAreDiscarded"
         ]
       }
     },
@@ -6729,13 +6738,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
@@ -6744,7 +6756,10 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesInitialAndHandshakePacketsFromCongestionAccounting",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_DoesNotChangeCongestionAccountingForPacketsThatWereNotInFlight",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesPacketsAtThePersistentCongestionDurationBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesPacketsAtThePersistentCongestionDurationBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDiscardPacketNumberSpace_ClearsRuntimeSentPacketsAndPendingRetransmissionsForDiscardedSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDiscardPacketNumberSpace_DoesNotClearApplicationDataRuntimeState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::FuzzDiscardingEarlyPacketNumberSpacesClearsOnlyDiscardedRuntimeLedger"
         ]
       }
     },
@@ -6760,13 +6775,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9002-0001"
+          "ARC-QUIC-RFC9002-0001",
+          "ARC-QUIC-RFC9002-0002"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9002-0001"
+          "WI-QUIC-RFC9002-0001",
+          "WI-QUIC-RFC9002-0002"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9002-0001"
+          "VER-QUIC-RFC9002-0001",
+          "VER-QUIC-RFC9002-0002"
         ],
         "upstream_refs": [
           "RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1",
@@ -6775,7 +6793,9 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheResetLossDeadlineOverPto",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_CancelsPtoWhenRecoveryIsBlocked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_UsesAnImmediateDeadlineWhenTheResetTimerIsZero"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_UsesAnImmediateDeadlineWhenTheResetTimerIsZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::RuntimeTlsInitialKeyDiscardResetsSendTimerStateAndClearsDiscardedSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState"
         ]
       }
     }

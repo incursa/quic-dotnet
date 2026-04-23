@@ -12,6 +12,10 @@ addresses:
   - "REQ-QUIC-RFC9002-S6P4-0002"
   - "REQ-QUIC-RFC9002-S6P4-0003"
   - "REQ-QUIC-RFC9002-S6P4-0004"
+  - "REQ-QUIC-RFC9002-SAP11-0003"
+  - "REQ-QUIC-RFC9002-SBP9-0001"
+  - "REQ-QUIC-RFC9002-SBP9-0002"
+  - "REQ-QUIC-RFC9002-SBP9-0003"
 design_links:
   - "ARC-QUIC-RFC9002-0002"
 verification_links:
@@ -37,6 +41,10 @@ Preserve the ability to add direct test and benchmark evidence as the recovery c
 - REQ-QUIC-RFC9002-S6P4-0002
 - REQ-QUIC-RFC9002-S6P4-0003
 - REQ-QUIC-RFC9002-S6P4-0004
+- REQ-QUIC-RFC9002-SAP11-0003
+- REQ-QUIC-RFC9002-SBP9-0001
+- REQ-QUIC-RFC9002-SBP9-0002
+- REQ-QUIC-RFC9002-SBP9-0003
 
 ## Design Inputs
 
@@ -76,6 +84,10 @@ Addresses:
 - REQ-QUIC-RFC9002-S6P4-0002
 - REQ-QUIC-RFC9002-S6P4-0003
 - REQ-QUIC-RFC9002-S6P4-0004
+- REQ-QUIC-RFC9002-SAP11-0003
+- REQ-QUIC-RFC9002-SBP9-0001
+- REQ-QUIC-RFC9002-SBP9-0002
+- REQ-QUIC-RFC9002-SBP9-0003
 
 Uses Design:
 
@@ -99,4 +111,8 @@ Verified By:
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs

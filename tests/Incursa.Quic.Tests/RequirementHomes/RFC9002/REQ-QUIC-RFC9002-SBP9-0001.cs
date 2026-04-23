@@ -74,4 +74,43 @@ public sealed class REQ_QUIC_RFC9002_SBP9_0001
         Assert.Equal(10_800UL, state.BytesInFlightBytes);
         Assert.False(state.HasRecoveryStartTime);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDiscardPacketNumberSpace_RemovesRuntimeInitialBytesInFlightWhenKeysAreDiscarded()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        TrackSentPacket(runtime, QuicPacketNumberSpace.Initial, packetNumber: 1, payloadBytes: 1_200);
+        TrackSentPacket(runtime, QuicPacketNumberSpace.Handshake, packetNumber: 2, payloadBytes: 1_200);
+        TrackSentPacket(runtime, QuicPacketNumberSpace.ApplicationData, packetNumber: 3, payloadBytes: 1_200);
+
+        Assert.Equal(3_600UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial));
+
+        Assert.Equal(2_400UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+        Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Initial);
+        Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Handshake);
+        Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
+
+    private static void TrackSentPacket(
+        QuicConnectionSendRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong payloadBytes)
+    {
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            payloadBytes,
+            SentAtMicros: packetNumber,
+            PacketProtectionLevel: packetNumberSpace switch
+            {
+                QuicPacketNumberSpace.Initial => QuicTlsEncryptionLevel.Initial,
+                QuicPacketNumberSpace.Handshake => QuicTlsEncryptionLevel.Handshake,
+                _ => QuicTlsEncryptionLevel.OneRtt,
+            }));
+    }
 }

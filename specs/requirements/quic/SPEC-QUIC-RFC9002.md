@@ -3380,10 +3380,13 @@ When Initial or Handshake keys are discarded, the sender MUST reset `time_of_las
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §A.11 RFC9002-SA.11-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-a.11
@@ -3391,6 +3394,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenKeysAreDiscarded
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoDiscardOccurs
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenKeysAreDiscarded
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::RuntimeTlsInitialKeyDiscardResetsSendTimerStateAndClearsDiscardedSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState
 
 ## REQ-QUIC-RFC9002-SBP1-0001 Use the recommended loss reduction factor
 kLossReductionFactor SHOULD be 0.5.
@@ -3833,10 +3838,13 @@ When Initial or Handshake keys are discarded, packets in that space MUST no long
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §B.9 RFC9002-SB.9-B2-P1-S1
   - RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1
@@ -3845,6 +3853,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesInitialPacketsFromBytesInFlightWhenKeysAreDiscarded
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_DoesNotRemoveInitialPacketsThatWereNotInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDetectPersistentCongestion_RemovesHandshakePacketsAtTheFirstRttSampleBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs::TryDiscardPacketNumberSpace_RemovesRuntimeInitialBytesInFlightWhenKeysAreDiscarded
 
 ## REQ-QUIC-RFC9002-SBP9-0002 Remove discarded packets from congestion accounting
 When Initial or Handshake keys are discarded, the sender MUST remove the discarded packets from `bytes_in_flight` and clear `sent_packets` for that packet number space.
@@ -3852,10 +3861,13 @@ When Initial or Handshake keys are discarded, the sender MUST remove the discard
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9
@@ -3863,6 +3875,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesInitialAndHandshakePacketsFromCongestionAccounting
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_DoesNotChangeCongestionAccountingForPacketsThatWereNotInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDetectPersistentCongestion_RemovesPacketsAtThePersistentCongestionDurationBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDiscardPacketNumberSpace_ClearsRuntimeSentPacketsAndPendingRetransmissionsForDiscardedSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::TryDiscardPacketNumberSpace_DoesNotClearApplicationDataRuntimeState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs::FuzzDiscardingEarlyPacketNumberSpacesClearsOnlyDiscardedRuntimeLedger
 
 ## REQ-QUIC-RFC9002-SBP9-0003 Reset recovery timers after discarding keys
 When Initial or Handshake keys are discarded, the sender MUST reset `time_of_last_ack_eliciting_packet[pn_space]`, `loss_time[pn_space]`, and `pto_count`, and set the loss detection timer.
@@ -3870,10 +3885,13 @@ When Initial or Handshake keys are discarded, the sender MUST reset `time_of_las
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9002-0001
+  - ARC-QUIC-RFC9002-0002
 - Implemented By:
   - WI-QUIC-RFC9002-0001
+  - WI-QUIC-RFC9002-0002
 - Verified By:
   - VER-QUIC-RFC9002-0001
+  - VER-QUIC-RFC9002-0002
 - Source Refs:
   - RFC 9002 §B.9 RFC9002-SB.9-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-b.9
@@ -3881,3 +3899,5 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheResetLossDeadlineOverPto
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_CancelsPtoWhenRecoveryIsBlocked
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TrySelectLossDetectionTimerMicros_UsesAnImmediateDeadlineWhenTheResetTimerIsZero
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::RuntimeTlsInitialKeyDiscardResetsSendTimerStateAndClearsDiscardedSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs::TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState

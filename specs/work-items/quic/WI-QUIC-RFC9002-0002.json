@@ -23,7 +23,7 @@
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs"
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs"
     }
   ],
   "artifact_type": "work_item",
@@ -37,6 +37,10 @@
     "REQ-QUIC-RFC9002-S6P4-0001",
     "REQ-QUIC-RFC9002-S6P4-0002",
     "REQ-QUIC-RFC9002-S6P4-0003",
-    "REQ-QUIC-RFC9002-S6P4-0004"
+    "REQ-QUIC-RFC9002-S6P4-0004",
+    "REQ-QUIC-RFC9002-SAP11-0003",
+    "REQ-QUIC-RFC9002-SBP9-0001",
+    "REQ-QUIC-RFC9002-SBP9-0002",
+    "REQ-QUIC-RFC9002-SBP9-0003"
   ]
 }

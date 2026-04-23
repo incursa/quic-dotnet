@@ -19,6 +19,10 @@ It keeps the sender/recovery state in the connection runtime and does not widen 
 - REQ-QUIC-RFC9002-S6P4-0002
 - REQ-QUIC-RFC9002-S6P4-0003
 - REQ-QUIC-RFC9002-S6P4-0004
+- REQ-QUIC-RFC9002-SAP11-0003
+- REQ-QUIC-RFC9002-SBP9-0001
+- REQ-QUIC-RFC9002-SBP9-0002
+- REQ-QUIC-RFC9002-SBP9-0003
 
 ## Design Summary
 
@@ -39,6 +43,10 @@ Initial and Handshake key discard continues to clear those spaces and reset PTO 
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs
 
 ## Risks
 

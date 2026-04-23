@@ -15,6 +15,10 @@ It does not duplicate RFC 9000 transport framing or RFC 9001 TLS packet-protecti
 - REQ-QUIC-RFC9002-S6P4-0002
 - REQ-QUIC-RFC9002-S6P4-0003
 - REQ-QUIC-RFC9002-S6P4-0004
+- REQ-QUIC-RFC9002-SAP11-0003
+- REQ-QUIC-RFC9002-SBP9-0001
+- REQ-QUIC-RFC9002-SBP9-0002
+- REQ-QUIC-RFC9002-SBP9-0003
 
 ## Verification Method
 
@@ -42,6 +46,10 @@ Execution, inspection, and targeted runtime evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0142.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0143.cs
@@ -50,10 +58,11 @@ Execution, inspection, and targeted runtime evidence.
 - src/Incursa.Quic/QuicConnectionSendRuntime.cs
 - src/Incursa.Quic/QuicRecoveryTiming.cs
 - src/Incursa.Quic/QuicCongestionControlState.cs
+- dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_SBP9|FullyQualifiedName~REQ_QUIC_RFC9002_SAP11_0003"
 
 ## Status
 
-This verification artifact records the landed runtime-owned sender-ledger cleanup slice, with requirement-home tests and targeted runtime inspection showing Initial and Handshake key discard reset PTO and loss detection while rejected 0-RTT cleanup removes bytes in flight and queued retransmissions.
+This verification artifact records the landed runtime-owned sender-ledger cleanup slice, with requirement-home tests and targeted runtime inspection showing Initial and Handshake key discard reset PTO and loss detection while rejected 0-RTT cleanup removes bytes in flight and queued retransmissions. The same runtime-owned evidence now closes the overlapping Appendix B SBP9 key-discard requirements without treating the older helper-only persistent-congestion tests as sufficient by themselves.
 
 ## Related Artifacts
 
