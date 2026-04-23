@@ -20,39 +20,48 @@ Focused requirement-home tests, preserved interop replay evidence, fuzzing, benc
 - REQ-QUIC-CRT-0112 remains the landed server-role ServerHello and Handshake key-publication floor.
 - The preserved server-local quic-go handshake evidence remains available under `artifacts/interop-runner/20260422-110409619-server-nginx/`.
 - A permanent benchmark exists or is extended for the server-side handshake parser/protection path.
+- A permanent benchmark exists for the CRYPTO buffer overlap path used by duplicate Initial replay.
 
 ## Procedure or Approach
 
-- Run focused requirement-home tests for positive first-ClientHello HelloRetryRequest emission, positive retried-ClientHello handoff into REQ-QUIC-CRT-0112, and negative no-secp256r1-supported_groups, repeated-retry, and malformed/conflicting retried-ClientHello paths.
+- Run focused requirement-home tests for positive first-ClientHello HelloRetryRequest emission, positive retried-ClientHello handoff into REQ-QUIC-CRT-0112, positive duplicate Initial HRR replay, and negative no-secp256r1-supported_groups, premature duplicate replay, repeated-retry, and malformed/conflicting retried-ClientHello paths.
 - Replay the preserved first-ClientHello evidence from `artifacts/interop-runner/20260422-110409619-server-nginx/` so the retry branch is proven against the captured quic-go offer that previously failed with TLS alert 50.
+- Replay the preserved duplicate first-ClientHello Initial evidence from `artifacts/interop-runner/20260422-210022638-server-nginx/` so the packet-level HRR retransmission branch is proven against the captured quic-go handshakeloss timeout.
 - Run fuzz coverage for supported_groups/key_share ordering, duplicate extension handling, and retry-branch state transitions.
-- Run the permanent benchmark for the server-side handshake parser/protection path.
+- Run the permanent benchmark dry checks for the server-side handshake parser/protection path and CRYPTO buffer overlap path.
 - Render the SpecTrace markdown from the canonical JSON and validate the generated artifacts.
 
 ## Expected Result
 
-The managed server-role path emits exactly one HelloRetryRequest requesting secp256r1 for the retry-eligible first ClientHello, keeps ServerHello and Handshake key publication unavailable until the retried ClientHello is accepted, rejoins REQ-QUIC-CRT-0112 on the retried secp256r1 branch, and does not widen the cryptographic subset to x25519, hybrid groups, general TLS group negotiation, or broader transport/runtime promises.
+The managed server-role path emits exactly one TLS HelloRetryRequest requesting secp256r1 for the retry-eligible first ClientHello, retransmits the already-published HRR Initial when duplicate first-ClientHello Initial CRYPTO frames indicate likely HRR loss, keeps ServerHello and Handshake key publication unavailable until the retried ClientHello is accepted, rejoins REQ-QUIC-CRT-0112 on the retried secp256r1 branch, and does not widen the cryptographic subset to x25519, hybrid groups, general TLS group negotiation, or broader transport/runtime promises.
 
 ## Evidence
 
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+- src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs
+- src/Incursa.Quic/QuicCryptoBuffer.cs
 - src/Incursa.Quic/QuicTlsTransport.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs
 - benchmarks/QuicHandshakePacketProtectionBenchmarks.cs
+- benchmarks/QuicCryptoBufferBenchmarks.cs
 - benchmarks/README.md
 - artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt
 - artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog
+- artifacts/interop-runner/20260422-210022638-server-nginx/runner-logs/nginx_quic-go/handshakeloss/client/log.txt
+- artifacts/interop-runner/20260422-210022638-server-nginx/runner-logs/nginx_quic-go/handshakeloss/server/qlog/server-multiconnect-e9838e9861bf4dc3a997a1536cf523eb.qlog
+- artifacts/QuicCryptoBufferBenchmarks-dry.log
 - specs/requirements/quic/REQUIREMENT-GAPS.md
 - scripts/Validate-SpecTraceJson.ps1
 - scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1
 
 ## Status
 
-planned
+Passed locally for the focused REQ-QUIC-CRT-0147 and CRYPTO-buffer overlap coverage, with preserved quic-go replay evidence captured for both the original retry-eligible ClientHello and the duplicate Initial HRR-loss branch.
 
 ## Related Artifacts
 
@@ -62,13 +71,16 @@ planned
 
 ## Acceptance Criteria
 
-- Exactly one HelloRetryRequest is emitted for the retry-eligible first ClientHello.
+- Exactly one TLS HelloRetryRequest is emitted for the retry-eligible first ClientHello.
+- Duplicate first-ClientHello Initial CRYPTO frames after HRR publication retransmit the already-published HRR packet without creating a second TLS HelloRetryRequest.
 - ServerHello bytes and Handshake keys remain unavailable before the retried ClientHello is accepted.
 - The retried secp256r1 ClientHello rejoins the landed REQ-QUIC-CRT-0112 floor.
-- Missing secp256r1 support, repeated retry attempts, and malformed or conflicting retried ClientHello inputs fail deterministically.
+- Missing secp256r1 support, premature duplicate replay, repeated retry attempts, and malformed or conflicting retried ClientHello inputs fail deterministically.
 - The slice does not claim x25519 acceptance, hybrid group acceptance, general TLS group negotiation, or broader transport/runtime promises.
 
 ## Preserved Interop Evidence
 
 - Use the preserved server-local quic-go handshake rerun under [`artifacts/interop-runner/20260422-110409619-server-nginx/`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/) as the source replay bundle.
 - The captured first-ClientHello evidence lives in [`runner-logs/nginx_quic-go/handshake/output.txt`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt) and [`runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog`](../../../artifacts/interop-runner/20260422-110409619-server-nginx/runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog).
+- Use the preserved server-local quic-go handshakeloss rerun under [`artifacts/interop-runner/20260422-210022638-server-nginx/`](../../../artifacts/interop-runner/20260422-210022638-server-nginx/) for duplicate first-ClientHello Initial replay evidence.
+- The duplicate-HRR-loss evidence lives in [`runner-logs/nginx_quic-go/handshakeloss/client/log.txt`](../../../artifacts/interop-runner/20260422-210022638-server-nginx/runner-logs/nginx_quic-go/handshakeloss/client/log.txt) and [`runner-logs/nginx_quic-go/handshakeloss/server/qlog/server-multiconnect-e9838e9861bf4dc3a997a1536cf523eb.qlog`](../../../artifacts/interop-runner/20260422-210022638-server-nginx/runner-logs/nginx_quic-go/handshakeloss/server/qlog/server-multiconnect-e9838e9861bf4dc3a997a1536cf523eb.qlog).

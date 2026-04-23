@@ -701,6 +701,8 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects)
     {
         bool processedCryptoFrame = false;
+        bool progressedTranscript = false;
+        bool replayedDuplicateInitialCrypto = false;
         bool stateChanged = false;
         int payloadOffset = 0;
 
@@ -759,6 +761,21 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             processedCryptoFrame = true;
+            if (IsDuplicateServerInitialCryptoFrame(encryptionLevel, cryptoFrame))
+            {
+                if (!replayedDuplicateInitialCrypto)
+                {
+                    replayedDuplicateInitialCrypto = TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+                        encryptionLevel,
+                        nowTicks,
+                        ref effects);
+                    stateChanged |= replayedDuplicateInitialCrypto;
+                }
+
+                payloadOffset += bytesConsumed;
+                continue;
+            }
+
             if (!tlsBridgeDriver.TryBufferIncomingCryptoData(
                 encryptionLevel,
                 cryptoFrame.Offset,
@@ -781,6 +798,7 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            progressedTranscript = true;
             bool sawFatalAlert = false;
             foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
             {
@@ -807,8 +825,56 @@ internal sealed partial class QuicConnectionRuntime
 
         stateChanged |= TryFlushInitialPackets(ref effects);
         stateChanged |= TryFlushHandshakePackets(ref effects);
+        if (processedCryptoFrame && !progressedTranscript && !replayedDuplicateInitialCrypto)
+        {
+            stateChanged |= TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+                encryptionLevel,
+                nowTicks,
+                ref effects);
+        }
 
         return stateChanged || processedCryptoFrame;
+    }
+
+    private bool IsDuplicateServerInitialCryptoFrame(
+        QuicTlsEncryptionLevel encryptionLevel,
+        QuicCryptoFrame cryptoFrame)
+    {
+        if (encryptionLevel != QuicTlsEncryptionLevel.Initial
+            || tlsState.Role != QuicTlsRole.Server
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.HandshakeKeysAvailable
+            || cryptoFrame.CryptoData.IsEmpty
+            || cryptoFrame.Offset > QuicVariableLengthInteger.MaxValue - (ulong)cryptoFrame.CryptoData.Length)
+        {
+            return false;
+        }
+
+        ulong frameEndOffset = cryptoFrame.Offset + (ulong)cryptoFrame.CryptoData.Length;
+        return frameEndOffset <= tlsState.InitialIngressCryptoBuffer.NextReadOffset;
+    }
+
+    private bool TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+        QuicTlsEncryptionLevel encryptionLevel,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (encryptionLevel != QuicTlsEncryptionLevel.Initial
+            || tlsState.Role != QuicTlsRole.Server
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.HandshakeKeysAvailable
+            || tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0
+            || activePath is null)
+        {
+            return false;
+        }
+
+        return TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Initial)
+            && TryFlushPendingRetransmissions(
+                QuicPacketNumberSpace.Initial,
+                nowTicks,
+                probePacket: true,
+                ref effects);
     }
 
     private bool TryHandleApplicationPacketReceived(

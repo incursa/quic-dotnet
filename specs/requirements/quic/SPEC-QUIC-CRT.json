@@ -1052,6 +1052,18 @@
           "RFC 8446 Sections 4.1.2, 4.1.4, 4.2.8, and 7.1",
           "RFC 9001 Sections 5 and 8",
           "connection-runtime-state-machine.md"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedSecp256r1ClientHelloRejoinsTheExistingServerHelloPublicationFloorAfterHelloRetryRequest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoZeroSourceConnectionIdClientHelloStillFlushesTheHelloRetryRequestInitialDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedZeroSourceConnectionIdClientHelloFlushesServerHelloInitialBeforeTheHandshakeFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MissingSecp256r1SupportedGroupsStillFailsInsteadOfEmittingHelloRetryRequest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RepeatedRetryEligibleClientHelloIsRejectedAfterTheSingleHelloRetryRequestBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MalformedRetriedClientHelloFailsDeterministicallyAfterHelloRetryRequest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FuzzRetryBoundary_PermutedSupportedGroupsAndKeySharesStayWithinTheSingleHelloRetryRequestSlice"
         ]
       },
       "notes": [

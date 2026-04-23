@@ -12,11 +12,13 @@ Describe how the managed server-role handshake path detects a retry-eligible fir
 
 ## Design Summary
 
-The transcript-progress owner adds one retry-eligible classification ahead of the landed REQ-QUIC-CRT-0112 ServerHello floor. On the first server-role ClientHello, the parser still enforces the existing TLS 1.3, cipher-suite, and transport-parameter subset, but it distinguishes the case where supported_groups includes secp256r1 while key_share omits a usable secp256r1 entry. On that branch, the bridge driver emits exactly one local HelloRetryRequest requesting secp256r1, records retry-pending state, and keeps ServerHello publication plus Handshake key availability unavailable. The next ClientHello must satisfy the same narrow subset and carry the requested secp256r1 key share; only then does the flow re-enter the landed REQ-QUIC-CRT-0112 ServerHello and Handshake key-publication boundary. Missing secp256r1 support, malformed or conflicting retried ClientHello input, or repeated retry attempts remain deterministic fatal paths.
+The transcript-progress owner adds one retry-eligible classification ahead of the landed REQ-QUIC-CRT-0112 ServerHello floor. On the first server-role ClientHello, the parser still enforces the existing TLS 1.3, cipher-suite, and transport-parameter subset, but it distinguishes the case where supported_groups includes secp256r1 while key_share omits a usable secp256r1 entry. On that branch, the bridge driver emits exactly one local HelloRetryRequest requesting secp256r1, records retry-pending state, and keeps ServerHello publication plus Handshake key availability unavailable. The connection runtime retains the already-sent Initial CRYPTO packet and, when duplicate first-ClientHello Initial CRYPTO data arrives after the HRR has been published but before Handshake keys exist, schedules packet-level retransmission of that outstanding HRR without invoking the TLS retry branch a second time. The CRYPTO buffer deduplicates exact and partial overlaps so repeated same-offset crypto bytes cannot fabricate additional buffered output. The next ClientHello must satisfy the same narrow subset and carry the requested secp256r1 key share; only then does the flow re-enter the landed REQ-QUIC-CRT-0112 ServerHello and Handshake key-publication boundary. Missing secp256r1 support, malformed or conflicting retried ClientHello input, or repeated retry attempts remain deterministic fatal paths.
 
 ## Key Components
 
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
+- src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs
+- src/Incursa.Quic/QuicCryptoBuffer.cs
 - src/Incursa.Quic/QuicTlsTransport.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
@@ -24,12 +26,14 @@ The transcript-progress owner adds one retry-eligible classification ahead of th
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs
 - benchmarks/QuicHandshakePacketProtectionBenchmarks.cs
+- benchmarks/QuicCryptoBufferBenchmarks.cs
 
 ## Edge Cases and Constraints
 
 - Server role only.
 - The first ClientHello must already be within the landed TLS 1.3 plus TLS_AES_128_GCM_SHA256 subset apart from the missing secp256r1 key_share.
 - Exactly one HelloRetryRequest may be emitted per handshake attempt.
+- Packet-level retransmission of the already-published HRR may occur when duplicate first-ClientHello Initial CRYPTO frames indicate likely HRR loss, but it must not create a second TLS HelloRetryRequest.
 - Handshake key material and local ServerHello publication remain unavailable until the retried ClientHello is accepted.
 - The slice does not add x25519 acceptance, hybrid named-group acceptance, general TLS group negotiation, 0-RTT, endpoint-host wiring, or interop-runner handshake claims.
 
@@ -48,6 +52,8 @@ The transcript-progress owner adds one retry-eligible classification ahead of th
 ## Related Code And Tests
 
 - [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)
+- [`src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)
+- [`src/Incursa.Quic/QuicCryptoBuffer.cs`](../../../src/Incursa.Quic/QuicCryptoBuffer.cs)
 - [`src/Incursa.Quic/QuicTlsTransport.cs`](../../../src/Incursa.Quic/QuicTlsTransport.cs)
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
@@ -55,3 +61,4 @@ The transcript-progress owner adds one retry-eligible classification ahead of th
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs)
 - [`benchmarks/QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)
+- [`benchmarks/QuicCryptoBufferBenchmarks.cs`](../../../benchmarks/QuicCryptoBufferBenchmarks.cs)

@@ -84,6 +84,11 @@ internal enum QuicCryptoBufferResult
     internal int BufferedBytes => bufferedBytes;
 
     /// <summary>
+    /// Gets the next CRYPTO stream offset expected by the consumer.
+    /// </summary>
+    internal ulong NextReadOffset => nextReadOffset;
+
+    /// <summary>
     /// Discards all currently buffered CRYPTO data and marks future frames as acknowledged.
     /// </summary>
     internal void DiscardFutureFrames()
@@ -339,14 +344,11 @@ internal enum QuicCryptoBufferResult
                 break;
             }
 
-            if (existing.Offset < currentOffset)
+            if (existing.End > currentOffset)
             {
                 ulong skipEnd = Math.Min(existing.End, endOffset);
-                if (skipEnd > currentOffset)
-                {
-                    dataIndex += (int)(skipEnd - currentOffset);
-                    currentOffset = skipEnd;
-                }
+                dataIndex += (int)(skipEnd - currentOffset);
+                currentOffset = skipEnd;
             }
 
             updated.Add(existing);

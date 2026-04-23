@@ -843,11 +843,37 @@ Trace:
   - RFC 8446 Sections 4.1.2, 4.1.4, 4.2.8, and 7.1
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedSecp256r1ClientHelloRejoinsTheExistingServerHelloPublicationFloorAfterHelloRetryRequest
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoZeroSourceConnectionIdClientHelloStillFlushesTheHelloRetryRequestInitialDatagram
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedZeroSourceConnectionIdClientHelloFlushesServerHelloInitialBeforeTheHandshakeFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MissingSecp256r1SupportedGroupsStillFailsInsteadOfEmittingHelloRetryRequest
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RepeatedRetryEligibleClientHelloIsRejectedAfterTheSingleHelloRetryRequestBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MalformedRetriedClientHelloFailsDeterministicallyAfterHelloRetryRequest
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FuzzRetryBoundary_PermutedSupportedGroupsAndKeySharesStayWithinTheSingleHelloRetryRequestSlice
 
 Notes:
 - This slice is intentionally server-role only and keeps the supported cryptographic subset pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
 - This slice does not add `x25519`, hybrid named-group acceptance, general TLS group negotiation, `EncryptedExtensions`, certificate flight, server `Finished`, `0-RTT`, `1-RTT`, key update, endpoint-host wiring, or interop-runner handshake support.
 - This slice does not add server-role peer transport-parameter commitment.
+
+## REQ-QUIC-CRT-0148 Select one configured application protocol on the server EncryptedExtensions path
+In the server role, when one or more local application protocols are configured and the supported peer `ClientHello` carries an ALPN offer list, the library MUST preserve enough of that peer offer to select exactly one protocol present in both the configured local list and the peer offer, MUST keep that selection deterministic by local configuration order, and MUST append one ALPN extension carrying only the selected protocol inside the local `EncryptedExtensions` message on the existing Handshake-crypto output seam. If the peer omits ALPN, offers only unsupported protocols, or repeats or malforms the ALPN offer list, the library MUST fail deterministically with `no_application_protocol` without publishing local `ServerHello`, Handshake key material, or wider handshake progress for that attempt. This slice reuses the existing `REQ-QUIC-CRT-0113` `EncryptedExtensions` continuation once a match has been selected and does not widen the supported cryptographic subset, certificate flight, or interop classification promises.
+
+Trace:
+- Source Refs:
+  - RFC 8446 Sections 4.1.2, 4.2.11, and 7.1
+  - RFC 9000 Section 7
+  - RFC 9001 Sections 5 and 8
+  - connection-runtime-state-machine.md
+
+Notes:
+- This slice is intentionally server-role only and keeps the supported cryptographic subset pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.
+- The selection boundary is application protocol only: it does not widen `x25519`, hybrid groups, general TLS group negotiation, certificate flight, server `Finished`, `0-RTT`, `1-RTT`, key update, endpoint-host wiring, or interop-runner classification.
+- The deterministic failure path for missing or unsupported ALPN is `no_application_protocol`; server-role peer transport-parameter commitment remains out of scope.
 
 ## REQ-QUIC-CRT-0113 Emit local server EncryptedExtensions on the permanent handshake seam
 In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.

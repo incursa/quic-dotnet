@@ -15,6 +15,93 @@ public sealed class REQ_QUIC_CRT_0147
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString(
         "CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
+    private static readonly byte[] CapturedServerMulticonnectHrrReplayClientInitial0 = FromHexLines(
+        "C10000000114E699B5051BFC2232F62A176D7ECB0AF4A0A29930000044E241D4233BB6D6DF52B54162FCAADFB2063108",
+        "C9658ACF0DA924D6531EE15DC3F4F55E7E30C0DB0FD686147FAFADE6E975A76E6777500FAF77FA95D1EFC0AECAE87713",
+        "553F3DE8EC813FA1DA345D8B4CF7A6A9A7A28317C9F7C9E80C8A01969465A12B3038606B3B90F0A853905F709F88F1F2",
+        "BB4B69D4D6337A2F8B99286F6C708B2828788624E1CD837A3B178F081C061FBD819B4FB7E963E0F2A63CA21F5D4CD364",
+        "E7E3E7B4D7571C1698C7176FF8B2536DBD170ABFCD721FEF1CE64F84F6651B159EA941FF56CB739B8EBF5F4D96A6CBA2",
+        "C25707462D6C42D2605BC0855E0BFBECB997DAFCE75CF1281ABFC6F423FB4CECE7327C07D295DA6B3278745A870D7CD5",
+        "A3EB6609E9879DE985FA00AB8D0C1EACEDC0BBE9468DE569C983551B3DFDA13C8565B9F7DDF877C2F2A3A03F3E00E4F3",
+        "EA81D6CBD7D1EABF48CDF0E8D2D1B2A4FA065E0FB216C5D0CD239314ECE10CFB3FF7745739635B6585B8D1CA6A677D01",
+        "694AA953BD0392B68E2DE64976C51AB70E1D1F2FC016593C923BD720E5918D6C06BD5E4568EA878C89DF2EBBC40BE307",
+        "C2F73363BAD1EA650BDEF3745E6F4D1617252C7E5926FC78A039F7D192B312D500F61E86448A8A190A261EABD0797F32",
+        "BBF6C457BFA11DFAF3784BFD3D4803CF3C507F9BB068EA61B26E3DDB93FFEA661F83B92528D6C583ACC3793F7628D36F",
+        "AC08105ADA6E71DAE84A231B488302859DEF40B7C5DA97BE29E45132E21D5739E1EFCD1929B5C6DB5939EB24E3EDE26B",
+        "4CF868017123E26652D1E378D6F704448DE1ACE21B2527C0BE855858D1C80220105432E9BB7CA51D8336BAC6D98E701A",
+        "61C1B8D5B8C7FA76ADD0FBD5798D5A02DD54040B444436C4D0B320452EB161F83FB9A42E724FB75C52C0748E8BF7774B",
+        "7E94F53FE0AF671BF5AE01647D1C0979214DF657293A7AF8FF9034ECAA9CDA44ADDDA59F02E22938AA0608094FD0259F",
+        "CF2F7778AE82A6208DFA1F368DFDB0BF6FEDE714DA009E4CDC23FEFD768DB7FDB48EDB83D9AA6B2EFD9DBD2B9B70E46F",
+        "A3892469B0AF5A3DF30190268AA18E9492B4B57874786A032DBCC5557E17788468EA5CD2CB6277E4DC1D2BAB617390A7",
+        "A480FD2ADBE0650001D9E7CE2A30882C04E8375DB941467A577F3F3246B5E1399614616891546251B6484D23D1C11733",
+        "A9C3DA544C1C5ABE4637F7A5FD16634FB68A3BC1BD4F53D130E4D633F0F8790C22ED7DB24551919853FECFE118775AF2",
+        "B8804DFCE229F651474F5603A10F60D23869C5E80FB5D4F0CFC06E84348FEE85FBB82E2A5C2660935428188775DB774A",
+        "57039FF4FAE276A8E9B71A2AD130463B5814BDE972E4C981E1280581BE8CB670D0EAE33412674476B3A2730FCE7555B4",
+        "7CF024D2D867962FFBCF396D45F8484A911E13338868CAB4D1819B735060C2084B2DA2F5171E84F201DF74C56F1B9E1B",
+        "AA7D0C166F5239915F06C15D3F3307674B183F17933A8718AC6370AEB51398D27524042A130FB119A477E8360147C6B4",
+        "5B1AE280278C99BBC731C3631731E22AA5A9F7ADEE11CC1C9355C78442137C57CF7746F930A8736871AF6D0F3AFEB130",
+        "6118B5135904D792945F64DD619C1DB00A27065357710128F71382008254FFDF8AB8AC55FE8EDE54B5665DAD66F2DDB4",
+        "340109F4F080027B7BE0FABF3FBBCE9D12632719F2B226164FD75B0150E5B5D2B878BB449055D155ABEF9E7CAB609991",
+        "0AC3104632C41E097B1F9CC774A79493822AEDF88DD2E3B9EBCFD24F0C7CCE75");
+
+    private static readonly byte[] CapturedServerMulticonnectHrrReplayClientInitial1 = FromHexLines(
+        "C50000000114E699B5051BFC2232F62A176D7ECB0AF4A0A29930000044E2F9893B21C5D8221482D93CEC6F1F8EE00349",
+        "5C99E46AC143AC41E44BEEF85765F81C83610C745711864146BA4EAE945DE924F90D23CCE49DB3A4D0320C041FAC5FDE",
+        "D688B32F8C2978470C3266E33EAEEFF5D4F3EDB849B3341F17E5F629EEB611962DD89B2151960B9DD9E79F2A3DB04998",
+        "4AC40A08BA3AECD346920D97BDA03AE1C68E81B161111DFBAECD4831E1D3902BD84903242416BFEB07061AF6846B87EB",
+        "95994EBB43CB7E37C9A58A922FF4D313542D28C2AE6922522BEB1CD5AF4255C5DD764F3FF094E13C185D76EB78A14C06",
+        "91B06D6DF97951D7E1B5D2C871F7CCFC79A157A006D7B375EA173BA9755329AE51F8F3924C8BDBC453E352F286710204",
+        "DF2CFF27A99E1B8756A828C114CA02B2BCA64057CCC6C7E88F89628EE740B1B656B514ADE325CD3C112F40898B70BC80",
+        "0136FF7D4B1187F13A7D17A5090630A19CD5393D523C395F6E272087E5E99022903866738C05741907904678E1407B5A",
+        "0626FA2FFB66F3DA7AE27DBAC325B110F90E9CAAC629C1888A0D469D9B5DAE76E19B28D213E8D6A9C28DB378EEDCCC17",
+        "0E058FCD93DF9981E474FDD08DE08C399205B645C5B7A59FE2C15099B0E8303279D00E9D9B80148F27DB4C47E4203649",
+        "0DD87EC0DDA16EF2E8B688E8A05318FE437D6C3FF6B4809EC499E7139B12B92DD3D49F73608A7FA6A6F410F5B848C42B",
+        "1FBAC42F7891CAEC32F46C4EFD29C377786F56C2E7948407596C625BEC4E6EF1816C7CF349CCA59AD994A1AAD02540B2",
+        "519FA998843D60D91097675E78AE14A2B6BC06523CD3D17F1C0850C58F37024BF6ECA273A52C884C36417C1AF103532B",
+        "0574F2DC9367C8D59391D2504B8D371163AE351E705A343FA2A79763F1BACD1BA8A9C199608ABA3060F79107D70B531F",
+        "A7BE80C3DDA39CB4CC2B1CD84220CE7043B9B1472CB6D45CC92D0CAF2ADEACB1E1B30EB272C41F6A70046D8617AB65C1",
+        "A72788EBA634A1A8F57F96F5F11B067618AA18066253F94472A0574E6F1785BD79566965E6C133356CC1B6A164C95A0E",
+        "0B061D3DA358AB63743EC962E96B9459BCD7611711DBC736DAAAF909C9942776EA7E4B0F9EDF5A09C76DE5C641B1A28D",
+        "C7AD5C3165241E6CB60DAE8AE1BFE5E49D8F58DC2625A04D4413E69B06FFF5DBA446BBE85D9A13FE477D019819791EFF",
+        "C712A49F3B3F7B4C7B9177DAE549F2AF49A62946B6A17F0176E7253CAF3FA64B59D141F40E0B8681F7B20515E56C5EC4",
+        "53782BA44872D273C6C7F37A1223718DB9760607CE606DE500CD7BE364A694EFDFEA9AE77BA2EE35925E4C3589404910",
+        "6810D9EECCDD8CE28B25E1D14EB5390269B0BC04A4727CC095DD150D8399BD95679FED0DEADE9DE43E86BEF1F6347556",
+        "12DD74A42EDB6D49BBFC47373B050B8E003BE8AF4123234C84EC0C1E04E8803AF6A05744FCA10788D7723211BEEDB742",
+        "5537590FBD076F767FC715191DA9C717CED8B53BEB87C1CB6C222F8BE7F72D536812CE2C34B74278AEC6C73B39E25265",
+        "89079112EB652B2F34C5EE010F69F8AFF1319A049D02CBA191B78F8FAEB9BAD436E5A8E23727DAD55BC7770BDCEA1ED0",
+        "09CD20C1ABC8EE8145951FA9A9B697868AAE4072CD60B96A72235393FFB60E0CEBD0E00FB8D5F3E07DA3A52F6ED58E70",
+        "CB99AA2889E6875E9C6BE1B8C0B56AEBEFD88E1A9B3D9220D23DBF4E99335A2B3D92E48067E3B81FB74C708689778759",
+        "EF8EBFA9B6764A39F9666B48382DCFAD82CCC0E2F06FEE3217FFABFF3F5122AD");
+
+    private static readonly byte[] CapturedServerMulticonnectHrrReplayClientInitial2 = FromHexLines(
+        "C50000000114E699B5051BFC2232F62A176D7ECB0AF4A0A29930000044E2F607947BA365AC41ED991931443CE667F42B",
+        "BD146ACC9A4EA9C5A1C8830B4504E3E82068BBBB5D69166C56EA9CFE47AA0864EC00A4EB9E9D3A4232CED23C2D0CC979",
+        "5E864B813DFC4BCAA7F1B27195102CD404759058B8CFA77EEB5E8BDD669EA35F605D57201637CC4AFDB3B62053B6613B",
+        "86AF330BBC5E3D50007D5E8CC15AAA885DE4221ADBCCD7E9B3FD552F94744FA80AE63EB024C32EB6458ED6E9DAEA3F4A",
+        "0E4EAF8CFE15074A71B261D416D9E9A3BC10265B4B886DC65E2B0EDAB359F60FB296C10C1CE6F49B307FD0765C7A71F4",
+        "4EF35A452ECB1FD3641F98FA03258BAFE8AF28F5C9D04F90E6FF5D9E8BCB8D12E3CD27C74B2C5F33D753B1D826B6CC57",
+        "38BB145195248036B8F64A93E35FE4861404C5A58F21EEFA8B3D8F7F361F9B8A801F175F2A18E88670621DA3A0AE947A",
+        "B698BC241655AD56250FC8CD86739FC97AA312AD9AA80DFA9945A7EFB6E9B3AF2B44BFAD3CB7779973A7710C5C04968D",
+        "B9D4FB36C215B314C2BD899DBF1F23FB2DC22F208FFFC74862F312C63363E3EEB23E9D9D2487D5022A96BDA1D196EFC5",
+        "56E200359E0348FE0E0B5FEBF5EF835E6618CA08BC5F41A269262D352EF0D51D2E409A58483CCB888DF4AB1530113163",
+        "2B4201BAB8ADD5C582D87731DE6219FE08B72208275F7CD07673B11CDE9D1BFDB78CA9E99F1F11B3EE814EC1496FC292",
+        "D199DE609EC7379A2A85306A73B9084253979FDA7838AB291F91182B37A8B7DC95BFA2F74B48CAFC7603F6BCBBC1897C",
+        "3B839C2CDAA9B765C8A0AE34FA67F1F26506B7432BD55BEE4BCD011BF9F2D32D97D41761DAF7F434B4D8DC19A2CF9FA6",
+        "352E27A9C31733DE2D1A8FC19642FFCE7C42ABA8174F39CCEFD3743B25EB00CA83654D17D8E4F01D7C71D931D6306B37",
+        "09F20D40B4DF5CBEAE46389A62DC099562A2CC21E855CABF3BE1AB9E714619A8A907AEB2E5CB2715ABDFE41EA47260EF",
+        "1DFB78B136266CB6A97E05F705D444510B7CF2CCBA7653DDAEC3E8E0353910BCDA6871943FAD5F7ADDF862942F32CCCC",
+        "3DE94557EBBCF8605AD492BC16E9F90D8BD09D917372E69AF1DD427FD8A6452CCE677A5CBA087E269A8C6104366BE88A",
+        "2D92E50A950EABD7E57A26460237C810357FE5D55DB99ADB17456D10708089DEA9A5AB21BB7525062E6044DD95E1F383",
+        "9EA90459D1D0313F688D3AEF73BFBC04AC8DDCD40E628B76D473EE288C4B6911CDFF7B6054762B97B012549CBA402F30",
+        "52FDB673DF6DB683DD50AC8C97CB3BE3EA9F96A921329D3993E81B7534B4EF97C94AC6990E7EE91995299D8403E442B4",
+        "F4634BE1B5C9997A451F9F279F7CDF920AF535E4247D3A1E65DDEAD7BCE7288D85C6D6F693AB902E3BAF5DDB6529C333",
+        "7284FF78CD206E5C7D19B542A1496211D1BFE0F52D3A4741C73AF20F6D482165EC35CA4F35BBAFE171004527562EE34B",
+        "7A3CC9AD7B0B30BA1AB719A5C596B043824DF01723E6C81A902550017B52EA0A6808083ECF257E7468421452A4754C3F",
+        "A48CC7D8B982318239DFA200977941F0CF9069D3D55E35C5F5D995ED3C40207C322529E7548EBAC692FA891F99512FD0",
+        "AD3E00F34DEC4446DAE250745E231CA8A1E7A5E4678067F3BDA9A125FDFC58F626D43891F9FDED53C445798FA38AD397",
+        "10D977D1F1F77000E85374B85E223BE1BFC343FE06D6818475EA333ED5A8BDE41F490EA2867B9C2BD95DA3EB55542CE3",
+        "B6443D62D6A75C42ECD8B728AB47786D6BCCBEDF3F94F78518261D9F354F68B1");
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -447,6 +534,102 @@ public sealed class REQ_QUIC_CRT_0147
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-210022638-server-nginx\
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt
+        //   runner-logs\nginx_quic-go\handshakeloss\server\qlog\server-multiconnect-e9838e9861bf4dc3a997a1536cf523eb.qlog
+        // Connection 11 received the first two quic-go Initial packets, emitted an HRR Initial, then received
+        // duplicate first-ClientHello Initial packets while the client never logged a received HRR. The server
+        // must retransmit the already-published HRR packet promptly without producing a second TLS HRR.
+        byte[] originalDestinationConnectionId = Convert.FromHexString("E699B5051BFC2232F62A176D7ECB0AF4A0A29930");
+        byte[] serverSourceConnectionId = Convert.FromHexString("C19E25085E926C93");
+        using QuicConnectionRuntime serverRuntime = CreateServerRuntimeForCapturedHrrReplay(
+            originalDestinationConnectionId,
+            serverSourceConnectionId);
+        QuicConnectionPathIdentity pathIdentity = new(
+            "193.167.0.100",
+            "193.167.100.100",
+            59504,
+            443);
+
+        QuicConnectionTransitionResult firstInitialResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial0),
+            nowTicks: 1);
+        Assert.True(firstInitialResult.StateChanged, DescribeRuntimeResult(serverRuntime, firstInitialResult));
+        Assert.Empty(firstInitialResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicConnectionTransitionResult secondInitialResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial1),
+            nowTicks: 2);
+        QuicConnectionSendDatagramEffect firstHrrEffect = Assert.Single(
+            secondInitialResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            static effect => IsPacketNumberSpace(effect, QuicPacketNumberSpace.Initial));
+        Assert.False(serverRuntime.TlsState.HandshakeKeysAvailable, DescribeRuntimeResult(serverRuntime, secondInitialResult));
+        QuicCryptoFrame firstHrrFrame = OpenInitialCryptoFrame(
+            originalDestinationConnectionId,
+            firstHrrEffect.Datagram.Span);
+
+        QuicConnectionTransitionResult duplicateInitialResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 3, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial2),
+            nowTicks: 3);
+        QuicConnectionSendDatagramEffect[] replayEffects = duplicateInitialResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Where(static effect => IsPacketNumberSpace(effect, QuicPacketNumberSpace.Initial))
+            .ToArray();
+        Assert.True(
+            replayEffects.Length == 1,
+            $"postHrr={DescribeRuntimeResult(serverRuntime, secondInitialResult)} | firstHrr={firstHrrFrame.Offset}+{firstHrrFrame.CryptoData.Length} | duplicateResult={DescribeRuntimeResult(serverRuntime, duplicateInitialResult)} | duplicate={DescribeClientInitialCryptoFrames(originalDestinationConnectionId, CapturedServerMulticonnectHrrReplayClientInitial2)}");
+        QuicConnectionSendDatagramEffect replayedHrrEffect = replayEffects[0];
+        Assert.False(serverRuntime.TlsState.HandshakeKeysAvailable, DescribeRuntimeResult(serverRuntime, duplicateInitialResult));
+        Assert.Null(serverRuntime.TlsState.StagedPeerTransportParameters);
+
+        QuicCryptoFrame replayedHrrFrame = OpenInitialCryptoFrame(
+            originalDestinationConnectionId,
+            replayedHrrEffect.Datagram.Span);
+
+        Assert.Equal(0UL, firstHrrFrame.Offset);
+        Assert.Equal(firstHrrFrame.Offset, replayedHrrFrame.Offset);
+        Assert.True(firstHrrFrame.CryptoData.SequenceEqual(replayedHrrFrame.CryptoData));
+        HelloRetryRequestDescription replayedHelloRetryRequest = ParseHelloRetryRequest(replayedHrrFrame.CryptoData.ToArray());
+        Assert.True(replayedHelloRetryRequest.Random.AsSpan().SequenceEqual(HelloRetryRequestRandom));
+        Assert.Equal(QuicTlsNamedGroup.Secp256r1, replayedHelloRetryRequest.SelectedGroup);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CapturedServerMulticonnectDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr()
+    {
+        byte[] originalDestinationConnectionId = Convert.FromHexString("E699B5051BFC2232F62A176D7ECB0AF4A0A29930");
+        byte[] serverSourceConnectionId = Convert.FromHexString("C19E25085E926C93");
+        using QuicConnectionRuntime serverRuntime = CreateServerRuntimeForCapturedHrrReplay(
+            originalDestinationConnectionId,
+            serverSourceConnectionId);
+        QuicConnectionPathIdentity pathIdentity = new(
+            "193.167.0.100",
+            "193.167.100.100",
+            59504,
+            443);
+
+        QuicConnectionTransitionResult firstInitialResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial0),
+            nowTicks: 1);
+        Assert.True(firstInitialResult.StateChanged, DescribeRuntimeResult(serverRuntime, firstInitialResult));
+
+        QuicConnectionTransitionResult duplicateFragmentResult = serverRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial2),
+            nowTicks: 2);
+
+        Assert.Empty(duplicateFragmentResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.False(serverRuntime.TlsState.HandshakeKeysAvailable, DescribeRuntimeResult(serverRuntime, duplicateFragmentResult));
+        Assert.Equal(0, serverRuntime.TlsState.InitialEgressCryptoBuffer.BufferedBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void MissingSecp256r1SupportedGroupsStillFailsInsteadOfEmittingHelloRetryRequest()
@@ -751,6 +934,100 @@ public sealed class REQ_QUIC_CRT_0147
         return driver;
     }
 
+    private static QuicConnectionRuntime CreateServerRuntimeForCapturedHrrReplay(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> serverSourceConnectionId)
+    {
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            localHandshakePrivateKey: REQ_QUIC_CRT_0112.CreateScalar(0x22),
+            tlsRole: QuicTlsRole.Server);
+        QuicTransportParameters localTransportParameters =
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(serverSourceConnectionId);
+        localTransportParameters.OriginalDestinationConnectionId = originalDestinationConnectionId.ToArray();
+
+        Assert.True(runtime.TryConfigureInitialPacketProtection(originalDestinationConnectionId));
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId([]));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId));
+        Assert.True(runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 0,
+                LocalTransportParameters: localTransportParameters),
+            nowTicks: 0).StateChanged);
+        return runtime;
+    }
+
+    private static QuicCryptoFrame OpenInitialCryptoFrame(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> datagram)
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            originalDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        QuicHandshakeFlowCoordinator clientCoordinator = new(
+            originalDestinationConnectionId.ToArray(),
+            sourceConnectionId: ReadOnlyMemory<byte>.Empty);
+        Assert.True(clientCoordinator.TryOpenInitialPacket(
+            datagram,
+            clientProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicCryptoFrame cryptoFrame,
+            out _));
+        return cryptoFrame;
+    }
+
+    private static string DescribeClientInitialCryptoFrames(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> datagram)
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            originalDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryOpenInitialPacket(
+            datagram,
+            serverProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        List<string> frames = [];
+        int offset = payloadOffset;
+        int payloadEnd = payloadOffset + payloadLength;
+        while (offset < payloadEnd)
+        {
+            ReadOnlySpan<byte> remaining = openedPacket.AsSpan(offset, payloadEnd - offset);
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int bytesConsumed)
+                || bytesConsumed <= 0)
+            {
+                break;
+            }
+
+            frames.Add($"{cryptoFrame.Offset}+{cryptoFrame.CryptoData.Length}");
+            offset += bytesConsumed;
+        }
+
+        return string.Join(",", frames);
+    }
+
+    private static byte[] FromHexLines(params string[] lines)
+    {
+        return Convert.FromHexString(string.Concat(lines));
+    }
+
     private static void AssertFatalAlert32(
         IReadOnlyList<QuicTlsStateUpdate> updates,
         QuicTlsTransportBridgeDriver driver)
@@ -841,6 +1118,7 @@ public sealed class REQ_QUIC_CRT_0147
                 $"peerHandshakeComplete={runtime.PeerHandshakeTranscriptCompleted}",
                 $"initialKeys={runtime.TlsState.InitialKeysAvailable}",
                 $"handshakeKeys={runtime.TlsState.HandshakeKeysAvailable}",
+                $"initialIngressNext={runtime.TlsState.InitialIngressCryptoBuffer.NextReadOffset}",
                 $"initialIngress={runtime.TlsState.InitialIngressCryptoBuffer.BufferedBytes}",
                 $"initialEgress={runtime.TlsState.InitialEgressCryptoBuffer.BufferedBytes}",
                 $"initialDiscarding={runtime.TlsState.InitialEgressCryptoBuffer.DiscardingFutureFrames}",

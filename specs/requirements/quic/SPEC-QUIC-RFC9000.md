@@ -4918,6 +4918,11 @@ Trace:
 - Source Refs:
   - RFC 9000 §7.5 RFC9000-S7.5-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-7.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs::Fuzz_CryptoBuffer_ReconstructsShuffledFramesWithinMinimumCapacity
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs::TryDequeueContiguousData_ConsumesASingleContiguousFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs::TryAddFrame_DeduplicatesExactOverlapBeforeConsumption
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P5-0001.cs::TryAddFrame_DoesNotChargeAlreadyBufferedOverlapAgainstCapacity
 
 ## REQ-QUIC-RFC9000-S7P5-0002 Choose to allow more data to be buffered during the handshake
 Endpoints MAY choose to allow more data to be buffered during the handshake.
