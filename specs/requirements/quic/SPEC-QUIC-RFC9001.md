@@ -576,10 +576,13 @@ Once the handshake is confirmed, an endpoint MAY initiate a key update.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -592,10 +595,13 @@ The Key Phase bit MUST indicate which packet protection keys are used to protect
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -626,10 +632,13 @@ The Key Phase bit MUST be toggled to signal each subsequent key update.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -643,10 +652,13 @@ The Key Phase bit MUST allow a recipient to detect a change in keying material w
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -661,10 +673,13 @@ An endpoint that notices a changed Key Phase bit MUST update keys.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -678,10 +693,13 @@ An endpoint that notices a changed Key Phase bit MUST decrypt the packet that co
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
@@ -695,10 +713,13 @@ Initiating a key update MUST result in both endpoints updating keys.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9001-0001
+  - ARC-QUIC-RFC9001-0003
 - Implemented By:
   - WI-QUIC-RFC9001-0001
+  - WI-QUIC-RFC9001-0003
 - Verified By:
   - VER-QUIC-RFC9001-0001
+  - VER-QUIC-RFC9001-0003
 - Source Refs:
   - RFC 9001 §6 RFC9001-S6-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6
