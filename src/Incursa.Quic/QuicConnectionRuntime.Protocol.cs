@@ -910,14 +910,19 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        bool openedWithCurrentOpenMaterial = false;
         bool openedWithRetainedOldOpenMaterial = false;
-        if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+        if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
             packetReceivedEvent.Datagram.Span,
             tlsState.OneRttOpenPacketProtectionMaterial.Value,
             out byte[] openedPacket,
             out int payloadOffset,
             out int payloadLength,
             out bool keyPhase))
+        {
+            openedWithCurrentOpenMaterial = true;
+        }
+        else
         {
             bool openedWithRetainedOldKeys = tlsState.KeyUpdateInstalled
                 && tlsState.CurrentOneRttKeyPhase == 1
@@ -968,6 +973,12 @@ internal sealed partial class QuicConnectionRuntime
                 keyPhase = true;
                 stateChanged = true;
             }
+        }
+
+        if (openedWithCurrentOpenMaterial
+            && keyPhase != ((tlsState.CurrentOneRttKeyPhase & 1U) == 1U))
+        {
+            return false;
         }
 
         if (keyPhase

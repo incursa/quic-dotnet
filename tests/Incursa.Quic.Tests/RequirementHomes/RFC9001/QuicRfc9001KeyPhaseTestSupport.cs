@@ -166,11 +166,22 @@ internal static class QuicRfc9001KeyPhaseTestSupport
 
     internal static byte[] CreateSuccessorPhaseOneApplicationPacket(QuicTlsPacketProtectionMaterial openMaterial)
     {
-        QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
-        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
-            CreatePingPayload(),
+        return BuildProtectedApplicationPacket(
             openMaterial,
             keyPhase: true,
+            CreatePingPayload());
+    }
+
+    internal static byte[] BuildProtectedApplicationPacket(
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        byte[] payload)
+    {
+        QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            material,
+            keyPhase,
             out byte[] protectedPacket));
 
         return protectedPacket;

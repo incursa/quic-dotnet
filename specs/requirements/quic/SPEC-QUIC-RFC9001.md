@@ -1000,6 +1000,12 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.3 RFC9001-S6.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveServerRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeDropsCurrentKeyPacketsThatCarryTheNextKeyPhaseBitWithoutClosing
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeDropsSuccessorKeyPacketsThatCarryTheOldKeyPhaseBitWithoutClosing
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::FuzzInvalidKeyPhasePackets_RandomizedPayloadSizesDoNotCloseOrSendAResponse
 
 ## REQ-QUIC-RFC9001-S6P3-0002 Retain current and next receive keys
 Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.
