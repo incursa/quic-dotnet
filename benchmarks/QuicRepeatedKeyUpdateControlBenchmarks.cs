@@ -16,6 +16,7 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
     private QuicOneRttKeyUpdateLifecycle pendingConfirmationLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle confirmedLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle retainedPhaseOneLifecycle = default!;
+    private QuicAeadKeyLifecycle exhaustedRepeatedProtectionLifecycle = default!;
     private QuicConnectionSendRuntime repeatedOldSendRuntime = default!;
     private QuicRecoveryController repeatedOldRecoveryController = default!;
     private QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial;
@@ -44,6 +45,13 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
 
         repeatedUpdateNotBeforeMicros = confirmedLifecycle.RepeatedLocalPacketProtectionUpdateNotBeforeMicros
             ?? throw new InvalidOperationException("The repeated local key-update cooldown deadline was not recorded.");
+
+        exhaustedRepeatedProtectionLifecycle = new QuicAeadKeyLifecycle(new QuicAeadUsageLimits(1, 128));
+        if (!exhaustedRepeatedProtectionLifecycle.TryActivate()
+            || !exhaustedRepeatedProtectionLifecycle.TryUseForProtection())
+        {
+            throw new InvalidOperationException("Failed to prepare the repeated AEAD-limit protection state.");
+        }
 
         retainedPhaseOneLifecycle = new QuicOneRttKeyUpdateLifecycle();
         if (!retainedPhaseOneLifecycle.TryRetainOldPacketProtectionMaterial(
@@ -97,6 +105,21 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
             repeatedUpdateNotBeforeMicros)
             ? 1
             : -1;
+    }
+
+    /// <summary>
+    /// Measures the AEAD-limit decision that requests a repeated local update after the cooldown gate opens.
+    /// </summary>
+    [Benchmark]
+    public int EvaluateRepeatedAeadLimitUpdateDecisionAfterCooldown()
+    {
+        QuicAeadLimitDecision decision = QuicAeadLimitPolicy.EvaluateProtectionUse(
+            exhaustedRepeatedProtectionLifecycle,
+            confirmedLifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(
+                CurrentKeyPhase,
+                repeatedUpdateNotBeforeMicros));
+
+        return decision.Action == QuicAeadLimitAction.InitiateKeyUpdate ? 1 : -1;
     }
 
     /// <summary>

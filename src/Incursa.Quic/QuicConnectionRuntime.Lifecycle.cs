@@ -134,12 +134,12 @@ internal sealed partial class QuicConnectionRuntime
 
         QuicAeadLimitDecision decision = QuicAeadLimitPolicy.EvaluateProtectionUse(
             keyLifecycle,
-            keyUpdatePossible: CanInstallFirstOneRttKeyUpdateForAeadLimit());
+            keyUpdatePossible: CanInstallOneRttKeyUpdateForAeadLimit());
         return decision.Action switch
         {
             QuicAeadLimitAction.Continue => true,
             QuicAeadLimitAction.InitiateKeyUpdate
-                when tlsBridgeDriver.TryInstallOneRttKeyUpdate() => true,
+                when TryInstallOneRttKeyUpdateForAeadLimit() => true,
             _ => StopUsingConnectionForAeadLimit(failureMessage, ref effects, out exception),
         };
     }
@@ -194,12 +194,35 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
-    private bool CanInstallFirstOneRttKeyUpdateForAeadLimit()
+    private bool CanInstallOneRttKeyUpdateForAeadLimit()
     {
-        return phase == QuicConnectionPhase.Active
-            && HandshakeConfirmed
-            && !tlsState.KeyUpdateInstalled
-            && tlsState.CurrentOneRttKeyPhase == 0;
+        if (phase != QuicConnectionPhase.Active || !HandshakeConfirmed)
+        {
+            return false;
+        }
+
+        if (!tlsState.KeyUpdateInstalled)
+        {
+            return tlsState.CurrentOneRttKeyPhase == 0;
+        }
+
+        return tlsState.CurrentOneRttKeyPhase != 0
+            && tlsState.CanInitiateRepeatedLocalOneRttKeyUpdate(GetElapsedMicros(lastTransitionTicks));
+    }
+
+    private bool TryInstallOneRttKeyUpdateForAeadLimit()
+    {
+        if (!CanInstallOneRttKeyUpdateForAeadLimit())
+        {
+            return false;
+        }
+
+        if (!tlsState.KeyUpdateInstalled)
+        {
+            return tlsBridgeDriver.TryInstallOneRttKeyUpdate();
+        }
+
+        return tlsBridgeDriver.TryInstallRepeatedOneRttKeyUpdate(GetElapsedMicros(lastTransitionTicks));
     }
 
     private static QuicConnectionCloseMetadata CreatePeerConnectionCloseReplyMetadata()

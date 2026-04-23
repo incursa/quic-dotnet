@@ -1258,8 +1258,10 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::RuntimeSendPathInstallsFirstKeyUpdateBeforeProtectingBeyondConfidentialityLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::RuntimeSendPathInstallsRepeatedKeyUpdateBeforeProtectingBeyondRepeatedConfidentialityLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzRepeatedConfidentialityLimitPolicy_UsesRepeatedLocalUpdateGate
 
 ## REQ-QUIC-RFC9001-S6P6-0004 Stop using the connection when key update is impossible
 If a key update is not possible or integrity limits are reached, an endpoint MUST stop using the connection.
