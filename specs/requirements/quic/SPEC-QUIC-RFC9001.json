@@ -1476,6 +1476,12 @@
         "upstream_refs": [
           "RFC 9001 §6.4 RFC9001-S6.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveServerRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeDoesNotSendOldKeyAckForTamperedPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::FuzzPeerUpdateAckSends_RandomizedPayloadsNeverOpenWithOldKeys"
         ]
       }
     },
@@ -1496,6 +1502,11 @@
         "upstream_refs": [
           "RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateProtectsHigherPacketNumbersWithNewKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateDoesNotProtectHigherPacketNumbersWithOldKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::FuzzLocalFirstKeyUpdate_RandomizedPayloadsProtectHigherPacketNumbersWithNewKeys"
         ]
       }
     },

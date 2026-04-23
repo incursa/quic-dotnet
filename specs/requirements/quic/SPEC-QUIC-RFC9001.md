@@ -1029,6 +1029,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.4 RFC9001-S6.4-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeSendsPeerUpdateAcksWithNewKeysOnly
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveServerRuntimeSendsPeerUpdateAcksWithNewKeysOnly
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeDoesNotSendOldKeyAckForTamperedPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::FuzzPeerUpdateAckSends_RandomizedPayloadsNeverOpenWithOldKeys
 
 ## REQ-QUIC-RFC9001-S6P4-0002 Protect higher packet numbers with same or newer keys
 Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.
@@ -1043,6 +1048,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateProtectsHigherPacketNumbersWithNewKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateDoesNotProtectHigherPacketNumbersWithOldKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::FuzzLocalFirstKeyUpdate_RandomizedPayloadsProtectHigherPacketNumbersWithNewKeys
 
 ## REQ-QUIC-RFC9001-S6P4-0003 Reject old-key packets that violate packet-number ordering
 If an endpoint successfully removes protection with old keys after newer keys were used for lower packet numbers, it MUST treat that condition as a connection error of type KEY_UPDATE_ERROR.
