@@ -919,15 +919,20 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         bool openedWithCurrentOpenMaterial = false;
         bool openedWithRetainedOldOpenMaterial = false;
+        QuicBufferLease openedPacket = default;
+        bool openedPacketOwned = false;
+        try
+        {
         if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
             packetReceivedEvent.Datagram.Span,
             tlsState.OneRttOpenPacketProtectionMaterial.Value,
-            out byte[] openedPacket,
+            out openedPacket,
             out int payloadOffset,
             out int payloadLength,
             out bool keyPhase))
         {
             openedWithCurrentOpenMaterial = true;
+            openedPacketOwned = true;
         }
         else
         {
@@ -955,6 +960,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 keyPhase = oldKeyPhase;
                 openedWithRetainedOldOpenMaterial = true;
+                openedPacketOwned = true;
             }
             else
             {
@@ -986,6 +992,7 @@ internal sealed partial class QuicConnectionRuntime
                     return stateChanged;
                 }
 
+                openedPacketOwned = true;
                 if (tlsState.KeyUpdateInstalled)
                 {
                     installedSuccessor = tlsBridgeDriver.TryInstallRepeatedPeerOneRttKeyUpdate(
@@ -1052,7 +1059,7 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
-        if (!TryExpandOpenedApplicationPacketNumber(openedPacket, payloadOffset, out ulong packetNumber))
+        if (!TryExpandOpenedApplicationPacketNumber(openedPacket.Span, payloadOffset, out ulong packetNumber))
         {
             if (ApplicationReceiveDebugEnabled)
             {
@@ -1097,7 +1104,7 @@ internal sealed partial class QuicConnectionRuntime
 
         while (offset < payloadEnd)
         {
-            ReadOnlySpan<byte> remaining = openedPacket.AsSpan(offset, payloadEnd - offset);
+            ReadOnlySpan<byte> remaining = openedPacket.Span.Slice(offset, payloadEnd - offset);
             if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
             {
                 if (paddingBytesConsumed <= 0)
@@ -1524,9 +1531,17 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return processedStreamFrame || processedCryptoFrame || stateChanged;
+        }
+        finally
+        {
+            if (openedPacketOwned)
+            {
+                openedPacket.Dispose();
+            }
+        }
     }
 
-    private bool TryExpandOpenedApplicationPacketNumber(byte[] openedPacket, int payloadOffset, out ulong packetNumber)
+    private bool TryExpandOpenedApplicationPacketNumber(ReadOnlySpan<byte> openedPacket, int payloadOffset, out ulong packetNumber)
     {
         packetNumber = default;
 

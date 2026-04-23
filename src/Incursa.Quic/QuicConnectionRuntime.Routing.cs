@@ -918,23 +918,31 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        QuicHandshakeFlowCoordinator probeSelectionCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
-        if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacket(
-                packetBytes.Span,
-                tlsState.OneRttProtectPacketProtectionMaterial.Value,
-                out byte[] openedPacket,
-                out int payloadOffset,
-                out int payloadLength,
-                out _))
+        QuicHandshakeFlowCoordinator probeSelectionCoordinator = new(CurrentPeerDestinationConnectionId);
+        QuicBufferLease openedPacket = default;
+        try
         {
-            return false;
-        }
+            if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacket(
+                    packetBytes.Span,
+                    tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                    out openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength,
+                    out _))
+            {
+                return false;
+            }
 
-        return TryParseApplicationProbeSelectionPriority(
-            openedPacket.AsSpan(payloadOffset, payloadLength),
-            out carriesStreamData,
-            out closesStream,
-            out streamEndOffset);
+            return TryParseApplicationProbeSelectionPriority(
+                openedPacket.Span.Slice(payloadOffset, payloadLength),
+                out carriesStreamData,
+                out closesStream,
+                out streamEndOffset);
+        }
+        finally
+        {
+            openedPacket.Dispose();
+        }
     }
 
     private static bool TryParseApplicationProbeSelectionPriority(

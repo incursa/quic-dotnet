@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Net.Sockets;
 
 namespace Incursa.Quic;
@@ -137,7 +136,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(receiveBufferBytes);
+        byte[] buffer = QuicBufferPool.RentBytes(receiveBufferBytes);
         try
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -176,7 +175,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer);
+            QuicBufferPool.ReturnBytes(buffer);
         }
     }
 

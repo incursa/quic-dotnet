@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
 
@@ -30,6 +29,9 @@ internal static class QuicRetryIntegrity
         0x46, 0x15, 0x99, 0xD3, 0x5D, 0x63, 0x2B, 0xF2,
         0x23, 0x98, 0x25, 0xBB,
     ];
+
+    private static readonly AesGcm RetryIntegrityAead = new(RetryIntegrityKeyBytes, RetryIntegrityTagLength);
+    private static readonly object RetryIntegrityAeadGate = new();
 
     /// <summary>
     /// Gets the fixed Retry integrity key from RFC 9001 Section 5.8.
@@ -139,13 +141,15 @@ internal static class QuicRetryIntegrity
 
         try
         {
-            using AesGcm aead = new(RetryIntegrityKeyBytes, RetryIntegrityTagLength);
-            aead.Encrypt(
-                RetryIntegrityNonceBytes,
-                ReadOnlySpan<byte>.Empty,
-                Span<byte>.Empty,
-                destination[..RetryIntegrityTagLength],
-                associatedDataBuffer.AsSpan(0, associatedDataLength));
+            lock (RetryIntegrityAeadGate)
+            {
+                RetryIntegrityAead.Encrypt(
+                    RetryIntegrityNonceBytes,
+                    ReadOnlySpan<byte>.Empty,
+                    Span<byte>.Empty,
+                    destination[..RetryIntegrityTagLength],
+                    associatedDataBuffer.AsSpan(0, associatedDataLength));
+            }
 
             bytesWritten = RetryIntegrityTagLength;
             return true;
@@ -186,13 +190,15 @@ internal static class QuicRetryIntegrity
 
         try
         {
-            using AesGcm aead = new(RetryIntegrityKeyBytes, RetryIntegrityTagLength);
-            aead.Decrypt(
-                RetryIntegrityNonceBytes,
-                ReadOnlySpan<byte>.Empty,
-                retryIntegrityTag,
-                Span<byte>.Empty,
-                associatedDataBuffer.AsSpan(0, associatedDataLength));
+            lock (RetryIntegrityAeadGate)
+            {
+                RetryIntegrityAead.Decrypt(
+                    RetryIntegrityNonceBytes,
+                    ReadOnlySpan<byte>.Empty,
+                    retryIntegrityTag,
+                    Span<byte>.Empty,
+                    associatedDataBuffer.AsSpan(0, associatedDataLength));
+            }
 
             return true;
         }
@@ -233,7 +239,7 @@ internal static class QuicRetryIntegrity
         }
 
         associatedDataLength = 1 + originalDestinationConnectionId.Length + retryPacket.Length;
-        associatedDataBuffer = ArrayPool<byte>.Shared.Rent(associatedDataLength);
+        associatedDataBuffer = QuicBufferPool.RentBytes(associatedDataLength);
 
         Span<byte> associatedData = associatedDataBuffer.AsSpan(0, associatedDataLength);
         associatedData[0] = (byte)originalDestinationConnectionId.Length;
@@ -250,7 +256,7 @@ internal static class QuicRetryIntegrity
         }
 
         CryptographicOperations.ZeroMemory(associatedDataBuffer.AsSpan(0, associatedDataLength));
-        ArrayPool<byte>.Shared.Return(associatedDataBuffer);
+        QuicBufferPool.ReturnBytes(associatedDataBuffer);
     }
 
     /// <summary>

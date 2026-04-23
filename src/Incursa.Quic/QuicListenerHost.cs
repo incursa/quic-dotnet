@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Security;
@@ -229,7 +228,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
+        byte[] buffer = QuicBufferPool.RentBytes(4096);
         try
         {
             EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
@@ -333,7 +332,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer);
+            QuicBufferPool.ReturnBytes(buffer);
         }
     }
 
@@ -414,20 +413,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        byte[] responseDatagram = new byte[datagram.Length];
-        if (!QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
-                longHeader.Version,
-                longHeader.DestinationConnectionId,
-                longHeader.SourceConnectionId,
-                ListenerSupportedVersions,
-                responseDatagram,
-                out int bytesWritten))
-        {
-            return false;
-        }
-
+        byte[] responseDatagram = QuicBufferPool.RentBytes(datagram.Length);
         try
         {
+            if (!QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+                    longHeader.Version,
+                    longHeader.DestinationConnectionId,
+                    longHeader.SourceConnectionId,
+                    ListenerSupportedVersions,
+                    responseDatagram,
+                    out int bytesWritten))
+            {
+                return false;
+            }
+
             EndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
             int bytesSent = socket.SendTo(responseDatagram.AsSpan(0, bytesWritten), SocketFlags.None, remoteEndPoint);
             return bytesSent == bytesWritten;
@@ -435,6 +434,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         catch
         {
             return false;
+        }
+        finally
+        {
+            QuicBufferPool.ReturnBytes(responseDatagram);
         }
     }
 
@@ -460,21 +463,28 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     private void TrySendProtocolViolationCloseResponse(QuicConnectionPathIdentity pathIdentity)
     {
-        byte[] closeDatagram = new byte[32];
-        if (!QuicFrameCodec.TryFormatConnectionCloseFrame(
-            new QuicConnectionCloseFrame(
-                QuicTransportErrorCode.ProtocolViolation,
-                triggeringFrameType: 0,
-                []),
-            closeDatagram,
-            out int bytesWritten))
+        byte[] closeDatagram = QuicBufferPool.RentBytes(32);
+        try
         {
-            return;
-        }
+            if (!QuicFrameCodec.TryFormatConnectionCloseFrame(
+                new QuicConnectionCloseFrame(
+                    QuicTransportErrorCode.ProtocolViolation,
+                    triggeringFrameType: 0,
+                    []),
+                closeDatagram,
+                out int bytesWritten))
+            {
+                return;
+            }
 
-        SendDatagram(new QuicConnectionSendDatagramEffect(
-            pathIdentity,
-            closeDatagram.AsMemory(0, bytesWritten)));
+            SendDatagram(new QuicConnectionSendDatagramEffect(
+                pathIdentity,
+                closeDatagram.AsMemory(0, bytesWritten)));
+        }
+        finally
+        {
+            QuicBufferPool.ReturnBytes(closeDatagram);
+        }
     }
 
     private async ValueTask<bool> TryAdmitIncomingInitialConnectionAsync(

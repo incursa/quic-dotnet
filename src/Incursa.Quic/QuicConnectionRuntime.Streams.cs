@@ -2510,19 +2510,27 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            QuicHandshakeFlowCoordinator retransmissionOpenCoordinator = new(CurrentPeerDestinationConnectionId.ToArray());
-            if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
-                    retransmission.PacketBytes.Span,
-                    tlsState.OneRttProtectPacketProtectionMaterial.Value,
-                    out byte[] openedPacket,
-                    out int payloadOffset,
-                    out int payloadLength,
-                    out _))
+            QuicHandshakeFlowCoordinator retransmissionOpenCoordinator = new(CurrentPeerDestinationConnectionId);
+            QuicBufferLease openedPacket = default;
+            try
             {
-                return false;
-            }
+                if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
+                        retransmission.PacketBytes.Span,
+                        tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                        out openedPacket,
+                        out int payloadOffset,
+                        out int payloadLength,
+                        out _))
+                {
+                    return false;
+                }
 
-            plaintextPayload = openedPacket.AsMemory(payloadOffset, payloadLength).ToArray();
+                plaintextPayload = openedPacket.Memory.Slice(payloadOffset, payloadLength).ToArray();
+            }
+            finally
+            {
+                openedPacket.Dispose();
+            }
         }
 
         ulong minimumPacketNumberExclusive = retransmission.PacketNumber;

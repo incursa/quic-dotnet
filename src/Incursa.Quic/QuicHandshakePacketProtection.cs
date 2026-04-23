@@ -129,7 +129,6 @@ internal sealed class QuicHandshakePacketProtection
             }
 
             if (!TryApplyHeaderProtection(
-                material.HeaderProtectionKeyBytes,
                 destination,
                 packetNumberOffset,
                 packetNumberLength))
@@ -178,8 +177,7 @@ internal sealed class QuicHandshakePacketProtection
         }
 
         Span<byte> mask = stackalloc byte[HeaderProtectionMaskLength];
-        if (!TryGenerateHeaderProtectionMask(
-            material.HeaderProtectionKeyBytes,
+        if (!material.TryGenerateHeaderProtectionMask(
             protectedPacket.Slice(packetNumberOffset + HeaderProtectionSampleOffset, HeaderProtectionSampleLength),
             mask))
         {
@@ -296,15 +294,13 @@ internal sealed class QuicHandshakePacketProtection
         }
     }
 
-    private static bool TryApplyHeaderProtection(
-        ReadOnlySpan<byte> headerProtectionKey,
+    private bool TryApplyHeaderProtection(
         Span<byte> packet,
         int packetNumberOffset,
         int packetNumberLength)
     {
         Span<byte> mask = stackalloc byte[HeaderProtectionMaskLength];
-        if (!TryGenerateHeaderProtectionMask(
-            headerProtectionKey,
+        if (!material.TryGenerateHeaderProtectionMask(
             packet.Slice(packetNumberOffset + HeaderProtectionSampleOffset, HeaderProtectionSampleLength),
             mask))
         {
@@ -327,28 +323,7 @@ internal sealed class QuicHandshakePacketProtection
         Span<byte> tag,
         ReadOnlySpan<byte> associatedData)
     {
-        switch (material.Algorithm)
-        {
-            case QuicAeadAlgorithm.Aes128Gcm:
-            case QuicAeadAlgorithm.Aes256Gcm:
-                using (AesGcm aeadGcm = new(material.AeadKeyBytes, AuthenticationTagLength))
-                {
-                    aeadGcm.Encrypt(nonce, plaintext, ciphertext, tag, associatedData);
-                }
-
-                return true;
-
-            case QuicAeadAlgorithm.Aes128Ccm:
-                using (AesCcm aeadCcm = new(material.AeadKeyBytes))
-                {
-                    aeadCcm.Encrypt(nonce, plaintext, ciphertext, tag, associatedData);
-                }
-
-                return true;
-
-            default:
-                return false;
-        }
+        return material.TryEncryptPacketPayload(nonce, plaintext, ciphertext, tag, associatedData);
     }
 
     private bool TryDecryptPacketPayload(
@@ -358,56 +333,6 @@ internal sealed class QuicHandshakePacketProtection
         Span<byte> plaintext,
         ReadOnlySpan<byte> associatedData)
     {
-        switch (material.Algorithm)
-        {
-            case QuicAeadAlgorithm.Aes128Gcm:
-            case QuicAeadAlgorithm.Aes256Gcm:
-                using (AesGcm aeadGcm = new(material.AeadKeyBytes, AuthenticationTagLength))
-                {
-                    aeadGcm.Decrypt(nonce, ciphertext, tag, plaintext, associatedData);
-                }
-
-                return true;
-
-            case QuicAeadAlgorithm.Aes128Ccm:
-                using (AesCcm aeadCcm = new(material.AeadKeyBytes))
-                {
-                    aeadCcm.Decrypt(nonce, ciphertext, tag, plaintext, associatedData);
-                }
-
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    private static bool TryGenerateHeaderProtectionMask(
-        ReadOnlySpan<byte> headerProtectionKey,
-        ReadOnlySpan<byte> sample,
-        Span<byte> destination)
-    {
-        if (sample.Length < HeaderProtectionSampleLength
-            || destination.Length < HeaderProtectionMaskLength)
-        {
-            return false;
-        }
-
-        try
-        {
-            using Aes aes = Aes.Create();
-            aes.Key = headerProtectionKey.ToArray();
-            aes.Mode = CipherMode.ECB;
-            aes.Padding = PaddingMode.None;
-
-            return aes.EncryptEcb(
-                sample[..HeaderProtectionSampleLength],
-                destination[..HeaderProtectionMaskLength],
-                PaddingMode.None) == HeaderProtectionMaskLength;
-        }
-        catch (CryptographicException)
-        {
-            return false;
-        }
+        return material.TryDecryptPacketPayload(nonce, ciphertext, tag, plaintext, associatedData);
     }
 }

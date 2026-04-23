@@ -171,9 +171,24 @@ internal sealed class QuicInitialPacketProtection
         byte[] clientInitialSecret = HkdfExpandLabel(initialSecret, ClientInLabel, 32);
         byte[] serverInitialSecret = HkdfExpandLabel(initialSecret, ServerInLabel, 32);
 
-        clientMaterial = DeriveInitialPacketProtectionMaterial(clientInitialSecret);
-        serverMaterial = DeriveInitialPacketProtectionMaterial(serverInitialSecret);
-        return true;
+        try
+        {
+            clientMaterial = DeriveInitialPacketProtectionMaterial(clientInitialSecret);
+            serverMaterial = DeriveInitialPacketProtectionMaterial(serverInitialSecret);
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            clientMaterial = default;
+            serverMaterial = default;
+            return false;
+        }
+        catch (PlatformNotSupportedException)
+        {
+            clientMaterial = default;
+            serverMaterial = default;
+            return false;
+        }
     }
 
     /// <summary>
@@ -227,16 +242,18 @@ internal sealed class QuicInitialPacketProtection
             Span<byte> nonce = stackalloc byte[AeadNonceLength];
             BuildNonce(OutboundMaterial.AeadIvBytes, plaintextPacket.Slice(packetNumberOffset, packetNumberLength), nonce);
 
-            using AesGcm aead = new(OutboundMaterial.AeadKeyBytes, AuthenticationTagLength);
-            aead.Encrypt(
+            if (!OutboundMaterial.TryEncryptPacketPayload(
                 nonce,
                 plaintextPacket.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
                 destination.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
                 destination.Slice(packetNumberOffset + packetNumberLength + plaintextPayloadLength, AuthenticationTagLength),
-                destination[..(packetNumberOffset + packetNumberLength)]);
+                destination[..(packetNumberOffset + packetNumberLength)]))
+            {
+                return false;
+            }
 
             if (!TryApplyHeaderProtection(
-                OutboundMaterial.HeaderProtectionKeyBytes,
+                OutboundMaterial,
                 destination,
                 packetNumberOffset,
                 packetNumberLength))
@@ -309,8 +326,7 @@ internal sealed class QuicInitialPacketProtection
         }
 
         Span<byte> mask = stackalloc byte[HeaderProtectionKeyLength];
-        if (!TryGenerateHeaderProtectionMask(
-            packetProtectionMaterial.HeaderProtectionKeyBytes,
+        if (!packetProtectionMaterial.TryGenerateHeaderProtectionMask(
             protectedPacket.Slice(packetNumberOffset + HeaderProtectionSampleOffset, HeaderProtectionSampleLength),
             mask))
         {
@@ -351,13 +367,15 @@ internal sealed class QuicInitialPacketProtection
             Span<byte> nonce = stackalloc byte[AeadNonceLength];
             BuildNonce(packetProtectionMaterial.AeadIvBytes, destination.Slice(packetNumberOffset, packetNumberLength), nonce);
 
-            using AesGcm aead = new(packetProtectionMaterial.AeadKeyBytes, AuthenticationTagLength);
-            aead.Decrypt(
+            if (!packetProtectionMaterial.TryDecryptPacketPayload(
                 nonce,
                 protectedPacket.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
                 protectedPacket.Slice(packetNumberOffset + packetNumberLength + plaintextPayloadLength, AuthenticationTagLength),
                 destination.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
-                destination[..(packetNumberOffset + packetNumberLength)]);
+                destination[..(packetNumberOffset + packetNumberLength)]))
+            {
+                return false;
+            }
         }
         catch (CryptographicException)
         {
@@ -447,14 +465,13 @@ internal sealed class QuicInitialPacketProtection
     }
 
     private static bool TryApplyHeaderProtection(
-        ReadOnlySpan<byte> headerProtectionKey,
+        QuicInitialPacketProtectionMaterial packetProtectionMaterial,
         Span<byte> packet,
         int packetNumberOffset,
         int packetNumberLength)
     {
         Span<byte> mask = stackalloc byte[HeaderProtectionKeyLength];
-        if (!TryGenerateHeaderProtectionMask(
-            headerProtectionKey,
+        if (!packetProtectionMaterial.TryGenerateHeaderProtectionMask(
             packet.Slice(packetNumberOffset + HeaderProtectionSampleOffset, HeaderProtectionSampleLength),
             mask))
         {
@@ -470,35 +487,6 @@ internal sealed class QuicInitialPacketProtection
         return true;
     }
 
-    private static bool TryGenerateHeaderProtectionMask(
-        ReadOnlySpan<byte> headerProtectionKey,
-        ReadOnlySpan<byte> sample,
-        Span<byte> destination)
-    {
-        if (headerProtectionKey.Length != HeaderProtectionKeyLength
-            || sample.Length < HeaderProtectionSampleLength
-            || destination.Length < HeaderProtectionKeyLength)
-        {
-            return false;
-        }
-
-        try
-        {
-            using Aes aes = Aes.Create();
-            aes.Key = headerProtectionKey.ToArray();
-            aes.Mode = CipherMode.ECB;
-            aes.Padding = PaddingMode.None;
-
-            return aes.EncryptEcb(
-                sample[..HeaderProtectionSampleLength],
-                destination[..HeaderProtectionKeyLength],
-                PaddingMode.None) == HeaderProtectionKeyLength;
-        }
-        catch (CryptographicException)
-        {
-            return false;
-        }
-    }
 
     private static byte[] HkdfExtract(ReadOnlySpan<byte> salt, ReadOnlySpan<byte> inputKeyMaterial)
     {
@@ -546,6 +534,7 @@ internal readonly struct QuicInitialPacketProtectionMaterial
     private readonly byte[] aeadKey;
     private readonly byte[] aeadIv;
     private readonly byte[] headerProtectionKey;
+    private readonly QuicPacketProtectionCryptoContext cryptoContext;
 
     internal QuicInitialPacketProtectionMaterial(
         QuicAeadAlgorithm algorithm,
@@ -557,6 +546,7 @@ internal readonly struct QuicInitialPacketProtectionMaterial
         this.aeadKey = aeadKey;
         this.aeadIv = aeadIv;
         this.headerProtectionKey = headerProtectionKey;
+        cryptoContext = new QuicPacketProtectionCryptoContext(algorithm, aeadKey, headerProtectionKey);
     }
 
     /// <summary>
@@ -579,9 +569,35 @@ internal readonly struct QuicInitialPacketProtectionMaterial
     /// </summary>
     public ReadOnlySpan<byte> HeaderProtectionKey => headerProtectionKey;
 
-    internal byte[] AeadKeyBytes => aeadKey;
-
     internal byte[] AeadIvBytes => aeadIv;
 
-    internal byte[] HeaderProtectionKeyBytes => headerProtectionKey;
+    internal bool TryEncryptPacketPayload(
+        ReadOnlySpan<byte> nonce,
+        ReadOnlySpan<byte> plaintext,
+        Span<byte> ciphertext,
+        Span<byte> tag,
+        ReadOnlySpan<byte> associatedData)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryEncryptPacketPayload(nonce, plaintext, ciphertext, tag, associatedData);
+    }
+
+    internal bool TryDecryptPacketPayload(
+        ReadOnlySpan<byte> nonce,
+        ReadOnlySpan<byte> ciphertext,
+        ReadOnlySpan<byte> tag,
+        Span<byte> plaintext,
+        ReadOnlySpan<byte> associatedData)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryDecryptPacketPayload(nonce, ciphertext, tag, plaintext, associatedData);
+    }
+
+    internal bool TryGenerateHeaderProtectionMask(
+        ReadOnlySpan<byte> sample,
+        Span<byte> destination)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryGenerateHeaderProtectionMask(sample, destination);
+    }
 }

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -8,6 +10,7 @@ internal readonly struct QuicTlsPacketProtectionMaterial
     private readonly byte[] aeadKey;
     private readonly byte[] aeadIv;
     private readonly byte[] headerProtectionKey;
+    private readonly QuicPacketProtectionCryptoContext cryptoContext;
 
     private QuicTlsPacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
@@ -23,6 +26,7 @@ internal readonly struct QuicTlsPacketProtectionMaterial
         this.aeadKey = aeadKey;
         this.aeadIv = aeadIv;
         this.headerProtectionKey = headerProtectionKey;
+        cryptoContext = new QuicPacketProtectionCryptoContext(algorithm, aeadKey, headerProtectionKey);
     }
 
     /// <summary>
@@ -55,11 +59,37 @@ internal readonly struct QuicTlsPacketProtectionMaterial
     /// </summary>
     public ReadOnlySpan<byte> HeaderProtectionKey => headerProtectionKey;
 
-    internal byte[] AeadKeyBytes => aeadKey;
-
     internal byte[] AeadIvBytes => aeadIv;
 
-    internal byte[] HeaderProtectionKeyBytes => headerProtectionKey;
+    internal bool TryEncryptPacketPayload(
+        ReadOnlySpan<byte> nonce,
+        ReadOnlySpan<byte> plaintext,
+        Span<byte> ciphertext,
+        Span<byte> tag,
+        ReadOnlySpan<byte> associatedData)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryEncryptPacketPayload(nonce, plaintext, ciphertext, tag, associatedData);
+    }
+
+    internal bool TryDecryptPacketPayload(
+        ReadOnlySpan<byte> nonce,
+        ReadOnlySpan<byte> ciphertext,
+        ReadOnlySpan<byte> tag,
+        Span<byte> plaintext,
+        ReadOnlySpan<byte> associatedData)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryDecryptPacketPayload(nonce, ciphertext, tag, plaintext, associatedData);
+    }
+
+    internal bool TryGenerateHeaderProtectionMask(
+        ReadOnlySpan<byte> sample,
+        Span<byte> destination)
+    {
+        return cryptoContext is not null
+            && cryptoContext.TryGenerateHeaderProtectionMask(sample, destination);
+    }
 
     /// <summary>
     /// Creates a validated packet-protection material package.
@@ -101,14 +131,27 @@ internal readonly struct QuicTlsPacketProtectionMaterial
             return false;
         }
 
-        material = new QuicTlsPacketProtectionMaterial(
-            encryptionLevel,
-            algorithm,
-            usageLimits,
-            aeadKey.ToArray(),
-            aeadIv.ToArray(),
-            headerProtectionKey.ToArray());
-        return true;
+        try
+        {
+            material = new QuicTlsPacketProtectionMaterial(
+                encryptionLevel,
+                algorithm,
+                usageLimits,
+                aeadKey.ToArray(),
+                aeadIv.ToArray(),
+                headerProtectionKey.ToArray());
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            material = default;
+            return false;
+        }
+        catch (PlatformNotSupportedException)
+        {
+            material = default;
+            return false;
+        }
     }
 
     /// <summary>

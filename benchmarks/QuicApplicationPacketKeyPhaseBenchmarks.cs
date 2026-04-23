@@ -33,6 +33,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     private QuicTlsTransportBridgeDriver repeatedPeerInstallDriver = default!;
     private ulong repeatedUpdateNotBeforeMicros;
     private QuicHandshakeFlowCoordinator packetCoordinator = default!;
+    private QuicHandshakeFlowCoordinator buildPacketCoordinator = default!;
     private QuicTlsPacketProtectionMaterial installedOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial installedProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial repeatedRetainedPhaseOneOpenPacketProtectionMaterial;
@@ -87,6 +88,30 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             throw new InvalidOperationException("Failed to configure the packet coordinator destination connection ID.");
         }
 
+        buildPacketCoordinator = new QuicHandshakeFlowCoordinator(DestinationConnectionId);
+        if (!buildPacketCoordinator.TrySetDestinationConnectionId(DestinationConnectionId))
+        {
+            throw new InvalidOperationException("Failed to configure the build packet coordinator destination connection ID.");
+        }
+
+        QuicBufferLease warmupProtectedPacket = default;
+        try
+        {
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
+                applicationPayload,
+                installedProtectPacketProtectionMaterial,
+                keyPhase: true,
+                out ulong _,
+                out warmupProtectedPacket))
+            {
+                throw new InvalidOperationException("Failed to warm up the representative protected packet build path.");
+            }
+        }
+        finally
+        {
+            warmupProtectedPacket.Dispose();
+        }
+
         if (!packetCoordinator.TryBuildProtectedApplicationDataPacket(
             applicationPayload,
             installedProtectPacketProtectionMaterial,
@@ -130,6 +155,24 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         {
             throw new InvalidOperationException("Failed to prepare repeated peer second-successor material.");
         }
+
+        QuicBufferLease warmupPacket = default;
+        try
+        {
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
+                applicationPayload,
+                installedProtectPacketProtectionMaterial,
+                keyPhase: true,
+                out ulong _,
+                out warmupPacket))
+            {
+                throw new InvalidOperationException("Failed to warm up the representative protected packet build iteration.");
+            }
+        }
+        finally
+        {
+            warmupPacket.Dispose();
+        }
     }
 
     /// <summary>
@@ -167,18 +210,25 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     [Benchmark]
     public int BuildProtectedApplicationPacketWithInstalledKeyPhaseBit()
     {
-        QuicHandshakeFlowCoordinator coordinator = new(DestinationConnectionId);
-        if (!coordinator.TrySetDestinationConnectionId(DestinationConnectionId)
-            || !coordinator.TryBuildProtectedApplicationDataPacket(
+        QuicBufferLease packet = default;
+        try
+        {
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
                 applicationPayload,
                 installedProtectPacketProtectionMaterial,
                 keyPhase: true,
-                out byte[] packet))
-        {
-            return -1;
-        }
+                out ulong _,
+                out packet))
+            {
+                return -1;
+            }
 
-        return packet.Length;
+            return packet.Length;
+        }
+        finally
+        {
+            packet.Dispose();
+        }
     }
 
     /// <summary>
@@ -187,15 +237,23 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     [Benchmark]
     public int OpenProtectedApplicationPacketAndReadKeyPhaseBit()
     {
-        return packetCoordinator.TryOpenProtectedApplicationDataPacket(
-            protectedPacket,
-            installedOpenPacketProtectionMaterial,
-            out byte[] openedPacket,
-            out _,
-            out _,
-            out bool keyPhase)
-            ? openedPacket.Length + (keyPhase ? 1 : 0)
-            : -1;
+        QuicBufferLease openedPacket = default;
+        try
+        {
+            return packetCoordinator.TryOpenProtectedApplicationDataPacket(
+                protectedPacket,
+                installedOpenPacketProtectionMaterial,
+                out openedPacket,
+                out _,
+                out _,
+                out bool keyPhase)
+                ? openedPacket.Length + (keyPhase ? 1 : 0)
+                : -1;
+        }
+        finally
+        {
+            openedPacket.Dispose();
+        }
     }
 
     /// <summary>
@@ -204,15 +262,23 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     [Benchmark]
     public int OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate()
     {
-        return packetCoordinator.TryOpenProtectedApplicationDataPacket(
-            repeatedRetainedPhaseOneProtectedPacket,
-            repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
-            out byte[] openedPacket,
-            out _,
-            out _,
-            out bool keyPhase)
-            ? openedPacket.Length + (keyPhase ? 1 : 0)
-            : -1;
+        QuicBufferLease openedPacket = default;
+        try
+        {
+            return packetCoordinator.TryOpenProtectedApplicationDataPacket(
+                repeatedRetainedPhaseOneProtectedPacket,
+                repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
+                out openedPacket,
+                out _,
+                out _,
+                out bool keyPhase)
+                ? openedPacket.Length + (keyPhase ? 1 : 0)
+                : -1;
+        }
+        finally
+        {
+            openedPacket.Dispose();
+        }
     }
 
     private QuicTlsTransportBridgeDriver CreateFinishedClientDriver()
