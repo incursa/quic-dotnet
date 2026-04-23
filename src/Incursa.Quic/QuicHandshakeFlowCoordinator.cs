@@ -933,7 +933,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     destinationConnectionId,
                     sourceConnectionId,
                     token: ReadOnlySpan<byte>.Empty,
-                    versionSpecificData,
+                    versionSpecificData.AsSpan(0, lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength),
                     includeTokenLengthField: false);
 
                 nextPacketNumber = nextPacketNumber == ulong.MaxValue ? 0 : nextPacketNumber + 1;
@@ -1040,7 +1040,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     destinationConnectionId,
                     sourceConnectionId,
                     token,
-                    versionSpecificData,
+                    versionSpecificData.AsSpan(0, lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength),
                     includeTokenLengthField: true);
 
                 nextPacketNumber = nextPacketNumber == ulong.MaxValue ? 0 : nextPacketNumber + 1;
@@ -1402,7 +1402,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 effectiveDestinationConnectionId,
                 sourceConnectionId,
                 token: ReadOnlySpan<byte>.Empty,
-                versionSpecificData,
+                versionSpecificData.AsSpan(0, lengthFieldBytes + packetNumberLength + paddedPayloadLength),
                 includeTokenLengthField: false);
             return true;
         }
