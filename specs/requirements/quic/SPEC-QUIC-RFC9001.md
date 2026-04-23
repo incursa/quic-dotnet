@@ -1103,6 +1103,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::ActiveClientRuntimeUsesNextKeysForHigherRecoveredPacketNumbers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::ActiveServerRuntimeUsesNextKeysForHigherRecoveredPacketNumbers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::ActiveClientRuntimeDoesNotInstallNextKeysForALowerCurrentPhasePacketAfterRetainingNextKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::FuzzHigherRecoveredPackets_UseNextKeysAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0003 Wait before initiating another key update after confirmation
 Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.
