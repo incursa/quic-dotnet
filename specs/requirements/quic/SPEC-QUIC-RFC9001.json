@@ -1292,7 +1292,8 @@
       "x_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs::ClientRoleSuccessorWriteMaterialMatchesTheQuicKeyUpdateLabel",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs::ServerRoleSuccessorWriteMaterialMatchesTheQuicKeyUpdateLabel",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs::WrongKeyUpdateLabelDoesNotMatchTheRuntimeSuccessorWriteMaterial"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs::WrongKeyUpdateLabelDoesNotMatchTheRuntimeSuccessorWriteMaterial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs::RuntimeAdvancesStoredTrafficSecretsAfterFirstKeyUpdate"
       ]
     },
     {
@@ -1317,7 +1318,8 @@
       "x_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs::ClientRoleSuccessorPacketKeysAndIvsMatchIndependentDerivationFromUpdatedSecrets",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs::ServerRoleSuccessorPacketKeysAndIvsMatchIndependentDerivationFromUpdatedSecrets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs::CurrentTrafficSecretsDoNotMatchTheRuntimeSuccessorPacketKeysOrIvs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs::CurrentTrafficSecretsDoNotMatchTheRuntimeSuccessorPacketKeysOrIvs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs::RuntimeDerivesSecondSuccessorPacketKeysFromAdvancedTrafficSecrets"
       ]
     },
     {

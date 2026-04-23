@@ -1172,6 +1172,29 @@ internal sealed class QuicTlsKeySchedule
         openMaterial = default;
         protectMaterial = default;
 
+        if (!TryCreateOneRttSuccessorPacketProtectionUpdate(
+                currentOpenHeaderProtectionKey,
+                currentProtectHeaderProtectionKey,
+                out QuicOneRttTrafficSecretUpdate update))
+        {
+            return false;
+        }
+
+        using (update)
+        {
+            openMaterial = update.OpenPacketProtectionMaterial;
+            protectMaterial = update.ProtectPacketProtectionMaterial;
+            return true;
+        }
+    }
+
+    internal bool TryCreateOneRttSuccessorPacketProtectionUpdate(
+        ReadOnlySpan<byte> currentOpenHeaderProtectionKey,
+        ReadOnlySpan<byte> currentProtectHeaderProtectionKey,
+        out QuicOneRttTrafficSecretUpdate update)
+    {
+        update = null!;
+
         if (clientApplicationTrafficSecret is null
             || serverApplicationTrafficSecret is null
             || currentOpenHeaderProtectionKey.Length == 0
@@ -1209,16 +1232,23 @@ internal sealed class QuicTlsKeySchedule
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
                 currentOpenHeaderProtectionKey,
-                out openMaterial)
+                out QuicTlsPacketProtectionMaterial openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
                     currentProtectHeaderProtectionKey,
-                    out protectMaterial))
+                    out QuicTlsPacketProtectionMaterial protectMaterial))
             {
                 return false;
             }
 
+            update = new QuicOneRttTrafficSecretUpdate(
+                nextClientApplicationTrafficSecret,
+                nextServerApplicationTrafficSecret,
+                openMaterial,
+                protectMaterial);
+            nextClientApplicationTrafficSecret = null;
+            nextServerApplicationTrafficSecret = null;
             return true;
         }
         finally
@@ -1233,6 +1263,24 @@ internal sealed class QuicTlsKeySchedule
                 CryptographicOperations.ZeroMemory(nextServerApplicationTrafficSecret);
             }
         }
+    }
+
+    internal bool TryCommitOneRttSuccessorTrafficSecrets(QuicOneRttTrafficSecretUpdate update)
+    {
+        if (clientApplicationTrafficSecret is null
+            || serverApplicationTrafficSecret is null
+            || !update.TryTakeApplicationTrafficSecrets(
+                out byte[] nextClientApplicationTrafficSecret,
+                out byte[] nextServerApplicationTrafficSecret))
+        {
+            return false;
+        }
+
+        CryptographicOperations.ZeroMemory(clientApplicationTrafficSecret);
+        CryptographicOperations.ZeroMemory(serverApplicationTrafficSecret);
+        clientApplicationTrafficSecret = nextClientApplicationTrafficSecret;
+        serverApplicationTrafficSecret = nextServerApplicationTrafficSecret;
+        return true;
     }
 
     internal bool TryDiscardOneRttApplicationTrafficSecrets()

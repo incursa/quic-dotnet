@@ -91,7 +91,10 @@ internal static class QuicRfc9001KeyPhaseTestSupport
 
         MethodInfo installMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
             "TryInstallOneRttKeyUpdate",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            binder: null,
+            Type.EmptyTypes,
+            modifiers: null)!;
 
         return (bool)installMethod.Invoke(runtimeBridgeDriver, [])!;
     }

@@ -61,6 +61,7 @@ The existing implementation is intentionally a single-successor floor plus a hel
 - src/Incursa.Quic/QuicCongestionControlState.cs
 - src/Incursa.Quic/QuicRecoveryTiming.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
+- src/Incursa.Quic/QuicOneRttTrafficSecretUpdate.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
@@ -132,6 +133,10 @@ The implementation now has a dedicated connection-owned 1-RTT key-update lifecyc
 ## Current Boundary
 
 This artifact records a stabilized lifecycle boundary, not a complete repeated-update implementation claim. The current executable proof covers the first-successor install, retained next first-update receive material, retained old first-update 1-RTT material, timing-neutral invalid Key Phase drop classification, timing-neutral no-close handling for apparent unconfirmed consecutive peer updates, the first three-PTO retained-old discard timer after authenticating a new-key packet, first old-key discard with matching sender/recovery cleanup, first peer-initiated updated-key packet opening and ACK-key update, the first KEY_UPDATE_ERROR floor for retained old-key ACK packets that acknowledge first-successor phase-1 sends, first-update send-key ordering, the first old/current next receive-selection floors for lower and higher recovered packet numbers, the first KEY_UPDATE_ERROR floor for old-key packet-number ordering violations, helper-backed per-key-set protected/opened-packet counting, confidentiality-limit stop-use, AEAD-limit policy classification, bounded runtime AEAD update/discard wiring, and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
+
+## Traffic Secret Advancement Boundary
+
+The runtime now commits the first key update by replacing the stored client and server application traffic secrets with their updated `quic ku` successors. This lets helper derivation compute the next successor packet-protection material from the advanced secrets while the bridge state still rejects repeated local update installation until the current-phase acknowledgment and repeated epoch-selection slices are implemented. This is a prerequisite only; it does not install or accept second-successor packets.
 
 ## Lifecycle Ledger Shape
 

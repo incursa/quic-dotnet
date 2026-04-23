@@ -61,6 +61,36 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0009
         Assert.False(wrongSuccessorProtectMaterial.Matches(runtimeSuccessorProtectMaterial));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimeAdvancesStoredTrafficSecretsAfterFirstKeyUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeApplicationTrafficSecrets(
+            runtime,
+            out byte[] initialClientApplicationTrafficSecret,
+            out byte[] initialServerApplicationTrafficSecret));
+
+        byte[] expectedUpdatedClientApplicationTrafficSecret =
+            QuicRfc9001KeyPhaseTestSupport.DeriveQuicKeyUpdateTrafficSecret(initialClientApplicationTrafficSecret);
+        byte[] expectedUpdatedServerApplicationTrafficSecret =
+            QuicRfc9001KeyPhaseTestSupport.DeriveQuicKeyUpdateTrafficSecret(initialServerApplicationTrafficSecret);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeApplicationTrafficSecrets(
+            runtime,
+            out byte[] advancedClientApplicationTrafficSecret,
+            out byte[] advancedServerApplicationTrafficSecret));
+
+        Assert.True(expectedUpdatedClientApplicationTrafficSecret.SequenceEqual(advancedClientApplicationTrafficSecret));
+        Assert.True(expectedUpdatedServerApplicationTrafficSecret.SequenceEqual(advancedServerApplicationTrafficSecret));
+        Assert.False(initialClientApplicationTrafficSecret.SequenceEqual(advancedClientApplicationTrafficSecret));
+        Assert.False(initialServerApplicationTrafficSecret.SequenceEqual(advancedServerApplicationTrafficSecret));
+    }
+
     private static void AssertRuntimeSuccessorWriteMaterialMatchesTheQuicKeyUpdateLabel(
         Func<QuicConnectionRuntime> runtimeFactory,
         bool useClientTrafficSecretForWriteSecret)

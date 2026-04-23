@@ -402,29 +402,61 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
-    /// Derives and installs the successor 1-RTT packet-protection pair after the first observed Key Phase transition.
+    /// Derives, installs, and commits the successor 1-RTT packet-protection pair.
     /// </summary>
     internal bool TryInstallOneRttKeyUpdate()
     {
-        if (!TryDeriveOneRttSuccessorPacketProtectionMaterial(
-                out QuicTlsPacketProtectionMaterial openMaterial,
-                out QuicTlsPacketProtectionMaterial protectMaterial))
+        if (!TryCreateOneRttSuccessorPacketProtectionUpdate(
+                out QuicTlsKeySchedule activeKeySchedule,
+                out QuicOneRttTrafficSecretUpdate update))
         {
             return false;
         }
 
-        if (!bridgeState.TryInstallOneRttKeyUpdate(openMaterial, protectMaterial))
+        using (update)
         {
-            return false;
-        }
+            if (!bridgeState.TryInstallOneRttKeyUpdate(
+                    update.OpenPacketProtectionMaterial,
+                    update.ProtectPacketProtectionMaterial))
+            {
+                return false;
+            }
 
-        return TryDiscardOneRttApplicationTrafficSecrets();
+            return activeKeySchedule.TryCommitOneRttSuccessorTrafficSecrets(update);
+        }
     }
 
     /// <summary>
-    /// Derives the successor 1-RTT packet-protection pair without installing it into the bridge state.
-    /// The supported first-update slice retains the currently installed header-protection keys and
-    /// advances only the 1-RTT AEAD key/IV material for the successor Key Phase.
+    /// Installs and commits already authenticated successor 1-RTT packet-protection material.
+    /// </summary>
+    internal bool TryInstallOneRttKeyUpdate(
+        QuicTlsPacketProtectionMaterial openMaterial,
+        QuicTlsPacketProtectionMaterial protectMaterial)
+    {
+        if (!TryCreateOneRttSuccessorPacketProtectionUpdate(
+                out QuicTlsKeySchedule activeKeySchedule,
+                out QuicOneRttTrafficSecretUpdate update))
+        {
+            return false;
+        }
+
+        using (update)
+        {
+            if (!update.OpenPacketProtectionMaterial.Matches(openMaterial)
+                || !update.ProtectPacketProtectionMaterial.Matches(protectMaterial)
+                || !bridgeState.TryInstallOneRttKeyUpdate(openMaterial, protectMaterial))
+            {
+                return false;
+            }
+
+            return activeKeySchedule.TryCommitOneRttSuccessorTrafficSecrets(update);
+        }
+    }
+
+    /// <summary>
+    /// Derives the successor 1-RTT packet-protection pair from the currently stored traffic secrets.
+    /// The supported key-update slice retains the installed header-protection keys and advances only
+    /// the 1-RTT AEAD key/IV material for the successor Key Phase.
     /// </summary>
     internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
         out QuicTlsPacketProtectionMaterial openMaterial,
@@ -433,22 +465,47 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         openMaterial = default;
         protectMaterial = default;
 
-        if (keySchedule is null
+        if (!TryCreateOneRttSuccessorPacketProtectionUpdate(
+                out _,
+                out QuicOneRttTrafficSecretUpdate update))
+        {
+            return false;
+        }
+
+        using (update)
+        {
+            openMaterial = update.OpenPacketProtectionMaterial;
+            protectMaterial = update.ProtectPacketProtectionMaterial;
+            return true;
+        }
+    }
+
+    private bool TryCreateOneRttSuccessorPacketProtectionUpdate(
+        out QuicTlsKeySchedule activeKeySchedule,
+        out QuicOneRttTrafficSecretUpdate update)
+    {
+        activeKeySchedule = null!;
+        update = null!;
+
+        if (keySchedule is not { } localKeySchedule
             || !bridgeState.PeerHandshakeTranscriptCompleted
             || !bridgeState.OneRttKeysAvailable
-            || bridgeState.KeyUpdateInstalled
-            || bridgeState.CurrentOneRttKeyPhase != 0
             || !bridgeState.OneRttOpenPacketProtectionMaterial.HasValue
             || !bridgeState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;
         }
 
-        return keySchedule.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+        if (!localKeySchedule.TryCreateOneRttSuccessorPacketProtectionUpdate(
             bridgeState.OneRttOpenPacketProtectionMaterial.Value.HeaderProtectionKey,
             bridgeState.OneRttProtectPacketProtectionMaterial.Value.HeaderProtectionKey,
-            out openMaterial,
-            out protectMaterial);
+            out update))
+        {
+            return false;
+        }
+
+        activeKeySchedule = localKeySchedule;
+        return true;
     }
 
     /// <summary>

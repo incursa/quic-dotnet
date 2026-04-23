@@ -284,6 +284,19 @@ The eventual lifecycle proof shows that endpoints can repeatedly update 1-RTT pa
 - artifacts/verification/20260423-rfc9001-s6p6-aead-limit-runtime-wiring/render-check-ver.log
 - artifacts/verification/20260423-rfc9001-s6p6-aead-limit-runtime-wiring/git-diff-check.log
 - artifacts/verification/20260423-rfc9001-s6p6-aead-limit-runtime-wiring/spec-trace-core-validation.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/rfc9001-s6p1-traffic-secret-advance-tests.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/rfc9001-s6p1-all-tests.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/rfc9001-s6p1-s6p6-key-update-guard-tests.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/benchmark-keyphase-dry.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report-github.md
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report.csv
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report.html
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/render-check-spec.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/render-check-arc.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/render-check-wi.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/render-check-ver.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/git-diff-check.log
+- artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/spec-trace-core-validation.log
 - dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008"
 - dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6P1"
 - dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1"
@@ -344,6 +357,12 @@ Planned for the broader repeated lifecycle. On 2026-04-23, the existing first-su
 - Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, duplicate same-phase rejection, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, first current-phase acknowledgment tracking, the first three-PTO post-confirmation repeated local-update cooldown, timing-neutral invalid Key Phase drop classification, timing-neutral no-close handling for apparent unconfirmed consecutive peer updates, successor receive-key installation, retained next first-update receive material, retained old first-update 1-RTT material before and after new-key packet authentication, the first retained-old discard timer after authenticating a new-key packet, the first old 1-RTT read-key discard floor with matching sender/recovery cleanup, first peer-initiated next-key packet opening, next-Key-Phase guard for successor install, updated send-key ACK protection for peer-initiated updates, the first KEY_UPDATE_ERROR floor for retained old-key ACK packets that acknowledge first-successor phase-1 sends, first-update send-key ordering, the first old/current next receive-selection floors for lower and higher recovered packet numbers, the first KEY_UPDATE_ERROR floor for old-key packet-number ordering violations, helper-backed per-key-set protected/opened-packet counting, confidentiality-limit stop-use, AEAD-limit policy classification, bounded runtime first-update-or-discard send/open wiring, QUIC `quic ku` successor traffic-secret derivation, and packet key/IV derivation from updated secrets.
 - Current benchmarks cover the first-successor install, protected packet formatting/opening path, repeated local-update control-state checks, and helper-backed AEAD key lifecycle counter/limit and policy-decision checks.
 - No evidence in this artifact claims receive-key selection across old/current/next epochs beyond the first successor, repeated key-update cycles after acknowledgment, repeated AEAD-limit-triggered local updates after the first successor, broader stateless-reset-only response behavior, or repeated old 1-RTT key discard beyond the first authenticated successor floor.
+
+## Traffic Secret Advancement Evidence
+
+- The 2026-04-23 traffic-secret advancement run proves that a committed first update advances stored application traffic secrets to the updated `quic ku` secrets and that the helper can derive the next successor packet keys from those advanced secrets.
+- The same run preserves the repeated-local-update negative boundary: second-successor material derivation is possible, but repeated local update installation still fails before the current-phase acknowledgment gate is widened.
+- Evidence is preserved under `artifacts/verification/20260423-rfc9001-s6p1-traffic-secret-advance/` with focused S6P1 tests, the all-S6P1 guard, the S6P1-through-S6P6 key-update guard, and a QuicApplicationPacketKeyPhaseBenchmarks Dry validation.
 
 ## Next Planned Proof Slice
 
