@@ -138,10 +138,11 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 out _,
                 out _)));
 
-        QuicConnectionSendDatagramEffect sendEffect = FindHandshakeProbeEffect(
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
             sendEffects,
-            coordinator,
-            handshakeMaterial);
+            sendEffect => runtime.SendRuntime.SentPackets.Values.Any(
+                packet => packet.ProbePacket
+                    && packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span)));
         Assert.True(coordinator.TryOpenHandshakePacket(
             sendEffect.Datagram.Span,
             handshakeMaterial,
@@ -1391,6 +1392,276 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             entry => entry.Value.ProbePacket
                 && entry.Key.PacketNumber == finishProbePacketNumber
                 && entry.Value.PacketBytes.Span.SequenceEqual(applicationProbeEffects[finishProbeIndex].Datagram.Span));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySendRecoveryProbeDatagram_PromotesLaterInitialCryptoRangeWhenPeerOnlyHasTheFirstRange()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-202551462-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
+        //     connection 22e4aaf88b64abc3de276946447f54aa repeatedly received server Initial
+        //     CRYPTO offset 0 length 56 and queued Handshake packets for later decryption.
+        //   runner-logs\nginx_quic-go\handshakeloss\server\qlog\server-multiconnect-9b7c09063f6f44a48ff45111caa9a840.qlog:
+        //     the server stayed in handshake_started on the 16th connection after Initial loss.
+        // A PTO promotion must repair the furthest Initial CRYPTO range instead of repeatedly
+        // choosing the earliest range the peer already received.
+        using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.TryConfigureInitialPacketProtection(
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection initialPacketProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+        byte[] firstCryptoRange = CreateSequentialBytes(0x40, 56);
+        byte[] laterCryptoRange = CreateSequentialBytes(0x80, 123);
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            firstCryptoRange,
+            0,
+            initialPacketProtection,
+            out ulong firstPacketNumber,
+            out byte[] firstPacketBytes));
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            laterCryptoRange,
+            (ulong)firstCryptoRange.Length,
+            initialPacketProtection,
+            out ulong laterPacketNumber,
+            out byte[] laterPacketBytes));
+
+        SeedOutstandingRecoveryPacket(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            firstPacketNumber,
+            firstPacketBytes,
+            sentAtMicros: 1,
+            QuicTlsEncryptionLevel.Initial);
+        SeedOutstandingRecoveryPacket(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            laterPacketNumber,
+            laterPacketBytes,
+            sentAtMicros: 2,
+            QuicTlsEncryptionLevel.Initial);
+
+        List<QuicConnectionEffect>? effects = null;
+        Assert.True(InvokeTrySendRecoveryProbeDatagram(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            nowTicks: 20,
+            ref effects));
+
+        Assert.NotNull(effects);
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.True(coordinator.TryOpenOutboundInitialPacket(
+            sendEffect.Datagram.Span,
+            initialPacketProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicCryptoFrame cryptoFrame,
+            out _));
+        Assert.Equal((ulong)firstCryptoRange.Length, cryptoFrame.Offset);
+        Assert.True(laterCryptoRange.AsSpan().SequenceEqual(cryptoFrame.CryptoData));
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && packet.ProbePacket
+                && packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySendRecoveryProbeDatagram_SendsUnsentInitialCryptoBeforeQueuedEarlyRetransmission()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-204247913-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
+        //     connection 72da15523d43f85f repeatedly received server Initial CRYPTO offset 0
+        //     and timed out before receiving the later Initial range needed for Handshake keys.
+        //   runner-logs\nginx_quic-go\handshakeloss\server\qlog\server-multiconnect-de19c40d8f3d4842a4be5932a722b927.qlog:
+        //     the server had received repeated client Initial probes while staying in handshake_started.
+        // Preserve unsent CRYPTO progress ahead of stale retransmission work when PTO repairs Initial.
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateClientRuntime();
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection initialPacketProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+        byte[] laterCryptoRange = CreateSequentialBytes(0x90, 123);
+
+        QuicConnectionTransitionResult firstSendResult = runtime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: 1,
+                LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(
+                    QuicS17P2P5P2TestSupport.InitialSourceConnectionId)),
+            nowTicks: 1);
+        QuicConnectionSendDatagramEffect firstSendEffect = Assert.Single(
+            firstSendResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.True(coordinator.TryOpenOutboundInitialPacket(
+            firstSendEffect.Datagram.Span,
+            initialPacketProtection,
+            out byte[] openedFirstPacket,
+            out int firstPayloadOffset,
+            out int firstPayloadLength));
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            openedFirstPacket.AsSpan(firstPayloadOffset, firstPayloadLength),
+            out QuicCryptoFrame firstCryptoFrame,
+            out _));
+        Assert.Equal(0UL, firstCryptoFrame.Offset);
+        ulong laterCryptoOffset = (ulong)firstCryptoFrame.CryptoData.Length;
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 0,
+            PayloadBytes: (ulong)firstSendEffect.Datagram.Length,
+            SentAtMicros: 1,
+            ProbePacket: false,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: firstSendEffect.Datagram,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+        Assert.True(runtime.TlsState.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.CryptoDataAvailable,
+            QuicTlsEncryptionLevel.Initial,
+            CryptoDataOffset: laterCryptoOffset,
+            CryptoData: laterCryptoRange)));
+
+        List<QuicConnectionEffect>? effects = null;
+        Assert.True(InvokeTrySendRecoveryProbeDatagram(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            nowTicks: 20,
+            ref effects));
+
+        Assert.NotNull(effects);
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.True(coordinator.TryOpenOutboundInitialPacket(
+            sendEffect.Datagram.Span,
+            initialPacketProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicCryptoFrame cryptoFrame,
+            out _));
+        Assert.Equal(laterCryptoOffset, cryptoFrame.Offset);
+        Assert.True(laterCryptoRange.AsSpan().SequenceEqual(cryptoFrame.CryptoData));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDequeuePreferredProbeRetransmission_PrefersLaterInitialCryptoRangeWhenPtoMustRepairCrypto()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-202551462-server-nginx
+        //   runner-logs\nginx_quic-go\handshakeloss\client\qlog\22e4aaf88b64abc3de276946447f54aa.sqlog:
+        //     the peer queued Handshake packets but did not install Handshake keys after seeing
+        //     only the first server Initial CRYPTO range.
+        // Keep queued Initial retransmission selection focused on CRYPTO stream progress.
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection initialPacketProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+        byte[] firstCryptoRange = CreateSequentialBytes(0x20, 56);
+        byte[] laterCryptoRange = CreateSequentialBytes(0x70, 123);
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            firstCryptoRange,
+            0,
+            initialPacketProtection,
+            out ulong firstPacketNumber,
+            out byte[] firstPacketBytes));
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            laterCryptoRange,
+            (ulong)firstCryptoRange.Length,
+            initialPacketProtection,
+            out ulong laterPacketNumber,
+            out byte[] laterPacketBytes));
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Initial,
+            firstPacketNumber,
+            PayloadBytes: (ulong)firstPacketBytes.Length,
+            SentAtMicros: 1,
+            ProbePacket: false,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: firstPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Initial,
+            laterPacketNumber,
+            PayloadBytes: (ulong)laterPacketBytes.Length,
+            SentAtMicros: 2,
+            ProbePacket: false,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: laterPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+
+        Assert.True(TryDequeuePreferredProbeRetransmission(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            out QuicConnectionRetransmissionPlan selectedRetransmission));
+        Assert.Equal(laterPacketNumber, selectedRetransmission.PacketNumber);
+        Assert.True(selectedRetransmission.PacketBytes.Span.SequenceEqual(laterPacketBytes));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.True(runtime.SendRuntime.TryDequeueRetransmission(
+            QuicPacketNumberSpace.Initial,
+            out QuicConnectionRetransmissionPlan remainingRetransmission));
+        Assert.Equal(firstPacketNumber, remainingRetransmission.PacketNumber);
+        Assert.True(remainingRetransmission.PacketBytes.Span.SequenceEqual(firstPacketBytes));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDequeuePreferredProbeRetransmission_PreservesInitialFifoWhenCryptoPriorityCannotBeRead()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        byte[] firstPacketBytes = [0xC0, 0x00, 0x01];
+        byte[] secondPacketBytes = [0xC0, 0x00, 0x02];
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 7,
+            PayloadBytes: (ulong)firstPacketBytes.Length,
+            SentAtMicros: 1,
+            ProbePacket: false,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: firstPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Initial,
+            PacketNumber: 8,
+            PayloadBytes: (ulong)secondPacketBytes.Length,
+            SentAtMicros: 2,
+            ProbePacket: false,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Initial),
+            PacketBytes: secondPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Initial));
+
+        Assert.True(TryDequeuePreferredProbeRetransmission(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            out QuicConnectionRetransmissionPlan selectedRetransmission));
+        Assert.Equal(7UL, selectedRetransmission.PacketNumber);
+        Assert.True(selectedRetransmission.PacketBytes.Span.SequenceEqual(firstPacketBytes));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
     }
 
     [Fact]

@@ -56,8 +56,8 @@ public sealed class REQ_QUIC_INT_0015
             Assert.NotNull(serverResult);
             Assert.NotNull(clientResult);
 
-            Assert.Equal(0, serverResult!.ExitCode);
-            Assert.Equal(0, clientResult!.ExitCode);
+            Assert.True(serverResult!.ExitCode == 0, $"SERVER STDOUT:{Environment.NewLine}{serverResult.Stdout}{Environment.NewLine}SERVER STDERR:{Environment.NewLine}{serverResult.Stderr}");
+            Assert.True(clientResult!.ExitCode == 0, $"CLIENT STDOUT:{Environment.NewLine}{clientResult.Stdout}{Environment.NewLine}CLIENT STDERR:{Environment.NewLine}{clientResult.Stderr}");
             Assert.Contains("testcase=multiconnect", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("testcase=multiconnect", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("connectionCount=2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
@@ -71,6 +71,10 @@ public sealed class REQ_QUIC_INT_0015
             Assert.Contains($"sent HTTP/0.9 request line for /{relativePathOne}", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains($"sent HTTP/0.9 request line for /{relativePathTwo}", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("completed managed multiconnect response", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.True(
+                serverResult.Stdout.Contains("observed peer close after final multiconnect response", StringComparison.OrdinalIgnoreCase)
+                || serverResult.Stdout.Contains("completed server-side post-response linger after final multiconnect response", StringComparison.OrdinalIgnoreCase),
+                serverResult.Stdout);
             Assert.Contains("completed managed multiconnect download", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
 
             Assert.True(File.Exists(destinationPathOne));
@@ -82,6 +86,78 @@ public sealed class REQ_QUIC_INT_0015
             Assert.NotEmpty(qlogFiles);
             QlogFile qlog = QlogJsonSerializer.Deserialize(File.ReadAllText(qlogFiles[0]));
             Assert.NotEmpty(qlog.Traces);
+        }
+        finally
+        {
+            TryDelete(sourcePathOne);
+            TryDelete(sourcePathTwo);
+            TryDelete(destinationPathOne);
+            TryDelete(destinationPathTwo);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRoleEmptyRequestsAcceptsNextConnectionWhilePreviousResponseLingers()
+    {
+        // Provenance: artifacts\interop-runner\20260422-200004619-server-nginx showed server-role
+        // multiconnect completing two responses, then blocking the third connection while the second
+        // open-plan connection waited synchronously for peer close under handshakeloss.
+        using TempDirectoryFixture fixture = new("incursa-quic-preflight-multiconnect-open-server");
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+        string relativePathOne = $"preflight-open-multiconnect-{Guid.NewGuid():N}-1.txt";
+        string relativePathTwo = $"preflight-open-multiconnect-{Guid.NewGuid():N}-2.txt";
+        string sourcePathOne = Path.Combine(sourceRoot, relativePathOne);
+        string sourcePathTwo = Path.Combine(sourceRoot, relativePathTwo);
+        string destinationPathOne = Path.Combine(destinationRoot, relativePathOne);
+        string destinationPathTwo = Path.Combine(destinationRoot, relativePathTwo);
+        byte[] payloadOne = Encoding.UTF8.GetBytes($"open multiconnect payload one {Guid.NewGuid():N}");
+        byte[] payloadTwo = Encoding.UTF8.GetBytes($"open multiconnect payload two {Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(sourceRoot);
+        Directory.CreateDirectory(destinationRoot);
+        File.WriteAllBytes(sourcePathOne, payloadOne);
+        File.WriteAllBytes(sourcePathTwo, payloadTwo);
+        TryDelete(destinationPathOne);
+        TryDelete(destinationPathTwo);
+
+        try
+        {
+            HarnessRunResult? serverResult = null;
+            HarnessRunResult? clientResult = null;
+
+            await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+            {
+                string clientRequests = $"https://localhost:443/{relativePathOne} https://localhost:443/{relativePathTwo}";
+
+                (serverResult, clientResult) = await RunHarnessPairAsync(
+                    testcase: "multiconnect",
+                    serverRequest: string.Empty,
+                    clientRequest: clientRequests,
+                    certificatePath: InteropHarnessEnvironment.CertificatePath,
+                    privateKeyPath: InteropHarnessEnvironment.PrivateKeyPath,
+                    qlogDirectory: qlogDirectory);
+            });
+
+            Assert.NotNull(serverResult);
+            Assert.NotNull(clientResult);
+
+            Assert.True(serverResult!.ExitCode == 0, $"SERVER STDOUT:{Environment.NewLine}{serverResult.Stdout}{Environment.NewLine}SERVER STDERR:{Environment.NewLine}{serverResult.Stderr}");
+            Assert.True(clientResult!.ExitCode == 0, $"CLIENT STDOUT:{Environment.NewLine}{clientResult.Stdout}{Environment.NewLine}CLIENT STDERR:{Environment.NewLine}{clientResult.Stderr}");
+            Assert.Contains("requestCount=0 listening", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted managed connection 1", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("accepted managed connection 2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"parsed HTTP/0.9 request target /{relativePathOne}", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"parsed HTTP/0.9 request target /{relativePathTwo}", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed multiconnect response", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed multiconnect download", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(destinationPathOne));
+            Assert.True(File.Exists(destinationPathTwo));
+            Assert.Equal(payloadOne, File.ReadAllBytes(destinationPathOne));
+            Assert.Equal(payloadTwo, File.ReadAllBytes(destinationPathTwo));
         }
         finally
         {
@@ -326,16 +402,31 @@ public sealed class REQ_QUIC_INT_0015
         string certificatePath,
         string privateKeyPath,
         string? qlogDirectory)
+        => await RunHarnessPairAsync(
+            testcase,
+            serverRequest: request,
+            clientRequest: request,
+            certificatePath,
+            privateKeyPath,
+            qlogDirectory).ConfigureAwait(false);
+
+    private static async Task<(HarnessRunResult Server, HarnessRunResult Client)> RunHarnessPairAsync(
+        string testcase,
+        string serverRequest,
+        string clientRequest,
+        string certificatePath,
+        string privateKeyPath,
+        string? qlogDirectory)
     {
         RecordingTextWriter serverStdout = new();
         RecordingTextWriter serverStderr = new();
         RecordingTextWriter clientStdout = new();
         RecordingTextWriter clientStderr = new();
 
-        Task<int> serverTask = StartHarnessRunAsync("server", testcase, request, qlogDirectory, certificatePath, privateKeyPath, serverStdout, serverStderr);
+        Task<int> serverTask = StartHarnessRunAsync("server", testcase, serverRequest, qlogDirectory, certificatePath, privateKeyPath, serverStdout, serverStderr);
         await WaitForTextAsync(serverTask, serverStdout, "listening on", TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
-        Task<int> clientTask = StartHarnessRunAsync("client", testcase, request, qlogDirectory, certificatePath, privateKeyPath, clientStdout, clientStderr);
+        Task<int> clientTask = StartHarnessRunAsync("client", testcase, clientRequest, qlogDirectory, certificatePath, privateKeyPath, clientStdout, clientStderr);
         try
         {
             await WaitForPairCompletionAsync(serverTask, clientTask, TimeSpan.FromSeconds(30)).ConfigureAwait(false);

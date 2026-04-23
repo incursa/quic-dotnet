@@ -1479,6 +1479,11 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace packetNumberSpace,
         out QuicConnectionRetransmissionPlan retransmission)
     {
+        if (packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake)
+        {
+            return TryDequeuePreferredCryptoProbeRetransmission(packetNumberSpace, out retransmission);
+        }
+
         if (packetNumberSpace != QuicPacketNumberSpace.ApplicationData)
         {
             return sendRuntime.TryDequeueRetransmission(packetNumberSpace, out retransmission);
@@ -1599,6 +1604,108 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool TryDequeuePreferredCryptoProbeRetransmission(
+        QuicPacketNumberSpace packetNumberSpace,
+        out QuicConnectionRetransmissionPlan retransmission)
+    {
+        retransmission = default;
+        if (sendRuntime.PendingRetransmissionCount == 0)
+        {
+            return false;
+        }
+
+        int queuedPlanCount = sendRuntime.PendingRetransmissionCount;
+        List<QuicConnectionRetransmissionPlan> queuedPlans = [];
+        while (queuedPlanCount-- > 0
+            && sendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan candidatePlan))
+        {
+            queuedPlans.Add(candidatePlan);
+        }
+
+        int selectedIndex = -1;
+        bool selectedHasCryptoPriority = false;
+        ulong selectedCryptoEndOffset = 0;
+        bool selectedProbePacket = false;
+        ulong selectedPacketNumber = 0;
+
+        for (int index = 0; index < queuedPlans.Count; index++)
+        {
+            QuicConnectionRetransmissionPlan candidatePlan = queuedPlans[index];
+            if (candidatePlan.PacketNumberSpace != packetNumberSpace)
+            {
+                continue;
+            }
+
+            bool candidateHasCryptoPriority = TryGetCryptoProbeSelectionPriority(
+                candidatePlan,
+                out ulong candidateCryptoEndOffset);
+
+            if (selectedIndex >= 0)
+            {
+                if (selectedHasCryptoPriority && !candidateHasCryptoPriority)
+                {
+                    continue;
+                }
+
+                if (selectedHasCryptoPriority == candidateHasCryptoPriority)
+                {
+                    if (!selectedHasCryptoPriority)
+                    {
+                        continue;
+                    }
+
+                    if (candidateCryptoEndOffset < selectedCryptoEndOffset)
+                    {
+                        continue;
+                    }
+
+                    if (candidateCryptoEndOffset == selectedCryptoEndOffset)
+                    {
+                        if (!selectedProbePacket && candidatePlan.ProbePacket)
+                        {
+                            continue;
+                        }
+
+                        if (selectedProbePacket == candidatePlan.ProbePacket
+                            && candidatePlan.PacketNumber <= selectedPacketNumber)
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            selectedIndex = index;
+            selectedHasCryptoPriority = candidateHasCryptoPriority;
+            selectedCryptoEndOffset = candidateCryptoEndOffset;
+            selectedProbePacket = candidatePlan.ProbePacket;
+            selectedPacketNumber = candidatePlan.PacketNumber;
+        }
+
+        if (selectedIndex < 0)
+        {
+            foreach (QuicConnectionRetransmissionPlan queuedPlan in queuedPlans)
+            {
+                sendRuntime.QueueRetransmission(queuedPlan);
+            }
+
+            return false;
+        }
+
+        retransmission = queuedPlans[selectedIndex];
+        for (int index = 0; index < queuedPlans.Count; index++)
+        {
+            if (index == selectedIndex)
+            {
+                continue;
+            }
+
+            sendRuntime.QueueRetransmission(queuedPlans[index]);
+        }
+
+        return true;
+    }
+
     private bool TrySendCoalescedCryptoRecoveryProbeDatagram(
         QuicPacketNumberSpace firstPacketNumberSpace,
         QuicPacketNumberSpace secondPacketNumberSpace,
@@ -1610,13 +1717,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        bool initialDequeued = sendRuntime.TryDequeueRetransmission(
+        bool initialDequeued = TryDequeuePreferredProbeRetransmission(
             QuicPacketNumberSpace.Initial,
             out QuicConnectionRetransmissionPlan initialRetransmission);
         if (!initialDequeued
             && TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Initial))
         {
-            initialDequeued = sendRuntime.TryDequeueRetransmission(
+            initialDequeued = TryDequeuePreferredProbeRetransmission(
                 QuicPacketNumberSpace.Initial,
                 out initialRetransmission);
         }
@@ -1626,13 +1733,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        bool handshakeDequeued = sendRuntime.TryDequeueRetransmission(
+        bool handshakeDequeued = TryDequeuePreferredProbeRetransmission(
             QuicPacketNumberSpace.Handshake,
             out QuicConnectionRetransmissionPlan handshakeRetransmission);
         if (!handshakeDequeued
             && TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Handshake))
         {
-            handshakeDequeued = sendRuntime.TryDequeueRetransmission(
+            handshakeDequeued = TryDequeuePreferredProbeRetransmission(
                 QuicPacketNumberSpace.Handshake,
                 out handshakeRetransmission);
         }
@@ -2078,24 +2185,186 @@ internal sealed partial class QuicConnectionRuntime
         cryptoPayload = [];
 
         int offset = 0;
-        while (offset < payload.Length && payload[offset] == 0)
+        while (offset < payload.Length)
         {
-            offset++;
+            ReadOnlySpan<byte> remaining = payload[offset..];
+
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicFrameCodec.TryParseCryptoFrame(
+                    remaining,
+                    out QuicCryptoFrame cryptoFrame,
+                    out int cryptoBytesConsumed)
+                || cryptoBytesConsumed <= 0)
+            {
+                return false;
+            }
+
+            cryptoOffset = cryptoFrame.Offset;
+            cryptoPayload = cryptoFrame.CryptoData.ToArray();
+            return cryptoPayload.Length > 0;
         }
 
-        if (offset >= payload.Length
-            || !QuicFrameCodec.TryParseCryptoFrame(
-                payload[offset..],
-                out QuicCryptoFrame cryptoFrame,
-                out int cryptoBytesConsumed)
-            || cryptoBytesConsumed <= 0)
+        return false;
+    }
+
+    private bool TryGetCryptoProbeSelectionPriority(
+        QuicConnectionSentPacket packet,
+        out ulong cryptoEndOffset)
+    {
+        cryptoEndOffset = default;
+
+        QuicTlsEncryptionLevel? packetProtectionLevel = packet.PacketProtectionLevel
+            ?? packet.CryptoMetadata?.EncryptionLevel;
+        if (packet.PacketBytes.IsEmpty
+            || packetProtectionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake))
         {
             return false;
         }
 
-        cryptoOffset = cryptoFrame.Offset;
-        cryptoPayload = cryptoFrame.CryptoData.ToArray();
-        return cryptoPayload.Length > 0;
+        return TryGetCryptoProbeSelectionPriority(
+            packet.PacketBytes,
+            packetProtectionLevel.Value,
+            out cryptoEndOffset);
+    }
+
+    private bool TryGetCryptoProbeSelectionPriority(
+        QuicConnectionRetransmissionPlan retransmission,
+        out ulong cryptoEndOffset)
+    {
+        cryptoEndOffset = default;
+
+        if (!TryGetCryptoRetransmissionProtectionLevel(retransmission, out QuicTlsEncryptionLevel packetProtectionLevel))
+        {
+            return false;
+        }
+
+        return TryGetCryptoProbeSelectionPriority(
+            retransmission.PacketBytes,
+            packetProtectionLevel,
+            out cryptoEndOffset);
+    }
+
+    private bool TryGetCryptoProbeSelectionPriority(
+        ReadOnlyMemory<byte> packetBytes,
+        QuicTlsEncryptionLevel packetProtectionLevel,
+        out ulong cryptoEndOffset)
+    {
+        cryptoEndOffset = default;
+
+        switch (packetProtectionLevel)
+        {
+            case QuicTlsEncryptionLevel.Initial:
+                if (initialPacketProtection is null
+                    || !handshakeFlowCoordinator.TryOpenOutboundInitialPacket(
+                        packetBytes.Span,
+                        initialPacketProtection,
+                        out byte[] openedInitialPacket,
+                        out int initialPayloadOffset,
+                        out int initialPayloadLength))
+                {
+                    return false;
+                }
+
+                return TryParseCryptoProbeSelectionPriority(
+                    openedInitialPacket.AsSpan(initialPayloadOffset, initialPayloadLength),
+                    out cryptoEndOffset);
+            case QuicTlsEncryptionLevel.Handshake:
+                if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial)
+                    || !handshakeFlowCoordinator.TryOpenHandshakePacket(
+                        packetBytes.Span,
+                        handshakeMaterial,
+                        out byte[] openedHandshakePacket,
+                        out int handshakePayloadOffset,
+                        out int handshakePayloadLength))
+                {
+                    return false;
+                }
+
+                return TryParseCryptoProbeSelectionPriority(
+                    openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
+                    out cryptoEndOffset);
+            default:
+                return false;
+        }
+    }
+
+    private static bool TryParseCryptoProbeSelectionPriority(
+        ReadOnlySpan<byte> payload,
+        out ulong cryptoEndOffset)
+    {
+        cryptoEndOffset = default;
+        bool parsedCryptoFrame = false;
+
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(
+                    remaining,
+                    out QuicCryptoFrame cryptoFrame,
+                    out int cryptoBytesConsumed))
+            {
+                if (cryptoFrame.CryptoData.Length > 0)
+                {
+                    ulong frameEndOffset = SaturatingAdd(
+                        cryptoFrame.Offset,
+                        (ulong)cryptoFrame.CryptoData.Length);
+                    cryptoEndOffset = parsedCryptoFrame
+                        ? Math.Max(cryptoEndOffset, frameEndOffset)
+                        : frameEndOffset;
+                    parsedCryptoFrame = true;
+                }
+
+                offset += cryptoBytesConsumed;
+                continue;
+            }
+
+            break;
+        }
+
+        return parsedCryptoFrame;
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong sum = left + right;
+        return sum < left ? ulong.MaxValue : sum;
     }
 
     private static bool TryParseInitialRetryToken(

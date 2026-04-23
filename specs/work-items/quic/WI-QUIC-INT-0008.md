@@ -24,7 +24,7 @@ related_artifacts:
 
 ## Summary
 
-Route the `multiconnect` testcase through the existing managed endpoint-host transfer path sequentially, add requirement-home coverage, and keep both unsupported and stalled-response cases honest.
+Route the `multiconnect` testcase through the existing managed endpoint-host transfer path sequentially, add server-role open-plan coverage, and keep unsupported, stalled-response, and replay-narrowed teardown cases honest.
 
 ## Requirements Addressed
 
@@ -36,10 +36,13 @@ Route the `multiconnect` testcase through the existing managed endpoint-host tra
 
 ## Planned Changes
 
-- Add a sequential `multiconnect` plan builder to `InteropHarnessRunner` that validates each `REQUESTS` URL, requires a shared `https` host/port, and opens one managed connection per request.
+- Add a sequential `multiconnect` plan builder to `InteropHarnessRunner` that validates each client `REQUESTS` URL, requires a shared `https` host/port, and opens one managed connection per request.
 - Keep the client and server paths on the existing endpoint-host transfer path rather than introducing a generalized multipath dispatcher.
 - Bound the client-side response wait so a stalled sequential response fails the child process honestly instead of hanging until the external runner times out.
-- Add a requirement-home test file that proves the sequential happy path, qlog capture, the stalled-response failure path, and malformed-URL rejection.
+- Allow the server-role external-runner shape to use an empty `REQUESTS` list as an open sequential accept plan, derive the mounted path from each inbound HTTP/0.9 request target, and send the response after the request line instead of waiting for request EOF.
+- Replace server-initiated application close after a completed response with bounded peer-close linger, and run open-plan linger off the accept path so a completed connection cannot block later sequential accepts.
+- Keep the listener alive across per-peer UDP reset/refused indications on the shared server socket.
+- Add requirement-home coverage that proves the sequential happy path, qlog capture, the server open-plan accept path, the stalled-response failure path, and malformed-URL rejection.
 - Update local interop helper docs and testcase whitelists so `multiconnect` is recognized honestly.
 
 ## Out of Scope
@@ -56,11 +59,11 @@ Route the `multiconnect` testcase through the existing managed endpoint-host tra
 
 ## Verification Plan
 
-Run the `REQ_QUIC_INT_0015` lane, confirm the sequential connection markers and qlog capture on the smoke path, confirm malformed multiconnect input fails before transport success is claimed, and confirm a stalled response fails with exit code `1` and no preserved partial download. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.
+Run the `REQ_QUIC_INT_0015` lane, confirm the sequential connection markers and qlog capture on the smoke path, confirm malformed multiconnect input fails before transport success is claimed, confirm a stalled response fails with exit code `1` and no preserved partial download, and confirm the empty-server-REQUESTS open-plan path can accept a later sequential connection while a completed prior connection lingers. Re-run once if the tree is temporarily mid-edit and a first pass fails for an unrelated build reason.
 
 ## Completion Notes
 
-Implemented and verified; the requirement-home `REQ-QUIC-INT-0015` lane passed locally on 2026-04-21 with sequential smoke, malformed-input, and stalled-response honest-failure coverage.
+Implemented and verified; the requirement-home `REQ-QUIC-INT-0015` lane passed locally on 2026-04-21 with sequential smoke, malformed-input, and stalled-response honest-failure coverage, then was widened on 2026-04-22 with preserved server-role replay coverage for empty-server-REQUESTS open-plan sequencing, response-after-request-line handling, bounded post-response linger, no server-initiated application close after response, and shared-listener socket reset tolerance. The latest live runner evidence now reaches second-connection server Initial responses; the remaining live timeout is tracked as a narrower handshake-loss/delivery question rather than the closed harness teardown bugs.
 
 ## Trace Links
 

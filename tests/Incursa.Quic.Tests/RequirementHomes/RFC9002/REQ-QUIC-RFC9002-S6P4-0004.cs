@@ -138,6 +138,53 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0004
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRuntimeDiscardsInitialRecoveryStateWhenPeerHandshakeTranscriptCompletes()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-205045193-server-nginx\
+        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt
+        //   runner-logs\nginx_quic-go\handshakeloss\server\qlog\server-multiconnect-5486d3610f1c4d1ebffa979598d31d57.qlog
+        // The narrowed server-role multiconnect replay advanced past Initial crypto starvation, but
+        // connection 2 still received stale server Initial probes after quic-go installed 1-RTT keys
+        // and dropped Initial keys. Peer transcript completion is the server-side safety boundary
+        // that must clear leftover Initial recovery state if an earlier Handshake packet did not.
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(isServer: true),
+            tlsRole: QuicTlsRole.Server);
+        Assert.True(runtime.TrySetBootstrapOutboundPath(new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443)));
+
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 101,
+            sentAtMicros: 11,
+            QuicTlsEncryptionLevel.Initial);
+        SeedTrackedPacket(
+            runtime,
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 102,
+            sentAtMicros: 12,
+            QuicTlsEncryptionLevel.OneRtt);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 20),
+            nowTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.PeerHandshakeTranscriptCompleted);
+        Assert.DoesNotContain(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                && key.PacketNumber == 101);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Keys,
+            key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && key.PacketNumber == 102);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist()

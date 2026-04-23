@@ -61,10 +61,14 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
+        if (!TryFormatConnectionCloseDatagram(closeMetadata, out ReadOnlyMemory<byte> closeDatagram))
+        {
+            return;
+        }
+
         QuicConnectionActivePathRecord currentPath = activePath.Value;
         if (!currentPath.AmplificationState.TryConsumeSendBudget(
-            closePayload.Length,
+            closeDatagram.Length,
             out QuicConnectionPathAmplificationState updatedAmplificationState))
         {
             return;
@@ -77,7 +81,32 @@ internal sealed partial class QuicConnectionRuntime
 
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
-            closePayload));
+            closeDatagram));
+    }
+
+    private bool TryFormatConnectionCloseDatagram(
+        QuicConnectionCloseMetadata closeMetadata,
+        out ReadOnlyMemory<byte> closeDatagram)
+    {
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            closeDatagram = closePayload;
+            return true;
+        }
+
+        if (handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+            closePayload.Span,
+            tlsState.OneRttProtectPacketProtectionMaterial.Value,
+            tlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket))
+        {
+            closeDatagram = protectedPacket;
+            return true;
+        }
+
+        closeDatagram = default;
+        return false;
     }
 
     private static QuicConnectionCloseMetadata CreatePeerConnectionCloseReplyMetadata()

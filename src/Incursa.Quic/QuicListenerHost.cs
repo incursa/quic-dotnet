@@ -261,8 +261,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
                 {
-                    // Best-effort listener shell: peer resets during cancel/dispose are not actionable.
-                    break;
+                    // Windows can surface ICMP errors from a prior UDP peer on the shared listener socket.
+                    // Treat them as per-datagram noise so one closed peer does not stop unrelated connections.
+                    continue;
                 }
 
                 if (receiveResult.ReceivedBytes <= 0)
@@ -394,6 +395,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         catch (SocketException) when (shutdown.IsCancellationRequested)
         {
             // Expected during shutdown.
+        }
+        catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+        {
+            // A shared UDP listener cannot reliably map these ICMP errors back to a live managed
+            // connection. Keep the endpoint alive so unrelated sequential accepts can finish.
         }
     }
 

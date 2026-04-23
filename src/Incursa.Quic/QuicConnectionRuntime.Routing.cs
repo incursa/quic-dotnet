@@ -622,30 +622,30 @@ internal sealed partial class QuicConnectionRuntime
     {
         return packetNumberSpace switch
         {
-            QuicPacketNumberSpace.Initial => TryFlushPendingRetransmissions(
+            QuicPacketNumberSpace.Initial => TryFlushInitialPackets(
+                    ref effects,
+                    probePacket: true,
+                    maximumDatagrams: 1)
+                || TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.Initial,
                     nowTicks,
                     probePacket: true,
                     ref effects)
-                || TryFlushInitialPackets(
-                    ref effects,
-                    probePacket: true,
-                    maximumDatagrams: 1)
                 || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Initial)
                 && TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.Initial,
                     nowTicks,
                     probePacket: true,
                     ref effects),
-            QuicPacketNumberSpace.Handshake => TryFlushPendingRetransmissions(
+            QuicPacketNumberSpace.Handshake => TryFlushHandshakePackets(
+                    ref effects,
+                    probePacket: true,
+                    maximumDatagrams: 1)
+                || TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.Handshake,
                     nowTicks,
                     probePacket: true,
                     ref effects)
-                || TryFlushHandshakePackets(
-                    ref effects,
-                    probePacket: true,
-                    maximumDatagrams: 1)
                 || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.Handshake)
                 && TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.Handshake,
@@ -671,12 +671,15 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryPromoteOutstandingProbePacket(QuicPacketNumberSpace packetNumberSpace)
     {
         bool preferStreamData = packetNumberSpace == QuicPacketNumberSpace.ApplicationData;
+        bool preferCryptoData = packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake;
         QuicConnectionSentPacketKey? candidateKey = null;
         bool candidateIsProbePacket = false;
         bool candidateHasPreferredPayload = false;
         bool candidateCarriesStreamData = false;
         bool candidateClosesStream = false;
         ulong candidateStreamEndOffset = 0;
+        bool candidateHasCryptoPriority = false;
+        ulong candidateCryptoEndOffset = 0;
 
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sendRuntime.SentPackets)
         {
@@ -695,7 +698,18 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             bool entryIsProbePacket = packet.ProbePacket;
-            bool entryHasPreferredPayload = !preferStreamData
+            bool entryHasCryptoPriority = false;
+            ulong entryCryptoEndOffset = 0;
+            if (preferCryptoData)
+            {
+                entryHasCryptoPriority = TryGetCryptoProbeSelectionPriority(
+                    packet,
+                    out entryCryptoEndOffset);
+            }
+
+            bool entryHasPreferredPayload = preferCryptoData
+                ? entryHasCryptoPriority
+                : !preferStreamData
                 || packet.StreamIds is { Length: > 0 };
             bool entryCarriesStreamData = false;
             bool entryClosesStream = false;
@@ -712,45 +726,63 @@ internal sealed partial class QuicConnectionRuntime
 
             if (candidateKey is not null)
             {
-                bool samePayloadClass = candidateHasPreferredPayload == entryHasPreferredPayload;
-                bool preferEntryForFreshness = candidateIsProbePacket
-                    && !entryIsProbePacket
-                    && samePayloadClass;
-                if (!candidateIsProbePacket && entryIsProbePacket && samePayloadClass)
+                if (preferCryptoData)
                 {
-                    continue;
-                }
-
-                if (!preferEntryForFreshness)
-                {
-                if (candidateHasPreferredPayload && !entryHasPreferredPayload)
-                {
-                    continue;
-                }
-
-                if (!candidateHasPreferredPayload && entryHasPreferredPayload)
-                {
-                    // Prefer application packets that actually repair stream progress.
-                }
-                else if (preferStreamData)
-                {
-                    if (!IsPreferredApplicationProbeCandidate(
-                            candidateCarriesStreamData,
-                            candidateClosesStream,
-                            candidateStreamEndOffset,
+                    if (!IsPreferredOutstandingCryptoProbeCandidate(
+                            candidateHasCryptoPriority,
+                            candidateCryptoEndOffset,
+                            candidateIsProbePacket,
                             candidateKey.Value.PacketNumber,
-                            entryCarriesStreamData,
-                            entryClosesStream,
-                            entryStreamEndOffset,
+                            entryHasCryptoPriority,
+                            entryCryptoEndOffset,
+                            entryIsProbePacket,
                             entry.Key.PacketNumber))
                     {
                         continue;
                     }
                 }
-                else if (entry.Key.PacketNumber >= candidateKey.Value.PacketNumber)
+                else
                 {
-                    continue;
-                }
+                    bool samePayloadClass = candidateHasPreferredPayload == entryHasPreferredPayload;
+                    bool preferEntryForFreshness = candidateIsProbePacket
+                        && !entryIsProbePacket
+                        && samePayloadClass;
+                    if (!candidateIsProbePacket && entryIsProbePacket && samePayloadClass)
+                    {
+                        continue;
+                    }
+
+                    if (!preferEntryForFreshness)
+                    {
+                        if (candidateHasPreferredPayload && !entryHasPreferredPayload)
+                        {
+                            continue;
+                        }
+
+                        if (!candidateHasPreferredPayload && entryHasPreferredPayload)
+                        {
+                            // Prefer application packets that actually repair stream progress.
+                        }
+                        else if (preferStreamData)
+                        {
+                            if (!IsPreferredApplicationProbeCandidate(
+                                    candidateCarriesStreamData,
+                                    candidateClosesStream,
+                                    candidateStreamEndOffset,
+                                    candidateKey.Value.PacketNumber,
+                                    entryCarriesStreamData,
+                                    entryClosesStream,
+                                    entryStreamEndOffset,
+                                    entry.Key.PacketNumber))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (entry.Key.PacketNumber >= candidateKey.Value.PacketNumber)
+                        {
+                            continue;
+                        }
+                    }
                 }
             }
 
@@ -760,6 +792,8 @@ internal sealed partial class QuicConnectionRuntime
             candidateCarriesStreamData = entryCarriesStreamData;
             candidateClosesStream = entryClosesStream;
             candidateStreamEndOffset = entryStreamEndOffset;
+            candidateHasCryptoPriority = entryHasCryptoPriority;
+            candidateCryptoEndOffset = entryCryptoEndOffset;
         }
 
         if (candidateKey is null)
@@ -772,6 +806,44 @@ internal sealed partial class QuicConnectionRuntime
             candidateKey.Value.PacketNumber,
             handshakeConfirmed: HandshakeConfirmed,
             scheduleRetransmission: true);
+    }
+
+    private static bool IsPreferredOutstandingCryptoProbeCandidate(
+        bool currentHasCryptoPriority,
+        ulong currentCryptoEndOffset,
+        bool currentProbePacket,
+        ulong currentPacketNumber,
+        bool candidateHasCryptoPriority,
+        ulong candidateCryptoEndOffset,
+        bool candidateProbePacket,
+        ulong candidatePacketNumber)
+    {
+        if (currentHasCryptoPriority != candidateHasCryptoPriority)
+        {
+            return candidateHasCryptoPriority;
+        }
+
+        if (currentHasCryptoPriority)
+        {
+            if (currentCryptoEndOffset != candidateCryptoEndOffset)
+            {
+                return candidateCryptoEndOffset > currentCryptoEndOffset;
+            }
+
+            if (currentProbePacket != candidateProbePacket)
+            {
+                return !candidateProbePacket;
+            }
+
+            return candidatePacketNumber > currentPacketNumber;
+        }
+
+        if (currentProbePacket != candidateProbePacket)
+        {
+            return !candidateProbePacket;
+        }
+
+        return candidatePacketNumber < currentPacketNumber;
     }
 
     private bool TryGetApplicationProbeSelectionPriority(

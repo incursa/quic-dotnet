@@ -154,7 +154,9 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
             Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
 
         Assert.Equal(path, send.PathIdentity);
-        Assert.True(expectedDatagram.AsSpan().SequenceEqual(send.Datagram.Span));
+        Assert.NotEqual(expectedDatagram.Length, send.Datagram.Length);
+        Assert.False(expectedDatagram.AsSpan().SequenceEqual(send.Datagram.Span));
+        AssertProtectedConnectionClose(runtime, send.Datagram, expectedClose);
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
         Assert.False(runtime.CanSendOrdinaryPackets);
@@ -177,5 +179,30 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
         Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
         Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
         Assert.Equal(minimumAllowedMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+    }
+
+    private static void AssertProtectedConnectionClose(
+        QuicConnectionRuntime runtime,
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionCloseFrame expectedClose)
+    {
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool keyPhase));
+        Assert.False(keyPhase);
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(payload, out QuicConnectionCloseFrame parsedClose, out int bytesConsumed));
+        Assert.Equal(expectedClose.IsApplicationError, parsedClose.IsApplicationError);
+        Assert.Equal(expectedClose.ErrorCode, parsedClose.ErrorCode);
+        Assert.Equal(expectedClose.TriggeringFrameType, parsedClose.TriggeringFrameType);
+        Assert.True(payload[bytesConsumed..].SequenceEqual(new byte[payloadLength - bytesConsumed]));
     }
 }

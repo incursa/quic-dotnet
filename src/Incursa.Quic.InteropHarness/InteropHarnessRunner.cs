@@ -19,6 +19,8 @@ internal static class InteropHarnessRunner
     private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan ServerOpenPlanPostResponseLingerTimeout = InteropRequestWaitTimeout;
 
     private sealed record SequentialTransferPlan(
         Uri RequestUri,
@@ -323,7 +325,16 @@ internal static class InteropHarnessRunner
                     return 1;
                 }
 
-                await connection.CloseAsync(0).ConfigureAwait(false);
+                if (settings.Requests.Count > 0)
+                {
+                    await LingerForPeerCloseAfterFinalResponseAsync(
+                        connection,
+                        stdout,
+                        "handshake",
+                        settings.Requests.Count,
+                        ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
+                }
+
                 return 0;
             }
         }
@@ -877,11 +888,37 @@ internal static class InteropHarnessRunner
                         return 1;
                     }
 
+                    if (dispatchPlan.ExpectedConnectionCount == 0)
+                    {
+                        WriteLineAndFlush(
+                            stdout,
+                            $"interop harness: role=server, testcase=multiconnect, requestCount={dispatchPlan.ConfiguredConnectionCount} accepted managed connection {servedConnectionCount + 1}.");
+                        int servedRequestCount = await ServeHttp09RequestsAsync(
+                            connection,
+                            stdout,
+                            "multiconnect",
+                            expectedRequestCount: 1,
+                            configuredRequestCount: dispatchPlan.ConfiguredConnectionCount).ConfigureAwait(false);
+
+                        if (servedRequestCount == 0)
+                        {
+                            WriteLineAndFlush(stderr, "interop harness: role=server, testcase=multiconnect did not observe an HTTP/0.9 request stream.");
+                            return 1;
+                        }
+
+                        _ = DisposeConnectionAfterPostResponseLingerAsync(
+                            connection,
+                            stdout,
+                            "multiconnect",
+                            dispatchPlan.ConfiguredConnectionCount,
+                            ServerOpenPlanPostResponseLingerTimeout);
+                        servedConnectionCount++;
+                        continue;
+                    }
+
                     await using (connection.ConfigureAwait(false))
                     {
-                        string connectionProgressLabel = dispatchPlan.ExpectedConnectionCount > 0
-                            ? $"{servedConnectionCount + 1}/{dispatchPlan.ExpectedConnectionCount}"
-                            : (servedConnectionCount + 1).ToString();
+                        string connectionProgressLabel = $"{servedConnectionCount + 1}/{dispatchPlan.ExpectedConnectionCount}";
                         WriteLineAndFlush(
                             stdout,
                             $"interop harness: role=server, testcase=multiconnect, requestCount={dispatchPlan.ConfiguredConnectionCount} accepted managed connection {connectionProgressLabel}.");
@@ -898,7 +935,12 @@ internal static class InteropHarnessRunner
                             return 1;
                         }
 
-                        await connection.CloseAsync(0).ConfigureAwait(false);
+                        await LingerForPeerCloseAfterFinalResponseAsync(
+                            connection,
+                            stdout,
+                            "multiconnect",
+                            dispatchPlan.ConfiguredConnectionCount,
+                            ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
                         servedConnectionCount++;
                     }
                 }
@@ -1027,7 +1069,16 @@ internal static class InteropHarnessRunner
                     return 1;
                 }
 
-                await connection.CloseAsync(0).ConfigureAwait(false);
+                if (dispatchPlan.ExpectedRequestCount > 0)
+                {
+                    await LingerForPeerCloseAfterFinalResponseAsync(
+                        connection,
+                        stdout,
+                        "transfer",
+                        dispatchPlan.ConfiguredRequestCount,
+                        ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
+                }
+
                 return 0;
             }
         }
@@ -1339,12 +1390,6 @@ internal static class InteropHarnessRunner
                         stdout,
                         $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} parsed HTTP/0.9 request target {requestTarget} on stream {servedRequestCount + 1}.");
 
-                    // HTTP/0.9 GET requests in this harness never carry a request body, and the
-                    // client completes its request stream immediately after the line is sent.
-                    // Drain to EOF rather than sending STOP_SENDING on the shared bidirectional
-                    // stream, because the response travels on the same stream ID.
-                    await DrainStreamReadSideToEofAsync(stream).ConfigureAwait(false);
-
                     if (!InteropHarnessPreflightPlanner.TryGetTransferPathsFromRequestTarget(
                         requestTarget,
                         out string? relativePath,
@@ -1401,6 +1446,68 @@ internal static class InteropHarnessRunner
             && servedRequestCount > 0
             && exception.QuicError == QuicError.ConnectionAborted
             && exception.ApplicationErrorCode == 0;
+    }
+
+    private static async Task LingerForPeerCloseAfterFinalResponseAsync(
+        QuicConnection connection,
+        TextWriter stdout,
+        string testCase,
+        int configuredRequestCount,
+        TimeSpan lingerTimeout)
+    {
+        using CancellationTokenSource peerCloseTimeout = new(lingerTimeout);
+
+        try
+        {
+            QuicStream unexpectedStream = await connection.AcceptInboundStreamAsync(peerCloseTimeout.Token).ConfigureAwait(false);
+            await unexpectedStream.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (QuicException ex) when (
+            ex.QuicError == QuicError.ConnectionAborted
+            && ex.ApplicationErrorCode == 0)
+        {
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} observed peer close after final {testCase} response.");
+            return;
+        }
+        catch (OperationCanceledException) when (peerCloseTimeout.IsCancellationRequested)
+        {
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} completed server-side post-response linger after final {testCase} response.");
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"interop harness: role=server, testcase={testCase} observed an unexpected stream after the final response.");
+    }
+
+    private static async Task DisposeConnectionAfterPostResponseLingerAsync(
+        QuicConnection connection,
+        TextWriter stdout,
+        string testCase,
+        int configuredRequestCount,
+        TimeSpan lingerTimeout)
+    {
+        await using (connection.ConfigureAwait(false))
+        {
+            try
+            {
+                await LingerForPeerCloseAfterFinalResponseAsync(
+                    connection,
+                    stdout,
+                    testCase,
+                    configuredRequestCount,
+                    lingerTimeout).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} post-response linger ended with {ex.GetType().Name}: {ex.Message}");
+            }
+        }
     }
 
     private static async Task<string> ReadHttp09RequestTargetAsync(QuicStream stream)
@@ -1517,19 +1624,6 @@ internal static class InteropHarnessRunner
         catch
         {
             // Best-effort failure signaling only.
-        }
-    }
-
-    private static async Task DrainStreamReadSideToEofAsync(QuicStream stream)
-    {
-        byte[] buffer = new byte[256];
-        while (true)
-        {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            if (bytesRead == 0)
-            {
-                return;
-            }
         }
     }
 

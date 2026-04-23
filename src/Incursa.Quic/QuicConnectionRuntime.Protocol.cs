@@ -53,6 +53,10 @@ internal sealed partial class QuicConnectionRuntime
             if (tlsState.Role == QuicTlsRole.Server)
             {
                 stateChanged |= TryPublishTlsKeyDiscard(
+                    QuicTlsEncryptionLevel.Initial,
+                    nowTicks,
+                    ref effects);
+                stateChanged |= TryPublishTlsKeyDiscard(
                     QuicTlsEncryptionLevel.Handshake,
                     nowTicks,
                     ref effects);
