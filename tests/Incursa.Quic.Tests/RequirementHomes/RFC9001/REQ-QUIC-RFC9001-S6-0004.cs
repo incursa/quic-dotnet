@@ -80,6 +80,43 @@ public sealed class REQ_QUIC_RFC9001_S6_0004
         Assert.True(installedProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeTogglesOutboundKeyPhaseBackToZeroAfterARepeatedLocalUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+
+        ulong repeatedUpdateNotBeforeMicros =
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareRepeatedLocalUpdateEligibility(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            repeatedUpdateNotBeforeMicros));
+        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
+
+        QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            CreatePingPayload(),
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhaseBit,
+            out byte[] phaseTwoPacket));
+
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            phaseTwoPacket,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPhaseTwoPacket,
+            out _,
+            out _,
+            out bool observedPhaseTwoKeyPhase));
+
+        Assert.False(observedPhaseTwoKeyPhase);
+        Assert.True(QuicPacketParser.TryParseShortHeader(openedPhaseTwoPacket, out QuicShortHeaderPacket parsedPhaseTwoHeader));
+        Assert.False(parsedPhaseTwoHeader.KeyPhase);
+    }
+
     private static byte[] CreatePingPayload()
     {
         byte[] payload = new byte[1];

@@ -13,6 +13,9 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class QuicApplicationPacketKeyPhaseBenchmarks
 {
+    private const ulong RepeatedUpdateAcknowledgedAtMicros = 1_000_000;
+    private const ulong RepeatedUpdateProbeTimeoutMicros = 25_000;
+
     private static readonly byte[] DestinationConnectionId =
     [
         0x83, 0x94, 0xC8, 0xF0, 0x3E, 0x51, 0x57, 0x08,
@@ -26,6 +29,8 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     private QuicTransportParameters peerTransportParameters = default!;
     private byte[] clientHelloTranscript = [];
     private QuicTlsTransportBridgeDriver installDriver = default!;
+    private QuicTlsTransportBridgeDriver repeatedInstallDriver = default!;
+    private ulong repeatedUpdateNotBeforeMicros;
     private QuicHandshakeFlowCoordinator packetCoordinator = default!;
     private QuicTlsPacketProtectionMaterial installedOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial installedProtectPacketProtectionMaterial;
@@ -94,6 +99,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     public void IterationSetup()
     {
         installDriver = CreateFinishedClientDriver();
+        repeatedInstallDriver = CreateRepeatedInstallReadyClientDriver();
     }
 
     /// <summary>
@@ -103,6 +109,15 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     public int InstallSuccessorOneRttPacketProtectionMaterial()
     {
         return installDriver.TryInstallOneRttKeyUpdate() ? 1 : -1;
+    }
+
+    /// <summary>
+    /// Measures the repeated local key-update install boundary after current-phase acknowledgment and cooldown.
+    /// </summary>
+    [Benchmark]
+    public int InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown()
+    {
+        return repeatedInstallDriver.TryInstallRepeatedOneRttKeyUpdate(repeatedUpdateNotBeforeMicros) ? 1 : -1;
     }
 
     /// <summary>
@@ -186,6 +201,28 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         if (!driver.State.OneRttKeysAvailable || !driver.State.PeerHandshakeTranscriptCompleted)
         {
             throw new InvalidOperationException("The representative client Finished boundary did not reach active 1-RTT state.");
+        }
+
+        return driver;
+    }
+
+    private QuicTlsTransportBridgeDriver CreateRepeatedInstallReadyClientDriver()
+    {
+        QuicTlsTransportBridgeDriver driver = CreateFinishedClientDriver();
+        if (!driver.TryInstallOneRttKeyUpdate()
+            || !driver.State.TryDiscardRetainedOneRttKeyUpdateMaterial()
+            || !driver.State.TryRecordCurrentOneRttKeyPhaseAcknowledgment(
+                RepeatedUpdateAcknowledgedAtMicros,
+                RepeatedUpdateProbeTimeoutMicros))
+        {
+            throw new InvalidOperationException("Failed to prepare the repeated 1-RTT install state.");
+        }
+
+        repeatedUpdateNotBeforeMicros = driver.State.RepeatedLocalOneRttKeyUpdateNotBeforeMicros
+            ?? throw new InvalidOperationException("The repeated 1-RTT cooldown deadline was not recorded.");
+        if (!driver.State.CanInitiateRepeatedLocalOneRttKeyUpdate(repeatedUpdateNotBeforeMicros))
+        {
+            throw new InvalidOperationException("The repeated 1-RTT install state was not eligible after cooldown.");
         }
 
         return driver;
