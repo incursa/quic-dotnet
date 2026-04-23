@@ -47,13 +47,14 @@ Define the design boundary for widening the current first-successor 1-RTT Key Ph
 
 ## Design Summary
 
-The existing implementation is intentionally a single-successor floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material, and reject duplicate same-phase installs. The stabilized lifecycle boundary requires a connection-owned 1-RTT key-update epoch ledger before code is widened. That future ledger must track current, next, and old 1-RTT open/protect epochs; preserve stable header-protection keys; gate local repeated updates on acknowledgment of the current phase; install corresponding receive/send material for local and peer initiated updates; retain old material through authenticated new-key receipt and the bounded retention window; reject stale or packet-number-incoherent old-key packets with KEY_UPDATE_ERROR where required; and synchronize old-key discard with sender/recovery cleanup for packets protected by discarded 1-RTT epochs. The AEAD usage-limit policy feeds this lifecycle only through counted per-key packet usage and must not bypass the update gate. TLS KeyUpdate prohibition stays separate from QUIC Key Phase updates, and the current first-update CRT slice remains supporting evidence rather than proof of repeated lifecycle support.
+The existing implementation is intentionally a single-successor floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, retain the displaced old open/protect material in a dedicated connection-owned lifecycle object, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material, and reject duplicate same-phase installs. The stabilized lifecycle boundary still requires the lifecycle owner to become a complete 1-RTT key-update epoch ledger before repeated updates are claimed. That future ledger must track current, next, and old 1-RTT open/protect epochs; preserve stable header-protection keys; gate local repeated updates on acknowledgment of the current phase; install corresponding receive/send material for local and peer initiated updates; retain old material through authenticated new-key receipt and the bounded retention window; reject stale or packet-number-incoherent old-key packets with KEY_UPDATE_ERROR where required; and synchronize old-key discard with sender/recovery cleanup for packets protected by discarded 1-RTT epochs. The AEAD usage-limit policy feeds this lifecycle only through counted per-key packet usage and must not bypass the update gate. TLS KeyUpdate prohibition stays separate from QUIC Key Phase updates, and the current first-update CRT slice remains supporting evidence rather than proof of repeated lifecycle support.
 
 ## Key Components
 
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
+- src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs
@@ -61,15 +62,17 @@ The existing implementation is intentionally a single-successor floor: after han
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs
 - benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs
 
 ## Data and State Considerations
 
-The future design should introduce a dedicated connection-owned 1-RTT key-update lifecycle object rather than widening the TLS bridge's first-successor fields directly. The lifecycle object owns epoch identifiers, current/next/old open and protect material, current outbound Key Phase, packet-number ranges observed per phase, current-phase acknowledgment state, AEAD encrypted-packet counters per key set, old-read-key retention deadlines, and sender/recovery references for packets protected with old 1-RTT material. The TLS bridge and key schedule remain responsible for deriving material from retained traffic secrets and for surfacing prohibited TLS KeyUpdate violations.
+The implementation now has a dedicated connection-owned 1-RTT key-update lifecycle object for retained old first-update packet-protection material rather than widening the TLS bridge's first-successor fields directly. The future ledger expansion must add epoch identifiers, current/next/old open and protect material selection, current outbound Key Phase, packet-number ranges observed per phase, current-phase acknowledgment state, AEAD encrypted-packet counters per key set, old-read-key retention deadlines, and sender/recovery references for packets protected with old 1-RTT material. The TLS bridge and key schedule remain responsible for deriving material from retained traffic secrets and for surfacing prohibited TLS KeyUpdate violations.
 
 ## Edge Cases and Constraints
 
-- The current supported runtime floor remains a first 0-to-1 successor install only.
+- The current supported runtime floor remains a first 0-to-1 successor install with retained old 1-RTT material only.
 - Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle ledger is built and verified.
 - Authentication failure while trying successor material must not advance the active key epoch.
 - Duplicate same-phase packets must not retrigger derivation or discard retained old material.
@@ -94,7 +97,7 @@ The future design should introduce a dedicated connection-owned 1-RTT key-update
 
 ## Current Boundary
 
-This artifact records a stabilized lifecycle boundary, not an implementation claim. The current executable proof remains the first-successor install and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
+This artifact records a stabilized lifecycle boundary, not a complete repeated-update implementation claim. The current executable proof covers the first-successor install, retained old first-update 1-RTT material, and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
 
 ## Lifecycle Ledger Shape
 
@@ -110,6 +113,7 @@ This artifact records a stabilized lifecycle boundary, not an implementation cla
 - [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)
 - [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
+- [`src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs`](../../../src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs)
@@ -117,4 +121,6 @@ This artifact records a stabilized lifecycle boundary, not an implementation cla
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs)
 - [`benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs`](../../../benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs)

@@ -864,6 +864,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::ActiveClientRuntimeRetainsOldOneRttKeysWhenAKeyUpdateIsInstalled
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::ActiveServerRuntimeRetainsOldOneRttKeysWhenAKeyUpdateIsInstalled
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::EstablishingClientRuntimeDoesNotInventRetainedOldKeysBeforeAKeyUpdate
 
 ## REQ-QUIC-RFC9001-S6P1-0008 Retain old keys after new-key packet authentication
 An endpoint SHOULD retain old keys for some time after it successfully unprotects a packet sent with the new keys.
@@ -878,6 +882,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ActiveClientRuntimeRetainsOldOneRttKeysAfterOpeningANewKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ActiveServerRuntimeRetainsOldOneRttKeysAfterOpeningANewKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ExplicitRetainedOldKeyCleanupRemovesOldOneRttMaterialAfterTheRetentionWindowOwnerRuns
 
 ## REQ-QUIC-RFC9001-S6P1-0009 Derive next write secrets with the QUIC key-update label
 An endpoint MUST derive the next write secret from the current write secret using the TLS-provided KDF and the label "quic ku".

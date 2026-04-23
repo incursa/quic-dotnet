@@ -1236,6 +1236,11 @@
         "upstream_refs": [
           "RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::ActiveClientRuntimeRetainsOldOneRttKeysWhenAKeyUpdateIsInstalled",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::ActiveServerRuntimeRetainsOldOneRttKeysWhenAKeyUpdateIsInstalled",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs::EstablishingClientRuntimeDoesNotInventRetainedOldKeysBeforeAKeyUpdate"
         ]
       }
     },
@@ -1256,6 +1261,11 @@
         "upstream_refs": [
           "RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ActiveClientRuntimeRetainsOldOneRttKeysAfterOpeningANewKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ActiveServerRuntimeRetainsOldOneRttKeysAfterOpeningANewKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs::ExplicitRetainedOldKeyCleanupRemovesOldOneRttMaterialAfterTheRetentionWindowOwnerRuns"
         ]
       }
     },

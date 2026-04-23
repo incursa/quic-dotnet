@@ -10,6 +10,7 @@ internal sealed class QuicTransportTlsBridgeState
     private readonly QuicCryptoBuffer oneRttIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
+    private readonly QuicOneRttKeyUpdateLifecycle oneRttKeyUpdateLifecycle = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
     private readonly QuicTlsRole role;
     private QuicTlsPacketProtectionMaterial? handshakeOpenPacketProtectionMaterial;
@@ -77,6 +78,12 @@ internal sealed class QuicTransportTlsBridgeState
 
     public QuicTlsPacketProtectionMaterial? OneRttProtectPacketProtectionMaterial => oneRttProtectPacketProtectionMaterial;
 
+    public QuicTlsPacketProtectionMaterial? RetainedOldOneRttOpenPacketProtectionMaterial =>
+        oneRttKeyUpdateLifecycle.RetainedOldOpenPacketProtectionMaterial;
+
+    public QuicTlsPacketProtectionMaterial? RetainedOldOneRttProtectPacketProtectionMaterial =>
+        oneRttKeyUpdateLifecycle.RetainedOldProtectPacketProtectionMaterial;
+
     public ReadOnlyMemory<byte> PostHandshakeTicketBytes => postHandshakeTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
     public bool HasPostHandshakeTicket => postHandshakeTicketBytes is not null;
@@ -114,7 +121,8 @@ internal sealed class QuicTransportTlsBridgeState
         || handshakeOpenPacketProtectionMaterial.HasValue
         || handshakeProtectPacketProtectionMaterial.HasValue
         || oneRttOpenPacketProtectionMaterial.HasValue
-        || oneRttProtectPacketProtectionMaterial.HasValue;
+        || oneRttProtectPacketProtectionMaterial.HasValue
+        || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial;
 
     public bool IsTerminal => FatalAlertCode.HasValue;
 
@@ -741,8 +749,17 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal
             || KeyUpdateInstalled
             || CurrentOneRttKeyPhase != 0
+            || !oneRttOpenPacketProtectionMaterial.HasValue
+            || !oneRttProtectPacketProtectionMaterial.HasValue
             || openMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
             || protectMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
+        {
+            return false;
+        }
+
+        if (!oneRttKeyUpdateLifecycle.TryRetainOldPacketProtectionMaterial(
+            oneRttOpenPacketProtectionMaterial.Value,
+            oneRttProtectPacketProtectionMaterial.Value))
         {
             return false;
         }
@@ -755,6 +772,11 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    internal bool TryDiscardRetainedOneRttKeyUpdateMaterial()
+    {
+        return oneRttKeyUpdateLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
+    }
+
     public bool TryDiscardOldKeys()
     {
         if (IsTerminal || OldKeysDiscarded)
@@ -763,6 +785,7 @@ internal sealed class QuicTransportTlsBridgeState
         }
 
         OldKeysDiscarded = true;
+        oneRttKeyUpdateLifecycle.Reset();
         packetProtectionMaterials.Clear();
         return true;
     }
@@ -796,6 +819,7 @@ internal sealed class QuicTransportTlsBridgeState
         handshakeProtectPacketProtectionMaterial = null;
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
+        oneRttKeyUpdateLifecycle.Reset();
         oneRttIngressCryptoBuffer.DiscardFutureFrames();
         postHandshakeTicketBytes = null;
         postHandshakeTicketNonce = null;
@@ -1015,6 +1039,7 @@ internal sealed class QuicTransportTlsBridgeState
             || handshakeIngressCryptoBuffer.BufferedBytes > 0
             || oneRttIngressCryptoBuffer.BufferedBytes > 0
             || handshakeEgressCryptoBuffer.BufferedBytes > 0
+            || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
             || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.Handshake)
             || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.OneRtt)
             || postHandshakeTicketBytes is not null
@@ -1047,6 +1072,7 @@ internal sealed class QuicTransportTlsBridgeState
         handshakeProtectPacketProtectionMaterial = null;
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
+        oneRttKeyUpdateLifecycle.Reset();
         initialIngressCryptoBuffer.Reset();
         handshakeIngressCryptoBuffer.Reset();
         oneRttIngressCryptoBuffer.Reset();
@@ -1196,9 +1222,11 @@ internal sealed class QuicTransportTlsBridgeState
     private bool TryDiscardOneRttPacketProtectionMaterial()
     {
         bool discardedDirectionalMaterial = oneRttOpenPacketProtectionMaterial.HasValue
-            || oneRttProtectPacketProtectionMaterial.HasValue;
+            || oneRttProtectPacketProtectionMaterial.HasValue
+            || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial;
         oneRttOpenPacketProtectionMaterial = null;
         oneRttProtectPacketProtectionMaterial = null;
+        oneRttKeyUpdateLifecycle.Reset();
         bool discardedLegacyMaterial = packetProtectionMaterials.Remove(QuicTlsEncryptionLevel.OneRtt);
         return discardedDirectionalMaterial || discardedLegacyMaterial;
     }
