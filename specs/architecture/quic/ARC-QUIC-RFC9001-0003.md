@@ -15,10 +15,39 @@ Define the design boundary for widening the current first-successor 1-RTT Key Ph
 - REQ-QUIC-RFC9001-S6-0006
 - REQ-QUIC-RFC9001-S6-0007
 - REQ-QUIC-RFC9001-S6-0008
+- REQ-QUIC-RFC9001-S6P1-0001
+- REQ-QUIC-RFC9001-S6P1-0002
+- REQ-QUIC-RFC9001-S6P1-0003
+- REQ-QUIC-RFC9001-S6P1-0004
+- REQ-QUIC-RFC9001-S6P1-0005
+- REQ-QUIC-RFC9001-S6P1-0006
+- REQ-QUIC-RFC9001-S6P1-0007
+- REQ-QUIC-RFC9001-S6P1-0008
+- REQ-QUIC-RFC9001-S6P1-0009
+- REQ-QUIC-RFC9001-S6P1-0010
+- REQ-QUIC-RFC9001-S6P2-0001
+- REQ-QUIC-RFC9001-S6P2-0002
+- REQ-QUIC-RFC9001-S6P2-0003
+- REQ-QUIC-RFC9001-S6P2-0004
+- REQ-QUIC-RFC9001-S6P3-0001
+- REQ-QUIC-RFC9001-S6P3-0002
+- REQ-QUIC-RFC9001-S6P4-0001
+- REQ-QUIC-RFC9001-S6P4-0002
+- REQ-QUIC-RFC9001-S6P4-0003
+- REQ-QUIC-RFC9001-S6P5-0001
+- REQ-QUIC-RFC9001-S6P5-0002
+- REQ-QUIC-RFC9001-S6P5-0003
+- REQ-QUIC-RFC9001-S6P5-0004
+- REQ-QUIC-RFC9001-S6P5-0005
+- REQ-QUIC-RFC9001-S6P6-0001
+- REQ-QUIC-RFC9001-S6P6-0002
+- REQ-QUIC-RFC9001-S6P6-0003
+- REQ-QUIC-RFC9001-S6P6-0004
+- REQ-QUIC-RFC9001-S6P6-0005
 
 ## Design Summary
 
-The existing implementation is intentionally a single-successor floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material, and reject duplicate same-phase installs. A general RFC 9001 lifecycle needs a separate endpoint-owned key-update state machine before code is widened. That future state machine must track the current, next, and old 1-RTT packet-protection epochs, alternate the Key Phase bit for each accepted update, retain enough old material to authenticate reordered packets, discard old material only after the RFC-safe boundary, and synchronize sender/recovery cleanup with the discarded epoch. The design boundary keeps TLS KeyUpdate prohibition separate from QUIC Key Phase updates and keeps the current first-update CRT slice as supporting evidence rather than proof of repeated lifecycle support.
+The existing implementation is intentionally a single-successor floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material, and reject duplicate same-phase installs. The stabilized lifecycle boundary requires a connection-owned 1-RTT key-update epoch ledger before code is widened. That future ledger must track current, next, and old 1-RTT open/protect epochs; preserve stable header-protection keys; gate local repeated updates on acknowledgment of the current phase; install corresponding receive/send material for local and peer initiated updates; retain old material through authenticated new-key receipt and the bounded retention window; reject stale or packet-number-incoherent old-key packets with KEY_UPDATE_ERROR where required; and synchronize old-key discard with sender/recovery cleanup for packets protected by discarded 1-RTT epochs. The AEAD usage-limit policy feeds this lifecycle only through counted per-key packet usage and must not bypass the update gate. TLS KeyUpdate prohibition stays separate from QUIC Key Phase updates, and the current first-update CRT slice remains supporting evidence rather than proof of repeated lifecycle support.
 
 ## Key Components
 
@@ -36,15 +65,15 @@ The existing implementation is intentionally a single-successor floor: after han
 
 ## Data and State Considerations
 
-The future design needs an explicit epoch record for current, next, and old 1-RTT open/protect material, the active outbound Key Phase bit, accepted peer Key Phase observations, key-update initiation state, discard eligibility, and sender/recovery references for packets protected with old 1-RTT material.
+The future design should introduce a dedicated connection-owned 1-RTT key-update lifecycle object rather than widening the TLS bridge's first-successor fields directly. The lifecycle object owns epoch identifiers, current/next/old open and protect material, current outbound Key Phase, packet-number ranges observed per phase, current-phase acknowledgment state, AEAD encrypted-packet counters per key set, old-read-key retention deadlines, and sender/recovery references for packets protected with old 1-RTT material. The TLS bridge and key schedule remain responsible for deriving material from retained traffic secrets and for surfacing prohibited TLS KeyUpdate violations.
 
 ## Edge Cases and Constraints
 
 - The current supported runtime floor remains a first 0-to-1 successor install only.
-- Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle state model is traced.
+- Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle ledger is built and verified.
 - Authentication failure while trying successor material must not advance the active key epoch.
 - Duplicate same-phase packets must not retrigger derivation or discard retained old material.
-- Old 1-RTT key discard must stay synchronized with packet number, reordering, and sender/recovery state.
+- Old 1-RTT key discard must stay synchronized with packet number, reordering, retention-window, AEAD-usage, and sender/recovery state.
 - TLS KeyUpdate messages remain prohibited and are not a substitute for QUIC Key Phase updates.
 
 ## Alternatives Considered
@@ -55,19 +84,26 @@ The future design needs an explicit epoch record for current, next, and old 1-RT
 
 ## Risks
 
-- If repeated key updates reuse the first-update bridge fields without an epoch model, the receiver can lose the ability to authenticate packets protected with retained old keys.
+- If repeated key updates reuse the first-update bridge fields without an epoch ledger, the receiver can lose the ability to authenticate packets protected with retained old keys.
 - If old 1-RTT key discard is implemented without sender/recovery ownership, bytes-in-flight and retransmission state can outlive the usable packet-protection epoch.
-- If AEAD usage-limit policy is wired directly to the helper calculator without an endpoint lifecycle decision, the implementation can silently change when key updates are initiated.
+- If AEAD usage-limit counters trigger local updates without the repeated-update acknowledgment gate, the implementation can violate the current-phase acknowledgment requirement or advance into an unrecoverable limit state.
 
 ## Open Questions
 
-- Which connection-owned component should own the repeated key-update epoch ledger: the TLS transport bridge state, the connection runtime, or a dedicated packet-protection lifecycle object?
-- Where should AEAD usage-limit policy trigger a local key update without introducing an automatic policy promise before public/runtime requirements exist?
-- What exact old-key discard evidence is required to close the overlap between RFC 9001 key update and RFC 9002 recovery cleanup for 1-RTT epochs?
+- No open architecture questions remain for the trace boundary; implementation sequencing is tracked by WI-QUIC-RFC9001-0003.
 
 ## Current Boundary
 
-This artifact records a design boundary, not an implementation claim. The current executable proof remains the first-successor install and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
+This artifact records a stabilized lifecycle boundary, not an implementation claim. The current executable proof remains the first-successor install and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
+
+## Lifecycle Ledger Shape
+
+- The future ledger keeps the current epoch, optionally precomputed next receive epoch, and retained old receive epoch distinct.
+- Local initiation is allowed only after handshake confirmation and only after the current phase has produced an acknowledged packet.
+- Peer initiation installs corresponding send keys before acknowledging the new-key packet.
+- Packet-number ordering decides whether retained previous, current, or next receive material is eligible for opening a packet.
+- AEAD usage-limit counters can request a local update only through the same gate used for ordinary local initiation.
+- Old read-key discard must remove the corresponding secrets and sender/recovery state together.
 
 ## Related Code And Tests
 

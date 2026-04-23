@@ -764,6 +764,417 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsStillBecomeConnectionErrorsAfterAPostHandshakeTicketHasBeenStored
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition
 
+## REQ-QUIC-RFC9001-S6P1-0001 Initiate key updates with successor write secrets
+An endpoint MUST initiate a key update by updating its packet protection write secret and using that secret to protect new packets.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+Notes:
+- This requirement promotes the initiation step needed for repeated 1-RTT key-update epochs.
+
+## REQ-QUIC-RFC9001-S6P1-0002 Keep header protection stable across key updates
+Key updates MUST NOT update the header protection key.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S6
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0003 Use updated keys for subsequent packets
+After initiating a key update, an endpoint MUST toggle the Key Phase bit and protect all subsequent packets with the updated key and IV.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B5-P3-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0004 Forbid local key updates before handshake confirmation
+An endpoint MUST NOT initiate a key update before confirming the handshake.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0005 Gate repeated local updates on current-phase acknowledgment
+An endpoint MUST NOT initiate another key update until it has received an acknowledgment for a packet protected with keys from the current key phase.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0006 Update receive keys when initiating a key update
+The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B7-P5-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0007 Retain old keys until new-key packet authentication succeeds
+An endpoint MUST retain old keys until it has successfully unprotected a packet sent with the new keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0008 Retain old keys after new-key packet authentication
+An endpoint SHOULD retain old keys for some time after it successfully unprotects a packet sent with the new keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0009 Derive next write secrets with the QUIC key-update label
+An endpoint MUST derive the next write secret from the current write secret using the TLS-provided KDF and the label "quic ku".
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S3
+  - RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S4
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P1-0010 Derive updated packet keys and IVs from updated secrets
+An endpoint MUST derive the updated packet protection key and IV from the updated secret as defined for QUIC packet protection.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S5
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1
+
+## REQ-QUIC-RFC9001-S6P2-0001 Test apparent peer updates with next keys
+To process a packet that appears to signal a key update, an endpoint MUST use the next packet protection key and IV.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.2 RFC9001-S6.2-B2-P1-S3
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+
+## REQ-QUIC-RFC9001-S6P2-0002 Update send keys after peer-initiated key updates
+If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S2
+  - RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S3
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+
+## REQ-QUIC-RFC9001-S6P2-0003 Allow KEY_UPDATE_ERROR for unconfirmed consecutive peer updates
+An endpoint MAY treat consecutive peer key updates that occur before confirmation of the prior update as a connection error of type KEY_UPDATE_ERROR.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.2 RFC9001-S6.2-B4-P3-S5
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+
+## REQ-QUIC-RFC9001-S6P2-0004 Allow KEY_UPDATE_ERROR for old-key ACKs of newer-key packets
+An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+
+## REQ-QUIC-RFC9001-S6P3-0001 Avoid timing signals for invalid Key Phase bits
+Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.3 RFC9001-S6.3-B2-P1-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3
+
+## REQ-QUIC-RFC9001-S6P3-0002 Retain current and next receive keys
+Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.3 RFC9001-S6.3-B6-P5-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3
+
+## REQ-QUIC-RFC9001-S6P4-0001 Never send packets with old keys
+An endpoint MUST NOT send packets protected with old keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.4 RFC9001-S6.4-B2-P1-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+
+## REQ-QUIC-RFC9001-S6P4-0002 Protect higher packet numbers with same or newer keys
+Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+
+## REQ-QUIC-RFC9001-S6P4-0003 Reject old-key packets that violate packet-number ordering
+If an endpoint successfully removes protection with old keys after newer keys were used for lower packet numbers, it MUST treat that condition as a connection error of type KEY_UPDATE_ERROR.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4
+
+## REQ-QUIC-RFC9001-S6P5-0001 Use previous keys for lower recovered packet numbers
+When selecting receive keys across phases, a recovered packet number lower than any packet number from the current key phase MUST use the previous packet protection keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+
+## REQ-QUIC-RFC9001-S6P5-0002 Use next keys for higher recovered packet numbers
+When selecting receive keys across phases, a recovered packet number higher than any packet number from the current key phase MUST use the next packet protection keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+
+## REQ-QUIC-RFC9001-S6P5-0003 Wait before initiating another key update after confirmation
+Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.5 RFC9001-S6.5-B7-P6-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+
+## REQ-QUIC-RFC9001-S6P5-0004 Limit old read key retention to three PTOs
+An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+
+## REQ-QUIC-RFC9001-S6P5-0005 Discard old read keys after retention expires
+After the old-read-key retention window expires, an endpoint SHOULD discard the old read keys and their corresponding secrets.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+
+## REQ-QUIC-RFC9001-S6P6-0001 Count encrypted packets per key set
+Endpoints MUST count the number of encrypted packets for each set of packet protection keys.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+
+## REQ-QUIC-RFC9001-S6P6-0002 Stop using keys beyond the AEAD confidentiality limit
+If encrypted packet count with the same key exceeds the AEAD confidentiality limit, the endpoint MUST stop using that key.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+
+## REQ-QUIC-RFC9001-S6P6-0003 Initiate key updates before the AEAD confidentiality limit
+Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S3
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+
+## REQ-QUIC-RFC9001-S6P6-0004 Stop using the connection when key update is impossible
+If a key update is not possible or integrity limits are reached, an endpoint MUST stop using the connection.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+
+## REQ-QUIC-RFC9001-S6P6-0005 Send only stateless resets after exhausted AEAD limits
+If a key update is not possible or integrity limits are reached, an endpoint MUST send only stateless resets in response to received packets.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0003
+- Implemented By:
+  - WI-QUIC-RFC9001-0003
+- Verified By:
+  - VER-QUIC-RFC9001-0003
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
 

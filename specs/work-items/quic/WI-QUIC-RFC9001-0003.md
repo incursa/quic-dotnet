@@ -13,6 +13,35 @@ addresses:
   - "REQ-QUIC-RFC9001-S6-0006"
   - "REQ-QUIC-RFC9001-S6-0007"
   - "REQ-QUIC-RFC9001-S6-0008"
+  - "REQ-QUIC-RFC9001-S6P1-0001"
+  - "REQ-QUIC-RFC9001-S6P1-0002"
+  - "REQ-QUIC-RFC9001-S6P1-0003"
+  - "REQ-QUIC-RFC9001-S6P1-0004"
+  - "REQ-QUIC-RFC9001-S6P1-0005"
+  - "REQ-QUIC-RFC9001-S6P1-0006"
+  - "REQ-QUIC-RFC9001-S6P1-0007"
+  - "REQ-QUIC-RFC9001-S6P1-0008"
+  - "REQ-QUIC-RFC9001-S6P1-0009"
+  - "REQ-QUIC-RFC9001-S6P1-0010"
+  - "REQ-QUIC-RFC9001-S6P2-0001"
+  - "REQ-QUIC-RFC9001-S6P2-0002"
+  - "REQ-QUIC-RFC9001-S6P2-0003"
+  - "REQ-QUIC-RFC9001-S6P2-0004"
+  - "REQ-QUIC-RFC9001-S6P3-0001"
+  - "REQ-QUIC-RFC9001-S6P3-0002"
+  - "REQ-QUIC-RFC9001-S6P4-0001"
+  - "REQ-QUIC-RFC9001-S6P4-0002"
+  - "REQ-QUIC-RFC9001-S6P4-0003"
+  - "REQ-QUIC-RFC9001-S6P5-0001"
+  - "REQ-QUIC-RFC9001-S6P5-0002"
+  - "REQ-QUIC-RFC9001-S6P5-0003"
+  - "REQ-QUIC-RFC9001-S6P5-0004"
+  - "REQ-QUIC-RFC9001-S6P5-0005"
+  - "REQ-QUIC-RFC9001-S6P6-0001"
+  - "REQ-QUIC-RFC9001-S6P6-0002"
+  - "REQ-QUIC-RFC9001-S6P6-0003"
+  - "REQ-QUIC-RFC9001-S6P6-0004"
+  - "REQ-QUIC-RFC9001-S6P6-0005"
 design_links:
   - "ARC-QUIC-RFC9001-0003"
 verification_links:
@@ -41,6 +70,35 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 - REQ-QUIC-RFC9001-S6-0006
 - REQ-QUIC-RFC9001-S6-0007
 - REQ-QUIC-RFC9001-S6-0008
+- REQ-QUIC-RFC9001-S6P1-0001
+- REQ-QUIC-RFC9001-S6P1-0002
+- REQ-QUIC-RFC9001-S6P1-0003
+- REQ-QUIC-RFC9001-S6P1-0004
+- REQ-QUIC-RFC9001-S6P1-0005
+- REQ-QUIC-RFC9001-S6P1-0006
+- REQ-QUIC-RFC9001-S6P1-0007
+- REQ-QUIC-RFC9001-S6P1-0008
+- REQ-QUIC-RFC9001-S6P1-0009
+- REQ-QUIC-RFC9001-S6P1-0010
+- REQ-QUIC-RFC9001-S6P2-0001
+- REQ-QUIC-RFC9001-S6P2-0002
+- REQ-QUIC-RFC9001-S6P2-0003
+- REQ-QUIC-RFC9001-S6P2-0004
+- REQ-QUIC-RFC9001-S6P3-0001
+- REQ-QUIC-RFC9001-S6P3-0002
+- REQ-QUIC-RFC9001-S6P4-0001
+- REQ-QUIC-RFC9001-S6P4-0002
+- REQ-QUIC-RFC9001-S6P4-0003
+- REQ-QUIC-RFC9001-S6P5-0001
+- REQ-QUIC-RFC9001-S6P5-0002
+- REQ-QUIC-RFC9001-S6P5-0003
+- REQ-QUIC-RFC9001-S6P5-0004
+- REQ-QUIC-RFC9001-S6P5-0005
+- REQ-QUIC-RFC9001-S6P6-0001
+- REQ-QUIC-RFC9001-S6P6-0002
+- REQ-QUIC-RFC9001-S6P6-0003
+- REQ-QUIC-RFC9001-S6P6-0004
+- REQ-QUIC-RFC9001-S6P6-0005
 
 ## Design Inputs
 
@@ -48,10 +106,11 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 
 ## Planned Changes
 
-- Split the future implementation into an explicit 1-RTT key-update lifecycle owner with current, next, and old packet-protection epoch state.
+- Introduce a dedicated connection-owned 1-RTT key-update lifecycle owner with current, next, and old packet-protection epoch state.
 - Preserve the existing first-successor install path as a bounded prerequisite rather than widening its single-update guard in place.
-- Add repeated local-initiated and peer-initiated update handling that alternates the Key Phase bit and rejects duplicate, stale, tampered, or unauthenticated transitions without advancing state.
-- Add old 1-RTT key retention and discard rules tied to packet number, reordering, and sender/recovery cleanup instead of helper-only secret deletion.
+- Add repeated local-initiated and peer-initiated update handling that alternates the Key Phase bit, derives successor write/read material from the current epoch, and rejects duplicate, stale, tampered, packet-number-incoherent, or unauthenticated transitions without advancing state.
+- Add current-phase acknowledgment gating for repeated local updates and feed AEAD usage-limit update requests through that same gate.
+- Add old 1-RTT key retention and discard rules tied to packet number, reordering, three-PTO retention, AEAD usage, and sender/recovery cleanup instead of helper-only secret deletion.
 - Keep TLS KeyUpdate prohibition, post-handshake ticket ingestion, 0-RTT, public API promises, and interop expansion out of this RFC 9001 lifecycle slice unless separately traced.
 
 ## Out of Scope
@@ -66,7 +125,7 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 
 ## Verification Plan
 
-Before implementation, tighten the missing requirement boundary in REQUIREMENT-GAPS.md and keep ARC-QUIC-RFC9001-0003 current. The eventual executable slice must include positive tests for repeated local and peer updates, negative tests for duplicate/stale/tampered transitions and premature discard, fuzz or property coverage for Key Phase observation and epoch transition boundaries, and BenchmarkDotNet coverage for the hot successor-derivation/install/open path. The current first-update tests and QuicApplicationPacketKeyPhaseBenchmarks remain baseline evidence only.
+The executable slice must include positive tests for repeated local and peer updates, negative tests for duplicate/stale/tampered transitions, current-phase acknowledgment gating, packet-number-incoherent old-key packets, AEAD-limit-driven update requests, and premature discard, fuzz or property coverage for Key Phase observation and epoch transition boundaries, and BenchmarkDotNet coverage for the hot successor-derivation/install/open path. The current first-update tests and QuicApplicationPacketKeyPhaseBenchmarks remain baseline evidence only.
 
 ## Completion Notes
 
@@ -83,6 +142,35 @@ Addresses:
 - REQ-QUIC-RFC9001-S6-0006
 - REQ-QUIC-RFC9001-S6-0007
 - REQ-QUIC-RFC9001-S6-0008
+- REQ-QUIC-RFC9001-S6P1-0001
+- REQ-QUIC-RFC9001-S6P1-0002
+- REQ-QUIC-RFC9001-S6P1-0003
+- REQ-QUIC-RFC9001-S6P1-0004
+- REQ-QUIC-RFC9001-S6P1-0005
+- REQ-QUIC-RFC9001-S6P1-0006
+- REQ-QUIC-RFC9001-S6P1-0007
+- REQ-QUIC-RFC9001-S6P1-0008
+- REQ-QUIC-RFC9001-S6P1-0009
+- REQ-QUIC-RFC9001-S6P1-0010
+- REQ-QUIC-RFC9001-S6P2-0001
+- REQ-QUIC-RFC9001-S6P2-0002
+- REQ-QUIC-RFC9001-S6P2-0003
+- REQ-QUIC-RFC9001-S6P2-0004
+- REQ-QUIC-RFC9001-S6P3-0001
+- REQ-QUIC-RFC9001-S6P3-0002
+- REQ-QUIC-RFC9001-S6P4-0001
+- REQ-QUIC-RFC9001-S6P4-0002
+- REQ-QUIC-RFC9001-S6P4-0003
+- REQ-QUIC-RFC9001-S6P5-0001
+- REQ-QUIC-RFC9001-S6P5-0002
+- REQ-QUIC-RFC9001-S6P5-0003
+- REQ-QUIC-RFC9001-S6P5-0004
+- REQ-QUIC-RFC9001-S6P5-0005
+- REQ-QUIC-RFC9001-S6P6-0001
+- REQ-QUIC-RFC9001-S6P6-0002
+- REQ-QUIC-RFC9001-S6P6-0003
+- REQ-QUIC-RFC9001-S6P6-0004
+- REQ-QUIC-RFC9001-S6P6-0005
 
 Uses Design:
 
@@ -94,7 +182,7 @@ Verified By:
 
 ## Current Boundary
 
-The current runtime can prove the first 0-to-1 successor install and rejection of duplicate same-phase installs. Repeated key-update cycles and old 1-RTT key discard remain planned until the gap ledger and lifecycle design are stable.
+The current runtime can prove the first 0-to-1 successor install and rejection of duplicate same-phase installs. Repeated key-update cycles, current-phase acknowledgment gating, AEAD-limit update requests, and old 1-RTT key discard remain planned until the lifecycle owner is implemented and proven.
 
 ## Related Code And Tests
 

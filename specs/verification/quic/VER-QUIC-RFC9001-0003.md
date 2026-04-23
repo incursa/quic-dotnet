@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the future repeated 1-RTT key-update lifecycle for RFC 9001 Section 6, including local and peer initiated updates, repeated Key Phase alternation, successor packet opening, duplicate and tampered transition rejection, old-key retention, and old-key discard synchronized with sender/recovery state. The current artifact does not claim that broader lifecycle is implemented.
+Verify the future repeated 1-RTT key-update lifecycle for RFC 9001 Section 6 and Sections 6.1 through 6.6, including local and peer initiated updates, repeated Key Phase alternation, successor packet opening, duplicate and tampered transition rejection, current-phase acknowledgment gating, AEAD usage-limit update requests, old-key retention, and old-key discard synchronized with sender/recovery state. The current artifact does not claim that broader lifecycle is implemented.
 
 ## Requirements Verified
 
@@ -15,6 +15,35 @@ Verify the future repeated 1-RTT key-update lifecycle for RFC 9001 Section 6, in
 - REQ-QUIC-RFC9001-S6-0006
 - REQ-QUIC-RFC9001-S6-0007
 - REQ-QUIC-RFC9001-S6-0008
+- REQ-QUIC-RFC9001-S6P1-0001
+- REQ-QUIC-RFC9001-S6P1-0002
+- REQ-QUIC-RFC9001-S6P1-0003
+- REQ-QUIC-RFC9001-S6P1-0004
+- REQ-QUIC-RFC9001-S6P1-0005
+- REQ-QUIC-RFC9001-S6P1-0006
+- REQ-QUIC-RFC9001-S6P1-0007
+- REQ-QUIC-RFC9001-S6P1-0008
+- REQ-QUIC-RFC9001-S6P1-0009
+- REQ-QUIC-RFC9001-S6P1-0010
+- REQ-QUIC-RFC9001-S6P2-0001
+- REQ-QUIC-RFC9001-S6P2-0002
+- REQ-QUIC-RFC9001-S6P2-0003
+- REQ-QUIC-RFC9001-S6P2-0004
+- REQ-QUIC-RFC9001-S6P3-0001
+- REQ-QUIC-RFC9001-S6P3-0002
+- REQ-QUIC-RFC9001-S6P4-0001
+- REQ-QUIC-RFC9001-S6P4-0002
+- REQ-QUIC-RFC9001-S6P4-0003
+- REQ-QUIC-RFC9001-S6P5-0001
+- REQ-QUIC-RFC9001-S6P5-0002
+- REQ-QUIC-RFC9001-S6P5-0003
+- REQ-QUIC-RFC9001-S6P5-0004
+- REQ-QUIC-RFC9001-S6P5-0005
+- REQ-QUIC-RFC9001-S6P6-0001
+- REQ-QUIC-RFC9001-S6P6-0002
+- REQ-QUIC-RFC9001-S6P6-0003
+- REQ-QUIC-RFC9001-S6P6-0004
+- REQ-QUIC-RFC9001-S6P6-0005
 
 ## Verification Method
 
@@ -22,22 +51,24 @@ Planned requirement-home execution, negative transition tests, fuzz or property 
 
 ## Preconditions
 
-- REQ-QUIC-RFC9001-S6-0001 through REQ-QUIC-RFC9001-S6-0008 remain the owning RFC 9001 Section 6 requirements for QUIC Key Phase updates.
+- REQ-QUIC-RFC9001-S6-0001 through REQ-QUIC-RFC9001-S6-0008 remain the baseline RFC 9001 Section 6 requirements for QUIC Key Phase updates.
+- REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P6-0005 define the promoted lifecycle, retention, ordering, and AEAD-limit policy boundary for implementation.
 - REQ-QUIC-CRT-0145 remains the implemented first-successor install prerequisite.
-- The 9001-06-1rtt-key-update-lifecycle gap remains open until the repeated lifecycle and old-key discard requirements are stable.
+- The 9001-06-1rtt-key-update-lifecycle gap remains open until the repeated lifecycle and old-key discard requirements are implemented and proven.
 
 ## Procedure or Approach
 
 - Run the existing first-successor RFC 9001 Section 6 requirement-home tests as a regression baseline.
 - Add and run positive tests for repeated local-initiated and peer-initiated key updates that alternate the Key Phase bit across more than one epoch.
-- Add and run negative tests for duplicate same-phase packets, stale older-epoch packets, tampered successor packets, premature old-key discard, and authentication failure rollback.
+- Add and run negative tests for duplicate same-phase packets, stale older-epoch packets, tampered successor packets, packet-number-incoherent old-key packets, unacknowledged repeated local updates, premature old-key discard, and authentication failure rollback.
+- Add and run tests that prove AEAD usage-limit counters request a local update through the same acknowledgment-gated lifecycle and enter the terminal stateless-reset-only boundary when key update is impossible or integrity limits are reached.
 - Add fuzz or property coverage for Key Phase observation and packet-protection epoch transition boundaries.
 - Run a permanent BenchmarkDotNet suite for successor derivation, epoch install, protected packet formatting, and opening in the repeated lifecycle path.
 - Render SpecTrace Markdown from JSON and run the repo-local trace validation checks available for the touched artifacts.
 
 ## Expected Result
 
-The eventual lifecycle proof shows that endpoints can repeatedly update 1-RTT packet-protection keys after handshake confirmation, use the Key Phase bit to identify and detect the active epoch, decrypt packets that carry a changed Key Phase, keep both endpoints synchronized, retain old keys long enough for safe reordering, and discard old 1-RTT material only with sender/recovery cleanup. Until then, this verification remains planned and the repository only claims the bounded first-successor floor.
+The eventual lifecycle proof shows that endpoints can repeatedly update 1-RTT packet-protection keys after handshake confirmation, use the Key Phase bit to identify and detect the active epoch, decrypt packets that carry a changed Key Phase, keep both endpoints synchronized, gate local repeated updates on current-phase acknowledgment, handle AEAD usage limits without bypassing that gate, retain old keys long enough for safe reordering, reject packet-number-incoherent old-key packets where required, and discard old 1-RTT material only with sender/recovery cleanup. Until then, this verification remains planned and the repository only claims the bounded first-successor floor.
 
 ## Evidence
 
@@ -55,7 +86,7 @@ The eventual lifecycle proof shows that endpoints can repeatedly update 1-RTT pa
 
 ## Status
 
-Planned only. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. Repeated 1-RTT key-update cycles and old 1-RTT key discard remain open under the gap ledger.
+Planned only. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. Repeated 1-RTT key-update cycles, AEAD-limit-triggered updates, and old 1-RTT key discard remain open under the gap ledger.
 
 ## Related Artifacts
 
@@ -70,4 +101,4 @@ Planned only. On 2026-04-23, the existing first-successor Section 6 regression g
 
 - Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, and duplicate same-phase rejection.
 - Current benchmarks cover the first-successor install and protected packet formatting/opening path.
-- No evidence in this artifact claims repeated key-update cycles, old 1-RTT key retention, or old 1-RTT key discard.
+- No evidence in this artifact claims repeated key-update cycles, current-phase acknowledgment gating, AEAD-limit-triggered local updates, old 1-RTT key retention across multiple epochs, or old 1-RTT key discard.

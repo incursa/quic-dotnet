@@ -22,12 +22,6 @@
       "id": "REQ-QUIC-RFC9001-S2-0001",
       "title": "Interpret uppercase BCP 14 keywords",
       "statement": "Uppercase BCP 14 keywords in this document MUST be interpreted as described in RFC 2119 and RFC 8174 when they appear in all capitals.",
-      "coverage": {
-        "positive": "required",
-        "negative": "not_applicable",
-        "edge": "not_applicable",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -54,12 +48,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0001",
       "title": "Assume packet confidentiality",
       "statement": "QUIC MUST assume responsibility for the confidentiality and integrity protection of packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -83,12 +71,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0002",
       "title": "Derive packet keys from TLS handshake",
       "statement": "QUIC MUST use keys derived from a TLS handshake.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -112,12 +94,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0003",
       "title": "Carry handshake and alert messages directly",
       "statement": "TLS handshake and alert messages MUST be carried directly over the QUIC transport.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0002"
@@ -141,12 +117,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0004",
       "title": "Replace the TLS record layer",
       "statement": "QUIC transport MUST take over the responsibilities of the TLS record layer.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0002"
@@ -170,12 +140,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0005",
       "title": "Rely on TLS for security-critical functions",
       "statement": "QUIC MUST rely on TLS for authentication and negotiation of parameters that are critical to security and performance.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0002"
@@ -199,12 +163,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0006",
       "title": "Use the TLS handshake",
       "statement": "QUIC MUST use the TLS handshake.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -228,12 +186,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0007",
       "title": "Use QUIC-provided delivery services",
       "statement": "TLS MUST use the reliability, ordered delivery, and record layer provided by QUIC.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -257,12 +209,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0008",
       "title": "Send TLS messages via QUIC",
       "statement": "The TLS component MUST send and receive messages via the QUIC component.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -286,12 +232,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0009",
       "title": "Provide a reliable stream abstraction",
       "statement": "QUIC MUST provide a reliable stream abstraction to TLS.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -315,12 +255,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0010",
       "title": "Provide TLS updates to QUIC",
       "statement": "The TLS component MUST provide a series of updates to the QUIC component.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -344,12 +278,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0011",
       "title": "Do not use TLS Application Data records",
       "statement": "QUIC applications that want to send data MUST NOT send it using TLS Application Data records.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -373,12 +301,6 @@
       "id": "REQ-QUIC-RFC9001-S3-0012",
       "title": "Send data as QUIC frames",
       "statement": "QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -406,12 +328,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0001",
       "title": "Carry handshake data in CRYPTO frames",
       "statement": "QUIC MUST carry TLS handshake data in CRYPTO frames.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -435,12 +351,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0002",
       "title": "Define CRYPTO frame boundaries",
       "statement": "Each CRYPTO frame MUST consist of a contiguous block of handshake data identified by an offset and length.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -466,12 +376,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0003",
       "title": "Package and encrypt CRYPTO frames",
       "statement": "Those frames MUST be packaged into QUIC packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -492,12 +396,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0004",
       "title": "Package and encrypt CRYPTO frames",
       "statement": "Those frames MUST be encrypted under the current encryption level.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -518,12 +416,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0005",
       "title": "Deliver handshake data reliably",
       "statement": "Once TLS handshake data has been delivered to QUIC, QUIC MUST deliver it reliably.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -544,12 +436,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0006",
       "title": "Associate TLS-produced chunks with current keys",
       "statement": "Each chunk of data that is produced by TLS MUST be associated with the set of keys that TLS is currently using.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -574,12 +460,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0007",
       "title": "Retransmit with the same keys",
       "statement": "If QUIC needs to retransmit that data, it MUST use the same keys even if TLS has already updated to newer keys.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -603,12 +483,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0008",
       "title": "Map encryption levels to packet number spaces",
       "statement": "Each encryption level MUST correspond to a packet number space.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -629,12 +503,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0009",
       "title": "Let packet number space determine frame semantics",
       "statement": "The packet number space that is used MUST determine the semantics of frames.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -655,12 +523,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0010",
       "title": "Indicate packet keys via packet type",
       "statement": "QUIC MUST use the packet type to indicate which keys were used to protect a given packet.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -681,12 +543,6 @@
       "id": "REQ-QUIC-RFC9001-S4-0011",
       "title": "Prefer coalesced packets",
       "statement": "When packets of different types need to be sent, endpoints SHOULD use coalesced packets to send them in the same UDP datagram.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -707,12 +563,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0001",
       "title": "Protect packets with TLS-derived keys",
       "statement": "QUIC MUST protect packets with keys derived from the TLS handshake.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -737,12 +587,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0002",
       "title": "Use the TLS-negotiated AEAD",
       "statement": "QUIC MUST use the AEAD algorithm negotiated by TLS.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -767,12 +611,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0003",
       "title": "Leave Version Negotiation packets unprotected",
       "statement": "Version Negotiation packets MUST NOT have cryptographic protection.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -796,12 +634,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0004",
       "title": "Protect Retry packets with AEAD_AES_128_GCM",
       "statement": "Retry packets MUST use AEAD_AES_128_GCM to provide protection against accidental modification and limit the entities that can produce a valid Retry.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -830,12 +662,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0005",
       "title": "Use AEAD_AES_128_GCM for Initial packets",
       "statement": "Initial packets MUST use AEAD_AES_128_GCM.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -859,12 +685,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0006",
       "title": "Derive Initial keys from the active client Initial destination connection ID",
       "statement": "Initial packet keys MUST be derived from the client Initial Destination Connection ID that is active for the current attempt: the first client Initial Destination Connection ID before Retry, and the server-selected Destination Connection ID after Retry.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -895,12 +715,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0007",
       "title": "Protect all other packets cryptographically",
       "statement": "All other packets MUST have strong cryptographic protections for confidentiality and integrity using keys and algorithms negotiated by TLS.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -929,12 +743,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0008",
       "title": "Apply the same protection process to Initial packets",
       "statement": "The same packet protection process MUST be applied to Initial packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -960,12 +768,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0009",
       "title": "Treat Initial packets as lacking confidentiality and integrity protection",
       "statement": "Initial packets MUST NOT be considered to have confidentiality or integrity protection.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -990,12 +792,6 @@
       "id": "REQ-QUIC-RFC9001-S5-0010",
       "title": "Use a fixed key for Retry packets",
       "statement": "Retry packets MUST use a fixed key.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1019,12 +815,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0001",
       "title": "Allow key update after handshake confirmation",
       "statement": "Once the handshake is confirmed, an endpoint MAY initiate a key update.",
-      "coverage": {
-        "positive": "optional",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1051,12 +841,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0002",
       "title": "Identify packet protection keys with Key Phase",
       "statement": "The Key Phase bit MUST indicate which packet protection keys are used to protect the packet.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1083,12 +867,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0003",
       "title": "Initialize Key Phase to zero",
       "statement": "The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1114,12 +892,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0004",
       "title": "Toggle Key Phase on each update",
       "statement": "The Key Phase bit MUST be toggled to signal each subsequent key update.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1147,12 +919,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0005",
       "title": "Let Key Phase detect key changes",
       "statement": "The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.",
-      "coverage": {
-        "positive": "optional",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1181,12 +947,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0006",
       "title": "Update keys when Key Phase changes",
       "statement": "An endpoint that notices a changed Key Phase bit MUST update keys.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1214,12 +974,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0007",
       "title": "Decrypt the packet with the changed Key Phase",
       "statement": "An endpoint that notices a changed Key Phase bit MUST decrypt the packet that contains the changed value.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1247,12 +1001,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0008",
       "title": "Update both endpoints on key update",
       "statement": "Initiating a key update MUST result in both endpoints updating keys.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001",
@@ -1281,12 +1029,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0009",
       "title": "Prohibit TLS KeyUpdate messages",
       "statement": "Endpoints MUST NOT send a TLS KeyUpdate message.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
         "trace": {
           "satisfied_by": [
             "ARC-QUIC-RFC9001-0002"
@@ -1311,12 +1053,6 @@
       "id": "REQ-QUIC-RFC9001-S6-0010",
       "title": "Treat TLS KeyUpdate as a connection error",
       "statement": "Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
         "trace": {
           "satisfied_by": [
             "ARC-QUIC-RFC9001-0002"
@@ -1340,15 +1076,594 @@
         }
       },
     {
+      "id": "REQ-QUIC-RFC9001-S6P1-0001",
+      "title": "Initiate key updates with successor write secrets",
+      "statement": "An endpoint MUST initiate a key update by updating its packet protection write secret and using that secret to protect new packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "This requirement promotes the initiation step needed for repeated 1-RTT key-update epochs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0002",
+      "title": "Keep header protection stable across key updates",
+      "statement": "Key updates MUST NOT update the header protection key.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S6",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0003",
+      "title": "Use updated keys for subsequent packets",
+      "statement": "After initiating a key update, an endpoint MUST toggle the Key Phase bit and protect all subsequent packets with the updated key and IV.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B5-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0004",
+      "title": "Forbid local key updates before handshake confirmation",
+      "statement": "An endpoint MUST NOT initiate a key update before confirming the handshake.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0005",
+      "title": "Gate repeated local updates on current-phase acknowledgment",
+      "statement": "An endpoint MUST NOT initiate another key update until it has received an acknowledgment for a packet protected with keys from the current key phase.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0006",
+      "title": "Update receive keys when initiating a key update",
+      "statement": "The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B7-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0007",
+      "title": "Retain old keys until new-key packet authentication succeeds",
+      "statement": "An endpoint MUST retain old keys until it has successfully unprotected a packet sent with the new keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0008",
+      "title": "Retain old keys after new-key packet authentication",
+      "statement": "An endpoint SHOULD retain old keys for some time after it successfully unprotects a packet sent with the new keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B8-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0009",
+      "title": "Derive next write secrets with the QUIC key-update label",
+      "statement": "An endpoint MUST derive the next write secret from the current write secret using the TLS-provided KDF and the label \"quic ku\".",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S3",
+          "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P1-0010",
+      "title": "Derive updated packet keys and IVs from updated secrets",
+      "statement": "An endpoint MUST derive the updated packet protection key and IV from the updated secret as defined for QUIC packet protection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P2-0001",
+      "title": "Test apparent peer updates with next keys",
+      "statement": "To process a packet that appears to signal a key update, an endpoint MUST use the next packet protection key and IV.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.2 RFC9001-S6.2-B2-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P2-0002",
+      "title": "Update send keys after peer-initiated key updates",
+      "statement": "If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S2",
+          "RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P2-0003",
+      "title": "Allow KEY_UPDATE_ERROR for unconfirmed consecutive peer updates",
+      "statement": "An endpoint MAY treat consecutive peer key updates that occur before confirmation of the prior update as a connection error of type KEY_UPDATE_ERROR.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.2 RFC9001-S6.2-B4-P3-S5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P2-0004",
+      "title": "Allow KEY_UPDATE_ERROR for old-key ACKs of newer-key packets",
+      "statement": "An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P3-0001",
+      "title": "Avoid timing signals for invalid Key Phase bits",
+      "statement": "Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.3 RFC9001-S6.3-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P3-0002",
+      "title": "Retain current and next receive keys",
+      "statement": "Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.3 RFC9001-S6.3-B6-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P4-0001",
+      "title": "Never send packets with old keys",
+      "statement": "An endpoint MUST NOT send packets protected with old keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.4 RFC9001-S6.4-B2-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P4-0002",
+      "title": "Protect higher packet numbers with same or newer keys",
+      "statement": "Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P4-0003",
+      "title": "Reject old-key packets that violate packet-number ordering",
+      "statement": "If an endpoint successfully removes protection with old keys after newer keys were used for lower packet numbers, it MUST treat that condition as a connection error of type KEY_UPDATE_ERROR.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.4 RFC9001-S6.4-B3-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0001",
+      "title": "Use previous keys for lower recovered packet numbers",
+      "statement": "When selecting receive keys across phases, a recovered packet number lower than any packet number from the current key phase MUST use the previous packet protection keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0002",
+      "title": "Use next keys for higher recovered packet numbers",
+      "statement": "When selecting receive keys across phases, a recovered packet number higher than any packet number from the current key phase MUST use the next packet protection keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5 RFC9001-S6.5-B3-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0003",
+      "title": "Wait before initiating another key update after confirmation",
+      "statement": "Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5 RFC9001-S6.5-B7-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0004",
+      "title": "Limit old read key retention to three PTOs",
+      "statement": "An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0005",
+      "title": "Discard old read keys after retention expires",
+      "statement": "After the old-read-key retention window expires, an endpoint SHOULD discard the old read keys and their corresponding secrets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0001",
+      "title": "Count encrypted packets per key set",
+      "statement": "Endpoints MUST count the number of encrypted packets for each set of packet protection keys.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0002",
+      "title": "Stop using keys beyond the AEAD confidentiality limit",
+      "statement": "If encrypted packet count with the same key exceeds the AEAD confidentiality limit, the endpoint MUST stop using that key.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0003",
+      "title": "Initiate key updates before the AEAD confidentiality limit",
+      "statement": "Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0004",
+      "title": "Stop using the connection when key update is impossible",
+      "statement": "If a key update is not possible or integrity limits are reached, an endpoint MUST stop using the connection.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0005",
+      "title": "Send only stateless resets after exhausted AEAD limits",
+      "statement": "If a key update is not possible or integrity limits are reached, an endpoint MUST send only stateless resets in response to received packets.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0003"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ]
+      }
+    },
+    {
       "id": "REQ-QUIC-RFC9001-S7-0001",
       "title": "Use caution with unauthenticated Initial data",
       "statement": "Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1369,12 +1684,6 @@
       "id": "REQ-QUIC-RFC9001-S7-0002",
       "title": "Fail on Handshake tampering",
       "statement": "Any tampering with data carried in Handshake packets that requires modifying TLS handshake messages MUST cause the TLS handshake to fail.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1398,12 +1707,6 @@
       "id": "REQ-QUIC-RFC9001-S8-0001",
       "title": "Carry QUIC transport parameters",
       "statement": "The TLS handshake MUST carry values for QUIC transport parameters.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1424,12 +1727,6 @@
       "id": "REQ-QUIC-RFC9001-S8-0002",
       "title": "Authenticate QUIC transport parameters",
       "statement": "The TLS handshake MUST authenticate values for QUIC transport parameters.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1450,12 +1747,6 @@
       "id": "REQ-QUIC-RFC9001-S9-0001",
       "title": "Apply TLS security considerations to QUIC",
       "statement": "All security considerations that apply to TLS MUST also apply to the use of TLS in QUIC.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1479,12 +1770,6 @@
       "id": "REQ-QUIC-RFC9001-S10-0001",
       "title": "Register quic_transport_parameters at codepoint 57",
       "statement": "IANA MUST register codepoint 57 (0x39) for the quic_transport_parameters extension in the TLS ExtensionType Values registry.",
-      "coverage": {
-        "positive": "required",
-        "negative": "not_applicable",
-        "edge": "not_applicable",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1511,12 +1796,6 @@
       "id": "REQ-QUIC-RFC9001-S10-0002",
       "title": "Mark Recommended as Yes",
       "statement": "The Recommended column for the quic_transport_parameters extension MUST be marked Yes.",
-      "coverage": {
-        "positive": "required",
-        "negative": "not_applicable",
-        "edge": "not_applicable",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1540,12 +1819,6 @@
       "id": "REQ-QUIC-RFC9001-S10-0003",
       "title": "Include CH and EE in TLS 1.3 column",
       "statement": "The TLS 1.3 column for the quic_transport_parameters extension MUST include CH (ClientHello) and EE (EncryptedExtensions).",
-      "coverage": {
-        "positive": "required",
-        "negative": "not_applicable",
-        "edge": "not_applicable",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1569,12 +1842,6 @@
       "id": "REQ-QUIC-RFC9001-SB-0001",
       "title": "Restrict larger packet-size-derived limits",
       "statement": "Only endpoints that strictly limit packet size MAY use the larger confidentiality and integrity limits derived using the smaller packet size.",
-      "coverage": {
-        "positive": "optional",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1600,12 +1867,6 @@
       "id": "REQ-QUIC-RFC9001-SB-0002",
       "title": "Require AEAD usage limits",
       "statement": "Any AEAD that is used with QUIC MUST have limits on use that ensure that both confidentiality and integrity are preserved.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1630,12 +1891,6 @@
       "id": "REQ-QUIC-RFC9001-SBP1P1-0001",
       "title": "Limit GCM confidentiality at 2^11 bytes",
       "statement": "Endpoints that do not send packets larger than 2^11 bytes MUST NOT protect more than 2^28 packets in a single connection.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1661,12 +1916,6 @@
       "id": "REQ-QUIC-RFC9001-SBP1P1-0002",
       "title": "Limit GCM confidentiality at 2^16 bytes",
       "statement": "Endpoints that allow packets as large as 2^16 bytes MUST NOT protect more than 2^23 packets in a single connection.",
-      "coverage": {
-        "positive": "optional",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1692,12 +1941,6 @@
       "id": "REQ-QUIC-RFC9001-SBP1P2-0001",
       "title": "Limit GCM integrity at 2^11 bytes",
       "statement": "Endpoints that do not attempt to remove protection from packets larger than 2^11 bytes MUST NOT attempt to remove protection from more than 2^57 packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1723,12 +1966,6 @@
       "id": "REQ-QUIC-RFC9001-SBP1P2-0002",
       "title": "Limit GCM integrity at unrestricted size",
       "statement": "Endpoints that do not restrict the size of processed packets MUST NOT attempt to remove protection from more than 2^52 packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1753,12 +1990,6 @@
       "id": "REQ-QUIC-RFC9001-SBP1P2-0003",
       "title": "Apply one GCM integrity limit to both functions",
       "statement": "The same integrity limit SHOULD be applied to AEAD_AES_128_GCM and AEAD_AES_256_GCM.",
-      "coverage": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "not_applicable"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1782,12 +2013,6 @@
       "id": "REQ-QUIC-RFC9001-SBP2-0001",
       "title": "Limit CCM at 2^11 bytes",
       "statement": "Endpoints that limit packets to 2^11 bytes MUST have both confidentiality and integrity limits of 2^26.5 packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
@@ -1813,12 +2038,6 @@
       "id": "REQ-QUIC-RFC9001-SBP2-0002",
       "title": "Limit CCM at unrestricted packet size",
       "statement": "Endpoints that do not restrict packet size MUST have a limit of 2^21.5 packets.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "required",
-        "fuzz": "deferred"
-      },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9001-0001"
