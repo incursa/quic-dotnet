@@ -23336,17 +23336,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0006"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0006"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0006"
         ],
         "upstream_refs": [
           "RFC 9000 §14.3 RFC9000-S14.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeAcknowledged_RaisesTheDplpmtudMaximumPacketSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeLost_TracksLossWithoutRaisingTheMaximumPacketSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeAcknowledged_IgnoresUntrackedPacketNumbers"
         ]
       }
     },
@@ -23362,17 +23370,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0006"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0006"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0006"
         ],
         "upstream_refs": [
           "RFC 9000 §14.3 RFC9000-S14.3-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_ComputesPaddingDataForTheTargetProbeSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_RejectsPurePaddingWithoutAckElicitingPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_RejectsTargetsThatLeaveNoPaddingData"
         ]
       }
     },
@@ -23388,17 +23404,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0006"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0006"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0006"
         ],
         "upstream_refs": [
           "RFC 9000 §14.3 RFC9000-S14.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::InitialPathStateUsesTheQuicMinimumAsBasePlpmtu",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::ConstructorRejectsABasePlpmtuBelowTheQuicMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::ConstructorRejectsABasePlpmtuAboveTheQuicMinimum"
         ]
       }
     },
@@ -23414,17 +23438,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0006"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0006"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0006"
         ],
         "upstream_refs": [
           "RFC 9000 §14.3 RFC9000-S14.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::AcknowledgedProbeUpdatesOnlyTheMatchingAddressPairMaximumPacketSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::ProbeOutcomeOnOneAddressPairDoesNotMatchAnotherAddressPair",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::TryTrackProbe_RejectsProbeSizesThatDoNotExceedTheCurrentPathMaximumPacketSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::FuzzProbeOutcomesRemainIsolatedPerAddressPair"
         ]
       }
     },

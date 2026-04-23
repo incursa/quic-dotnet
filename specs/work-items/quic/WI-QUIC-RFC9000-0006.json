@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0006",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 DPLPMTUD Probe Tracking Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0006",
+    "VER-QUIC-RFC9000-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S14P3-0001",
+    "REQ-QUIC-RFC9000-S14P3-0002",
+    "REQ-QUIC-RFC9000-S14P3-0003",
+    "REQ-QUIC-RFC9000-S14P3-0004"
+  ],
+  "summary": "Close the helper-backed RFC 9000 Section 14.3 DPLPMTUD subset by adding internal per-path probe tracking, PADDING probe sizing, BASE_PLPMTU initialization, and per-address-pair MPS isolation.",
+  "planned_changes": "- Add an internal DPLPMTUD state helper keyed by connection path identity.\n- Track PMTU probe packet numbers until acknowledgment or loss.\n- Promote per-path MPS only on acknowledged probes and keep losses non-promoting.\n- Compute PADDING bytes for padding-based probes while requiring ack-eliciting payload bytes.\n- Replace empty S14P3 requirement homes with positive, negative, edge, and fuzz coverage.\n- Add a permanent BenchmarkDotNet suite for the helper's hot paths.",
+  "verification_plan": "Run the focused S14P3 requirement-home tests, run the DPLPMTUD BenchmarkDotNet suite with Dry first, render/check the touched SpecTrace artifacts, and keep the verification scope limited to the internal helper-backed subset.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0006"
+  ],
+  "out_of_scope": [
+    "Automatic PMTU probe scheduling.",
+    "Packet-builder or UDP socket integration.",
+    "Operating-system ICMP ingress.",
+    "Alternative-path search.",
+    "Public API support claims."
+  ],
+  "completion_notes": "Implemented the internal DPLPMTUD state helper, replaced the four S14P3 placeholder requirement homes with executable proof coverage, and added a permanent BenchmarkDotNet suite for probe tracking and outcome processing."
+}

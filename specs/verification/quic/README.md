@@ -27,6 +27,8 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0002.json`](VER-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission verification source
 - [`VER-QUIC-RFC9000-0003.json`](VER-QUIC-RFC9000-0003.json): canonical RFC 9000 multi-version stateless reset generation verification source
 - [`VER-QUIC-RFC9000-0004.json`](VER-QUIC-RFC9000-0004.json): canonical RFC 9000 PMTU discovery path-state verification source
+- [`VER-QUIC-RFC9000-0005.json`](VER-QUIC-RFC9000-0005.json): canonical RFC 9000 migration path probing and recovery reset verification source
+- [`VER-QUIC-RFC9000-0006.json`](VER-QUIC-RFC9000-0006.json): canonical RFC 9000 DPLPMTUD probe-tracking verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9002-0001.json`](VER-QUIC-RFC9002-0001.json): canonical RFC 9002 verification source

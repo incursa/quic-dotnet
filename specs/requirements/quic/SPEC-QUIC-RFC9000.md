@@ -12904,13 +12904,20 @@ DPLPMTUD [DPLPMTUD] relies on tracking loss or acknowledgment of QUIC packets th
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0006
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0006
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0006
 - Source Refs:
   - RFC 9000 §14.3 RFC9000-S14.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeAcknowledged_RaisesTheDplpmtudMaximumPacketSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeLost_TracksLossWithoutRaisingTheMaximumPacketSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs::TryRegisterProbeAcknowledged_IgnoresUntrackedPacketNumbers
 
 ## REQ-QUIC-RFC9000-S14P3-0002 PMTU probes for DPLPMTUD that use the PADDING frame implement "Probing using padding data", as defined in Section 4
 PMTU probes for DPLPMTUD MUST that use the PADDING frame implement "Probing using padding data", as defined in Section 4.1 of [DPLPMTUD].
@@ -12918,13 +12925,20 @@ PMTU probes for DPLPMTUD MUST that use the PADDING frame implement "Probing usin
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0006
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0006
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0006
 - Source Refs:
   - RFC 9000 §14.3 RFC9000-S14.3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_ComputesPaddingDataForTheTargetProbeSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_RejectsPurePaddingWithoutAckElicitingPayload
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs::TryTrackPaddingProbe_RejectsTargetsThatLeaveNoPaddingData
 
 ## REQ-QUIC-RFC9000-S14P3-0003 Set BASE_PLPMTU consistently with QUIC's minimum
 Endpoints SHOULD set the initial value of BASE_PLPMTU to be consistent with QUIC's smallest allowed maximum datagram size.
@@ -12932,13 +12946,20 @@ Endpoints SHOULD set the initial value of BASE_PLPMTU to be consistent with QUIC
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0006
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0006
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0006
 - Source Refs:
   - RFC 9000 §14.3 RFC9000-S14.3-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::InitialPathStateUsesTheQuicMinimumAsBasePlpmtu
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::ConstructorRejectsABasePlpmtuBelowTheQuicMinimum
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs::ConstructorRejectsABasePlpmtuAboveTheQuicMinimum
 
 ## REQ-QUIC-RFC9000-S14P3-0004 Maintain an MPS per address pair when using DPLPMTUD
 QUIC endpoints implementing DPLPMTUD MUST maintain a DPLPMTUD Maximum Packet Size for each combination of local and remote IP addresses.
@@ -12946,13 +12967,21 @@ QUIC endpoints implementing DPLPMTUD MUST maintain a DPLPMTUD Maximum Packet Siz
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0006
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0006
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0006
 - Source Refs:
   - RFC 9000 §14.3 RFC9000-S14.3-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-14.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::AcknowledgedProbeUpdatesOnlyTheMatchingAddressPairMaximumPacketSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::ProbeOutcomeOnOneAddressPairDoesNotMatchAnotherAddressPair
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::TryTrackProbe_RejectsProbeSizesThatDoNotExceedTheCurrentPathMaximumPacketSize
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs::FuzzProbeOutcomesRemainIsolatedPerAddressPair
 
 ## REQ-QUIC-RFC9000-S14P4-0001 Make PMTU probes ack-eliciting
 PMTU probes MUST be ack-eliciting packets.

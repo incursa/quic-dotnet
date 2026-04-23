@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 DPLPMTUD Probe Tracking Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded helper that tracks DPLPMTUD PMTU probes, BASE_PLPMTU, and per-address-pair maximum packet size without claiming a full probe scheduler, socket-level ICMP ingestion, or public API support.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0006",
+    "VER-QUIC-RFC9000-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S14P3-0001",
+    "REQ-QUIC-RFC9000-S14P3-0002",
+    "REQ-QUIC-RFC9000-S14P3-0003",
+    "REQ-QUIC-RFC9000-S14P3-0004"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicDplpmtudState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs",
+    "benchmarks/QuicDplpmtudStateBenchmarks.cs"
+  ],
+  "design_summary": "The DPLPMTUD helper owns a per-address-pair state map keyed by the connection path identity. Each path starts with BASE_PLPMTU equal to QUIC v1's 1200-byte minimum and a matching DPLPMTUD Maximum Packet Size. Probe packet numbers are tracked as outstanding PMTU probes, acknowledgments promote the path's MPS to the acknowledged probe size, losses record the outcome without promoting MPS, and padding-based probes compute the PADDING contribution needed to reach the target probe size while requiring an ack-eliciting payload.",
+  "data_and_state_considerations": "State is intentionally internal and in-memory. It is scoped to runtime path identities, uses packet numbers only for outstanding probe matching, and does not persist across connection instances.",
+  "edge_cases_and_constraints": [
+    "BASE_PLPMTU is fixed to the QUIC v1 minimum; alternate base values are rejected.",
+    "Probe sizes must exceed the current per-path MPS before they are tracked.",
+    "Probe outcomes are matched by both address pair and packet number.",
+    "A padding probe must leave nonzero PADDING bytes and must include nonzero ack-eliciting payload bytes."
+  ],
+  "risks": [
+    "The helper does not generate probe packets or schedule probe cadence; future sender integration must wire those decisions explicitly.",
+    "The helper does not ingest ICMP from the operating system and does not replace the existing validated ICMP reduction seam.",
+    "The helper is not a public API and must not be used to claim broader PMTU product support."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the helper-backed DPLPMTUD subset for RFC 9000 Section 14.3: probe tracking, acknowledgment/loss outcome processing, BASE_PLPMTU initialization, PADDING-based probe sizing, and per-address-pair MPS isolation. It does not claim automatic PMTU probe scheduling, packet-builder integration, OS ICMP socket integration, or alternative-path search."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicDplpmtudState.cs`](../../../src/Incursa.Quic/QuicDplpmtudState.cs)\n- [`REQ-QUIC-RFC9000-S14P3-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs)\n- [`REQ-QUIC-RFC9000-S14P3-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs)\n- [`REQ-QUIC-RFC9000-S14P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs)\n- [`REQ-QUIC-RFC9000-S14P3-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs)\n- [`QuicDplpmtudStateBenchmarks.cs`](../../../benchmarks/QuicDplpmtudStateBenchmarks.cs)"
+    }
+  ]
+}
