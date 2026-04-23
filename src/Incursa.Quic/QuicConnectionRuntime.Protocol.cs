@@ -918,9 +918,18 @@ internal sealed partial class QuicConnectionRuntime
             out bool keyPhase))
         {
             // The first observed phase-1 packet may already require successor keys.
-            if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+            if (!tlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
                     out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+                    out bool retainedNextOpenMaterial))
+            {
+                return false;
+            }
+
+            stateChanged |= retainedNextOpenMaterial;
+            if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                    out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
                     out QuicTlsPacketProtectionMaterial successorProtectMaterial)
+                || !derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
                 || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
                     packetReceivedEvent.Datagram.Span,
                     successorOpenMaterial,
@@ -932,7 +941,7 @@ internal sealed partial class QuicConnectionRuntime
                 || !tlsState.TryInstallOneRttKeyUpdate(successorOpenMaterial, successorProtectMaterial)
                 || !tlsBridgeDriver.TryDiscardOneRttApplicationTrafficSecrets())
             {
-                return false;
+                return stateChanged;
             }
 
             keyPhase = true;

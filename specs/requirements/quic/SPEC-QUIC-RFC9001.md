@@ -1009,6 +1009,12 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.3 RFC9001-S6.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveServerRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeClearsRetainedNextReceiveKeysAfterInstallingPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::EstablishingClientRuntimeDoesNotRetainNextReceiveKeysBeforeOneRttKeysExist
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::FuzzApparentPeerUpdates_RandomizedTamperedPayloadsRetainNextReceiveKeysWithoutInstalling
 
 ## REQ-QUIC-RFC9001-S6P4-0001 Never send packets with old keys
 An endpoint MUST NOT send packets protected with old keys.

@@ -452,6 +452,38 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
+    /// Ensures the first successor 1-RTT receive material is retained alongside the current receive material.
+    /// </summary>
+    internal bool TryEnsureNextOneRttOpenPacketProtectionMaterial(
+        out QuicTlsPacketProtectionMaterial openMaterial,
+        out bool retainedNewMaterial)
+    {
+        retainedNewMaterial = false;
+        if (bridgeState.RetainedNextOneRttOpenPacketProtectionMaterial.HasValue)
+        {
+            openMaterial = bridgeState.RetainedNextOneRttOpenPacketProtectionMaterial.Value;
+            return true;
+        }
+
+        if (!TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                out openMaterial,
+                out _))
+        {
+            openMaterial = default;
+            return false;
+        }
+
+        if (!bridgeState.TryRetainNextOneRttOpenPacketProtectionMaterial(openMaterial))
+        {
+            openMaterial = default;
+            return false;
+        }
+
+        retainedNewMaterial = true;
+        return true;
+    }
+
+    /// <summary>
     /// Discards retained 1-RTT application traffic secrets after a key update has been committed.
     /// </summary>
     internal bool TryDiscardOneRttApplicationTrafficSecrets()
