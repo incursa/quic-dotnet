@@ -2609,7 +2609,8 @@ internal sealed partial class QuicConnectionRuntime
             sentAtMicros,
             isAckElicitingPacket: true,
             isProbePacket: probePacket,
-            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt);
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            oneRttKeyPhase: tlsState.CurrentOneRttKeyPhase);
 
         if (idleTimeoutState is not null)
         {
@@ -2652,7 +2653,11 @@ internal sealed partial class QuicConnectionRuntime
             sentAtMicros,
             isAckElicitingPacket: true,
             isProbePacket: probePacket,
-            packetProtectionLevel: packetProtectionLevel);
+            packetProtectionLevel: packetProtectionLevel,
+            oneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                ? tlsState.CurrentOneRttKeyPhase
+                : null);
 
         if (idleTimeoutState is not null)
         {
@@ -2780,7 +2785,10 @@ internal sealed partial class QuicConnectionRuntime
             GetElapsedMicros(lastTransitionTicks),
             isAckElicitingPacket: ackEliciting,
             isProbePacket: probePacket,
-            packetProtectionLevel: packetProtectionLevel);
+            packetProtectionLevel: packetProtectionLevel,
+            oneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                ? tlsState.CurrentOneRttKeyPhase
+                : null);
 
         if (ackEliciting && idleTimeoutState is not null)
         {

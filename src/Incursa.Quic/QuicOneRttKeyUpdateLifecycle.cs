@@ -8,6 +8,8 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     private QuicTlsPacketProtectionMaterial? retainedOldOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? retainedOldProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? retainedNextOpenPacketProtectionMaterial;
+    private ulong? retainedOldPacketProtectionDiscardAtMicros;
+    private uint? retainedOldPacketProtectionKeyPhase;
 
     internal QuicTlsPacketProtectionMaterial? RetainedOldOpenPacketProtectionMaterial =>
         retainedOldOpenPacketProtectionMaterial;
@@ -18,12 +20,21 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     internal QuicTlsPacketProtectionMaterial? RetainedNextOpenPacketProtectionMaterial =>
         retainedNextOpenPacketProtectionMaterial;
 
+    internal ulong? RetainedOldPacketProtectionDiscardAtMicros =>
+        retainedOldPacketProtectionDiscardAtMicros;
+
+    internal uint? RetainedOldPacketProtectionKeyPhase =>
+        retainedOldPacketProtectionKeyPhase;
+
     internal bool HasRetainedOldPacketProtectionMaterial =>
         retainedOldOpenPacketProtectionMaterial.HasValue
         || retainedOldProtectPacketProtectionMaterial.HasValue;
 
     internal bool HasRetainedNextOpenPacketProtectionMaterial =>
         retainedNextOpenPacketProtectionMaterial.HasValue;
+
+    internal bool HasRetainedOldPacketProtectionDiscardDeadline =>
+        retainedOldPacketProtectionDiscardAtMicros.HasValue;
 
     internal bool HasPacketProtectionMaterial =>
         HasRetainedOldPacketProtectionMaterial
@@ -72,6 +83,21 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
         return true;
     }
 
+    internal bool TryArmRetainedOldPacketProtectionMaterialDiscard(
+        ulong discardAtMicros,
+        uint keyPhase)
+    {
+        if (!HasRetainedOldPacketProtectionMaterial
+            || HasRetainedOldPacketProtectionDiscardDeadline)
+        {
+            return false;
+        }
+
+        retainedOldPacketProtectionDiscardAtMicros = discardAtMicros;
+        retainedOldPacketProtectionKeyPhase = keyPhase;
+        return true;
+    }
+
     internal bool TryDiscardRetainedOldPacketProtectionMaterial()
     {
         if (!HasRetainedOldPacketProtectionMaterial)
@@ -88,5 +114,7 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
         retainedOldOpenPacketProtectionMaterial = null;
         retainedOldProtectPacketProtectionMaterial = null;
         retainedNextOpenPacketProtectionMaterial = null;
+        retainedOldPacketProtectionDiscardAtMicros = null;
+        retainedOldPacketProtectionKeyPhase = null;
     }
 }

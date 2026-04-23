@@ -483,7 +483,8 @@ internal readonly struct QuicLostPacket
 /// </summary>
 internal readonly record struct QuicRecoverySentPacketState(
     ulong SentAtMicros,
-    QuicTlsEncryptionLevel? PacketProtectionLevel);
+    QuicTlsEncryptionLevel? PacketProtectionLevel,
+    uint? OneRttKeyPhase = null);
 
 /// <summary>
 /// Minimal RFC 9002 runtime for loss and PTO timing decisions on a per-space basis.
@@ -551,13 +552,15 @@ internal sealed class QuicRecoveryController
         ulong sentAtMicros,
         bool isAckElicitingPacket = true,
         bool isProbePacket = false,
-        QuicTlsEncryptionLevel? packetProtectionLevel = null)
+        QuicTlsEncryptionLevel? packetProtectionLevel = null,
+        uint? oneRttKeyPhase = null)
     {
         StateFor(packetNumberSpace).RecordPacketSent(
             packetNumber,
             sentAtMicros,
             isAckElicitingPacket,
-            packetProtectionLevel);
+            packetProtectionLevel,
+            oneRttKeyPhase);
 
         if (isAckElicitingPacket && !isProbePacket)
         {
@@ -686,6 +689,20 @@ internal sealed class QuicRecoveryController
         foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
         {
             updated |= state.TryDiscardPacketProtectionLevel(packetProtectionLevel);
+        }
+
+        return updated;
+    }
+
+    /// <summary>
+    /// Discards in-flight 1-RTT packets that were protected with a specific Key Phase.
+    /// </summary>
+    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    {
+        bool updated = false;
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            updated |= state.TryDiscardOneRttKeyPhase(keyPhase);
         }
 
         return updated;
@@ -855,7 +872,8 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         ulong packetNumber,
         ulong sentAtMicros,
         bool isAckElicitingPacket,
-        QuicTlsEncryptionLevel? packetProtectionLevel)
+        QuicTlsEncryptionLevel? packetProtectionLevel,
+        uint? oneRttKeyPhase)
     {
         if (!isAckElicitingPacket)
         {
@@ -864,7 +882,8 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
         ackElicitingPacketsInFlight[packetNumber] = new QuicRecoverySentPacketState(
             sentAtMicros,
-            packetProtectionLevel);
+            packetProtectionLevel,
+            oneRttKeyPhase);
     }
 
     /// <summary>
@@ -1058,6 +1077,41 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
         {
             if (packet.Value.PacketProtectionLevel != packetProtectionLevel)
+            {
+                continue;
+            }
+
+            (removedPacketNumbers ??= []).Add(packet.Key);
+        }
+
+        if (removedPacketNumbers is null)
+        {
+            return false;
+        }
+
+        foreach (ulong packetNumber in removedPacketNumbers)
+        {
+            ackElicitingPacketsInFlight.Remove(packetNumber);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Removes in-flight 1-RTT packets that used a specific Key Phase.
+    /// </summary>
+    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    {
+        if (ackElicitingPacketsInFlight.Count == 0)
+        {
+            return false;
+        }
+
+        List<ulong>? removedPacketNumbers = null;
+        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        {
+            if (packet.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
+                || packet.Value.OneRttKeyPhase != keyPhase)
             {
                 continue;
             }

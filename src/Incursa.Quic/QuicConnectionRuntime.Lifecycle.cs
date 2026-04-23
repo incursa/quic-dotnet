@@ -133,6 +133,7 @@ internal sealed partial class QuicConnectionRuntime
 
         long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
         long? recoveryDueTicks = GetEarliestRecoveryDueTicks();
+        long? keyUpdateRetentionDueTicks = GetEarliestKeyUpdateRetentionDueTicks();
         long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
             ? pendingApplicationSendDelayDueTicks
             : null;
@@ -145,6 +146,7 @@ internal sealed partial class QuicConnectionRuntime
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
         return effects.ToArray();
     }
@@ -217,6 +219,62 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return GetAbsoluteTicks(selectedRecoveryTimerMicros);
+    }
+
+    private long? GetEarliestKeyUpdateRetentionDueTicks()
+    {
+        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active
+            || !tlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue)
+        {
+            return null;
+        }
+
+        return GetAbsoluteTicks(tlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.Value);
+    }
+
+    private bool TryArmRetainedOldOneRttKeyDiscard(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        if (!tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
+            || tlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue
+            || tlsState.CurrentOneRttKeyPhase == 0)
+        {
+            return false;
+        }
+
+        ulong retentionWindowMicros = MultiplySaturating(Math.Max(currentProbeTimeoutMicros, 1UL), TerminalLifetimePtoMultiplier);
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        ulong discardAtMicros = ulong.MaxValue - nowMicros < retentionWindowMicros
+            ? ulong.MaxValue
+            : nowMicros + retentionWindowMicros;
+        if (!tlsState.TryArmRetainedOneRttKeyUpdateMaterialDiscard(
+                discardAtMicros,
+                tlsState.CurrentOneRttKeyPhase - 1))
+        {
+            return false;
+        }
+
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
+    }
+
+    private bool TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref List<QuicConnectionEffect>? effects)
+    {
+        if (!tlsState.RetainedOldOneRttPacketProtectionKeyPhase.HasValue)
+        {
+            return false;
+        }
+
+        uint retainedKeyPhase = tlsState.RetainedOldOneRttPacketProtectionKeyPhase.Value;
+        bool stateChanged = tlsState.TryDiscardRetainedOneRttKeyUpdateMaterial();
+        stateChanged |= sendRuntime.TryDiscardOneRttKeyPhase(retainedKeyPhase);
+        stateChanged |= recoveryController.TryDiscardOneRttKeyPhase(retainedKeyPhase);
+        if (!stateChanged)
+        {
+            return false;
+        }
+
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
     }
 
     private long ComputeTerminalEndTicks(long nowTicks)

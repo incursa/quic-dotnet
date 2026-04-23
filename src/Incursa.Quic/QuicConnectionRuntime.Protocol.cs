@@ -1004,6 +1004,15 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
+        if (!openedWithRetainedOldOpenMaterial
+            && keyPhase
+            && tlsState.KeyUpdateInstalled
+            && tlsState.CurrentOneRttKeyPhase == 1
+            && TryArmRetainedOldOneRttKeyDiscard(nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+
         bool packetNumberAdvancesTheHighestObservedValue = !hasObservedApplicationPacketNumber
             || packetNumber > largestObservedApplicationPacketNumber;
         bool processedCryptoFrame = false;

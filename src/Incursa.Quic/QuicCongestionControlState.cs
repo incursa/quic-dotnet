@@ -819,7 +819,8 @@ internal sealed class QuicSenderFlowController
         bool ackEliciting,
         bool isAckOnlyPacket = false,
         bool isProbePacket = false,
-        QuicTlsEncryptionLevel? packetProtectionLevel = null)
+        QuicTlsEncryptionLevel? packetProtectionLevel = null,
+        uint? oneRttKeyPhase = null)
     {
         CongestionControlState.RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
         if (isAckOnlyPacket)
@@ -834,7 +835,8 @@ internal sealed class QuicSenderFlowController
             ackEliciting,
             InFlight: true,
             isProbePacket,
-            packetProtectionLevel);
+            packetProtectionLevel,
+            oneRttKeyPhase);
     }
 
     /// <summary>
@@ -1014,6 +1016,63 @@ internal sealed class QuicSenderFlowController
     }
 
     /// <summary>
+    /// Discards retained 1-RTT packets that were protected with a specific Key Phase.
+    /// </summary>
+    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    {
+        bool updated = false;
+        List<QuicPacketNumberSpace>? emptyPacketNumberSpaces = null;
+
+        foreach (KeyValuePair<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpaceEntry in sentPacketsBySpace.ToArray())
+        {
+            SortedDictionary<ulong, SentPacketState> sentPackets = sentPacketsBySpaceEntry.Value;
+            if (sentPackets.Count == 0)
+            {
+                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
+                continue;
+            }
+
+            List<ulong>? removedPacketNumbers = null;
+            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
+            {
+                if (sentPacketEntry.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
+                    || sentPacketEntry.Value.OneRttKeyPhase != keyPhase)
+                {
+                    continue;
+                }
+
+                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
+                (removedPacketNumbers ??= []).Add(sentPacketEntry.Key);
+            }
+
+            if (removedPacketNumbers is null)
+            {
+                continue;
+            }
+
+            foreach (ulong packetNumber in removedPacketNumbers)
+            {
+                sentPackets.Remove(packetNumber);
+            }
+
+            if (sentPackets.Count == 0)
+            {
+                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
+            }
+        }
+
+        if (emptyPacketNumberSpaces is not null)
+        {
+            foreach (QuicPacketNumberSpace emptyPacketNumberSpace in emptyPacketNumberSpaces)
+            {
+                sentPacketsBySpace.Remove(emptyPacketNumberSpace);
+            }
+        }
+
+        return updated;
+    }
+
+    /// <summary>
     /// Records a received packet and drives ACK scheduling logic.
     /// The optional buffering delay captures time spent waiting for decryption keys before processing.
     /// </summary>
@@ -1146,5 +1205,6 @@ internal sealed class QuicSenderFlowController
         bool AckEliciting,
         bool InFlight,
         bool IsProbePacket,
-        QuicTlsEncryptionLevel? PacketProtectionLevel = null);
+        QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+        uint? OneRttKeyPhase = null);
 }

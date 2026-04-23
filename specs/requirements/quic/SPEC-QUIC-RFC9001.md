@@ -1141,6 +1141,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveServerRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendTheRetentionTimerAfterAnotherNewKeyPacket
 
 ## REQ-QUIC-RFC9001-S6P5-0005 Discard old read keys after retention expires
 After the old-read-key retention window expires, an endpoint SHOULD discard the old read keys and their corresponding secrets.
@@ -1155,6 +1159,12 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.5 RFC9001-S6.5-B8-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeDiscardsOldReadKeysAndOldPhaseSendStateWhenTheRetentionTimerExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveServerRuntimeDiscardsOldReadKeysAndOldPhaseSendStateWhenTheRetentionTimerExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::RecoveryControllerDiscardsOnlyTheSpecifiedOneRttKeyPhase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeKeepsOldReadKeysAndOldPhaseSendStateBeforeTheRetentionTimerExpires
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzRetentionExpiry_DiscardsOnlyTheOldOneRttKeyPhaseAcrossRepresentativePacketSets
 
 ## REQ-QUIC-RFC9001-S6P6-0001 Count encrypted packets per key set
 Endpoints MUST count the number of encrypted packets for each set of packet protection keys.

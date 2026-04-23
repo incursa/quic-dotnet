@@ -36,7 +36,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
-    ReadOnlyMemory<byte> PlaintextPayload = default);
+    ReadOnlyMemory<byte> PlaintextPayload = default,
+    uint? OneRttKeyPhase = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -156,7 +157,8 @@ internal sealed class QuicConnectionSendRuntime
             packet.AckEliciting,
             packet.AckOnlyPacket,
             packet.ProbePacket,
-            packet.PacketProtectionLevel);
+            packet.PacketProtectionLevel,
+            packet.OneRttKeyPhase);
         if (packet.AckEliciting && !packet.ProbePacket)
         {
             ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -339,6 +341,63 @@ internal sealed class QuicConnectionSendRuntime
     }
 
     /// <summary>
+    /// Discards retained send state for 1-RTT packets protected with a specific Key Phase.
+    /// </summary>
+    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    {
+        bool updated = flowController.TryDiscardOneRttKeyPhase(keyPhase);
+
+        List<QuicConnectionSentPacketKey>? removedKeys = null;
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (entry.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
+                || entry.Value.OneRttKeyPhase != keyPhase)
+            {
+                continue;
+            }
+
+            (removedKeys ??= []).Add(entry.Key);
+        }
+
+        if (removedKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in removedKeys)
+            {
+                updated |= sentPackets.Remove(key);
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (retransmission.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                    && retransmission.OneRttKeyPhase == keyPhase)
+                {
+                    updated = true;
+                    continue;
+                }
+
+                retainedRetransmissions.Enqueue(retransmission);
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
+    /// <summary>
     /// Discards queued retransmission plans sent before a retention cutoff.
     /// </summary>
     /// <remarks>
@@ -409,7 +468,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PacketBytes,
                 packet.PacketProtectionLevel,
                 packet.StreamIds,
-                packet.PlaintextPayload));
+                packet.PlaintextPayload,
+                packet.OneRttKeyPhase));
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(

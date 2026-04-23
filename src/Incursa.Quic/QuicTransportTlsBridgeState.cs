@@ -87,6 +87,12 @@ internal sealed class QuicTransportTlsBridgeState
     public QuicTlsPacketProtectionMaterial? RetainedNextOneRttOpenPacketProtectionMaterial =>
         oneRttKeyUpdateLifecycle.RetainedNextOpenPacketProtectionMaterial;
 
+    public ulong? RetainedOldOneRttPacketProtectionDiscardAtMicros =>
+        oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionDiscardAtMicros;
+
+    public uint? RetainedOldOneRttPacketProtectionKeyPhase =>
+        oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionKeyPhase;
+
     public ReadOnlyMemory<byte> PostHandshakeTicketBytes => postHandshakeTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
     public bool HasPostHandshakeTicket => postHandshakeTicketBytes is not null;
@@ -796,6 +802,16 @@ internal sealed class QuicTransportTlsBridgeState
     internal bool TryDiscardRetainedOneRttKeyUpdateMaterial()
     {
         return oneRttKeyUpdateLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
+    }
+
+    internal bool TryArmRetainedOneRttKeyUpdateMaterialDiscard(
+        ulong discardAtMicros,
+        uint keyPhase)
+    {
+        return !IsTerminal
+            && oneRttKeyUpdateLifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(
+                discardAtMicros,
+                keyPhase);
     }
 
     public bool TryDiscardOldKeys()

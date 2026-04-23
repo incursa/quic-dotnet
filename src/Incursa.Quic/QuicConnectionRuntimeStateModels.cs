@@ -45,6 +45,7 @@ internal enum QuicConnectionTimerKind
     PathValidation = 3,
     ApplicationSendDelay = 4,
     Recovery = 5,
+    KeyUpdateRetention = 6,
 }
 
 internal enum QuicConnectionStreamOwnership
@@ -310,6 +311,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
     QuicConnectionTimerSchedule PathValidation,
     QuicConnectionTimerSchedule ApplicationSendDelay,
     QuicConnectionTimerSchedule Recovery,
+    QuicConnectionTimerSchedule KeyUpdateRetention,
     ulong NextSequence)
 {
     internal QuicConnectionTimerDeadlineState(
@@ -326,6 +328,27 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             PathValidation,
             ApplicationSendDelay,
             default,
+            default,
+            NextSequence)
+    {
+    }
+
+    internal QuicConnectionTimerDeadlineState(
+        QuicConnectionTimerSchedule IdleTimeout,
+        QuicConnectionTimerSchedule CloseLifetime,
+        QuicConnectionTimerSchedule DrainLifetime,
+        QuicConnectionTimerSchedule PathValidation,
+        QuicConnectionTimerSchedule ApplicationSendDelay,
+        QuicConnectionTimerSchedule Recovery,
+        ulong NextSequence)
+        : this(
+            IdleTimeout,
+            CloseLifetime,
+            DrainLifetime,
+            PathValidation,
+            ApplicationSendDelay,
+            Recovery,
+            default,
             NextSequence)
     {
     }
@@ -335,7 +358,8 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
         || DrainLifetime.DueTicks.HasValue
         || PathValidation.DueTicks.HasValue
         || ApplicationSendDelay.DueTicks.HasValue
-        || Recovery.DueTicks.HasValue;
+        || Recovery.DueTicks.HasValue
+        || KeyUpdateRetention.DueTicks.HasValue;
 
     public QuicConnectionTimerPriority CreatePriority(long dueTicks)
     {
@@ -373,6 +397,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.PathValidation => this with { PathValidation = schedule },
             QuicConnectionTimerKind.ApplicationSendDelay => this with { ApplicationSendDelay = schedule },
             QuicConnectionTimerKind.Recovery => this with { Recovery = schedule },
+            QuicConnectionTimerKind.KeyUpdateRetention => this with { KeyUpdateRetention = schedule },
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }
@@ -397,6 +422,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.PathValidation => PathValidation,
             QuicConnectionTimerKind.ApplicationSendDelay => ApplicationSendDelay,
             QuicConnectionTimerKind.Recovery => Recovery,
+            QuicConnectionTimerKind.KeyUpdateRetention => KeyUpdateRetention,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }

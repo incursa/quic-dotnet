@@ -458,6 +458,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicConnectionTimerKind.DrainLifetime => timerState.DrainLifetime,
             QuicConnectionTimerKind.PathValidation => timerState.PathValidation,
             QuicConnectionTimerKind.Recovery => timerState.Recovery,
+            QuicConnectionTimerKind.KeyUpdateRetention => timerState.KeyUpdateRetention,
             QuicConnectionTimerKind.ApplicationSendDelay => timerState.ApplicationSendDelay,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
@@ -500,6 +501,8 @@ internal sealed partial class QuicConnectionRuntime
                 return true;
             case QuicConnectionTimerKind.Recovery:
                 return HandleRecoveryTimerExpired(nowTicks, ref effects);
+            case QuicConnectionTimerKind.KeyUpdateRetention:
+                return HandleKeyUpdateRetentionTimerExpired(ref effects);
             default:
                 throw new ArgumentOutOfRangeException(nameof(timerExpiredEvent), "TimerKind was not recognized.");
         }
@@ -543,6 +546,16 @@ internal sealed partial class QuicConnectionRuntime
         recoveryController.RecordProbeTimeoutExpired();
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
+    }
+
+    private bool HandleKeyUpdateRetentionTimerExpired(ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active))
+        {
+            return false;
+        }
+
+        return TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref effects);
     }
 
     private bool TrySelectRecoveryTimer(
