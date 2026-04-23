@@ -16,7 +16,7 @@
   ],
   "procedure": [
     "Run the existing first-successor RFC 9001 Section 6 requirement-home tests as a regression baseline.",
-    "Run the direct RFC 9001 Section 6.1 first-successor requirement-home tests for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006.",
+    "Run the direct RFC 9001 Section 6.1 first-successor requirement-home tests for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006 plus REQ-QUIC-RFC9001-S6P1-0009 and REQ-QUIC-RFC9001-S6P1-0010.",
     "Add and run positive tests for repeated local-initiated and peer-initiated key updates that alternate the Key Phase bit across more than one epoch.",
     "Add and run negative tests for duplicate same-phase packets, stale older-epoch packets, tampered successor packets, packet-number-incoherent old-key packets, unacknowledged repeated local updates, premature old-key discard, and authentication failure rollback.",
     "Add and run tests that prove AEAD usage-limit counters request a local update through the same acknowledgment-gated lifecycle and enter the terminal stateless-reset-only boundary when key update is impossible or integrity limits are reached.",
@@ -38,6 +38,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs",
     "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs",
     "artifacts/benchmark-baseline/20260422-2327-keyphase-dry/",
@@ -47,7 +49,16 @@
     "artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/render-check.log",
     "artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/git-diff-check.log",
     "artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/spec-trace-core-validation.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/rfc9001-s6p1-kdf-tests.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/rfc9001-s6p1-all-first-successor-tests.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/rfc9001-s6-and-s6p1-key-update-tests.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/render-check.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/git-diff-check.log",
+    "artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/spec-trace-core-validation.log",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6P1\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6P1_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1_0010\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6P1\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1\""
   ],
@@ -97,11 +108,11 @@
     "REQ-QUIC-RFC9001-S6P6-0004",
     "REQ-QUIC-RFC9001-S6P6-0005"
   ],
-  "status_summary": "Planned for the broader lifecycle. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. The direct Section 6.1 first-successor proof now covers REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006 with 9 focused tests and a 28-test combined Section 6 plus Section 6.1 guard preserved under artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/. The touched Markdown views render cleanly; repo-wide SpecTrace core validation still fails at the known 6125-error residual baseline. Repeated 1-RTT key-update cycles, AEAD-limit-triggered updates, old-key retention after new-key authentication, and old 1-RTT key discard remain open under the gap ledger.",
+  "status_summary": "Planned for the broader lifecycle. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. The direct Section 6.1 first-successor proof covers REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006 with 9 focused tests and a 28-test combined Section 6 plus Section 6.1 guard preserved under artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/. The direct Section 6.1 KDF proof covers REQ-QUIC-RFC9001-S6P1-0009 and REQ-QUIC-RFC9001-S6P1-0010 with 6 focused tests, a 15-test all-S6P1 guard, and a 34-test combined Section 6 plus Section 6.1 guard preserved under artifacts/verification/20260423-rfc9001-s6p1-kdf-proof/. The touched Markdown views render cleanly; repo-wide SpecTrace core validation still fails at the known 6125-error residual baseline. Repeated 1-RTT key-update cycles, AEAD-limit-triggered updates, old-key retention after new-key authentication, and old 1-RTT key discard remain open under the gap ledger.",
   "supplemental_sections": [
     {
       "heading": "Current Evidence Boundary",
-      "content": "- Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, duplicate same-phase rejection, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, and successor receive-key installation.\n- Current benchmarks cover the first-successor install and protected packet formatting/opening path.\n- No evidence in this artifact claims repeated key-update cycles after acknowledgment, AEAD-limit-triggered local updates, old 1-RTT key retention after new-key authentication, or old 1-RTT key discard."
+      "content": "- Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, duplicate same-phase rejection, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, successor receive-key installation, QUIC `quic ku` successor traffic-secret derivation, and packet key/IV derivation from updated secrets.\n- Current benchmarks cover the first-successor install and protected packet formatting/opening path.\n- No evidence in this artifact claims repeated key-update cycles after acknowledgment, AEAD-limit-triggered local updates, old 1-RTT key retention after new-key authentication, or old 1-RTT key discard."
     }
   ]
 }
