@@ -1406,6 +1406,12 @@
         "verified_by": [
           "VER-QUIC-RFC9001-0003"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveServerRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatOnlyAcknowledgeOldKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes"
+        ],
         "upstream_refs": [
           "RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"

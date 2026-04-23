@@ -749,6 +749,7 @@ internal sealed partial class QuicConnectionRuntime
                     packetNumberSpace,
                     ackFrame,
                     nowTicks,
+                    receivedInRetainedOldOneRttPacket: false,
                     ref effects);
                 payloadOffset += ackBytesConsumed;
                 continue;
@@ -1047,7 +1048,11 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                stateChanged |= HandleApplicationAckFrame(ackFrame, nowTicks, ref effects);
+                stateChanged |= HandleApplicationAckFrame(
+                    ackFrame,
+                    nowTicks,
+                    openedWithRetainedOldOpenMaterial,
+                    ref effects);
                 offset += ackBytesConsumed;
                 continue;
             }
@@ -1520,12 +1525,14 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleApplicationAckFrame(
         QuicAckFrame ackFrame,
         long nowTicks,
+        bool receivedInRetainedOldOneRttPacket,
         ref List<QuicConnectionEffect>? effects)
     {
         return HandleAckFrame(
             QuicPacketNumberSpace.ApplicationData,
             ackFrame,
             nowTicks,
+            receivedInRetainedOldOneRttPacket,
             ref effects);
     }
 
@@ -1533,6 +1540,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace packetNumberSpace,
         QuicAckFrame ackFrame,
         long nowTicks,
+        bool receivedInRetainedOldOneRttPacket,
         ref List<QuicConnectionEffect>? effects)
     {
         ArgumentNullException.ThrowIfNull(ackFrame);
@@ -1550,10 +1558,23 @@ internal sealed partial class QuicConnectionRuntime
 
             if (sendRuntime.SentPackets.TryGetValue(
                     new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
-                    out QuicConnectionSentPacket sentPacket)
-                && sentPacket.AckEliciting)
+                    out QuicConnectionSentPacket sentPacket))
             {
-                newlyAcknowledgedAckElicitingPacketNumbers.Add(packetNumber);
+                if (receivedInRetainedOldOneRttPacket
+                    && packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                    && sentPacket.OneRttKeyPhase == 1)
+                {
+                    return HandleFatalTlsSignal(
+                        nowTicks,
+                        QuicTransportErrorCode.KeyUpdateError,
+                        "The peer acknowledged a newer-key packet in an old-key packet.",
+                        ref effects);
+                }
+
+                if (sentPacket.AckEliciting)
+                {
+                    newlyAcknowledgedAckElicitingPacketNumbers.Add(packetNumber);
+                }
             }
         }
 

@@ -23,7 +23,8 @@ internal readonly record struct QuicConnectionSentPacket(
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
-    ReadOnlyMemory<byte> PlaintextPayload = default);
+    ReadOnlyMemory<byte> PlaintextPayload = default,
+    uint? OneRttKeyPhase = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,

@@ -2601,7 +2601,8 @@ internal sealed partial class QuicConnectionRuntime
             PacketBytes: protectedPacket,
             PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
             StreamIds: streamIds,
-            PlaintextPayload: plaintextPayload));
+            PlaintextPayload: plaintextPayload,
+            OneRttKeyPhase: tlsState.CurrentOneRttKeyPhase));
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
@@ -2640,7 +2641,11 @@ internal sealed partial class QuicConnectionRuntime
                 PacketBytes: retransmission.PacketBytes,
                 PacketProtectionLevel: retransmission.PacketProtectionLevel,
                 StreamIds: retransmission.StreamIds,
-                PlaintextPayload: retransmission.PlaintextPayload));
+                PlaintextPayload: retransmission.PlaintextPayload,
+                OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                    && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                    ? tlsState.CurrentOneRttKeyPhase
+                    : null));
         recoveryController.RecordPacketSent(
             retransmission.PacketNumberSpace,
             retransmission.PacketNumber,
@@ -2765,7 +2770,10 @@ internal sealed partial class QuicConnectionRuntime
             PacketBytes: protectedPacket,
             PacketProtectionLevel: packetProtectionLevel,
             StreamIds: streamIds,
-            PlaintextPayload: plaintextPayload));
+            PlaintextPayload: plaintextPayload,
+            OneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                ? tlsState.CurrentOneRttKeyPhase
+                : null));
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,

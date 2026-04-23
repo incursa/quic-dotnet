@@ -981,6 +981,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveServerRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatOnlyAcknowledgeOldKeyPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P3-0001 Avoid timing signals for invalid Key Phase bits
 Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.
