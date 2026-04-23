@@ -967,6 +967,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.2 RFC9001-S6.2-B4-P3-S5
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::ActiveClientRuntimeKeepsTheFirstPeerUpdatePathAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::ActiveRuntimeDropsApparentConsecutivePeerUpdateBeforeConfirmationWithoutClosing
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::FuzzApparentConsecutivePeerUpdatesBeforeConfirmation_RandomizedPayloadSizesDoNotClose
 
 ## REQ-QUIC-RFC9001-S6P2-0004 Allow KEY_UPDATE_ERROR for old-key ACKs of newer-key packets
 An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.
