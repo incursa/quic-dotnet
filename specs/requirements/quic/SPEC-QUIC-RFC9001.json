@@ -1697,6 +1697,12 @@
         "upstream_refs": [
           "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleCountsProtectedPacketsForOneKeySet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleKeepsProtectedPacketCountsSeparatePerKeySet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleDoesNotCountProtectionAttemptsBeforeKeysAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::FuzzProtectedPacketCounting_RandomizedLimitsKeepCountsPerKeySet"
         ]
       }
     },
@@ -1717,6 +1723,12 @@
         "upstream_refs": [
           "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleDiscardsProtectionKeysWhenConfidentialityLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleRejectsProtectionBeyondTheConfidentialityLimitWithoutIncreasingTheCount",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleKeepsIndependentKeySetsAvailableWhenAnotherKeySetReachesItsLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::FuzzConfidentialityLimitExhaustion_RandomizedLimitsRejectTheFirstExcessProtectionAttempt"
         ]
       }
     },

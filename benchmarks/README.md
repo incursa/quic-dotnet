@@ -55,6 +55,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicCryptoBufferBenchmarks`
 - `QuicDplpmtudStateBenchmarks`
 - `QuicAeadUsageLimitCalculatorBenchmarks`
+- `QuicAeadKeyLifecycleBenchmarks`
 - `QuicTransportParametersBenchmarks`
 - `QuicHeaderParsingBenchmarks`
 - `QuicStreamParsingBenchmarks`

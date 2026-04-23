@@ -1192,6 +1192,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleCountsProtectedPacketsForOneKeySet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleKeepsProtectedPacketCountsSeparatePerKeySet
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::AeadKeyLifecycleDoesNotCountProtectionAttemptsBeforeKeysAreAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs::FuzzProtectedPacketCounting_RandomizedLimitsKeepCountsPerKeySet
 
 ## REQ-QUIC-RFC9001-S6P6-0002 Stop using keys beyond the AEAD confidentiality limit
 If encrypted packet count with the same key exceeds the AEAD confidentiality limit, the endpoint MUST stop using that key.
@@ -1206,6 +1211,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S2
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleDiscardsProtectionKeysWhenConfidentialityLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleRejectsProtectionBeyondTheConfidentialityLimitWithoutIncreasingTheCount
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::AeadKeyLifecycleKeepsIndependentKeySetsAvailableWhenAnotherKeySetReachesItsLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs::FuzzConfidentialityLimitExhaustion_RandomizedLimitsRejectTheFirstExcessProtectionAttempt
 
 ## REQ-QUIC-RFC9001-S6P6-0003 Initiate key updates before the AEAD confidentiality limit
 Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.

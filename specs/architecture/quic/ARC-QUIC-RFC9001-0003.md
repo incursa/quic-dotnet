@@ -47,7 +47,7 @@ Define the design boundary for widening the current first-successor 1-RTT Key Ph
 
 ## Design Summary
 
-The existing implementation is intentionally a single-successor floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, retain the displaced old open/protect material in a dedicated connection-owned lifecycle object, retain the first next receive material alongside the current receive material for apparent peer updates, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material only when the opened packet carries the next Key Phase bit, drop invalid Key Phase probes without close/datagram signaling, update send keys before emitting ACKs for peer-updated packets, avoid sending first peer-update ACKs with retained old protect material, allow KEY_UPDATE_ERROR for retained old-key ACK packets that acknowledge tracked first-successor phase-1 sends, keep first-update higher packet numbers protected with same or newer material, use retained old receive material for lower recovered packet numbers once the first phase-1 packet-number floor is known, use next receive material for higher recovered packet numbers in the first successor transition, reject first old-key packets that violate that packet-number ordering with KEY_UPDATE_ERROR, arm a first retained-old discard deadline for three PTOs after authenticating a new-key packet, discard that retained old first-update material together with matching sender and recovery state when the deadline expires, clear the retained next receive material when that successor is installed, record the first current-phase acknowledgment, enforce the first three-PTO post-confirmation local-update cooldown, and reject duplicate same-phase installs. The next trace-safe widening is not second-successor packet acceptance. It is the rest of the repeated-update control plane: optional unconfirmed consecutive peer-update error policy, encrypted-packet counters per key set, and update-or-close behavior when AEAD limits approach or key updates are impossible. Only after those invariants exist can repeated epoch selection be widened beyond the first successor. TLS KeyUpdate prohibition stays separate from QUIC Key Phase updates, and the current first-update CRT slice remains supporting evidence rather than proof of repeated lifecycle support.
+The existing implementation is intentionally a single-successor floor plus a helper-backed AEAD key-use floor: after handshake confirmation it can derive and install the first 0-to-1 1-RTT successor material, retain the displaced old open/protect material in a dedicated connection-owned lifecycle object, retain the first next receive material alongside the current receive material for apparent peer updates, detect the changed Key Phase bit, retry opening a first observed phase-1 packet with successor material only when the opened packet carries the next Key Phase bit, drop invalid Key Phase probes without close/datagram signaling, update send keys before emitting ACKs for peer-updated packets, avoid sending first peer-update ACKs with retained old protect material, allow KEY_UPDATE_ERROR for retained old-key ACK packets that acknowledge tracked first-successor phase-1 sends, keep first-update higher packet numbers protected with same or newer material, use retained old receive material for lower recovered packet numbers once the first phase-1 packet-number floor is known, use next receive material for higher recovered packet numbers in the first successor transition, reject first old-key packets that violate that packet-number ordering with KEY_UPDATE_ERROR, arm a first retained-old discard deadline for three PTOs after authenticating a new-key packet, discard that retained old first-update material together with matching sender and recovery state when the deadline expires, clear the retained next receive material when that successor is installed, record the first current-phase acknowledgment, enforce the first three-PTO post-confirmation local-update cooldown, reject duplicate same-phase installs, count protected packets separately for each AEAD key lifecycle, and stop protecting with a key lifecycle when its configured confidentiality limit is reached. The next trace-safe widening is not second-successor packet acceptance. It is the rest of the repeated-update control plane: optional unconfirmed consecutive peer-update error policy plus AEAD-limit-driven update-or-close and stateless-reset-only behavior when key updates are impossible or integrity limits are reached. Only after those invariants exist can repeated epoch selection be widened beyond the first successor. TLS KeyUpdate prohibition stays separate from QUIC Key Phase updates, and the current first-update CRT slice remains supporting evidence rather than proof of repeated lifecycle support.
 
 ## Key Components
 
@@ -64,6 +64,7 @@ The existing implementation is intentionally a single-successor floor: after han
 - src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs
 - src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
+- src/Incursa.Quic/QuicAeadUsageLimits.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs
@@ -87,22 +88,25 @@ The existing implementation is intentionally a single-successor floor: after han
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicRfc9001RepeatedKeyUpdateTestSupport.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs
 - benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs
 - benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs
+- benchmarks/QuicAeadKeyLifecycleBenchmarks.cs
 
 ## Data and State Considerations
 
-The implementation now has a dedicated connection-owned 1-RTT key-update lifecycle object for retained next receive material, retained old first-update packet-protection material, the first retained-old discard deadline, current-phase acknowledgment state, and the first repeated local-update cooldown deadline rather than widening the TLS bridge's first-successor fields directly. The sender and recovery ledgers now tag tracked 1-RTT packets with the first-successor key phase so the first old epoch can be discarded without dropping current-phase state. The future ledger expansion must add epoch identifiers, repeated current/next/old open and protect material selection, current outbound Key Phase, packet-number ranges observed per phase, AEAD encrypted-packet counters per key set, repeated old-read-key retention deadlines, and sender/recovery references for packets protected with old 1-RTT material beyond the first authenticated successor. The TLS bridge and key schedule remain responsible for deriving material from retained traffic secrets and for surfacing prohibited TLS KeyUpdate violations.
+The implementation now has a dedicated connection-owned 1-RTT key-update lifecycle object for retained next receive material, retained old first-update packet-protection material, the first retained-old discard deadline, current-phase acknowledgment state, and the first repeated local-update cooldown deadline rather than widening the TLS bridge's first-successor fields directly. The sender and recovery ledgers now tag tracked 1-RTT packets with the first-successor key phase so the first old epoch can be discarded without dropping current-phase state. A reusable AEAD key lifecycle helper now tracks protected/opened packet counters per key lifecycle and stops protection when the configured confidentiality limit is reached. The future ledger expansion must add epoch identifiers, repeated current/next/old open and protect material selection, current outbound Key Phase, packet-number ranges observed per phase, runtime wiring for AEAD-limit-triggered local update decisions, repeated old-read-key retention deadlines, and sender/recovery references for packets protected with old 1-RTT material beyond the first authenticated successor. The TLS bridge and key schedule remain responsible for deriving material from retained traffic secrets and for surfacing prohibited TLS KeyUpdate violations.
 
 ## Edge Cases and Constraints
 
-- The current supported runtime floor remains a first 0-to-1 successor install with retained next receive material, retained old 1-RTT material, first peer-initiated updated-key ACK protection, and the first authenticated retained-old discard timer plus discard cleanup only.
+- The current supported runtime floor remains a first 0-to-1 successor install with retained next receive material, retained old 1-RTT material, first peer-initiated updated-key ACK protection, first authenticated retained-old discard timer plus discard cleanup, and helper-backed AEAD protection-side counter/stop-use state only.
 - Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle ledger is built and verified.
 - Authentication failure while trying successor material must not advance the active key epoch.
 - Duplicate same-phase packets must not retrigger derivation or discard retained old material.
 - Only the first-successor old/current/next receive-selection, old-key packet-number ordering, and retained-old discard floors are implemented; broader old/current/next epoch selection remains unimplemented until the lifecycle ledger exists.
 - Repeated old 1-RTT key discard must stay synchronized with packet number, reordering, retention-window, AEAD-usage, and sender/recovery state.
-- The next planned slice is the remaining consecutive-peer-update/AEAD-policy subset (`REQ-QUIC-RFC9001-S6P2-0003` and `REQ-QUIC-RFC9001-S6P6-0001` through `REQ-QUIC-RFC9001-S6P6-0005`); repeated epoch selection beyond the first successor remains blocked until that control state exists.
+- The next planned slice is the remaining consecutive-peer-update/AEAD-policy subset (`REQ-QUIC-RFC9001-S6P2-0003` and `REQ-QUIC-RFC9001-S6P6-0003` through `REQ-QUIC-RFC9001-S6P6-0005`); repeated epoch selection beyond the first successor remains blocked until that control state exists.
 - TLS KeyUpdate messages remain prohibited and are not a substitute for QUIC Key Phase updates.
 
 ## Alternatives Considered
@@ -119,15 +123,16 @@ The implementation now has a dedicated connection-owned 1-RTT key-update lifecyc
 
 ## Open Questions
 
-- The AEAD-limit owner needs a concrete transition model for `REQ-QUIC-RFC9001-S6P6-0001` through `REQ-QUIC-RFC9001-S6P6-0005` that distinguishes update-required, update-impossible, and stateless-reset-only behavior without weakening the existing close path.
+- The AEAD-limit owner still needs a concrete runtime transition model for `REQ-QUIC-RFC9001-S6P6-0003` through `REQ-QUIC-RFC9001-S6P6-0005` that distinguishes update-required, update-impossible, and stateless-reset-only behavior without weakening the existing close path.
 
 ## Current Boundary
 
-This artifact records a stabilized lifecycle boundary, not a complete repeated-update implementation claim. The current executable proof covers the first-successor install, retained next first-update receive material, retained old first-update 1-RTT material, timing-neutral invalid Key Phase drop classification, the first three-PTO retained-old discard timer after authenticating a new-key packet, first old-key discard with matching sender/recovery cleanup, first peer-initiated updated-key packet opening and ACK-key update, the first KEY_UPDATE_ERROR floor for retained old-key ACK packets that acknowledge first-successor phase-1 sends, first-update send-key ordering, the first old/current next receive-selection floors for lower and higher recovered packet numbers, the first KEY_UPDATE_ERROR floor for old-key packet-number ordering violations, and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
+This artifact records a stabilized lifecycle boundary, not a complete repeated-update implementation claim. The current executable proof covers the first-successor install, retained next first-update receive material, retained old first-update 1-RTT material, timing-neutral invalid Key Phase drop classification, the first three-PTO retained-old discard timer after authenticating a new-key packet, first old-key discard with matching sender/recovery cleanup, first peer-initiated updated-key packet opening and ACK-key update, the first KEY_UPDATE_ERROR floor for retained old-key ACK packets that acknowledge first-successor phase-1 sends, first-update send-key ordering, the first old/current next receive-selection floors for lower and higher recovered packet numbers, the first KEY_UPDATE_ERROR floor for old-key packet-number ordering violations, helper-backed per-key-set protected-packet counting plus confidentiality-limit stop-use, and Key Phase observation coverage under the RFC 9001 Section 6 requirement homes plus the CRT `REQ-QUIC-CRT-0145` slice.
 
 ## Lifecycle Ledger Shape
 
 - The current executable floor already arms one retained-old discard deadline from the first authenticated successor packet and clears matching old-phase sender/recovery state when it expires.
+- The current AEAD lifecycle helper counts protected/opened packets per key lifecycle and rejects further protection once the configured confidentiality limit is reached.
 - The future ledger keeps the current epoch, optionally precomputed next receive epoch, and retained old receive epoch distinct.
 - Local initiation is allowed only after handshake confirmation and only after the current phase has produced an acknowledged packet.
 - Peer initiation installs corresponding send keys before acknowledging the new-key packet.
@@ -138,7 +143,7 @@ This artifact records a stabilized lifecycle boundary, not a complete repeated-u
 ## Next Planned Scope
 
 - Decide whether to surface `KEY_UPDATE_ERROR` for unconfirmed consecutive peer updates under `REQ-QUIC-RFC9001-S6P2-0003` without creating a distinguishable signal.
-- Add per-key-set encrypted-packet counters and AEAD-limit-driven update-or-close behavior for `REQ-QUIC-RFC9001-S6P6-0001` through `REQ-QUIC-RFC9001-S6P6-0005`.
+- Add AEAD-limit-driven local-update, connection stop-use, and stateless-reset-only behavior for `REQ-QUIC-RFC9001-S6P6-0003` through `REQ-QUIC-RFC9001-S6P6-0005`.
 - Keep repeated old/current/next epoch selection and second-successor packet processing blocked until the remaining control-state subset above is proven.
 
 ## Related Code And Tests
@@ -156,6 +161,7 @@ This artifact records a stabilized lifecycle boundary, not a complete repeated-u
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
 - [`src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs`](../../../src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
+- [`src/Incursa.Quic/QuicAeadUsageLimits.cs`](../../../src/Incursa.Quic/QuicAeadUsageLimits.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs)
@@ -177,4 +183,8 @@ This artifact records a stabilized lifecycle boundary, not a complete repeated-u
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicRfc9001KeyUpdateRetentionTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicRfc9001KeyUpdateRetentionTestSupport.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs)
 - [`benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs`](../../../benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs)
+- [`benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs`](../../../benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs)
+- [`benchmarks/QuicAeadKeyLifecycleBenchmarks.cs`](../../../benchmarks/QuicAeadKeyLifecycleBenchmarks.cs)
