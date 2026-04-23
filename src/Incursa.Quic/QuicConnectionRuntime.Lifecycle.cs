@@ -108,7 +108,7 @@ internal sealed partial class QuicConnectionRuntime
         if (handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             closePayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
-            tlsState.CurrentOneRttKeyPhase == 1,
+            tlsState.CurrentOneRttKeyPhaseBit,
             out byte[] protectedPacket))
         {
             _ = tlsState.TryRecordCurrentOneRttProtectionUse();

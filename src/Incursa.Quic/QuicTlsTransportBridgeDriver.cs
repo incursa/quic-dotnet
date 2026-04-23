@@ -454,6 +454,32 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <summary>
+    /// Derives, installs, and commits a repeated local 1-RTT key update after the cooldown gate permits it.
+    /// </summary>
+    internal bool TryInstallRepeatedOneRttKeyUpdate(ulong nowMicros)
+    {
+        if (!TryCreateOneRttSuccessorPacketProtectionUpdate(
+                out QuicTlsKeySchedule activeKeySchedule,
+                out QuicOneRttTrafficSecretUpdate update))
+        {
+            return false;
+        }
+
+        using (update)
+        {
+            if (!bridgeState.TryInstallRepeatedOneRttKeyUpdate(
+                    update.OpenPacketProtectionMaterial,
+                    update.ProtectPacketProtectionMaterial,
+                    nowMicros))
+            {
+                return false;
+            }
+
+            return activeKeySchedule.TryCommitOneRttSuccessorTrafficSecrets(update);
+        }
+    }
+
+    /// <summary>
     /// Derives the successor 1-RTT packet-protection pair from the currently stored traffic secrets.
     /// The supported key-update slice retains the installed header-protection keys and advances only
     /// the 1-RTT AEAD key/IV material for the successor Key Phase.

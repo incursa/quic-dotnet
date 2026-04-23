@@ -1169,7 +1169,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             applicationPayload[..bytesWritten],
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
-            tlsState.CurrentOneRttKeyPhase == 1,
+            tlsState.CurrentOneRttKeyPhaseBit,
             out ulong packetNumber,
             out byte[] protectedPacket))
         {

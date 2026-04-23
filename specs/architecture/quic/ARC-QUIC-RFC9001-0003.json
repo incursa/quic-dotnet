@@ -115,7 +115,7 @@
   ],
   "edge_cases_and_constraints": [
     "The current supported runtime floor remains a first 0-to-1 successor install with retained next receive material, retained old 1-RTT material, first peer-initiated updated-key ACK protection, first authenticated retained-old discard timer plus discard cleanup, helper-backed AEAD counter/stop-use and AEAD-limit policy classifier state, and bounded runtime AEAD update-or-discard wiring only.",
-    "Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle ledger is built and verified.",
+    "Only the bounded local 1-to-0 repeated install is implemented, and only after current-phase acknowledgment, three-PTO cooldown, and retained-old discard; repeated receive epoch selection, second-successor packet acceptance, and peer-initiated repeated update cycles remain unimplemented until the lifecycle ledger is widened and verified.",
     "Authentication failure while trying successor material must not advance the active key epoch.",
     "Duplicate same-phase packets must not retrigger derivation or discard retained old material.",
     "Only the first-successor old/current/next receive-selection, old-key packet-number ordering, and retained-old discard floors are implemented; broader old/current/next epoch selection remains unimplemented until the lifecycle ledger exists.",
@@ -137,12 +137,16 @@
       "content": "The runtime now commits the first key update by replacing the stored client and server application traffic secrets with their updated `quic ku` successors. This lets helper derivation compute the next successor packet-protection material from the advanced secrets while the bridge state still rejects repeated local update installation until the current-phase acknowledgment and repeated epoch-selection slices are implemented. This is a prerequisite only; it does not install or accept second-successor packets."
     },
     {
+      "heading": "Bounded Repeated Local Install Boundary",
+      "content": "The runtime now exposes a narrow repeated local 1-RTT install seam after the first current phase is acknowledged, the three-PTO cooldown has elapsed, and retained-old first-update material has been discarded. The seam derives the next `quic ku` successor from the advanced traffic secrets, retains the displaced phase-1 open/protect material, increments the internal key-phase counter to phase 2, and emits outbound Key Phase using phase parity so phase 2 is signaled with bit 0. This is a send-side/local-install floor only; it does not claim repeated receive epoch selection, second-successor packet acceptance, peer-initiated repeated updates, repeated AEAD-limit-triggered updates, or broader stateless-reset-only response behavior."
+    },
+    {
       "heading": "Lifecycle Ledger Shape",
       "content": "- The current executable floor already arms one retained-old discard deadline from the first authenticated successor packet and clears matching old-phase sender/recovery state when it expires.\n- The current AEAD lifecycle helper counts protected/opened packets per key lifecycle, rejects further protection once the configured confidentiality limit is reached, and classifies exhausted AEAD usage into key-update, stop-connection, or stateless-reset-only actions.\n- The future ledger keeps the current epoch, optionally precomputed next receive epoch, and retained old receive epoch distinct.\n- Local initiation is allowed only after handshake confirmation and only after the current phase has produced an acknowledged packet.\n- Peer initiation installs corresponding send keys before acknowledging the new-key packet.\n- Packet-number ordering decides whether retained previous, current, or next receive material is eligible for opening a packet.\n- The current runtime applies AEAD-limit policy decisions to bounded first-update-or-discard send/open paths; broader repeated-update requests still need the future ledger gate.\n- Repeated old read-key discard must remove the corresponding secrets and sender/recovery state together."
     },
     {
       "heading": "Next Planned Scope",
-      "content": "- Design and prove repeated old/current/next epoch selection and second-successor packet processing now that first-update-or-discard AEAD runtime wiring is in place.\n- Keep broader stateless-reset-only response behavior blocked until endpoint-level emission requirements are traced."
+      "content": "- Design and prove repeated receive old/current/next epoch selection and second-successor packet acceptance now that first-update-or-discard AEAD runtime wiring and bounded local repeated install/send parity are in place.\n- Keep peer-initiated repeated updates, repeated AEAD-limit-triggered local updates, and broader stateless-reset-only response behavior blocked until their requirements are traced."
     },
     {
       "heading": "Related Code And Tests",

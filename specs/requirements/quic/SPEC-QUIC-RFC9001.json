@@ -911,7 +911,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseBackToZeroAfterARepeatedLocalUpdate"
         ]
       }
     },
@@ -1631,7 +1632,9 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotAllowARepeatedLocalKeyUpdateBeforeTheCurrentKeyPhaseIsAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotArmTheRepeatedUpdateCooldownWhenOnlyAnOldPhasePacketIsAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotExtendTheRepeatedUpdateCooldownAfterDuplicateAcknowledgments",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsRepeatedLocalKeyUpdateAfterCooldownAndOldKeyDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded"
         ]
       }
     },

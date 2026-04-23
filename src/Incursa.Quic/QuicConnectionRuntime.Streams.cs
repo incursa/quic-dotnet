@@ -1176,7 +1176,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
-            tlsState.CurrentOneRttKeyPhase == 1,
+            tlsState.CurrentOneRttKeyPhaseBit,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -1253,7 +1253,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             payload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
-            tlsState.CurrentOneRttKeyPhase == 1,
+            tlsState.CurrentOneRttKeyPhaseBit,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -2546,7 +2546,7 @@ internal sealed partial class QuicConnectionRuntime
             plaintextPayload.Span,
             minimumPacketNumberExclusive,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
-            tlsState.CurrentOneRttKeyPhase == 1,
+            tlsState.CurrentOneRttKeyPhaseBit,
             out packetNumber,
             out protectedPacket))
         {

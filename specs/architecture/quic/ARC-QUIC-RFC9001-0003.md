@@ -106,7 +106,7 @@ The implementation now has a dedicated connection-owned 1-RTT key-update lifecyc
 ## Edge Cases and Constraints
 
 - The current supported runtime floor remains a first 0-to-1 successor install with retained next receive material, retained old 1-RTT material, first peer-initiated updated-key ACK protection, first authenticated retained-old discard timer plus discard cleanup, helper-backed AEAD counter/stop-use and AEAD-limit policy classifier state, and bounded runtime AEAD update-or-discard wiring only.
-- Repeated 1-to-0, 0-to-1, and peer-initiated update cycles remain unimplemented until the lifecycle ledger is built and verified.
+- Only the bounded local 1-to-0 repeated install is implemented, and only after current-phase acknowledgment, three-PTO cooldown, and retained-old discard; repeated receive epoch selection, second-successor packet acceptance, and peer-initiated repeated update cycles remain unimplemented until the lifecycle ledger is widened and verified.
 - Authentication failure while trying successor material must not advance the active key epoch.
 - Duplicate same-phase packets must not retrigger derivation or discard retained old material.
 - Only the first-successor old/current/next receive-selection, old-key packet-number ordering, and retained-old discard floors are implemented; broader old/current/next epoch selection remains unimplemented until the lifecycle ledger exists.
@@ -138,6 +138,10 @@ This artifact records a stabilized lifecycle boundary, not a complete repeated-u
 
 The runtime now commits the first key update by replacing the stored client and server application traffic secrets with their updated `quic ku` successors. This lets helper derivation compute the next successor packet-protection material from the advanced secrets while the bridge state still rejects repeated local update installation until the current-phase acknowledgment and repeated epoch-selection slices are implemented. This is a prerequisite only; it does not install or accept second-successor packets.
 
+## Bounded Repeated Local Install Boundary
+
+The runtime now exposes a narrow repeated local 1-RTT install seam after the first current phase is acknowledged, the three-PTO cooldown has elapsed, and retained-old first-update material has been discarded. The seam derives the next `quic ku` successor from the advanced traffic secrets, retains the displaced phase-1 open/protect material, increments the internal key-phase counter to phase 2, and emits outbound Key Phase using phase parity so phase 2 is signaled with bit 0. This is a send-side/local-install floor only; it does not claim repeated receive epoch selection, second-successor packet acceptance, peer-initiated repeated updates, repeated AEAD-limit-triggered updates, or broader stateless-reset-only response behavior.
+
 ## Lifecycle Ledger Shape
 
 - The current executable floor already arms one retained-old discard deadline from the first authenticated successor packet and clears matching old-phase sender/recovery state when it expires.
@@ -151,8 +155,8 @@ The runtime now commits the first key update by replacing the stored client and 
 
 ## Next Planned Scope
 
-- Design and prove repeated old/current/next epoch selection and second-successor packet processing now that first-update-or-discard AEAD runtime wiring is in place.
-- Keep broader stateless-reset-only response behavior blocked until endpoint-level emission requirements are traced.
+- Design and prove repeated receive old/current/next epoch selection and second-successor packet acceptance now that first-update-or-discard AEAD runtime wiring and bounded local repeated install/send parity are in place.
+- Keep peer-initiated repeated updates, repeated AEAD-limit-triggered local updates, and broader stateless-reset-only response behavior blocked until their requirements are traced.
 
 ## Related Code And Tests
 

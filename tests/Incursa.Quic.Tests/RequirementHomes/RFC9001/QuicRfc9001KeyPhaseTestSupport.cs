@@ -99,6 +99,26 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         return (bool)installMethod.Invoke(runtimeBridgeDriver, [])!;
     }
 
+    internal static bool TryInstallRuntimeRepeatedOneRttKeyUpdate(
+        QuicConnectionRuntime runtime,
+        ulong nowMicros)
+    {
+        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
+            "tlsBridgeDriver",
+            BindingFlags.NonPublic | BindingFlags.Instance)!;
+        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
+            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
+
+        MethodInfo installMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
+            "TryInstallRepeatedOneRttKeyUpdate",
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            binder: null,
+            [typeof(ulong)],
+            modifiers: null)!;
+
+        return (bool)installMethod.Invoke(runtimeBridgeDriver, [nowMicros])!;
+    }
+
     internal static bool TryGetRuntimeApplicationTrafficSecrets(
         QuicConnectionRuntime runtime,
         out byte[] clientApplicationTrafficSecret,

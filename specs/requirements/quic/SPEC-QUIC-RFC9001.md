@@ -645,6 +645,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs::ActiveClientRuntimeTogglesOutboundKeyPhaseBackToZeroAfterARepeatedLocalUpdate
 
 ## REQ-QUIC-RFC9001-S6-0005 Let Key Phase detect key changes
 The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.
@@ -1144,6 +1145,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotArmTheRepeatedUpdateCooldownWhenOnlyAnOldPhasePacketIsAcknowledged
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotExtendTheRepeatedUpdateCooldownAfterDuplicateAcknowledgments
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsRepeatedLocalKeyUpdateAfterCooldownAndOldKeyDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded
 
 ## REQ-QUIC-RFC9001-S6P5-0004 Limit old read key retention to three PTOs
 An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.

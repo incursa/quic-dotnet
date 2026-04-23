@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Incursa.Quic.Tests;
 
 internal static class QuicRfc9001RepeatedKeyUpdateTestSupport
@@ -29,6 +31,37 @@ internal static class QuicRfc9001RepeatedKeyUpdateTestSupport
                 QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
                 protectedPacket),
             nowTicks: observedAtTicks);
+    }
+
+    internal static ulong PrepareRepeatedLocalUpdateEligibility(QuicConnectionRuntime runtime)
+    {
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+
+        QuicConnectionTransitionResult currentPhasePacketResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhaseOnePacket(
+                runtime,
+                observedAtTicks: Stopwatch.Frequency);
+        Assert.True(currentPhasePacketResult.StateChanged);
+        Assert.True(runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue);
+
+        QuicConnectionTransitionResult discardResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+        Assert.True(discardResult.StateChanged);
+        Assert.False(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.False(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial.HasValue);
+
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber: 20,
+            sentAtMicros: 100,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicConnectionTransitionResult ackResult =
+            ReceiveCurrentPhaseAck(runtime, largestAcknowledged: 20, observedAtTicks: Stopwatch.Frequency * 2);
+        Assert.True(ackResult.StateChanged);
+        Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+
+        return runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros!.Value;
     }
 
     private static byte[] CreateAckPayload(ulong largestAcknowledged, ulong ackDelay)
