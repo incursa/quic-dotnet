@@ -43,6 +43,32 @@ public class QuicAeadKeyLifecycleBenchmarks
             : -1;
     }
 
+    /// <summary>
+    /// Measures the policy branch that requests a key update instead of overusing exhausted protect keys.
+    /// </summary>
+    [Benchmark]
+    public int EvaluateProtectionLimitPolicyForKeyUpdate()
+    {
+        QuicAeadKeyLifecycle keyLifecycle = CreateActiveLifecycle(confidentialityLimit: 1, integrityLimit: 1_000_000);
+        return keyLifecycle.TryUseForProtection()
+            && QuicAeadLimitPolicy.EvaluateProtectionUse(keyLifecycle, keyUpdatePossible: true).Action == QuicAeadLimitAction.InitiateKeyUpdate
+            ? 1
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures the policy branch that admits only stateless resets after integrity exhaustion.
+    /// </summary>
+    [Benchmark]
+    public int EvaluateStatelessResetOnlyPolicyForIntegrityLimit()
+    {
+        QuicAeadKeyLifecycle keyLifecycle = CreateActiveLifecycle(confidentialityLimit: 1_000_000, integrityLimit: 1);
+        return keyLifecycle.TryUseForOpening()
+            && QuicAeadLimitPolicy.EvaluateReceivedPacketResponse(keyLifecycle, connectionStoppedForAeadLimit: false).AllowsOnlyStatelessReset
+            ? 1
+            : -1;
+    }
+
     private static QuicAeadKeyLifecycle CreateActiveLifecycle(int confidentialityLimit, int integrityLimit)
     {
         QuicAeadKeyLifecycle keyLifecycle = new(new QuicAeadUsageLimits(confidentialityLimit, integrityLimit));

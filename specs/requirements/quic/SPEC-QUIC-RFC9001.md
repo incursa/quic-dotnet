@@ -1234,6 +1234,10 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection
 
 ## REQ-QUIC-RFC9001-S6P6-0004 Stop using the connection when key update is impossible
 If a key update is not possible or integrity limits are reached, an endpoint MUST stop using the connection.
@@ -1248,6 +1252,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenConfidentialityLimitIsReachedAndKeyUpdateIsImpossible
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenIntegrityLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyDoesNotStopConnectionWhileLimitsRemainAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::FuzzIntegrityLimitPolicy_RandomizedLimitsStopConnectionAtTheLimit
 
 ## REQ-QUIC-RFC9001-S6P6-0005 Send only stateless resets after exhausted AEAD limits
 If a key update is not possible or integrity limits are reached, an endpoint MUST send only stateless resets in response to received packets.
@@ -1262,6 +1271,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterConnectionStoppedForAeadLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyKeepsOrdinaryResponsesBeforeAeadStop
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzStatelessResetOnlyPolicy_RandomizedIntegrityLimitsChooseStatelessResetOnly
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.

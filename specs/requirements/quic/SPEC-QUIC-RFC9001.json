@@ -1754,6 +1754,11 @@
         "upstream_refs": [
           "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection"
         ]
       }
     },
@@ -1774,6 +1779,12 @@
         "upstream_refs": [
           "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenConfidentialityLimitIsReachedAndKeyUpdateIsImpossible",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyStopsConnectionWhenIntegrityLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::AeadLimitPolicyDoesNotStopConnectionWhileLimitsRemainAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs::FuzzIntegrityLimitPolicy_RandomizedLimitsStopConnectionAtTheLimit"
         ]
       }
     },
@@ -1794,6 +1805,12 @@
         "upstream_refs": [
           "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterConnectionStoppedForAeadLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyKeepsOrdinaryResponsesBeforeAeadStop",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzStatelessResetOnlyPolicy_RandomizedIntegrityLimitsChooseStatelessResetOnly"
         ]
       }
     },

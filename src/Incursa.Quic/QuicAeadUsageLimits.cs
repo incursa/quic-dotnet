@@ -60,6 +60,95 @@ internal enum QuicAeadKeyUsageState
 }
 
 /// <summary>
+/// Describes the next connection-level action required by AEAD usage-limit policy.
+/// </summary>
+internal enum QuicAeadLimitAction
+{
+    /// <summary>
+    /// The key set can still be used normally.
+    /// </summary>
+    Continue,
+
+    /// <summary>
+    /// The endpoint must initiate a QUIC key update before protecting another packet.
+    /// </summary>
+    InitiateKeyUpdate,
+
+    /// <summary>
+    /// The endpoint must stop using the connection because key update cannot safely continue.
+    /// </summary>
+    StopUsingConnection,
+
+    /// <summary>
+    /// The endpoint can only answer future packets with stateless resets.
+    /// </summary>
+    SendOnlyStatelessReset,
+}
+
+/// <summary>
+/// Carries an AEAD usage-limit policy decision.
+/// </summary>
+internal readonly record struct QuicAeadLimitDecision(
+    QuicAeadLimitAction Action,
+    QuicTransportErrorCode? TransportErrorCode)
+{
+    internal static QuicAeadLimitDecision Continue { get; } =
+        new(QuicAeadLimitAction.Continue, null);
+
+    internal static QuicAeadLimitDecision InitiateKeyUpdate { get; } =
+        new(QuicAeadLimitAction.InitiateKeyUpdate, null);
+
+    internal static QuicAeadLimitDecision StopUsingConnection { get; } =
+        new(QuicAeadLimitAction.StopUsingConnection, QuicTransportErrorCode.AeadLimitReached);
+
+    internal static QuicAeadLimitDecision SendOnlyStatelessReset { get; } =
+        new(QuicAeadLimitAction.SendOnlyStatelessReset, QuicTransportErrorCode.AeadLimitReached);
+
+    internal bool RequiresConnectionStop =>
+        Action is QuicAeadLimitAction.StopUsingConnection or QuicAeadLimitAction.SendOnlyStatelessReset;
+
+    internal bool AllowsOnlyStatelessReset =>
+        Action == QuicAeadLimitAction.SendOnlyStatelessReset;
+}
+
+/// <summary>
+/// Converts per-key AEAD counters into connection-level limit actions.
+/// </summary>
+internal static class QuicAeadLimitPolicy
+{
+    internal static QuicAeadLimitDecision EvaluateProtectionUse(
+        QuicAeadKeyLifecycle keyLifecycle,
+        bool keyUpdatePossible)
+    {
+        if (keyLifecycle.CanProtect)
+        {
+            return QuicAeadLimitDecision.Continue;
+        }
+
+        if (keyLifecycle.HasReachedIntegrityLimit || !keyUpdatePossible)
+        {
+            return QuicAeadLimitDecision.StopUsingConnection;
+        }
+
+        return keyLifecycle.HasReachedConfidentialityLimit
+            ? QuicAeadLimitDecision.InitiateKeyUpdate
+            : QuicAeadLimitDecision.StopUsingConnection;
+    }
+
+    internal static QuicAeadLimitDecision EvaluateReceivedPacketResponse(
+        QuicAeadKeyLifecycle keyLifecycle,
+        bool connectionStoppedForAeadLimit)
+    {
+        if (connectionStoppedForAeadLimit || keyLifecycle.HasReachedIntegrityLimit)
+        {
+            return QuicAeadLimitDecision.SendOnlyStatelessReset;
+        }
+
+        return QuicAeadLimitDecision.Continue;
+    }
+}
+
+/// <summary>
 /// Tracks key availability against appendix B usage limits and supports transition/rejection checks.
 /// </summary>
 internal sealed class QuicAeadKeyLifecycle
@@ -116,6 +205,18 @@ internal sealed class QuicAeadKeyLifecycle
     /// Gets the number of packets opened so far using this key set.
     /// </summary>
     internal double OpenedPacketCount => openedPackets;
+
+    /// <summary>
+    /// Gets whether the confidentiality limit has been reached for this key set.
+    /// </summary>
+    internal bool HasReachedConfidentialityLimit =>
+        protectedPackets >= limits.ConfidentialityLimitPackets;
+
+    /// <summary>
+    /// Gets whether the integrity limit has been reached for this key set.
+    /// </summary>
+    internal bool HasReachedIntegrityLimit =>
+        openedPackets >= limits.IntegrityLimitPackets;
 
     /// <summary>
     /// Marks key material available for use.
@@ -192,4 +293,3 @@ internal sealed class QuicAeadKeyLifecycle
         return true;
     }
 }
-
