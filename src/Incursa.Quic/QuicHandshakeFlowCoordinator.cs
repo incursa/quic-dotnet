@@ -480,8 +480,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int sourceConnectionIdLength = sourceConnectionId.Length;
         int destinationConnectionIdLength = destinationConnectionId.Length;
-        if (sourceConnectionIdLength > 0
-            && sourceConnectionIdLength != destinationConnectionIdLength)
+        if (sourceConnectionIdLength > 0)
         {
             for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
             {
@@ -499,20 +498,25 @@ internal sealed class QuicHandshakeFlowCoordinator
                 }
             }
 
-            for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
+            if (sourceConnectionIdLength == destinationConnectionIdLength)
             {
-                if (TryOpenApplicationDataPacket(
-                    protectedPacket,
-                    material,
-                    destinationConnectionIdLength,
-                    packetNumberLength,
-                    out openedPacket,
-                    out payloadOffset,
-                    out payloadLength,
-                    out keyPhase))
-                {
-                    return true;
-                }
+                return false;
+            }
+        }
+
+        for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
+        {
+            if (TryOpenApplicationDataPacket(
+                protectedPacket,
+                material,
+                destinationConnectionIdLength,
+                packetNumberLength,
+                out openedPacket,
+                out payloadOffset,
+                out payloadLength,
+                out keyPhase))
+            {
+                return true;
             }
         }
 
@@ -540,8 +544,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int sourceConnectionIdLength = sourceConnectionId.Length;
         int destinationConnectionIdLength = destinationConnectionId.Length;
-        if (sourceConnectionIdLength > 0
-            && sourceConnectionIdLength != destinationConnectionIdLength)
+        if (sourceConnectionIdLength > 0)
         {
             for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
             {
@@ -559,20 +562,25 @@ internal sealed class QuicHandshakeFlowCoordinator
                 }
             }
 
-            for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
+            if (sourceConnectionIdLength == destinationConnectionIdLength)
             {
-                if (TryOpenApplicationDataPacket(
-                    protectedPacket,
-                    material,
-                    destinationConnectionIdLength,
-                    packetNumberLength,
-                    out openedPacket,
-                    out payloadOffset,
-                    out payloadLength,
-                    out keyPhase))
-                {
-                    return true;
-                }
+                return false;
+            }
+        }
+
+        for (int packetNumberLength = 1; packetNumberLength <= ApplicationPacketNumberLength; packetNumberLength++)
+        {
+            if (TryOpenApplicationDataPacket(
+                protectedPacket,
+                material,
+                destinationConnectionIdLength,
+                packetNumberLength,
+                out openedPacket,
+                out payloadOffset,
+                out payloadLength,
+                out keyPhase))
+            {
+                return true;
             }
         }
 
