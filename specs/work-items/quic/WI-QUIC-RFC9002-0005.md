@@ -37,7 +37,7 @@ related_artifacts:
 
 ## Summary
 
-Implement a runtime-owned PTO probe send scheduler that re-arms recovery from real sends, selects the packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before using a PING, and keeps the existing pacing and burst helpers visible on the non-ACK send path.
+Implement a runtime-owned PTO probe send scheduler that re-arms recovery from real sends, selects the packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before using a PING, can trigger bounded early CRYPTO probes for already-published ServerHello/Handshake data on duplicate retried Initial ingress, and keeps the existing pacing and burst helpers visible on the non-ACK send path.
 
 ## Requirements Addressed
 
@@ -67,8 +67,9 @@ Implement a runtime-owned PTO probe send scheduler that re-arms recovery from re
 
 - Re-arm the recovery timer from actual send activity and queued stream flushes.
 - Select the PTO packet-number space at expiry and fall back across other in-flight spaces before using a PING.
+- Permit a bounded early CRYPTO probe sequence for already-published server Initial ServerHello and Handshake packets when duplicate retried Initial CRYPTO indicates likely first-flight loss after HelloRetryRequest.
 - Keep the existing pacing and burst helpers visible on non-ACK traffic instead of inventing an alternate scheduler.
-- Prove the slice with focused requirement-home coverage for the PTO fallback and pacing/burst contract.
+- Prove the slice with focused requirement-home coverage for the PTO fallback, duplicate retried-ClientHello early probe, anti-amplification negative, fuzz boundary, and pacing/burst contract.
 
 ## Out of Scope
 
@@ -80,11 +81,11 @@ Implement a runtime-owned PTO probe send scheduler that re-arms recovery from re
 
 ## Verification Plan
 
-Run the targeted RFC 9002 requirement-home tests for the PTO fallback and pacing/burst slice, then run the lane filter command and the repo-local trace validation flow if the canonical JSON changes.
+Run the targeted RFC 9002 requirement-home tests for the PTO fallback, duplicate retried-ClientHello early probe, anti-amplification boundary, fuzz boundary, and pacing/burst slice; inspect preserved evidence under `artifacts/interop-runner/20260422-214233797-server-nginx/`; then run the lane filter command and the repo-local trace validation flow if the canonical JSON changes.
 
 ## Completion Notes
 
-The recovery timer now re-arms from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to a PING probe, and does not widen public APIs.
+The recovery timer now re-arms from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to a PING probe, and can replay already-published server Initial ServerHello plus Handshake CRYPTO packets early when duplicate retried Initial CRYPTO indicates likely first-flight loss. The early path remains subject to anti-amplification and datagram-size limits and does not widen public APIs or TLS group support.
 
 ## Trace Links
 

@@ -765,7 +765,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (!replayedDuplicateInitialCrypto)
                 {
-                    replayedDuplicateInitialCrypto = TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+                    replayedDuplicateInitialCrypto = TryReplayOutstandingCryptoAfterDuplicateInitialIngress(
                         encryptionLevel,
                         nowTicks,
                         ref effects);
@@ -827,7 +827,7 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TryFlushHandshakePackets(ref effects);
         if (processedCryptoFrame && !progressedTranscript && !replayedDuplicateInitialCrypto)
         {
-            stateChanged |= TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+            stateChanged |= TryReplayOutstandingCryptoAfterDuplicateInitialIngress(
                 encryptionLevel,
                 nowTicks,
                 ref effects);
@@ -843,7 +843,6 @@ internal sealed partial class QuicConnectionRuntime
         if (encryptionLevel != QuicTlsEncryptionLevel.Initial
             || tlsState.Role != QuicTlsRole.Server
             || phase != QuicConnectionPhase.Establishing
-            || tlsState.HandshakeKeysAvailable
             || cryptoFrame.CryptoData.IsEmpty
             || cryptoFrame.Offset > QuicVariableLengthInteger.MaxValue - (ulong)cryptoFrame.CryptoData.Length)
         {
@@ -854,7 +853,7 @@ internal sealed partial class QuicConnectionRuntime
         return frameEndOffset <= tlsState.InitialIngressCryptoBuffer.NextReadOffset;
     }
 
-    private bool TryReplayOutstandingInitialCryptoAfterDuplicateIngress(
+    private bool TryReplayOutstandingCryptoAfterDuplicateInitialIngress(
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
@@ -862,9 +861,28 @@ internal sealed partial class QuicConnectionRuntime
         if (encryptionLevel != QuicTlsEncryptionLevel.Initial
             || tlsState.Role != QuicTlsRole.Server
             || phase != QuicConnectionPhase.Establishing
-            || tlsState.HandshakeKeysAvailable
-            || tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0
             || activePath is null)
+        {
+            return false;
+        }
+
+        if (tlsState.HandshakeKeysAvailable)
+        {
+            if (tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0
+                || tlsState.HandshakeEgressCryptoBuffer.BufferedBytes > 0)
+            {
+                return false;
+            }
+
+            return TrySendRecoveryProbeSequence(
+                QuicPacketNumberSpace.Initial,
+                QuicPacketNumberSpace.Handshake,
+                QuicPacketNumberSpace.ApplicationData,
+                nowTicks,
+                ref effects);
+        }
+
+        if (tlsState.InitialEgressCryptoBuffer.BufferedBytes > 0)
         {
             return false;
         }

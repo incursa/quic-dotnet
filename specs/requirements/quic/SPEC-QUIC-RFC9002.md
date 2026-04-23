@@ -1467,6 +1467,9 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_ArmsAnEarlyCryptoProbeAfterUniqueDatagramReceiptRestoresSendBudget
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_DoesNotArmAnEarlyCryptoProbeWhileThePeerIsStillAmplificationLimited
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightReplaysServerHelloAndHandshakeProbes
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightDoesNotProbePastAntiAmplificationBudget
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FuzzDuplicateRetriedClientHelloAfterServerFlight_ProbeReplayStaysBudgetedAndBounded
 
 ## REQ-QUIC-RFC9002-S6P2P4-0001 Probe with at least one ack-eliciting packet
 When a PTO timer expires, a sender MUST send at least one ack-eliciting packet in the packet number space as a probe.

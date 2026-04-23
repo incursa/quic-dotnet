@@ -4,12 +4,12 @@
 
 ## Purpose
 
-Describe the runtime-owned PTO probe scheduler that re-arms recovery from real sends, prefers the packet-number space selected by recovery, falls back across other in-flight packet-number spaces, and only uses a PING when no better probe exists.
+Describe the runtime-owned PTO probe scheduler that re-arms recovery from real sends, prefers the packet-number space selected by recovery, falls back across other in-flight packet-number spaces, can send bounded early CRYPTO probes before PTO when duplicate handshake CRYPTO proves likely first-flight loss, and only uses a PING when no better probe exists.
 
 ## Scope
 
-This design covers the sender-recovery timer, the PTO fallback packet, and the runtime recompute hooks needed for stream-open, stream-write, and application-delay flushes.
-It does not define new congestion control behavior, public APIs, or RFC 9000/RFC 9001 packet formats outside the send scheduler path.
+This design covers the sender-recovery timer, the PTO fallback packet, bounded early CRYPTO probes for already-published ServerHello/Handshake data when duplicate retried Initial CRYPTO indicates likely first-flight loss, and the runtime recompute hooks needed for stream-open, stream-write, and application-delay flushes.
+It does not define new congestion control behavior, public APIs, TLS group widening, or RFC 9000/RFC 9001 packet formats outside the send scheduler path.
 
 ## Requirements Satisfied
 
@@ -33,17 +33,19 @@ It does not define new congestion control behavior, public APIs, or RFC 9000/RFC
 
 ## Design Summary
 
-The runtime records ack-eliciting sends in QuicRecoveryController, re-selects the recovery packet-number space when PTO expires, and attempts the selected space before falling back to other in-flight packet-number spaces and then a PING probe.
-Queued stream writes still flush as ordinary application packets, while the send path recomputes lifecycle timers after each actual send so the recovery deadline remains aligned with the in-flight packet set.
+The runtime records ack-eliciting sends in QuicRecoveryController, re-selects the recovery packet-number space when PTO expires, and attempts the selected space before falling back across other in-flight packet-number spaces and then a PING probe.
+On the server path, duplicate Initial CRYPTO that carries an already-consumed retried ClientHello after the ServerHello/Handshake flight has been published can prompt an early recovery sequence for the outstanding Initial ServerHello and Handshake CRYPTO packets, still subject to maximum-datagram-size and anti-amplification limits. Queued stream writes still flush as ordinary application packets, while the send path recomputes lifecycle timers after each actual send so the recovery deadline remains aligned with the in-flight packet set.
 
 ## Key Components
 
 - src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs
 - src/Incursa.Quic/QuicRecoveryTiming.cs
 - src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
 - src/Incursa.Quic/QuicConnectionSendRuntime.cs
 - src/Incursa.Quic/QuicCongestionControlState.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs

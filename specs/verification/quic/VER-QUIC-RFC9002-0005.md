@@ -4,7 +4,7 @@
 
 ## Scope
 
-This verification artifact covers the runtime-owned PTO probe scheduler slice only: recovery now re-arms from actual sends, PTO expiry prefers the selected packet-number space, falls back across other in-flight packet-number spaces before using a PING, and stays aligned with the existing pacing and burst helpers on non-ACK traffic. It does not claim public API changes, alternate congestion controllers, or unrelated RFC 9000 framing work.
+This verification artifact covers the runtime-owned PTO probe scheduler slice only: recovery now re-arms from actual sends, PTO expiry prefers the selected packet-number space, falls back across other in-flight packet-number spaces before using a PING, can send bounded early CRYPTO probes for already-published server ServerHello/Handshake packets when duplicate retried Initial CRYPTO indicates likely first-flight loss, and stays aligned with the existing pacing and burst helpers on non-ACK traffic. It does not claim public API changes, alternate congestion controllers, TLS group widening, or unrelated RFC 9000 framing work.
 
 ## Requirements Verified
 
@@ -28,7 +28,7 @@ This verification artifact covers the runtime-owned PTO probe scheduler slice on
 
 ## Verification Method
 
-Requirement-home execution, packet inspection, and trace validation for the PTO probe scheduler slice.
+Requirement-home execution, packet inspection, preserved interop replay evidence, fuzzing, and trace validation for the PTO probe scheduler slice.
 
 ## Preconditions
 
@@ -40,15 +40,17 @@ Requirement-home execution, packet inspection, and trace validation for the PTO 
 
 - Run `dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P2_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P3_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P7_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P8_0002"`.
 - Inspect `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs` for the selected-space handshake probe proof and `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs` for the PTO-expiry PING fallback.
+- Inspect `tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs` for the preserved `artifacts/interop-runner/20260422-214233797-server-nginx/` duplicate retried-ClientHello replay, anti-amplification negative, and fuzz-boundary tests tied to `REQ-QUIC-RFC9002-S6P2P3-0001`.
 - Keep the adjacent pacing and burst requirement homes green so the non-ACK send-path proof stays intact.
 
 ## Expected Result
 
-The requirement-home proof shows a recovery timer armed by real sends, a PTO expiry path that emits a protected handshake packet when handshake egress is available, a PING probe when only application fallback exists, a rearmed recovery timer after the probe, and unchanged pacing/burst coverage for non-ACK traffic.
+The requirement-home proof shows a recovery timer armed by real sends, a PTO expiry path that emits a protected handshake packet when handshake egress is available, a PING probe when only application fallback exists, a rearmed recovery timer after the probe, bounded early replay of already-published server Initial ServerHello plus Handshake CRYPTO packets after duplicate retried Initial ingress, anti-amplification suppression when send budget is insufficient, and unchanged pacing/burst coverage for non-ACK traffic.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0002.cs
@@ -56,15 +58,25 @@ The requirement-home proof shows a recovery timer armed by real sends, a PTO exp
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs
+- benchmarks/QuicHandshakePacketProtectionBenchmarks.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
+- src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs
 - src/Incursa.Quic/QuicRecoveryTiming.cs
 - src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
 - src/Incursa.Quic/QuicCongestionControlState.cs
+- artifacts/interop-runner/20260422-214233797-server-nginx/runner-logs/nginx_quic-go/handshakeloss/client/log.txt
+- artifacts/interop-runner/20260422-214233797-server-nginx/runner-logs/nginx_quic-go/handshakeloss/client/qlog/dff75b130f1b4dce.sqlog
+- artifacts/interop-runner/20260422-214233797-server-nginx/runner-logs/nginx_quic-go/handshakeloss/output.txt
+- artifacts/interop-runner/20260422-221637908-server-nginx/runner-report.md
+- artifacts/interop-runner/20260422-221637908-server-nginx/runner-logs/nginx_quic-go/handshakeloss/client/qlog/574b636a9591102ebdfc6c1bd197.sqlog
+- artifacts/interop-runner/20260422-221637908-server-nginx/runner-logs/nginx_quic-go/handshakeloss/output.txt
+- artifacts/interop-runner/20260422-221637908-server-nginx/runner-logs/nginx_quic-go/handshakeloss/server/qlog/server-multiconnect-664752a1f6f443a3bb74d8816383df55.qlog
+- artifacts/QuicHandshakePacketProtectionBenchmarks-dry.log
 - dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P2_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P3_0001|FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P7_|FullyQualifiedName~REQ_QUIC_RFC9002_S7P8_0002"
 
 ## Status
 
-Passed; the runtime slice now arms recovery from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to PING, and keeps the pacing/burst proof visible in the targeted RFC 9002 requirement homes.
+Passed; the runtime slice now arms recovery from real sends, prefers the selected packet-number space at PTO expiry, falls back across other in-flight packet-number spaces before defaulting to PING, can replay already-published server Initial ServerHello plus Handshake CRYPTO packets early on duplicate retried Initial ingress while preserving anti-amplification limits, and keeps the pacing/burst proof visible in the targeted RFC 9002 requirement homes. The preserved follow-up interop rerun at artifacts/interop-runner/20260422-221637908-server-nginx/ no longer reproduces the repo-owned post-HRR server-flight loss branch; its final failed connection dropped both retried ClientHello datagrams before the server could advance.
 
 ## Related Artifacts
 
