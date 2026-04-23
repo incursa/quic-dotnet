@@ -1094,6 +1094,10 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs::ActiveClientRuntimeInstallsSuccessorWriteSecretForNewPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs::ActiveServerRuntimeInstallsSuccessorWriteSecretForNewPackets"
+      ],
       "notes": [
         "This requirement promotes the initiation step needed for repeated 1-RTT key-update epochs."
       ]
@@ -1116,7 +1120,11 @@
           "RFC 9001 §6.1 RFC9001-S6.1-B2-P1-S6",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs::RuntimeDerivedSuccessorMaterialRetainsCurrentHeaderProtectionKeys",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs::CapturedPhaseOnePacketDoesNotOpenWhenTheHeaderProtectionKeyRotates"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P1-0003",
@@ -1136,7 +1144,10 @@
           "RFC 9001 §6.1 RFC9001-S6.1-B5-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs::InitiatedKeyUpdateProtectsConsecutivePacketsWithUpdatedKeyIvAndKeyPhase"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P1-0004",
@@ -1156,7 +1167,10 @@
           "RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs::EstablishingClientRuntimeCannotDeriveOrInstallALocalKeyUpdateBeforeHandshakeConfirmation"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P1-0005",
@@ -1176,7 +1190,10 @@
           "RFC 9001 §6.1 RFC9001-S6.1-B6-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs::RuntimeRejectsASecondLocalUpdateBeforeCurrentPhaseAcknowledgmentSupportExists"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P1-0006",
@@ -1196,7 +1213,11 @@
           "RFC 9001 §6.1 RFC9001-S6.1-B7-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ]
-      }
+      },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate"
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P1-0007",

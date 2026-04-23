@@ -24,6 +24,14 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         return coordinator;
     }
 
+    internal static QuicConnectionRuntime CreateEstablishingClientRuntime()
+    {
+        return new QuicConnectionRuntime(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            new FakeMonotonicClock(0),
+            tlsRole: QuicTlsRole.Client);
+    }
+
     internal static bool TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
         QuicConnectionRuntime runtime,
         out QuicTlsPacketProtectionMaterial openMaterial,
@@ -91,11 +99,23 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         return protectedPacket;
     }
 
-    private static byte[] CreatePingPayload()
+    internal static byte[] CreatePingPayload()
     {
         byte[] payload = new byte[1];
         Assert.True(QuicFrameCodec.TryFormatPingFrame(payload, out int bytesWritten));
         Assert.Equal(1, bytesWritten);
         return payload;
+    }
+
+    private sealed class FakeMonotonicClock : IMonotonicClock
+    {
+        public FakeMonotonicClock(long ticks)
+        {
+            Ticks = ticks;
+        }
+
+        public long Ticks { get; }
+
+        public double Seconds => Ticks / (double)TimeSpan.TicksPerSecond;
     }
 }

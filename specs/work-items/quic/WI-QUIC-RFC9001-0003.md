@@ -129,7 +129,7 @@ The executable slice must include positive tests for repeated local and peer upd
 
 ## Completion Notes
 
-Planned only. No repeated 1-RTT key-update implementation is claimed by this artifact.
+Planned for the broader lifecycle. The direct first-successor proof for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006 is now executable at the requirement-home level, but no repeated 1-RTT key-update implementation or old-key discard implementation is claimed by this artifact.
 
 ## Trace Links
 
@@ -182,7 +182,7 @@ Verified By:
 
 ## Current Boundary
 
-The current runtime can prove the first 0-to-1 successor install and rejection of duplicate same-phase installs. Repeated key-update cycles, current-phase acknowledgment gating, AEAD-limit update requests, and old 1-RTT key discard remain planned until the lifecycle owner is implemented and proven.
+The current runtime can prove the first 0-to-1 successor install, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, and successor receive-key installation. Repeated key-update cycles after acknowledgment, AEAD-limit update requests, old-key retention after new-key authentication, and old 1-RTT key discard remain planned until the lifecycle owner is implemented and proven.
 
 ## Related Code And Tests
 
@@ -192,4 +192,10 @@ The current runtime can prove the first 0-to-1 successor install and rejection o
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs)
 - [`benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs`](../../../benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs)

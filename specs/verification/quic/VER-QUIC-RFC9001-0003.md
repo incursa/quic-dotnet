@@ -59,6 +59,7 @@ Planned requirement-home execution, negative transition tests, fuzz or property 
 ## Procedure or Approach
 
 - Run the existing first-successor RFC 9001 Section 6 requirement-home tests as a regression baseline.
+- Run the direct RFC 9001 Section 6.1 first-successor requirement-home tests for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006.
 - Add and run positive tests for repeated local-initiated and peer-initiated key updates that alternate the Key Phase bit across more than one epoch.
 - Add and run negative tests for duplicate same-phase packets, stale older-epoch packets, tampered successor packets, packet-number-incoherent old-key packets, unacknowledged repeated local updates, premature old-key discard, and authentication failure rollback.
 - Add and run tests that prove AEAD usage-limit counters request a local update through the same acknowledgment-gated lifecycle and enter the terminal stateless-reset-only boundary when key update is impossible or integrity limits are reached.
@@ -78,15 +79,28 @@ The eventual lifecycle proof shows that endpoints can repeatedly update 1-RTT pa
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs
 - benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs
 - artifacts/benchmark-baseline/20260422-2327-keyphase-dry/
 - artifacts/verification/20260423-rfc9001-key-update-boundary/rfc9001-s6-key-update-boundary.log
+- artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/rfc9001-s6p1-first-successor-tests.log
+- artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/rfc9001-s6-and-s6p1-key-update-tests.log
+- artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/render-check.log
+- artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/git-diff-check.log
+- artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/spec-trace-core-validation.log
 - dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008"
+- dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6P1"
+- dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0006|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0007|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0008|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1"
 
 ## Status
 
-Planned only. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. Repeated 1-RTT key-update cycles, AEAD-limit-triggered updates, and old 1-RTT key discard remain open under the gap ledger.
+Planned for the broader lifecycle. On 2026-04-23, the existing first-successor Section 6 regression guard passed 19 focused tests with the serialized `-m:1` run preserved under artifacts/verification/20260423-rfc9001-key-update-boundary/. The direct Section 6.1 first-successor proof now covers REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0006 with 9 focused tests and a 28-test combined Section 6 plus Section 6.1 guard preserved under artifacts/verification/20260423-rfc9001-s6p1-first-successor-proof/. The touched Markdown views render cleanly; repo-wide SpecTrace core validation still fails at the known 6125-error residual baseline. Repeated 1-RTT key-update cycles, AEAD-limit-triggered updates, old-key retention after new-key authentication, and old 1-RTT key discard remain open under the gap ledger.
 
 ## Related Artifacts
 
@@ -99,6 +113,6 @@ Planned only. On 2026-04-23, the existing first-successor Section 6 regression g
 
 ## Current Evidence Boundary
 
-- Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, and duplicate same-phase rejection.
+- Current tests prove first-successor install, changed-Key Phase observation, tampered-packet rejection, duplicate same-phase rejection, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, and successor receive-key installation.
 - Current benchmarks cover the first-successor install and protected packet formatting/opening path.
-- No evidence in this artifact claims repeated key-update cycles, current-phase acknowledgment gating, AEAD-limit-triggered local updates, old 1-RTT key retention across multiple epochs, or old 1-RTT key discard.
+- No evidence in this artifact claims repeated key-update cycles after acknowledgment, AEAD-limit-triggered local updates, old 1-RTT key retention after new-key authentication, or old 1-RTT key discard.
