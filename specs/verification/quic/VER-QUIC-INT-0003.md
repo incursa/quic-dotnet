@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the narrow child-process transfer contract on the existing active-phase managed path: one managed connection, an ordered `REQUESTS` URL list, exactly one application stream per request, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion for every ordered request, and honest exit `0` only after byte delivery is complete on both sides.
+Verify the narrow child-process transfer contract on the existing active-phase managed path: one managed connection, an ordered client `REQUESTS` URL list, exactly one application stream per request, fixed `/www` and `/downloads` mount-path contract, `Http3` ALPN, EOF-based completion for every ordered request, and honest exit `0` only after byte delivery is complete on both sides. This verification also covers the supported server-role runner shape where `REQUESTS_SERVER` is empty and the server derives the mounted source path from each actual HTTP/0.9 request target.
 
 ## Requirements Verified
 
@@ -18,19 +18,19 @@ Focused requirement-home tests, captured-packet replay, helper-script validation
 
 - The active-phase loopback stream lane and client-role 1-RTT readiness proof remain green.
 - The harness can still build and run the existing handshake path without widening retry support.
-- Transfer requirement-home and localhost preflight proofs exist for the ordered one-connection child-process contract.
+- Transfer requirement-home and localhost preflight proofs exist for the ordered one-connection child-process contract, including the empty-server-REQUESTS dispatch shape used by server-role runner executions.
 
 ## Procedure or Approach
 
 - Run the focused transfer and preflight requirement-home lanes that cover `REQ_QUIC_INT_0010` and `REQ_QUIC_INT_0014`.
 - Run the existing handshake/public guard tests, the client 1-RTT readiness tests, and the captured transfer replay lane to keep the prerequisites green.
 - Run `InteropRunnerScriptFailureSummaryTests` so the helper's narrow advisory-only classification stays proven for the runner's `FileNotFoundError` post-check path.
-- Rerun the local helper against quic-go in client-role `transfer` mode and inspect the preserved `output.txt`, runner stderr log, and runner report under the fresh artifact root.
+- Rerun the local helper against quic-go in client-role `transfer` mode and in server-role `transfer` mode, then inspect the preserved `output.txt`, runner stderr log, and runner report under the fresh artifact roots.
 - Inspect the README and gap ledger to confirm the transfer contract is wired into runner dispatch and that retry remains unsupported.
 
 ## Expected Result
 
-The child-process transfer slice only reports success after every ordered download completes on the single managed connection, EOF is observed on both sides, and the helper only downgrades the runner's post-check `FileNotFoundError` to advisory when the preserved client-role transfer output proves the full ordered request list completed cleanly.
+The child-process transfer slice only reports success after every ordered download completes on the single managed connection, EOF is observed on both sides, supported server-role runs tolerate the runner's empty `REQUESTS_SERVER` input while serving request-target-derived files honestly, and the helper only downgrades the runner's post-check `FileNotFoundError` to advisory when preserved output proves the transfer completed cleanly for the active local role.
 
 ## Evidence
 
@@ -49,10 +49,12 @@ The child-process transfer slice only reports success after every ordered downlo
 - src/Incursa.Quic.InteropHarness/README.md
 - specs/requirements/quic/REQUIREMENT-GAPS.md
 - artifacts/interop-runner/20260421-020851211-client-chrome/
+- artifacts/interop-runner/20260422-140138237-server-nginx/
+- artifacts/interop-runner/20260422-141632722-server-nginx/
 
 ## Status
 
-Passed on 2026-04-21; the requirement-home, replay, helper-script, and fresh quic-go client-role helper lanes confirmed the ordered one-connection transfer contract and preserved a case-specific advisory-success bundle for the runner's post-check `FileNotFoundError` at `artifacts/interop-runner/20260421-020851211-client-chrome/`.
+Passed on 2026-04-22; the requirement-home, replay, helper-script, and fresh quic-go helper lanes now confirm the ordered one-connection transfer contract for both client-role and server-role local executions. The preserved server-role helper bundle at `artifacts/interop-runner/20260422-140138237-server-nginx/` narrowed the remaining defect to pre-QUIC server dispatch rejecting the runner's empty `REQUESTS_SERVER`, and the post-fix rerun at `artifacts/interop-runner/20260422-141632722-server-nginx/` shows the managed server completing every transfer response with both endpoints exiting `0` before the external runner's own post-check throws `FileNotFoundError`.
 
 ## Related Artifacts
 

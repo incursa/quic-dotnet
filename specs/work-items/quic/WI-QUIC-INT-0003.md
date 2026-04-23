@@ -36,7 +36,8 @@ Implement the ordered one-connection child-process transfer contract on the exis
 
 ## Planned Changes
 
-- Route the `transfer` testcase through the existing active-phase managed path as an ordered `REQUESTS` plan on one managed connection.
+- Route the `transfer` testcase through the existing active-phase managed path as an ordered client-side `REQUESTS` plan on one managed connection.
+- Keep the server-side transfer path honest when the external runner passes `REQUESTS_SERVER=""` by deriving mounted source paths from the actual HTTP/0.9 request targets instead of failing before QUIC work starts.
 - Open or accept exactly one application stream per ordered request and gate exit `0` on byte delivery plus EOF across the full ordered request list.
 - Preserve the fixed `/www` and `/downloads` mount-path contract without widening retry, parallel stream fan-out, or TLS policy.
 - Add requirement-home coverage, captured-interop replay coverage, and narrow helper validation for the ordered transfer contract while keeping the unsupported-testcase guards honest.
@@ -50,11 +51,11 @@ Implement the ordered one-connection child-process transfer contract on the exis
 
 ## Verification Plan
 
-Run the focused `REQ_QUIC_INT_0010`, `REQ_QUIC_INT_0014`, replay, and helper-script lanes, rerun the fresh client-role quic-go transfer helper, and confirm the harness only reports exit `0` after the full ordered request list reaches byte delivery plus EOF on both sides. Keep retry, multiconnect, msquic, and broader transfer widening on their own slices.
+Run the focused `REQ_QUIC_INT_0010`, `REQ_QUIC_INT_0014`, replay, and helper-script lanes, rerun the fresh client-role quic-go transfer helper plus the server-role quic-go transfer helper, and confirm the harness only reports exit `0` after the full ordered request list reaches byte delivery plus EOF on both sides while supported server-role runs tolerate the runner's empty server-side `REQUESTS` list. Keep retry, multiconnect, msquic, and broader transfer widening on their own slices.
 
 ## Completion Notes
 
-Implemented and revalidated locally on 2026-04-21. The transfer slice now routes an ordered `REQUESTS` list through one managed connection, replays preserved quic-go transfer artifacts locally, and preserves the fresh client-role helper bundle at `artifacts/interop-runner/20260421-020851211-client-chrome/` where the runner's post-check still raised `FileNotFoundError` even though the managed downloads completed and the local client exited `0`.
+Implemented and revalidated locally on 2026-04-22. The transfer slice still routes the ordered client `REQUESTS` list through one managed connection, and the server-role path now also tolerates the runner's empty server-side `REQUESTS` list by deriving mounted source paths from the actual HTTP/0.9 request targets it receives. Requirement-home proof now covers that empty-server-REQUESTS dispatch shape, the preserved server-role helper bundle at `artifacts/interop-runner/20260422-140138237-server-nginx/` narrowed the regression before the fix by showing the harness failed fast on `REQUESTS must contain at least one URL for testcase dispatch.`, and the post-fix rerun at `artifacts/interop-runner/20260422-141632722-server-nginx/` shows the managed server completing every transfer response with both endpoints exiting `0` before the external runner's own post-check throws `FileNotFoundError`.
 
 ## Trace Links
 
