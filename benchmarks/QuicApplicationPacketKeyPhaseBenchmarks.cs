@@ -30,11 +30,14 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     private byte[] clientHelloTranscript = [];
     private QuicTlsTransportBridgeDriver installDriver = default!;
     private QuicTlsTransportBridgeDriver repeatedInstallDriver = default!;
+    private QuicTlsTransportBridgeDriver repeatedPeerInstallDriver = default!;
     private ulong repeatedUpdateNotBeforeMicros;
     private QuicHandshakeFlowCoordinator packetCoordinator = default!;
     private QuicTlsPacketProtectionMaterial installedOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial installedProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial repeatedRetainedPhaseOneOpenPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial repeatedPeerSecondSuccessorOpenPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial repeatedPeerSecondSuccessorProtectPacketProtectionMaterial;
     private readonly byte[] applicationPayload = new byte[1];
     private byte[] protectedPacket = [];
     private byte[] repeatedRetainedPhaseOneProtectedPacket = [];
@@ -120,6 +123,13 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     {
         installDriver = CreateFinishedClientDriver();
         repeatedInstallDriver = CreateRepeatedInstallReadyClientDriver();
+        repeatedPeerInstallDriver = CreateRepeatedInstallReadyClientDriver();
+        if (!repeatedPeerInstallDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+            out repeatedPeerSecondSuccessorOpenPacketProtectionMaterial,
+            out repeatedPeerSecondSuccessorProtectPacketProtectionMaterial))
+        {
+            throw new InvalidOperationException("Failed to prepare repeated peer second-successor material.");
+        }
     }
 
     /// <summary>
@@ -138,6 +148,17 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     public int InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown()
     {
         return repeatedInstallDriver.TryInstallRepeatedOneRttKeyUpdate(repeatedUpdateNotBeforeMicros) ? 1 : -1;
+    }
+
+    /// <summary>
+    /// Measures the repeated peer key-update install boundary after current-phase acknowledgment and old-key discard.
+    /// </summary>
+    [Benchmark]
+    public int InstallRepeatedPeerOneRttPacketProtectionMaterialAfterAcknowledgment()
+    {
+        return repeatedPeerInstallDriver.TryInstallRepeatedPeerOneRttKeyUpdate(
+            repeatedPeerSecondSuccessorOpenPacketProtectionMaterial,
+            repeatedPeerSecondSuccessorProtectPacketProtectionMaterial) ? 1 : -1;
     }
 
     /// <summary>

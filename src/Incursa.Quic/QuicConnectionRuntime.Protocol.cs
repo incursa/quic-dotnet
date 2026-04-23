@@ -967,6 +967,9 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 stateChanged |= retainedNextOpenMaterial;
+                bool expectedSuccessorKeyPhase =
+                    ((tlsState.CurrentOneRttKeyPhase + 1U) & 1U) == 1U;
+                bool installedSuccessor = false;
                 if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
                         out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
                         out QuicTlsPacketProtectionMaterial successorProtectMaterial)
@@ -978,13 +981,30 @@ internal sealed partial class QuicConnectionRuntime
                         out payloadOffset,
                         out payloadLength,
                         out bool successorKeyPhase)
-                    || !successorKeyPhase
-                    || !tlsBridgeDriver.TryInstallOneRttKeyUpdate(successorOpenMaterial, successorProtectMaterial))
+                    || successorKeyPhase != expectedSuccessorKeyPhase)
                 {
                     return stateChanged;
                 }
 
-                keyPhase = true;
+                if (tlsState.KeyUpdateInstalled)
+                {
+                    installedSuccessor = tlsBridgeDriver.TryInstallRepeatedPeerOneRttKeyUpdate(
+                        successorOpenMaterial,
+                        successorProtectMaterial);
+                }
+                else if (tlsState.CurrentOneRttKeyPhase == 0)
+                {
+                    installedSuccessor = tlsBridgeDriver.TryInstallOneRttKeyUpdate(
+                        successorOpenMaterial,
+                        successorProtectMaterial);
+                }
+
+                if (!installedSuccessor)
+                {
+                    return stateChanged;
+                }
+
+                keyPhase = expectedSuccessorKeyPhase;
                 stateChanged = true;
             }
         }

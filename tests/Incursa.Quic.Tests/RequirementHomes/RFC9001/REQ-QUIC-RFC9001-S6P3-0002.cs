@@ -77,6 +77,41 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeRetainsPhaseOneAndSecondSuccessorReceiveKeysForApparentRepeatedPeerUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareRepeatedPeerUpdateEligibility(
+            runtime,
+            out QuicTlsPacketProtectionMaterial secondSuccessorOpenMaterial,
+            out _);
+
+        QuicTlsPacketProtectionMaterial currentPhaseOneMaterial =
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        byte[] tamperedPacket = BuildProtectedApplicationPacket(
+            secondSuccessorOpenMaterial,
+            keyPhase: false,
+            payload: QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
+        tamperedPacket[^1] ^= 0x40;
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 30_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                tamperedPacket),
+            nowTicks: 30_000);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.True(currentPhaseOneMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(secondSuccessorOpenMaterial.Matches(
+            runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial!.Value));
+        Assert.DoesNotContain(result.Effects, static effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EstablishingClientRuntimeDoesNotRetainNextReceiveKeysBeforeOneRttKeysExist()

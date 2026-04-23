@@ -56,6 +56,38 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ActiveClientRuntimeDropsSecondSuccessorPeerUpdateBeforeCurrentPhaseConfirmationWithoutClosing()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+        _ = ReceiveFirstPeerUpdate(runtime, observedAtTicks: 1);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+
+        QuicTlsPacketProtectionMaterial currentPhaseOneMaterial =
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial secondSuccessorOpenMaterial,
+            out _));
+
+        byte[] protectedPacket = QuicRfc9001KeyPhaseTestSupport.BuildProtectedApplicationPacket(
+            secondSuccessorOpenMaterial,
+            keyPhase: false,
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
+
+        QuicConnectionTransitionResult result = ReceivePacket(runtime, protectedPacket, observedAtTicks: 2);
+
+        AssertApparentConsecutiveUpdateDidNotSignal(runtime, result);
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+        Assert.False(runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(currentPhaseOneMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzApparentConsecutivePeerUpdatesBeforeConfirmation_RandomizedPayloadSizesDoNotClose()
     {

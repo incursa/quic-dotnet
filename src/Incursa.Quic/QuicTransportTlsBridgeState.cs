@@ -848,11 +848,54 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    internal bool TryInstallRepeatedPeerOneRttKeyUpdate(
+        QuicTlsPacketProtectionMaterial openMaterial,
+        QuicTlsPacketProtectionMaterial protectMaterial)
+    {
+        if (IsTerminal
+            || !KeyUpdateInstalled
+            || CurrentOneRttKeyPhase == 0
+            || CurrentOneRttKeyPhase == uint.MaxValue
+            || !CurrentOneRttKeyPhaseAcknowledged
+            || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
+            || !oneRttOpenPacketProtectionMaterial.HasValue
+            || !oneRttProtectPacketProtectionMaterial.HasValue
+            || !oneRttKeyUpdateLifecycle.CanCommitNextOpenPacketProtectionMaterial(openMaterial)
+            || openMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
+            || protectMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
+        {
+            return false;
+        }
+
+        if (!oneRttKeyUpdateLifecycle.TryRetainOldPacketProtectionMaterial(
+            oneRttOpenPacketProtectionMaterial.Value,
+            oneRttProtectPacketProtectionMaterial.Value))
+        {
+            return false;
+        }
+
+        CurrentOneRttKeyPhase++;
+        OneRttKeysAvailable = true;
+        retainedOldOneRttOpenKeyLifecycle = currentOneRttOpenKeyLifecycle;
+        retainedOldOneRttProtectKeyLifecycle = currentOneRttProtectKeyLifecycle;
+        oneRttOpenPacketProtectionMaterial = openMaterial;
+        oneRttProtectPacketProtectionMaterial = protectMaterial;
+        currentOneRttOpenKeyLifecycle = CreateActiveAeadKeyLifecycle(openMaterial);
+        currentOneRttProtectKeyLifecycle = CreateActiveAeadKeyLifecycle(protectMaterial);
+        oneRttKeyUpdateLifecycle.ClearRetainedNextOpenPacketProtectionMaterial();
+        oneRttKeyUpdateLifecycle.ResetRepeatedLocalPacketProtectionUpdateEligibility();
+        KeyUpdateInstalled = true;
+        return true;
+    }
+
     internal bool TryRetainNextOneRttOpenPacketProtectionMaterial(QuicTlsPacketProtectionMaterial openMaterial)
     {
         if (IsTerminal
-            || KeyUpdateInstalled
-            || CurrentOneRttKeyPhase != 0
+            || (KeyUpdateInstalled
+                ? CurrentOneRttKeyPhase == 0
+                    || !CurrentOneRttKeyPhaseAcknowledged
+                    || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
+                : CurrentOneRttKeyPhase != 0)
             || !oneRttOpenPacketProtectionMaterial.HasValue
             || openMaterial.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt)
         {
