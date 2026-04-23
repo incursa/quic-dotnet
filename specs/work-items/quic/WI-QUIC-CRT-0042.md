@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0042"
 artifact_type: "work_item"
 title: "QUIC client-side successor 1-RTT Key Phase install work item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0145"
@@ -55,6 +55,10 @@ Add successor 1-RTT open/protect material install on the first observed client K
 ## Verification Plan
 
 Run focused requirement-home tests for positive successor install, negative establishing-runtime no-install, negative duplicate same-phase no-op, outbound phase-bit propagation, and the public no-broad-support guard; add fuzz coverage for the short-header Key Phase boundary; run the permanent BenchmarkDotNet suite for the successor path; then run the current CRT/API/INT guard set, the full `REQ_QUIC_CRT_` sweep, and SpecTrace render/validation checks.
+
+## Completion Notes
+
+Implemented the bounded client-side successor 1-RTT Key Phase install seam. The active client path derives and installs the first phase-1 successor open/protect pair after the first observed 0->1 transition, propagates the installed Key Phase bit to later outbound 1-RTT packets, leaves establishing runtimes unchanged before handshake confirmation, and keeps general RFC 9001 key-update, TLS KeyUpdate, retry, transfer, and public API support out of scope.
 
 ## Trace Links
 

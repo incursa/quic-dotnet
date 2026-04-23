@@ -45,13 +45,16 @@ The managed client/runtime path installs successor 1-RTT packet-protection mater
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs
 - benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs
 - benchmarks/README.md
+- artifacts/benchmark-baseline/20260422-2327-keyphase-dry/
 - specs/requirements/quic/REQUIREMENT-GAPS.md
 - scripts/Validate-SpecTraceJson.ps1
 - scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1
+- dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_CRT_0145"
+- dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationPacketKeyPhaseBenchmarks*"
 
 ## Status
 
-planned
+Passed locally for the focused REQ-QUIC-CRT-0145 requirement-home coverage and the repaired `QuicApplicationPacketKeyPhaseBenchmarks` Dry suite. The benchmark harness now follows the current key-schedule transcript contract for the representative certificate flight.
 
 ## Related Artifacts
 
@@ -68,5 +71,6 @@ planned
 
 ## Benchmark Scope
 
-- Extend the permanent `QuicApplicationPacketKeyPhaseBenchmarks` suite to cover the successor install and outbound phase-bit path.
+- The permanent `QuicApplicationPacketKeyPhaseBenchmarks` suite covers successor install, outbound phase-bit packet formatting, and protected packet opening with Key Phase observation.
 - Keep the benchmark focused on packet-protection derivation and protected packet formatting, not receive handling or replay control.
+- The 2026-04-22 Dry run is preserved under `artifacts/benchmark-baseline/20260422-2327-keyphase-dry/`.

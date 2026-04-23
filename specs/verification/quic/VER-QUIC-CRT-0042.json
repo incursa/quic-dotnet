@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0042",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC client-side successor 1-RTT Key Phase install verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -26,9 +26,12 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0145.cs",
     "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs",
     "benchmarks/README.md",
+    "artifacts/benchmark-baseline/20260422-2327-keyphase-dry/",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "scripts/Validate-SpecTraceJson.ps1",
-    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
+    "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1",
+    "dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_CRT_0145\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicApplicationPacketKeyPhaseBenchmarks*\""
   ],
   "procedure": [
     "Run focused requirement-home tests for positive successor install, negative establishing-runtime no-install, negative duplicate same-phase no-op, outbound phase-bit propagation, and the public no-broad-support guard.",
@@ -49,9 +52,10 @@
     },
     {
       "heading": "Benchmark Scope",
-      "content": "- Extend the permanent `QuicApplicationPacketKeyPhaseBenchmarks` suite to cover the successor install and outbound phase-bit path.\n- Keep the benchmark focused on packet-protection derivation and protected packet formatting, not receive handling or replay control."
+      "content": "- The permanent `QuicApplicationPacketKeyPhaseBenchmarks` suite covers successor install, outbound phase-bit packet formatting, and protected packet opening with Key Phase observation.\n- Keep the benchmark focused on packet-protection derivation and protected packet formatting, not receive handling or replay control.\n- The 2026-04-22 Dry run is preserved under `artifacts/benchmark-baseline/20260422-2327-keyphase-dry/`."
     }
   ],
+  "status_summary": "Passed locally for the focused REQ-QUIC-CRT-0145 requirement-home coverage and the repaired `QuicApplicationPacketKeyPhaseBenchmarks` Dry suite. The benchmark harness now follows the current key-schedule transcript contract for the representative certificate flight.",
   "verifies": [
     "REQ-QUIC-CRT-0145"
   ]

@@ -244,9 +244,9 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             throw new InvalidOperationException("Failed to prepare the representative Finished transcript.");
         }
 
-        if (schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)).Count != 1
-            || schedule.ProcessTranscriptStep(CreateCertificateStep(leafCertificateDer)).Count != 1
-            || schedule.ProcessTranscriptStep(CreateCertificateVerifyStep(certificateVerify)).Count != 3)
+        if (schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)).Count != 0
+            || schedule.ProcessTranscriptStep(CreateCertificateStep(leafCertificateDer)).Count != 0
+            || schedule.ProcessTranscriptStep(CreateCertificateVerifyStep(certificateVerify)).Count != 1)
         {
             throw new InvalidOperationException("Failed to prepare the representative certificate flight.");
         }
