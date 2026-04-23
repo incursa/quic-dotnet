@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0007",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAMS_BLOCKED Runtime Emission Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-API",
+    "ARC-QUIC-RFC9000-0007",
+    "WI-QUIC-RFC9000-0007",
+    "VER-QUIC-API-0005"
+  ],
+  "verification_method": "Requirement-home execution, protected-packet inspection, existing frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded active-runtime `STREAMS_BLOCKED` emission slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S4P6-0012",
+    "REQ-QUIC-RFC9000-S13P3-0022",
+    "REQ-QUIC-RFC9000-S13P3-0023",
+    "REQ-QUIC-RFC9000-S19P14-0001",
+    "REQ-QUIC-RFC9000-S19P14-0002",
+    "REQ-QUIC-RFC9000-S19P14-0003",
+    "REQ-QUIC-RFC9000-S19P14-0006"
+  ],
+  "scope": "This verification covers active-runtime advisory `STREAMS_BLOCKED` emission when an outbound stream open is blocked by the peer's current bidirectional or unidirectional stream limit. It also covers suppression while ack-eliciting or retransmission work is already outstanding and confirms that the advisory frame does not create or complete the blocked stream.",
+  "expected_result": "The requirement-home tests show a protected STREAMS_BLOCKED packet with the correct bidirectional or unidirectional type and Maximum Streams value after the supported stream limit is exhausted, the advisory packet remains registered for loss repair, the blocked open remains pending until cancellation or real limit growth, no advisory packet is emitted while ack-eliciting work remains in flight, and the existing frame-codec fuzz and BenchmarkDotNet Dry runs remain valid.",
+  "procedure": [
+    "Run the focused RFC 9000 S4P6/S13P3/S19P14 requirement-home tests.",
+    "Run the adjacent API pending-open tests for `REQ-QUIC-API-0014`.",
+    "Run the `QuicFrameCodecBenchmarks` BenchmarkDotNet suite with the Dry job.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm that the existing STREAMS_BLOCKED frame-codec fuzz coverage remains linked and no parser behavior was weakened."
+  ],
+  "preconditions": [
+    "The active runtime has 1-RTT packet protection material and an active path.",
+    "The peer stream limit can be exhausted on both bidirectional and unidirectional outbound-open paths.",
+    "The existing frame codec can parse and format STREAMS_BLOCKED frames."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0014.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/rfc9000-streams-blocked-runtime-tests.log",
+    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry.log",
+    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry-report-github.md",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14|FullyQualifiedName~REQ_QUIC_API_0014\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\""
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Fuzz And Benchmark Scope",
+      "content": "The existing `QuicFrameCodecPart4FuzzSupport.FuzzStreamsBlockedFrame` coverage remains the fuzz proof for untrusted STREAMS_BLOCKED parse/format boundaries. The permanent `QuicFrameCodecBenchmarks` suite now includes STREAMS_BLOCKED parse and format cases; Dry validation proves the benchmark harness executes but is not treated as a stable performance baseline."
+    }
+  ],
+  "status_summary": "Passed locally for the focused requirement-home coverage, adjacent API pending-open regression coverage, STREAMS_BLOCKED frame-codec fuzz linkage, and BenchmarkDotNet Dry validation. The proof remains limited to advisory runtime emission on the supported active path."
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0007",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAMS_BLOCKED Runtime Emission Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-API",
+    "ARC-QUIC-RFC9000-0007",
+    "VER-QUIC-RFC9000-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P6-0012",
+    "REQ-QUIC-RFC9000-S13P3-0022",
+    "REQ-QUIC-RFC9000-S13P3-0023",
+    "REQ-QUIC-RFC9000-S19P14-0001",
+    "REQ-QUIC-RFC9000-S19P14-0002",
+    "REQ-QUIC-RFC9000-S19P14-0003",
+    "REQ-QUIC-RFC9000-S19P14-0006"
+  ],
+  "summary": "Emit bounded protected `STREAMS_BLOCKED` advisory packets when active outbound stream opens are blocked by the peer's current stream limit while keeping the open request pending until real `MAX_STREAMS` growth.",
+  "planned_changes": "- Refine the API pending-open requirement so advisory `STREAMS_BLOCKED` signaling no longer conflicts with the pending-open completion contract.\n- Add a runtime `STREAMS_BLOCKED` payload builder and guarded send path beside the existing blocked-signal send helpers.\n- Attempt advisory emission when a queued outbound open is blocked by the peer stream limit, while preserving the pending request.\n- Suppress duplicate advisory emission while ack-eliciting packets or retransmissions are already outstanding.\n- Add positive and negative requirement-home tests that open the protected packet and verify the STREAMS_BLOCKED direction and Maximum Streams value.\n- Add permanent BenchmarkDotNet coverage for STREAMS_BLOCKED frame parse and format hot paths.",
+  "verification_plan": "Run the focused RFC 9000 S4P6/S13P3/S19P14 requirement-home tests, run the adjacent API pending-open regression tests, run the STREAMS_BLOCKED frame-codec BenchmarkDotNet suite with Dry validation, render/check the touched SpecTrace artifacts, and keep the scope limited to advisory runtime emission.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0007"
+  ],
+  "out_of_scope": [
+    "Completing a blocked open without real `MAX_STREAMS` growth.",
+    "Public API surface changes.",
+    "A general stream scheduler.",
+    "0-RTT.",
+    "Key update.",
+    "Migration behavior.",
+    "Broader stream-management parity."
+  ],
+  "completion_notes": "Implemented bounded active-runtime `STREAMS_BLOCKED` emission with protected-packet proof coverage, retained the pending-open completion boundary, and added BenchmarkDotNet Dry coverage for the STREAMS_BLOCKED frame-codec hot path."
+}

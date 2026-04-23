@@ -12,7 +12,7 @@ Describe how blocked outbound stream opens stay queued until a later real `MAX_S
 
 ## Design Summary
 
-The runtime keeps outbound open requests queued by request ID and requested direction when the peer limit is exhausted. The initial open request remains pending instead of failing fast, and later real `MAX_STREAMS` frames re-drive the queued requests only for the matching direction and only when the requested stream is truly available. The success path still uses the existing packet-protection, stream-commit, and local-completion machinery, while cancellation and terminal-state completion remain owned by the existing lifecycle boundary. The slice intentionally avoids adding `STREAMS_BLOCKED` emission or broader stream-management parity.
+The runtime keeps outbound open requests queued by request ID and requested direction when the peer limit is exhausted. The initial open request remains pending instead of failing fast, and later real `MAX_STREAMS` frames re-drive the queued requests only for the matching direction and only when the requested stream is truly available. The success path still uses the existing packet-protection, stream-commit, and local-completion machinery, while cancellation and terminal-state completion remain owned by the existing lifecycle boundary. This API slice intentionally does not make `STREAMS_BLOCKED` emission a completion mechanism; advisory stream-limit signaling is owned separately by the RFC 9000 runtime-emission slice.
 
 ## Key Components
 

@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0014">On the supported active loopback path, QuicConnection.OpenOutboundStreamAsync(...) MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it MUST complete that pending open only after a later real MAX_STREAMS increase makes a stream of that direction available. Cancellation and terminal-state behavior remain governed by REQ-QUIC-API-0008, and the slice MUST not fabricate success, synthetic wake-up, STREAMS_BLOCKED emission, or broader stream-management parity.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0014">On the supported active loopback path, QuicConnection.OpenOutboundStreamAsync(...) MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it must complete that pending open only after a later real MAX_STREAMS increase makes a stream of that direction available. This slice must honor cancellation and terminal-state behavior under REQ-QUIC-API-0008 and must not fabricate success or a synthetic wake-up. Advisory STREAMS_BLOCKED emission is governed by the RFC 9000 stream-limit requirements and MUST NOT by itself complete the pending open or claim broader stream-management parity.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0014")]
 public sealed class REQ_QUIC_API_0014

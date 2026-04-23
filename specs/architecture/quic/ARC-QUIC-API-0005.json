@@ -10,7 +10,8 @@
   "related_artifacts": [
     "SPEC-QUIC-API",
     "WI-QUIC-API-0005",
-    "VER-QUIC-API-0005"
+    "VER-QUIC-API-0005",
+    "ARC-QUIC-RFC9000-0007"
   ],
   "satisfies": [
     "REQ-QUIC-API-0014"
@@ -26,7 +27,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0014.cs"
   ],
-  "design_summary": "The runtime keeps outbound open requests queued by request ID and requested direction when the peer limit is exhausted. The initial open request remains pending instead of failing fast, and later real `MAX_STREAMS` frames re-drive the queued requests only for the matching direction and only when the requested stream is truly available. The success path still uses the existing packet-protection, stream-commit, and local-completion machinery, while cancellation and terminal-state completion remain owned by the existing lifecycle boundary. The slice intentionally avoids adding `STREAMS_BLOCKED` emission or broader stream-management parity.",
+  "design_summary": "The runtime keeps outbound open requests queued by request ID and requested direction when the peer limit is exhausted. The initial open request remains pending instead of failing fast, and later real `MAX_STREAMS` frames re-drive the queued requests only for the matching direction and only when the requested stream is truly available. The success path still uses the existing packet-protection, stream-commit, and local-completion machinery, while cancellation and terminal-state completion remain owned by the existing lifecycle boundary. This API slice intentionally does not make `STREAMS_BLOCKED` emission a completion mechanism; advisory stream-limit signaling is owned separately by the RFC 9000 runtime-emission slice.",
   "edge_cases_and_constraints": [
     "A blocked open request must remain queued until a real `MAX_STREAMS` increase for the same direction arrives.",
     "Cancellation or terminal-state completion must remove the queued request so later `MAX_STREAMS` growth cannot revive it.",

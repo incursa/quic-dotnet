@@ -146,8 +146,12 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool bidirectional = streamType == QuicStreamType.Bidirectional;
-        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(bidirectional, out QuicStreamId streamId, out _))
+        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(
+                bidirectional,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame))
         {
+            _ = TryEmitStreamsBlockedSignal(blockedFrame, ref effects);
             stillPending = true;
             return true;
         }
@@ -586,6 +590,22 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
+    private bool TryEmitStreamsBlockedSignal(
+        QuicStreamsBlockedFrame streamsBlockedFrame,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (sendRuntime.HasAckElicitingPacketsInFlight || sendRuntime.PendingRetransmissionCount > 0)
+        {
+            return false;
+        }
+
+        return TrySendStreamsBlockedSignal(
+            streamsBlockedFrame,
+            "The connection runtime could not protect the streams-blocked packet.",
+            "The connection cannot send the streams-blocked packet.",
+            ref effects);
+    }
+
     private bool TryEmitFlowControlCreditUpdate(
         QuicMaxDataFrame? maxDataFrame,
         QuicMaxStreamDataFrame? maxStreamDataFrame,
@@ -727,6 +747,42 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects)
     {
         if (!TryBuildOutboundStreamDataBlockedPayload(frame, out byte[] blockedPayload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            blockedPayload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out byte[] protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+
+        return true;
+    }
+
+    private bool TrySendStreamsBlockedSignal(
+        QuicStreamsBlockedFrame frame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!TryBuildOutboundStreamsBlockedPayload(frame, out byte[] blockedPayload))
         {
             return false;
         }
@@ -2968,6 +3024,32 @@ internal sealed partial class QuicConnectionRuntime
 
         byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
         if (!QuicFrameCodec.TryFormatStreamDataBlockedFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
+    private bool TryBuildOutboundStreamsBlockedPayload(
+        QuicStreamsBlockedFrame frame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatStreamsBlockedFrame(frame, buffer, out int frameBytesWritten))
         {
             return false;
         }

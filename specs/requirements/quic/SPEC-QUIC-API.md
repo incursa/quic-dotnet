@@ -297,7 +297,7 @@ Notes:
 - Broader client-auth, `0-RTT`, key update, transfer, and retry remain out of scope for this slice.
 
 ## REQ-QUIC-API-0014 Keep blocked outbound stream opens pending until later real MAX_STREAMS growth
-On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it must complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available. This slice must honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008` and must not fabricate success, synthetic wake-up, `STREAMS_BLOCKED` emission, or broader stream-management parity.
+On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, and it must complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available. This slice must honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008` and must not fabricate success or a synthetic wake-up. Advisory `STREAMS_BLOCKED` emission is governed by the RFC 9000 stream-limit requirements and MUST NOT by itself complete the pending open or claim broader stream-management parity.
 
 Trace:
 - Source Refs:
@@ -306,4 +306,5 @@ Trace:
 
 Notes:
 - The supported subset is limited to the active loopback path and keeps the pending open request in the runtime queue until a real peer `MAX_STREAMS` update makes the requested direction available.
-- Cancellation, disposal, and terminal-state behavior stay owned by `REQ-QUIC-API-0008`, while later real `MAX_STREAMS` growth on the same path remains the only supported wake-up mechanism for the queued request.
+- Cancellation, disposal, and terminal-state behavior stay owned by `REQ-QUIC-API-0008`, while later real `MAX_STREAMS` growth on the same path remains the only supported completion mechanism for the queued request.
+- `STREAMS_BLOCKED` emission is advisory stream-limit signaling and is traced under RFC 9000 rather than this public API requirement.

@@ -40,7 +40,7 @@ Implement pending outbound stream opens that remain queued when the peer limit i
 
 ## Out of Scope
 
-- `STREAMS_BLOCKED` emission.
+- `STREAMS_BLOCKED` emission as a public API completion mechanism.
 - Broader stream-management parity.
 - New public API surface.
 - 0-RTT.
@@ -53,7 +53,7 @@ Run the new `REQ-QUIC-API-0014` requirement-home proof plus the existing `REQ-QU
 
 ## Completion Notes
 
-This slice keeps the blocked open request honest by staying pending until the peer really grows the matching stream limit. It does not add `STREAMS_BLOCKED` emission or broader stream-management parity.
+This slice keeps the blocked open request honest by staying pending until the peer really grows the matching stream limit. It does not make advisory `STREAMS_BLOCKED` emission a completion mechanism; RFC 9000 runtime signaling is owned separately.
 
 ## Trace Links
 

@@ -2406,13 +2406,19 @@ An endpoint that is unable to open a new stream due to the peer's limits SHOULD 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §4.6 RFC9000-S4.6-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight
 
 ## REQ-QUIC-RFC9000-S4P6-0013 Do not wait for STREAMS_BLOCKED before advertising more credit
 An endpoint MUST NOT wait to receive STREAMS_BLOCKED before advertising additional credit.
@@ -11601,15 +11607,19 @@ Blocked signals MUST be carried in DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAM
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S13P3-0023 Scope blocked signals appropriately
 DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames MUST use connection, stream, and stream-type scope respectively.
@@ -11617,15 +11627,19 @@ DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames MUST use connectio
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S13P3-0024 Send a new blocked frame while blocked and the latest frame is lost
 A new frame MUST be sent if a packet containing the most recent frame for a scope is lost, but only while the endpoint is blocked on the corresponding limit.
@@ -20208,15 +20222,20 @@ A sender SHOULD send a STREAMS_BLOCKED frame (type=0x16 or 0x17) when it wishes 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight
 
 ## REQ-QUIC-RFC9000-S19P14-0002 A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stre...
 A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidirectional stream limit, and a STREAMS_BLOCKED frame of type 0x17 is used to indicate reaching the unidirectional stream limit.
@@ -20224,10 +20243,13 @@ A STREAMS_BLOCKED frame of type 0x16 MUST be used to indicate reaching the bidir
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
@@ -20235,6 +20257,7 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S19P14-0003 A STREAMS_BLOCKED frame MUST NOT open the stream, but informs the peer that a new stream was...
 A STREAMS_BLOCKED frame MUST NOT open the stream, but informs the peer that a new stream was needed and the stream limit prevented the creation of the stream.
@@ -20242,15 +20265,19 @@ A STREAMS_BLOCKED frame MUST NOT open the stream, but informs the peer that a ne
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S19P14-0004 The Type field MUST be encoded as a variable-length integer with value 0x16..0x17
 The Type field MUST be encoded as a variable-length integer with value 0x16..0x17.
@@ -20294,10 +20321,13 @@ STREAMS_BLOCKED frames MUST contain the following field:
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0007
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0007
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0007
 - Source Refs:
   - RFC 9000 §19.14 RFC9000-S19.14-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14
@@ -20305,6 +20335,7 @@ Trace:
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit
   - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S19P14-0007 The Maximum Streams field MUST be variable-length integer indicating the maximum number of st...
 The Maximum Streams field MUST be variable-length integer indicating the maximum number of streams allowed at the time the frame was sent.

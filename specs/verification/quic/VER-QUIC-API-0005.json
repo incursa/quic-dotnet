@@ -10,7 +10,8 @@
   "related_artifacts": [
     "SPEC-QUIC-API",
     "ARC-QUIC-API-0005",
-    "WI-QUIC-API-0005"
+    "WI-QUIC-API-0005",
+    "VER-QUIC-RFC9000-0007"
   ],
   "verifies": [
     "REQ-QUIC-API-0014"
@@ -20,7 +21,7 @@
     "The runtime can keep a blocked outbound open request queued instead of failing fast.",
     "The existing cancellation and terminal-state semantics remain owned by `REQ-QUIC-API-0008`."
   ],
-  "scope": "This artifact covers the pending outbound open slice only: a blocked outbound open remains incomplete when the peer limit is exhausted, completes after later real `MAX_STREAMS` growth makes the requested direction available, and still honors cancellation while pending. It does not claim `STREAMS_BLOCKED` emission, broader stream-management parity, `0-RTT`, key update, or retry changes.",
+  "scope": "This artifact covers the pending outbound open slice only: a blocked outbound open remains incomplete when the peer limit is exhausted, completes after later real `MAX_STREAMS` growth makes the requested direction available, and still honors cancellation while pending. It does not make advisory `STREAMS_BLOCKED` emission a completion mechanism and does not claim broader stream-management parity, `0-RTT`, key update, or retry changes.",
   "expected_result": "The requirement-home proof shows a blocked outbound open staying pending until later real `MAX_STREAMS` growth resumes it, the request cancellation path still settles a blocked pending open, and the trace/doc artifacts stay aligned with the new requirement ID and supporting architecture/work-item records.",
   "procedure": [
     "Run `tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0014.cs` to prove blocked pending open behavior, later real `MAX_STREAMS` wake-up, and blocked-open cancellation.",

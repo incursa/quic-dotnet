@@ -14,6 +14,8 @@ public class QuicFrameCodecBenchmarks
     private byte[] cryptoData = [];
     private byte[] largeStreamData = [];
     private byte[] streamData = [];
+    private byte[] streamsBlockedFrame = [];
+    private QuicStreamsBlockedFrame streamsBlockedTemplate;
     private byte[] destination = [];
 
     /// <summary>
@@ -51,6 +53,14 @@ public class QuicFrameCodecBenchmarks
         }
 
         ackFrame = ackDestination[..bytesWritten].ToArray();
+        streamsBlockedTemplate = new QuicStreamsBlockedFrame(isBidirectional: true, maximumStreams: 4);
+        byte[] streamsBlockedDestination = new byte[16];
+        if (!QuicFrameCodec.TryFormatStreamsBlockedFrame(streamsBlockedTemplate, streamsBlockedDestination, out int streamsBlockedBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a STREAMS_BLOCKED frame benchmark payload.");
+        }
+
+        streamsBlockedFrame = streamsBlockedDestination[..streamsBlockedBytesWritten].ToArray();
         destination = new byte[2048];
     }
 
@@ -132,6 +142,31 @@ public class QuicFrameCodecBenchmarks
             streamData,
             destination,
             out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAMS_BLOCKED frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseStreamsBlockedFrame()
+    {
+        return QuicFrameCodec.TryParseStreamsBlockedFrame(
+            streamsBlockedFrame,
+            out QuicStreamsBlockedFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed ^ (frame.IsBidirectional ? 1 : 0) ^ unchecked((int)frame.MaximumStreams)
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAMS_BLOCKED frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatStreamsBlockedFrame()
+    {
+        return QuicFrameCodec.TryFormatStreamsBlockedFrame(streamsBlockedTemplate, destination, out int bytesWritten)
             ? bytesWritten
             : -1;
     }

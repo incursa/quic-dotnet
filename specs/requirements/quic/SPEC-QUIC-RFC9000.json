@@ -4368,17 +4368,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight"
         ]
       }
     },
@@ -21001,20 +21008,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }
     },
@@ -21030,20 +21041,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }
     },
@@ -36166,20 +36181,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight"
         ]
       }
     },
@@ -36195,13 +36215,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B2-P1-S2",
@@ -36210,7 +36233,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }
     },
@@ -36226,20 +36250,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }
     },
@@ -36317,13 +36345,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0007"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0007"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0007"
         ],
         "upstream_refs": [
           "RFC 9000 §19.14 RFC9000-S19.14-B7-P4-S1",
@@ -36332,7 +36363,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_AcceptsValueAtTheEncodingLimit",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants"
+          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }
     },

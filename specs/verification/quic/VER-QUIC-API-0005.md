@@ -4,7 +4,7 @@
 
 ## Scope
 
-This artifact covers the pending outbound open slice only: a blocked outbound open remains incomplete when the peer limit is exhausted, completes after later real `MAX_STREAMS` growth makes the requested direction available, and still honors cancellation while pending. It does not claim `STREAMS_BLOCKED` emission, broader stream-management parity, `0-RTT`, key update, or retry changes.
+This artifact covers the pending outbound open slice only: a blocked outbound open remains incomplete when the peer limit is exhausted, completes after later real `MAX_STREAMS` growth makes the requested direction available, and still honors cancellation while pending. It does not make advisory `STREAMS_BLOCKED` emission a completion mechanism and does not claim broader stream-management parity, `0-RTT`, key update, or retry changes.
 
 ## Requirements Verified
 
@@ -54,3 +54,4 @@ Landed; this verification slice records the proof burden for keeping blocked out
 - SPEC-QUIC-API
 - ARC-QUIC-API-0005
 - WI-QUIC-API-0005
+- VER-QUIC-RFC9000-0007
