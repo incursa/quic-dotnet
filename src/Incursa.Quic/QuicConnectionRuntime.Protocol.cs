@@ -938,8 +938,9 @@ internal sealed partial class QuicConnectionRuntime
                 return true;
             }
 
+            bool oldKeyPhase = false;
             bool openedWithRetainedOldKeys = tlsState.KeyUpdateInstalled
-                && tlsState.CurrentOneRttKeyPhase == 1
+                && tlsState.CurrentOneRttKeyPhase != 0
                 && tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
                 && handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
                     packetReceivedEvent.Datagram.Span,
@@ -947,12 +948,12 @@ internal sealed partial class QuicConnectionRuntime
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
-                    out bool oldKeyPhase)
-                && !oldKeyPhase;
+                    out oldKeyPhase)
+                && oldKeyPhase == (((tlsState.CurrentOneRttKeyPhase - 1U) & 1U) == 1U);
 
             if (openedWithRetainedOldKeys)
             {
-                keyPhase = false;
+                keyPhase = oldKeyPhase;
                 openedWithRetainedOldOpenMaterial = true;
             }
             else
@@ -1044,6 +1045,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (openedWithRetainedOldOpenMaterial
             && hasObservedCurrentOneRttKeyPhasePacketNumber
+            && observedCurrentOneRttKeyPhase == tlsState.CurrentOneRttKeyPhase
             && packetNumber >= lowestObservedCurrentOneRttKeyPhasePacketNumber)
         {
             return HandleFatalTlsSignal(
@@ -1054,9 +1056,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (!openedWithRetainedOldOpenMaterial
-            && keyPhase
             && tlsState.KeyUpdateInstalled
-            && tlsState.CurrentOneRttKeyPhase == 1
+            && tlsState.CurrentOneRttKeyPhase != 0
+            && keyPhase == tlsState.CurrentOneRttKeyPhaseBit
             && TryArmRetainedOldOneRttKeyDiscard(nowTicks, ref effects))
         {
             stateChanged = true;
@@ -1484,13 +1486,15 @@ internal sealed partial class QuicConnectionRuntime
             : packetNumber;
         hasObservedApplicationPacketNumber = true;
         if (!openedWithRetainedOldOpenMaterial
-            && keyPhase
             && tlsState.KeyUpdateInstalled
-            && tlsState.CurrentOneRttKeyPhase == 1)
+            && tlsState.CurrentOneRttKeyPhase != 0
+            && keyPhase == tlsState.CurrentOneRttKeyPhaseBit)
         {
             lowestObservedCurrentOneRttKeyPhasePacketNumber = hasObservedCurrentOneRttKeyPhasePacketNumber
+                && observedCurrentOneRttKeyPhase == tlsState.CurrentOneRttKeyPhase
                 ? Math.Min(lowestObservedCurrentOneRttKeyPhasePacketNumber, packetNumber)
                 : packetNumber;
+            observedCurrentOneRttKeyPhase = tlsState.CurrentOneRttKeyPhase;
             hasObservedCurrentOneRttKeyPhasePacketNumber = true;
         }
 

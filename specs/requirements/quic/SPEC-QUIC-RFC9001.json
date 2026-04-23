@@ -1578,7 +1578,10 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveServerRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousPhaseOneKeysForLowerRecoveredPacketNumbersAfterRepeatedLocalUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeRejectsPreviousPhaseOnePacketsWithThePhaseZeroBitAfterRepeatedLocalUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzRepeatedLowerRecoveredPackets_UsePreviousPhaseOneKeysAcrossRepresentativePayloadSizes"
         ]
       }
     },

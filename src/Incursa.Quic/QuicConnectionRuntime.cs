@@ -107,6 +107,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong transitionSequence;
     private ulong largestObservedApplicationPacketNumber;
     private ulong lowestObservedCurrentOneRttKeyPhasePacketNumber;
+    private uint observedCurrentOneRttKeyPhase;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;

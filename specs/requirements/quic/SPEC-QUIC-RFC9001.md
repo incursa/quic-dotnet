@@ -1105,6 +1105,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveServerRuntimeUsesPreviousKeysForLowerRecoveredPacketNumbers
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousPhaseOneKeysForLowerRecoveredPacketNumbersAfterRepeatedLocalUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeRejectsPreviousPhaseOnePacketsWithThePhaseZeroBitAfterRepeatedLocalUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzRepeatedLowerRecoveredPackets_UsePreviousPhaseOneKeysAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0002 Use next keys for higher recovered packet numbers
 When selecting receive keys across phases, a recovered packet number higher than any packet number from the current key phase MUST use the next packet protection keys.

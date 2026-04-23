@@ -1,0 +1,288 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 5 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 1.67 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 18.42 sec and exited with 0
+// ***** Done, took 00:00:20 (20.45 sec)   *****
+// Found 5 benchmarks:
+//   QuicApplicationPacketKeyPhaseBenchmarks.InstallSuccessorOneRttPacketProtectionMaterial: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicApplicationPacketKeyPhaseBenchmarks.InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicApplicationPacketKeyPhaseBenchmarks.BuildProtectedApplicationPacketWithInstalledKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicApplicationPacketKeyPhaseBenchmarks.OpenProtectedApplicationPacketAndReadKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicApplicationPacketKeyPhaseBenchmarks.OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicApplicationPacketKeyPhaseBenchmarks.InstallSuccessorOneRttPacketProtectionMaterial: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2204 3784 --benchmarkName Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks.InstallSuccessorOneRttPacketProtectionMaterial --job Dry --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 341400.00 ns, 341.4000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 341400.00 ns, 341.4000 us/op
+// GC:  0 0 0 4080 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 56748 has exited with code 0.
+
+Mean = 341.400 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 341.400 us, Q1 = 341.400 us, Median = 341.400 us, Q3 = 341.400 us, Max = 341.400 us
+IQR = 0.000 us, LowerFence = 341.400 us, UpperFence = 341.400 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 4 (80.0%) benchmark(s) to run. Estimated finish 2026-04-23 15:26 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicApplicationPacketKeyPhaseBenchmarks.InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2228 2220 --benchmarkName Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks.InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown --job Dry --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 327200.00 ns, 327.2000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 327200.00 ns, 327.2000 us/op
+// GC:  0 0 0 4080 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 70356 has exited with code 0.
+
+Mean = 327.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 327.200 us, Q1 = 327.200 us, Median = 327.200 us, Q3 = 327.200 us, Max = 327.200 us
+IQR = 0.000 us, LowerFence = 327.200 us, UpperFence = 327.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 3 (60.0%) benchmark(s) to run. Estimated finish 2026-04-23 15:26 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicApplicationPacketKeyPhaseBenchmarks.BuildProtectedApplicationPacketWithInstalledKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2240 3760 --benchmarkName Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks.BuildProtectedApplicationPacketWithInstalledKeyPhaseBit --job Dry --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 363200.00 ns, 363.2000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 363200.00 ns, 363.2000 us/op
+// GC:  0 0 0 952 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 76616 has exited with code 0.
+
+Mean = 363.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 363.200 us, Q1 = 363.200 us, Median = 363.200 us, Q3 = 363.200 us, Max = 363.200 us
+IQR = 0.000 us, LowerFence = 363.200 us, UpperFence = 363.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 2 (40.0%) benchmark(s) to run. Estimated finish 2026-04-23 15:26 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicApplicationPacketKeyPhaseBenchmarks.OpenProtectedApplicationPacketAndReadKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3268 3492 --benchmarkName Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks.OpenProtectedApplicationPacketAndReadKeyPhaseBit --job Dry --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 4995300.00 ns, 4.9953 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 4995300.00 ns, 4.9953 ms/op
+// GC:  0 0 0 2296 1
+// Threading:  0 0 1
+// Exceptions:  1
+
+// AfterAll
+// Benchmark Process 43568 has exited with code 0.
+
+Mean = 4.995 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 4.995 ms, Q1 = 4.995 ms, Median = 4.995 ms, Q3 = 4.995 ms, Max = 4.995 ms
+IQR = 0.000 ms, LowerFence = 4.995 ms, UpperFence = 4.995 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 1 (20.0%) benchmark(s) to run. Estimated finish 2026-04-23 15:26 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicApplicationPacketKeyPhaseBenchmarks.OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4312 4308 --benchmarkName Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks.OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate --job Dry --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3866200.00 ns, 3.8662 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3866200.00 ns, 3.8662 ms/op
+// GC:  0 0 0 1808 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 84872 has exited with code 0.
+
+Mean = 3.866 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.866 ms, Q1 = 3.866 ms, Median = 3.866 ms, Q3 = 3.866 ms, Max = 3.866 ms
+IQR = 0.000 ms, LowerFence = 3.866 ms, UpperFence = 3.866 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-23 15:26 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts\20260423-152621\Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report.csv
+  BenchmarkDotNet.Artifacts\20260423-152621\Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report-github.md
+  BenchmarkDotNet.Artifacts\20260423-152621\Incursa.Quic.Benchmarks.QuicApplicationPacketKeyPhaseBenchmarks-report.html
+
+// * Detailed results *
+QuicApplicationPacketKeyPhaseBenchmarks.InstallSuccessorOneRttPacketProtectionMaterial: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 341.400 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 341.400 us, Q1 = 341.400 us, Median = 341.400 us, Q3 = 341.400 us, Max = 341.400 us
+IQR = 0.000 us, LowerFence = 341.400 us, UpperFence = 341.400 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[341.399 us ; 341.401 us) | @
+---------------------------------------------------
+
+QuicApplicationPacketKeyPhaseBenchmarks.InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 327.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 327.200 us, Q1 = 327.200 us, Median = 327.200 us, Q3 = 327.200 us, Max = 327.200 us
+IQR = 0.000 us, LowerFence = 327.200 us, UpperFence = 327.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[327.200 us ; 327.200 us) | @
+---------------------------------------------------
+
+QuicApplicationPacketKeyPhaseBenchmarks.BuildProtectedApplicationPacketWithInstalledKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 363.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 363.200 us, Q1 = 363.200 us, Median = 363.200 us, Q3 = 363.200 us, Max = 363.200 us
+IQR = 0.000 us, LowerFence = 363.200 us, UpperFence = 363.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[363.200 us ; 363.200 us) | @
+---------------------------------------------------
+
+QuicApplicationPacketKeyPhaseBenchmarks.OpenProtectedApplicationPacketAndReadKeyPhaseBit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 4.995 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 4.995 ms, Q1 = 4.995 ms, Median = 4.995 ms, Q3 = 4.995 ms, Max = 4.995 ms
+IQR = 0.000 ms, LowerFence = 4.995 ms, UpperFence = 4.995 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[4.995 ms ; 4.995 ms) | @
+---------------------------------------------------
+
+QuicApplicationPacketKeyPhaseBenchmarks.OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.866 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.866 ms, Q1 = 3.866 ms, Median = 3.866 ms, Q3 = 3.866 ms, Max = 3.866 ms
+IQR = 0.000 ms, LowerFence = 3.866 ms, UpperFence = 3.866 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.866 ms ; 3.866 ms) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.202
+  [Host] : .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+  Dry    : .NET 10.0.6 (10.0.6, 10.0.626.17701), X64 RyuJIT x86-64-v3
+
+Job=Dry  IterationCount=1  LaunchCount=1
+RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+| Method                                                     | Mean       | Error | Allocated |
+|----------------------------------------------------------- |-----------:|------:|----------:|
+| InstallSuccessorOneRttPacketProtectionMaterial             |   341.4 us |    NA |    4080 B |
+| InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown |   327.2 us |    NA |    4080 B |
+| BuildProtectedApplicationPacketWithInstalledKeyPhaseBit    |   363.2 us |    NA |     952 B |
+| OpenProtectedApplicationPacketAndReadKeyPhaseBit           | 4,995.3 us |    NA |    2296 B |
+| OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate         | 3,866.2 us |    NA |    1808 B |
+
+// * Warnings *
+MinIterationTime
+  QuicApplicationPacketKeyPhaseBenchmarks.InstallSuccessorOneRttPacketProtectionMaterial: Dry             -> The minimum observed iteration time is 341.4us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicApplicationPacketKeyPhaseBenchmarks.InstallRepeatedOneRttPacketProtectionMaterialAfterCooldown: Dry -> The minimum observed iteration time is 327.2us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicApplicationPacketKeyPhaseBenchmarks.BuildProtectedApplicationPacketWithInstalledKeyPhaseBit: Dry    -> The minimum observed iteration time is 363.2us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicApplicationPacketKeyPhaseBenchmarks.OpenProtectedApplicationPacketAndReadKeyPhaseBit: Dry           -> The minimum observed iteration time is 4.995ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicApplicationPacketKeyPhaseBenchmarks.OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate: Dry         -> The minimum observed iteration time is 3.866ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 us      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:03 (3.73 sec), executed benchmarks: 5
+
+Global total time: 00:00:24 (24.84 sec), executed benchmarks: 5
+// * Artifacts cleanup *
+Artifacts cleanup is finished

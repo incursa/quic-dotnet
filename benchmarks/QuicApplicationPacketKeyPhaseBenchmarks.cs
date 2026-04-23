@@ -34,8 +34,10 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
     private QuicHandshakeFlowCoordinator packetCoordinator = default!;
     private QuicTlsPacketProtectionMaterial installedOpenPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial installedProtectPacketProtectionMaterial;
+    private QuicTlsPacketProtectionMaterial repeatedRetainedPhaseOneOpenPacketProtectionMaterial;
     private readonly byte[] applicationPayload = new byte[1];
     private byte[] protectedPacket = [];
+    private byte[] repeatedRetainedPhaseOneProtectedPacket = [];
 
     /// <summary>
     /// Prepares representative 1-RTT packet-protection material, the successor install state, and the protected packet used by the open benchmark.
@@ -89,6 +91,24 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             out protectedPacket))
         {
             throw new InvalidOperationException("Failed to prepare representative successor 1-RTT protected packet.");
+        }
+
+        QuicTlsTransportBridgeDriver repeatedDriver = CreateRepeatedInstallReadyClientDriver();
+        if (!repeatedDriver.TryInstallRepeatedOneRttKeyUpdate(repeatedUpdateNotBeforeMicros))
+        {
+            throw new InvalidOperationException("Failed to prepare the representative repeated 1-RTT install state.");
+        }
+
+        repeatedRetainedPhaseOneOpenPacketProtectionMaterial =
+            repeatedDriver.State.RetainedOldOneRttOpenPacketProtectionMaterial
+            ?? throw new InvalidOperationException("The repeated install did not retain phase-1 open material.");
+        if (!packetCoordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
+            keyPhase: true,
+            out repeatedRetainedPhaseOneProtectedPacket))
+        {
+            throw new InvalidOperationException("Failed to prepare representative retained phase-1 packet.");
         }
     }
 
@@ -149,6 +169,23 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         return packetCoordinator.TryOpenProtectedApplicationDataPacket(
             protectedPacket,
             installedOpenPacketProtectionMaterial,
+            out byte[] openedPacket,
+            out _,
+            out _,
+            out bool keyPhase)
+            ? openedPacket.Length + (keyPhase ? 1 : 0)
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures opening a lower recovered packet with retained phase-1 material after a repeated local update.
+    /// </summary>
+    [Benchmark]
+    public int OpenRetainedPhaseOnePacketAfterRepeatedLocalUpdate()
+    {
+        return packetCoordinator.TryOpenProtectedApplicationDataPacket(
+            repeatedRetainedPhaseOneProtectedPacket,
+            repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
             out byte[] openedPacket,
             out _,
             out _,

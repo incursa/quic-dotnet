@@ -27,6 +27,115 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeUsesPreviousPhaseOneKeysForLowerRecoveredPacketNumbersAfterRepeatedLocalUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        InstallRepeatedLocalUpdate(runtime);
+
+        QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial =
+            runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial phaseTwoOpenMaterial =
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+
+        QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+        SkipPacketNumbers(peerCoordinator, phaseTwoOpenMaterial, keyPhase: false, count: 8);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+            retainedPhaseOneOpenMaterial,
+            keyPhase: true,
+            out ulong oldPacketNumber,
+            out byte[] oldProtectedPacket));
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+            phaseTwoOpenMaterial,
+            keyPhase: false,
+            out ulong currentPacketNumber,
+            out byte[] currentProtectedPacket));
+
+        Assert.True(currentPacketNumber > oldPacketNumber);
+        AssertPacketRequiresOldKeys(
+            oldProtectedPacket,
+            phaseTwoOpenMaterial,
+            retainedPhaseOneOpenMaterial,
+            expectedRetainedOldKeyPhase: true);
+
+        _ = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 30_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                currentProtectedPacket),
+            nowTicks: 30_000);
+        _ = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 40_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                oldProtectedPacket),
+            nowTicks: 40_000);
+
+        Assert.True(TryBuildApplicationAckFrame(runtime, 40_000, out QuicAckFrame ackFrame));
+        Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
+        Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
+        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ActiveClientRuntimeRejectsPreviousPhaseOnePacketsWithThePhaseZeroBitAfterRepeatedLocalUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        InstallRepeatedLocalUpdate(runtime);
+
+        QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial =
+            runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial phaseTwoOpenMaterial =
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+
+        QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+        SkipPacketNumbers(peerCoordinator, phaseTwoOpenMaterial, keyPhase: false, count: 8);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+            retainedPhaseOneOpenMaterial,
+            keyPhase: false,
+            out ulong oldPacketNumber,
+            out byte[] oldProtectedPacket));
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+            phaseTwoOpenMaterial,
+            keyPhase: false,
+            out ulong currentPacketNumber,
+            out byte[] currentProtectedPacket));
+
+        _ = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 30_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                currentProtectedPacket),
+            nowTicks: 30_000);
+        _ = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 40_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                oldProtectedPacket),
+            nowTicks: 40_000);
+
+        Assert.True(TryBuildApplicationAckFrame(runtime, 40_000, out QuicAckFrame ackFrame));
+        Assert.True(currentPacketNumber > oldPacketNumber);
+        Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
+        Assert.Equal(0UL, ackFrame.FirstAckRange);
+        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzLowerRecoveredPackets_UsePreviousKeysAcrossRepresentativePayloadSizes()
     {
@@ -74,6 +183,61 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             Assert.True(TryBuildApplicationAckFrame(runtime, 20_000 + (iteration * 2), out QuicAckFrame ackFrame));
             Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
             Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzRepeatedLowerRecoveredPackets_UsePreviousPhaseOneKeysAcrossRepresentativePayloadSizes()
+    {
+        Random random = new(unchecked((int)0x9001_6511));
+
+        for (int iteration = 0; iteration < 32; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            InstallRepeatedLocalUpdate(runtime);
+
+            QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial =
+                runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+            QuicTlsPacketProtectionMaterial phaseTwoOpenMaterial =
+                runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+
+            QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+            SkipPacketNumbers(peerCoordinator, phaseTwoOpenMaterial, keyPhase: false, count: 8);
+            Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+                CreateAckElicitingPayload(random.Next(1, 96)),
+                retainedPhaseOneOpenMaterial,
+                keyPhase: true,
+                out ulong oldPacketNumber,
+                out byte[] oldProtectedPacket));
+            Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
+                CreateAckElicitingPayload(random.Next(1, 96)),
+                phaseTwoOpenMaterial,
+                keyPhase: false,
+                out ulong currentPacketNumber,
+                out byte[] currentProtectedPacket));
+
+            _ = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 30_000 + (iteration * 2),
+                    QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                    currentProtectedPacket),
+                nowTicks: 30_000 + (iteration * 2));
+            _ = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 40_000 + (iteration * 2),
+                    QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                    oldProtectedPacket),
+                nowTicks: 40_000 + (iteration * 2));
+
+            Assert.True(currentPacketNumber > oldPacketNumber);
+            Assert.True(TryBuildApplicationAckFrame(runtime, 40_000 + (iteration * 2), out QuicAckFrame ackFrame));
+            Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
+            Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
+            Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
             Assert.Null(runtime.TerminalState);
             Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -135,7 +299,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
     private static void AssertPacketRequiresOldKeys(
         byte[] protectedPacket,
         QuicTlsPacketProtectionMaterial currentOpenMaterial,
-        QuicTlsPacketProtectionMaterial retainedOldOpenMaterial)
+        QuicTlsPacketProtectionMaterial retainedOldOpenMaterial,
+        bool expectedRetainedOldKeyPhase = false)
     {
         QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
         Assert.False(coordinator.TryOpenProtectedApplicationDataPacket(
@@ -152,7 +317,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             out _,
             out _,
             out bool observedKeyPhase));
-        Assert.False(observedKeyPhase);
+        Assert.Equal(expectedRetainedOldKeyPhase, observedKeyPhase);
     }
 
     private static bool TryBuildApplicationAckFrame(
@@ -185,6 +350,34 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(QuicFrameCodec.TryFormatPingFrame(payload, out int bytesWritten));
         Assert.Equal(1, bytesWritten);
         return payload;
+    }
+
+    private static void InstallRepeatedLocalUpdate(QuicConnectionRuntime runtime)
+    {
+        QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+        ulong repeatedUpdateNotBeforeMicros =
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareRepeatedLocalUpdateEligibility(runtime);
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            repeatedUpdateNotBeforeMicros));
+        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+    }
+
+    private static void SkipPacketNumbers(
+        QuicHandshakeFlowCoordinator coordinator,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+                material,
+                keyPhase,
+                out _,
+                out _));
+        }
     }
 
     private static void MarkServerHandshakeDoneAsAlreadySent(QuicConnectionRuntime runtime)
