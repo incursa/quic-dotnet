@@ -129,7 +129,7 @@ The executable slice must include positive tests for repeated local and peer upd
 
 ## Completion Notes
 
-Planned for the broader lifecycle. The direct first-successor proof for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0010 is now executable at the requirement-home level, including retained old first-update 1-RTT packet-protection material before and after new-key packet authentication plus explicit retained cleanup. No repeated 1-RTT key-update implementation, old-key receive selection, AEAD-limit update trigger, or old-key discard implementation is claimed by this artifact.
+Planned for the broader lifecycle. The direct first-successor proof for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0010 is now executable at the requirement-home level, including retained old first-update 1-RTT packet-protection material before and after new-key packet authentication plus explicit retained cleanup. The first peer-initiated update proof now covers REQ-QUIC-RFC9001-S6P2-0001 and REQ-QUIC-RFC9001-S6P2-0002 for opening next-key packets only when they carry the next Key Phase bit and updating send keys before ACK emission. No repeated 1-RTT key-update implementation, unconfirmed consecutive peer-update error policy, old-key receive selection, AEAD-limit update trigger, or old-key discard implementation is claimed by this artifact.
 
 ## Trace Links
 
@@ -182,13 +182,14 @@ Verified By:
 
 ## Current Boundary
 
-The current runtime can prove the first 0-to-1 successor install, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, successor receive-key installation, retained old first-update 1-RTT material before and after new-key packet authentication, explicit retained cleanup, QUIC `quic ku` successor traffic-secret derivation, and packet key/IV derivation from updated secrets. Repeated key-update cycles after acknowledgment, AEAD-limit update requests, old-key receive selection across retained/current/next epochs, and old 1-RTT key discard remain planned until the lifecycle owner is implemented and proven.
+The current runtime can prove the first 0-to-1 successor install, successor write-key use, stable header-protection keys, updated-key protection for subsequent packets, pre-confirmation local-update rejection, bounded repeat-update rejection before any current-phase acknowledgment support exists, successor receive-key installation, retained old first-update 1-RTT material before and after new-key packet authentication, explicit retained cleanup, first peer-initiated next-key packet opening, updated send-key ACK protection for peer-initiated updates, QUIC `quic ku` successor traffic-secret derivation, and packet key/IV derivation from updated secrets. Repeated key-update cycles after acknowledgment, unconfirmed consecutive peer-update error policy, old-key ACK error policy, AEAD-limit update requests, old-key receive selection across retained/current/next epochs, and old 1-RTT key discard remain planned until the lifecycle owner is implemented and proven.
 
 ## Related Code And Tests
 
 - [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)
 - [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)
 - [`src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs`](../../../src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs)
+- [`src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)
 - [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs)
@@ -204,4 +205,6 @@ The current runtime can prove the first 0-to-1 successor install, successor writ
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs)
 - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0010.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs)
+- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs)
 - [`benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs`](../../../benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs)

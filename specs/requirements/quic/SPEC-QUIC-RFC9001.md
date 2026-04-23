@@ -929,6 +929,11 @@ Trace:
 - Source Refs:
   - RFC 9001 §6.2 RFC9001-S6.2-B2-P1-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveClientRuntimeOpensPeerInitiatedUpdatePacketsWithNextKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveServerRuntimeOpensPeerInitiatedUpdatePacketsWithNextKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveClientRuntimeRejectsNextKeyPacketsThatDoNotSignalTheNextKeyPhase
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::FuzzPeerInitiatedNextKeyPackets_RandomizedPayloadLengthsInstallOnlyWhenTheNextPhaseBitIsPresent
 
 ## REQ-QUIC-RFC9001-S6P2-0002 Update send keys after peer-initiated key updates
 If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.
@@ -944,6 +949,10 @@ Trace:
   - RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S2
   - RFC 9001 §6.2 RFC9001-S6.2-B3-P2-S3
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveServerRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeDoesNotAcknowledgeATamperedPeerUpdatedKeyPacketWithOldSendKeys
 
 ## REQ-QUIC-RFC9001-S6P2-0003 Allow KEY_UPDATE_ERROR for unconfirmed consecutive peer updates
 An endpoint MAY treat consecutive peer key updates that occur before confirmation of the prior update as a connection error of type KEY_UPDATE_ERROR.

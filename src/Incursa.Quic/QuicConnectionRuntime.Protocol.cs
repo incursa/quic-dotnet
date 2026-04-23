@@ -927,7 +927,8 @@ internal sealed partial class QuicConnectionRuntime
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
-                    out _)
+                    out bool successorKeyPhase)
+                || !successorKeyPhase
                 || !tlsState.TryInstallOneRttKeyUpdate(successorOpenMaterial, successorProtectMaterial)
                 || !tlsBridgeDriver.TryDiscardOneRttApplicationTrafficSecrets())
             {
