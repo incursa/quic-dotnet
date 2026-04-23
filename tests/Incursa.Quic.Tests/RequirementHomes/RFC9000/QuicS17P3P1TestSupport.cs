@@ -84,7 +84,7 @@ internal static class QuicS17P3P1TestSupport
         {
             case QuicAeadAlgorithm.Aes128Gcm:
             case QuicAeadAlgorithm.Aes256Gcm:
-                using (AesGcm aeadGcm = new(material.AeadKeyBytes, QuicInitialPacketProtection.AuthenticationTagLength))
+                using (AesGcm aeadGcm = new(material.AeadKey, QuicInitialPacketProtection.AuthenticationTagLength))
                 {
                     aeadGcm.Encrypt(nonce, plaintext, ciphertext, tag, associatedData);
                 }
@@ -92,7 +92,7 @@ internal static class QuicS17P3P1TestSupport
                 return true;
 
             case QuicAeadAlgorithm.Aes128Ccm:
-                using (AesCcm aeadCcm = new(material.AeadKeyBytes))
+                using (AesCcm aeadCcm = new(material.AeadKey))
                 {
                     aeadCcm.Encrypt(nonce, plaintext, ciphertext, tag, associatedData);
                 }
@@ -112,7 +112,7 @@ internal static class QuicS17P3P1TestSupport
     {
         Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
         if (!TryGenerateHeaderProtectionMask(
-            material.HeaderProtectionKeyBytes,
+            material.HeaderProtectionKey,
             packet.Slice(packetNumberOffset + QuicInitialPacketProtection.HeaderProtectionSampleOffset, QuicInitialPacketProtection.HeaderProtectionSampleLength),
             mask))
         {

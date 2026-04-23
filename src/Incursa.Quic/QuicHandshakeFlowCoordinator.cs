@@ -300,7 +300,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         return true;
     }
 
-    internal bool TryBuildProtectedApplicationDataPacket(
+    internal bool TryBuildProtectedApplicationDataPacketLease(
         ReadOnlySpan<byte> applicationPayload,
         QuicTlsPacketProtectionMaterial material,
         bool keyPhase,
@@ -519,7 +519,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         return false;
     }
 
-    internal bool TryOpenProtectedApplicationDataPacket(
+    internal bool TryOpenProtectedApplicationDataPacketLease(
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
         out QuicBufferLease openedPacket,

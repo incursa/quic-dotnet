@@ -97,7 +97,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         QuicBufferLease warmupProtectedPacket = default;
         try
         {
-            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacketLease(
                 applicationPayload,
                 installedProtectPacketProtectionMaterial,
                 keyPhase: true,
@@ -159,7 +159,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         QuicBufferLease warmupPacket = default;
         try
         {
-            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacketLease(
                 applicationPayload,
                 installedProtectPacketProtectionMaterial,
                 keyPhase: true,
@@ -213,7 +213,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         QuicBufferLease packet = default;
         try
         {
-            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacket(
+            if (!buildPacketCoordinator.TryBuildProtectedApplicationDataPacketLease(
                 applicationPayload,
                 installedProtectPacketProtectionMaterial,
                 keyPhase: true,
@@ -240,7 +240,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         QuicBufferLease openedPacket = default;
         try
         {
-            return packetCoordinator.TryOpenProtectedApplicationDataPacket(
+            return packetCoordinator.TryOpenProtectedApplicationDataPacketLease(
                 protectedPacket,
                 installedOpenPacketProtectionMaterial,
                 out openedPacket,
@@ -265,7 +265,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
         QuicBufferLease openedPacket = default;
         try
         {
-            return packetCoordinator.TryOpenProtectedApplicationDataPacket(
+            return packetCoordinator.TryOpenProtectedApplicationDataPacketLease(
                 repeatedRetainedPhaseOneProtectedPacket,
                 repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
                 out openedPacket,

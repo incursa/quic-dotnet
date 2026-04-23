@@ -2514,7 +2514,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicBufferLease openedPacket = default;
             try
             {
-                if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacket(
+                if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacketLease(
                         retransmission.PacketBytes.Span,
                         tlsState.OneRttProtectPacketProtectionMaterial.Value,
                         out openedPacket,

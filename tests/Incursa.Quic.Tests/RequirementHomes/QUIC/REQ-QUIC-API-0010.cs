@@ -765,7 +765,7 @@ public sealed class REQ_QUIC_API_0010
             nonce[nonceOffset + index] ^= plaintextPacket[packetNumberOffset + index];
         }
 
-        using (AesGcm aeadGcm = new(material.AeadKeyBytes, QuicInitialPacketProtection.AuthenticationTagLength))
+        using (AesGcm aeadGcm = new(material.AeadKey, QuicInitialPacketProtection.AuthenticationTagLength))
         {
             aeadGcm.Encrypt(
                 nonce,
@@ -778,7 +778,7 @@ public sealed class REQ_QUIC_API_0010
         Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
         using (Aes aes = Aes.Create())
         {
-            aes.Key = material.HeaderProtectionKeyBytes.ToArray();
+            aes.Key = material.HeaderProtectionKey.ToArray();
             aes.Mode = CipherMode.ECB;
             aes.Padding = PaddingMode.None;
             int bytesWritten = aes.EncryptEcb(

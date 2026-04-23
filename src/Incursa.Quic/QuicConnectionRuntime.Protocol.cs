@@ -923,7 +923,7 @@ internal sealed partial class QuicConnectionRuntime
         bool openedPacketOwned = false;
         try
         {
-        if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+            if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
             packetReceivedEvent.Datagram.Span,
             tlsState.OneRttOpenPacketProtectionMaterial.Value,
             out openedPacket,
@@ -947,7 +947,7 @@ internal sealed partial class QuicConnectionRuntime
             bool openedWithRetainedOldKeys = tlsState.KeyUpdateInstalled
                 && tlsState.CurrentOneRttKeyPhase != 0
                 && tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
-                && handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+                && handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetReceivedEvent.Datagram.Span,
                     tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.Value,
                     out openedPacket,
@@ -980,7 +980,7 @@ internal sealed partial class QuicConnectionRuntime
                         out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
                         out QuicTlsPacketProtectionMaterial successorProtectMaterial)
                     || !derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
-                    || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacket(
+                    || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                         packetReceivedEvent.Datagram.Span,
                         successorOpenMaterial,
                         out openedPacket,

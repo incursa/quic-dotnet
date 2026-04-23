@@ -922,7 +922,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicBufferLease openedPacket = default;
         try
         {
-            if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacket(
+            if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetBytes.Span,
                     tlsState.OneRttProtectPacketProtectionMaterial.Value,
                     out openedPacket,
