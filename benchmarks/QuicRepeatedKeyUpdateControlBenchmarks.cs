@@ -16,11 +16,16 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
     private QuicOneRttKeyUpdateLifecycle pendingConfirmationLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle confirmedLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle retainedPhaseOneLifecycle = default!;
+    private QuicOneRttKeyUpdateLifecycle retainedPhaseTwoLifecycle = default!;
     private QuicAeadKeyLifecycle exhaustedRepeatedProtectionLifecycle = default!;
     private QuicConnectionSendRuntime repeatedOldSendRuntime = default!;
     private QuicRecoveryController repeatedOldRecoveryController = default!;
+    private QuicConnectionSendRuntime repeatedPhaseTwoOldSendRuntime = default!;
+    private QuicRecoveryController repeatedPhaseTwoOldRecoveryController = default!;
     private QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial;
     private QuicTlsPacketProtectionMaterial retainedPhaseOneProtectMaterial;
+    private QuicTlsPacketProtectionMaterial retainedPhaseTwoOpenMaterial;
+    private QuicTlsPacketProtectionMaterial retainedPhaseTwoProtectMaterial;
     private ulong repeatedUpdateNotBeforeMicros;
 
     [GlobalSetup]
@@ -28,6 +33,8 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
     {
         retainedPhaseOneOpenMaterial = CreatePacketProtectionMaterial(0x30);
         retainedPhaseOneProtectMaterial = CreatePacketProtectionMaterial(0x60);
+        retainedPhaseTwoOpenMaterial = CreatePacketProtectionMaterial(0x90);
+        retainedPhaseTwoProtectMaterial = CreatePacketProtectionMaterial(0xC0);
     }
 
     [IterationSetup]
@@ -75,6 +82,30 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
                 handshakeConfirmed: true))
         {
             throw new InvalidOperationException("Failed to prepare repeated old-key pending retransmission state.");
+        }
+
+        retainedPhaseTwoLifecycle = new QuicOneRttKeyUpdateLifecycle();
+        if (!retainedPhaseTwoLifecycle.TryRetainOldPacketProtectionMaterial(
+                retainedPhaseTwoOpenMaterial,
+                retainedPhaseTwoProtectMaterial)
+            || !retainedPhaseTwoLifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(
+                AcknowledgedAtMicros + (ProbeTimeoutMicros * 3UL),
+                keyPhase: 2))
+        {
+            throw new InvalidOperationException("Failed to prepare repeated phase-2 old-key discard lifecycle state.");
+        }
+
+        repeatedPhaseTwoOldSendRuntime = new QuicConnectionSendRuntime();
+        repeatedPhaseTwoOldRecoveryController = new QuicRecoveryController();
+        SeedOneRttPacket(repeatedPhaseTwoOldSendRuntime, repeatedPhaseTwoOldRecoveryController, packetNumber: 50, keyPhase: 2);
+        SeedOneRttPacket(repeatedPhaseTwoOldSendRuntime, repeatedPhaseTwoOldRecoveryController, packetNumber: 51, keyPhase: 3);
+        SeedOneRttPacket(repeatedPhaseTwoOldSendRuntime, repeatedPhaseTwoOldRecoveryController, packetNumber: 52, keyPhase: 2);
+        if (!repeatedPhaseTwoOldSendRuntime.TryRegisterLoss(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 52,
+                handshakeConfirmed: true))
+        {
+            throw new InvalidOperationException("Failed to prepare repeated phase-2 pending retransmission state.");
         }
     }
 
@@ -133,6 +164,22 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
         updated |= repeatedOldRecoveryController.TryDiscardOneRttKeyPhase(1);
 
         return updated ? repeatedOldSendRuntime.SentPackets.Count + repeatedOldSendRuntime.PendingRetransmissionCount : -1;
+    }
+
+    /// <summary>
+    /// Measures the same repeated old-key cleanup after one more bounded alternation, where phase 2 is retained old
+    /// and phase 3 remains current.
+    /// </summary>
+    [Benchmark]
+    public int DiscardRepeatedOldPhaseTwoPacketProtectionAndSendState()
+    {
+        bool updated = retainedPhaseTwoLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
+        updated |= repeatedPhaseTwoOldSendRuntime.TryDiscardOneRttKeyPhase(2);
+        updated |= repeatedPhaseTwoOldRecoveryController.TryDiscardOneRttKeyPhase(2);
+
+        return updated
+            ? repeatedPhaseTwoOldSendRuntime.SentPackets.Count + repeatedPhaseTwoOldSendRuntime.PendingRetransmissionCount
+            : -1;
     }
 
     private static QuicTlsPacketProtectionMaterial CreatePacketProtectionMaterial(byte seed)

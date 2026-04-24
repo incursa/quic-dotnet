@@ -124,6 +124,41 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeInstallsLocalPhaseThreeAfterPhaseTwoAcknowledgmentCooldownAndOldKeyDiscard()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+        ulong phaseThreeNotBeforeMicros =
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PreparePhaseTwoCurrentWithOldDiscardedAndAcknowledged(runtime);
+
+        QuicTlsPacketProtectionMaterial phaseTwoOpenMaterial =
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial phaseTwoProtectMaterial =
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial phaseThreeOpenMaterial,
+            out QuicTlsPacketProtectionMaterial phaseThreeProtectMaterial));
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            phaseThreeNotBeforeMicros));
+
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseBit);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+        Assert.Null(runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
+        Assert.True(phaseThreeOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(phaseThreeProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+        Assert.True(phaseTwoOpenMaterial.Matches(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(phaseTwoProtectMaterial.Matches(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial!.Value));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded()

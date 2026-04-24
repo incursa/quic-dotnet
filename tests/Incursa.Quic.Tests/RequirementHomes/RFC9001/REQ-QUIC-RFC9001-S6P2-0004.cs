@@ -80,6 +80,94 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeRejectsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+
+        QuicConnectionSentPacketKey currentPhasePacketKey = new(
+            QuicPacketNumberSpace.ApplicationData,
+            90);
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            currentPhasePacketKey.PacketNumber,
+            sentAtMicros: 900,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicTlsPacketProtectionMaterial retainedPhaseTwoOpenMaterial =
+            runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+        byte[] oldKeyAckPacket = BuildProtectedApplicationPacket(
+            retainedPhaseTwoOpenMaterial,
+            keyPhase: false,
+            CreateAckPayload(currentPhasePacketKey.PacketNumber));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 70_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                oldKeyAckPacket),
+            nowTicks: 70_000);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
+        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
+        Assert.Equal(
+            "The peer acknowledged a newer-key packet in an old-key packet.",
+            runtime.TerminalState?.Close.ReasonPhrase);
+        Assert.True(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatOnlyAcknowledgePhaseTwoPackets()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+
+        QuicConnectionSentPacketKey oldPhasePacketKey = new(
+            QuicPacketNumberSpace.ApplicationData,
+            91);
+        QuicConnectionSentPacketKey currentPhasePacketKey = new(
+            QuicPacketNumberSpace.ApplicationData,
+            92);
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            oldPhasePacketKey.PacketNumber,
+            sentAtMicros: 910,
+            keyPhase: 2);
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            currentPhasePacketKey.PacketNumber,
+            sentAtMicros: 920,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicTlsPacketProtectionMaterial retainedPhaseTwoOpenMaterial =
+            runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+        byte[] oldKeyAckPacket = BuildProtectedApplicationPacket(
+            retainedPhaseTwoOpenMaterial,
+            keyPhase: false,
+            CreateAckPayload(oldPhasePacketKey.PacketNumber));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 80_000,
+                QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                oldKeyAckPacket),
+            nowTicks: 80_000);
+
+        Assert.False(result.Effects.OfType<QuicConnectionNotifyStreamsOfTerminalStateEffect>().Any());
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+        Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(oldPhasePacketKey));
+        Assert.True(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
     {
@@ -125,6 +213,49 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                     QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
                     oldKeyAckPacket),
                 nowTicks: iteration * 30 + 20);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
+            Assert.Equal(
+                "The peer acknowledged a newer-key packet in an old-key packet.",
+                runtime.TerminalState?.Close.ReasonPhrase);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
+    {
+        Random random = new(unchecked((int)0x9001_6234));
+
+        for (int iteration = 0; iteration < 32; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+
+            ulong currentPhasePacketNumber = (ulong)(120 + iteration);
+            QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+                runtime,
+                currentPhasePacketNumber,
+                sentAtMicros: (ulong)(1_200 + iteration),
+                keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+            QuicTlsPacketProtectionMaterial retainedPhaseTwoOpenMaterial =
+                runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+            byte[] oldKeyAckPacket = BuildProtectedApplicationPacket(
+                retainedPhaseTwoOpenMaterial,
+                keyPhase: false,
+                CreateAckPayload(
+                    currentPhasePacketNumber,
+                    ackDelay: (ulong)random.Next(0, 64)));
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 90_000 + iteration,
+                    QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                    oldKeyAckPacket),
+                nowTicks: 90_000 + iteration);
 
             Assert.True(result.StateChanged);
             Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);

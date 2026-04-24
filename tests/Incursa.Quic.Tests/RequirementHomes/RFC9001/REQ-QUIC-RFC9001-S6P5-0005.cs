@@ -120,6 +120,30 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeDiscardsRetainedPhaseTwoReadKeysAndPhaseTwoSendStateAfterPhaseThreeLocalKeyUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+        SeedPhaseThreeTrackedPackets(runtime);
+
+        QuicConnectionTransitionResult armResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(
+                runtime,
+                observedAtTicks: Stopwatch.Frequency * 5L);
+
+        Assert.True(armResult.StateChanged);
+        Assert.Equal(2U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        QuicConnectionTransitionResult timerResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+
+        AssertRepeatedPhaseTwoDiscardedAndPhaseThreeRetained(runtime, timerResult);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ActiveClientRuntimeDiscardsRetainedPhaseOneReadKeysAndPhaseOneSendStateAfterRepeatedPeerKeyUpdate()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
@@ -288,6 +312,57 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzPhaseThreeRetentionExpiry_DiscardsOnlyRetainedPhaseTwoAcrossRepresentativePacketSets()
+    {
+        Random random = new(unchecked((int)0x9001_6525));
+
+        for (int iteration = 0; iteration < 32; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+
+            int retainedPhaseTwoPacketCount = random.Next(1, 4);
+            int currentPhaseThreePacketCount = random.Next(1, 4);
+            for (int index = 0; index < retainedPhaseTwoPacketCount; index++)
+            {
+                QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+                    runtime,
+                    packetNumber: (ulong)(130 + index),
+                    sentAtMicros: (ulong)(1_300 + index),
+                    keyPhase: 2);
+            }
+
+            for (int index = 0; index < currentPhaseThreePacketCount; index++)
+            {
+                QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+                    runtime,
+                    packetNumber: (ulong)(170 + index),
+                    sentAtMicros: (ulong)(1_700 + index),
+                    keyPhase: 3);
+            }
+
+            QuicRfc9001KeyUpdateRetentionTestSupport.SeedLostOneRttPacket(
+                runtime,
+                packetNumber: (ulong)(210 + iteration),
+                sentAtMicros: (ulong)(2_100 + iteration),
+                keyPhase: 2);
+            _ = QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(
+                runtime,
+                observedAtTicks: Stopwatch.Frequency * (5L + iteration));
+            QuicConnectionTransitionResult timerResult =
+                QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+
+            Assert.True(timerResult.StateChanged);
+            Assert.Null(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+            Assert.Null(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+            Assert.DoesNotContain(runtime.SendRuntime.SentPackets.Values, packet => packet.OneRttKeyPhase == 2);
+            Assert.Contains(runtime.SendRuntime.SentPackets.Values, packet => packet.OneRttKeyPhase == 3);
+            Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        }
+    }
+
     private static void AssertRuntimeDiscardsOldReadKeysAndOldPhaseSendStateWhenTheRetentionTimerExpires(
         Func<QuicConnectionRuntime> runtimeFactory)
     {
@@ -344,6 +419,25 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
         Assert.Null(runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
     }
 
+    private static void SeedPhaseThreeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber: 50,
+            sentAtMicros: 500,
+            keyPhase: 2);
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedLostOneRttPacket(
+            runtime,
+            packetNumber: 51,
+            sentAtMicros: 510,
+            keyPhase: 2);
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber: 52,
+            sentAtMicros: 520,
+            keyPhase: 3);
+    }
+
     private static void SeedRepeatedPhaseTrackedPackets(QuicConnectionRuntime runtime)
     {
         QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
@@ -361,6 +455,33 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
             packetNumber: 32,
             sentAtMicros: 320,
             keyPhase: 2);
+    }
+
+    private static void AssertRepeatedPhaseTwoDiscardedAndPhaseThreeRetained(
+        QuicConnectionRuntime runtime,
+        QuicConnectionTransitionResult timerResult)
+    {
+        QuicRecoveryController recoveryController =
+            QuicRfc9001KeyUpdateRetentionTestSupport.GetRecoveryController(runtime);
+
+        Assert.True(timerResult.StateChanged);
+        Assert.Null(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+        Assert.Null(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+        Assert.DoesNotContain(runtime.SendRuntime.SentPackets.Values, packet => packet.OneRttKeyPhase == 2);
+        Assert.Contains(runtime.SendRuntime.SentPackets.Values, packet => packet.OneRttKeyPhase == 3);
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.True(recoveryController.TrySelectLossDetectionTimer(
+            nowMicros: 2_000,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: true,
+            serverAtAntiAmplificationLimit: false,
+            peerAddressValidationComplete: true,
+            handshakeKeysAvailable: true,
+            out _,
+            out QuicPacketNumberSpace selectedPacketNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, selectedPacketNumberSpace);
     }
 
     private static void AssertRepeatedPhaseOneDiscardedAndPhaseTwoRetained(

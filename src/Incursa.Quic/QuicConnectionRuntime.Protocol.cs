@@ -1660,7 +1660,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (receivedInRetainedOldOneRttPacket
                     && packetNumberSpace == QuicPacketNumberSpace.ApplicationData
-                    && sentPacket.OneRttKeyPhase == 1)
+                    && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
                 {
                     return HandleFatalTlsSignal(
                         nowTicks,
