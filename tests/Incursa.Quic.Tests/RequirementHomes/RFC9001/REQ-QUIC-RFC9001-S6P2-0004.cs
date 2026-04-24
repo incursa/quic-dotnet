@@ -536,7 +536,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
 
         for (int iteration = 0; iteration < 16; iteration++)
         {
-            uint targetPhase = (uint)random.Next(6, 10);
+            uint targetPhase = (uint)random.Next(6, 25);
             using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
             QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
             QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseWithPreviousRetained(

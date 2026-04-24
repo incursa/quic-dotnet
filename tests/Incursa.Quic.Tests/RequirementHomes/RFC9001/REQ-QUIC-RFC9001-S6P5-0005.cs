@@ -567,7 +567,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
 
         for (int iteration = 0; iteration < 16; iteration++)
         {
-            uint targetPhase = (uint)random.Next(6, 17);
+            uint targetPhase = (uint)random.Next(6, 25);
             uint retainedPreviousPhase = targetPhase - 1U;
             using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
             QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
@@ -625,7 +625,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
 
         for (int iteration = 0; iteration < 8; iteration++)
         {
-            uint targetPhase = (uint)random.Next(6, 17);
+            uint targetPhase = (uint)random.Next(6, 25);
             ulong packetNumber = 900UL + (ulong)iteration;
             using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
             QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
