@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9001-0004",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC RFC 9001 Post-Stop Stateless Reset Response Matrix Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the design boundary for the retained-route stateless-reset response floor after AEAD-limit terminal discard, including exact retained-route lookup, same-remote-address-and-port ownership, loop-prevention, and emission-rate suppression.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "WI-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004",
+    "ARC-QUIC-CRT-0040",
+    "WI-QUIC-CRT-0042",
+    "VER-QUIC-CRT-0042"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9001-S6P6-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicStatelessReset.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
+    "benchmarks/QuicStatelessResetBenchmarks.cs"
+  ],
+  "risks": [
+    "If retained-route lookup drifts away from the same remote address and port rule, post-stop responses can be emitted for the wrong path.",
+    "If loop-prevention and emission-rate gates are separated from retained-route lookup, the response matrix can overstate how often a reset may be sent.",
+    "If the endpoint helper and host shells diverge on retained-route ownership, the direct emission path and receive-loop path can drift apart."
+  ],
+  "design_summary": "The runtime already has a shared retained-route lookup helper for post-stop stateless-reset response. This design keeps that helper exact: later packets only qualify when they resolve to a retained route bound to a remembered token for the same remote address and port, and the endpoint helper still suppresses emission when loop-prevention or rate-budget gates fail. The connected endpoint host and listener host continue to delegate through the same helper so direct emission and receive-loop response ownership stay aligned instead of growing separate response models.",
+  "alternatives_considered": [
+    "Allow any later packet to reach stateless-reset emission once AEAD limits are exhausted. Rejected because it would overstate the retained-route floor and hide missing lookup state.",
+    "Introduce a separate ambiguity-detection model for post-stop routing before the runtime expresses an ambiguity state. Rejected because the current route model is exact and the missing work is a tighter retained-route floor, not a new ambiguity engine.",
+    "Split direct endpoint emission and host receive-loop response into unrelated policies. Rejected because the existing helper already centralizes the response gates and the host shells forward through that same helper."
+  ],
+  "edge_cases_and_constraints": [
+    "Packets that do not resolve to a retained route remain suppressed.",
+    "A retained route must match the same remote address and remote port as the retained binding.",
+    "Loop-prevention still suppresses responses when the helper cannot keep the reset shorter than the triggering packet.",
+    "Rate-budget exhaustion suppresses subsequent resets for the same remote address.",
+    "Short-header and long-header packets both use the same retained-route lookup boundary.",
+    "Direct endpoint emission and host-shell forwarding must remain consistent with the same helper-owned route/token state."
+  ],
+  "data_and_state_considerations": "The retained-route matrix depends on the endpoint's route binding tables, retained stateless-reset bindings by route length, and per-remote-address emission counters. Path identity stores both remote address and remote port, so the response floor stays tied to the same endpoint tuple rather than a token alone. The runtime continues to own the token snapshot, retained route, and loop/rate gates after AEAD-limit terminal discard; the host shells should not reconstruct a separate eligibility model.",
+  "open_questions": [
+    "If a later change adds a distinct ambiguity state to route lookup, the gap ledger should split that case out instead of broadening the retained-route floor."
+  ]
+}

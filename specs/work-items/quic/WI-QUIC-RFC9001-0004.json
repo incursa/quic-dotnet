@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9001-0004",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC RFC 9001 Post-Stop Stateless Reset Response Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement and prove the retained-route stateless-reset response floor after AEAD-limit terminal discard, keeping the same-remote-address-and-port lookup, loop-prevention, and rate-budget gates aligned across the endpoint helper and host shells.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004",
+    "ARC-QUIC-CRT-0040",
+    "WI-QUIC-CRT-0042",
+    "VER-QUIC-CRT-0042"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9001-0004"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9001-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9001-S6P6-0006"
+  ],
+  "planned_changes": "- Keep the retained-route response floor exact after AEAD-limit terminal discard.\n- Align endpoint-helper emission, connected endpoint host forwarding, and listener host forwarding on the same retained-route lookup, token ownership, loop-prevention, and rate-budget gates.\n- Add requirement-home coverage for matching-route emission, remote-port mismatch suppression, loop-prevention suppression, and rate-budget suppression.\n- Refresh the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for retained-route lookup hit/miss and stateless-reset formatting.\n- Keep broader stateless-reset response behavior outside the retained-route floor blocked until separately traced.",
+  "out_of_scope": [
+    "Broader stateless-reset response behavior outside the retained-route floor",
+    "New token-generation behavior",
+    "New stateless-reset formatting behavior",
+    "A separate ambiguity-detection engine",
+    "Key-update lifecycle broadening"
+  ],
+  "verification_plan": "Run focused requirement-home tests for the new retained-route floor, include negative suppression coverage for remote-port mismatch, loop-prevention, and rate budget failures, refresh the stateless-reset benchmark suite, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.",
+  "completion_notes": "Planned for the retained-route response floor only. The broader response matrix remains open for any behavior that does not resolve through the retained route, remembered token, and loop/rate gates."
+}

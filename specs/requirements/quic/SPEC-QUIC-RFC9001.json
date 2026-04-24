@@ -9,7 +9,10 @@
     "VER-QUIC-RFC9001-0002",
     "ARC-QUIC-RFC9001-0003",
     "WI-QUIC-RFC9001-0003",
-    "VER-QUIC-RFC9001-0003"
+    "VER-QUIC-RFC9001-0003",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004"
   ],
   "artifact_id": "SPEC-QUIC-RFC9001",
   "scope": "This specification covers the reviewed RFC 9001 extraction outputs and preserves the distinction between RFC 9001 packet-protection behavior and overlapping TLS or transport references.",
@@ -1894,6 +1897,35 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzStatelessResetOnlyPolicy_RandomizedIntegrityLimitsChooseStatelessResetOnly",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointStatelessResetOnlyEmissionAfterAeadLimitDiscard_RespectsLoopAndRateGates",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresLinkedTokenPathAndRateBudget"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0006",
+      "title": "Gate retained-route stateless-reset responses",
+      "statement": "After AEAD-limit terminal discard, an endpoint MUST emit a stateless reset for a later received packet only when the packet resolves to a retained route linked to a remembered stateless-reset token for the same remote address and port, and the loop-prevention and emission-rate gates permit the response; otherwise it MUST suppress the response.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0004"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2",
+          "RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1",
+          "RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresPortMatchLoopBudgetAndRateBudget"
         ]
       }
     },

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9001-0004",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9001 Post-Stop Stateless Reset Response Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home execution, negative suppression tests, fuzz coverage for retained-route port and gate combinations, BenchmarkDotNet coverage for retained-route lookup and stateless-reset helper paths, and SpecTrace render/validation checks.",
+  "scope": "Verify the retained-route stateless-reset response floor after AEAD-limit terminal discard, including same remote address and port lookup, missing-token suppression, loop-prevention suppression, rate-budget suppression, and host-shell forwarding through the shared endpoint helper.",
+  "preconditions": [
+    "REQ-QUIC-RFC9001-S6P6-0005 remains the established AEAD-limit floor baseline.",
+    "REQ-QUIC-RFC9001-S6P6-0006 defines the retained-route response floor being verified.",
+    "QuicStatelessResetBenchmarks remains the permanent hot-path benchmark suite for token matching, retained-route lookup, and formatting."
+  ],
+  "procedure": [
+    "Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 and REQ-QUIC-RFC9001-S6P6-0006.",
+    "Run the retained-route response fuzz and negative suppression tests for missing token, remote-port mismatch, loop-prevention, and rate-budget cases.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicStatelessResetBenchmarks*\"` to refresh the permanent stateless-reset benchmark evidence.",
+    "Render the touched SpecTrace Markdown views from JSON and run the repo-local validation checks for the changed artifacts.",
+    "Run `git diff --check` before committing the slice."
+  ],
+  "expected_result": "The retained-route floor emits a stateless reset only when a later packet resolves to a remembered token on the same remote address and port and the loop-prevention and rate-budget gates permit the response. Missing token state, remote-port mismatch, loop-prevention failure, or exhausted rate budget suppress the response. The refreshed benchmark suite preserves the retained-route lookup hit/miss and stateless-reset formatting paths without claiming any broader response model.",
+  "verifies": [
+    "REQ-QUIC-RFC9001-S6P6-0006"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0004",
+    "ARC-QUIC-CRT-0040",
+    "WI-QUIC-CRT-0042",
+    "VER-QUIC-CRT-0042"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs",
+    "benchmarks/QuicStatelessResetBenchmarks.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicStatelessReset.cs",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/focused-rfc9001-s6p6-tests.log",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/render.log",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/git-diff-check.log",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260424-154648.log",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.csv",
+    "artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.html"
+  ],
+  "status_summary": "Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 and REQ-QUIC-RFC9001-S6P6-0006 ran green with 19 total cases, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the retained-route lookup and stateless-reset helper paths. The artifact remains scoped to the retained-route same-remote-address-and-port floor; broader stateless-reset response behavior stays open.",
+  "completion_notes": "The repository already has the shared retained-route helper and host shells. This verification stays bounded to the exact retained-route, same-remote-address-and-port, loop-prevention, and rate-budget floor instead of broadening stateless-reset behavior.",
+  "open_questions": [
+    "Any future ambiguity-specific lookup model should be traced as a separate gap instead of expanding this floor."
+  ]
+}

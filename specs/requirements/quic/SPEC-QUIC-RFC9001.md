@@ -1358,6 +1358,28 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointStatelessResetOnlyEmissionAfterAeadLimitDiscard_RespectsLoopAndRateGates
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresLinkedTokenPathAndRateBudget
 
+## REQ-QUIC-RFC9001-S6P6-0006 Gate retained-route stateless-reset responses
+After AEAD-limit terminal discard, an endpoint MUST emit a stateless reset for a later received packet only when the packet resolves to a retained route linked to a remembered stateless-reset token for the same remote address and port, and the loop-prevention and emission-rate gates permit the response; otherwise it MUST suppress the response.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0004
+- Implemented By:
+  - WI-QUIC-RFC9001-0004
+- Verified By:
+  - VER-QUIC-RFC9001-0004
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresPortMatchLoopBudgetAndRateBudget
+
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
 
