@@ -13,15 +13,16 @@
     "SBP9"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
-  "review_result": "split_this_appendix_chunk",
-  "recommendation": "split this appendix chunk into a smaller executable subset",
+  "review_result": "closed_after_split_slices",
+  "recommendation": "keep the split helper, PMTU accounting, and key-discard closures as the Appendix B closeout boundary",
   "counts": {
     "total_in_scope": 28,
-    "move_now": 23,
-    "defer": 5,
+    "helper_backed_subset": 23,
+    "followup_closures": 5,
+    "defer": 0,
     "retained_overlap": 1
   },
-  "move_now": {
+  "closed_helper_backed_subset": {
     "requirement_ids": [
       "REQ-QUIC-RFC9002-SBP1-0001",
       "REQ-QUIC-RFC9002-SBP1-0002",
@@ -48,21 +49,39 @@
       "REQ-QUIC-RFC9002-SBP8-0005"
     ],
     "notes": [
-      "These clauses are the smallest executable subset for this appendix and already map to the helper-backed surfaces in `QuicCongestionControlState` and `QuicEcnValidationState`.",
-      "The current unit tests already exercise the constructor defaults, bytes-in-flight accounting, ACK handling, recovery entry, ECN handling, pacing helpers, and persistent congestion math."
+      "These clauses map to the helper-backed surfaces in `QuicCongestionControlState` and `QuicEcnValidationState`.",
+      "Requirement-home tests exercise constructor defaults, bytes-in-flight accounting, ACK handling, recovery entry, ECN handling, pacing helpers, and persistent congestion math."
     ]
   },
+  "closed_followups": [
+    {
+      "name": "9002-06-appendix-b-pmtu-accounting-topoff",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-SBP2-0001",
+        "REQ-QUIC-RFC9002-SBP2-0003"
+      ],
+      "notes": [
+        "The recovery accounting subset clamps RFC 9002 recovery formulas to the 1200-byte floor while preserving the RFC 9000 path value used for close-only gating.",
+        "This closure does not claim key-discard cleanup."
+      ]
+    },
+    {
+      "name": "9002-06-appendix-b-key-discard-remainder",
+      "requirement_ids": [
+        "REQ-QUIC-RFC9002-SBP9-0001",
+        "REQ-QUIC-RFC9002-SBP9-0002",
+        "REQ-QUIC-RFC9002-SBP9-0003"
+      ],
+      "notes": [
+        "The closing proof relies on the connection-owned sender ledger and TLS key-discard transition path under `ARC-QUIC-RFC9002-0002`, `WI-QUIC-RFC9002-0002`, and `VER-QUIC-RFC9002-0002`.",
+        "The older helper-only persistent-congestion examples remain supporting evidence but are not the closing proof by themselves."
+      ]
+    }
+  ],
   "defer": {
-    "requirement_ids": [
-      "REQ-QUIC-RFC9002-SBP2-0001",
-      "REQ-QUIC-RFC9002-SBP2-0003",
-      "REQ-QUIC-RFC9002-SBP9-0001",
-      "REQ-QUIC-RFC9002-SBP9-0002",
-      "REQ-QUIC-RFC9002-SBP9-0003"
-    ],
+    "requirement_ids": [],
     "notes": [
-      "The PMTU and overhead clauses need sender/runtime state that is not present in the current helper-only surface.",
-      "The key-discard clauses need a connection-owned packet table and timer bookkeeping that is still missing from `src`, so this remainder stays deferred."
+      "No scoped Appendix B requirements remain deferred by this generated review."
     ]
   },
   "retained_overlap": {
@@ -76,17 +95,34 @@
       "Keep this clause split from the Appendix A key-discard cleanup item so the duplicate implementation work stays visible."
     ]
   },
-  "existing_code_touchpoints": [
-    "src/Incursa.Quic/QuicCongestionControlState.cs",
-    "src/Incursa.Quic/QuicEcnValidationState.cs",
-    "src/Incursa.Quic/QuicVersionNegotiation.cs"
+  "tests_run": [
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_SBP1|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0002|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0004|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0005|FullyQualifiedName~REQ_QUIC_RFC9002_SBP3|FullyQualifiedName~REQ_QUIC_RFC9002_SBP4|FullyQualifiedName~REQ_QUIC_RFC9002_SBP5|FullyQualifiedName~REQ_QUIC_RFC9002_SBP6|FullyQualifiedName~REQ_QUIC_RFC9002_SBP7|FullyQualifiedName~REQ_QUIC_RFC9002_SBP8\"",
+      "result": "47 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0001|FullyQualifiedName~REQ_QUIC_RFC9002_SBP2_0003\"",
+      "result": "8 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_SBP9|FullyQualifiedName~REQ_QUIC_RFC9002_SAP11_0003\"",
+      "result": "19 passed, 0 failed, 0 skipped"
+    }
   ],
-  "existing_test_touchpoints": [
-    "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs",
-    "tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs"
+  "preserved_evidence": [
+    "artifacts/benchmark-baseline/20260422-230344-dry/",
+    "artifacts/benchmark-baseline/20260422-230945-short/",
+    "artifacts/benchmark-baseline/20260422-2350-rfc9002-pmtu-accounting-dry/",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+    "specs/architecture/quic/ARC-QUIC-RFC9002-0002.json",
+    "specs/work-items/quic/WI-QUIC-RFC9002-0002.json",
+    "specs/verification/quic/VER-QUIC-RFC9002-0002.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/"
   ],
   "rationale": [
-    "The appendix is not a single executable unit. The helper-backed restatements form the smallest safe slice, but the PMTU/overhead clauses and the key-discard cleanup clauses need a broader sender/runtime dependency.",
-    "The smallest safe slice is therefore the helper-backed subset, with the remaining clauses deferred until the relevant runtime work exists."
+    "The appendix was not a single executable unit at initial review time, so it was split into helper-backed, PMTU accounting, and key-discard remainder slices.",
+    "All three slices now have requirement-home evidence recorded in the gap ledger, so this generated review no longer carries the old deferred classification.",
+    "This reconciliation does not broaden pacing, PMTU discovery, or key-discard lifecycle behavior beyond the traced requirements and existing evidence."
   ]
 }
