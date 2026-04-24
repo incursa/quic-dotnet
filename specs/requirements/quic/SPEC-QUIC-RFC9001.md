@@ -1379,6 +1379,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresPortMatchLoopBudgetAndRateBudget
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
