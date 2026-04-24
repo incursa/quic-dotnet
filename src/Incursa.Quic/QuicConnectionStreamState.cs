@@ -426,6 +426,11 @@ internal sealed class QuicConnectionStreamState
                 return false;
             }
 
+            if (state.ReceiveState is QuicStreamReceiveState.DataRecvd or QuicStreamReceiveState.DataRead)
+            {
+                return true;
+            }
+
             ulong additionalBytes = state.ReceivedRanges.MeasureAdditionalCoverage(frame.Offset, endExclusive);
             ulong newUniqueBytes = state.ReceivedRanges.TotalLength + additionalBytes;
             ulong newAccountedBytes = proposedFinalSize.HasValue ? Math.Max(newUniqueBytes, proposedFinalSize.Value) : newUniqueBytes;

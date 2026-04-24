@@ -1258,6 +1258,9 @@ Trace:
 - Source Refs:
   - RFC 9000 §3.2 RFC9000-S3.2-B11-P8-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs::TryReceiveStreamFrame_DiscardsRedundantFramesAfterDataRecvd
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs::TryReceiveStreamFrame_RejectsBytesBeyondTheFinalSizeAfterDataRecvd
 
 ## REQ-QUIC-RFC9000-S3P2-0019 Keep Data Recvd until the application receives the data
 The Data Recvd state MUST persist until stream data has been delivered to the application.
