@@ -248,7 +248,7 @@ The current executable floor can prove the first 0-to-1 successor install, succe
 ## Next Planned Scope
 
 - Keep broader stateless-reset response behavior outside the bounded AEAD-limit retained-route floor blocked until packet-to-token lookup, response eligibility, loop prevention, and rate gating are traced.
-- Continue repeated key-update work with a real unbounded epoch-ledger and cleanup ownership model beyond the representative later-phase proof.
+- Continue repeated key-update work with the dedicated `9001-06-repeated-epoch-ledger-ownership` follow-on beyond the representative later-phase proof.
 
 ## Related Code And Tests
 

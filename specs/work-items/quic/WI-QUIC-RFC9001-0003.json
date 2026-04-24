@@ -100,7 +100,7 @@
     },
     {
       "heading": "Next Planned Scope",
-      "content": "- Keep broader stateless-reset response behavior outside the bounded AEAD-limit retained-route floor blocked until packet-to-token lookup, response eligibility, loop prevention, and rate gating are traced.\n- Continue repeated key-update work with a real unbounded epoch-ledger and cleanup ownership model beyond the representative later-phase proof."
+      "content": "- Keep broader stateless-reset response behavior outside the bounded AEAD-limit retained-route floor blocked until packet-to-token lookup, response eligibility, loop prevention, and rate gating are traced.\n- Continue repeated key-update work with the dedicated `9001-06-repeated-epoch-ledger-ownership` follow-on beyond the representative later-phase proof."
     },
     {
       "heading": "Related Code And Tests",
