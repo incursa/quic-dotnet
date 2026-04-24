@@ -10,14 +10,14 @@
     "S4P6"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9000.json",
-  "audit_result": "clean_with_explicit_deferments",
+  "audit_result": "clean",
   "implementation_summary_file": "./specs/generated/quic/chunks/9000-03-flow-control.implementation-summary.json",
   "reference_check": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
       "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-S4-0005",
-      "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-S4P1-0014",
-      "REQ-QUIC-RFC9000-S4P2-0005",
+      "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-S4P1-0015",
+      "REQ-QUIC-RFC9000-S4P2-0001 through REQ-QUIC-RFC9000-S4P2-0005",
       "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-S4P4-0004",
       "REQ-QUIC-RFC9000-S4P5-0001 through REQ-QUIC-RFC9000-S4P5-0008",
       "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-S4P6-0012"
@@ -26,18 +26,22 @@
     "notes": "No requirement tags were found under src/Incursa.Quic; the helper-layer evidence comes from QuicConnectionStreamState, QuicTransportParametersCodec, QuicCryptoBuffer, and the requirement-home tests."
   },
   "status_summary": {
-    "implemented_and_tested": 46,
+    "implemented_and_tested": 50,
     "partially_implemented": 0,
     "tested_but_implementation_mapping_unclear": 0,
-    "not_implemented": 4,
+    "not_implemented": 0,
     "unclear_or_needs_human_review": 0
   },
-  "tests_run": {
-    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0036\"",
-    "passed": 13,
-    "failed": 0,
-    "skipped": 0
-  },
+  "tests_run": [
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4\"",
+      "result": "74 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024\"",
+      "result": "10 passed, 0 failed, 0 skipped"
+    }
+  ],
   "files_changed": [
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
@@ -134,10 +138,14 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P1-0015",
-      "completion_status": "blocked",
-      "tests_covering_requirement": [],
-      "remaining_gap": "Needs a periodic blocked-sender signaling policy tied to live flow-control state.",
-      "notes": "The repo still lacks the connection-scoped sender cadence that would decide when to emit blocked notifications repeatedly."
+      "completion_status": "implemented_and_tested",
+      "tests_covering_requirement": [
+        "WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
+        "WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight",
+        "TryReserveSendCapacity_ReemitsBlockedFramesWhileTheLimitRemainsClosed"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof now covers the bounded runtime blocked-signal cadence: a blocked sender emits STREAM_DATA_BLOCKED when no ack-eliciting packet is in flight, suppresses the extra signal while one is outstanding, and can re-emit while the limit remains closed."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P2-0001",
@@ -151,10 +159,14 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P2-0002 through REQ-QUIC-RFC9000-S4P2-0004",
-      "completion_status": "blocked",
-      "tests_covering_requirement": [],
-      "remaining_gap": "Needs the flow-control autotuning and early-credit advertisement policy that belongs on top of connection-level stream state.",
-      "notes": "These clauses are policy-heavy and still need a higher-level credit-advertisement engine."
+      "completion_status": "implemented_and_tested",
+      "tests_covering_requirement": [
+        "TryReadStreamData_UsesApplicationConsumptionAsAutotuningInput",
+        "TryReadStreamData_MakesCreditFramesAvailableForOpportunisticSerialization",
+        "TryReserveSendCapacity_ResumesAfterCreditRestorationWithoutAnyBlockedSignalExchange"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof now covers the bounded helper-backed credit publication floor: application consumption is exposed as autotuning input, refreshed credit can be serialized opportunistically, and senders resume when credit is restored without requiring blocked-signal exchange. Broader adaptive credit policy remains a separate follow-on and is not claimed here."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P2-0005",

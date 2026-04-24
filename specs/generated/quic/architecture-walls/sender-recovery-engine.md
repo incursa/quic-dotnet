@@ -42,7 +42,7 @@ That missing ownership is the actual wall.
 | --- | --- | --- |
 | `9000-19-retransmission-and-frame-reliability` | Retransmit reliability-sensitive frames until acknowledged or superseded, suppress obsolete retransmissions, handle whole-packet loss, and tie frame behavior to stream, path, and connection-ID lifecycle. | Only `REQ-QUIC-RFC9000-S13P3-0010` and `REQ-QUIC-RFC9000-S13P3-0027` are closed. The other 25 clauses are partial and 12 are blocked. |
 | `9002-03-loss-detection` | Maintain per-space loss state, arm and rearm PTO, send probes, apply backoff rules, handle Retry and key discard, and compose PTO probe packets correctly. | Closed for the bounded repo-owned Section 6 loss-detection surfaces. Focused requirement-home execution now covers all 55 scoped requirements; broader sender/recovery work remains in adjacent chunks. |
-| `9000-03-flow-control` remainder | Reconcile flow-control updates with reliability and loss. | Helper accounting is strong, but one requirement stays partial and several more stay deferred until sender-owned reliability exists. |
+| `9000-03-flow-control` follow-ons | Reconcile broader adaptive credit policy and generalized sender/recovery orchestration with reliability and loss. | The required runtime publication floor is closed; broader sender-owned reliability and adaptive credit policy remain outside that closed chunk. |
 | `9000-02-stream-state` send/abort remainder | Own send-path transitions, retransmission behavior, ACK tracking, and `STOP_SENDING` / `RESET_STREAM` coordination. | Helper state exists, but live send-path orchestration is absent. |
 | `9002-05` and `9002-06` appendix remainders | Appendix restatements of sender, timer, PMTU, and key-discard behavior. | Already split because the runtime layer does not exist yet. |
 
@@ -289,7 +289,7 @@ Picking the sender/recovery shape unlocks:
 
 - the remaining 37 open clauses in `9000-19-retransmission-and-frame-reliability`
 - the already-closed `9002-03-loss-detection` runtime proof as a baseline for adjacent reliability work
-- the partial and deferred reliability remainder in `9000-03-flow-control`
+- the broader adaptive credit policy and generalized sender/recovery follow-ons outside the closed `9000-03-flow-control` publication floor
 - the send-path and abort-coordination remainder in `9000-02-stream-state`
 - the deferred appendix work in `9002-05` and `9002-06`
 
