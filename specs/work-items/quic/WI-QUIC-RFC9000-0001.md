@@ -1464,7 +1464,7 @@ related_artifacts:
 ## Summary
 
 Keep the RFC 9000 transport surface, tests, and evidence wiring aligned with the canonical transport requirements.
-Scope the flow-control slice to connection-scoped stream opening, ordered receive buffering, final-size accounting, and MAX_* credit publication/repair without claiming full retransmission or STOP_SENDING/RESET orchestration.
+Scope the flow-control slice to connection-scoped stream opening, ordered receive buffering, final-size accounting, MAX_* credit publication/repair, and bounded final-size-bearing FIN/RESET retransmission preservation without claiming full retransmission or STOP_SENDING/RESET orchestration.
 Preserve the ability to backfill direct test and code evidence from the quality inventory without losing the canonical requirement references.
 
 ## Requirements Addressed
@@ -2920,19 +2920,19 @@ Preserve the ability to backfill direct test and code evidence from the quality 
 ## Planned Changes
 
 - Keep the packet, frame, transport-parameter, version-negotiation, and recovery helpers aligned with the RFC 9000 requirement set.
-- Introduce and maintain a connection-scoped stream helper plus runtime path that can own stream creation, ordered receive buffering, final-size accounting, and flow-control credit publication/repair.
+- Introduce and maintain a connection-scoped stream helper plus runtime path that can own stream creation, ordered receive buffering, final-size accounting, flow-control credit publication/repair, and supported final-size-bearing termination-packet retransmission preservation.
 - Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.
-- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically while leaving retransmission-driven send states and STOP_SENDING/RESET orchestration out of scope for this slice.
+- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically while leaving broader retransmission-driven send states and STOP_SENDING/RESET orchestration out of scope for this slice.
 
 ## Out of Scope
 
 - RFC 8999 version-independent invariants.
 - RFC 9001 TLS-protection details.
-- RFC 9002 loss-detection and congestion-control implementation details.
+- RFC 9002 loss-detection and congestion-control implementation details beyond the already-traced packet retransmission ledger seams.
 
 ## Verification Plan
 
-Run the RFC 9000-oriented unit, property, and fuzz suites that target the bounded stream/runtime flow-control foundation.
+Run the RFC 9000-oriented unit, property, and fuzz suites that target the bounded stream/runtime flow-control foundation, including the requirement-home final-size reliability top-off for supported FIN and RESET termination paths.
 Run the frame, transport-parameter, version-negotiation, and header parsing benchmark suites where relevant, and add a small helper/runtime-path benchmark if the new stream registry becomes hot.
 Run the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links and the bounded exclusions.
 

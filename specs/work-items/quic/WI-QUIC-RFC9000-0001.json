@@ -12,12 +12,12 @@
   "out_of_scope": [
     "RFC 8999 version-independent invariants.",
     "RFC 9001 TLS-protection details.",
-    "RFC 9002 loss-detection and congestion-control implementation details."
+    "RFC 9002 loss-detection and congestion-control implementation details beyond the already-traced packet retransmission ledger seams."
   ],
   "status": "planned",
   "domain": "quic",
-  "summary": "Keep the RFC 9000 transport surface, tests, and evidence wiring aligned with the canonical transport requirements.\nScope the flow-control slice to connection-scoped stream opening, ordered receive buffering, final-size accounting, and MAX_* credit publication/repair without claiming full retransmission or STOP_SENDING/RESET orchestration.\nPreserve the ability to backfill direct test and code evidence from the quality inventory without losing the canonical requirement references.",
-  "verification_plan": "Run the RFC 9000-oriented unit, property, and fuzz suites that target the bounded stream/runtime flow-control foundation.\nRun the frame, transport-parameter, version-negotiation, and header parsing benchmark suites where relevant, and add a small helper/runtime-path benchmark if the new stream registry becomes hot.\nRun the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links and the bounded exclusions.",
+  "summary": "Keep the RFC 9000 transport surface, tests, and evidence wiring aligned with the canonical transport requirements.\nScope the flow-control slice to connection-scoped stream opening, ordered receive buffering, final-size accounting, MAX_* credit publication/repair, and bounded final-size-bearing FIN/RESET retransmission preservation without claiming full retransmission or STOP_SENDING/RESET orchestration.\nPreserve the ability to backfill direct test and code evidence from the quality inventory without losing the canonical requirement references.",
+  "verification_plan": "Run the RFC 9000-oriented unit, property, and fuzz suites that target the bounded stream/runtime flow-control foundation, including the requirement-home final-size reliability top-off for supported FIN and RESET termination paths.\nRun the frame, transport-parameter, version-negotiation, and header parsing benchmark suites where relevant, and add a small helper/runtime-path benchmark if the new stream registry becomes hot.\nRun the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links and the bounded exclusions.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
@@ -25,7 +25,7 @@
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Keep the packet, frame, transport-parameter, version-negotiation, and recovery helpers aligned with the RFC 9000 requirement set.\n- Introduce and maintain a connection-scoped stream helper plus runtime path that can own stream creation, ordered receive buffering, final-size accounting, and flow-control credit publication/repair.\n- Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.\n- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically while leaving retransmission-driven send states and STOP_SENDING/RESET orchestration out of scope for this slice.",
+  "planned_changes": "- Keep the packet, frame, transport-parameter, version-negotiation, and recovery helpers aligned with the RFC 9000 requirement set.\n- Introduce and maintain a connection-scoped stream helper plus runtime path that can own stream creation, ordered receive buffering, final-size accounting, flow-control credit publication/repair, and supported final-size-bearing termination-packet retransmission preservation.\n- Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.\n- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically while leaving broader retransmission-driven send states and STOP_SENDING/RESET orchestration out of scope for this slice.",
   "design_links": [
     "ARC-QUIC-RFC9000-0001"
   ],

@@ -26,20 +26,24 @@
     "notes": "No requirement tags were found under src/Incursa.Quic; the helper-layer evidence comes from QuicConnectionStreamState, QuicTransportParametersCodec, QuicCryptoBuffer, and the requirement-home tests."
   },
   "status_summary": {
-    "implemented_and_tested": 43,
-    "partially_implemented": 1,
+    "implemented_and_tested": 46,
+    "partially_implemented": 0,
     "tested_but_implementation_mapping_unclear": 0,
-    "not_implemented": 6,
+    "not_implemented": 4,
     "unclear_or_needs_human_review": 0
   },
   "tests_run": {
-    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore",
-    "passed": 1339,
+    "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0036\"",
+    "passed": 13,
     "failed": 0,
     "skipped": 0
   },
   "files_changed": [
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
+    "specs/architecture/quic/ARC-QUIC-RFC9000-0001.json",
+    "specs/work-items/quic/WI-QUIC-RFC9000-0001.json",
+    "specs/verification/quic/VER-QUIC-RFC9000-0001.json",
     "specs/generated/quic/chunks/9000-03-flow-control.closeout.md",
     "specs/generated/quic/chunks/9000-03-flow-control.closeout.json",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0001.cs",
@@ -172,13 +176,19 @@
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P5-0001",
-      "completion_status": "partially_implemented",
+      "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReceiveStreamFrame_CommunicatesFinalSizeWhenTerminatedWithFin",
-        "TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset"
+        "TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset",
+        "TryReserveSendCapacity_CommunicatesFinalSizeWhenTerminatedWithFin",
+        "TryAbortLocalStreamWrites_CommunicatesFinalSizeWhenTerminatedWithReset",
+        "TryRegisterLoss_RetransmitsFinTerminationWithTheSameFinalSize",
+        "TryRegisterLoss_RetransmitsResetTerminationWithTheSameFinalSize",
+        "TryAcknowledgePacket_KeepsQueuedFinalSizeRetransmissionAfterUnrelatedAcknowledgment",
+        "Fuzz_FinalSizeRemainsStableAcrossSupportedTerminationOrders"
       ],
-      "remaining_gap": "Needs sender/recovery reliability and retransmission coordination before the final-size guarantee can be treated as fully owned.",
-      "notes": "The helper can model and retain final size, but the repository still does not own the sender-side reliability path that makes the guarantee complete."
+      "remaining_gap": null,
+      "notes": "Requirement-home proof now covers helper final-size accounting plus supported FIN-only and RESET_STREAM termination packets retaining the same final size when queued for retransmission. Broader sender/recovery orchestration remains outside this flow-control chunk."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S4P5-0002 through REQ-QUIC-RFC9000-S4P5-0008",

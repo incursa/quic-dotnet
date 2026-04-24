@@ -5,7 +5,7 @@
 ## Scope
 
 This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.
-The current flow-control slice spans a connection-scoped helper and runtime path for stream opening, ordered receive buffering, final-size accounting, and MAX_* credit publication/repair.
+The current flow-control slice spans a connection-scoped helper and runtime path for stream opening, ordered receive buffering, final-size accounting, MAX_* credit publication/repair, and bounded final-size-bearing FIN/RESET retransmission preservation.
 It does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.
 
 ## Requirements Verified
@@ -1468,7 +1468,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 ## Procedure or Approach
 
-- Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation.
+- Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation, including final-size accounting and supported termination-packet retransmission preservation.
 - Run the fuzz suites against the stream parser and any new helper/runtime-path boundary cases.
 - Run any available benchmark evidence for the stream helper/runtime path or existing hot parsing paths.
 - Run the repo-local quality evidence scripts.
@@ -1478,7 +1478,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 
 - The spec requirements carry downstream trace links.
 - The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.
-- The bounded stream/runtime flow-control slice is visible in the trace plan without implying full sender/recovery or STOP_SENDING/RESET coverage.
+- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.
 
 ## Evidence
 

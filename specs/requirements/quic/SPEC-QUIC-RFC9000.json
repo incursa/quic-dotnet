@@ -263,9 +263,9 @@
       "statement": "A unidirectional stream MUST carry data only from the initiator of the stream to its peer.",
       "coverage": {
         "positive": "required",
-        "negative": "optional",
+        "negative": "required",
         "edge": "optional",
-        "fuzz": "not_applicable"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
@@ -3879,7 +3879,11 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveStreamFrame_CommunicatesFinalSizeWhenTerminatedWithFin",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReceiveResetStreamFrame_CommunicatesFinalSizeWhenTerminatedWithReset",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryReserveSendCapacity_CommunicatesFinalSizeWhenTerminatedWithFin",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryAbortLocalStreamWrites_CommunicatesFinalSizeWhenTerminatedWithReset"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryAbortLocalStreamWrites_CommunicatesFinalSizeWhenTerminatedWithReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryRegisterLoss_RetransmitsFinTerminationWithTheSameFinalSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryRegisterLoss_RetransmitsResetTerminationWithTheSameFinalSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::TryAcknowledgePacket_KeepsQueuedFinalSizeRetransmissionAfterUnrelatedAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs::Fuzz_FinalSizeRemainsStableAcrossSupportedTerminationOrders"
         ]
       }
     },

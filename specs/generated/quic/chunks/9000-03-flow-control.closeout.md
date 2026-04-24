@@ -10,7 +10,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 
 ## Audit Result
 
-- The scoped helper-layer flow-control slice now proves 45 requirements directly, with one requirement remaining partial and four remaining explicit blockers.
+- The scoped helper-layer flow-control slice now proves 46 requirements directly, with no requirements remaining partial and four remaining explicit blockers.
 - The current repository state was reconciled against the helper layer, the requirement-home tests, and the generated chunk traces.
 - No stale requirement IDs remain in the scoped tests.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
@@ -23,13 +23,13 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `REQ-QUIC-RFC9000-S4P2-0001`
 - `REQ-QUIC-RFC9000-S4P2-0005`
 - `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`
-- `REQ-QUIC-RFC9000-S4P5-0002` through `REQ-QUIC-RFC9000-S4P5-0008`
+- `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`
 - `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0012`
 - `REQ-QUIC-RFC9000-S4P6-0013`
 
 ## Requirements Partial
 
-- `REQ-QUIC-RFC9000-S4P5-0001`: the helper can model final-size state, but it does not own sender/recovery reliability or retransmission behavior.
+- None.
 
 ## Requirements Deferred
 
@@ -46,6 +46,10 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 ## Files Changed
 
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
+- `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
+- `specs/architecture/quic/ARC-QUIC-RFC9000-0001.json`
+- `specs/work-items/quic/WI-QUIC-RFC9000-0001.json`
+- `specs/verification/quic/VER-QUIC-RFC9000-0001.json`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0002.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0004.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs`
@@ -55,6 +59,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0005.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0004.cs`
@@ -63,5 +68,6 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 
 ## Tests Run
 
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`
-- Result: `1339 passed, 0 failed, 0 skipped`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0036"`
+- Result: `13 passed, 0 failed, 0 skipped`
+- Full unfiltered project run on 2026-04-23: `3102 passed, 33 failed, 0 skipped`; failures were outside the touched S4P5 requirement-home and trace files and are not used as closing evidence for this slice.

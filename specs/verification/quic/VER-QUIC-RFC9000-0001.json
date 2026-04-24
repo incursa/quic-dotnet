@@ -6,7 +6,7 @@
     "ARC-QUIC-RFC9000-0001",
     "WI-QUIC-RFC9000-0001"
   ],
-  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan without implying full sender/recovery or STOP_SENDING/RESET coverage.",
+  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.",
   "artifact_id": "VER-QUIC-RFC9000-0001",
   "verifies": [
     "REQ-QUIC-RFC9000-S2-0001",
@@ -1458,13 +1458,13 @@
   "artifact_type": "verification",
   "status": "planned",
   "procedure": [
-    "Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation.",
+    "Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation, including final-size accounting and supported termination-packet retransmission preservation.",
     "Run the fuzz suites against the stream parser and any new helper/runtime-path boundary cases.",
     "Run any available benchmark evidence for the stream helper/runtime path or existing hot parsing paths.",
     "Run the repo-local quality evidence scripts.",
     "Re-run the JSON render and validation checks so the downstream trace surface reflects the updated requirement links and bounded exclusions."
   ],
-  "scope": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nThe current flow-control slice spans a connection-scoped helper and runtime path for stream opening, ordered receive buffering, final-size accounting, and MAX_* credit publication/repair.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.",
+  "scope": "This design covers the canonical RFC 9000 transport slice, including packet forms, stream semantics, frame codecs, transport-parameter handling, version negotiation, and the transport-side recovery contracts surfaced in the requirement file.\nThe current flow-control slice spans a connection-scoped helper and runtime path for stream opening, ordered receive buffering, final-size accounting, MAX_* credit publication/repair, and bounded final-size-bearing FIN/RESET retransmission preservation.\nIt does not define RFC 8999 version-independent invariants or RFC 9001 TLS-protection details as separate concerns, and it does not claim full retransmission-driven send states or STOP_SENDING/RESET orchestration.",
   "evidence": [
     "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs",
     "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
@@ -1481,6 +1481,7 @@
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs",
