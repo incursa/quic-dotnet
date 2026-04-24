@@ -47,7 +47,11 @@
     "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render.log",
     "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render-check.log",
     "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/git-diff-check.log",
-    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/spec-trace-core-validation.log"
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/spec-trace-core-validation.log",
+    "artifacts/benchmark-baseline/20260424-public-api-comparison/StreamTransfer/Short/benchmark.log",
+    "artifacts/benchmark-baseline/20260424-public-api-comparison/StreamTransfer/Short/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report-github.md",
+    "artifacts/benchmark-baseline/20260424-public-api-comparison/StreamTransfer/Short/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report.csv",
+    "artifacts/benchmark-baseline/20260424-public-api-comparison/StreamTransfer/Short/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report.html"
   ],
-  "status_summary": "Passed on 2026-04-24. Focused Incursa public request/response guards for REQ-QUIC-API-0010 passed 8 tests, and the preserved BenchmarkDotNet Dry plus Short runs executed the matched public-facade request/response stream comparison cleanly. The Short run recorded about 67.20 ms and 479.2 KB allocated for Incursa.Quic versus about 19.31 ms and 94.38 KB allocated for System.Net.Quic on this machine for the bounded 1 KiB loopback request/response workload. The repo-local core SpecTrace profile still fails on the standing canonical backlog; this artifact does not claim a public stream-transfer comparison beyond the traced request/response boundary."
+  "status_summary": "Passed on 2026-04-24. Focused Incursa public request/response guards for REQ-QUIC-API-0010 remain green, and the preserved BenchmarkDotNet Dry plus Short runs executed the matched public-facade request/response stream comparison cleanly. The refreshed local Short rerun recorded about 66.78 ms and 476.75 KB allocated for Incursa.Quic versus about 21.44 ms and 94.39 KB allocated for System.Net.Quic on this machine for the bounded 1 KiB loopback request/response workload. The repo-local core SpecTrace profile still fails on the standing canonical backlog; this artifact does not claim a public stream-transfer comparison beyond the traced request/response boundary."
 }
