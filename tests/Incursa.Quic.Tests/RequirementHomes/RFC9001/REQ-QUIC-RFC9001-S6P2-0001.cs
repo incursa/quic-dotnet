@@ -192,6 +192,48 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzLaterPeerInitiatedUpdates_OpenWithNextKeysAfterCurrentPhaseConfirmationAndOldKeyDiscard()
+    {
+        Random random = new(unchecked((int)0x9001_6215));
+
+        for (int iteration = 0; iteration < 16; iteration++)
+        {
+            uint currentPhase = (uint)random.Next(5, 9);
+            uint nextPhase = currentPhase + 1U;
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+            _ = QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareCurrentPhaseWithOldDiscardedAndAcknowledged(
+                runtime,
+                currentPhase);
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+                runtime,
+                out QuicTlsPacketProtectionMaterial nextOpenMaterial,
+                out QuicTlsPacketProtectionMaterial nextProtectMaterial));
+
+            QuicConnectionTransitionResult result =
+                QuicRfc9001RepeatedKeyUpdateTestSupport.ReceivePeerUpdatePacket(
+                    runtime,
+                    nextOpenMaterial,
+                    keyPhase: (nextPhase & 1U) == 1U,
+                    observedAtTicks: 100_000 + iteration,
+                    QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.TlsState.KeyUpdateInstalled);
+            Assert.Equal(nextPhase, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal((nextPhase & 1U) == 1U, runtime.TlsState.CurrentOneRttKeyPhaseBit);
+            Assert.True(nextOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+            Assert.True(nextProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+            Assert.Equal(currentPhase, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ActiveClientRuntimeRejectsRepeatedPeerUpdatePacketsThatDoNotSignalTheNextKeyPhase()

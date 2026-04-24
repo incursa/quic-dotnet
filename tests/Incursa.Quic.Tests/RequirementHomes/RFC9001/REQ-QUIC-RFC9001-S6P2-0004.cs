@@ -528,6 +528,53 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateError()
+    {
+        Random random = new(unchecked((int)0x9001_6265));
+
+        for (int iteration = 0; iteration < 16; iteration++)
+        {
+            uint targetPhase = (uint)random.Next(6, 10);
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseWithPreviousRetained(
+                runtime,
+                targetPhase);
+
+            ulong currentPhasePacketNumber = (ulong)(500 + iteration);
+            QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+                runtime,
+                currentPhasePacketNumber,
+                sentAtMicros: (ulong)(5_000 + iteration),
+                keyPhase: targetPhase);
+
+            QuicTlsPacketProtectionMaterial retainedPreviousOpenMaterial =
+                runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
+            byte[] oldKeyAckPacket = BuildProtectedApplicationPacket(
+                retainedPreviousOpenMaterial,
+                keyPhase: ((targetPhase - 1U) & 1U) == 1U,
+                CreateAckPayload(
+                    currentPhasePacketNumber,
+                    ackDelay: (ulong)random.Next(0, 64)));
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 150_000 + iteration,
+                    QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                    oldKeyAckPacket),
+                nowTicks: 150_000 + iteration);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
+            Assert.Equal(
+                "The peer acknowledged a newer-key packet in an old-key packet.",
+                runtime.TerminalState?.Close.ReasonPhrase);
+        }
+    }
+
     private static void AssertRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
         Func<QuicConnectionRuntime> runtimeFactory)
     {

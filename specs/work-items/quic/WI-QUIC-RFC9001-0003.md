@@ -111,6 +111,7 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 - Preserve the bounded phase-3 local install floor that now derives and installs phase-3 material only after phase-2 acknowledgment, three-PTO cooldown, and retained-old phase-1 discard.
 - Preserve the bounded phase-4 topoff that now derives and installs local phase-4 material only after phase-3 acknowledgment, cooldown, and retained-old phase-2 discard, opens peer phase-4 packets after phase-3 confirmation, and sends ACKs with phase-4 send keys.
 - Preserve the bounded phase-5 topoff that now derives and installs local phase-5 material only after phase-4 acknowledgment, cooldown, and retained-old phase-3 discard, opens peer phase-5 packets after phase-4 confirmation, and sends ACKs with phase-5 send keys.
+- Preserve representative phases 6 through 9 property/fuzz coverage for the repeated local-update gate, peer next-key opening, old-key ACK KEY_UPDATE_ERROR parity, and retained-previous cleanup shape without claiming a full unbounded epoch ledger.
 - Preserve the bounded repeated lower-recovered receive-selection floor that now authenticates retained phase-1 packets after local phase-2 install, retained phase-2 packets after local phase-3 install, retained phase-3 packets after local phase-4 install, and retained phase-4 packets after local phase-5 install, rejects retained packets with stale Key Phase bits, and tracks the current packet-number floor per key phase.
 - Preserve the phase-2, phase-3, and phase-4 old-key ACK KEY_UPDATE_ERROR parity now proven when a retained old-key ACK acknowledges a newer-key send.
 - Preserve the timing-neutral invalid-Key-Phase classification now proven for `REQ-QUIC-RFC9001-S6P3-0001` and the current timing-neutral no-close policy for apparent unconfirmed consecutive peer updates under `REQ-QUIC-RFC9001-S6P2-0003`.
@@ -119,7 +120,7 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 - Preserve bounded endpoint helper-backed stateless-reset emission after AEAD-limit terminal discard, including token availability, loop-prevention, and rate gates.
 - Preserve bounded retained-route host stateless-reset response after AEAD-limit terminal discard, including token-linked route lookup, same-remote path matching, loop-prevention, and rate gates.
 - Preserve the existing first-successor install path as a bounded prerequisite rather than widening receive-side repeated epoch selection in place.
-- Preserve the bounded repeated old-key discard cleanup floor that now arms retained phase-1 cleanup from local and peer phase-2 packets, retained phase-2 cleanup from phase-3 packets, retained phase-3 cleanup from phase-4 packets, and retained phase-4 cleanup from phase-5 packets, then expires matching sender/recovery state.
+- Preserve the bounded repeated old-key discard cleanup floor that now arms retained phase-1 cleanup from local and peer phase-2 packets, retained phase-2 cleanup from phase-3 packets, retained phase-3 cleanup from phase-4 packets, retained phase-4 cleanup from phase-5 packets, and representative retained-previous cleanup from later phases, then expires matching sender/recovery state.
 - Keep broader stateless-reset response behavior blocked until that follow-on has explicit requirements and a proof plan.
 - Keep TLS KeyUpdate prohibition, post-handshake ticket ingestion, 0-RTT, public API promises, and interop expansion out of this RFC 9001 lifecycle slice unless separately traced.
 
@@ -198,7 +199,7 @@ The current executable floor can prove the first 0-to-1 successor install, succe
 
 - Add a pending 1-RTT traffic-secret update carrier so derived successor secrets are zeroed unless the matching bridge-state install commits.
 - Replace stored application traffic secrets with the updated `quic ku` secrets when the first local or peer-initiated update commits.
-- Allow helper derivation of the next successor material from the advanced secrets for bounded local, peer phase-2, bounded phase-3, bounded phase-4, bounded phase-5, and repeated AEAD-limit-triggered local install paths while keeping broader cleanup blocked.
+- Allow helper derivation of the next successor material from the advanced secrets for bounded local, peer phase-2, bounded phase-3, bounded phase-4, bounded phase-5, representative later-phase checks, and repeated AEAD-limit-triggered local install paths while keeping broader cleanup blocked.
 
 ## Bounded Repeated Local Install Slice
 
@@ -231,9 +232,10 @@ The current executable floor can prove the first 0-to-1 successor install, succe
 - Arm retained phase-2 cleanup from authenticated phase-3 packets after bounded local phase-3 install.
 - Arm retained phase-3 cleanup from authenticated phase-4 packets after the bounded phase-4 topoff.
 - Arm retained phase-4 cleanup from authenticated phase-5 packets after the bounded phase-5 topoff.
+- Exercise representative retained-previous cleanup across phases 6 through 9.
 - Expire retained old read material together with matching sender/recovery state.
 - Keep current send and recovery state intact after retained old cleanup.
-- Keep unbounded epoch-ledger cleanup blocked.
+- Keep a real unbounded epoch-ledger cleanup model blocked.
 
 ## Bounded AEAD-Limit Stateless-Reset Endpoint Slice
 
@@ -246,7 +248,7 @@ The current executable floor can prove the first 0-to-1 successor install, succe
 ## Next Planned Scope
 
 - Keep broader stateless-reset response behavior outside the bounded AEAD-limit retained-route floor blocked until packet-to-token lookup, response eligibility, loop prevention, and rate gating are traced.
-- Continue repeated key-update work with broader epoch-ledger and old-key cleanup beyond the bounded phase-5 local floor.
+- Continue repeated key-update work with a real unbounded epoch-ledger and cleanup ownership model beyond the representative later-phase proof.
 
 ## Related Code And Tests
 
