@@ -940,6 +940,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::FuzzRepeatedPeerInitiatedNextKeyPackets_RandomizedPayloadLengthsInstallOnlyWhenTheNextPhaseBitIsPresent
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveClientRuntimeOpensPeerInitiatedPhaseThreeUpdatePacketsAfterPhaseTwoConfirmationAndOldKeyDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveClientRuntimeOpensPeerInitiatedPhaseFourUpdatePacketsAfterPhaseThreeConfirmationAndOldKeyDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs::ActiveClientRuntimeOpensPeerInitiatedPhaseFiveUpdatePacketsAfterPhaseFourConfirmationAndOldKeyDiscard
 
 ## REQ-QUIC-RFC9001-S6P2-0002 Update send keys after peer-initiated key updates
 If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.
@@ -961,6 +962,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeDoesNotAcknowledgeATamperedPeerUpdatedKeyPacketWithOldSendKeys
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForARepeatedPeerUpdatedKeyPacketWithPhaseTwoSendKeys
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFourUpdatedPacketWithPhaseFourSendKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFiveUpdatedPacketWithPhaseFiveSendKeys
 
 ## REQ-QUIC-RFC9001-S6P2-0003 Allow KEY_UPDATE_ERROR for unconfirmed consecutive peer updates
 An endpoint MAY treat consecutive peer key updates that occur before confirmation of the prior update as a connection error of type KEY_UPDATE_ERROR.
@@ -1005,6 +1007,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatOnlyAcknowledgePhaseThreePackets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatOnlyAcknowledgePhaseFourPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P3-0001 Avoid timing signals for invalid Key Phase bits
 Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.
@@ -1127,6 +1132,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzPhaseThreeLowerRecoveredPackets_UsePreviousPhaseTwoKeysAcrossRepresentativePayloadSizes
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousPhaseThreeKeysForLowerRecoveredPacketNumbersAfterPhaseFourUpdate
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzPhaseFourLowerRecoveredPackets_UsePreviousPhaseThreeKeysAcrossRepresentativePayloadSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::ActiveClientRuntimeUsesPreviousPhaseFourKeysForLowerRecoveredPacketNumbersAfterPhaseFiveUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs::FuzzPhaseFiveLowerRecoveredPackets_UsePreviousPhaseFourKeysAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0002 Use next keys for higher recovered packet numbers
 When selecting receive keys across phases, a recovered packet number higher than any packet number from the current key phase MUST use the next packet protection keys.
@@ -1150,6 +1157,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::FuzzRepeatedHigherRecoveredPackets_UseSecondSuccessorKeysAcrossRepresentativePayloadSizes
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::ActiveClientRuntimeUsesPhaseFourKeysForHigherRecoveredPacketNumbersAfterPhaseThreePeerUpdate
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::FuzzPhaseFourHigherRecoveredPackets_UsePhaseFourKeysAcrossRepresentativePayloadSizes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::ActiveClientRuntimeUsesPhaseFiveKeysForHigherRecoveredPacketNumbersAfterPhaseFourPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs::FuzzPhaseFiveHigherRecoveredPackets_UsePhaseFiveKeysAcrossRepresentativePayloadSizes
 
 ## REQ-QUIC-RFC9001-S6P5-0003 Wait before initiating another key update after confirmation
 Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.
@@ -1175,6 +1184,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseThreeAfterPhaseTwoAcknowledgmentCooldownAndOldKeyDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseFourAfterPhaseThreeAcknowledgmentCooldownAndOldKeyDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseFiveAfterPhaseFourAcknowledgmentCooldownAndOldKeyDiscard
 
 ## REQ-QUIC-RFC9001-S6P5-0004 Limit old read key retention to three PTOs
 An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.
@@ -1200,6 +1210,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseTwoRetentionTimerAfterAnotherPhaseThreePacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseThreeRetentionTimerAfterPhaseFourLocalKeyUpdate
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseThreeRetentionTimerAfterAnotherPhaseFourPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket
 
 ## REQ-QUIC-RFC9001-S6P5-0005 Discard old read keys after retention expires
 After the old-read-key retention window expires, an endpoint SHOULD discard the old read keys and their corresponding secrets.
@@ -1228,6 +1240,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzPhaseThreeRetentionExpiry_DiscardsOnlyRetainedPhaseTwoAcrossRepresentativePacketSets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeDiscardsRetainedPhaseThreeReadKeysAndPhaseThreeSendStateAfterPhaseFourLocalKeyUpdate
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzPhaseFourRetentionExpiry_DiscardsOnlyRetainedPhaseThreeAcrossRepresentativePacketSets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimeDiscardsRetainedPhaseFourReadKeysAndPhaseFourSendStateAfterPhaseFiveLocalKeyUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzPhaseFiveRetentionExpiry_DiscardsOnlyRetainedPhaseFourAcrossRepresentativePacketSets
 
 ## REQ-QUIC-RFC9001-S6P6-0001 Count encrypted packets per key set
 Endpoints MUST count the number of encrypted packets for each set of packet protection keys.

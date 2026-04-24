@@ -227,6 +227,54 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFiveWithPhaseFourRetained(runtime);
+
+        Assert.Equal(5U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
+
+        long observedAtTicks = Stopwatch.Frequency * 9L;
+        QuicConnectionTransitionResult result =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(runtime, observedAtTicks);
+
+        Assert.True(result.StateChanged);
+        AssertRetainedPhaseFourTimer(runtime, observedAtTicks);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFiveWithPhaseFourRetained(runtime);
+
+        long firstObservedAtTicks = Stopwatch.Frequency * 9L;
+        QuicConnectionTransitionResult firstResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(runtime, firstObservedAtTicks);
+
+        Assert.True(firstResult.StateChanged);
+        long firstDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention)!.Value;
+        ulong firstDiscardAtMicros = runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros!.Value;
+
+        QuicConnectionTransitionResult secondResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(
+                runtime,
+                firstObservedAtTicks + Stopwatch.Frequency);
+
+        Assert.True(secondResult.StateChanged);
+        Assert.Equal(firstDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
+        Assert.Equal(firstDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
+        Assert.Equal(4U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+        Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+    }
+
     private static void AssertRuntimeArmsTheOldReadKeyRetentionTimer(Func<QuicConnectionRuntime> runtimeFactory)
     {
         using QuicConnectionRuntime runtime = runtimeFactory();
@@ -268,6 +316,11 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
     private static void AssertRetainedPhaseThreeTimer(QuicConnectionRuntime runtime, long observedAtTicks)
     {
         AssertRetainedTimer(runtime, observedAtTicks, expectedRetainedKeyPhase: 3);
+    }
+
+    private static void AssertRetainedPhaseFourTimer(QuicConnectionRuntime runtime, long observedAtTicks)
+    {
+        AssertRetainedTimer(runtime, observedAtTicks, expectedRetainedKeyPhase: 4);
     }
 
     private static void AssertRetainedTimer(

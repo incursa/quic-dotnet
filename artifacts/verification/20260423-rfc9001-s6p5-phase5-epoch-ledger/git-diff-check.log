@@ -1,0 +1,2 @@
+git diff --check passed
+git diff --cached --check passed after trimming BenchmarkDotNet-generated report whitespace
