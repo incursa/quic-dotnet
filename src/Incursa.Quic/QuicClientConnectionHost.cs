@@ -73,7 +73,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         }
 
         if (!endpoint.TryRegisterConnection(handle, runtime)
-            || !endpoint.TryRegisterConnectionId(handle, routeConnectionId)
+            || !endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 0UL)
             || !endpoint.TryUpdateEndpointBinding(handle, pathIdentity))
         {
             throw new InvalidOperationException("The client runtime shell could not register its connection state.");

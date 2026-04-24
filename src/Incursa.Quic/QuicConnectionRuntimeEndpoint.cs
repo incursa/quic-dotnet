@@ -13,9 +13,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionPathIdentity> pathByHandle = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, byte>> routeIdsByHandle = new();
     private readonly ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionHandle>> routesByLength = new();
+    private readonly ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, ulong>> statelessResetConnectionIdsByRouteIdByHandle = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<ulong, byte>> statelessResetTokenIdsByHandle = new();
     private readonly ConcurrentDictionary<QuicConnectionStatelessResetMatchKey, QuicConnectionStatelessResetBinding> statelessResetBindingsByMatchKey = new();
     private readonly ConcurrentDictionary<ulong, QuicConnectionStatelessResetBinding> statelessResetBindingsByConnectionId = new();
+    private readonly ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>> retainedStatelessResetBindingsByRouteLength = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionVersionProfile> versionProfilesByHandle = new();
     private readonly ConcurrentDictionary<string, int> statelessResetEmissionCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumStatelessResetEmissionsPerRemoteAddress;
@@ -92,9 +94,16 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             foreach (QuicConnectionIdKey routeId in routeIds.Keys)
             {
+                if (preserveStatelessResetEmissionState)
+                {
+                    RetainStatelessResetRoute(handle, routeId);
+                }
+
                 TryRemoveRoute(handle, routeId);
             }
         }
+
+        statelessResetConnectionIdsByRouteIdByHandle.TryRemove(handle, out _);
 
         if (statelessResetTokenIdsByHandle.TryRemove(handle, out ConcurrentDictionary<ulong, byte>? tokenIds))
         {
@@ -107,7 +116,27 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         return true;
     }
 
-    public bool TryRegisterConnectionId(QuicConnectionHandle handle, ReadOnlySpan<byte> connectionId)
+    private void RetainStatelessResetRoute(QuicConnectionHandle handle, QuicConnectionIdKey routeId)
+    {
+        if (routeId.Length == 0
+            || !statelessResetConnectionIdsByRouteIdByHandle.TryGetValue(handle, out ConcurrentDictionary<QuicConnectionIdKey, ulong>? connectionIdsByRoute)
+            || !connectionIdsByRoute.TryGetValue(routeId, out ulong connectionId)
+            || !statelessResetBindingsByConnectionId.TryGetValue(connectionId, out QuicConnectionStatelessResetBinding? binding)
+            || binding.Handle != handle)
+        {
+            return;
+        }
+
+        ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding> retainedRoutes = retainedStatelessResetBindingsByRouteLength.GetOrAdd(
+            routeId.Length,
+            static _ => new ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>());
+        retainedRoutes[routeId] = binding;
+    }
+
+    public bool TryRegisterConnectionId(
+        QuicConnectionHandle handle,
+        ReadOnlySpan<byte> connectionId,
+        ulong? statelessResetConnectionId = null)
     {
         if (!registeredHandles.ContainsKey(handle)
             || !QuicConnectionIdKey.TryCreate(connectionId, out QuicConnectionIdKey routeId))
@@ -139,6 +168,25 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
+        if (statelessResetConnectionId.HasValue)
+        {
+            ConcurrentDictionary<QuicConnectionIdKey, ulong> statelessResetRouteIds = statelessResetConnectionIdsByRouteIdByHandle.GetOrAdd(
+                handle,
+                static _ => new ConcurrentDictionary<QuicConnectionIdKey, ulong>());
+
+            if (!statelessResetRouteIds.TryAdd(routeId, statelessResetConnectionId.Value))
+            {
+                TryRemoveRoute(handle, routeId);
+                routeIds.TryRemove(routeId, out _);
+                if (routeIds.IsEmpty)
+                {
+                    routeIdsByHandle.TryRemove(handle, out _);
+                }
+
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -165,6 +213,15 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         if (routeIds.IsEmpty)
         {
             routeIdsByHandle.TryRemove(handle, out _);
+        }
+
+        if (statelessResetConnectionIdsByRouteIdByHandle.TryGetValue(handle, out ConcurrentDictionary<QuicConnectionIdKey, ulong>? statelessResetRouteIds))
+        {
+            statelessResetRouteIds.TryRemove(routeId, out _);
+            if (statelessResetRouteIds.IsEmpty)
+            {
+                statelessResetConnectionIdsByRouteIdByHandle.TryRemove(handle, out _);
+            }
         }
 
         return true;
@@ -288,20 +345,53 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 ReadOnlyMemory<byte>.Empty);
         }
 
+        return TryCreateStatelessResetDatagram(
+            binding,
+            binding.PathIdentity,
+            triggeringPacketLength,
+            hasLoopPreventionState);
+    }
+
+    public QuicConnectionStatelessResetEmissionResult TryCreateStatelessResetDatagramForPacket(
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        bool hasLoopPreventionState)
+    {
+        if (!TryLookupRetainedStatelessResetBinding(datagram.Span, pathIdentity, out QuicConnectionStatelessResetBinding? binding))
+        {
+            return new QuicConnectionStatelessResetEmissionResult(
+                QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable,
+                null,
+                ReadOnlyMemory<byte>.Empty);
+        }
+
+        return TryCreateStatelessResetDatagram(
+            binding!,
+            pathIdentity,
+            datagram.Length,
+            hasLoopPreventionState);
+    }
+
+    private QuicConnectionStatelessResetEmissionResult TryCreateStatelessResetDatagram(
+        QuicConnectionStatelessResetBinding binding,
+        QuicConnectionPathIdentity responsePathIdentity,
+        int triggeringPacketLength,
+        bool hasLoopPreventionState)
+    {
         int datagramLength = Math.Max(QuicStatelessReset.MinimumDatagramLength, triggeringPacketLength - 1);
         if (!QuicStatelessReset.CanSendStatelessReset(triggeringPacketLength, datagramLength, hasLoopPreventionState))
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.LoopOrAmplificationPrevented,
-                binding.PathIdentity,
+                responsePathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
-        if (!TryReserveStatelessResetEmission(binding.PathIdentity.RemoteAddress))
+        if (!TryReserveStatelessResetEmission(responsePathIdentity.RemoteAddress))
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.RateLimited,
-                binding.PathIdentity,
+                responsePathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
@@ -315,13 +405,13 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             return new QuicConnectionStatelessResetEmissionResult(
                 QuicConnectionStatelessResetEmissionDisposition.FormatFailed,
-                binding.PathIdentity,
+                responsePathIdentity,
                 ReadOnlyMemory<byte>.Empty);
         }
 
         return new QuicConnectionStatelessResetEmissionResult(
             QuicConnectionStatelessResetEmissionDisposition.Emitted,
-            binding.PathIdentity,
+            responsePathIdentity,
             datagram.AsMemory(0, bytesWritten));
     }
 
@@ -475,9 +565,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         pathByHandle.Clear();
         routeIdsByHandle.Clear();
         routesByLength.Clear();
+        statelessResetConnectionIdsByRouteIdByHandle.Clear();
         statelessResetTokenIdsByHandle.Clear();
         statelessResetBindingsByMatchKey.Clear();
         statelessResetBindingsByConnectionId.Clear();
+        retainedStatelessResetBindingsByRouteLength.Clear();
         versionProfilesByHandle.Clear();
         statelessResetEmissionCountsByRemoteAddress.Clear();
     }
@@ -588,6 +680,76 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         }
 
         return bucket.TryGetValue(routeId, out handle);
+    }
+
+    private bool TryLookupRetainedStatelessResetBinding(
+        ReadOnlySpan<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        out QuicConnectionStatelessResetBinding? binding)
+    {
+        binding = null;
+
+        if (datagram.IsEmpty
+            || !QuicPacketParser.TryClassifyHeaderForm(datagram, out QuicHeaderForm headerForm))
+        {
+            return false;
+        }
+
+        if (headerForm == QuicHeaderForm.Long)
+        {
+            if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket longHeader)
+                || longHeader.DestinationConnectionId.IsEmpty
+                || !QuicConnectionIdKey.TryCreate(longHeader.DestinationConnectionId, out QuicConnectionIdKey routeId))
+            {
+                return false;
+            }
+
+            return TryLookupRetainedStatelessResetBinding(routeId, pathIdentity, out binding);
+        }
+
+        if ((datagram[0] & QuicPacketHeaderBits.HeaderFormBitMask) != 0
+            || (datagram[0] & QuicPacketHeaderBits.FixedBitMask) == 0)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> connectionIdRemainder = datagram[1..];
+        int maximumCandidateLength = Math.Min(connectionIdRemainder.Length, QuicConnectionIdKey.MaximumLength);
+        for (int candidateLength = maximumCandidateLength; candidateLength > 0; candidateLength--)
+        {
+            if (!retainedStatelessResetBindingsByRouteLength.ContainsKey((byte)candidateLength)
+                || !QuicConnectionIdKey.TryCreate(connectionIdRemainder[..candidateLength], out QuicConnectionIdKey routeId))
+            {
+                continue;
+            }
+
+            if (TryLookupRetainedStatelessResetBinding(routeId, pathIdentity, out binding))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryLookupRetainedStatelessResetBinding(
+        QuicConnectionIdKey routeId,
+        QuicConnectionPathIdentity pathIdentity,
+        out QuicConnectionStatelessResetBinding? binding)
+    {
+        binding = null;
+
+        if (!retainedStatelessResetBindingsByRouteLength.TryGetValue(
+                routeId.Length,
+                out ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>? retainedRoutes)
+            || !retainedRoutes.TryGetValue(routeId, out QuicConnectionStatelessResetBinding? candidateBinding)
+            || !IsSameRemoteEndpoint(candidateBinding.PathIdentity, pathIdentity))
+        {
+            return false;
+        }
+
+        binding = candidateBinding;
+        return true;
     }
 
     private bool TryRemoveRoute(QuicConnectionHandle handle, QuicConnectionIdKey routeId)
@@ -704,6 +866,26 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         if (!preserveEmissionState)
         {
             statelessResetBindingsByConnectionId.TryRemove(connectionId, out _);
+            TryRemoveRetainedStatelessResetBindings(connectionId);
+        }
+    }
+
+    private void TryRemoveRetainedStatelessResetBindings(ulong connectionId)
+    {
+        foreach ((byte routeLength, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding> retainedRoutes) in retainedStatelessResetBindingsByRouteLength)
+        {
+            foreach ((QuicConnectionIdKey routeId, QuicConnectionStatelessResetBinding binding) in retainedRoutes)
+            {
+                if (binding.ConnectionId == connectionId)
+                {
+                    retainedRoutes.TryRemove(routeId, out _);
+                }
+            }
+
+            if (retainedRoutes.IsEmpty)
+            {
+                retainedStatelessResetBindingsByRouteLength.TryRemove(routeLength, out _);
+            }
         }
     }
 
@@ -736,5 +918,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 return true;
             }
         }
+    }
+
+    private static bool IsSameRemoteEndpoint(QuicConnectionPathIdentity left, QuicConnectionPathIdentity right)
+    {
+        return string.Equals(left.RemoteAddress, right.RemoteAddress, StringComparison.Ordinal)
+            && left.RemotePort == right.RemotePort;
     }
 }

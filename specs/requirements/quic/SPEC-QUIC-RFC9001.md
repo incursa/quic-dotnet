@@ -1302,10 +1302,16 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::RuntimeOpenPathDiscardsBeforeUsingExhaustedRetainedOldKeys
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointPreservesStatelessResetOnlyEmissionAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointDoesNotFabricateStatelessResetOnlyEmissionAfterAeadLimitDiscardWithoutToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointHostSendsStatelessResetForRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::ListenerHostSendsStatelessResetForRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointDoesNotAutomaticallyResetUnlinkedRoutesAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyKeepsOrdinaryResponsesBeforeAeadStop
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzStatelessResetOnlyPolicy_RandomizedIntegrityLimitsChooseStatelessResetOnly
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointStatelessResetOnlyEmissionAfterAeadLimitDiscard_RespectsLoopAndRateGates
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresLinkedTokenPathAndRateBudget
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.

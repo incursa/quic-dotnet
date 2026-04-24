@@ -10,6 +10,7 @@ public class QuicStatelessResetBenchmarks
 {
     private const int LargerFlattenedTokenCount = 8;
     private const int LargerDatagramLength = QuicStatelessReset.MinimumDatagramLength + 32;
+    private const ulong RetainedRouteConnectionId = 6605UL;
 
     private byte[] secretKey = [];
     private byte[] connectionId = [];
@@ -23,6 +24,11 @@ public class QuicStatelessResetBenchmarks
     private byte[] largerFormattedDatagram = [];
     private byte[] destination = [];
     private byte[] largerDestination = [];
+    private QuicConnectionRuntimeEndpoint retainedRouteEndpoint = null!;
+    private QuicConnectionRuntime retainedRouteRuntime = null!;
+    private QuicConnectionPathIdentity retainedRoutePath;
+    private byte[] retainedRouteDatagram = [];
+    private byte[] retainedRouteMissDatagram = [];
 
     /// <summary>
     /// Prepares representative stateless-reset inputs and output buffers.
@@ -82,6 +88,37 @@ public class QuicStatelessResetBenchmarks
             missingToken,
             statelessResetToken,
             LargerFlattenedTokenCount);
+
+        retainedRoutePath = new QuicConnectionPathIdentity(
+            "203.0.113.66",
+            "198.51.100.66",
+            RemotePort: 6605,
+            LocalPort: 4433);
+        retainedRouteDatagram = BuildShortHeaderDatagram(connectionId, LargerDatagramLength);
+        retainedRouteMissDatagram = BuildShortHeaderDatagram(alternateConnectionId, LargerDatagramLength);
+        retainedRouteEndpoint = new QuicConnectionRuntimeEndpoint(
+            1,
+            maximumStatelessResetEmissionsPerRemoteAddress: int.MaxValue);
+        retainedRouteRuntime = new QuicConnectionRuntime(CreateStreamState());
+        QuicConnectionHandle handle = retainedRouteEndpoint.AllocateConnectionHandle();
+        if (!retainedRouteEndpoint.TryRegisterConnection(handle, retainedRouteRuntime)
+            || !retainedRouteEndpoint.TryRegisterConnectionId(handle, connectionId, RetainedRouteConnectionId)
+            || !retainedRouteEndpoint.TryUpdateEndpointBinding(handle, retainedRoutePath)
+            || !retainedRouteEndpoint.TryRegisterStatelessResetToken(handle, RetainedRouteConnectionId, statelessResetToken)
+            || !retainedRouteEndpoint.TryApplyEffect(handle, new QuicConnectionDiscardConnectionStateEffect(CreateAeadLimitTerminalState())))
+        {
+            throw new InvalidOperationException("Failed to configure retained-route stateless reset benchmark state.");
+        }
+    }
+
+    /// <summary>
+    /// Cleans up the retained endpoint state used by route-level benchmarks.
+    /// </summary>
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        retainedRouteEndpoint.Dispose();
+        retainedRouteRuntime.Dispose();
     }
 
     /// <summary>
@@ -187,6 +224,34 @@ public class QuicStatelessResetBenchmarks
             : -1;
     }
 
+    /// <summary>
+    /// Measures retained-route lookup and reset formatting for a post-discard packet that matches a retained CID.
+    /// </summary>
+    [Benchmark]
+    public int CreateRetainedRouteStatelessResetDatagramHit()
+    {
+        QuicConnectionStatelessResetEmissionResult result = retainedRouteEndpoint.TryCreateStatelessResetDatagramForPacket(
+            retainedRouteDatagram,
+            retainedRoutePath,
+            hasLoopPreventionState: true);
+
+        return result.Emitted ? result.Datagram.Length : -1;
+    }
+
+    /// <summary>
+    /// Measures retained-route lookup for a post-discard packet that does not match a retained CID.
+    /// </summary>
+    [Benchmark]
+    public int CreateRetainedRouteStatelessResetDatagramMiss()
+    {
+        QuicConnectionStatelessResetEmissionResult result = retainedRouteEndpoint.TryCreateStatelessResetDatagramForPacket(
+            retainedRouteMissDatagram,
+            retainedRoutePath,
+            hasLoopPreventionState: true);
+
+        return result.Emitted ? result.Datagram.Length : -1;
+    }
+
     private static byte[] BuildFlattenedTokenSet(ReadOnlySpan<byte> token, int tokenCount)
     {
         byte[] flattenedTokens = new byte[tokenCount * QuicStatelessReset.StatelessResetTokenLength];
@@ -207,5 +272,49 @@ public class QuicStatelessResetBenchmarks
         byte[] flattenedTokens = BuildFlattenedTokenSet(missToken, tokenCount);
         matchToken.CopyTo(flattenedTokens.AsSpan((tokenCount - 1) * QuicStatelessReset.StatelessResetTokenLength));
         return flattenedTokens;
+    }
+
+    private static byte[] BuildShortHeaderDatagram(ReadOnlySpan<byte> destinationConnectionId, int datagramLength)
+    {
+        byte[] datagram = new byte[datagramLength];
+        datagram[0] = QuicPacketHeaderBits.FixedBitMask;
+        destinationConnectionId.CopyTo(datagram.AsSpan(1));
+        for (int offset = 1 + destinationConnectionId.Length; offset < datagram.Length; offset++)
+        {
+            datagram[offset] = unchecked((byte)(0xA0 + offset));
+        }
+
+        return datagram;
+    }
+
+    private static QuicConnectionStreamState CreateStreamState()
+    {
+        return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(
+            IsServer: false,
+            InitialConnectionReceiveLimit: 65_536,
+            InitialConnectionSendLimit: 65_536,
+            InitialIncomingBidirectionalStreamLimit: 1,
+            InitialIncomingUnidirectionalStreamLimit: 1,
+            InitialPeerBidirectionalStreamLimit: 1,
+            InitialPeerUnidirectionalStreamLimit: 1,
+            InitialLocalBidirectionalReceiveLimit: 65_536,
+            InitialPeerBidirectionalReceiveLimit: 65_536,
+            InitialPeerUnidirectionalReceiveLimit: 65_536,
+            InitialLocalBidirectionalSendLimit: 65_536,
+            InitialLocalUnidirectionalSendLimit: 65_536,
+            InitialPeerBidirectionalSendLimit: 65_536));
+    }
+
+    private static QuicConnectionTerminalState CreateAeadLimitTerminalState()
+    {
+        return new QuicConnectionTerminalState(
+            QuicConnectionPhase.Discarded,
+            QuicConnectionCloseOrigin.Local,
+            new QuicConnectionCloseMetadata(
+                QuicTransportErrorCode.AeadLimitReached,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: null,
+                ReasonPhrase: "The connection reached the AEAD limit."),
+            EnteredAtTicks: 0);
     }
 }

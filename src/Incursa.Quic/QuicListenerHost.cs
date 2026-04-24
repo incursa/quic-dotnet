@@ -290,6 +290,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                if (TrySendStatelessResetResponse(datagram, pathIdentity))
+                {
+                    continue;
+                }
+
                 if (TrySendVersionNegotiationResponse(datagram, pathIdentity))
                 {
                     continue;
@@ -333,6 +338,38 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         finally
         {
             QuicBufferPool.ReturnBytes(buffer);
+        }
+    }
+
+    private bool TrySendStatelessResetResponse(ReadOnlyMemory<byte> triggeringDatagram, QuicConnectionPathIdentity pathIdentity)
+    {
+        QuicConnectionStatelessResetEmissionResult reset = endpoint.TryCreateStatelessResetDatagramForPacket(
+            triggeringDatagram,
+            pathIdentity,
+            hasLoopPreventionState: true);
+
+        if (!reset.Emitted)
+        {
+            return false;
+        }
+
+        try
+        {
+            EndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
+            int bytesSent = socket.SendTo(reset.Datagram.Span, SocketFlags.None, remoteEndPoint);
+            return bytesSent == reset.Datagram.Length;
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            return false;
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            return false;
+        }
+        catch (SocketException)
+        {
+            return false;
         }
     }
 
@@ -567,7 +604,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             if (!endpoint.TryRegisterConnection(handle, runtime)
                 || !endpoint.TryRegisterConnectionId(handle, initialDestinationConnectionId)
-                || !endpoint.TryRegisterConnectionId(handle, serverSourceConnectionId)
+                || !endpoint.TryRegisterConnectionId(handle, serverSourceConnectionId, statelessResetConnectionId: 0UL)
                 || !endpoint.TryUpdateEndpointBinding(handle, pathIdentity))
             {
                 return false;

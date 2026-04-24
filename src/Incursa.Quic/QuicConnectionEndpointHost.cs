@@ -169,6 +169,12 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 byte[] datagram = buffer.AsSpan(0, bytesReceived).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, peerPathIdentity);
+                if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
+                    and not QuicConnectionIngressDisposition.EndpointHandling)
+                {
+                    SendStatelessResetResponse(datagram, peerPathIdentity);
+                }
+
                 ingressDatagramObserver?.Invoke(datagram, ingressResult);
                 ingressObserver?.Invoke(ingressResult);
             }
@@ -176,6 +182,44 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         finally
         {
             QuicBufferPool.ReturnBytes(buffer);
+        }
+    }
+
+    private void SendStatelessResetResponse(ReadOnlyMemory<byte> triggeringDatagram, QuicConnectionPathIdentity pathIdentity)
+    {
+        QuicConnectionStatelessResetEmissionResult reset = endpoint.TryCreateStatelessResetDatagramForPacket(
+            triggeringDatagram,
+            pathIdentity,
+            hasLoopPreventionState: true);
+
+        if (!reset.Emitted)
+        {
+            return;
+        }
+
+        try
+        {
+            int bytesSent = socket.Send(reset.Datagram.Span, SocketFlags.None);
+            if (bytesSent != reset.Datagram.Length)
+            {
+                throw new IOException("Failed to send the complete QUIC Stateless Reset datagram.");
+            }
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during shutdown.
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during shutdown.
+        }
+        catch (SocketException)
+        {
+            // Best-effort reset emission only.
+        }
+        catch (IOException)
+        {
+            // Best-effort reset emission only.
         }
     }
 
