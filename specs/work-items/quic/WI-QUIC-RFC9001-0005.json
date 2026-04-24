@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9001-0005",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC RFC 9001 Stateless Reset Disposition Matrix Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement and prove the helper-owned stateless-reset formatting-failure branch after AEAD-limit terminal discard, keeping malformed inputs suppressive and preserving the retained-route floor as a subset.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004",
+    "ARC-QUIC-RFC9001-0005",
+    "VER-QUIC-RFC9001-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9001-0005"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9001-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9001-S6P6-0007"
+  ],
+  "planned_changes": "- Keep malformed stateless-reset formatting inputs suppressive instead of fabricating a response datagram.\n- Keep the shared `QuicStatelessReset` formatter as the only place that can construct a stateless reset wire shape.\n- Add requirement-home coverage for minimum-length formatting, undersized destination or datagram length rejection, and empty version-profile rejection.\n- Keep the retained-route floor from `REQ-QUIC-RFC9001-S6P6-0006` as a separate subset of the same broader matrix.\n- Keep the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for formatting and retained-route lookup paths.",
+  "out_of_scope": [
+    "New token-generation behavior",
+    "A separate ambiguity-detection route model",
+    "Key-update lifecycle broadening",
+    "Non-`QuicStatelessReset` wire-shape changes"
+  ],
+  "verification_plan": "Run the new requirement-home tests for REQ-QUIC-RFC9001-S6P6-0007, keep the existing retained-route and helper unit coverage green, refresh the permanent stateless-reset benchmark suite in Dry mode, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.",
+  "completion_notes": "Planned for the helper-format failure branch only. The retained-route floor remains in REQ-QUIC-RFC9001-S6P6-0006 and the broader matrix should stay split if a future ambiguity model appears."
+}

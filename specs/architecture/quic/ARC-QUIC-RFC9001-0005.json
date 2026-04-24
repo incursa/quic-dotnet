@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9001-0005",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC RFC 9001 Stateless Reset Disposition Matrix Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the design boundary for the helper-owned stateless-reset formatting-failure branch after AEAD-limit terminal discard, keeping emission suppression exact when formatting inputs are malformed.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0005",
+    "VER-QUIC-RFC9001-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9001-S6P6-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicStatelessReset.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs",
+    "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs",
+    "benchmarks/QuicStatelessResetBenchmarks.cs"
+  ],
+  "risks": [
+    "If helper-format failures are not kept separate from emitted outcomes, callers can overclaim response success.",
+    "If host shells reconstruct their own formatting rules, the matrix can drift away from the shared helper.",
+    "If the retained-route floor and the formatting-failure branch are merged, later trace slices can lose their boundary."
+  ],
+  "design_summary": "The runtime keeps stateless-reset formatting in a shared helper and treats invalid formatting inputs as a non-emitted branch. The endpoint helper remains the single place that formats a datagram, and the endpoint-host and listener-host paths continue to delegate through that helper rather than inventing their own formatting logic. This architecture keeps the retained-route floor from ARC-QUIC-RFC9001-0004 intact while making the formatting-failure branch explicit and suppressive instead of success-biased.",
+  "alternatives_considered": [
+    "Allow each host shell to format its own stateless reset datagram. Rejected because it would create divergent matrix behavior and duplicate validation.",
+    "Fold malformed-format handling into the retained-route floor without a separate slice. Rejected because the failure branch is a distinct helper outcome and should remain traceable on its own.",
+    "Treat any helper failure as an emitted reset. Rejected because it would fabricate responses from invalid inputs."
+  ],
+  "edge_cases_and_constraints": [
+    "Invalid token length must suppress emission.",
+    "Undersized datagram length or destination space must suppress emission.",
+    "An empty version-profile snapshot must suppress emission.",
+    "Only a fully formatted datagram may be reported as emitted.",
+    "The retained-route floor from ARC-QUIC-RFC9001-0004 remains a subset of this matrix."
+  ],
+  "data_and_state_considerations": "The formatting branch uses only the helper inputs, not a broader route lookup. Token bytes, destination length, and retained version-profile snapshot are the relevant state inputs; if any of them are malformed, the helper returns a non-emitted result and the caller drops the response path. The endpoint and host shells should not cache a parallel formatting outcome.",
+  "open_questions": [
+    "If a future ambiguity-specific route model appears, it should split into its own gap instead of broadening this helper failure slice."
+  ]
+}

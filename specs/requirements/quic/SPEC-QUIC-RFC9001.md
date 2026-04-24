@@ -1382,6 +1382,34 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers
 
+## REQ-QUIC-RFC9001-S6P6-0007 Reject malformed stateless-reset formatting inputs
+When the stateless-reset helper cannot format a response because the token length, datagram length, destination space, or version-profile snapshot is invalid, it MUST fail the formatting attempt and callers MUST suppress emission rather than inventing a stateless-reset datagram.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0005
+- Implemented By:
+  - WI-QUIC-RFC9001-0005
+- Verified By:
+  - VER-QUIC-RFC9001-0005
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots
+  - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail
+  - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength
+  - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots
+  - benchmarks/QuicStatelessResetBenchmarks.cs::FormatStatelessResetDatagram
+  - benchmarks/QuicStatelessResetBenchmarks.cs::FormatLargerStatelessResetDatagram
+
+Notes:
+- This clause captures the helper-format failure branch that suppresses emission instead of fabricating a response datagram.
+
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
 

@@ -1932,6 +1932,41 @@
       }
     },
     {
+      "id": "REQ-QUIC-RFC9001-S6P6-0007",
+      "title": "Reject malformed stateless-reset formatting inputs",
+      "statement": "When the stateless-reset helper cannot format a response because the token length, datagram length, destination space, or version-profile snapshot is invalid, it MUST fail the formatting attempt and callers MUST suppress emission rather than inventing a stateless-reset datagram.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0005"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2",
+          "RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots",
+          "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail",
+          "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength",
+          "tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots",
+          "benchmarks/QuicStatelessResetBenchmarks.cs::FormatStatelessResetDatagram",
+          "benchmarks/QuicStatelessResetBenchmarks.cs::FormatLargerStatelessResetDatagram"
+        ]
+      },
+      "notes": [
+        "This clause captures the helper-format failure branch that suppresses emission instead of fabricating a response datagram."
+      ]
+    },
+    {
       "id": "REQ-QUIC-RFC9001-S7-0001",
       "title": "Use caution with unauthenticated Initial data",
       "statement": "Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.",
