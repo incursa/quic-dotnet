@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-API-0007",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Incursa.Quic Public Stream-Transfer Comparison Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -21,8 +21,8 @@
     "The benchmark project targets a runtime where `System.Net.Quic` can be evaluated through public support markers.",
     "The benchmark harness can create matching local certificate, trust, ALPN, endpoint, payload, timeout, and cleanup inputs for both stacks."
   ],
-  "scope": "This artifact covers only the planned side-by-side public stream-transfer comparison boundary for one loopback bidirectional request/response stream through approved public facades. It does not claim internal helper equivalence, connection-only performance, HTTP/3 throughput, internet performance, interop-runner behavior, retry, 0-RTT, key update, or broader stream-management parity.",
-  "expected_result": "The trace shows a benchmark boundary that uses only the public listener, connection, and stream facades for both Incursa.Quic and `System.Net.Quic`; focused Incursa public request/response guards remain green; the future BenchmarkDotNet suite executes the matched stream-transfer workload; and unsupported stacks are omitted rather than represented by synthetic results.",
+  "scope": "This artifact covers only the bounded side-by-side public stream-transfer comparison slice for one loopback bidirectional request/response stream through approved public facades. It does not claim internal helper equivalence, connection-only performance, HTTP/3 throughput, internet performance, interop-runner behavior, retry, 0-RTT, key update, or broader stream-management parity.",
+  "expected_result": "The trace shows a benchmark boundary that uses only the public listener, connection, and stream facades for both Incursa.Quic and `System.Net.Quic`; focused Incursa public request/response guards remain green; the BenchmarkDotNet suite executes the matched stream-transfer workload; and unsupported stacks are omitted rather than represented by synthetic results.",
   "procedure": [
     "Inspect `SPEC-QUIC-API`, `ARC-QUIC-API-0007`, `WI-QUIC-API-0007`, `VER-QUIC-API-0007`, and `REQUIREMENT-GAPS.md` to confirm the stream-transfer comparison boundary stays at the public-facade level.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_API_0010\"` and preserve the output under the verification evidence directory for the implementation slice.",
@@ -37,12 +37,17 @@
     "specs/work-items/quic/WI-QUIC-API-0007.json",
     "benchmarks/README.md",
     "benchmarks/Incursa.Quic.Benchmarks.csproj",
+    "benchmarks/QuicPublicApiStreamTransferBenchmarks.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
-    "artifacts/verification/20260423-public-api-stream-transfer-trace/focused-req-quic-api-0010-tests.log",
-    "artifacts/verification/20260423-public-api-stream-transfer-trace/render.log",
-    "artifacts/verification/20260423-public-api-stream-transfer-trace/render-check.log",
-    "artifacts/verification/20260423-public-api-stream-transfer-trace/git-diff-check.log",
-    "artifacts/verification/20260423-public-api-stream-transfer-trace/spec-trace-core-validation.log"
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/focused-req-quic-api-0010-tests.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Dry/benchmark.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Dry/20260424-001758/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report-github.md",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Short/benchmark.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Short/20260424-001830/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report-github.md",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render-check.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/git-diff-check.log",
+    "artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/spec-trace-core-validation.log"
   ],
-  "status_summary": "Planned on 2026-04-23. The trace-boundary slice passed 8 focused `REQ-QUIC-API-0010` public request/response tests, SpecTrace render/check, and `git diff --check`; the repo-local core SpecTrace profile still fails on the standing canonical backlog and reported 6143 errors after adding the planned `0007` artifacts. This artifact intentionally does not publish stream-transfer benchmark numbers yet."
+  "status_summary": "Passed on 2026-04-24. Focused Incursa public request/response guards for REQ-QUIC-API-0010 passed 8 tests, and the preserved BenchmarkDotNet Dry plus Short runs executed the matched public-facade request/response stream comparison cleanly. The Short run recorded about 67.20 ms and 479.2 KB allocated for Incursa.Quic versus about 19.31 ms and 94.38 KB allocated for System.Net.Quic on this machine for the bounded 1 KiB loopback request/response workload. The repo-local core SpecTrace profile still fails on the standing canonical backlog; this artifact does not claim a public stream-transfer comparison beyond the traced request/response boundary."
 }

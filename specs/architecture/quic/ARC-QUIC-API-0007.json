@@ -2,11 +2,11 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-API-0007",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "Incursa.Quic Public Stream-Transfer Comparison Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Define the honest side-by-side public-facade stream-transfer benchmark boundary against `System.Net.Quic` before benchmark implementation starts.",
+  "purpose": "Describe the narrowest honest side-by-side public-facade stream-transfer benchmark boundary against `System.Net.Quic` without conflating internal helper measurements with public connection or stream workloads.",
   "related_artifacts": [
     "SPEC-QUIC-API",
     "WI-QUIC-API-0007",

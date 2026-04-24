@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Define the honest side-by-side public-facade stream-transfer benchmark boundary against `System.Net.Quic` before benchmark implementation starts.
+Describe the narrowest honest side-by-side public-facade stream-transfer benchmark boundary against `System.Net.Quic` without conflating internal helper measurements with public connection or stream workloads.
 
 ## Requirements Satisfied
 

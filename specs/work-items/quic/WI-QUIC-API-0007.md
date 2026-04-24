@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-API-0007"
 artifact_type: "work_item"
 title: "Incursa.Quic Public Stream-Transfer Comparison Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-API-0016"
@@ -53,7 +53,7 @@ Before benchmark implementation, run focused public API requirement-home tests f
 
 ## Completion Notes
 
-Planned only. This slice records the benchmark boundary and proof plan; it does not add benchmark source code or publish stream-transfer comparison numbers.
+Completed the permanent public-facade loopback request/response stream-transfer benchmark suite and preserved Dry plus Short evidence under `artifacts/verification/20260424-public-api-stream-transfer-comparison/`. The comparison now covers the bounded public request/response workload on both Incursa.Quic and `System.Net.Quic`.
 
 ## Trace Links
 

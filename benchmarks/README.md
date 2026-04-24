@@ -28,6 +28,7 @@ public `System.Net.Quic` or MSQUIC comparison.
 The benchmark project also carries a bounded public-facade comparison suite:
 
 - `QuicPublicApiLoopbackBenchmarks`
+- `QuicPublicApiStreamTransferBenchmarks`
 
 Run it directly when the goal is a like-for-like local comparison between the
 Incursa public facade and `System.Net.Quic`:
@@ -35,23 +36,27 @@ Incursa public facade and `System.Net.Quic`:
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiLoopbackBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter "*QuicPublicApiLoopbackBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiStreamTransferBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter "*QuicPublicApiStreamTransferBenchmarks*"
 ```
 
-This suite is intentionally narrow. The current proven floor compares only
-public-facade loopback connection establishment plus disposal. Unsupported
-implementations are omitted when either public support marker
+These suites are intentionally narrow. The current proven floor for
+`QuicPublicApiLoopbackBenchmarks` compares only public-facade loopback
+connection establishment plus disposal. `QuicPublicApiStreamTransferBenchmarks`
+compares one bounded public-facade loopback request/response stream workload.
+Unsupported implementations are omitted when either public support marker
 (`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
 results must not be treated as equivalent to the repo's internal helper
-benchmarks or as full internet or HTTP/3 performance claims. A broader public
-stream-transfer comparison is traced separately under `REQ-QUIC-API-0016` but
-remains deferred until that matched request/response workload has implementation
-and BenchmarkDotNet evidence.
+benchmarks or as full internet, HTTP/3, or interop-runner performance claims.
+The public stream-transfer comparison is traced under `REQ-QUIC-API-0016` and
+now has its own bounded benchmark suite.
 
 ## Other Suites
 
 The benchmark project also contains the following permanent suites:
 
 - `QuicPublicApiLoopbackBenchmarks`
+- `QuicPublicApiStreamTransferBenchmarks`
 - `QuicFrameCodecBenchmarks`
 - `QuicCryptoBufferBenchmarks`
 - `QuicDplpmtudStateBenchmarks`

@@ -4,7 +4,7 @@
 
 ## Scope
 
-This artifact covers only the planned side-by-side public stream-transfer comparison boundary for one loopback bidirectional request/response stream through approved public facades. It does not claim internal helper equivalence, connection-only performance, HTTP/3 throughput, internet performance, interop-runner behavior, retry, 0-RTT, key update, or broader stream-management parity.
+This artifact covers only the bounded side-by-side public stream-transfer comparison slice for one loopback bidirectional request/response stream through approved public facades. It does not claim internal helper equivalence, connection-only performance, HTTP/3 throughput, internet performance, interop-runner behavior, retry, 0-RTT, key update, or broader stream-management parity.
 
 ## Requirements Verified
 
@@ -31,7 +31,7 @@ Focused public API requirement-home execution, BenchmarkDotNet evidence, and Spe
 
 ## Expected Result
 
-The trace shows a benchmark boundary that uses only the public listener, connection, and stream facades for both Incursa.Quic and `System.Net.Quic`; focused Incursa public request/response guards remain green; the future BenchmarkDotNet suite executes the matched stream-transfer workload; and unsupported stacks are omitted rather than represented by synthetic results.
+The trace shows a benchmark boundary that uses only the public listener, connection, and stream facades for both Incursa.Quic and `System.Net.Quic`; focused Incursa public request/response guards remain green; the BenchmarkDotNet suite executes the matched stream-transfer workload; and unsupported stacks are omitted rather than represented by synthetic results.
 
 ## Evidence
 
@@ -41,16 +41,21 @@ The trace shows a benchmark boundary that uses only the public listener, connect
 - specs/work-items/quic/WI-QUIC-API-0007.json
 - benchmarks/README.md
 - benchmarks/Incursa.Quic.Benchmarks.csproj
+- benchmarks/QuicPublicApiStreamTransferBenchmarks.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs
-- artifacts/verification/20260423-public-api-stream-transfer-trace/focused-req-quic-api-0010-tests.log
-- artifacts/verification/20260423-public-api-stream-transfer-trace/render.log
-- artifacts/verification/20260423-public-api-stream-transfer-trace/render-check.log
-- artifacts/verification/20260423-public-api-stream-transfer-trace/git-diff-check.log
-- artifacts/verification/20260423-public-api-stream-transfer-trace/spec-trace-core-validation.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/focused-req-quic-api-0010-tests.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Dry/benchmark.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Dry/20260424-001758/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report-github.md
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Short/benchmark.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Short/20260424-001830/Incursa.Quic.Benchmarks.QuicPublicApiStreamTransferBenchmarks-report-github.md
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/render-check.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/git-diff-check.log
+- artifacts/verification/20260424-public-api-stream-transfer-comparison/Verification/spec-trace-core-validation.log
 
 ## Status
 
-Planned on 2026-04-23. The trace-boundary slice passed 8 focused `REQ-QUIC-API-0010` public request/response tests, SpecTrace render/check, and `git diff --check`; the repo-local core SpecTrace profile still fails on the standing canonical backlog and reported 6143 errors after adding the planned `0007` artifacts. This artifact intentionally does not publish stream-transfer benchmark numbers yet.
+Passed on 2026-04-24. Focused Incursa public request/response guards for REQ-QUIC-API-0010 passed 8 tests, and the preserved BenchmarkDotNet Dry plus Short runs executed the matched public-facade request/response stream comparison cleanly. The Short run recorded about 67.20 ms and 479.2 KB allocated for Incursa.Quic versus about 19.31 ms and 94.38 KB allocated for System.Net.Quic on this machine for the bounded 1 KiB loopback request/response workload. The repo-local core SpecTrace profile still fails on the standing canonical backlog; this artifact does not claim a public stream-transfer comparison beyond the traced request/response boundary.
 
 ## Related Artifacts
 
