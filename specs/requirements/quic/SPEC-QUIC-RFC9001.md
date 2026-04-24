@@ -1249,6 +1249,24 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_DiscardsOnlyTheRetainedPreviousPhaseAcrossRepresentativePacketSets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_PreservesCurrentPhaseGateAcrossSampledEpochs
 
+## REQ-QUIC-RFC9001-S6P5-0006 Keep repeated epoch ownership distinct
+While repeated 1-RTT key updates remain active, an endpoint MUST keep current, next, and retained-old 1-RTT epoch ownership distinct, MUST use the active epoch's packet-number floor to select retained, current, or next packet-protection material, and MUST synchronize retained-old discard with matching sender and recovery cleanup without clearing current-phase acknowledgment or repeated-update cooldown state.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0006
+- Implemented By:
+  - WI-QUIC-RFC9001-0006
+- Verified By:
+  - VER-QUIC-RFC9001-0006
+- Source Refs:
+  - RFC 9001 §6.5
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_DiscardsOnlyTheRetainedPreviousPhaseAcrossRepresentativePacketSets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_PreservesCurrentPhaseGateAcrossSampledEpochs
+  - benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs::DiscardRepeatedOldRepresentativeLaterEpochPacketProtectionAndSendState
+
 ## REQ-QUIC-RFC9001-S6P6-0001 Count encrypted packets per key set
 Endpoints MUST count the number of encrypted packets for each set of packet protection keys.
 
