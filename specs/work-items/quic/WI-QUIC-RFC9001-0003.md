@@ -111,7 +111,7 @@ Plan the trace-safe widening from the current first-successor Key Phase floor to
 - Preserve the bounded phase-3 local install floor that now derives and installs phase-3 material only after phase-2 acknowledgment, three-PTO cooldown, and retained-old phase-1 discard.
 - Preserve the bounded phase-4 topoff that now derives and installs local phase-4 material only after phase-3 acknowledgment, cooldown, and retained-old phase-2 discard, opens peer phase-4 packets after phase-3 confirmation, and sends ACKs with phase-4 send keys.
 - Preserve the bounded phase-5 topoff that now derives and installs local phase-5 material only after phase-4 acknowledgment, cooldown, and retained-old phase-3 discard, opens peer phase-5 packets after phase-4 confirmation, and sends ACKs with phase-5 send keys.
-- Preserve representative phases 6 through 9 property/fuzz coverage for the repeated local-update gate, peer next-key opening, old-key ACK KEY_UPDATE_ERROR parity, and retained-previous cleanup shape without claiming a full unbounded epoch ledger.
+- Preserve representative phases 6 through 16 property/fuzz coverage for the repeated local-update gate, peer next-key opening, old-key ACK KEY_UPDATE_ERROR parity, and retained-previous cleanup shape without claiming a full unbounded epoch ledger.
 - Preserve the bounded repeated lower-recovered receive-selection floor that now authenticates retained phase-1 packets after local phase-2 install, retained phase-2 packets after local phase-3 install, retained phase-3 packets after local phase-4 install, and retained phase-4 packets after local phase-5 install, rejects retained packets with stale Key Phase bits, and tracks the current packet-number floor per key phase.
 - Preserve the phase-2, phase-3, and phase-4 old-key ACK KEY_UPDATE_ERROR parity now proven when a retained old-key ACK acknowledges a newer-key send.
 - Preserve the timing-neutral invalid-Key-Phase classification now proven for `REQ-QUIC-RFC9001-S6P3-0001` and the current timing-neutral no-close policy for apparent unconfirmed consecutive peer updates under `REQ-QUIC-RFC9001-S6P2-0003`.
@@ -232,7 +232,7 @@ The current executable floor can prove the first 0-to-1 successor install, succe
 - Arm retained phase-2 cleanup from authenticated phase-3 packets after bounded local phase-3 install.
 - Arm retained phase-3 cleanup from authenticated phase-4 packets after the bounded phase-4 topoff.
 - Arm retained phase-4 cleanup from authenticated phase-5 packets after the bounded phase-5 topoff.
-- Exercise representative retained-previous cleanup across phases 6 through 9.
+- Exercise representative retained-previous cleanup across phases 6 through 16.
 - Expire retained old read material together with matching sender/recovery state.
 - Keep current send, recovery, packet-protection, acknowledgment, and cooldown state intact after retained old cleanup.
 - Keep a real unbounded epoch-ledger cleanup model blocked.

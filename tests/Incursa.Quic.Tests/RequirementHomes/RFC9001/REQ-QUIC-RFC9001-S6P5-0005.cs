@@ -567,7 +567,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
 
         for (int iteration = 0; iteration < 16; iteration++)
         {
-            uint targetPhase = (uint)random.Next(6, 10);
+            uint targetPhase = (uint)random.Next(6, 17);
             uint retainedPreviousPhase = targetPhase - 1U;
             using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
             QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
@@ -602,7 +602,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
                 keyPhase: retainedPreviousPhase);
             _ = QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(
                 runtime,
-                observedAtTicks: Stopwatch.Frequency * (11L + iteration));
+                observedAtTicks: Stopwatch.Frequency * (long)(targetPhase + 5U));
             QuicConnectionTransitionResult timerResult =
                 QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
 
