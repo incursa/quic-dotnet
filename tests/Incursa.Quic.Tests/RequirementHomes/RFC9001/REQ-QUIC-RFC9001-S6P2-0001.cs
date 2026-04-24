@@ -126,6 +126,39 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ActiveClientRuntimeOpensPeerInitiatedPhaseFourUpdatePacketsAfterPhaseThreeConfirmationAndOldKeyDiscard()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        _ = QuicRfc9001RepeatedKeyUpdateTestSupport.PreparePhaseThreeCurrentWithOldDiscardedAndAcknowledged(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial phaseFourOpenMaterial,
+            out QuicTlsPacketProtectionMaterial phaseFourProtectMaterial));
+
+        QuicConnectionTransitionResult result =
+            QuicRfc9001RepeatedKeyUpdateTestSupport.ReceivePeerUpdatePacket(
+                runtime,
+                phaseFourOpenMaterial,
+                keyPhase: false,
+                observedAtTicks: 70_000,
+                QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.TlsState.KeyUpdateInstalled);
+        Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
+        Assert.True(phaseFourOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
+        Assert.True(phaseFourProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+        Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ActiveClientRuntimeRejectsRepeatedPeerUpdatePacketsThatDoNotSignalTheNextKeyPhase()

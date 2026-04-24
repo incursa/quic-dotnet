@@ -165,6 +165,56 @@ internal static class QuicRfc9001RepeatedKeyUpdateTestSupport
         return phaseThreeNotBeforeMicros;
     }
 
+    internal static ulong PreparePhaseThreeCurrentWithOldDiscardedAndAcknowledged(QuicConnectionRuntime runtime)
+    {
+        PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
+
+        QuicConnectionTransitionResult currentPhasePacketResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReceiveCurrentPhasePacket(
+                runtime,
+                observedAtTicks: Stopwatch.Frequency * 5L);
+        Assert.True(currentPhasePacketResult.StateChanged);
+        Assert.True(runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue);
+
+        QuicConnectionTransitionResult discardResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+        Assert.True(discardResult.StateChanged);
+        Assert.False(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.False(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial.HasValue);
+
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber: 60,
+            sentAtMicros: 600,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicConnectionTransitionResult ackResult =
+            ReceiveCurrentPhaseAck(
+                runtime,
+                largestAcknowledged: 60,
+                observedAtTicks: Stopwatch.Frequency * 6L);
+        Assert.True(ackResult.StateChanged);
+        Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+
+        return runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros!.Value;
+    }
+
+    internal static ulong PrepareLocalPhaseFourWithPhaseThreeRetained(QuicConnectionRuntime runtime)
+    {
+        ulong phaseFourNotBeforeMicros = PreparePhaseThreeCurrentWithOldDiscardedAndAcknowledged(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            phaseFourNotBeforeMicros));
+        Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
+        Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+        Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+        Assert.Null(runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
+
+        return phaseFourNotBeforeMicros;
+    }
+
     internal static QuicConnectionTransitionResult ReceivePeerUpdatePacket(
         QuicConnectionRuntime runtime,
         QuicTlsPacketProtectionMaterial openMaterial,
