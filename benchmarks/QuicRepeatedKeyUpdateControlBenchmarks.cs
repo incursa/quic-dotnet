@@ -216,14 +216,14 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
 
     /// <summary>
     /// Measures the same repeated old-key cleanup after additional bounded alternation, using a representative
-    /// later epoch where phase 24 is retained old and phase 25 remains current.
+    /// later epoch where phase 32 is retained old and phase 33 remains current.
     /// </summary>
     [Benchmark]
     public int DiscardRepeatedOldRepresentativeLaterEpochPacketProtectionAndSendState()
     {
         bool updated = retainedLaterLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
-        updated |= repeatedLaterSendRuntime.TryDiscardOneRttKeyPhase(24);
-        updated |= repeatedLaterRecoveryController.TryDiscardOneRttKeyPhase(24);
+        updated |= repeatedLaterSendRuntime.TryDiscardOneRttKeyPhase(32);
+        updated |= repeatedLaterRecoveryController.TryDiscardOneRttKeyPhase(32);
 
         return updated
             ? repeatedLaterSendRuntime.SentPackets.Count + repeatedLaterSendRuntime.PendingRetransmissionCount
