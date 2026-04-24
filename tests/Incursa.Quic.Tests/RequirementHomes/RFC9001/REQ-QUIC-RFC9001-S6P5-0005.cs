@@ -96,6 +96,52 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ActiveClientRuntimePreservesCurrentPhaseAcknowledgmentGateWhenRetainedOldKeysExpire()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+
+        ulong phaseTwoNotBeforeMicros = QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareRepeatedLocalUpdateEligibility(runtime);
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            phaseTwoNotBeforeMicros));
+        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber: 42,
+            sentAtMicros: 420,
+            keyPhase: runtime.TlsState.CurrentOneRttKeyPhase);
+
+        QuicConnectionTransitionResult ackResult =
+            QuicRfc9001RepeatedKeyUpdateTestSupport.ReceiveCurrentPhaseAck(
+                runtime,
+                largestAcknowledged: 42,
+                observedAtTicks: Stopwatch.Frequency * 3L);
+
+        Assert.True(ackResult.StateChanged);
+        Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+        Assert.True(runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue);
+        ulong phaseThreeNotBeforeMicros = runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros!.Value;
+
+        QuicConnectionTransitionResult timerResult =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+
+        Assert.True(timerResult.StateChanged);
+        Assert.Null(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+        Assert.Null(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+        Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+        Assert.Equal(phaseThreeNotBeforeMicros, runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
+        Assert.True(runtime.TlsState.CanInitiateRepeatedLocalOneRttKeyUpdate(phaseThreeNotBeforeMicros));
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+            runtime,
+            phaseThreeNotBeforeMicros));
+        Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ActiveClientRuntimeDiscardsRetainedPhaseOneReadKeysAndPhaseOneSendStateAfterRepeatedLocalKeyUpdate()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
@@ -568,6 +614,56 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0005
                 packet => packet.OneRttKeyPhase == retainedPreviousPhase);
             Assert.Contains(runtime.SendRuntime.SentPackets.Values, packet => packet.OneRttKeyPhase == targetPhase);
             Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzLaterRetentionExpiry_PreservesCurrentPhaseGateAcrossSampledEpochs()
+    {
+        Random random = new(unchecked((int)0x9001_6565));
+
+        for (int iteration = 0; iteration < 8; iteration++)
+        {
+            uint targetPhase = (uint)random.Next(6, 17);
+            ulong packetNumber = 900UL + (ulong)iteration;
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicRfc9001RepeatedKeyUpdateTestSupport.ConfigureRuntime(runtime);
+            QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseWithPreviousRetained(
+                runtime,
+                targetPhase);
+
+            QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+                runtime,
+                packetNumber,
+                sentAtMicros: 9_000UL + (ulong)iteration,
+                keyPhase: targetPhase);
+
+            long observedAtTicks = Stopwatch.Frequency * (long)(targetPhase + 8U);
+            QuicConnectionTransitionResult ackResult =
+                QuicRfc9001RepeatedKeyUpdateTestSupport.ReceiveCurrentPhaseAck(
+                    runtime,
+                    largestAcknowledged: packetNumber,
+                    observedAtTicks);
+
+            Assert.True(ackResult.StateChanged);
+            Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+            Assert.Equal(targetPhase - 1U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+            ulong nextNotBeforeMicros = runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros!.Value;
+
+            QuicConnectionTransitionResult timerResult =
+                QuicRfc9001KeyUpdateRetentionTestSupport.ExpireKeyUpdateRetentionTimer(runtime);
+
+            Assert.True(timerResult.StateChanged);
+            Assert.Null(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
+            Assert.Null(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
+            Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
+            Assert.Equal(nextNotBeforeMicros, runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
+            Assert.True(runtime.TlsState.CanInitiateRepeatedLocalOneRttKeyUpdate(nextNotBeforeMicros));
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
+                runtime,
+                nextNotBeforeMicros));
+            Assert.Equal(targetPhase + 1U, runtime.TlsState.CurrentOneRttKeyPhase);
         }
     }
 

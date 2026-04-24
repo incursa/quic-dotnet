@@ -145,7 +145,10 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
             return false;
         }
 
-        Reset();
+        retainedOldOpenPacketProtectionMaterial = null;
+        retainedOldProtectPacketProtectionMaterial = null;
+        retainedOldPacketProtectionDiscardAtMicros = null;
+        retainedOldPacketProtectionKeyPhase = null;
         return true;
     }
 
