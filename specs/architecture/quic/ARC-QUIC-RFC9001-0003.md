@@ -141,7 +141,7 @@ This artifact records a stabilized lifecycle boundary, not a complete repeated-u
 
 ## Traffic Secret Advancement Boundary
 
-The runtime now commits key updates by replacing the stored client and server application traffic secrets with their updated `quic ku` successors. This lets helper derivation compute the next successor packet-protection material from the advanced secrets for bounded local and peer phase-2 install paths, the bounded local/peer phase-3 install paths, the bounded local/peer phase-4 topoff paths, the bounded local/peer phase-5 topoff paths, and representative later phases 6 through 24. This is not a complete epoch ledger and does not claim unbounded cleanup beyond the representative retained-previous checks.
+The runtime now commits key updates by replacing the stored client and server application traffic secrets with their updated `quic ku` successors. This lets helper derivation compute the next successor packet-protection material from the advanced secrets for bounded local and peer phase-2 install paths, the bounded local/peer phase-3 install paths, the bounded local/peer phase-4 topoff paths, the bounded local/peer phase-5 topoff paths, and representative later phases 6 through 24. This is not a complete epoch ledger; the unbounded repeated-epoch cleanup follow-on is tracked separately under `9001-06-repeated-epoch-ledger-ownership`.
 
 ## Bounded Repeated Local Install Boundary
 
@@ -157,7 +157,7 @@ After the current phase is acknowledged and prior retained-old material has been
 
 ## Bounded Repeated Old-Key Discard Boundary
 
-After local or peer phase-2 install, retained phase-1 material uses the same three-PTO retention timer and expiration path as the first successor floor, but the retained key-phase identifier is phase 1 instead of phase 0. After bounded local phase-3 install, retained phase-2 material uses the same timer and cleanup path with retained key-phase identifier 2. After the bounded phase-4 topoff, retained phase-3 material uses the same timer and cleanup path with retained key-phase identifier 3. After the bounded phase-5 topoff, retained phase-4 material uses the same timer and cleanup path with retained key-phase identifier 4. Representative later-phase property coverage exercises the same retained-previous cleanup shape across phases 6 through 24. Expiration discards retained old read material and removes matching old-phase sender/recovery state while leaving current packet-protection material and current-phase acknowledgment/cooldown state intact. Sampled later-phase proof now guards that cleanup isolation across phases beyond the previous representative range. This remains helper-backed proof, not an unbounded epoch ledger.
+After local or peer phase-2 install, retained phase-1 material uses the same three-PTO retention timer and expiration path as the first successor floor, but the retained key-phase identifier is phase 1 instead of phase 0. After bounded local phase-3 install, retained phase-2 material uses the same timer and cleanup path with retained key-phase identifier 2. After the bounded phase-4 topoff, retained phase-3 material uses the same timer and cleanup path with retained key-phase identifier 3. After the bounded phase-5 topoff, retained phase-4 material uses the same timer and cleanup path with retained key-phase identifier 4. Representative later-phase property coverage exercises the same retained-previous cleanup shape across phases 6 through 24. Expiration discards retained old read material and removes matching old-phase sender/recovery state while leaving current packet-protection material and current-phase acknowledgment/cooldown state intact. Sampled later-phase proof now guards that cleanup isolation across phases beyond the previous representative range. This remains helper-backed proof; the unbounded repeated epoch-ledger cleanup model is tracked separately under the dedicated follow-on.
 
 ## Lifecycle Ledger Shape
 
@@ -175,7 +175,7 @@ After local or peer phase-2 install, retained phase-1 material uses the same thr
 ## Next Planned Scope
 
 - Keep broader stateless-reset response behavior outside the bounded AEAD-limit retained-route floor blocked until packet-to-token lookup, response eligibility, lifecycle, loop prevention, and rate gating requirements are traced.
-- Continue repeated key-update work with the dedicated `9001-06-repeated-epoch-ledger-ownership` follow-on beyond the representative later-phase proof.
+- The dedicated `9001-06-repeated-epoch-ledger-ownership` follow-on now owns the remaining repeated epoch-ledger cleanup work beyond the representative later-phase proof.
 
 ## Related Code And Tests
 
