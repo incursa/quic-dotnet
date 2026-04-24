@@ -242,6 +242,14 @@ internal sealed partial class QuicConnectionRuntime
 
         if (!HasValidatedPath)
         {
+            // Keep the connection alive if another validation attempt can still succeed.
+            if (HasPendingPathValidation())
+            {
+                UpdatePeerAddressValidationFlag();
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                return stateChanged;
+            }
+
             if (diagnosticsEnabled)
             {
                 EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationFailedNoValidatedPathsRemain(pathValidationFailedEvent.PathIdentity));

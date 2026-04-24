@@ -790,6 +790,19 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool HasPendingPathValidation()
+    {
+        foreach (QuicConnectionCandidatePathRecord candidatePath in candidatePaths.Values)
+        {
+            if (!candidatePath.Validation.IsValidated && !candidatePath.Validation.IsAbandoned)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private bool TryAbandonOriginalCandidatePathAfterPreferredAddressValidation(
         QuicConnectionPathIdentity originalPathIdentity,
         QuicConnectionPathIdentity preferredPathIdentity,

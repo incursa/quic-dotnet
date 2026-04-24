@@ -80,6 +80,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0003
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredValidationPath, out QuicConnectionCandidatePathRecord preferredCandidatePath));
         Assert.True(preferredCandidatePath.Validation.IsAbandoned);
         Assert.False(preferredCandidatePath.Validation.IsValidated);
+        Assert.True(runtime.CandidatePaths.TryGetValue(originalValidationPath, out QuicConnectionCandidatePathRecord originalCandidatePath));
+        Assert.False(originalCandidatePath.Validation.IsAbandoned);
+        Assert.False(originalCandidatePath.Validation.IsValidated);
+        Assert.NotEqual(QuicConnectionPhase.Discarded, runtime.Phase);
 
         QuicConnectionTransitionResult originalValidationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
