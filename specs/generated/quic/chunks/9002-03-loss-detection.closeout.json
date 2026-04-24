@@ -16,8 +16,8 @@
     "S6P4"
   ],
   "spec_file": "./specs/requirements/quic/SPEC-QUIC-RFC9002.json",
-  "audit_result": "clean_with_explicit_blockers",
-  "reconciliation_artifact_present": false,
+  "audit_result": "closed_with_explicit_evidence",
+  "reconciliation_artifact_present": true,
   "implementation_summary_file": "./specs/generated/quic/chunks/9002-03-loss-detection.implementation-summary.json",
   "implementation_summary_alignment": {
     "spec_requirement_ids": [
@@ -136,7 +136,7 @@
     ],
     "missing_in_summary": [],
     "extra_in_summary": [],
-    "summary_status": "partial_with_explicit_blockers"
+    "summary_status": "implemented_and_tested"
   },
   "requirements_in_scope": {
     "S6": 1,
@@ -152,8 +152,8 @@
     "S6P3": 5,
     "S6P4": 4,
     "total": 55,
-    "covered": 23,
-    "blocked": 32,
+    "covered": 55,
+    "blocked": 0,
     "deferred": 0,
     "partial": 0,
     "needs_review": 0
@@ -161,7 +161,9 @@
   "reference_audit": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
+      "REQ-QUIC-RFC9002-S6-0001",
       "REQ-QUIC-RFC9002-S6P1-0001",
+      "REQ-QUIC-RFC9002-S6P1-0002",
       "REQ-QUIC-RFC9002-S6P1P1-0001",
       "REQ-QUIC-RFC9002-S6P1P1-0002",
       "REQ-QUIC-RFC9002-S6P1P2-0001",
@@ -170,46 +172,140 @@
       "REQ-QUIC-RFC9002-S6P1P2-0004",
       "REQ-QUIC-RFC9002-S6P1P2-0005",
       "REQ-QUIC-RFC9002-S6P1P2-0006",
+      "REQ-QUIC-RFC9002-S6P1P2-0007",
+      "REQ-QUIC-RFC9002-S6P2-0001",
       "REQ-QUIC-RFC9002-S6P2-0002",
+      "REQ-QUIC-RFC9002-S6P2-0003",
       "REQ-QUIC-RFC9002-S6P2P1-0001",
       "REQ-QUIC-RFC9002-S6P2P1-0002",
       "REQ-QUIC-RFC9002-S6P2P1-0003",
       "REQ-QUIC-RFC9002-S6P2P1-0004",
       "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P1-0006",
       "REQ-QUIC-RFC9002-S6P2P1-0007",
+      "REQ-QUIC-RFC9002-S6P2P1-0008",
+      "REQ-QUIC-RFC9002-S6P2P1-0009",
       "REQ-QUIC-RFC9002-S6P2P1-0010",
       "REQ-QUIC-RFC9002-S6P2P2-0001",
       "REQ-QUIC-RFC9002-S6P2P2-0002",
       "REQ-QUIC-RFC9002-S6P2P2-0003",
       "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0002",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0003",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "REQ-QUIC-RFC9002-S6P3-0001",
+      "REQ-QUIC-RFC9002-S6P3-0002",
+      "REQ-QUIC-RFC9002-S6P3-0003",
       "REQ-QUIC-RFC9002-S6P3-0004",
-      "REQ-QUIC-RFC9002-S6P3-0005"
+      "REQ-QUIC-RFC9002-S6P3-0005",
+      "REQ-QUIC-RFC9002-S6P4-0001",
+      "REQ-QUIC-RFC9002-S6P4-0002",
+      "REQ-QUIC-RFC9002-S6P4-0003",
+      "REQ-QUIC-RFC9002-S6P4-0004"
     ],
     "source_files_checked_for_requirement_ids": [
+      "src/Incursa.Quic/QuicConnectionRuntime*.cs",
+      "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
       "src/Incursa.Quic/QuicRecoveryTiming.cs",
       "src/Incursa.Quic/QuicPathValidation.cs",
-      "src/Incursa.Quic/QuicRttEstimator.cs",
-      "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+      "src/Incursa.Quic/QuicRttEstimator.cs"
     ],
     "test_files_with_requirement_traits": [
-      "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
       "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
-      "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+      "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs"
     ],
     "stale_or_wrong_refs_found": [],
-    "notes": "Tests use only in-scope RFC 9002 IDs. Source helpers carry no requirement IDs, matching the repository convention for this slice."
+    "notes": "Canonical test refs were refreshed for the PTO restart negative proof and the runtime no-data PING fallback proof."
   },
   "requirements": [
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6-0001",
       "title": "Separate loss detection by packet number space",
       "section_token": "S6",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs packet-number-space-specific loss-state tracking to prove isolation beyond helper-level timing formulas.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_RemovesOnlyTheDiscardedSpaceFromTheRuntimeLedger",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs::TryDiscardPacketNumberSpace_IsNoOpForASpaceThatWasNeverTracked"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1-0001",
@@ -217,28 +313,35 @@
       "section_token": "S6P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::CanDeclarePacketLost_RequiresAnUnacknowledgedInFlightPacketSentBeforeAnAcknowledgedPacket"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_AllowsAnUnacknowledgedInflightPacketSentBeforeTheLargestAcknowledgedPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_RejectsPacketsThatAreAcknowledgedOrNotInFlight",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs::CanDeclarePacketLost_RejectsPacketsAtTheLargestAcknowledgedBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "Static helper covers the basic preconditions for declaring a packet lost."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1-0002",
       "title": "Allow smaller initial reordering thresholds with adaptation",
       "section_token": "S6P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs an adaptive reordering-threshold policy; the current slice only exposes static loss timing math.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0002.cs::ComputeLossDelayMicros_AcceptsASmallerAdaptiveThreshold"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0001",
@@ -246,17 +349,18 @@
       "section_token": "S6P1P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheRecommendedThresholdOfThree"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_DeclaresPacketsOlderThanTheRecommendedThreshold",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_DoesNotUseAThresholdAboveThreeAtTheBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheThreePacketBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "The helper exposes the recommended packet-threshold constant of 3."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
@@ -264,18 +368,16 @@
       "section_token": "S6P1P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheRecommendedThresholdOfThree",
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs"
       ],
       "remaining_gap": null,
-      "notes": "The helper rejects packet thresholds below 3."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
@@ -283,17 +385,16 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "Remaining time is computed from the packet send time and the RFC 9002 time threshold."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
@@ -301,17 +402,17 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs"
       ],
       "remaining_gap": null,
-      "notes": "The loss delay is bounded by the local timer granularity."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0003",
@@ -319,17 +420,17 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs"
       ],
       "remaining_gap": null,
-      "notes": "The loss delay uses max(latest_rtt, smoothed_rtt) scaled by kTimeThreshold."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0004",
@@ -337,17 +438,17 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs::TryComputeRemainingLossDelayMicros_SchedulesTheRemainingTimeBeforeLoss",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs::TryComputeRemainingLossDelayMicros_RejectsAZeroTimeThresholdNumerator"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0004.cs"
       ],
       "remaining_gap": null,
-      "notes": "The helper reports the remaining time before the loss deadline fires."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0005",
@@ -355,17 +456,17 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs"
       ],
       "remaining_gap": null,
-      "notes": "Default time-threshold multiplier is 9/8."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0006",
@@ -373,39 +474,54 @@
       "section_token": "S6P1P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0006.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeLossDelayMicros_UsesTheRttAndGranularityThresholds"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0006.cs::RecommendedTimerGranularity_UsesOneMillisecond"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0006.cs"
       ],
       "remaining_gap": null,
-      "notes": "Default timer granularity is 1 millisecond."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0007",
       "title": "Allow alternative time-threshold experiments",
       "section_token": "S6P1P2",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs sender/recovery state that is not present in the helper-only slice.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_AcceptsAlternativeThresholdParameters",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs::ComputeLossDelayMicros_UsesTheGranularityFloorForAnAlternativeThreshold"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0007.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2-0001",
       "title": "Send probe datagrams on PTO expiration or address-validation uncertainty",
       "section_token": "S6P2",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs a sender/transmit surface that can emit probe datagrams and apply address-validation gating.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs::TrySelectPtoTimeAndSpaceMicros_UsesHandshakeWhenHandshakeKeysAreAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs::TrySelectPtoTimeAndSpaceMicros_ReturnsFalseWhenNeitherSpaceHasAptoDeadline",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs::TrySelectPtoTimeAndSpaceMicros_StartsFromNowAtTheImmediateBoundary"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2-0002",
@@ -413,28 +529,39 @@
       "section_token": "S6P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs::TryComputeProbeTimeoutMicros_UsesTheSameBaseTimeoutAtTheAckDelayBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0002.cs"
       ],
       "remaining_gap": null,
-      "notes": "PTO is computed per packet number space and the helper takes the space explicitly."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2-0003",
       "title": "Do not infer loss from PTO expiration",
       "section_token": "S6P2",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs sender-side loss-recovery orchestration to prove PTO expiration does not itself mark packets lost.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
@@ -442,17 +569,20 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "The helper implements PTO = smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
@@ -460,17 +590,20 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs"
       ],
       "remaining_gap": null,
-      "notes": "Initial and Handshake spaces force max_ack_delay to zero in the PTO formula."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
@@ -478,17 +611,20 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs"
       ],
       "remaining_gap": null,
-      "notes": "The PTO helper floors the result at the local timer granularity."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
@@ -496,17 +632,20 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs"
       ],
       "remaining_gap": null,
-      "notes": "A helper selects the earlier PTO between Initial and Handshake spaces."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
@@ -514,29 +653,40 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs"
       ],
       "remaining_gap": null,
-      "notes": "Application Data PTO is withheld until handshake confirmation is present."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
       "title": "Restart PTO on send, acknowledgment, or key discard",
       "section_token": "S6P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs sender/recovery state transitions to restart PTO after sends, acknowledgments, or key discard.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0007",
@@ -544,39 +694,54 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::ComputeProbeTimeoutWithBackoffMicros_DoublesTheBasePtoOnTimeout"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_DoublesThePtoAfterAProbeTimeoutExpires",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_LeavesTheBasePtoInPlaceBeforeAnyProbeTimeoutExpires",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs::TrySelectLossDetectionTimer_ContinuesDoublingAfterRepeatedProbeTimeoutExpirations"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs"
       ],
       "remaining_gap": null,
-      "notes": "The backoff helper doubles the PTO period once per timeout."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0008",
       "title": "Reset PTO backoff on acknowledgment",
       "section_token": "S6P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs sender/recovery state transitions to reset PTO backoff on acknowledgment.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffAfterAnAcknowledgment"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0009",
       "title": "Suppress PTO-backoff reset on unvalidated Initial acknowledgments",
       "section_token": "S6P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs handshake- and validation-aware ack-processing state to suppress Initial backoff resets correctly.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs::ResetProbeTimeoutBackoffCount_DoesNotResetOnAnUnvalidatedInitialAcknowledgment",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs::ResetProbeTimeoutBackoffCount_ResetsOnAValidatedInitialAcknowledgment",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffOnAnUnvalidatedInitialAcknowledgment"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0010",
@@ -584,17 +749,18 @@
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectRecoveryTimerMicros_PrefersLossDetectionTimersOverPtoTimers"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoTimersAreAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs::TrySelectRecoveryTimerMicros_PrefersTheLossDetectionTimerWhenTheDeadlinesMatch"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0010.cs"
       ],
       "remaining_gap": null,
-      "notes": "The timer selector prefers the loss-detection deadline over PTO when both are available."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0001",
@@ -602,16 +768,17 @@
       "section_token": "S6P2P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRttEstimator.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs"
       ],
       "remaining_gap": null,
-      "notes": "The RTT estimator already accepts a caller-supplied initial RTT and seeds its state from that value."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0002",
@@ -619,16 +786,20 @@
       "section_token": "S6P2P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRttEstimator.cs"
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs"
       ],
       "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary",
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs"
       ],
       "remaining_gap": null,
-      "notes": "The default RTT seed remains 333 milliseconds."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0003",
@@ -636,17 +807,19 @@
       "section_token": "S6P2P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicPathValidation.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs"
       ],
       "remaining_gap": null,
-      "notes": "PATH_CHALLENGE/PATH_RESPONSE timing is exposed as a standalone elapsed-time helper."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0004",
@@ -654,8 +827,7 @@
       "section_token": "S6P2P2",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicPathValidation.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
@@ -664,227 +836,375 @@
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
       ],
       "remaining_gap": null,
-      "notes": "The path-validation timing helper does not mutate RTT state; callers can feed the elapsed time into a seed value separately."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0005",
       "title": "Reset timers when keys are discarded",
       "section_token": "S6P2P2",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs key-discard plumbing that resets the PTO and loss-detection timers.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
       "title": "Delay server PTO until address validation traffic arrives",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0002",
       "title": "Reset the server PTO when the client sends data",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_RestoresTheSendBudgetAfterTheServerHasExhaustedIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_DoesNotRestoreTheSendBudgetForUnattributedDatagrams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs::TryRegisterReceivedDatagramPayloadBytes_LeavesTheSendBudgetExhaustedForZeroLengthDatagrams"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "title": "Fire a past-due PTO immediately",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_ReturnsThePtoDeadlineImmediatelyWhenItIsAlreadyDue",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_ReturnsFalseWhenNoRecoveryTimersAreAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs::TrySelectRecoveryTimerMicros_PreservesAOneMicrosecondPtoDeadline"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
       "title": "Arm the client PTO before handshake confirmation",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
       "title": "Send Handshake probes when keys are available",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
       "title": "Send Initial probes otherwise",
       "section_token": "S6P2P2P1",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client/server PTO-arming logic and address-validation state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P3-0001",
       "title": "Permit early CRYPTO probes for handshake speedup",
       "section_token": "S6P2P3",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs handshake-speedup probe policy and CRYPTO send-path integration.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_ArmsAnEarlyCryptoProbeAfterUniqueDatagramReceiptRestoresSendBudget",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_DoesNotArmAnEarlyCryptoProbeWhileThePeerIsStillAmplificationLimited",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightReplaysServerHelloAndHandshakeProbes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightDoesNotProbePastAntiAmplificationBudget",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FuzzDuplicateRetriedClientHelloAfterServerFlight_ProbeReplayStaysBudgetedAndBounded"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0001",
       "title": "Probe with at least one ack-eliciting packet",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0002",
       "title": "Allow two full-sized PTO datagrams",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0003",
       "title": "Keep PTO probe packets ack-eliciting",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
       "title": "Use other packet number spaces for PTO probes",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0005",
       "title": "Include new data in PTO probes",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0006",
       "title": "Allow previously sent data in PTO probes",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0007",
       "title": "Allow alternative probe-content strategies",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0008",
       "title": "Send a PING when no probe data exists",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0009",
       "title": "Allow declaring in-flight packets lost instead of probing",
       "section_token": "S6P2P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs PTO probe packet composition and send-path packet selection logic.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_AllowsMarkingAnInFlightPacketLostInsteadOfSendingAnotherProbe",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_RejectsPacketsThatAreNotInFlightWhenNoAckOnlyLossSignalIsAllowed"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P3-0001",
       "title": "Reject Retry as an acknowledgment",
       "section_token": "S6P3",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs Retry packet classification in the connection-establishment state machine.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs::TryGetPacketNumberSpace_MapsInitialPacketsToTheInitialSpace",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs::TryGetPacketNumberSpace_RejectsRetryPackets"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P3-0002",
       "title": "Reset recovery and congestion state on Retry",
       "section_token": "S6P3",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs client recovery-state reset plumbing for Retry processing.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs::ResetProbeTimeoutBackoffCount_ResetsTheBackoffWhenRetryDiscardsKeys"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P3-0003",
       "title": "Retain cryptographic handshake state across Retry",
       "section_token": "S6P3",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs Retry-aware connection state that preserves handshake messages while resetting recovery state.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs::TryValidateConnectionIdBindings_AcceptsMatchingRetrySourceConnectionIdAfterRetry"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P3-0004",
@@ -892,17 +1212,17 @@
       "section_token": "S6P3",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryMeasureRetryRoundTripMicros_ComputesTheElapsedTimeAndCanSeedInitialRtt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs"
       ],
       "remaining_gap": null,
-      "notes": "Retry timing is exposed as a standalone elapsed-time helper."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P3-0005",
@@ -910,109 +1230,120 @@
       "section_token": "S6P3",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "src/Incursa.Quic/QuicRecoveryTiming.cs",
-        "src/Incursa.Quic/PublicAPI.Unshipped.txt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryMeasureRetryRoundTripMicros_ComputesTheElapsedTimeAndCanSeedInitialRtt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs"
       ],
       "remaining_gap": null,
-      "notes": "The Retry-derived RTT can be used to seed the RTT estimator by the caller."
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P4-0001",
       "title": "Discard recovery state when protection keys go away",
       "section_token": "S6P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeRecoveryPlansFromTheRuntimeLedger",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_LeavesApplicationRecoveryStateAloneWhenNoEarlyKeysWereTracked"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P4-0002",
       "title": "Remove discarded packets from bytes in flight",
       "section_token": "S6P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P4-0003",
       "title": "Discard recovery state for rejected 0-RTT packets",
       "section_token": "S6P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs::AcceptingTheResumptionAttempt_KeepsZeroRttRecoveryStateIntact"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S6P4-0004",
       "title": "Discard secrets as soon as the replacement keys exist",
       "section_token": "S6P4",
-      "status": "blocked",
-      "implementation_evidence": [],
-      "tests_covering_requirement": [],
-      "direct_refs_added_or_updated": [],
-      "remaining_gap": "Needs key-discard recovery cleanup and bytes-in-flight integration.",
-      "notes": "No sender/recovery state exists for this clause in the current helper-focused slice."
+      "status": "implemented and tested",
+      "implementation_evidence": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_DiscardOverflowFramesAsSoonAsReplacementKeysExist",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::ClientRuntimeDiscardsInitialRecoveryStateAfterTheFirstSuccessfulHandshakePacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::ClientRuntimeDiscardsHandshakeRecoveryStateWhenHandshakeDoneConfirmsTheHandshake",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::ServerRuntimeDiscardsInitialRecoveryStateWhenPeerHandshakeTranscriptCompletes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_ClosesWithBufferExceededBeforeReplacementKeysExist",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs::TryAddFrame_TransitionsFromBufferingToDiscardingAtTheHandshakeCompleteBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs::BridgeDriverHandshakeKeyDiscardFlowsThroughTheRuntimeAndClearsHandshakeSendState"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0106.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     }
   ],
-  "remaining_open_requirements": [
-    "REQ-QUIC-RFC9002-S6-0001",
-    "REQ-QUIC-RFC9002-S6P1-0002",
-    "REQ-QUIC-RFC9002-S6P1P2-0007",
-    "REQ-QUIC-RFC9002-S6P2-0001",
-    "REQ-QUIC-RFC9002-S6P2-0003",
-    "REQ-QUIC-RFC9002-S6P2P1-0006",
-    "REQ-QUIC-RFC9002-S6P2P1-0008",
-    "REQ-QUIC-RFC9002-S6P2P1-0009",
-    "REQ-QUIC-RFC9002-S6P2P2-0005",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0001",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0002",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0003",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0004",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0005",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0006",
-    "REQ-QUIC-RFC9002-S6P2P3-0001",
-    "REQ-QUIC-RFC9002-S6P2P4-0001",
-    "REQ-QUIC-RFC9002-S6P2P4-0002",
-    "REQ-QUIC-RFC9002-S6P2P4-0003",
-    "REQ-QUIC-RFC9002-S6P2P4-0004",
-    "REQ-QUIC-RFC9002-S6P2P4-0005",
-    "REQ-QUIC-RFC9002-S6P2P4-0006",
-    "REQ-QUIC-RFC9002-S6P2P4-0007",
-    "REQ-QUIC-RFC9002-S6P2P4-0008",
-    "REQ-QUIC-RFC9002-S6P2P4-0009",
-    "REQ-QUIC-RFC9002-S6P3-0001",
-    "REQ-QUIC-RFC9002-S6P3-0002",
-    "REQ-QUIC-RFC9002-S6P3-0003",
-    "REQ-QUIC-RFC9002-S6P4-0001",
-    "REQ-QUIC-RFC9002-S6P4-0002",
-    "REQ-QUIC-RFC9002-S6P4-0003",
-    "REQ-QUIC-RFC9002-S6P4-0004"
-  ],
+  "remaining_open_requirements": [],
   "tests_reviewed": [
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicRecoveryTimingTests|FullyQualifiedName~QuicPathValidationTests|FullyQualifiedName~QuicRttEstimatorTests\"",
-      "result": "36 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0003|FullyQualifiedName~REQ_QUIC_RFC9002_S6P3_0003\"",
+      "result": "5 passed, 0 failed, 0 skipped"
     },
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
-      "result": "294 passed, 0 failed, 0 skipped"
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P1_0006\"",
+      "result": "4 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_0008\"",
+      "result": "3 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_S6\"",
+      "result": "172 passed, 0 failed, 0 skipped"
     }
   ],
   "notes": [
-    "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
-    "The helper-only recovery surface is intentionally narrow and leaves the sender/recovery state-machine work deferred behind explicit blockers."
+    "The previous generated closeout was stale after later RFC 9002 timer-discipline, probe-scheduler, Retry reset, and key-discard artifacts landed.",
+    "Focused requirement-home execution on 2026-04-23 passed all 172 RFC 9002 Section 6 tests with no failures.",
+    "The reconciliation does not weaken protocol behavior or reinterpret external interop runner/reporting failures as managed transport success."
   ]
 }

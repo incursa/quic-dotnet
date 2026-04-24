@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -24,29 +26,20 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task WriteAsync_ArmsRecoveryPtoAndFallsBackToAPingProbeWhenItExpires()
+    public void RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists()
     {
-        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
-        List<QuicConnectionEffect> outboundEffects = [];
-
-        runtime.SetLocalApiEventDispatcher(connectionEvent =>
-        {
-            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
-            outboundEffects.AddRange(transition.Effects);
-            return true;
-        });
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
 
         Assert.True(runtime.ActivePath.HasValue);
-        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
-        outboundEffects.Clear();
+        Assert.Empty(runtime.SendRuntime.SentPackets);
 
-        byte[] payload = Enumerable.Range(0, 21).Select(value => (byte)value).ToArray();
-        await stream.WriteAsync(payload, 0, payload.Length);
+        TrackNonRetransmittableApplicationAckElicitingPacket(runtime);
+        QuicConnectionEffect[] timerEffects = InvokeRecomputeLifecycleTimerEffects(runtime);
 
         long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
         Assert.NotNull(recoveryDueTicks);
+        Assert.Contains(timerEffects, effect => effect is QuicConnectionArmTimerEffect arm && arm.TimerKind == QuicConnectionTimerKind.Recovery);
         ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
-        outboundEffects.Clear();
 
         QuicConnectionTransitionResult timerResult = runtime.Transition(
             new QuicConnectionTimerExpiredEvent(
@@ -55,8 +48,10 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
                 recoveryGeneration),
             nowTicks: recoveryDueTicks.Value);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
-            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(sendEffects);
 
         QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
@@ -76,6 +71,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
             runtime.SendRuntime.SentPackets.Values,
             packet => packet.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
         Assert.True(sentProbePacket.ProbePacket);
+        Assert.False(sentProbePacket.Retransmittable);
 
         for (int index = pingBytesConsumed; index < packetPayload.Length; index++)
         {
@@ -93,5 +89,46 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
     public void TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe()
     {
         Assert.False(QuicFrameCodec.TryFormatPingFrame(stackalloc byte[0], out _));
+    }
+
+    private static void TrackNonRetransmittableApplicationAckElicitingPacket(QuicConnectionRuntime runtime)
+    {
+        Span<byte> pingPayload = stackalloc byte[1];
+        Assert.True(QuicFrameCodec.TryFormatPingFrame(pingPayload, out int bytesWritten));
+
+        QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            pingPayload[..bytesWritten],
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhaseBit,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "TrackApplicationPacket",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        method.Invoke(
+            runtime,
+            [
+                packetNumber,
+                protectedPacket,
+                true,
+                false,
+                false,
+                false,
+                QuicTlsEncryptionLevel.OneRtt,
+                null,
+                default(ReadOnlyMemory<byte>),
+            ]);
+    }
+
+    private static QuicConnectionEffect[] InvokeRecomputeLifecycleTimerEffects(QuicConnectionRuntime runtime)
+    {
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "RecomputeLifecycleTimerEffects",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        return (QuicConnectionEffect[])method.Invoke(runtime, [])!;
     }
 }

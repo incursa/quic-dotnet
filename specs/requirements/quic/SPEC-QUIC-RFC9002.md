@@ -1163,6 +1163,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets
 
 ## REQ-QUIC-RFC9002-S6P2P1-0007 Increase PTO backoff on timeout
 When a PTO timer expires, the PTO backoff MUST be increased, which doubles the PTO period.
@@ -1604,6 +1605,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe
 
 ## REQ-QUIC-RFC9002-S6P2P4-0009 Allow declaring in-flight packets lost instead of probing

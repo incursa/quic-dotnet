@@ -6,7 +6,7 @@ internal static class QuicS17P2P5P3TestSupport
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
-            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
             out QuicInitialPacketProtection serverProtection));
 
         return serverProtection;

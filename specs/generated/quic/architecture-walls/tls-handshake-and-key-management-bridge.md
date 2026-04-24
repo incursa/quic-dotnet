@@ -43,7 +43,7 @@ That missing contract is the TLS wall.
 | Chunk | What the requirements are asking for | Current status |
 | --- | --- | --- |
 | `9001-02-security-and-registry` | Key update after peer handshake transcript completion, Key Phase semantics, prohibition and handling of TLS `KeyUpdate` messages, handshake tamper detection, transport-parameter commitment, and TLS registry metadata. | Six helper-backed requirements are closed and one is partial. The remaining executable security clauses are blocked by missing handshake and key-management surfaces. |
-| Cross-seam `9002-03-loss-detection` remainder | Reset PTO and discard recovery state when keys go away. | The timing helpers exist, but key-discard events do not yet exist as live runtime inputs. |
+| Cross-seam `9002-03-loss-detection` Section 6 baseline | Reset PTO and discard recovery state when keys go away within the bounded loss-detection runtime. | Closed for the repo-owned Section 6 loss-detection surface; it now provides the adjacent baseline rather than an open TLS-bridge blocker. |
 | Cross-seam `9002-06` appendix remainder | Connection-owned cleanup on key discard. | Still deferred because there is no bridge that exposes key lifecycle transitions to the sender/recovery runtime. |
 
 ## What The Requirements Are Actually Asking Us To Do
@@ -114,7 +114,7 @@ The repo does not yet have:
 - a transport-visible TLS transcript or authentication result surface
 - a TLS alert to QUIC error-mapping surface
 - a live policy surface that can reject outbound or inbound TLS `KeyUpdate` messages
-- key-discard events that the sender/recovery runtime can consume
+- generalized key-discard events that the sender/recovery runtime can consume beyond the already-traced RFC 9002 Section 6 loss-detection paths
 
 ## Why This Is Architectural Instead Of Just More Code
 
@@ -227,7 +227,7 @@ This does not require a full cryptographic implementation in the first slice. It
 Picking the TLS bridge shape unlocks:
 
 - the remaining executable blockers in `9001-02-security-and-registry`
-- the key-discard related blockers in `9002-03-loss-detection`
+- the already-closed `9002-03-loss-detection` Section 6 baseline as an executable model for adjacent key-discard cleanup
 - the deferred key-discard cleanup overlap in `9002-06`
 - the peer-handshake-completion dependency in migration and application-data PTO behavior
 

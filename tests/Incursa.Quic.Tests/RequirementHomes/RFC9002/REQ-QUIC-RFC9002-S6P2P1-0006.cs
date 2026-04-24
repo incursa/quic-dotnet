@@ -127,6 +127,48 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0006
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 1_200,
+            SentAtMicros: 0,
+            AckEliciting: true));
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 0,
+            smoothedRttMicros: 2_500,
+            rttVarMicros: 1_250,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: true));
+
+        Assert.Equal(2, runtime.ProbeTimeoutCount);
+        Assert.Equal(15_000UL, runtime.LossDetectionDeadlineMicros);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 8,
+            PayloadBytes: 64,
+            SentAtMicros: 0,
+            AckEliciting: false));
+
+        Assert.Equal(2, runtime.ProbeTimeoutCount);
+        Assert.Equal(15_000UL, runtime.LossDetectionDeadlineMicros);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted()

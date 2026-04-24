@@ -14,11 +14,11 @@ The sender / recovery engine is the transport-owned runtime that decides:
 - what is retransmitted, suppressed, updated, or discarded after loss or acknowledgment
 - how congestion control, flow control, stream state, path validation, and key discard affect transmission behavior
 
-The repo already has substantial helper coverage in this area. What it does not have is the runtime that owns those helpers and turns them into end-to-end transport behavior.
+The repo already has substantial helper and bounded runtime coverage in this area. What it does not yet have is a general sender/recovery engine that owns every retransmittable frame effect across flow control, stream state, connection-ID lifecycle, PMTU, and broader reliability behavior.
 
 ## Why This Is A Wall
 
-The remaining work is not blocked by missing formulas. It is blocked by missing ownership of live transmission state.
+The remaining work is not blocked by missing formulas. It is blocked by missing ownership of live transmission state outside the already-traced RFC 9002 Section 6 loss-detection lanes.
 
 Today the repo can answer questions like:
 
@@ -41,7 +41,7 @@ That missing ownership is the actual wall.
 | Chunk | What the requirements are asking for | Current status |
 | --- | --- | --- |
 | `9000-19-retransmission-and-frame-reliability` | Retransmit reliability-sensitive frames until acknowledged or superseded, suppress obsolete retransmissions, handle whole-packet loss, and tie frame behavior to stream, path, and connection-ID lifecycle. | Only `REQ-QUIC-RFC9000-S13P3-0010` and `REQ-QUIC-RFC9000-S13P3-0027` are closed. The other 25 clauses are partial and 12 are blocked. |
-| `9002-03-loss-detection` | Maintain per-space loss state, arm and rearm PTO, send probes, apply backoff rules, handle Retry and key discard, and compose PTO probe packets correctly. | The timing math is largely helper-backed. The runtime behaviors that need sent-packet ownership, timer ownership, and packet composition are still blocked. |
+| `9002-03-loss-detection` | Maintain per-space loss state, arm and rearm PTO, send probes, apply backoff rules, handle Retry and key discard, and compose PTO probe packets correctly. | Closed for the bounded repo-owned Section 6 loss-detection surfaces. Focused requirement-home execution now covers all 55 scoped requirements; broader sender/recovery work remains in adjacent chunks. |
 | `9000-03-flow-control` remainder | Reconcile flow-control updates with reliability and loss. | Helper accounting is strong, but one requirement stays partial and several more stay deferred until sender-owned reliability exists. |
 | `9000-02-stream-state` send/abort remainder | Own send-path transitions, retransmission behavior, ACK tracking, and `STOP_SENDING` / `RESET_STREAM` coordination. | Helper state exists, but live send-path orchestration is absent. |
 | `9002-05` and `9002-06` appendix remainders | Appendix restatements of sender, timer, PMTU, and key-discard behavior. | Already split because the runtime layer does not exist yet. |
@@ -124,7 +124,7 @@ The wall is not "there is no sender type at all".
 
 That is good evidence. It is also not enough.
 
-It still does not own:
+It still does not generally own:
 
 - packet assembly
 - retransmission planning
@@ -133,7 +133,7 @@ It still does not own:
 - semantic retransmission suppression
 - connection-ID lifecycle effects
 - stream send queue effects
-- key-discard cleanup
+- key-discard cleanup outside the closed RFC 9002 Section 6 loss-detection scope
 
 So the real decision is whether to evolve this facade into the real engine or treat it as a low-level helper under a new runtime layer.
 
@@ -141,18 +141,18 @@ So the real decision is whether to evolve this facade into the real engine or tr
 
 The missing pieces are runtime semantics, not isolated helpers.
 
-The repo does not yet have:
+The repo does not yet have a general-purpose sender/recovery layer with:
 
 - a packet planner that decides what frames go into a packet
 - a sent-packet record that stores semantic frame effects, not just bytes and timestamps
 - a retransmission queue or retransmission planner
-- a PTO owner that keeps a real `ptoCount`, selected space, due time, and rearm semantics
-- a per-space loss state owner that survives across sends, ACKs, and key discard
+- a PTO owner for all sender/reliability surfaces beyond the closed Section 6 loss-detection slice
+- a per-space loss state owner for frame-reliability and stream/flow-control recovery beyond the closed Section 6 loss-detection slice
 - frame-suppression logic for obsolete control frames
 - stream send queues tied to stream lifecycle
 - a connection-ID manager that can reason about retransmission and retirement
 - PMTU and wire-overhead accounting for bytes in flight
-- key-discard cleanup that removes discarded packets from bytes in flight and timer state
+- key-discard cleanup for deferred appendix and adjacent reliability surfaces not already covered by the Section 6 closeout
 
 ## Why This Is Architectural Instead Of Just More Code
 
@@ -288,7 +288,7 @@ And produce effects such as:
 Picking the sender/recovery shape unlocks:
 
 - the remaining 37 open clauses in `9000-19-retransmission-and-frame-reliability`
-- the 32 blocked clauses in `9002-03-loss-detection`
+- the already-closed `9002-03-loss-detection` runtime proof as a baseline for adjacent reliability work
 - the partial and deferred reliability remainder in `9000-03-flow-control`
 - the send-path and abort-coordination remainder in `9000-02-stream-state`
 - the deferred appendix work in `9002-05` and `9002-06`
