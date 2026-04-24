@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-API-0007",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Incursa.Quic Public Stream-Transfer Comparison Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the honest side-by-side public-facade stream-transfer benchmark boundary against `System.Net.Quic` before benchmark implementation starts.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "WI-QUIC-API-0007",
+    "VER-QUIC-API-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-API-0016"
+  ],
+  "key_components": [
+    "specs/requirements/quic/SPEC-QUIC-API.json",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "benchmarks/README.md",
+    "benchmarks/Incursa.Quic.Benchmarks.csproj",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs"
+  ],
+  "design_summary": "The future comparison harness must stay at one public abstraction level for both stacks: listener, connection, and stream facades only. Each invocation should establish a loopback connection, open one client-initiated bidirectional stream, write a finite request payload, gracefully finish the client write side, have the server read through request EOF, write a finite response payload, gracefully finish the server write side, have the client read through response EOF, and dispose the public stream, connection, and listener resources. Certificate, trust, ALPN, endpoint, payload-size, timeout, and cleanup choreography must be shared or matched between Incursa.Quic and `System.Net.Quic`; unsupported stacks must be omitted through their public support markers rather than assigned synthetic benchmark results.",
+  "alternatives_considered": [
+    "Extend the existing connection-only public comparison requirement and artifact: rejected because connection establishment plus disposal is a different workload from stream transfer and blending the two would obscure what the numbers prove.",
+    "Compare Incursa internal stream-state, frame, packet, or recovery helper benchmarks to `System.Net.Quic` public stream operations: rejected because the abstraction levels are different and the resulting report would mislead reviewers.",
+    "Use the interop harness or HTTP/3 request handling as the first public stream-transfer comparison: rejected because that would mix transport-stream behavior with external harness and application-protocol behavior.",
+    "Implement the BenchmarkDotNet suite before the requirement and proof plan are stable: rejected because the repo's trace-first rule requires the workload boundary and evidence plan before performance numbers are published."
+  ],
+  "edge_cases_and_constraints": [
+    "The Incursa side must not use internal runtime, packet, frame, or helper APIs to shortcut the public `QuicStream` workload.",
+    "Both stacks must execute the same stream direction, payload sizes, graceful write-side completion, EOF observation, and cleanup sequence.",
+    "The workload is loopback-only and must not be represented as internet, HTTP/3, interop-runner, or full product throughput.",
+    "Benchmark cases for a stack are emitted only when that stack's public `QuicConnection.IsSupported` and `QuicListener.IsSupported` markers are true on the current machine."
+  ],
+  "data_and_state_considerations": "The harness should own only local measurement state: self-signed loopback certificate material, trust inputs, payload buffers, loopback endpoints, and per-invocation public connection/stream resources. It must not inspect or mutate private transport state from either implementation.",
+  "risks": [
+    "If the future benchmark reuses internal Incursa helper seams, it will overclaim public parity.",
+    "If connection setup and stream transfer are reported as one undifferentiated result, reviewers cannot distinguish handshake cost from transfer cost.",
+    "If EOF and graceful completion are not part of the workload, the comparison can miss a class of public stream-facade behavior already proven important by interop evidence.",
+    "If payload and timeout choices are changed per stack, the comparison will stop being like-for-like."
+  ]
+}

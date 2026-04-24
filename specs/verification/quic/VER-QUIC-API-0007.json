@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-API-0007",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Incursa.Quic Public Stream-Transfer Comparison Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused public API requirement-home execution, BenchmarkDotNet evidence, and SpecTrace/render inspection for the bounded side-by-side public stream-transfer comparison.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "ARC-QUIC-API-0007",
+    "WI-QUIC-API-0007"
+  ],
+  "verifies": [
+    "REQ-QUIC-API-0016"
+  ],
+  "preconditions": [
+    "The supported Incursa public loopback path for listener/connect establishment exists.",
+    "The supported Incursa public bidirectional stream request/response lane remains proven by `REQ-QUIC-API-0010` requirement-home tests.",
+    "The benchmark project targets a runtime where `System.Net.Quic` can be evaluated through public support markers.",
+    "The benchmark harness can create matching local certificate, trust, ALPN, endpoint, payload, timeout, and cleanup inputs for both stacks."
+  ],
+  "scope": "This artifact covers only the planned side-by-side public stream-transfer comparison boundary for one loopback bidirectional request/response stream through approved public facades. It does not claim internal helper equivalence, connection-only performance, HTTP/3 throughput, internet performance, interop-runner behavior, retry, 0-RTT, key update, or broader stream-management parity.",
+  "expected_result": "The trace shows a benchmark boundary that uses only the public listener, connection, and stream facades for both Incursa.Quic and `System.Net.Quic`; focused Incursa public request/response guards remain green; the future BenchmarkDotNet suite executes the matched stream-transfer workload; and unsupported stacks are omitted rather than represented by synthetic results.",
+  "procedure": [
+    "Inspect `SPEC-QUIC-API`, `ARC-QUIC-API-0007`, `WI-QUIC-API-0007`, `VER-QUIC-API-0007`, and `REQUIREMENT-GAPS.md` to confirm the stream-transfer comparison boundary stays at the public-facade level.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_API_0010\"` and preserve the output under the verification evidence directory for the implementation slice.",
+    "When the benchmark suite exists, run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*<public-stream-transfer-suite>*\" --noOverwrite --artifacts <evidence-path>/Dry` and preserve the BenchmarkDotNet report.",
+    "If Dry validates the harness, run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter \"*<public-stream-transfer-suite>*\" --noOverwrite --artifacts <evidence-path>/Short` and preserve the BenchmarkDotNet report.",
+    "Run the repo-local SpecTrace render/check flow for the changed canonical JSON artifacts, then run `git diff --check` and the known-baseline core SpecTrace validation profile."
+  ],
+  "evidence": [
+    "specs/requirements/quic/SPEC-QUIC-API.json",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/architecture/quic/ARC-QUIC-API-0007.json",
+    "specs/work-items/quic/WI-QUIC-API-0007.json",
+    "benchmarks/README.md",
+    "benchmarks/Incursa.Quic.Benchmarks.csproj",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
+    "artifacts/verification/20260423-public-api-stream-transfer-trace/focused-req-quic-api-0010-tests.log",
+    "artifacts/verification/20260423-public-api-stream-transfer-trace/render.log",
+    "artifacts/verification/20260423-public-api-stream-transfer-trace/render-check.log",
+    "artifacts/verification/20260423-public-api-stream-transfer-trace/git-diff-check.log",
+    "artifacts/verification/20260423-public-api-stream-transfer-trace/spec-trace-core-validation.log"
+  ],
+  "status_summary": "Planned on 2026-04-23. The trace-boundary slice passed 8 focused `REQ-QUIC-API-0010` public request/response tests, SpecTrace render/check, and `git diff --check`; the repo-local core SpecTrace profile still fails on the standing canonical backlog and reported 6143 errors after adding the planned `0007` artifacts. This artifact intentionally does not publish stream-transfer benchmark numbers yet."
+}

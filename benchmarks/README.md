@@ -43,8 +43,9 @@ implementations are omitted when either public support marker
 (`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
 results must not be treated as equivalent to the repo's internal helper
 benchmarks or as full internet or HTTP/3 performance claims. A broader public
-stream-transfer comparison remains separately deferred until it has its own
-traced and proven workload boundary.
+stream-transfer comparison is traced separately under `REQ-QUIC-API-0016` but
+remains deferred until that matched request/response workload has implementation
+and BenchmarkDotNet evidence.
 
 ## Other Suites
 

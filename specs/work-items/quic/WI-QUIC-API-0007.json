@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0007",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Incursa.Quic Public Stream-Transfer Comparison Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a bounded BenchmarkDotNet suite for matched public bidirectional request/response stream-transfer workloads against Incursa.Quic and `System.Net.Quic`.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0007"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0016"
+  ],
+  "planned_changes": "- Add or extend a permanent BenchmarkDotNet suite that runs matched loopback public-facade bidirectional request/response stream-transfer workloads against Incursa.Quic and `System.Net.Quic`.\n- Keep the measured stream workload at the public listener, connection, and stream facade level for both stacks.\n- Share or align certificate generation, client trust setup, ALPN, loopback endpoint allocation, stream direction, request payload size, response payload size, timeouts, and disposal cleanup.\n- Omit unsupported implementations via each stack's public `IsSupported` markers instead of synthesizing placeholder benchmark results.\n- Preserve the existing connection-only comparison as a separate `REQ-QUIC-API-0015` result and document the new stream-transfer reports separately.",
+  "verification_plan": "Before benchmark implementation, run focused public API requirement-home tests for `REQ-QUIC-API-0010` to prove the Incursa public request/response stream workload still executes through the public facade. When the benchmark suite lands, run BenchmarkDotNet `Dry` to validate harness shape, then `Short` for a local repeatable baseline, preserve the exported reports, and finish with SpecTrace render/check, `git diff --check`, and the known-baseline core SpecTrace validation profile.",
+  "completion_notes": "Planned only. This slice records the benchmark boundary and proof plan; it does not add benchmark source code or publish stream-transfer comparison numbers.",
+  "out_of_scope": [
+    "Changing Incursa public API shape.",
+    "Comparing internal helper, parser, recovery, congestion, packet, or stream-state benchmarks to public `System.Net.Quic` workloads.",
+    "HTTP/3, interop-runner, internet, retry, transfer-harness, 0-RTT, key-update, or broader protocol throughput claims.",
+    "Weakening stream completion, EOF, cancellation, or cleanup behavior to improve benchmark numbers.",
+    "Merging connection-only and stream-transfer results into one undifferentiated benchmark claim."
+  ]
+}
