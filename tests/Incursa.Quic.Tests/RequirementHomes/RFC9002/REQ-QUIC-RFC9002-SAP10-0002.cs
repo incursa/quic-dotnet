@@ -39,4 +39,27 @@ public sealed class REQ_QUIC_RFC9002_SAP10_0002
             latestRttMicros: 1,
             smoothedRttMicros: 1));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ComputeLossDelayMicros_FuzzesRttThresholdAndGranularityFloor()
+    {
+        for (uint sampleIndex = 0; sampleIndex < 192; sampleIndex++)
+        {
+            ulong latestRttMicros = sampleIndex * 97 % 5_000;
+            ulong smoothedRttMicros = sampleIndex * 131 % 5_000;
+            ulong timerGranularityMicros = 1 + (sampleIndex * 17 % 2_000);
+            ulong referenceRttMicros = Math.Max(latestRttMicros, smoothedRttMicros);
+            ulong expectedLossDelayMicros = Math.Max((referenceRttMicros * 9) / 8, timerGranularityMicros);
+
+            ulong actualLossDelayMicros = QuicRecoveryTiming.ComputeLossDelayMicros(
+                latestRttMicros,
+                smoothedRttMicros,
+                timerGranularityMicros: timerGranularityMicros);
+
+            Assert.Equal(expectedLossDelayMicros, actualLossDelayMicros);
+            Assert.True(actualLossDelayMicros >= timerGranularityMicros);
+        }
+    }
 }

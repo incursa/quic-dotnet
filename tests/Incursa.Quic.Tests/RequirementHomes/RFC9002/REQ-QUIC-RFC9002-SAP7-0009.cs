@@ -86,4 +86,49 @@ public sealed class REQ_QUIC_RFC9002_SAP7_0009
         Assert.Equal(1_000UL, estimator.SmoothedRttMicros);
         Assert.Equal(375UL, estimator.RttVarMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryUpdateFromAck_FuzzesAdjustedRttAndWeightedAverageUpdates()
+    {
+        for (uint sampleIndex = 0; sampleIndex < 128; sampleIndex++)
+        {
+            ulong firstRawRttMicros = 600 + (sampleIndex * 37 % 900);
+            ulong laterRawRttMicros = 700 + (sampleIndex * 53 % 1_100);
+            ulong ackDelayMicros = sampleIndex * 29 % 700;
+            ulong peerMaxAckDelayMicros = 100 + (sampleIndex * 31 % 500);
+            ulong effectiveAckDelayMicros = Math.Min(ackDelayMicros, peerMaxAckDelayMicros);
+
+            QuicRttEstimator estimator = new();
+            Assert.True(estimator.TryUpdateFromAck(
+                largestAcknowledgedPacketSentAtMicros: 0,
+                ackReceivedAtMicros: firstRawRttMicros,
+                largestAcknowledgedPacketNewlyAcknowledged: true,
+                newlyAcknowledgedAckElicitingPacket: true));
+
+            ulong secondAckReceivedAtMicros = 10_000 + sampleIndex;
+            Assert.True(estimator.TryUpdateFromAck(
+                largestAcknowledgedPacketSentAtMicros: secondAckReceivedAtMicros - laterRawRttMicros,
+                ackReceivedAtMicros: secondAckReceivedAtMicros,
+                largestAcknowledgedPacketNewlyAcknowledged: true,
+                newlyAcknowledgedAckElicitingPacket: true,
+                ackDelayMicros: ackDelayMicros,
+                handshakeConfirmed: true,
+                peerMaxAckDelayMicros: peerMaxAckDelayMicros));
+
+            ulong adjustedRttMicros = laterRawRttMicros >= firstRawRttMicros
+                && laterRawRttMicros - firstRawRttMicros >= effectiveAckDelayMicros
+                ? laterRawRttMicros - effectiveAckDelayMicros
+                : laterRawRttMicros;
+            ulong rttDeviationMicros = firstRawRttMicros >= adjustedRttMicros
+                ? firstRawRttMicros - adjustedRttMicros
+                : adjustedRttMicros - firstRawRttMicros;
+
+            Assert.Equal(laterRawRttMicros, estimator.LatestRttMicros);
+            Assert.Equal(Math.Min(firstRawRttMicros, laterRawRttMicros), estimator.MinRttMicros);
+            Assert.Equal((7 * firstRawRttMicros + adjustedRttMicros) / 8, estimator.SmoothedRttMicros);
+            Assert.Equal((3 * (firstRawRttMicros / 2) + rttDeviationMicros) / 4, estimator.RttVarMicros);
+        }
+    }
 }

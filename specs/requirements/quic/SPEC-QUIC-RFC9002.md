@@ -3067,6 +3067,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_UsesTheAdjustedRttWhenTheSampleExceedsTheAckDelayFloor
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_DoesNotSubtractAckDelayWhenTheSampleDoesNotClearTheFloor
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_SubtractsAckDelayAtTheBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs::TryUpdateFromAck_FuzzesAdjustedRttAndWeightedAverageUpdates
 
 ## REQ-QUIC-RFC9002-SAP8-0001 Return the earliest pending loss time
 GetLossTimeAndSpace MUST return the earliest nonzero loss_time across the packet number spaces together with the corresponding packet number space.
@@ -3172,6 +3173,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_ChoosesTheEarliestPendingLossTime
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs::TrySelectLossDetectionTimerMicros_FuzzesLossCancelAndPtoPriority
 
 ## REQ-QUIC-RFC9002-SAP9-0001 Handle timeout-driven loss detection first
 When the loss detection timer expires and an earliest loss time exists, the endpoint MUST detect lost packets in that packet number space, assert that the lost-packet list is nonempty, pass the lost packets to `OnPacketsLost`, refresh the timer, and return.
@@ -3300,6 +3302,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_UsesTheLargerRttSampleForTheLossDelay
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_BoundsTheLossDelayByTimerGranularity
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs::ComputeLossDelayMicros_FuzzesRttThresholdAndGranularityFloor
 
 ## REQ-QUIC-RFC9002-SAP10-0003 Remove lost packets and schedule future loss marking
 `DetectAndRemoveLostPackets` MUST remove packets that are sufficiently old or sufficiently behind the largest acknowledged packet from `sent_packets`, report them lost, and schedule `loss_time` for packets that are not yet lost.

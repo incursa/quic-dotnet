@@ -104,4 +104,50 @@ public sealed class REQ_QUIC_RFC9002_SAP8_0006
         Assert.Equal(QuicPacketNumberSpace.ApplicationData, lostPacket.PacketNumberSpace);
         Assert.Equal(1UL, lostPacket.PacketNumber);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TrySelectLossDetectionTimerMicros_FuzzesLossCancelAndPtoPriority()
+    {
+        for (uint sampleIndex = 0; sampleIndex < 192; sampleIndex++)
+        {
+            ulong? pendingLossTimeMicros = sampleIndex % 5 == 0 ? 1_000 + sampleIndex : null;
+            ulong? probeTimeoutMicros = sampleIndex % 7 == 0 ? null : 5_000 + sampleIndex;
+            bool serverAtAntiAmplificationLimit = (sampleIndex & 0x1) != 0;
+            bool noAckElicitingPacketsInFlight = (sampleIndex & 0x2) != 0;
+            bool peerAddressValidationComplete = (sampleIndex & 0x4) != 0;
+
+            bool selected = QuicRecoveryTiming.TrySelectLossDetectionTimerMicros(
+                pendingLossTimeMicros,
+                probeTimeoutMicros,
+                serverAtAntiAmplificationLimit,
+                noAckElicitingPacketsInFlight,
+                peerAddressValidationComplete,
+                out ulong selectedTimerMicros);
+
+            if (pendingLossTimeMicros.HasValue)
+            {
+                Assert.True(selected);
+                Assert.Equal(pendingLossTimeMicros.Value, selectedTimerMicros);
+                continue;
+            }
+
+            if (serverAtAntiAmplificationLimit || (noAckElicitingPacketsInFlight && peerAddressValidationComplete))
+            {
+                Assert.False(selected);
+                continue;
+            }
+
+            if (probeTimeoutMicros.HasValue)
+            {
+                Assert.True(selected);
+                Assert.Equal(probeTimeoutMicros.Value, selectedTimerMicros);
+            }
+            else
+            {
+                Assert.False(selected);
+            }
+        }
+    }
 }
