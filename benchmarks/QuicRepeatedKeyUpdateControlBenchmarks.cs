@@ -3,8 +3,9 @@ using BenchmarkDotNet.Attributes;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Benchmarks the repeated local key-update control plane that records current-phase acknowledgment
-/// and checks the three-PTO cooldown before another locally initiated update may proceed.
+/// Benchmarks the repeated local key-update control plane that records current-phase acknowledgment,
+/// checks the three-PTO cooldown before another locally initiated update may proceed, and measures
+/// retained-old cleanup across representative repeated epochs.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicRepeatedKeyUpdateControlBenchmarks
@@ -17,15 +18,20 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
     private QuicOneRttKeyUpdateLifecycle confirmedLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle retainedPhaseOneLifecycle = default!;
     private QuicOneRttKeyUpdateLifecycle retainedPhaseTwoLifecycle = default!;
+    private QuicOneRttKeyUpdateLifecycle retainedLaterLifecycle = default!;
     private QuicAeadKeyLifecycle exhaustedRepeatedProtectionLifecycle = default!;
     private QuicConnectionSendRuntime repeatedOldSendRuntime = default!;
     private QuicRecoveryController repeatedOldRecoveryController = default!;
     private QuicConnectionSendRuntime repeatedPhaseTwoOldSendRuntime = default!;
     private QuicRecoveryController repeatedPhaseTwoOldRecoveryController = default!;
+    private QuicConnectionSendRuntime repeatedLaterSendRuntime = default!;
+    private QuicRecoveryController repeatedLaterRecoveryController = default!;
     private QuicTlsPacketProtectionMaterial retainedPhaseOneOpenMaterial;
     private QuicTlsPacketProtectionMaterial retainedPhaseOneProtectMaterial;
     private QuicTlsPacketProtectionMaterial retainedPhaseTwoOpenMaterial;
     private QuicTlsPacketProtectionMaterial retainedPhaseTwoProtectMaterial;
+    private QuicTlsPacketProtectionMaterial retainedLaterOpenMaterial;
+    private QuicTlsPacketProtectionMaterial retainedLaterProtectMaterial;
     private ulong repeatedUpdateNotBeforeMicros;
 
     [GlobalSetup]
@@ -35,6 +41,8 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
         retainedPhaseOneProtectMaterial = CreatePacketProtectionMaterial(0x60);
         retainedPhaseTwoOpenMaterial = CreatePacketProtectionMaterial(0x90);
         retainedPhaseTwoProtectMaterial = CreatePacketProtectionMaterial(0xC0);
+        retainedLaterOpenMaterial = CreatePacketProtectionMaterial(0xF0);
+        retainedLaterProtectMaterial = CreatePacketProtectionMaterial(0x20);
     }
 
     [IterationSetup]
@@ -106,6 +114,30 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
                 handshakeConfirmed: true))
         {
             throw new InvalidOperationException("Failed to prepare repeated phase-2 pending retransmission state.");
+        }
+
+        retainedLaterLifecycle = new QuicOneRttKeyUpdateLifecycle();
+        if (!retainedLaterLifecycle.TryRetainOldPacketProtectionMaterial(
+                retainedLaterOpenMaterial,
+                retainedLaterProtectMaterial)
+            || !retainedLaterLifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(
+                AcknowledgedAtMicros + (ProbeTimeoutMicros * 3UL),
+                keyPhase: 24))
+        {
+            throw new InvalidOperationException("Failed to prepare representative later-epoch discard lifecycle state.");
+        }
+
+        repeatedLaterSendRuntime = new QuicConnectionSendRuntime();
+        repeatedLaterRecoveryController = new QuicRecoveryController();
+        SeedOneRttPacket(repeatedLaterSendRuntime, repeatedLaterRecoveryController, packetNumber: 480, keyPhase: 24);
+        SeedOneRttPacket(repeatedLaterSendRuntime, repeatedLaterRecoveryController, packetNumber: 481, keyPhase: 25);
+        SeedOneRttPacket(repeatedLaterSendRuntime, repeatedLaterRecoveryController, packetNumber: 482, keyPhase: 24);
+        if (!repeatedLaterSendRuntime.TryRegisterLoss(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 482,
+                handshakeConfirmed: true))
+        {
+            throw new InvalidOperationException("Failed to prepare representative later-epoch pending retransmission state.");
         }
     }
 
@@ -179,6 +211,22 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
 
         return updated
             ? repeatedPhaseTwoOldSendRuntime.SentPackets.Count + repeatedPhaseTwoOldSendRuntime.PendingRetransmissionCount
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures the same repeated old-key cleanup after additional bounded alternation, using a representative
+    /// later epoch where phase 24 is retained old and phase 25 remains current.
+    /// </summary>
+    [Benchmark]
+    public int DiscardRepeatedOldRepresentativeLaterEpochPacketProtectionAndSendState()
+    {
+        bool updated = retainedLaterLifecycle.TryDiscardRetainedOldPacketProtectionMaterial();
+        updated |= repeatedLaterSendRuntime.TryDiscardOneRttKeyPhase(24);
+        updated |= repeatedLaterRecoveryController.TryDiscardOneRttKeyPhase(24);
+
+        return updated
+            ? repeatedLaterSendRuntime.SentPackets.Count + repeatedLaterSendRuntime.PendingRetransmissionCount
             : -1;
     }
 
