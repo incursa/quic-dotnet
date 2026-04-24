@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the helper-owned stateless-reset formatting-failure branch after AEAD-limit terminal discard, including minimum-length formatting success, undersized destination or datagram length rejection, empty version-profile rejection, and suppression of emission when formatting cannot complete.
+Verify the helper-owned stateless-reset formatting-failure branch after AEAD-limit terminal discard, including minimum-length formatting success, undersized destination or datagram length rejection, empty version-profile rejection, runtime FormatFailed suppression when the retained version profile is empty, and suppression of emission when formatting cannot complete.
 
 ## Requirements Verified
 
@@ -12,7 +12,7 @@ Verify the helper-owned stateless-reset formatting-failure branch after AEAD-lim
 
 ## Verification Method
 
-Focused requirement-home execution, helper-format negative tests, BenchmarkDotNet coverage for the stateless-reset formatting hot path, and SpecTrace render/validation checks.
+Focused requirement-home execution, runtime-result negative tests, helper-format negative tests, BenchmarkDotNet coverage for the stateless-reset formatting hot path, and SpecTrace render/validation checks.
 
 ## Preconditions
 
@@ -30,7 +30,7 @@ Focused requirement-home execution, helper-format negative tests, BenchmarkDotNe
 
 ## Expected Result
 
-Minimum-length stateless-reset formatting succeeds, malformed formatting inputs fail without inventing a datagram, and the retained-route floor continues to emit only when the route, token, and gates permit emission. The refreshed benchmark suite preserves the formatting and retained-route lookup paths without claiming a broader response model.
+Minimum-length stateless-reset formatting succeeds, malformed formatting inputs fail without inventing a datagram, runtime FormatFailed is surfaced and suppressed when the retained version profile is empty, and the retained-route floor continues to emit only when the route, token, and gates permit emission. The refreshed benchmark suite preserves the formatting and retained-route lookup paths without claiming a broader response model.
 
 ## Evidence
 
@@ -38,8 +38,10 @@ Minimum-length stateless-reset formatting succeeds, malformed formatting inputs 
 - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs
 - benchmarks/QuicStatelessResetBenchmarks.cs
 - src/Incursa.Quic/QuicStatelessReset.cs
+- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
 - artifacts/verification/20260424-rfc9001-s6p6-format-failure/focused-rfc9001-s6p6-format-failure-tests.log
 - artifacts/verification/20260424-rfc9001-s6p6-format-failure/render.log
+- artifacts/verification/20260424-rfc9001-s6p6-format-failure/render-check.log
 - artifacts/verification/20260424-rfc9001-s6p6-format-failure/git-diff-check.log
 - artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260424-format-failure.log
 - artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/20260424-161924/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md
@@ -48,7 +50,7 @@ Minimum-length stateless-reset formatting succeeds, malformed formatting inputs 
 
 ## Status
 
-Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0006 and REQ-QUIC-RFC9001-S6P6-0007 ran green with 10 total cases, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the formatting and retained-route lookup paths.
+Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0006 and REQ-QUIC-RFC9001-S6P6-0007 ran green with 11 total cases, the runtime endpoint returned FormatFailed when the retained version profile was forced empty, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the formatting and retained-route lookup paths.
 
 ## Related Artifacts
 

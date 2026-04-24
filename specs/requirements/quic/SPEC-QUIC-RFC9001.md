@@ -1401,6 +1401,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0007.cs::TryCreateStatelessResetDatagram_ReturnsFormatFailedWhenRetainedVersionProfileIsEmpty
   - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_WritesTheMinimumLengthDatagramAndKeepsTheTokenAtTheTail
   - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsUndersizedDestinationOrDatagramLength
   - tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs::TryFormatStatelessResetDatagram_RejectsEmptyVersionProfileSnapshots
@@ -1408,7 +1409,7 @@ Trace:
   - benchmarks/QuicStatelessResetBenchmarks.cs::FormatLargerStatelessResetDatagram
 
 Notes:
-- This clause captures the helper-format failure branch that suppresses emission instead of fabricating a response datagram.
+- This clause captures the helper-format failure branch and runtime FormatFailed suppression instead of fabricating a response datagram.
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.

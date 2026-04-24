@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9001-0005"
 artifact_type: "work_item"
 title: "QUIC RFC 9001 Stateless Reset Disposition Matrix Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9001-S6P6-0007"
@@ -26,7 +26,7 @@ related_artifacts:
 
 ## Summary
 
-Implement and prove the helper-owned stateless-reset formatting-failure branch after AEAD-limit terminal discard, keeping malformed inputs suppressive and preserving the retained-route floor as a subset.
+Implement and prove the helper-owned stateless-reset formatting-failure branch and runtime suppression proof after AEAD-limit terminal discard, keeping malformed inputs suppressive and preserving the retained-route floor as a subset.
 
 ## Requirements Addressed
 
@@ -40,7 +40,7 @@ Implement and prove the helper-owned stateless-reset formatting-failure branch a
 
 - Keep malformed stateless-reset formatting inputs suppressive instead of fabricating a response datagram.
 - Keep the shared `QuicStatelessReset` formatter as the only place that can construct a stateless reset wire shape.
-- Add requirement-home coverage for minimum-length formatting, undersized destination or datagram length rejection, and empty version-profile rejection.
+- Add requirement-home coverage for minimum-length formatting, undersized destination or datagram length rejection, empty version-profile rejection, and a runtime-format-failed suppression proof.
 - Keep the retained-route floor from `REQ-QUIC-RFC9001-S6P6-0006` as a separate subset of the same broader matrix.
 - Keep the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for formatting and retained-route lookup paths.
 
@@ -57,7 +57,7 @@ Run the new requirement-home tests for REQ-QUIC-RFC9001-S6P6-0007, keep the exis
 
 ## Completion Notes
 
-Planned for the helper-format failure branch only. The retained-route floor remains in REQ-QUIC-RFC9001-S6P6-0006 and the broader matrix should stay split if a future ambiguity model appears.
+Completed for the helper-format failure branch and the runtime FormatFailed suppression proof. The retained-route floor remains in REQ-QUIC-RFC9001-S6P6-0006 and the broader matrix should stay split if a future ambiguity model appears.
 
 ## Trace Links
 
