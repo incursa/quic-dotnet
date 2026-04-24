@@ -10863,6 +10863,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::ChangedPeerAddressStartsPathValidationBeforePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::PreviouslyValidatedPeerAddressBypassesAnotherValidationChallenge",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::FuzzChangedPeerAddresses_StartValidationAcrossSampledAddresses"
         ]
       }
     },
@@ -11019,6 +11024,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::PeerAddressChangeStartsPathValidationBeforePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::PreviouslyValidatedPeerAddressDoesNotStartAnotherValidationChallenge",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::FuzzPeerAddressChanges_StartValidationAcrossSampledAddresses"
         ]
       }
     },

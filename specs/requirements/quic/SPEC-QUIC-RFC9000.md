@@ -5962,6 +5962,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9 RFC9000-S9-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::ChangedPeerAddressStartsPathValidationBeforePromotion
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::PreviouslyValidatedPeerAddressBypassesAnotherValidationChallenge
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0004.cs::FuzzChangedPeerAddresses_StartValidationAcrossSampledAddresses
 
 ## REQ-QUIC-RFC9000-S9-0005 When an endpoint has no validated path on which to send packets, it MAY discard connection state
 When an endpoint has no validated path on which to send packets, it MAY discard connection state.
@@ -6046,6 +6050,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9 RFC9000-S9-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::PeerAddressChangeStartsPathValidationBeforePromotion
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::PreviouslyValidatedPeerAddressDoesNotStartAnotherValidationChallenge
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0010.cs::FuzzPeerAddressChanges_StartValidationAcrossSampledAddresses
 
 ## REQ-QUIC-RFC9000-S9-0011 Restrict Non-Probing Packets Until Peer Reachability Is Established
 Servers MUST NOT send non-probing packets toward a client address until they see a non-probing packet from that address.

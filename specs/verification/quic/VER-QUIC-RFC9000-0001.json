@@ -6,7 +6,7 @@
     "ARC-QUIC-RFC9000-0001",
     "WI-QUIC-RFC9000-0001"
   ],
-  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.",
+  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.\n- The top-level S9 peer-address validation proof is linked to focused requirement-home tests without claiming full migration-core closure.",
   "artifact_id": "VER-QUIC-RFC9000-0001",
   "verifies": [
     "REQ-QUIC-RFC9000-S2-0001",

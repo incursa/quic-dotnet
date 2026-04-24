@@ -161,6 +161,86 @@ internal static class QuicPathMigrationRecoveryTestSupport
         Assert.True(bridge.PeerTransportParametersCommitted);
         Assert.NotNull(bridge.PeerTransportParameters);
     }
+
+    internal static void AssertChangedPeerAddressStartsPathValidationBeforePromotion(
+        QuicConnectionPathIdentity activePath,
+        QuicConnectionPathIdentity changedPeerAddressPath,
+        long observedAtTicks)
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath(activePath);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                observedAtTicks,
+                changedPeerAddressPath,
+                datagram),
+            observedAtTicks);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(
+            changedPeerAddressPath,
+            out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.False(candidatePath.Validation.IsAbandoned);
+        Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
+        Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
+        Assert.Contains(result.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && send.PathIdentity == changedPeerAddressPath
+            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
+    internal static void AssertPreviouslyValidatedPeerAddressBypassesAnotherValidationChallenge(
+        QuicConnectionPathIdentity activePath,
+        QuicConnectionPathIdentity firstValidatedPath,
+        QuicConnectionPathIdentity secondValidatedPath)
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath(activePath);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                firstValidatedPath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        Assert.True(ValidatePath(
+            runtime,
+            firstValidatedPath,
+            observedAtTicks: 30).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 40,
+                secondValidatedPath,
+                datagram),
+            nowTicks: 40).StateChanged);
+
+        Assert.True(ValidatePath(
+            runtime,
+            secondValidatedPath,
+            observedAtTicks: 50).StateChanged);
+
+        QuicConnectionTransitionResult reuseResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 60,
+                firstValidatedPath,
+                datagram),
+            nowTicks: 60);
+
+        Assert.True(reuseResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(firstValidatedPath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(reuseResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && send.PathIdentity == firstValidatedPath
+            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+    }
 }
 
 internal sealed class QuicRecordingDiagnosticsSink : IQuicDiagnosticsSink

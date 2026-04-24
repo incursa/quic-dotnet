@@ -1,0 +1,17 @@
+  Incursa.Quic -> C:\src\incursa\quic-dotnet\src\Incursa.Quic\bin\Debug\net10.0\Incursa.Quic.dll
+  Incursa.Quic.Qlog -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.Qlog\bin\Debug\net10.0\Incursa.Quic.Qlog.dll
+  Incursa.Quic.InteropHarness -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.InteropHarness\bin\Debug\net10.0\Incursa.Quic.InteropHarness.dll
+  Incursa.Quic.Tests -> C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\bin\Debug\net10.0\Incursa.Quic.Tests.dll
+Test run for C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\bin\Debug\net10.0\Incursa.Quic.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:01.23]     Incursa.Quic.Tests.REQ_QUIC_RFC9000_S9P6P3_0003.ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails [FAIL]
+  Failed Incursa.Quic.Tests.REQ_QUIC_RFC9000_S9P6P3_0003.ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails [79 ms]
+  Error Message:
+   Assert.Contains() Failure: Filter not matched in collection
+Collection: []
+  Stack Trace:
+     at Incursa.Quic.Tests.REQ_QUIC_RFC9000_S9P6P3_0003.ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails() in C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\RequirementHomes\RFC9000\REQ-QUIC-RFC9000-S9P6P3-0003.cs:line 90
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 100 ms - Incursa.Quic.Tests.dll (net10.0)
