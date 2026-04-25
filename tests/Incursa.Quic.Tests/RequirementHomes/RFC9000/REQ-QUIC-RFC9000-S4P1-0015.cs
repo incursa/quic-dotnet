@@ -97,8 +97,31 @@ public sealed class REQ_QUIC_RFC9000_S4P1_0015
         Assert.NotEqual(streamBlockedStreamId, reopenedStreamId);
     }
 
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P1-0008">An endpoint in the Send state MUST generate STREAM_DATA_BLOCKED frames if it is blocked from sending by stream flow control limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0014">A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0015">A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame when it has no ack-eliciting packets in flight.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0022">Blocked signals MUST be carried in DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0023">DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames MUST use connection, stream, and stream-type scope respectively.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0024">A new frame MUST be sent if a packet containing the most recent frame for a scope is lost, but only while the endpoint is blocked on the corresponding limit.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0025">These frames MUST always include the limit that is causing blocking at the time that they are transmitted.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0001">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
+    /// </workbench-requirements>
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0022")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0023")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0024")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0025")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight()
@@ -235,8 +258,13 @@ public sealed class REQ_QUIC_RFC9000_S4P1_0015
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
     }
 
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0015">A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame when it has no ack-eliciting packets in flight.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P2-0004">A blocked sender MUST NOT be required to send STREAM_DATA_BLOCKED or DATA_BLOCKED frames.</workbench-requirement>
+    /// </workbench-requirements>
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0004")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight()

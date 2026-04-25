@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0025",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Runtime Emission Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0025",
+    "WI-QUIC-RFC9000-0025"
+  ],
+  "verification_method": "Requirement-home execution, protected-packet inspection, existing STREAM_DATA_BLOCKED frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded active-runtime `STREAM_DATA_BLOCKED` emission slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S3P1-0008",
+    "REQ-QUIC-RFC9000-S4P1-0014",
+    "REQ-QUIC-RFC9000-S4P1-0015",
+    "REQ-QUIC-RFC9000-S4P2-0004",
+    "REQ-QUIC-RFC9000-S13P3-0022",
+    "REQ-QUIC-RFC9000-S13P3-0023",
+    "REQ-QUIC-RFC9000-S13P3-0024",
+    "REQ-QUIC-RFC9000-S13P3-0025",
+    "REQ-QUIC-RFC9000-S19P13-0001",
+    "REQ-QUIC-RFC9000-S19P13-0006",
+    "REQ-QUIC-RFC9000-S19P13-0007",
+    "REQ-QUIC-RFC9000-S19P13-0008"
+  ],
+  "scope": "This verification covers active-runtime advisory `STREAM_DATA_BLOCKED` emission when an application stream write is blocked by the peer's current stream-level flow-control limit. It also covers suppression while ack-eliciting work remains in flight, confirms the advisory packet is retained for loss repair, and keeps wire-format parsing/fuzz evidence linked to the existing frame codec.",
+  "expected_result": "The requirement-home tests show a protected STREAM_DATA_BLOCKED packet carrying the blocked stream ID and current stream-level Maximum Stream Data limit after the supported stream send limit is exhausted, no advisory packet is emitted while ack-eliciting work is already outstanding, the advisory packet remains registered for loss repair, existing STREAM_DATA_BLOCKED frame-codec fuzz coverage remains linked, and the new BenchmarkDotNet Dry case executes.",
+  "procedure": [
+    "Run the focused RFC 9000 S3P1/S4P1/S4P2/S13P3/S19P13 requirement-home tests.",
+    "Run the STREAM_DATA_BLOCKED frame-codec fuzz coverage.",
+    "Run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm that no DATA_BLOCKED, STREAMS_BLOCKED, or public API behavior was widened by this proof topoff."
+  ],
+  "preconditions": [
+    "The active runtime has 1-RTT packet protection material and an active path.",
+    "The stream write can be forced to exceed the current stream-level send limit without exceeding the connection-level send limit.",
+    "The existing frame codec can parse and format STREAM_DATA_BLOCKED frames."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+    "benchmarks/QuicConnectionStreamStateBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/focused-rfc9000-stream-data-blocked-runtime-tests.log",
+    "artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/focused-rfc9000-stream-data-blocked-fuzz-tests.log",
+    "artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/quic-connection-stream-state-benchmark-dry.log",
+    "artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0001\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0003\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicConnectionStreamStateBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/BenchmarkDotNet.Artifacts"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Fuzz And Benchmark Scope",
+      "content": "The existing `QuicFrameCodecPart4FuzzSupport.FuzzStreamDataBlockedFrame` coverage remains the fuzz proof for untrusted STREAM_DATA_BLOCKED parse/format boundaries. The permanent `QuicConnectionStreamStateBenchmarks` suite now includes the stream-level `STREAM_DATA_BLOCKED` helper branch; Dry validation proves the benchmark harness executes but is not treated as a stable performance baseline."
+    }
+  ],
+  "status_summary": "Passed locally for the focused requirement-home coverage, STREAM_DATA_BLOCKED frame-codec fuzz linkage, BenchmarkDotNet Dry validation, and SpecTrace render/check. The proof remains limited to advisory runtime emission on the supported active path."
+}

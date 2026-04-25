@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0025",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Runtime Emission Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0025",
+    "VER-QUIC-RFC9000-0025"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S3P1-0008",
+    "REQ-QUIC-RFC9000-S4P1-0014",
+    "REQ-QUIC-RFC9000-S4P1-0015",
+    "REQ-QUIC-RFC9000-S4P2-0004",
+    "REQ-QUIC-RFC9000-S13P3-0022",
+    "REQ-QUIC-RFC9000-S13P3-0023",
+    "REQ-QUIC-RFC9000-S13P3-0024",
+    "REQ-QUIC-RFC9000-S13P3-0025",
+    "REQ-QUIC-RFC9000-S19P13-0001",
+    "REQ-QUIC-RFC9000-S19P13-0006",
+    "REQ-QUIC-RFC9000-S19P13-0007",
+    "REQ-QUIC-RFC9000-S19P13-0008"
+  ],
+  "summary": "Add direct protected-packet proof and permanent benchmark coverage for active-runtime `STREAM_DATA_BLOCKED` advisory emission when a stream write is blocked by stream-level flow-control credit.",
+  "planned_changes": "- Multi-tag the existing protected-packet write proof so the stream-level blocked-signal requirements point at a real outbound STREAM_DATA_BLOCKED packet.\n- Keep negative runtime coverage proving an in-flight ack-eliciting packet suppresses duplicate blocked-signal emission while the write still fails honestly for lack of credit.\n- Confirm the protected advisory packet remains retained by the sender/recovery ledger and can be retransmitted after loss.\n- Add a permanent BenchmarkDotNet case for the stream-state helper branch that publishes `STREAM_DATA_BLOCKED`.\n- Add focused architecture and verification artifacts for the bounded `STREAM_DATA_BLOCKED` runtime emission slice.",
+  "verification_plan": "Run the focused RFC 9000 S3P1/S4P1/S4P2/S13P3/S19P13 requirement-home tests, run the STREAM_DATA_BLOCKED frame-codec fuzz coverage, run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-rfc9000-stream-data-blocked-runtime/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0025"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0025"
+  ],
+  "out_of_scope": [
+    "Waiting asynchronously for later stream-level flow-control credit.",
+    "Receiver-side flow-control autotuning.",
+    "Changing DATA_BLOCKED or STREAMS_BLOCKED behavior.",
+    "Public API surface changes.",
+    "0-RTT.",
+    "Key update.",
+    "Migration behavior.",
+    "A general stream scheduler."
+  ],
+  "completion_notes": "Completed as a proof and benchmark topoff over the existing runtime `STREAM_DATA_BLOCKED` branch; no production behavior changed."
+}

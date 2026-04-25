@@ -43,6 +43,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0022.json`](VER-QUIC-RFC9000-0022.json): canonical RFC 9000 Retry replay ACK piggyback verification source
 - [`VER-QUIC-RFC9000-0023.json`](VER-QUIC-RFC9000-0023.json): canonical RFC 9000 bootstrap replay ACK piggyback verification source
 - [`VER-QUIC-RFC9000-0024.json`](VER-QUIC-RFC9000-0024.json): canonical RFC 9000 Application Data delayed ACK timer verification source
+- [`VER-QUIC-RFC9000-0025.json`](VER-QUIC-RFC9000-0025.json): canonical RFC 9000 STREAM_DATA_BLOCKED runtime emission verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source
