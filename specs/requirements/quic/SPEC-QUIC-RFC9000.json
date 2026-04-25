@@ -19659,21 +19659,31 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0016"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0016"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0016"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_OutOfOrderAckElicitingPacketRequiresImmediateAck",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_GapDetectingAckElicitingPacketRequiresImmediateAck",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_ContiguousAckElicitingPacketKeepsNormalDelayedAckScheduling",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_NonAckElicitingGapDoesNotRequireImmediateAck",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::Fuzz_RecordIncomingPacket_ClassifiesReorderedAndGapDetectingAckElicitingPackets"
         ]
       }
     },

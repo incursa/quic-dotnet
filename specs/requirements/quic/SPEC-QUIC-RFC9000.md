@@ -10884,13 +10884,22 @@ To assist loss detection at the sender, an endpoint SHOULD generate and send an 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0016
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0016
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0016
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_OutOfOrderAckElicitingPacketRequiresImmediateAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_GapDetectingAckElicitingPacketRequiresImmediateAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_ContiguousAckElicitingPacketKeepsNormalDelayedAckScheduling
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::RecordIncomingPacket_NonAckElicitingGapDoesNotRequireImmediateAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0013.cs::Fuzz_RecordIncomingPacket_ClassifiesReorderedAndGapDetectingAckElicitingPackets
 
 ## REQ-QUIC-RFC9000-S13P2P1-0014 ACK ECN-CE packets immediately
 Packets marked with the ECN Congestion Experienced (CE) codepoint in the IP header SHOULD be acknowledged immediately.
