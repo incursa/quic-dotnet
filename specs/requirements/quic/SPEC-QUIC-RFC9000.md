@@ -10701,10 +10701,13 @@ Ack-eliciting packets MUST be acknowledged at least once within the maximum dela
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10712,6 +10715,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheMaxAckDelayExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheMaxAckDelayExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactMaxAckDelayBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerAtAdvertisedMaxAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_AckDelayTimerEmitsAckOnlyPacketAfterDeadline
 
 ## REQ-QUIC-RFC9000-S13P2P1-0002 Acknowledge every packet at least once
 Every packet SHOULD be acknowledged at least once.
@@ -10753,10 +10760,13 @@ An endpoint MUST acknowledge all ack-eliciting 0-RTT and 1-RTT packets within it
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10764,6 +10774,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheApplicationDataAckDelayExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheApplicationDataAckDelayExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactApplicationDataAckDelayBoundary
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerAtAdvertisedMaxAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_AckDelayTimerEmitsAckOnlyPacketAfterDeadline
 
 ## REQ-QUIC-RFC9000-S13P2P1-0005 Acknowledge Initial and Handshake packets immediately
 An endpoint MUST acknowledge all ack-eliciting Initial and Handshake packets immediately.
@@ -10789,10 +10803,13 @@ Since packets containing only ACK frames are not congestion controlled, an endpo
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10800,6 +10817,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_AllowsTheFirstAckOnlyPacketForAnAckElicitingApplicationDataPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RejectsASecondAckOnlyPacketForTheSameAckElicitingApplicationDataPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RearmsAfterTheNextAckElicitingApplicationDataPacketArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer
 
 ## REQ-QUIC-RFC9000-S13P2P1-0007 Do not send non-ack-eliciting packets in response to non-ack-eliciting packets
 An endpoint MUST NOT send a non-ack-eliciting packet in response to a non-ack-eliciting packet, even if there are packet gaps that precede the received packet.
@@ -10807,16 +10827,20 @@ An endpoint MUST NOT send a non-ack-eliciting packet in response to a non-ack-el
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::NonAckElicitingApplicationDataPacketDoesNotArmAckDelayTimer
 
 ## REQ-QUIC-RFC9000-S13P2P1-0008 Non-ack-eliciting packets are eventually acknowledged when the endpoint sends an ACK frame in response to other events
 Non-ack-eliciting packets are eventually MUST acknowledged when the endpoint sends an ACK frame in response to other events.
@@ -10894,6 +10918,7 @@ Trace:
   - ARC-QUIC-RFC9000-0021
   - ARC-QUIC-RFC9000-0022
   - ARC-QUIC-RFC9000-0023
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
@@ -10902,6 +10927,7 @@ Trace:
   - WI-QUIC-RFC9000-0021
   - WI-QUIC-RFC9000-0022
   - WI-QUIC-RFC9000-0023
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
@@ -10910,11 +10936,13 @@ Trace:
   - VER-QUIC-RFC9000-0021
   - VER-QUIC-RFC9000-0022
   - VER-QUIC-RFC9000-0023
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending
@@ -10961,17 +10989,24 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0018
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingTriggersAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::NonAckElicitingApplicationDataPacketDoesNotArmAckDelayTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::OpenOutboundStreamAsync_DoesNotPiggybackAckAfterTheSameAckTriggerWasAlreadySent
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_PiggybackedAckSuppressesFeedbackLoopUntilANewerAckElicitingPacketArrives
 
@@ -11026,16 +11061,21 @@ A receiver determines how MUST frequently to send acknowledgments in response to
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.2 RFC9000-S13.2.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketBeforeTheDelayExpires
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueOnceTwoAckElicitingPacketsAreTracked
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer
 
 ## REQ-QUIC-RFC9000-S13P2P2-0002 Send ACK after at least two ack-eliciting packets
 A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting packets.
@@ -11043,16 +11083,20 @@ A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting p
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0024
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0024
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0024
 - Source Refs:
   - RFC 9000 §13.2.2 RFC9000-S13.2.2-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketAndOneNonAckElicitingPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueAfterTheSecondAckElicitingPacketArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer
 
 ## REQ-QUIC-RFC9000-S13P2P2-0003 Allow processing multiple packets before deciding to ACK
 A receiver MAY process multiple available packets before determining whether to send an ACK frame in response.

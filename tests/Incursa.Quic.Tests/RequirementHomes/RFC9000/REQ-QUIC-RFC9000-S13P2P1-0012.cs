@@ -9,13 +9,51 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ReceivedPingTriggersAckOnlyPacketWithoutInjectedAckElicitingFrame()
+    public void ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket()
     {
-        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        using QuicConnectionRuntime runtime = CreateAckDelayRuntime();
 
         QuicConnectionTransitionResult result = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
             runtime,
             observedAtTicks: 10);
+
+        Assert.Empty(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(
+            10 + (25 * TimeSpan.TicksPerMillisecond),
+            runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm
+            && arm.TimerKind == QuicConnectionTimerKind.AckDelay);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ReceivedPingArmsAckDelayTimerAtAdvertisedMaxAckDelay()
+    {
+        using QuicConnectionRuntime runtime = CreateAckDelayRuntime(localMaxAckDelayMicros: 12_000);
+
+        QuicConnectionTransitionResult result = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10);
+
+        Assert.Empty(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(
+            10 + (12 * TimeSpan.TicksPerMillisecond),
+            runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame()
+    {
+        using QuicConnectionRuntime runtime = CreateAckDelayRuntime();
+
+        _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10);
+
+        QuicConnectionTransitionResult result = ExpireAckDelayTimer(runtime);
 
         QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
             result.Effects.OfType<QuicConnectionSendDatagramEffect>());
@@ -33,6 +71,80 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
         Assert.True(sentPacket.AckOnlyPacket);
         Assert.False(sentPacket.AckEliciting);
         Assert.False(sentPacket.Retransmittable);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void NonAckElicitingApplicationDataPacketDoesNotArmAckDelayTimer()
+    {
+        using QuicConnectionRuntime runtime = CreateAckDelayRuntime();
+
+        QuicConnectionTransitionResult result = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
+            runtime,
+            observedAtTicks: 10);
+
+        Assert.Empty(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer()
+    {
+        using QuicConnectionRuntime runtime = CreateAckDelayRuntime();
+
+        _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1);
+        Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay).HasValue);
+
+        QuicConnectionTransitionResult result = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 20,
+            packetNumber: 2);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payloadBytes, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(2UL, ackFrame.LargestAcknowledged);
+        Assert.False(QuicFrameCodec.TryParsePingFrame(payloadBytes[ackBytesConsumed..], out _));
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_AckDelayTimerEmitsAckOnlyPacketAfterDeadline()
+    {
+        for (int sample = 0; sample < 8; sample++)
+        {
+            using QuicConnectionRuntime runtime = CreateAckDelayRuntime();
+
+            long observedAtTicks = 10 + sample;
+            _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+                runtime,
+                observedAtTicks,
+                packetNumber: (ulong)(sample + 1));
+
+            long dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay)!.Value;
+            Assert.True(dueTicks > observedAtTicks);
+
+            QuicConnectionTransitionResult result = ExpireAckDelayTimer(runtime);
+
+            QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+                result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+
+            Assert.True(QuicFrameCodec.TryParseAckFrame(payloadBytes, out QuicAckFrame ackFrame, out _));
+            Assert.Equal((ulong)(sample + 1), ackFrame.LargestAcknowledged);
+            Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+        }
     }
 
     [Fact]
@@ -123,5 +235,22 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
                 nowMicros: packetNumber + 1,
                 maxAckDelayMicros: 0));
         }
+    }
+
+    private static QuicConnectionTransitionResult ExpireAckDelayTimer(QuicConnectionRuntime runtime)
+    {
+        long dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay)!.Value;
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.AckDelay);
+        return runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                dueTicks,
+                QuicConnectionTimerKind.AckDelay,
+                generation),
+            nowTicks: dueTicks);
+    }
+
+    private static QuicConnectionRuntime CreateAckDelayRuntime(ulong? localMaxAckDelayMicros = null)
+    {
+        return QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath(localMaxAckDelayMicros);
     }
 }

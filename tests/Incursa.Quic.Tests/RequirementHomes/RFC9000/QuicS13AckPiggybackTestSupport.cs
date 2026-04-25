@@ -22,6 +22,28 @@ internal static class QuicS13AckPiggybackTestSupport
         return runtime;
     }
 
+    internal static QuicConnectionRuntime CreateAckDelayRuntimeWithValidatedActivePath(
+        ulong? localMaxAckDelayMicros = null)
+    {
+        QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+                localMaxAckDelayMicros: localMaxAckDelayMicros);
+        runtime.SendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData);
+        long? existingAckDelayDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay);
+        if (existingAckDelayDueTicks.HasValue)
+        {
+            _ = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    existingAckDelayDueTicks.Value,
+                    QuicConnectionTimerKind.AckDelay,
+                    runtime.TimerState.GetGeneration(QuicConnectionTimerKind.AckDelay)),
+                nowTicks: existingAckDelayDueTicks.Value);
+        }
+
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+        return runtime;
+    }
+
     internal static QuicTlsPacketProtectionMaterial CreateHandshakeMaterial()
     {
         Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
@@ -194,29 +216,60 @@ internal static class QuicS13AckPiggybackTestSupport
 
     internal static QuicConnectionTransitionResult ReceiveOneRttPing(
         QuicConnectionRuntime runtime,
-        long observedAtTicks)
+        long observedAtTicks,
+        ulong packetNumber = 1)
+    {
+        byte[] protectedPacket = BuildProtectedOneRttPacket(
+            runtime,
+            QuicS12P3TestSupport.CreatePingPayload(),
+            packetNumber);
+
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                runtime.ActivePath!.Value.Identity,
+                protectedPacket),
+            nowTicks: observedAtTicks);
+    }
+
+    internal static QuicConnectionTransitionResult ReceiveOneRttAckOnly(
+        QuicConnectionRuntime runtime,
+        long observedAtTicks,
+        ulong packetNumber = 1)
+    {
+        byte[] protectedPacket = BuildProtectedOneRttPacket(
+            runtime,
+            CreateAckFramePayload(largestAcknowledged: 0),
+            packetNumber);
+
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                runtime.ActivePath!.Value.Identity,
+                protectedPacket),
+            nowTicks: observedAtTicks);
+    }
+
+    private static byte[] BuildProtectedOneRttPacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> payload,
+        ulong packetNumber)
     {
         Assert.True(runtime.ActivePath.HasValue);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
 
         QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
-        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
-            QuicS12P3TestSupport.CreatePingPayload(),
-            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
-            runtime.TlsState.CurrentOneRttKeyPhaseBit,
-            out _));
-        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
-            QuicS12P3TestSupport.CreatePingPayload(),
-            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
-            runtime.TlsState.CurrentOneRttKeyPhaseBit,
-            out byte[] protectedPacket));
+        byte[] protectedPacket = [];
+        for (ulong currentPacketNumber = 0; currentPacketNumber <= packetNumber; currentPacketNumber++)
+        {
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                payload,
+                runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+                runtime.TlsState.CurrentOneRttKeyPhaseBit,
+                out protectedPacket));
+        }
 
-        return runtime.Transition(
-            new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: observedAtTicks,
-                runtime.ActivePath.Value.Identity,
-                protectedPacket),
-            nowTicks: observedAtTicks);
+        return protectedPacket;
     }
 
     private sealed class FakeMonotonicClock(long ticks) : IMonotonicClock

@@ -1239,11 +1239,10 @@ internal sealed partial class QuicConnectionRuntime
             plaintextPayload: payload);
         if (piggybackedAckFrame is not null)
         {
-            sendRuntime.FlowController.MarkAckFrameSent(
-                QuicPacketNumberSpace.ApplicationData,
-                packetNumber,
+            MarkApplicationAckFrameSent(
                 piggybackedAckFrame,
-                nowMicros,
+                packetNumber,
+                sentAtMicros: nowMicros,
                 ackOnlyPacket: false);
         }
 

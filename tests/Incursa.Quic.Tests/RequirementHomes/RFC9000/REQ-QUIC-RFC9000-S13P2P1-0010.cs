@@ -48,6 +48,42 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    public async Task OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer()
+    {
+        using QuicConnectionRuntime runtime = QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1);
+        Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay).HasValue);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> payload = payloadBytes;
+
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(1UL, ackFrame.LargestAcknowledged);
+
+        ReadOnlySpan<byte> streamPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(streamPayload, out QuicStreamFrame streamFrame));
+        Assert.Equal((ulong)stream.Id, streamFrame.StreamId.Value);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();

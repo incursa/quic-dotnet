@@ -468,6 +468,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicConnectionTimerKind.Recovery => timerState.Recovery,
             QuicConnectionTimerKind.KeyUpdateRetention => timerState.KeyUpdateRetention,
             QuicConnectionTimerKind.ApplicationSendDelay => timerState.ApplicationSendDelay,
+            QuicConnectionTimerKind.AckDelay => timerState.AckDelay,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }
@@ -507,6 +508,8 @@ internal sealed partial class QuicConnectionRuntime
 
                 AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
                 return true;
+            case QuicConnectionTimerKind.AckDelay:
+                return HandleAckDelayTimerExpired(nowTicks, ref effects);
             case QuicConnectionTimerKind.Recovery:
                 return HandleRecoveryTimerExpired(nowTicks, ref effects);
             case QuicConnectionTimerKind.KeyUpdateRetention:

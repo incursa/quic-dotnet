@@ -30,6 +30,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
+    private const ulong DefaultMaxAckDelayMicros = 25_000UL;
     // Hold slightly underfilled application writes long enough to coalesce a follow-up FIN
     // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
     private const int ApplicationSendDelayThresholdBytes = 32;
@@ -114,6 +115,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
+    private long? pendingApplicationAckDelayDueTicks;
     private bool hasObservedApplicationPacketNumber;
     private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
 

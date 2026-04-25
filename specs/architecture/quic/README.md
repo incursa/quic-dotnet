@@ -42,6 +42,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0017.json`](ARC-QUIC-RFC9000-0017.json): canonical RFC 9000 non-ack-eliciting ACK deferral and inclusion design source
 - [`ARC-QUIC-RFC9000-0022.json`](ARC-QUIC-RFC9000-0022.json): canonical RFC 9000 Retry replay ACK piggyback design source
 - [`ARC-QUIC-RFC9000-0023.json`](ARC-QUIC-RFC9000-0023.json): canonical RFC 9000 bootstrap replay ACK piggyback design source
+- [`ARC-QUIC-RFC9000-0024.json`](ARC-QUIC-RFC9000-0024.json): canonical RFC 9000 Application Data delayed ACK timer design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

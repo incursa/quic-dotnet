@@ -19329,13 +19329,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B2-P1-S1",
@@ -19344,7 +19347,11 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheMaxAckDelayExpires",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheMaxAckDelayExpires",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactMaxAckDelayBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactMaxAckDelayBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerAtAdvertisedMaxAckDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_AckDelayTimerEmitsAckOnlyPacketAfterDeadline"
         ]
       }
     },
@@ -19420,13 +19427,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B3-P2-S1",
@@ -19435,7 +19445,11 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_ReturnsTrueOnceTheApplicationDataAckDelayExpires",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseBeforeTheApplicationDataAckDelayExpires",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactApplicationDataAckDelayBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0004.cs::ShouldIncludeAckFrameWithOutgoingPacket_UsesTheExactApplicationDataAckDelayBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerAtAdvertisedMaxAckDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_AckDelayTimerEmitsAckOnlyPacketAfterDeadline"
         ]
       }
     },
@@ -19482,13 +19496,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B4-P3-S1",
@@ -19497,7 +19514,10 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_AllowsTheFirstAckOnlyPacketForAnAckElicitingApplicationDataPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RejectsASecondAckOnlyPacketForTheSameAckElicitingApplicationDataPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RearmsAfterTheNextAckElicitingApplicationDataPacketArrives"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0006.cs::CanSendAckOnlyPacket_RearmsAfterTheNextAckElicitingApplicationDataPacketArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer"
         ]
       }
     },
@@ -19513,13 +19533,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B5-P4-S1",
@@ -19527,7 +19550,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::NonAckElicitingApplicationDataPacketDoesNotArmAckDelayTimer"
         ]
       }
     },
@@ -19639,7 +19663,8 @@
           "ARC-QUIC-RFC9000-0020",
           "ARC-QUIC-RFC9000-0021",
           "ARC-QUIC-RFC9000-0022",
-          "ARC-QUIC-RFC9000-0023"
+          "ARC-QUIC-RFC9000-0023",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
@@ -19648,7 +19673,8 @@
           "WI-QUIC-RFC9000-0020",
           "WI-QUIC-RFC9000-0021",
           "WI-QUIC-RFC9000-0022",
-          "WI-QUIC-RFC9000-0023"
+          "WI-QUIC-RFC9000-0023",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
@@ -19657,7 +19683,8 @@
           "VER-QUIC-RFC9000-0020",
           "VER-QUIC-RFC9000-0021",
           "VER-QUIC-RFC9000-0022",
-          "VER-QUIC-RFC9000-0023"
+          "VER-QUIC-RFC9000-0023",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2",
@@ -19665,6 +19692,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending",
@@ -19732,22 +19760,29 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0018"
+          "ARC-QUIC-RFC9000-0018",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0018"
+          "WI-QUIC-RFC9000-0018",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0018"
+          "VER-QUIC-RFC9000-0018",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingTriggersAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::AckDelayTimerExpirySendsAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::NonAckElicitingApplicationDataPacketDoesNotArmAckDelayTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::OpenOutboundStreamAsync_DoesNotPiggybackAckAfterTheSameAckTriggerWasAlreadySent",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_PiggybackedAckSuppressesFeedbackLoopUntilANewerAckElicitingPacketArrives"
         ]
@@ -19836,13 +19871,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B2-P1-S1",
@@ -19850,7 +19888,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketBeforeTheDelayExpires",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueOnceTwoAckElicitingPacketsAreTracked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueOnceTwoAckElicitingPacketsAreTracked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingArmsAckDelayTimerWithoutImmediateAckOnlyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer"
         ]
       }
     },
@@ -19866,13 +19906,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B5-P4-S1",
@@ -19880,7 +19923,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseAfterOneAckElicitingPacketAndOneNonAckElicitingPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueAfterTheSecondAckElicitingPacketArrives"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0002.cs::ShouldIncludeAckFrameWithOutgoingPacket_TurnsTrueAfterTheSecondAckElicitingPacketArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::SecondAckElicitingPacketBeforeAckDelayExpiresSendsOneAckOnlyPacketAndCancelsTimer"
         ]
       }
     },

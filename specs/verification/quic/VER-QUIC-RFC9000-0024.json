@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0024",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Application Data Delayed ACK Timer Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0024",
+    "WI-QUIC-RFC9000-0024"
+  ],
+  "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Application Data ACK-delay runtime timer floor.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0001",
+    "REQ-QUIC-RFC9000-S13P2P1-0004",
+    "REQ-QUIC-RFC9000-S13P2P1-0006",
+    "REQ-QUIC-RFC9000-S13P2P1-0007",
+    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-S13P2P1-0012",
+    "REQ-QUIC-RFC9000-S13P2P2-0001",
+    "REQ-QUIC-RFC9000-S13P2P2-0002"
+  ],
+  "scope": "This verification covers active-path Application Data ACK-only runtime scheduling after packet processing has opened a protected 1-RTT packet and recorded its packet number and ack-eliciting classification.",
+  "expected_result": "Focused tests prove that one ordinary 1-RTT ack-eliciting packet arms an ACK-delay timer at the default or advertised local max_ack_delay deadline and does not immediately emit an ACK-only packet, the timer expiry emits one ACK-only packet without injected PING or STREAM frames, non-ack-eliciting-only packets do not arm the timer, a second pending ack-eliciting packet can send one ACK-only packet immediately before the timer expires, and ACK piggybacking cancels the timer. BenchmarkDotNet Dry and Short jobs validate the permanent ACK scheduling benchmark additions without making public or MSQUIC comparison claims.",
+  "procedure": [
+    "Run the focused RFC 9000 delayed-ACK and feedback-loop requirement-home tests.",
+    "Run the ACK piggyback policy benchmark suite with BenchmarkDotNet Dry and Short jobs and preserve logs and reports.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Run canonical SpecTrace JSON validation and preserve the output, including standing repository-wide residual failures if present.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "The runtime has active-path 1-RTT open and protect packet protection material.",
+    "The Application Data packet has been authenticated and packet-number expansion has succeeded.",
+    "ACK-generation state tracks packet number, ack-eliciting classification, and duplicate ACK suppression.",
+    "Candidate-path scheduling, endpoint interop, public API behavior, and ACK frame codec behavior are outside this verification."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/focused-rfc9000-application-ack-delay-timer-tests.log",
+    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/render.log",
+    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/render-check.log",
+    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/spec-trace-validate.log",
+    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/git-diff-check.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-dry.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-short.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/BenchmarkDotNet.Artifacts/results"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Benchmark Boundary",
+      "content": "The benchmark evidence is an internal Incursa-only ACK scheduling helper suite. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
+    }
+  ],
+  "status_summary": "Focused runtime, deterministic fuzz/property, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded Application Data ACK-delay runtime timer floor. Repository-wide SpecTrace JSON validation may still report standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+}

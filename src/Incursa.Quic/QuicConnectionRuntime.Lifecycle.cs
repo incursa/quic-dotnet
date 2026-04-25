@@ -253,6 +253,7 @@ internal sealed partial class QuicConnectionRuntime
         long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
             ? pendingApplicationSendDelayDueTicks
             : null;
+        long? applicationAckDelayDueTicks = GetApplicationAckDelayDueTicks();
 
         long? closeDueTicks = phase == QuicConnectionPhase.Closing ? terminalEndTicks : null;
         long? drainDueTicks = phase == QuicConnectionPhase.Draining ? terminalEndTicks : null;
@@ -264,7 +265,18 @@ internal sealed partial class QuicConnectionRuntime
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
+        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks));
         return effects.ToArray();
+    }
+
+    private long? GetApplicationAckDelayDueTicks()
+    {
+        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
+        {
+            return null;
+        }
+
+        return pendingApplicationAckDelayDueTicks;
     }
 
     private void RefreshCurrentProbeTimeoutMicros(long nowTicks)

@@ -1530,6 +1530,12 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
+        if (UpdateApplicationAckDelayTimer(nowTicks))
+        {
+            stateChanged = true;
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
         return processedStreamFrame || processedCryptoFrame || stateChanged;
         }
         finally
@@ -1745,10 +1751,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ulong nowMicros = GetElapsedMicros(nowTicks);
-        if (!sendRuntime.FlowController.CanSendAckOnlyPacket(
+        ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
+        if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
             QuicPacketNumberSpace.ApplicationData,
             nowMicros,
-            maxAckDelayMicros: 0)
+            localMaxAckDelayMicros)
             || !sendRuntime.FlowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
@@ -1779,15 +1786,94 @@ internal sealed partial class QuicConnectionRuntime
             AmplificationState = updatedAmplificationState,
         };
 
-        sendRuntime.FlowController.MarkAckFrameSent(
-            QuicPacketNumberSpace.ApplicationData,
-            nowMicros,
+        MarkApplicationAckFrameSent(
+            ackFrame,
+            packetNumber: null,
+            sentAtMicros: nowMicros,
             ackOnlyPacket: true);
 
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
         return true;
+    }
+
+    private bool HandleAckDelayTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    {
+        pendingApplicationAckDelayDueTicks = null;
+
+        bool sentAck = TrySendPendingApplicationAck(nowTicks, ref effects);
+        bool timerUpdated = UpdateApplicationAckDelayTimer(nowTicks);
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return sentAck || timerUpdated;
+    }
+
+    private bool UpdateApplicationAckDelayTimer(long nowTicks)
+    {
+        long? nextDueTicks = ComputeApplicationAckDelayDueTicks(nowTicks);
+        if (pendingApplicationAckDelayDueTicks == nextDueTicks)
+        {
+            return false;
+        }
+
+        pendingApplicationAckDelayDueTicks = nextDueTicks;
+        return true;
+    }
+
+    private long? ComputeApplicationAckDelayDueTicks(long nowTicks)
+    {
+        if (activePath is null || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return null;
+        }
+
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
+        if (sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                localMaxAckDelayMicros)
+            || !sendRuntime.FlowController.CanSendAckOnlyPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                localMaxAckDelayMicros))
+        {
+            return null;
+        }
+
+        return pendingApplicationAckDelayDueTicks
+            ?? SaturatingAdd(nowTicks, ConvertMicrosToTicks(localMaxAckDelayMicros));
+    }
+
+    private ulong GetLocalMaxAckDelayMicros()
+    {
+        return tlsState.LocalTransportParameters?.MaxAckDelay ?? DefaultMaxAckDelayMicros;
+    }
+
+    private void MarkApplicationAckFrameSent(
+        QuicAckFrame ackFrame,
+        ulong? packetNumber,
+        ulong sentAtMicros,
+        bool ackOnlyPacket)
+    {
+        if (packetNumber.HasValue)
+        {
+            sendRuntime.FlowController.MarkAckFrameSent(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber.Value,
+                ackFrame,
+                sentAtMicros,
+                ackOnlyPacket);
+        }
+        else
+        {
+            sendRuntime.FlowController.MarkAckFrameSent(
+                QuicPacketNumberSpace.ApplicationData,
+                sentAtMicros,
+                ackOnlyPacket);
+        }
+
+        pendingApplicationAckDelayDueTicks = null;
     }
 
     private bool TryBuildOutboundAckPayload(QuicAckFrame ackFrame, out byte[] payload)

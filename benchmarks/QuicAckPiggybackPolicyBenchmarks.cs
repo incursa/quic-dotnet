@@ -10,6 +10,7 @@ public class QuicAckPiggybackPolicyBenchmarks
 {
     private QuicSenderFlowController pendingAck = null!;
     private QuicSenderFlowController alreadyPiggybackedAck = null!;
+    private QuicSenderFlowController singleDelayedAck = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -41,6 +42,13 @@ public class QuicAckPiggybackPolicyBenchmarks
             ackFrame,
             sentAtMicros: 1_000,
             ackOnlyPacket: false);
+
+        singleDelayedAck = new QuicSenderFlowController();
+        singleDelayedAck.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 41,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
     }
 
     [Benchmark]
@@ -59,5 +67,23 @@ public class QuicAckPiggybackPolicyBenchmarks
             QuicPacketNumberSpace.ApplicationData,
             nowMicros: 1_001,
             maxAckDelayMicros: 0);
+    }
+
+    [Benchmark]
+    public bool SingleAckWaitsBeforeMaxAckDelay()
+    {
+        return singleDelayedAck.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 25_999,
+            maxAckDelayMicros: 25_000);
+    }
+
+    [Benchmark]
+    public bool SingleAckSendsAtMaxAckDelay()
+    {
+        return singleDelayedAck.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 26_000,
+            maxAckDelayMicros: 25_000);
     }
 }

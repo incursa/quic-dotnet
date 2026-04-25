@@ -25,10 +25,12 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         ulong localBidirectionalReceiveLimit = 8,
         ulong peerBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
-        int maximumRecentlyValidatedPaths = 8)
+        int maximumRecentlyValidatedPaths = 8,
+        ulong? localMaxAckDelayMicros = null)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
+        localTransportParameters.MaxAckDelay = localMaxAckDelayMicros;
         QuicTransportParameters peerTransportParameters = new()
         {
             MaxIdleTimeout = 21,
@@ -172,7 +174,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         ulong localBidirectionalReceiveLimit = 8,
         ulong peerBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
-        int maximumRecentlyValidatedPaths = 8)
+        int maximumRecentlyValidatedPaths = 8,
+        ulong? localMaxAckDelayMicros = null)
     {
         QuicConnectionRuntime runtime = CreateFinishedClientRuntimeWithValidatedActivePath(
             clock,
@@ -182,7 +185,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             localBidirectionalReceiveLimit,
             peerBidirectionalReceiveLimit,
             maximumCandidatePaths,
-            maximumRecentlyValidatedPaths);
+            maximumRecentlyValidatedPaths,
+            localMaxAckDelayMicros);
 
         Assert.False(runtime.HandshakeConfirmed);
         Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 9).StateChanged);
