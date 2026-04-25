@@ -316,6 +316,59 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task EndpointHostSendsStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard()
+    {
+        using Socket serverSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        serverSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        IPEndPoint serverEndPoint = (IPEndPoint)serverSocket.LocalEndPoint!;
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+        serverSocket.Connect(clientEndPoint);
+        clientSocket.Connect(serverEndPoint);
+
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity pathIdentity = new(
+            clientEndPoint.Address.ToString(),
+            serverEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            serverEndPoint.Port);
+        byte[] routeConnectionId = [0x66, 0x05, 0xB0, 0x02];
+        byte[] token = QuicStatelessResetRequirementTestData.CreateToken(0xC6);
+
+        Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+        Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 6605UL));
+        Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
+        Assert.True(endpoint.TryRegisterStatelessResetToken(handle, 6605UL, token));
+
+        QuicConnectionTransitionResult result = ExhaustCurrentOpenIntegrityLimit(runtime);
+        QuicConnectionDiscardConnectionStateEffect discard = Assert.Single(
+            result.Effects.OfType<QuicConnectionDiscardConnectionStateEffect>());
+        Assert.True(endpoint.TryApplyEffect(handle, discard));
+
+        await using QuicConnectionEndpointHost host = new(endpoint, serverSocket, pathIdentity);
+        _ = host.RunAsync();
+
+        byte[] triggeringPacket = CreateRetainedRouteLongHeaderDatagram(routeConnectionId);
+        Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
+
+        byte[] response = new byte[triggeringPacket.Length];
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
+        int bytesReceived = await clientSocket.ReceiveAsync(response.AsMemory(), SocketFlags.None, timeout.Token);
+
+        Assert.Equal(triggeringPacket.Length - 1, bytesReceived);
+        Assert.True(QuicStatelessReset.IsPotentialStatelessReset(response.AsSpan(0, bytesReceived)));
+        QuicStatelessResetRequirementTestData.AssertTailTokenMatches(response.AsSpan(0, bytesReceived), token);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task ListenerHostSendsStatelessResetForRetainedRouteAfterAeadLimitDiscard()
     {
         await using QuicListenerHost listenerHost = new(
@@ -356,6 +409,61 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         _ = listenerHost.RunAsync();
 
         byte[] triggeringPacket = CreateRetainedRouteShortHeaderDatagram(routeConnectionId, triggeringPacketLength: 88);
+        Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
+
+        byte[] response = new byte[triggeringPacket.Length];
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
+        int bytesReceived = await clientSocket.ReceiveAsync(response.AsMemory(), SocketFlags.None, timeout.Token);
+
+        Assert.Equal(triggeringPacket.Length - 1, bytesReceived);
+        Assert.True(QuicStatelessReset.IsPotentialStatelessReset(response.AsSpan(0, bytesReceived)));
+        QuicStatelessResetRequirementTestData.AssertTailTokenMatches(response.AsSpan(0, bytesReceived), token);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ListenerHostSendsStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard()
+    {
+        await using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [new SslApplicationProtocol("h3")],
+            static (_, _, _) => throw new InvalidOperationException("No connection acceptance is expected for retained-route reset response."),
+            listenBacklog: 1);
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
+        QuicConnectionRuntimeEndpoint endpoint = GetPrivateField<QuicConnectionRuntimeEndpoint>(listenerHost, "endpoint");
+        IPEndPoint serverEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
+        clientSocket.Connect(serverEndPoint);
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity pathIdentity = new(
+            clientEndPoint.Address.ToString(),
+            serverEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            serverEndPoint.Port);
+        byte[] routeConnectionId = [0x66, 0x05, 0xB0, 0x03];
+        byte[] token = QuicStatelessResetRequirementTestData.CreateToken(0xC7);
+
+        Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+        Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 6605UL));
+        Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
+        Assert.True(endpoint.TryRegisterStatelessResetToken(handle, 6605UL, token));
+
+        QuicConnectionTransitionResult result = ExhaustCurrentOpenIntegrityLimit(runtime);
+        QuicConnectionDiscardConnectionStateEffect discard = Assert.Single(
+            result.Effects.OfType<QuicConnectionDiscardConnectionStateEffect>());
+        Assert.True(endpoint.TryApplyEffect(handle, discard));
+
+        _ = listenerHost.RunAsync();
+
+        byte[] triggeringPacket = CreateRetainedRouteLongHeaderDatagram(routeConnectionId);
         Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
 
         byte[] response = new byte[triggeringPacket.Length];

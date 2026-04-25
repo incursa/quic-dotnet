@@ -1374,7 +1374,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointHostSendsStatelessResetForRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointHostSendsStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::ListenerHostSendsStatelessResetForRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::ListenerHostSendsStatelessResetForRetainedLongHeaderRouteAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::EndpointDoesNotAutomaticallyResetUnlinkedRoutesAfterAeadLimitDiscard
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyAllowsOnlyStatelessResetsAfterIntegrityLimitIsReached
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs::AeadLimitPolicyKeepsOrdinaryResponsesBeforeAeadStop
