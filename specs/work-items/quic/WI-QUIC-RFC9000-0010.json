@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0010",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Path Validation Response and Retry Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0010",
+    "VER-QUIC-RFC9000-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P3P3-0001",
+    "REQ-QUIC-RFC9000-S9P3P3-0002",
+    "REQ-QUIC-RFC9000-S13P3-0026",
+    "REQ-QUIC-RFC9000-S13P3-0027",
+    "REQ-QUIC-RFC9000-S13P3-0028",
+    "REQ-QUIC-RFC9000-S19P17-0006",
+    "REQ-QUIC-RFC9000-S19P18-0003"
+  ],
+  "summary": "Carve direct proof and permanent benchmark coverage for the supported runtime path-validation response and retry floor without broadening migration semantics.",
+  "planned_changes": "- Add a focused architecture, work item, and verification artifact set for path-validation response and retry behavior.\n- Link the involved RFC 9000 requirements to the focused artifact set while preserving the broad RFC9000-0001 trace.\n- Add deterministic fuzz topoffs for timer-driven PATH_CHALLENGE retry payload changes and active-path PATH_RESPONSE one-shot behavior.\n- Add a permanent BenchmarkDotNet suite for PATH_CHALLENGE generation/formatting, PATH_RESPONSE formatting, and the candidate-path retry transition.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-path-validation-response-retry/`.",
+  "verification_plan": "Run the focused RFC 9000 path-validation requirement-home tests, run existing PATH_CHALLENGE/PATH_RESPONSE frame-codec fuzz tests, run the new `QuicPathValidationBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-rfc9000-path-validation-response-retry/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0010"
+  ],
+  "out_of_scope": [
+    "Automatic alternative-path search.",
+    "Preferred-address migration completion.",
+    "Generalized multipath scheduling.",
+    "ECN validation expansion.",
+    "Public API migration controls.",
+    "Changing PATH_RESPONSE into a retransmitted sender-ledger packet.",
+    "Broader sender pacing or recovery policy."
+  ],
+  "completion_notes": "Completed as a proof, fuzz, and benchmark topoff over the existing runtime path-validation response and retry branch; no production behavior changed."
+}

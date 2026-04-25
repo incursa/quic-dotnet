@@ -157,6 +157,59 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
         Assert.DoesNotContain(timerResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0026")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0027")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathValidationTimerExpiryRetransmitsDistinctChallengesForRepresentativePaths()
+    {
+        for (int iteration = 0; iteration < 16; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            QuicConnectionPathIdentity migratedPath = new(
+                $"203.0.113.{100 + iteration}",
+                RemotePort: 443 + iteration);
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + (iteration % 3)];
+            long observedAtTicks = 100 + (iteration * 10);
+
+            QuicConnectionTransitionResult firstResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: observedAtTicks,
+                    migratedPath,
+                    datagram),
+                nowTicks: observedAtTicks);
+
+            QuicConnectionSendDatagramEffect firstSend = Assert.Single(
+                firstResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            byte[] firstChallengeData = GetPathChallengeData(firstSend.Datagram.Span);
+
+            Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+            Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
+            long validationDeadlineTicks = candidatePath.Validation.ValidationDeadlineTicks.Value;
+            ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.PathValidation);
+
+            QuicConnectionTransitionResult retryResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: validationDeadlineTicks,
+                    QuicConnectionTimerKind.PathValidation,
+                    generation),
+                nowTicks: validationDeadlineTicks);
+
+            QuicConnectionSendDatagramEffect retrySend = Assert.Single(
+                retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            byte[] retryChallengeData = GetPathChallengeData(retrySend.Datagram.Span);
+
+            Assert.Equal(migratedPath, retrySend.PathIdentity);
+            Assert.False(firstChallengeData.AsSpan().SequenceEqual(retryChallengeData));
+            Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord retriedCandidatePath));
+            Assert.False(retriedCandidatePath.Validation.IsValidated);
+            Assert.False(retriedCandidatePath.Validation.IsAbandoned);
+            Assert.Equal(2UL, retriedCandidatePath.Validation.ChallengeSendCount);
+            Assert.True(retriedCandidatePath.Validation.ValidationDeadlineTicks.HasValue);
+        }
+    }
+
     private static byte[] GetPathChallengeData(ReadOnlySpan<byte> datagram)
     {
         Assert.True(QuicFrameCodec.TryParsePathChallengeFrame(

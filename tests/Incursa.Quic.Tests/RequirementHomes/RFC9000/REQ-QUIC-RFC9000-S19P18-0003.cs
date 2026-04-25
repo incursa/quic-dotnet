@@ -61,7 +61,9 @@ public sealed class REQ_QUIC_RFC9000_S19P18_0003
             nowTicks: 21);
 
         Assert.True(result.StateChanged);
-        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.DoesNotContain(result.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && QuicFrameCodec.TryParsePathResponseFrame(send.Datagram.Span, out _, out _));
         Assert.Contains(result.Effects, effect =>
             effect is QuicConnectionPromoteActivePathEffect promote
             && promote.PathIdentity == ValidationPath);

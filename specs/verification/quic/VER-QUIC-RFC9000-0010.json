@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0010",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Path Validation Response and Retry Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0010",
+    "WI-QUIC-RFC9000-0010"
+  ],
+  "verification_method": "Requirement-home execution, deterministic state-machine fuzz topoffs, existing PATH_CHALLENGE/PATH_RESPONSE frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded path-validation response and retry slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S9P3P3-0001",
+    "REQ-QUIC-RFC9000-S9P3P3-0002",
+    "REQ-QUIC-RFC9000-S13P3-0026",
+    "REQ-QUIC-RFC9000-S13P3-0027",
+    "REQ-QUIC-RFC9000-S13P3-0028",
+    "REQ-QUIC-RFC9000-S19P17-0006",
+    "REQ-QUIC-RFC9000-S19P18-0003"
+  ],
+  "scope": "This verification covers the supported runtime path-validation floor: starting candidate-path validation on apparent migration, retransmitting PATH_CHALLENGE while validation remains needed, clearing retry after validation or abandonment, sending one matching PATH_RESPONSE for a received PATH_CHALLENGE, and closing without promotion on mismatched PATH_RESPONSE payloads.",
+  "expected_result": "Focused tests prove positive and negative path-validation retry behavior, deterministic fuzz topoffs cover representative retry payload changes and one-shot PATH_RESPONSE payload echoing, existing frame-codec fuzz coverage remains linked for PATH_CHALLENGE and PATH_RESPONSE parse/format boundaries, the new BenchmarkDotNet Dry suite executes, and the proof stays limited to the bounded runtime floor.",
+  "procedure": [
+    "Run the focused RFC 9000 requirement-home tests for S9P3P3, S13P3-0026 through S13P3-0028, S19P17-0006, and S19P18-0003.",
+    "Run the existing PATH_CHALLENGE and PATH_RESPONSE frame-codec fuzz tests.",
+    "Run the `QuicPathValidationBenchmarks` BenchmarkDotNet suite with the Dry job.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm that no broader migration, ECN, public API, or sender scheduler claim is introduced."
+  ],
+  "preconditions": [
+    "The active runtime can create candidate paths and path-validation timer state.",
+    "The application-data packet opener can process protected PATH_CHALLENGE and PATH_RESPONSE frames.",
+    "The PATH_CHALLENGE and PATH_RESPONSE frame codec remains strict about eight-byte payloads."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs",
+    "benchmarks/QuicPathValidationBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/focused-rfc9000-path-validation-response-retry-tests.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/focused-rfc9000-path-frame-fuzz-tests.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/quic-path-validation-benchmark-dry.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicPathValidationBenchmarks-20260425-092343.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicPathValidationBenchmarks-report-github.md",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/render.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/render-check.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/reciprocal-trace-check.log",
+    "artifacts/verification/20260425-rfc9000-path-validation-response-retry/git-diff-check.log",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P3P3|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0027|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S19P18_0003\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P17_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P18_0001\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicPathValidationBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-path-validation-response-retry/BenchmarkDotNet.Artifacts"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Fuzz And Benchmark Scope",
+      "content": "Deterministic requirement-home fuzz topoffs cover representative path identities, retry timer generations, challenge-payload changes, and one-shot PATH_RESPONSE echo behavior. Existing frame-codec fuzz coverage remains the untrusted parse/format proof for PATH_CHALLENGE and PATH_RESPONSE payload boundaries. The permanent benchmark suite covers helper and transition harness execution only; Dry validation is not treated as a stable performance baseline."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for the bounded path-validation response and retry slice passed 21/21, the PATH_CHALLENGE/PATH_RESPONSE frame-codec guard passed 5/5, and the new QuicPathValidationBenchmarks Dry suite executed all 3 cases. Dry benchmark results are harness evidence only and are not treated as stable performance baselines."
+}

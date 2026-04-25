@@ -6519,10 +6519,13 @@ In response to an apparent migration, endpoints MUST validate the previously act
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
@@ -6535,15 +6538,19 @@ An endpoint that receives a PATH_CHALLENGE on an active path SHOULD send a non-p
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §9.3.3 RFC9000-S9.3.3-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::PathChallengeFramesOnTheActivePathAreAnsweredWithPathResponseFrames
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::Fuzz_PathChallengeFramesOnActivePathEmitOneMatchingPathResponse
 
 ## REQ-QUIC-RFC9000-S9P3P3-0003 Return to the Original Path After a New Highest Packet Number
 A non-probing packet received on the original path that increases the maximum received packet number MUST cause the endpoint to move back to that path.
@@ -11770,10 +11777,13 @@ A liveness or path validation check using PATH_CHALLENGE frames MUST be sent per
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B14-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
@@ -11781,6 +11791,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::PathValidationTimerExpiryRetransmitsTheChallengeWithANewPayload
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::ValidatedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::AbandonedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::Fuzz_PathValidationTimerExpiryRetransmitsDistinctChallengesForRepresentativePaths
 
 ## REQ-QUIC-RFC9000-S13P3-0027 Use different PATH_CHALLENGE payloads each time
 PATH_CHALLENGE frames MUST include a different payload each time they are sent.
@@ -11788,10 +11799,13 @@ PATH_CHALLENGE frames MUST include a different payload each time they are sent.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B14-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
@@ -11799,6 +11813,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::TryGeneratePathChallengeData_RejectsShortDestinations
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0027.cs::Fuzz_TryGeneratePathChallengeData_ProducesDistinctPayloadsAcrossRepeatedCalls
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0026.cs::Fuzz_PathValidationTimerExpiryRetransmitsDistinctChallengesForRepresentativePaths
 
 ## REQ-QUIC-RFC9000-S13P3-0028 Send PATH_RESPONSE once
 Responses to path validation using PATH_RESPONSE frames MUST be sent just once.
@@ -11806,16 +11821,20 @@ Responses to path validation using PATH_RESPONSE frames MUST be sent just once.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B15-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::Fuzz_PathChallengeFramesOnActivePathEmitOneMatchingPathResponse
 
 ## REQ-QUIC-RFC9000-S13P3-0029 Send new connection IDs in NEW_CONNECTION_ID frames and retransmit them if lost
 New connection IDs MUST be sent in NEW_CONNECTION_ID frames and retransmitted if the packet containing them is lost.
@@ -21138,16 +21157,20 @@ The recipient of this frame MUST generate a PATH_RESPONSE frame (Section 19.18) 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §19.17 RFC9000-S19.17-B9-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.17
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0028.cs::TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3P3-0002.cs::Fuzz_PathChallengeFramesOnActivePathEmitOneMatchingPathResponse
 
 ## REQ-QUIC-RFC9000-S19P18-0001 The Type field MUST be encoded as a variable-length integer with value 0x1b
 The Type field MUST be encoded as a variable-length integer with value 0x1b.
@@ -21190,10 +21213,13 @@ If the content of a PATH_RESPONSE frame does not match the content of a PATH_CHA
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0010
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0010
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0010
 - Source Refs:
   - RFC 9000 §19.18 RFC9000-S19.18-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18

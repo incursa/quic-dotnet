@@ -1,0 +1,8 @@
+  Incursa.Quic -> C:\src\incursa\quic-dotnet\src\Incursa.Quic\bin\Debug\net10.0\Incursa.Quic.dll
+  Incursa.Quic.Qlog -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.Qlog\bin\Debug\net10.0\Incursa.Quic.Qlog.dll
+  Incursa.Quic.InteropHarness -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.InteropHarness\bin\Debug\net10.0\Incursa.Quic.InteropHarness.dll
+  Incursa.Quic.Tests -> C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\bin\Debug\net10.0\Incursa.Quic.Tests.dll
+Test run for C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\bin\Debug\net10.0\Incursa.Quic.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 29 ms - Incursa.Quic.Tests.dll (net10.0)
