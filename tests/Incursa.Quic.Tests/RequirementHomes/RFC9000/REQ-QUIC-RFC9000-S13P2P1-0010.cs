@@ -365,6 +365,244 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void InitialCryptoRetransmission_IncludesPendingInitialAckFrame()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 1,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[1200]),
+            nowTicks: 1).StateChanged);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalTrackedPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial);
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.Initial,
+            originalTrackedPacket.Key.PacketNumber));
+        QuicS13AckPiggybackTestSupport.RecordPendingAck(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 55,
+            receivedAtMicros: 1);
+
+        List<QuicConnectionEffect>? effects = [];
+        Assert.True(QuicS13AckPiggybackTestSupport.InvokeTryFlushPendingRetransmissions(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            nowTicks: TimeSpan.TicksPerMillisecond,
+            probePacket: true,
+            ref effects));
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            effects!.OfType<QuicConnectionSendDatagramEffect>());
+        ReadOnlySpan<byte> payload = OpenClientInitialPayload(sendEffect);
+
+        QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+            payload,
+            expectedLargestAcknowledged: 55,
+            expectedCryptoPayload: ReadOnlySpan<byte>.Empty,
+            expectedCryptoOffset: 0);
+        Assert.False(runtime.SendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 2,
+            maxAckDelayMicros: 0));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame()
+    {
+        using QuicConnectionRuntime runtime = QuicS13AckPiggybackTestSupport.CreateRuntimeWithActivePath();
+        QuicTlsPacketProtectionMaterial material = QuicS13AckPiggybackTestSupport.CreateHandshakeMaterial();
+        Assert.True(runtime.TlsState.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.KeysAvailable,
+            QuicTlsEncryptionLevel.Handshake)));
+        Assert.True(runtime.TlsState.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+            PacketProtectionMaterial: material)));
+
+        byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x70, 32);
+        QuicConnectionTransitionResult sendResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 4,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: 0,
+                    CryptoData: cryptoPayload)),
+            nowTicks: 4);
+        QuicConnectionSendDatagramEffect originalSendEffect = Assert.Single(
+            sendResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalTrackedPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, originalSendEffect.Datagram);
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.Handshake,
+            originalTrackedPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        QuicS13AckPiggybackTestSupport.RecordPendingAck(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 89,
+            receivedAtMicros: 1);
+
+        List<QuicConnectionEffect>? effects = [];
+        Assert.True(QuicS13AckPiggybackTestSupport.InvokeTryFlushPendingRetransmissions(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            nowTicks: TimeSpan.TicksPerMillisecond,
+            probePacket: true,
+            ref effects));
+
+        QuicConnectionSendDatagramEffect retransmissionSendEffect = Assert.Single(
+            effects!.OfType<QuicConnectionSendDatagramEffect>());
+        ReadOnlySpan<byte> payload = OpenHandshakePayload(retransmissionSendEffect, material);
+
+        QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+            payload,
+            expectedLargestAcknowledged: 89,
+            cryptoPayload,
+            expectedCryptoOffset: 0);
+        Assert.False(runtime.SendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros: 2,
+            maxAckDelayMicros: 0));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending()
+    {
+        using QuicConnectionRuntime runtime = QuicS13AckPiggybackTestSupport.CreateRuntimeWithActivePath();
+        QuicTlsPacketProtectionMaterial material = QuicS13AckPiggybackTestSupport.CreateHandshakeMaterial();
+        Assert.True(runtime.TlsState.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.KeysAvailable,
+            QuicTlsEncryptionLevel.Handshake)));
+        Assert.True(runtime.TlsState.TryApply(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+            PacketProtectionMaterial: material)));
+        QuicS13AckPiggybackTestSupport.RecordPendingAck(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 144,
+            receivedAtMicros: 1);
+
+        byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x90, 24);
+        QuicConnectionTransitionResult sendResult = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 4,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.CryptoDataAvailable,
+                    QuicTlsEncryptionLevel.Handshake,
+                    CryptoDataOffset: 0,
+                    CryptoData: cryptoPayload)),
+            nowTicks: 4);
+        QuicConnectionSendDatagramEffect originalSendEffect = Assert.Single(
+            sendResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        ReadOnlySpan<byte> originalPayload = OpenHandshakePayload(originalSendEffect, material);
+        QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+            originalPayload,
+            expectedLargestAcknowledged: 144,
+            cryptoPayload,
+            expectedCryptoOffset: 0);
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalTrackedPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, originalSendEffect.Datagram);
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.Handshake,
+            originalTrackedPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+
+        List<QuicConnectionEffect>? effects = [];
+        Assert.True(QuicS13AckPiggybackTestSupport.InvokeTryFlushPendingRetransmissions(
+            runtime,
+            QuicPacketNumberSpace.Handshake,
+            nowTicks: TimeSpan.TicksPerMillisecond,
+            probePacket: true,
+            ref effects));
+
+        QuicConnectionSendDatagramEffect retransmissionSendEffect = Assert.Single(
+            effects!.OfType<QuicConnectionSendDatagramEffect>());
+        ReadOnlySpan<byte> retransmissionPayload = OpenHandshakePayload(retransmissionSendEffect, material);
+        QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithCryptoWithoutAck(
+            retransmissionPayload,
+            cryptoPayload,
+            expectedCryptoOffset: 0);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientInitialProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverInitialProtection));
+        QuicTlsPacketProtectionMaterial handshakeMaterial = QuicS13AckPiggybackTestSupport.CreateHandshakeMaterial();
+
+        for (int length = 3; length <= 99; length += 16)
+        {
+            byte[] ackPayload = QuicS13AckPiggybackTestSupport.CreateAckFramePayload((ulong)(length + 200));
+            byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes((byte)(0x30 + length), length);
+
+            QuicHandshakeFlowCoordinator initialCoordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+            Assert.True(initialCoordinator.TryBuildProtectedInitialPacketForRetransmission(
+                cryptoPayload,
+                cryptoPayloadOffset: (ulong)(length % 5),
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialSourceConnectionId,
+                token: ReadOnlySpan<byte>.Empty,
+                prefixFramePayload: ackPayload,
+                protection: clientInitialProtection,
+                out _,
+                out byte[] protectedInitialPacket));
+            Assert.True(initialCoordinator.TryOpenInitialPacket(
+                protectedInitialPacket,
+                serverInitialProtection,
+                out byte[] openedInitialPacket,
+                out int initialPayloadOffset,
+                out int initialPayloadLength));
+            QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+                openedInitialPacket.AsSpan(initialPayloadOffset, initialPayloadLength),
+                expectedLargestAcknowledged: (ulong)(length + 200),
+                cryptoPayload,
+                expectedCryptoOffset: (ulong)(length % 5));
+
+            QuicHandshakeFlowCoordinator handshakeCoordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+            Assert.True(handshakeCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+                cryptoPayload,
+                cryptoPayloadOffset: (ulong)(length % 9),
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialSourceConnectionId,
+                ackPayload,
+                handshakeMaterial,
+                out _,
+                out byte[] protectedHandshakePacket));
+            Assert.True(handshakeCoordinator.TryOpenHandshakePacket(
+                protectedHandshakePacket,
+                handshakeMaterial,
+                out byte[] openedHandshakePacket,
+                out int handshakePayloadOffset,
+                out int handshakePayloadLength));
+            QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+                openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
+                expectedLargestAcknowledged: (ulong)(length + 200),
+                cryptoPayload,
+                expectedCryptoOffset: (ulong)(length % 9));
+        }
+    }
+
     private static ReadOnlySpan<byte> OpenClientInitialPayload(QuicConnectionSendDatagramEffect sendEffect)
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(

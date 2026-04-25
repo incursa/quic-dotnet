@@ -224,6 +224,27 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedHandshakePacketForRetransmission(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            destinationConnectionId,
+            sourceConnectionId,
+            ReadOnlySpan<byte>.Empty,
+            material,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedHandshakePacketForRetransmission(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        ReadOnlySpan<byte> prefixFramePayload,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         byte[] savedDestinationConnectionId = this.destinationConnectionId;
         byte[] savedSourceConnectionId = this.sourceConnectionId;
 
@@ -234,6 +255,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             return TryBuildProtectedHandshakePacket(
                 cryptoPayload,
                 cryptoPayloadOffset,
+                prefixFramePayload,
                 material,
                 out packetNumber,
                 out protectedPacket);
@@ -970,6 +992,31 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedInitialPacketForRetransmission(
+            cryptoPayload,
+            cryptoPayloadOffset,
+            initialDestinationConnectionId,
+            destinationConnectionId,
+            sourceConnectionId,
+            token,
+            ReadOnlySpan<byte>.Empty,
+            protection,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedInitialPacketForRetransmission(
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        ReadOnlySpan<byte> token,
+        ReadOnlySpan<byte> prefixFramePayload,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         byte[] savedInitialDestinationConnectionId = this.initialDestinationConnectionId;
         byte[] savedDestinationConnectionId = this.destinationConnectionId;
         byte[] savedSourceConnectionId = this.sourceConnectionId;
@@ -984,6 +1031,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 cryptoPayloadOffset,
                 destinationConnectionId,
                 token,
+                prefixFramePayload,
                 protection,
                 out packetNumber,
                 out protectedPacket);

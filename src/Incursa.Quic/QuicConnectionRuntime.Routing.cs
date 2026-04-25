@@ -1070,6 +1070,7 @@ internal sealed partial class QuicConnectionRuntime
         if (TrySendCoalescedCryptoRecoveryProbeDatagram(
             firstPacketNumberSpace,
             secondPacketNumberSpace,
+            nowTicks,
             ref effects))
         {
             _ = TrySendAdditionalRecoveryProbeDatagram(

@@ -1447,12 +1447,17 @@ internal sealed partial class QuicConnectionRuntime
             bool rebuildableApplicationRetransmission =
                 !rebuildableCryptoRetransmission
                 && probeRetransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
+            bool hasPiggybackedAck = false;
+            QuicAckFrame piggybackedAckFrame = new();
             if ((rebuildableCryptoRetransmission
                     && !TryBuildCryptoRetransmissionPacket(
                         probeRetransmission,
+                        sentAtMicros,
                         out _,
                         out rebuiltPacketNumber,
-                        out rebuiltDatagram))
+                        out rebuiltDatagram,
+                        out hasPiggybackedAck,
+                        out piggybackedAckFrame))
                 || (rebuildableApplicationRetransmission
                     && !TryBuildApplicationRetransmissionPacket(
                         probeRetransmission,
@@ -1506,6 +1511,12 @@ internal sealed partial class QuicConnectionRuntime
                     datagram.ToArray(),
                     probePacket,
                     ref effects);
+                MarkCryptoRetransmissionAckFrameSent(
+                    cryptoProtectionLevel,
+                    rebuiltPacketNumber,
+                    hasPiggybackedAck,
+                    piggybackedAckFrame,
+                    sentAtMicros);
             }
             else if (rebuildableApplicationRetransmission)
             {
@@ -1555,12 +1566,17 @@ internal sealed partial class QuicConnectionRuntime
             bool rebuildableApplicationRetransmission =
                 !rebuildableCryptoRetransmission
                 && retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
+            bool hasPiggybackedAck = false;
+            QuicAckFrame piggybackedAckFrame = new();
             if ((rebuildableCryptoRetransmission
                     && !TryBuildCryptoRetransmissionPacket(
                         retransmission,
+                        sentAtMicros,
                         out _,
                         out rebuiltPacketNumber,
-                        out rebuiltDatagram))
+                        out rebuiltDatagram,
+                        out hasPiggybackedAck,
+                        out piggybackedAckFrame))
                 || (rebuildableApplicationRetransmission
                     && !TryBuildApplicationRetransmissionPacket(
                         retransmission,
@@ -1614,6 +1630,12 @@ internal sealed partial class QuicConnectionRuntime
                     datagram.ToArray(),
                     probePacket,
                     ref effects);
+                MarkCryptoRetransmissionAckFrameSent(
+                    cryptoProtectionLevel,
+                    rebuiltPacketNumber,
+                    hasPiggybackedAck,
+                    piggybackedAckFrame,
+                    sentAtMicros);
             }
             else if (rebuildableApplicationRetransmission)
             {
@@ -1883,6 +1905,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TrySendCoalescedCryptoRecoveryProbeDatagram(
         QuicPacketNumberSpace firstPacketNumberSpace,
         QuicPacketNumberSpace secondPacketNumberSpace,
+        long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
         if (activePath is null
@@ -1946,17 +1969,24 @@ internal sealed partial class QuicConnectionRuntime
                 out byte[] probeDestinationConnectionId)
                 ? probeDestinationConnectionId
                 : ReadOnlySpan<byte>.Empty;
+            ulong sentAtMicros = GetElapsedMicros(nowTicks);
             if (!TryBuildCryptoRetransmissionPacket(
                     initialRetransmission,
                     initialDestinationConnectionIdOverride,
+                    sentAtMicros,
                     out _,
                     out ulong rebuiltInitialPacketNumber,
-                    out byte[] rebuiltInitialPacketBytes)
+                    out byte[] rebuiltInitialPacketBytes,
+                    out bool hasInitialPiggybackedAck,
+                    out QuicAckFrame initialPiggybackedAckFrame)
                 || !TryBuildCryptoRetransmissionPacket(
                     handshakeRetransmission,
+                    sentAtMicros,
                     out _,
                     out ulong rebuiltHandshakePacketNumber,
-                    out byte[] rebuiltHandshakePacketBytes))
+                    out byte[] rebuiltHandshakePacketBytes,
+                    out bool hasHandshakePiggybackedAck,
+                    out QuicAckFrame handshakePiggybackedAckFrame))
             {
                 return false;
             }
@@ -1995,6 +2025,12 @@ internal sealed partial class QuicConnectionRuntime
                 rebuiltInitialPacketBytes,
                 probePacket: true,
                 ref effects);
+            MarkCryptoRetransmissionAckFrameSent(
+                QuicTlsEncryptionLevel.Initial,
+                rebuiltInitialPacketNumber,
+                hasInitialPiggybackedAck,
+                initialPiggybackedAckFrame,
+                sentAtMicros);
             TrackCryptoRetransmissionSent(
                 currentPath.Identity,
                 QuicTlsEncryptionLevel.Handshake,
@@ -2002,6 +2038,12 @@ internal sealed partial class QuicConnectionRuntime
                 rebuiltHandshakePacketBytes,
                 probePacket: true,
                 ref effects);
+            MarkCryptoRetransmissionAckFrameSent(
+                QuicTlsEncryptionLevel.Handshake,
+                rebuiltHandshakePacketNumber,
+                hasHandshakePiggybackedAck,
+                handshakePiggybackedAckFrame,
+                sentAtMicros);
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
                 currentPath.Identity,
@@ -2075,6 +2117,7 @@ internal sealed partial class QuicConnectionRuntime
                 CurrentPeerDestinationConnectionId.IsEmpty
                     ? ReadOnlySpan<byte>.Empty
                     : CurrentPeerDestinationConnectionId.Span;
+            ulong sentAtMicros = GetElapsedMicros(nowTicks);
 
             if (!TryGetCryptoRetransmissionProtectionLevel(
                     handshakeRetransmission,
@@ -2083,8 +2126,11 @@ internal sealed partial class QuicConnectionRuntime
                 || !TryBuildHandshakeCryptoRetransmissionPacketWithDestinationOverride(
                     handshakeRetransmission,
                     handshakeDestinationConnectionIdOverride,
+                    sentAtMicros,
                     out ulong rebuiltHandshakePacketNumber,
-                    out byte[] rebuiltHandshakePacketBytes)
+                    out byte[] rebuiltHandshakePacketBytes,
+                    out bool hasHandshakePiggybackedAck,
+                    out QuicAckFrame handshakePiggybackedAckFrame)
                 || !TryBuildApplicationRetransmissionPacket(
                     applicationRetransmission,
                     ref effects,
@@ -2097,7 +2143,6 @@ internal sealed partial class QuicConnectionRuntime
 
             int coalescedDatagramLength = checked(
                 rebuiltHandshakePacketBytes.Length + rebuiltApplicationPacketBytes.Length);
-            ulong sentAtMicros = GetElapsedMicros(nowTicks);
             QuicConnectionActivePathRecord currentPath = activePath.Value;
             if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
                 || !currentPath.MaximumDatagramSizeState.CanSend((ulong)coalescedDatagramLength)
@@ -2129,6 +2174,12 @@ internal sealed partial class QuicConnectionRuntime
                 rebuiltHandshakePacketBytes,
                 probePacket: true,
                 ref effects);
+            MarkCryptoRetransmissionAckFrameSent(
+                QuicTlsEncryptionLevel.Handshake,
+                rebuiltHandshakePacketNumber,
+                hasHandshakePiggybackedAck,
+                handshakePiggybackedAckFrame,
+                sentAtMicros);
             TrackApplicationRetransmissionSent(
                 rebuiltApplicationPacketNumber,
                 rebuiltApplicationPacketBytes,
@@ -2205,27 +2256,38 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryBuildCryptoRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
+        ulong nowMicros,
         out QuicTlsEncryptionLevel packetProtectionLevel,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out bool hasPiggybackedAck,
+        out QuicAckFrame piggybackedAckFrame)
     {
         return TryBuildCryptoRetransmissionPacket(
             retransmission,
             ReadOnlySpan<byte>.Empty,
+            nowMicros,
             out packetProtectionLevel,
             out packetNumber,
-            out protectedPacket);
+            out protectedPacket,
+            out hasPiggybackedAck,
+            out piggybackedAckFrame);
     }
 
     private bool TryBuildCryptoRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
         ReadOnlySpan<byte> initialDestinationConnectionIdOverride,
+        ulong nowMicros,
         out QuicTlsEncryptionLevel packetProtectionLevel,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out bool hasPiggybackedAck,
+        out QuicAckFrame piggybackedAckFrame)
     {
         packetNumber = default;
         protectedPacket = [];
+        hasPiggybackedAck = false;
+        piggybackedAckFrame = new();
 
         if (!TryGetCryptoRetransmissionProtectionLevel(retransmission, out packetProtectionLevel))
         {
@@ -2237,12 +2299,18 @@ internal sealed partial class QuicConnectionRuntime
             QuicTlsEncryptionLevel.Initial => TryBuildInitialCryptoRetransmissionPacket(
                 retransmission,
                 initialDestinationConnectionIdOverride,
+                nowMicros,
                 out packetNumber,
-                out protectedPacket),
+                out protectedPacket,
+                out hasPiggybackedAck,
+                out piggybackedAckFrame),
             QuicTlsEncryptionLevel.Handshake => TryBuildHandshakeCryptoRetransmissionPacket(
                 retransmission,
+                nowMicros,
                 out packetNumber,
-                out protectedPacket),
+                out protectedPacket,
+                out hasPiggybackedAck,
+                out piggybackedAckFrame),
             _ => false,
         };
     }
@@ -2250,11 +2318,16 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryBuildInitialCryptoRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
         ReadOnlySpan<byte> destinationConnectionIdOverride,
+        ulong nowMicros,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out bool hasPiggybackedAck,
+        out QuicAckFrame piggybackedAckFrame)
     {
         packetNumber = default;
         protectedPacket = [];
+        hasPiggybackedAck = false;
+        piggybackedAckFrame = new();
 
         if (initialPacketProtection is null)
         {
@@ -2292,6 +2365,11 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
             ? longHeader.DestinationConnectionId
             : destinationConnectionIdOverride;
+        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+            QuicPacketNumberSpace.Initial,
+            nowMicros,
+            out byte[] ackFramePayload,
+            out piggybackedAckFrame);
 
         return handshakeFlowCoordinator.TryBuildProtectedInitialPacketForRetransmission(
             cryptoPayload,
@@ -2300,6 +2378,7 @@ internal sealed partial class QuicConnectionRuntime
             destinationConnectionId,
             longHeader.SourceConnectionId,
             parsedRetryToken,
+            ackFramePayload,
             initialPacketProtection,
             out packetNumber,
             out protectedPacket);
@@ -2307,11 +2386,16 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryBuildHandshakeCryptoRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
+        ulong nowMicros,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out bool hasPiggybackedAck,
+        out QuicAckFrame piggybackedAckFrame)
     {
         packetNumber = default;
         protectedPacket = [];
+        hasPiggybackedAck = false;
+        piggybackedAckFrame = new();
 
         if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
         {
@@ -2341,11 +2425,18 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros,
+            out byte[] ackFramePayload,
+            out piggybackedAckFrame);
+
         return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
             cryptoPayload,
             cryptoOffset,
             longHeader.DestinationConnectionId,
             longHeader.SourceConnectionId,
+            ackFramePayload,
             handshakeMaterial,
             out packetNumber,
             out protectedPacket);
@@ -2643,11 +2734,16 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryBuildHandshakeCryptoRetransmissionPacketWithDestinationOverride(
         QuicConnectionRetransmissionPlan retransmission,
         ReadOnlySpan<byte> destinationConnectionIdOverride,
+        ulong nowMicros,
         out ulong packetNumber,
-        out byte[] protectedPacket)
+        out byte[] protectedPacket,
+        out bool hasPiggybackedAck,
+        out QuicAckFrame piggybackedAckFrame)
     {
         packetNumber = default;
         protectedPacket = [];
+        hasPiggybackedAck = false;
+        piggybackedAckFrame = new();
 
         if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
         {
@@ -2680,15 +2776,47 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
             ? longHeader.DestinationConnectionId
             : destinationConnectionIdOverride;
+        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros,
+            out byte[] ackFramePayload,
+            out piggybackedAckFrame);
 
         return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
             cryptoPayload,
             cryptoOffset,
             destinationConnectionId,
             longHeader.SourceConnectionId,
+            ackFramePayload,
             handshakeMaterial,
             out packetNumber,
             out protectedPacket);
+    }
+
+    private void MarkCryptoRetransmissionAckFrameSent(
+        QuicTlsEncryptionLevel packetProtectionLevel,
+        ulong packetNumber,
+        bool hasPiggybackedAck,
+        QuicAckFrame piggybackedAckFrame,
+        ulong sentAtMicros)
+    {
+        if (!hasPiggybackedAck)
+        {
+            return;
+        }
+
+        QuicPacketNumberSpace packetNumberSpace = packetProtectionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => QuicPacketNumberSpace.Initial,
+            QuicTlsEncryptionLevel.Handshake => QuicPacketNumberSpace.Handshake,
+            _ => throw new InvalidOperationException($"Unsupported crypto retransmission ACK protection level {packetProtectionLevel}."),
+        };
+        sendRuntime.FlowController.MarkAckFrameSent(
+            packetNumberSpace,
+            packetNumber,
+            piggybackedAckFrame,
+            sentAtMicros,
+            ackOnlyPacket: false);
     }
 
     private void TrackCryptoRetransmissionSent(

@@ -10847,14 +10847,17 @@ Trace:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0018
   - ARC-QUIC-RFC9000-0020
+  - ARC-QUIC-RFC9000-0021
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
   - WI-QUIC-RFC9000-0020
+  - WI-QUIC-RFC9000-0021
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
   - VER-QUIC-RFC9000-0020
+  - VER-QUIC-RFC9000-0021
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10864,6 +10867,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoFlush_IncludesPendingInitialAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoRetransmission_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake
 
 ## REQ-QUIC-RFC9000-S13P2P1-0010 Send ACK frames with other frames when there is new ack-eliciting data
 An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.
@@ -10874,16 +10881,19 @@ Trace:
   - ARC-QUIC-RFC9000-0018
   - ARC-QUIC-RFC9000-0019
   - ARC-QUIC-RFC9000-0020
+  - ARC-QUIC-RFC9000-0021
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
   - WI-QUIC-RFC9000-0019
   - WI-QUIC-RFC9000-0020
+  - WI-QUIC-RFC9000-0021
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
   - VER-QUIC-RFC9000-0019
   - VER-QUIC-RFC9000-0020
+  - VER-QUIC-RFC9000-0021
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10896,6 +10906,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::LongHeaderCryptoPacketBuilders_DoNotInventAckFramesWhenNoAckPrefixIsProvided
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoRetransmission_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake
 
 ## REQ-QUIC-RFC9000-S13P2P1-0011 Delay ACK frames for non-ack-eliciting packets until needed
 When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.
@@ -11481,13 +11495,18 @@ Data sent in CRYPTO frames MUST be retransmitted according to the rules in [QUIC
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0021
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0021
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0021
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B4-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs::CryptoRetransmission_RebuildsCryptoDataInFreshPacketWithTransientAckPrefix
 
 ## REQ-QUIC-RFC9000-S13P3-0007 Discard CRYPTO data when its packet number space is discarded
 Data in CRYPTO frames for Initial and Handshake packets MUST be discarded when the keys for the corresponding packet number space are discarded.

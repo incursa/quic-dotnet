@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0021",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 CRYPTO Retransmission ACK Piggyback Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded retransmission packet-composition floor that prepends fresh pending packet-space ACK frames to rebuilt Initial and Handshake CRYPTO retransmission packets without replaying old ACK bytes as retransmittable data.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0020",
+    "WI-QUIC-RFC9000-0021",
+    "VER-QUIC-RFC9000-0021"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-S13P3-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs"
+  ],
+  "design_summary": "The recovery retransmission path continues to rebuild Initial and Handshake CRYPTO packets from the original retransmittable CRYPTO frame rather than reusing protected bytes. During that rebuild, the runtime checks the ACK-generation state for the same packet number space and formats a fresh ACK frame only when the matching Initial or Handshake space has pending ack-eliciting receipts. The transient ACK bytes are passed to the long-header retransmission packet builder as a packet prefix, the rebuilt packet is tracked under its new packet number, and ACK state is marked sent only after the retransmission datagram passes send-budget and datagram-size gates. The retransmittable CRYPTO extraction continues to skip prior ACK, PING, and PADDING bytes so an ACK prefix from the lost packet is not replayed as reliable CRYPTO data.",
+  "data_and_state_considerations": "ACK prefix bytes are packet-composition data only. They are not stored as CRYPTO stream bytes, not included in the retransmittable CRYPTO payload, and not marked sent until the rebuilt protected packet is tracked after all send gates pass. Sent-packet and recovery tracking remains packet-number-space specific for Initial and Handshake packets.",
+  "edge_cases_and_constraints": [
+    "Only rebuilt Initial and Handshake CRYPTO retransmission packets are in scope.",
+    "Retry bootstrap replay and retried Initial replay continue to use their existing replay paths without ACK prefixing.",
+    "The retransmission parser must skip any ACK prefix found in the lost packet before extracting the CRYPTO frame.",
+    "No ACK frame is invented when the matching packet number space has no pending ack-eliciting receipt.",
+    "ACK state is not marked sent if maximum-datagram-size, congestion, or anti-amplification gates suppress the retransmission."
+  ],
+  "alternatives_considered": [
+    "Store ACK-prefixed plaintext as the retransmittable payload; rejected because ACK frames are not reliable CRYPTO data and would replay stale acknowledgment state.",
+    "Treat the live CRYPTO flush proof as covering retransmission; rejected because retransmission rebuilds packets from sent-packet recovery state and has different failure gates.",
+    "Widen this slice to retry bootstrap replay and retried Initial replay; rejected because those are replay-specific paths with separate state and proof requirements.",
+    "Classify this as interop success; rejected because this slice proves local packet composition and recovery behavior only."
+  ],
+  "risks": [
+    "General delayed-ACK timer behavior remains unclaimed.",
+    "Retry/retried Initial replay ACK piggyback behavior remains unclaimed until separately traced.",
+    "Endpoint interop success and public API behavior remain outside this architecture slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers fresh pending ACK prefixing for rebuilt Initial and Handshake CRYPTO retransmission packets only. It does not claim retry bootstrap replay, retried Initial replay, candidate-path or multipath scheduling, endpoint interop success, public API behavior, or a general delayed-ACK timer."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs)\n- [`QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)"
+    }
+  ]
+}

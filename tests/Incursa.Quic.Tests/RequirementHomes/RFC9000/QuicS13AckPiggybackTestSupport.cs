@@ -1,7 +1,35 @@
+using System.Reflection;
+
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS13AckPiggybackTestSupport
 {
+    internal static QuicConnectionRuntime CreateRuntimeWithActivePath()
+    {
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            new FakeMonotonicClock(0));
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(QuicS17P2P2TestSupport.InitialDestinationConnectionId));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(QuicS17P2P2TestSupport.InitialSourceConnectionId));
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 0,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[1200]),
+            nowTicks: 0).StateChanged);
+
+        return runtime;
+    }
+
+    internal static QuicTlsPacketProtectionMaterial CreateHandshakeMaterial()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake,
+            out QuicTlsPacketProtectionMaterial material));
+        return material;
+    }
+
     internal static void RecordPendingApplicationAck(
         QuicConnectionRuntime runtime,
         ulong packetNumber,
@@ -60,6 +88,48 @@ internal static class QuicS13AckPiggybackTestSupport
         Assert.False(keyPhase);
 
         return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
+    }
+
+    internal static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> FindTrackedPacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlyMemory<byte> datagram)
+    {
+        return Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Value.PacketBytes.Span.SequenceEqual(datagram.Span));
+    }
+
+    internal static bool InvokeTryFlushPendingRetransmissions(
+        QuicConnectionRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        long nowTicks,
+        bool probePacket,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "TryFlushPendingRetransmissions",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new MissingMethodException(
+                nameof(QuicConnectionRuntime),
+                "TryFlushPendingRetransmissions");
+        object?[] arguments =
+        [
+            packetNumberSpace,
+            nowTicks,
+            probePacket,
+            effects,
+        ];
+
+        bool result = (bool)method.Invoke(runtime, arguments)!;
+        effects = (List<QuicConnectionEffect>?)arguments[3];
+        return result;
+    }
+
+    internal static ulong ReadLongHeaderPacketNumber(byte[] openedPacket, int payloadOffset)
+    {
+        return QuicS17P1TestSupport.ReadPacketNumber(openedPacket.AsSpan(
+            payloadOffset - sizeof(uint),
+            sizeof(uint)));
     }
 
     internal static void AssertPayloadStartsWithAckThenCrypto(
@@ -147,5 +217,12 @@ internal static class QuicS13AckPiggybackTestSupport
                 runtime.ActivePath.Value.Identity,
                 protectedPacket),
             nowTicks: observedAtTicks);
+    }
+
+    private sealed class FakeMonotonicClock(long ticks) : IMonotonicClock
+    {
+        public long Ticks { get; } = ticks;
+
+        public double Seconds => Ticks / (double)TimeSpan.TicksPerSecond;
     }
 }

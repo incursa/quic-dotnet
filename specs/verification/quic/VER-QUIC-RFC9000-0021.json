@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0021",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 CRYPTO Retransmission ACK Piggyback Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0021",
+    "WI-QUIC-RFC9000-0021"
+  ],
+  "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Initial and Handshake CRYPTO retransmission ACK piggyback floor.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-S13P3-0006"
+  ],
+  "scope": "This verification covers rebuilt Initial and Handshake CRYPTO retransmission packet construction when ACK-generation state already contains pending ack-eliciting receipts in the matching packet number space.",
+  "expected_result": "Focused tests prove that pending Initial and Handshake ACK state is prepended to rebuilt CRYPTO retransmission packets, the CRYPTO frame remains present after the ACK frame with its original stream offset and bytes, no ACK frame is invented when no ACK is pending, and a prior ACK prefix from the lost packet is skipped rather than replayed as reliable CRYPTO data. BenchmarkDotNet Dry and Short jobs validate the permanent long-header retransmission packet-builder benchmark additions without making public or MSQUIC comparison claims.",
+  "procedure": [
+    "Run the focused RFC 9000 S13P2P1-0010 requirement-home tests.",
+    "Run adjacent RFC 9002 CRYPTO retransmission and PTO requirement-home tests.",
+    "Run the QuicHandshakePacketProtectionBenchmarks suite with BenchmarkDotNet Dry and Short jobs and preserve logs and reports.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Run canonical SpecTrace JSON validation and preserve the output, including standing repository-wide residual failures if present.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "Initial packet protection is configured for the Initial retransmission rebuild path.",
+    "Handshake packet protection material is available for the Handshake retransmission rebuild path.",
+    "ACK-generation state has already recorded pending Initial or Handshake packet receipts before the retransmission packet is composed.",
+    "Retry/replay, endpoint interop, public API, and general delayed-ACK timer behavior are outside this verification."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/focused-rfc9000-crypto-retransmission-ack-piggyback-tests.log",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/adjacent-rfc9002-crypto-retransmission-tests.log",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/spec-trace-validate.log",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/render.log",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/render-check.log",
+    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/git-diff-check.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-dry.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-short.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/BenchmarkDotNet.Artifacts/results"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Benchmark Boundary",
+      "content": "The benchmark evidence is an internal Incursa-only packet-builder suite for Initial and Handshake CRYPTO packet construction and retransmission construction with an ACK prefix. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
+    }
+  ],
+  "status_summary": "Focused runtime, packet-builder, deterministic fuzz/property, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded Initial and Handshake CRYPTO retransmission ACK piggyback floor. Repository-wide SpecTrace JSON validation may still report standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+}

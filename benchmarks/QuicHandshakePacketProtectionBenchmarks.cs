@@ -27,8 +27,10 @@ public class QuicHandshakePacketProtectionBenchmarks
     private QuicInitialPacketProtection initialPacketProtection = default!;
     private QuicHandshakeFlowCoordinator initialPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator initialAckPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator initialRetransmissionAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakePacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakeAckPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator handshakeRetransmissionAckPacketBuilder = default!;
     private byte[] plaintextPacket = [];
     private byte[] protectedPacket = [];
     private byte[] recoveredPacket = [];
@@ -102,8 +104,10 @@ public class QuicHandshakePacketProtectionBenchmarks
         ackFramePayload = BuildAckFramePayload(largestAcknowledged: 23);
         initialPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         initialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        initialRetransmissionAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakePacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakeAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        handshakeRetransmissionAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
     }
 
     /// <summary>
@@ -160,6 +164,27 @@ public class QuicHandshakePacketProtectionBenchmarks
     }
 
     /// <summary>
+    /// Measures rebuilt protected Initial CRYPTO retransmission construction with a fresh ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildInitialCryptoRetransmissionPacketWithAck()
+    {
+        return initialRetransmissionAckPacketBuilder.TryBuildProtectedInitialPacketForRetransmission(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            initialDestinationConnectionId: DestinationConnectionId,
+            destinationConnectionId: DestinationConnectionId,
+            sourceConnectionId: SourceConnectionId,
+            token: ReadOnlySpan<byte>.Empty,
+            prefixFramePayload: ackFramePayload,
+            protection: initialPacketProtection,
+            out _,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
     /// Measures protected Handshake CRYPTO packet construction without an ACK prefix.
     /// </summary>
     [Benchmark]
@@ -185,6 +210,25 @@ public class QuicHandshakePacketProtectionBenchmarks
             cryptoPayloadOffset: 0,
             ackFramePayload,
             handshakePacketMaterial,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures rebuilt protected Handshake CRYPTO retransmission construction with a fresh ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildHandshakeCryptoRetransmissionPacketWithAck()
+    {
+        return handshakeRetransmissionAckPacketBuilder.TryBuildProtectedHandshakePacketForRetransmission(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            destinationConnectionId: DestinationConnectionId,
+            sourceConnectionId: SourceConnectionId,
+            prefixFramePayload: ackFramePayload,
+            material: handshakePacketMaterial,
+            out _,
             out byte[] packet)
             ? packet.Length
             : -1;
