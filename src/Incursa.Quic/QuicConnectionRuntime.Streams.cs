@@ -1173,8 +1173,22 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
+        ReadOnlyMemory<byte> packetPayload = payload;
+        QuicAckFrame? piggybackedAckFrame = null;
+        if (!ackOnlyPacket
+            && TryBuildApplicationAckPiggybackPayload(
+                payload,
+                nowMicros,
+                out byte[] piggybackedPayload,
+                out QuicAckFrame includedAckFrame))
+        {
+            packetPayload = piggybackedPayload;
+            piggybackedAckFrame = includedAckFrame;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
-            payload.Span,
+            packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             out ulong packetNumber,
@@ -1223,7 +1237,46 @@ internal sealed partial class QuicConnectionRuntime
             probePacket: probePacket,
             streamIds: streamIds,
             plaintextPayload: payload);
+        if (piggybackedAckFrame is not null)
+        {
+            sendRuntime.FlowController.MarkAckFrameSent(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                piggybackedAckFrame,
+                nowMicros,
+                ackOnlyPacket: false);
+        }
+
         exception = null;
+        return true;
+    }
+
+    private bool TryBuildApplicationAckPiggybackPayload(
+        ReadOnlyMemory<byte> payload,
+        ulong nowMicros,
+        out byte[] piggybackedPayload,
+        out QuicAckFrame ackFrame)
+    {
+        piggybackedPayload = [];
+        ackFrame = new QuicAckFrame();
+
+        if (payload.IsEmpty
+            || !sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                maxAckDelayMicros: 0)
+            || !sendRuntime.FlowController.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                out ackFrame)
+            || !TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackPayload))
+        {
+            return false;
+        }
+
+        piggybackedPayload = new byte[checked(ackPayload.Length + payload.Length)];
+        ackPayload.CopyTo(piggybackedPayload.AsSpan());
+        payload.Span.CopyTo(piggybackedPayload.AsSpan(ackPayload.Length));
         return true;
     }
 

@@ -1,0 +1,269 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 2 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1
+// command took 1.57 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1
+// command took 17.04 sec and exited with 0
+// ***** Done, took 00:00:18 (18.85 sec)   *****
+// Found 2 benchmarks:
+//   QuicAckPiggybackPolicyBenchmarks.PendingAckShouldPiggyback: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicAckPiggybackPolicyBenchmarks.AlreadyPiggybackedAckSuppressesAckOnlyTrigger: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicAckPiggybackPolicyBenchmarks.PendingAckShouldPiggyback: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 3960 3840 --benchmarkName Incursa.Quic.Benchmarks.QuicAckPiggybackPolicyBenchmarks.PendingAckShouldPiggyback --job ShortRun --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 206700.00 ns, 206.7000 us/op
+WorkloadJitting  1: 1 op, 561800.00 ns, 561.8000 us/op
+
+OverheadJitting  2: 16 op, 359500.00 ns, 22.4688 us/op
+WorkloadJitting  2: 16 op, 374900.00 ns, 23.4313 us/op
+
+WorkloadPilot    1: 16 op, 35700.00 ns, 2.2313 us/op
+WorkloadPilot    2: 32 op, 11800.00 ns, 368.7500 ns/op
+WorkloadPilot    3: 64 op, 30000.00 ns, 468.7500 ns/op
+WorkloadPilot    4: 128 op, 43200.00 ns, 337.5000 ns/op
+WorkloadPilot    5: 256 op, 78200.00 ns, 305.4688 ns/op
+WorkloadPilot    6: 512 op, 153400.00 ns, 299.6094 ns/op
+WorkloadPilot    7: 1024 op, 314600.00 ns, 307.2266 ns/op
+WorkloadPilot    8: 2048 op, 600000.00 ns, 292.9688 ns/op
+WorkloadPilot    9: 4096 op, 1266100.00 ns, 309.1064 ns/op
+WorkloadPilot   10: 8192 op, 2742900.00 ns, 334.8267 ns/op
+WorkloadPilot   11: 16384 op, 5110300.00 ns, 311.9080 ns/op
+WorkloadPilot   12: 32768 op, 9373400.00 ns, 286.0535 ns/op
+WorkloadPilot   13: 65536 op, 18675400.00 ns, 284.9640 ns/op
+WorkloadPilot   14: 131072 op, 36961900.00 ns, 281.9969 ns/op
+WorkloadPilot   15: 262144 op, 71092900.00 ns, 271.1979 ns/op
+WorkloadPilot   16: 524288 op, 99691800.00 ns, 190.1470 ns/op
+WorkloadPilot   17: 1048576 op, 31801100.00 ns, 30.3279 ns/op
+WorkloadPilot   18: 2097152 op, 62001800.00 ns, 29.5648 ns/op
+WorkloadPilot   19: 4194304 op, 122121700.00 ns, 29.1161 ns/op
+WorkloadPilot   20: 8388608 op, 242383400.00 ns, 28.8944 ns/op
+WorkloadPilot   21: 16777216 op, 505508600.00 ns, 30.1307 ns/op
+
+OverheadWarmup   1: 16777216 op, 47199600.00 ns, 2.8133 ns/op
+OverheadWarmup   2: 16777216 op, 46837800.00 ns, 2.7918 ns/op
+OverheadWarmup   3: 16777216 op, 47199400.00 ns, 2.8133 ns/op
+OverheadWarmup   4: 16777216 op, 46785800.00 ns, 2.7887 ns/op
+OverheadWarmup   5: 16777216 op, 46993000.00 ns, 2.8010 ns/op
+OverheadWarmup   6: 16777216 op, 47090400.00 ns, 2.8068 ns/op
+OverheadWarmup   7: 16777216 op, 41841500.00 ns, 2.4939 ns/op
+
+OverheadActual   1: 16777216 op, 28575000.00 ns, 1.7032 ns/op
+OverheadActual   2: 16777216 op, 25983300.00 ns, 1.5487 ns/op
+OverheadActual   3: 16777216 op, 26463100.00 ns, 1.5773 ns/op
+OverheadActual   4: 16777216 op, 25920900.00 ns, 1.5450 ns/op
+OverheadActual   5: 16777216 op, 26656800.00 ns, 1.5889 ns/op
+OverheadActual   6: 16777216 op, 26189300.00 ns, 1.5610 ns/op
+OverheadActual   7: 16777216 op, 25920900.00 ns, 1.5450 ns/op
+OverheadActual   8: 16777216 op, 25820000.00 ns, 1.5390 ns/op
+OverheadActual   9: 16777216 op, 26405400.00 ns, 1.5739 ns/op
+OverheadActual  10: 16777216 op, 26688300.00 ns, 1.5907 ns/op
+OverheadActual  11: 16777216 op, 26040700.00 ns, 1.5521 ns/op
+OverheadActual  12: 16777216 op, 26453900.00 ns, 1.5768 ns/op
+OverheadActual  13: 16777216 op, 26463600.00 ns, 1.5774 ns/op
+OverheadActual  14: 16777216 op, 26074500.00 ns, 1.5542 ns/op
+OverheadActual  15: 16777216 op, 26613400.00 ns, 1.5863 ns/op
+
+WorkloadWarmup   1: 16777216 op, 484646700.00 ns, 28.8872 ns/op
+WorkloadWarmup   2: 16777216 op, 659659700.00 ns, 39.3188 ns/op
+WorkloadWarmup   3: 16777216 op, 533338500.00 ns, 31.7895 ns/op
+
+// BeforeActualRun
+WorkloadActual   1: 16777216 op, 605562700.00 ns, 36.0943 ns/op
+WorkloadActual   2: 16777216 op, 578978900.00 ns, 34.5098 ns/op
+WorkloadActual   3: 16777216 op, 553593600.00 ns, 32.9967 ns/op
+
+// AfterActualRun
+WorkloadResult   1: 16777216 op, 579157300.00 ns, 34.5205 ns/op
+WorkloadResult   2: 16777216 op, 552573500.00 ns, 32.9359 ns/op
+WorkloadResult   3: 16777216 op, 527188200.00 ns, 31.4229 ns/op
+// GC:  144 0 0 1207959552 16777216
+// Threading:  0 0 16777216
+
+// AfterAll
+// Benchmark Process 53664 has exited with code 0.
+
+Mean = 32.960 ns, StdErr = 0.894 ns (2.71%), N = 3, StdDev = 1.549 ns
+Min = 31.423 ns, Q1 = 32.179 ns, Median = 32.936 ns, Q3 = 33.728 ns, Max = 34.520 ns
+IQR = 1.549 ns, LowerFence = 29.856 ns, UpperFence = 36.051 ns
+ConfidenceInterval = [4.701 ns; 61.218 ns] (CI 99.9%), Margin = 28.258 ns (85.74% of Mean)
+Skewness = 0.02, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 1 (50.0%) benchmark(s) to run. Estimated finish 2026-04-25 12:32 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicAckPiggybackPolicyBenchmarks.AlreadyPiggybackedAckSuppressesAckOnlyTrigger: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 3960 3840 --benchmarkName Incursa.Quic.Benchmarks.QuicAckPiggybackPolicyBenchmarks.AlreadyPiggybackedAckSuppressesAckOnlyTrigger --job ShortRun --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 164500.00 ns, 164.5000 us/op
+WorkloadJitting  1: 1 op, 594200.00 ns, 594.2000 us/op
+
+OverheadJitting  2: 16 op, 473300.00 ns, 29.5813 us/op
+WorkloadJitting  2: 16 op, 370600.00 ns, 23.1625 us/op
+
+WorkloadPilot    1: 16 op, 13500.00 ns, 843.7500 ns/op
+WorkloadPilot    2: 32 op, 12400.00 ns, 387.5000 ns/op
+WorkloadPilot    3: 64 op, 25400.00 ns, 396.8750 ns/op
+WorkloadPilot    4: 128 op, 48800.00 ns, 381.2500 ns/op
+WorkloadPilot    5: 256 op, 78400.00 ns, 306.2500 ns/op
+WorkloadPilot    6: 512 op, 157200.00 ns, 307.0313 ns/op
+WorkloadPilot    7: 1024 op, 299700.00 ns, 292.6758 ns/op
+WorkloadPilot    8: 2048 op, 592000.00 ns, 289.0625 ns/op
+WorkloadPilot    9: 4096 op, 1177000.00 ns, 287.3535 ns/op
+WorkloadPilot   10: 8192 op, 2784300.00 ns, 339.8804 ns/op
+WorkloadPilot   11: 16384 op, 5204700.00 ns, 317.6697 ns/op
+WorkloadPilot   12: 32768 op, 9985200.00 ns, 304.7241 ns/op
+WorkloadPilot   13: 65536 op, 18866700.00 ns, 287.8830 ns/op
+WorkloadPilot   14: 131072 op, 37450000.00 ns, 285.7208 ns/op
+WorkloadPilot   15: 262144 op, 76042200.00 ns, 290.0780 ns/op
+WorkloadPilot   16: 524288 op, 53871200.00 ns, 102.7512 ns/op
+WorkloadPilot   17: 1048576 op, 29879100.00 ns, 28.4949 ns/op
+WorkloadPilot   18: 2097152 op, 57933400.00 ns, 27.6248 ns/op
+WorkloadPilot   19: 4194304 op, 120779300.00 ns, 28.7960 ns/op
+WorkloadPilot   20: 8388608 op, 237458100.00 ns, 28.3072 ns/op
+WorkloadPilot   21: 16777216 op, 475544500.00 ns, 28.3447 ns/op
+WorkloadPilot   22: 33554432 op, 1009301900.00 ns, 30.0795 ns/op
+
+OverheadWarmup   1: 33554432 op, 95066700.00 ns, 2.8332 ns/op
+OverheadWarmup   2: 33554432 op, 95531900.00 ns, 2.8471 ns/op
+OverheadWarmup   3: 33554432 op, 62244100.00 ns, 1.8550 ns/op
+OverheadWarmup   4: 33554432 op, 55251700.00 ns, 1.6466 ns/op
+OverheadWarmup   5: 33554432 op, 57710300.00 ns, 1.7199 ns/op
+OverheadWarmup   6: 33554432 op, 51574500.00 ns, 1.5370 ns/op
+
+OverheadActual   1: 33554432 op, 51610000.00 ns, 1.5381 ns/op
+OverheadActual   2: 33554432 op, 52066700.00 ns, 1.5517 ns/op
+OverheadActual   3: 33554432 op, 51902900.00 ns, 1.5468 ns/op
+OverheadActual   4: 33554432 op, 52092300.00 ns, 1.5525 ns/op
+OverheadActual   5: 33554432 op, 54488200.00 ns, 1.6239 ns/op
+OverheadActual   6: 33554432 op, 67257900.00 ns, 2.0044 ns/op
+OverheadActual   7: 33554432 op, 67070000.00 ns, 1.9988 ns/op
+OverheadActual   8: 33554432 op, 67076200.00 ns, 1.9990 ns/op
+OverheadActual   9: 33554432 op, 66241100.00 ns, 1.9741 ns/op
+OverheadActual  10: 33554432 op, 67823500.00 ns, 2.0213 ns/op
+OverheadActual  11: 33554432 op, 66766600.00 ns, 1.9898 ns/op
+OverheadActual  12: 33554432 op, 67354300.00 ns, 2.0073 ns/op
+OverheadActual  13: 33554432 op, 57427100.00 ns, 1.7115 ns/op
+OverheadActual  14: 33554432 op, 64106800.00 ns, 1.9105 ns/op
+OverheadActual  15: 33554432 op, 56399200.00 ns, 1.6808 ns/op
+OverheadActual  16: 33554432 op, 60051500.00 ns, 1.7897 ns/op
+OverheadActual  17: 33554432 op, 53423500.00 ns, 1.5921 ns/op
+OverheadActual  18: 33554432 op, 55576100.00 ns, 1.6563 ns/op
+OverheadActual  19: 33554432 op, 62490700.00 ns, 1.8624 ns/op
+OverheadActual  20: 33554432 op, 69584300.00 ns, 2.0738 ns/op
+
+WorkloadWarmup   1: 33554432 op, 1311882800.00 ns, 39.0972 ns/op
+WorkloadWarmup   2: 33554432 op, 1217564800.00 ns, 36.2863 ns/op
+WorkloadWarmup   3: 33554432 op, 1123915400.00 ns, 33.4953 ns/op
+
+// BeforeActualRun
+WorkloadActual   1: 33554432 op, 1247838800.00 ns, 37.1885 ns/op
+WorkloadActual   2: 33554432 op, 1127920300.00 ns, 33.6146 ns/op
+WorkloadActual   3: 33554432 op, 1140170400.00 ns, 33.9797 ns/op
+
+// AfterActualRun
+WorkloadResult   1: 33554432 op, 1186567700.00 ns, 35.3625 ns/op
+WorkloadResult   2: 33554432 op, 1066649200.00 ns, 31.7886 ns/op
+WorkloadResult   3: 33554432 op, 1078899300.00 ns, 32.1537 ns/op
+// GC:  288 0 0 2415919104 33554432
+// Threading:  0 0 33554432
+
+// AfterAll
+// Benchmark Process 84392 has exited with code 0.
+
+Mean = 33.102 ns, StdErr = 1.135 ns (3.43%), N = 3, StdDev = 1.966 ns
+Min = 31.789 ns, Q1 = 31.971 ns, Median = 32.154 ns, Q3 = 33.758 ns, Max = 35.362 ns
+IQR = 1.787 ns, LowerFence = 29.291 ns, UpperFence = 36.438 ns
+ConfidenceInterval = [-2.774 ns; 68.977 ns] (CI 99.9%), Margin = 35.876 ns (108.38% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 12:32 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts\benchmark-baseline\20260425-rfc9000-ack-piggyback-policy\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicAckPiggybackPolicyBenchmarks-report.csv
+  artifacts\benchmark-baseline\20260425-rfc9000-ack-piggyback-policy\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicAckPiggybackPolicyBenchmarks-report-github.md
+  artifacts\benchmark-baseline\20260425-rfc9000-ack-piggyback-policy\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicAckPiggybackPolicyBenchmarks-report.html
+
+// * Detailed results *
+QuicAckPiggybackPolicyBenchmarks.PendingAckShouldPiggyback: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 32.960 ns, StdErr = 0.894 ns (2.71%), N = 3, StdDev = 1.549 ns
+Min = 31.423 ns, Q1 = 32.179 ns, Median = 32.936 ns, Q3 = 33.728 ns, Max = 34.520 ns
+IQR = 1.549 ns, LowerFence = 29.856 ns, UpperFence = 36.051 ns
+ConfidenceInterval = [4.701 ns; 61.218 ns] (CI 99.9%), Margin = 28.258 ns (85.74% of Mean)
+Skewness = 0.02, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[30.770 ns ; 33.589 ns) | @@
+[33.589 ns ; 35.930 ns) | @
+---------------------------------------------------
+
+QuicAckPiggybackPolicyBenchmarks.AlreadyPiggybackedAckSuppressesAckOnlyTrigger: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 33.102 ns, StdErr = 1.135 ns (3.43%), N = 3, StdDev = 1.966 ns
+Min = 31.789 ns, Q1 = 31.971 ns, Median = 32.154 ns, Q3 = 33.758 ns, Max = 35.362 ns
+IQR = 1.787 ns, LowerFence = 29.291 ns, UpperFence = 36.438 ns
+ConfidenceInterval = [-2.774 ns; 68.977 ns] (CI 99.9%), Margin = 35.876 ns (108.38% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[31.786 ns ; 35.365 ns) | @@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host]   : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=ShortRun  IterationCount=3  LaunchCount=1  
+WarmupCount=3  
+
+| Method                                        | Mean     | Error    | StdDev   | Gen0   | Allocated |
+|---------------------------------------------- |---------:|---------:|---------:|-------:|----------:|
+| PendingAckShouldPiggyback                     | 32.96 ns | 28.26 ns | 1.549 ns | 0.0086 |      72 B |
+| AlreadyPiggybackedAckSuppressesAckOnlyTrigger | 33.10 ns | 35.88 ns | 1.966 ns | 0.0086 |      72 B |
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  StdDev    : Standard deviation of all measurements
+  Gen0      : GC Generation 0 collects per 1000 operations
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 ns      : 1 Nanosecond (0.000000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:19 (19.7 sec), executed benchmarks: 2
+
+Global total time: 00:00:39 (39.19 sec), executed benchmarks: 2
+// * Artifacts cleanup *
+Artifacts cleanup is finished

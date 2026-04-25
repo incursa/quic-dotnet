@@ -1794,23 +1794,30 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 512)];
-        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten))
+        if (!TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackFramePayload))
         {
             return false;
         }
 
-        if (frameBytesWritten > buffer.Length)
-        {
-            return false;
-        }
-
-        if (frameBytesWritten < buffer.Length)
-        {
-            buffer.AsSpan(frameBytesWritten).Fill(0);
-        }
-
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, ackFramePayload.Length)];
+        ackFramePayload.CopyTo(buffer.AsSpan());
         payload = buffer;
+        return true;
+    }
+
+    private static bool TryBuildOutboundAckFramePayload(QuicAckFrame ackFrame, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[512];
+        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten)
+            || frameBytesWritten <= 0
+            || frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        payload = buffer.AsSpan(0, frameBytesWritten).ToArray();
         return true;
     }
 

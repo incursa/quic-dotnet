@@ -19567,17 +19567,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0018"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0018"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0018"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket"
         ]
       }
     },
@@ -19593,17 +19600,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0018"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0018"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0018"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck"
         ]
       }
     },
@@ -19653,17 +19667,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0018"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0018"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0018"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingTriggersAckOnlyPacketWithoutInjectedAckElicitingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::OpenOutboundStreamAsync_DoesNotPiggybackAckAfterTheSameAckTriggerWasAlreadySent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_PiggybackedAckSuppressesFeedbackLoopUntilANewerAckElicitingPacketArrives"
         ]
       }
     },

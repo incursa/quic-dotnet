@@ -10835,13 +10835,19 @@ An endpoint that is only sending ACK frames will not receive acknowledgments fro
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0018
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0018
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0018
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket
 
 ## REQ-QUIC-RFC9000-S13P2P1-0010 Send ACK frames with other frames when there is new ack-eliciting data
 An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.
@@ -10849,13 +10855,19 @@ An endpoint SHOULD send an ACK frame with other frames when there are new ack-el
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0018
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0018
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0018
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck
 
 ## REQ-QUIC-RFC9000-S13P2P1-0011 Delay ACK frames for non-ack-eliciting packets until needed
 When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.
@@ -10884,13 +10896,20 @@ In that case, an endpoint MUST NOT send an ack-eliciting frame in all packets th
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0018
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0018
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0018
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::ReceivedPingTriggersAckOnlyPacketWithoutInjectedAckElicitingFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::OpenOutboundStreamAsync_DoesNotPiggybackAckAfterTheSameAckTriggerWasAlreadySent
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs::Fuzz_PiggybackedAckSuppressesFeedbackLoopUntilANewerAckElicitingPacketArrives
 
 ## REQ-QUIC-RFC9000-S13P2P1-0013 Send ACK frames without delay for out-of-order or gap-detecting packets
 To assist loss detection at the sender, an endpoint SHOULD generate and send an ACK frame without delay when it receives an ack-eliciting packet that has a packet number less than another ack-eliciting packet that has been received, or when the packet has a packet number larger than the highest-numbered ack-eliciting packet that has been received and there are missing packets between that packet and this packet.

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0018",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Application ACK Piggyback Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0018",
+    "WI-QUIC-RFC9000-0018"
+  ],
+  "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded active-path 1-RTT Application Data ACK piggyback policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-S13P2P1-0012"
+  ],
+  "scope": "This verification covers active-path 1-RTT Application Data packet composition when ACK-generation state already contains pending ack-eliciting Application Data receipts, plus ACK-only feedback-loop protection for the same supported lane.",
+  "expected_result": "Focused tests prove that pending Application Data ACK state is piggybacked onto outbound stream-open and stream-write packets, no ACK frame is invented when no ACK is pending, ACK-only packets emitted after inbound 1-RTT PING contain only ACK plus padding and remain non-ack-eliciting/non-retransmittable, and a sent piggybacked ACK suppresses duplicate ACK-only or repeated piggyback triggers until a newer ack-eliciting packet arrives. BenchmarkDotNet Dry and Short jobs validate the permanent ACK piggyback policy benchmark suite without making public or MSQUIC comparison claims. SpecTrace render/check must pass for the touched artifacts; repository-wide JSON validation output is preserved even if the current core profile still reports standing residual Markdown and unresolved-reference backlog outside the focused runtime proof.",
+  "procedure": [
+    "Run the focused RFC 9000 requirement-home tests for S13P2P1-0009, S13P2P1-0010, and S13P2P1-0012.",
+    "Run the ACK piggyback policy benchmark suite with BenchmarkDotNet Dry and Short jobs and preserve logs and reports.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Run canonical SpecTrace JSON validation and preserve the output, including standing repository-wide residual failures if present.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "1-RTT Application Data packet protection material is available.",
+    "The active path is validated and can send ordinary packets.",
+    "ACK-generation state has already recorded pending Application Data packet receipts before the piggyback composition check.",
+    "Initial, Handshake, candidate-path, endpoint interop, public API, and general delayed-ACK timer behavior are outside this verification."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
+    "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/focused-rfc9000-ack-piggyback-tests.log",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/full-rfc9000-s13p2p1-tests.log",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/spec-trace-validate.log",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/render.log",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/render-check.log",
+    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/git-diff-check.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-dry.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-short.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/BenchmarkDotNet.Artifacts/results"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Benchmark Boundary",
+      "content": "The benchmark evidence is an internal Incursa-only policy benchmark for ACK-generation checks used by the active-path 1-RTT piggyback composition floor. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
+    }
+  ],
+  "status_summary": "Focused runtime, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded active-path 1-RTT Application Data ACK piggyback policy floor. Repository-wide SpecTrace JSON validation still reports standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+}

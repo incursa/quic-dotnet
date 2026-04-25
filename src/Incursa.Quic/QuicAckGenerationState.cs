@@ -120,7 +120,17 @@ internal sealed class QuicAckGenerationState
             return true;
         }
 
-        if (!TryGetAckElicitingStats(state, out _, out ulong largestAckElicitingReceivedAtMicros, out int ackElicitingPacketCount))
+        if (!TryGetAckElicitingStats(
+                state,
+                out ulong largestAckElicitingPacketNumber,
+                out ulong largestAckElicitingReceivedAtMicros,
+                out int ackElicitingPacketCount))
+        {
+            return false;
+        }
+
+        if (state.LastAckFrameTriggerPacketNumber.HasValue
+            && largestAckElicitingPacketNumber <= state.LastAckFrameTriggerPacketNumber.Value)
         {
             return false;
         }
@@ -155,8 +165,8 @@ internal sealed class QuicAckGenerationState
             return false;
         }
 
-        if (state.LastAckOnlyTriggerPacketNumber.HasValue
-            && largestAckElicitingPacketNumber <= state.LastAckOnlyTriggerPacketNumber.Value)
+        if (state.LastAckFrameTriggerPacketNumber.HasValue
+            && largestAckElicitingPacketNumber <= state.LastAckFrameTriggerPacketNumber.Value)
         {
             return false;
         }
@@ -227,9 +237,9 @@ internal sealed class QuicAckGenerationState
         state.LastAckFrameSentAtMicros = sentAtMicros;
         state.ImmediateAckRequired = false;
 
-        if (ackOnlyPacket && TryGetAckElicitingStats(state, out ulong largestAckElicitingPacketNumber, out _, out _))
+        if (TryGetAckElicitingStats(state, out ulong largestAckElicitingPacketNumber, out _, out _))
         {
-            state.LastAckOnlyTriggerPacketNumber = largestAckElicitingPacketNumber;
+            state.LastAckFrameTriggerPacketNumber = largestAckElicitingPacketNumber;
         }
     }
 
@@ -441,6 +451,6 @@ internal sealed class QuicAckGenerationState
 
         internal ulong? LastAckFrameSentAtMicros { get; set; }
 
-        internal ulong? LastAckOnlyTriggerPacketNumber { get; set; }
+        internal ulong? LastAckFrameTriggerPacketNumber { get; set; }
     }
 }
