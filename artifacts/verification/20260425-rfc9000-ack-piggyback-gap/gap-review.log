@@ -1,0 +1,6 @@
+gap=9000-13.2.1-ack-piggyback-feedback-loop-policy
+requirements=REQ-QUIC-RFC9000-S13P2P1-0009,REQ-QUIC-RFC9000-S13P2P1-0010,REQ-QUIC-RFC9000-S13P2P1-0012
+decision=recorded packet-composition ownership gap before implementation
+reason=ACK-generation helper does not own outgoing non-ACK frame selection or piggyback feedback-loop policy
+json-render-check=not_applicable_no_json_artifacts_changed
+focused-tests=not_applicable_gap_only_no_code_change
