@@ -118,7 +118,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzEndpointRetainedRouteStatelessResetResponse_RequiresPortMatchLoopBudgetAndRateBudget()
+    public void FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget()
     {
         Random random = new(unchecked((int)0x9001_6606));
 
@@ -133,14 +133,23 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
                 "198.51.100.66",
                 6605,
                 4433);
+            bool useSameRemoteAddress = random.Next(0, 2) == 0;
             bool useSameRemotePort = random.Next(0, 2) == 0;
             bool hasLoopPreventionState = random.Next(0, 2) == 0;
             int triggeringPacketLength = random.Next(0, 2) == 0
                 ? QuicStatelessReset.MinimumDatagramLength
                 : QuicStatelessReset.MinimumDatagramLength + random.Next(1, 24);
-            QuicConnectionPathIdentity triggerPath = useSameRemotePort
-                ? retainedPath
-                : retainedPath with { RemotePort = retainedPath.RemotePort + 1 };
+            QuicConnectionPathIdentity triggerPath = retainedPath;
+            if (!useSameRemoteAddress)
+            {
+                triggerPath = triggerPath with { RemoteAddress = $"203.0.113.{200 + iteration}" };
+            }
+
+            if (!useSameRemotePort)
+            {
+                triggerPath = triggerPath with { RemotePort = retainedPath.RemotePort + 1 };
+            }
+
             byte[] routeConnectionId = [0x66, 0x06, unchecked((byte)iteration), unchecked((byte)random.Next(1, 255))];
             byte[] token = QuicStatelessResetRequirementTestData.CreateToken((byte)(0xE0 + iteration));
             ulong resetConnectionId = (ulong)(7606 + iteration);
@@ -152,7 +161,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
                 triggerPath,
                 hasLoopPreventionState);
 
-            if (!useSameRemotePort)
+            if (!useSameRemoteAddress || !useSameRemotePort)
             {
                 Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, first.Disposition);
                 Assert.False(first.Emitted);
