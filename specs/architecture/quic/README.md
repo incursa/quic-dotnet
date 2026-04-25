@@ -37,6 +37,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0012.json`](ARC-QUIC-RFC9000-0012.json): canonical RFC 9000 ACK_ECN frame-codec design source
 - [`ARC-QUIC-RFC9000-0013.json`](ARC-QUIC-RFC9000-0013.json): canonical RFC 9000 NEW_CONNECTION_ID frame-codec design source
 - [`ARC-QUIC-RFC9000-0014.json`](ARC-QUIC-RFC9000-0014.json): canonical RFC 9000 connection-ID retransmission reliability design source
+- [`ARC-QUIC-RFC9000-0015.json`](ARC-QUIC-RFC9000-0015.json): canonical RFC 9000 ECN-CE immediate ACK scheduling design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

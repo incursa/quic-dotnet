@@ -10898,14 +10898,20 @@ Packets marked with the ECN Congestion Experienced (CE) codepoint in the IP head
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0015
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0015
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0015
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B11-P8-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::RecordIncomingPacket_WithCongestionExperiencedCodepointRequiresImmediateAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::RecordIncomingPacket_WithoutCongestionExperiencedCodepointKeepsApplicationDataDelayedAckEligible
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::MarkAckFrameSent_ClearsCongestionExperiencedImmediateAckUntilAnotherCePacketArrives
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed
 
 ## REQ-QUIC-RFC9000-S13P2P2-0001 determines how frequently to send acknowledgments in response to ack-eliciting packets

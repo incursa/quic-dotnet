@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0015",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 ECN-CE Immediate ACK Scheduling Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded ACK-generation proof that a processed Application Data packet marked with the ECN Congestion Experienced codepoint requires immediate ACK scheduling.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0015",
+    "VER-QUIC-RFC9000-0015"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0014"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs"
+  ],
+  "design_summary": "The sender flow controller forwards the processed-packet congestion-experienced observation into the ACK-generation state. When that flag is set for the Application Data packet number space, ACK generation marks the space as requiring an immediate ACK, causing the scheduling queries used by outgoing packet composition to report that an ACK frame should be sent without waiting for the normal delayed-ACK threshold. Marking an ACK frame as sent clears the immediate flag, and a later CE-marked packet rearms it.",
+  "data_and_state_considerations": "This slice proves the ACK scheduling state that exists after packet processing has already classified the received IP-header ECN codepoint. It does not parse IP headers, enable endpoint ECN marking, validate ACK_ECN counters, drive congestion response, or alter delayed-ACK policy for packets that are not marked CE.",
+  "edge_cases_and_constraints": [
+    "A non-CE Application Data packet remains eligible for the normal delayed-ACK path rather than setting the immediate flag.",
+    "The CE immediate-ACK flag is per packet number space and clears when an ACK frame is marked sent.",
+    "A subsequent CE-marked packet rearms immediate ACK scheduling after the prior ACK has been sent.",
+    "ACK_ECN frame construction and ECN count validation remain owned by separate requirement slices."
+  ],
+  "alternatives_considered": [
+    "Rely on the broad RFC 9000 artifact and the ACK_ECN count test only; rejected because the immediate-ACK scheduling rule needs direct requirement-home proof.",
+    "Implement endpoint ECN enablement or IP-header observation in this slice; rejected because this requirement closes only the ACK scheduling consequence once the CE observation is supplied.",
+    "Broaden the slice to congestion-control response to CE feedback; rejected because sender-side ECN validation and congestion response are separate RFC 9000 and RFC 9002 concerns."
+  ],
+  "risks": [
+    "Overstating this proof as endpoint-level ECN support would hide remaining IP-header marking and observation work.",
+    "Failing to clear the immediate flag after ACK emission would make CE-triggered scheduling sticky beyond the event it proves.",
+    "Treating ordinary non-CE Application Data packets as immediate would weaken delayed-ACK behavior and inflate ACK traffic."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only ACK-generation scheduling after the runtime has already supplied a congestion-experienced observation for a processed packet. It does not claim receiver-side IP-header ECN parsing, endpoint ECN enablement, ACK_ECN frame-codec behavior, sender-side ECN validation, congestion response, public API exposure, or interop ECN success."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0014.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs)\n- [`REQ-QUIC-RFC9000-S13P2P5-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs)"
+    }
+  ]
+}

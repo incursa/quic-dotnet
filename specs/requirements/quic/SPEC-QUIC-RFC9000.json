@@ -19683,25 +19683,31 @@
       "statement": "Packets marked with the ECN Congestion Experienced (CE) codepoint in the IP header SHOULD be acknowledged immediately.",
       "coverage": {
         "positive": "required",
-        "negative": "not_applicable",
-        "edge": "not_applicable",
+        "negative": "required",
+        "edge": "required",
         "fuzz": "not_applicable"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0015"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0015"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0015"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.1 RFC9000-S13.2.1-B11-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::RecordIncomingPacket_WithCongestionExperiencedCodepointRequiresImmediateAck",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::RecordIncomingPacket_WithoutCongestionExperiencedCodepointKeepsApplicationDataDelayedAckEligible",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs::MarkAckFrameSent_ClearsCongestionExperiencedImmediateAckUntilAnotherCePacketArrives",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
         ]
       }

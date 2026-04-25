@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0015",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 ECN-CE Immediate ACK Scheduling Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0015",
+    "VER-QUIC-RFC9000-0015"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P2P1-0014"
+  ],
+  "summary": "Add direct requirement-home proof and focused trace links for immediate ACK scheduling when a processed packet is marked ECN Congestion Experienced.",
+  "planned_changes": "- Add positive, negative, and edge requirement-home tests for `REQ-QUIC-RFC9000-S13P2P1-0014`.\n- Link the RFC 9000 Section 13.2.1 CE immediate-ACK requirement to a focused architecture, work-item, and verification artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-ce-immediate-ack/`.",
+  "verification_plan": "Run the focused RFC 9000 CE immediate-ACK requirement-home tests and the existing ACK_ECN cross-reference test, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, run `git diff --check`, and preserve evidence under `artifacts/verification/20260425-rfc9000-ce-immediate-ack/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0015"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0015"
+  ],
+  "out_of_scope": [
+    "Receiver-side IP-header ECN parsing or socket configuration.",
+    "Endpoint ECN enablement and packet marking policy.",
+    "ACK_ECN frame parsing or formatting.",
+    "Sender-side ECN ACK-count validation.",
+    "Congestion-control response to validated CE feedback.",
+    "Public API exposure for ECN behavior.",
+    "Interop-runner ECN success classification."
+  ],
+  "completion_notes": "Completed as a direct requirement-home proof over existing ACK-generation state; no production behavior changed."
+}
