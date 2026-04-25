@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0022",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Retry Replay ACK Piggyback Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0020",
+    "ARC-QUIC-RFC9000-0022",
+    "WI-QUIC-RFC9000-0022"
+  ],
+  "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Retry-selected Initial replay ACK piggyback floor.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-CRT-0122"
+  ],
+  "scope": "This verification covers Retry-selected Initial replay packet construction when ACK-generation state already contains pending ack-eliciting Initial receipts.",
+  "expected_result": "Focused tests prove that pending Initial ACK state is prepended to Retry-selected Initial replay packets, the Retry token is echoed, the Retry source connection ID remains the Initial destination connection ID, the replayed CRYPTO frame still carries the retained ClientHello bytes and stream offset after the ACK frame, packet numbers continue across Retry, no ACK frame is invented when no ACK is pending, and BenchmarkDotNet Dry and Short jobs validate the permanent long-header packet-builder benchmark addition without making public or MSQUIC comparison claims.",
+  "procedure": [
+    "Run the focused RFC 9000 S13P2P1-0010 requirement-home tests.",
+    "Run adjacent RFC 9000 S17P2P5P3 Retry replay requirement-home tests.",
+    "Run the CRT retry bootstrap requirement-home tests.",
+    "Run the QuicHandshakePacketProtectionBenchmarks suite with BenchmarkDotNet Dry and Short jobs and preserve logs and reports.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Run canonical SpecTrace JSON validation and preserve the output, including standing repository-wide residual failures if present.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "Retry bootstrap state has retained the original ClientHello, Retry source connection ID, Retry token, and Retry-selected Initial packet protection.",
+    "ACK-generation state has already recorded a pending Initial packet receipt before the Retry replay packet is composed.",
+    "Ordinary non-Retry bootstrap probe replay, endpoint interop, public API, path scheduling, and general delayed-ACK timer behavior are outside this verification."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
+    "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/focused-rfc9000-retry-replay-ack-piggyback-tests.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-rfc9000-retry-replay-tests.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-crt-retry-bootstrap-tests.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/spec-trace-validate.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/render.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/render-check.log",
+    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/git-diff-check.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-dry.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-short.log",
+    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Benchmark Boundary",
+      "content": "The benchmark evidence is an internal Incursa-only packet-builder suite for Initial and Handshake CRYPTO packet construction, retransmission construction, and Retry-selected Initial replay construction with an ACK prefix. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
+    }
+  ],
+  "status_summary": "Focused runtime, Retry replay, deterministic fuzz/property, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded Retry-selected Initial replay ACK piggyback floor. Repository-wide SpecTrace JSON validation may still report standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+}

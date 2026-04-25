@@ -10848,16 +10848,19 @@ Trace:
   - ARC-QUIC-RFC9000-0018
   - ARC-QUIC-RFC9000-0020
   - ARC-QUIC-RFC9000-0021
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
   - WI-QUIC-RFC9000-0020
   - WI-QUIC-RFC9000-0021
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
   - VER-QUIC-RFC9000-0020
   - VER-QUIC-RFC9000-0021
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10871,6 +10874,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto
 
 ## REQ-QUIC-RFC9000-S13P2P1-0010 Send ACK frames with other frames when there is new ack-eliciting data
 An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.
@@ -10882,18 +10887,21 @@ Trace:
   - ARC-QUIC-RFC9000-0019
   - ARC-QUIC-RFC9000-0020
   - ARC-QUIC-RFC9000-0021
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
   - WI-QUIC-RFC9000-0019
   - WI-QUIC-RFC9000-0020
   - WI-QUIC-RFC9000-0021
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
   - VER-QUIC-RFC9000-0019
   - VER-QUIC-RFC9000-0020
   - VER-QUIC-RFC9000-0021
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10910,6 +10918,9 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto
 
 ## REQ-QUIC-RFC9000-S13P2P1-0011 Delay ACK frames for non-ack-eliciting packets until needed
 When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.
@@ -16269,13 +16280,19 @@ Subsequent Initial packets from the client MUST include the connection ID and to
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientRetryReplayInitialPacketsCarryTheRetrySourceConnectionIdAndToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
 
 ## REQ-QUIC-RFC9000-S17P2P5P3-0002 The client copies the Source Connection ID field from the Retry packet to the Destination Con...
 The client copies the Source Connection ID field from the Retry packet to the Destination Connection ID field and MUST use this value until an Initial packet with an updated value is received; see Section 7.2.
@@ -16283,13 +16300,19 @@ The client copies the Source Connection ID field from the Retry packet to the De
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0002.cs::ClientRetryReplayInitialPacketsKeepTheRetrySourceConnectionIdAsTheirDestinationConnectionId
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
 
 ## REQ-QUIC-RFC9000-S17P2P5P3-0003 A client MUST use the same cryptographic handshake message it included in this packet
 A client MUST use the same cryptographic handshake message it included in this packet.
@@ -16297,13 +16320,19 @@ A client MUST use the same cryptographic handshake message it included in this p
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0003.cs::ClientRetryReplayInitialPacketsPreserveTheOriginalHandshakeMessageBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
 
 ## REQ-QUIC-RFC9000-S17P2P5P3-0004 A server MAY treat a packet that contains a different cryptographic handshake message as a co...
 A server MAY treat a packet that contains a different cryptographic handshake message as a connection error or discard it.
@@ -16341,13 +16370,19 @@ A client MUST NOT reset the packet number for any packet number space after proc
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0022
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0022
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0006.cs::ClientPacketNumbersContinueAcrossRetryForInitialAndZeroRttSpaces
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
 
 ## REQ-QUIC-RFC9000-S17P2P5P3-0007 In particular, 0-RTT packets MUST contain confidential information that will most likely be r...
 In particular, 0-RTT packets MUST contain confidential information that will most likely be retransmitted on receiving a Retry packet.

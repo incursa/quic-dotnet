@@ -1008,11 +1008,25 @@ Notes:
 The library bootstrap path MUST retain the original destination connection ID, the server-provided Retry source connection ID, and the Retry token across exactly one valid Retry, rederive client Initial packet protection from the Retry source connection ID for the replayed attempt, and keep the echoed token plus the Retry-selected Initial keys on later probe-driven replays until handshake progress supersedes them; this slice must not add interop-runner retry dispatch, public API widening, transfer generalization, broader TLS-policy work, 0-RTT, key update, or broad token-lifecycle behavior.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0020
+  - ARC-QUIC-RFC9000-0022
+- Implemented By:
+  - WI-QUIC-CRT-0020
+  - WI-QUIC-RFC9000-0022
+- Verified By:
+  - VER-QUIC-CRT-0020
+  - VER-QUIC-RFC9000-0022
 - Source Refs:
   - RFC 9000 Sections 7.2, 8.1, and 17.2.5
   - RFC 9001 Sections 5.2 and 5.8
   - RFC 9002 Section 6.3
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::ClientRetryReplayRetainsTheInitialClientHelloAndRetryMetadataExactlyOnce
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::RecoveryProbeAfterRetryRetainsTheRetrySelectedInitialKeysAndToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending
 
 Notes:
 - The helper-backed Retry integrity and `retry_source_connection_id` checks already exist; the missing seam is bootstrap state ownership across one replay plus the Retry-selected Initial key redrive that peers enforce on the wire.

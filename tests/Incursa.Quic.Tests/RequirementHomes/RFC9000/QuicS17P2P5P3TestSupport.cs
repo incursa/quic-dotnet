@@ -42,18 +42,38 @@ internal static class QuicS17P2P5P3TestSupport
                 out int tokenLengthBytesConsumed));
             Assert.True(tokenLength <= (ulong)(versionSpecificData.Length - tokenLengthBytesConsumed));
 
+            ulong packetNumber = QuicS13AckPiggybackTestSupport.ReadLongHeaderPacketNumber(
+                openedPacket,
+                payloadOffset);
             byte[] retryToken = versionSpecificData.Slice(tokenLengthBytesConsumed, checked((int)tokenLength)).ToArray();
+            ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+            QuicAckFrame? ackFrame = null;
+            if (QuicFrameCodec.TryParseAckFrame(
+                payload,
+                out QuicAckFrame parsedAckFrame,
+                out int ackBytesConsumed))
+            {
+                ackFrame = parsedAckFrame;
+                payload = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
+            }
+            else
+            {
+                payload = QuicS13AckPiggybackTestSupport.SkipPadding(payload);
+            }
+
             Assert.True(QuicFrameCodec.TryParseCryptoFrame(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
+                payload,
                 out QuicCryptoFrame cryptoFrame,
                 out _));
 
             packets.Add(new RetryReplayInitialPacket(
                 openedPacket,
+                packetNumber,
                 openedDestinationConnectionId.ToArray(),
                 retryToken,
                 cryptoFrame.Offset,
-                cryptoFrame.CryptoData.ToArray()));
+                cryptoFrame.CryptoData.ToArray(),
+                ackFrame));
         }
 
         return packets.ToArray();
@@ -61,8 +81,10 @@ internal static class QuicS17P2P5P3TestSupport
 
     internal sealed record RetryReplayInitialPacket(
         byte[] OpenedPacket,
+        ulong PacketNumber,
         byte[] DestinationConnectionId,
         byte[] Token,
         ulong CryptoOffset,
-        byte[] CryptoPayload);
+        byte[] CryptoPayload,
+        QuicAckFrame? AckFrame);
 }

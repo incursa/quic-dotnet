@@ -28,6 +28,7 @@ public class QuicHandshakePacketProtectionBenchmarks
     private QuicHandshakeFlowCoordinator initialPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator initialAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator initialRetransmissionAckPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator retrySelectedInitialAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakePacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakeAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakeRetransmissionAckPacketBuilder = default!;
@@ -36,6 +37,7 @@ public class QuicHandshakePacketProtectionBenchmarks
     private byte[] recoveredPacket = [];
     private byte[] cryptoPayload = [];
     private byte[] ackFramePayload = [];
+    private byte[] retryToken = [];
 
     /// <summary>
     /// Prepares representative Handshake packet inputs and reusable buffers.
@@ -102,9 +104,11 @@ public class QuicHandshakePacketProtectionBenchmarks
 
         cryptoPayload = CreateSequentialBytes(0x41, 96);
         ackFramePayload = BuildAckFramePayload(largestAcknowledged: 23);
+        retryToken = CreateSequentialBytes(0xA1, 32);
         initialPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         initialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         initialRetransmissionAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        retrySelectedInitialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakePacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakeAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakeRetransmissionAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
@@ -178,6 +182,25 @@ public class QuicHandshakePacketProtectionBenchmarks
             token: ReadOnlySpan<byte>.Empty,
             prefixFramePayload: ackFramePayload,
             protection: initialPacketProtection,
+            out _,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Retry-selected Initial replay construction with a Retry token and ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildRetrySelectedInitialReplayPacketWithAck()
+    {
+        return retrySelectedInitialAckPacketBuilder.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            DestinationConnectionId,
+            retryToken,
+            ackFramePayload,
+            initialPacketProtection,
             out _,
             out byte[] packet)
             ? packet.Length
