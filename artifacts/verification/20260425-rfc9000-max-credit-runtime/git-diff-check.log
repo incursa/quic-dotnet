@@ -1,0 +1,20 @@
+git diff --check passed
+
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-20260425-090139.log:299: trailing whitespace.
++Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-20260425-090139.log:300: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md:9: trailing whitespace.
++Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md:10: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report.html:22: trailing whitespace.
++<pre><code>Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report.html:23: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/quic-connection-stream-state-benchmark-dry.log:299: trailing whitespace.
++Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/verification/20260425-rfc9000-max-credit-runtime/quic-connection-stream-state-benchmark-dry.log:300: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+git diff --cached --check passed

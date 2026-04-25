@@ -31,6 +31,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0006.json`](VER-QUIC-RFC9000-0006.json): canonical RFC 9000 DPLPMTUD probe-tracking verification source
 - [`VER-QUIC-RFC9000-0007.json`](VER-QUIC-RFC9000-0007.json): canonical RFC 9000 STREAMS_BLOCKED runtime emission verification source
 - [`VER-QUIC-RFC9000-0008.json`](VER-QUIC-RFC9000-0008.json): canonical RFC 9000 DATA_BLOCKED runtime emission verification source
+- [`VER-QUIC-RFC9000-0009.json`](VER-QUIC-RFC9000-0009.json): canonical RFC 9000 MAX_DATA and MAX_STREAM_DATA runtime credit publication verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

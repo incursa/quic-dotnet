@@ -64,6 +64,37 @@ public class QuicConnectionStreamStateBenchmarks
     }
 
     [Benchmark]
+    public ulong ReceiveHeadAndEmptyReadDoesNotPublishCredit()
+    {
+        QuicConnectionStreamState state = CreateState();
+        ReadOnlySpan<byte> payload = streamData;
+        QuicStreamFrame frame = new(
+            0x0E,
+            new QuicStreamId(1),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: (ulong)payload.Length,
+            fin: false,
+            payload,
+            payload.Length);
+        state.TryReceiveStreamFrame(frame, out _);
+
+        state.TryReadStreamData(
+            1,
+            Span<byte>.Empty,
+            out int bytesWritten,
+            out bool completed,
+            out QuicMaxDataFrame maxDataFrame,
+            out QuicMaxStreamDataFrame maxStreamDataFrame,
+            out _);
+        return (ulong)bytesWritten
+            + maxDataFrame.MaximumData
+            + maxStreamDataFrame.MaximumStreamData
+            + (completed ? 1UL : 0UL);
+    }
+
+    [Benchmark]
     public ulong ReceiveResetBufferedDataPublishesCredit()
     {
         QuicConnectionStreamState state = CreateState();

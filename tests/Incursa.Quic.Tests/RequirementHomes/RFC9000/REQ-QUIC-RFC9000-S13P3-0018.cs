@@ -66,6 +66,13 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0016")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -136,6 +143,50 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
 
         Assert.True(sawMaxData);
         Assert.True(sawMaxStreamData);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0017")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0018")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, (ulong)stream.Id, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame streamFrame));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] readBuffer = [];
+        int bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length);
+
+        Assert.Equal(0, bytesRead);
+        Assert.Empty(outboundEffects);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(
+            (ulong)stream.Id,
+            out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(0UL, snapshot.ReadOffset);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
     }
 
     [Fact]

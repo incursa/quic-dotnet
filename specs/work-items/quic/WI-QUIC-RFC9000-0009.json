@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0009",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 MAX_DATA and MAX_STREAM_DATA Runtime Credit Publication Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0009",
+    "VER-QUIC-RFC9000-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P1-0006",
+    "REQ-QUIC-RFC9000-S4P1-0007",
+    "REQ-QUIC-RFC9000-S4P1-0009",
+    "REQ-QUIC-RFC9000-S4P2-0005",
+    "REQ-QUIC-RFC9000-S13P3-0015",
+    "REQ-QUIC-RFC9000-S13P3-0016",
+    "REQ-QUIC-RFC9000-S13P3-0017",
+    "REQ-QUIC-RFC9000-S13P3-0018",
+    "REQ-QUIC-RFC9000-S13P3-0019"
+  ],
+  "summary": "Add direct protected-packet proof and permanent benchmark coverage for active-runtime MAX_DATA and MAX_STREAM_DATA credit publication after receive-side application reads consume bytes.",
+  "planned_changes": "- Multi-tag the existing protected-packet read proof so the receiver credit-advertisement requirements point at real outbound MAX_DATA and MAX_STREAM_DATA packets.\n- Add negative runtime coverage proving empty reads do not publish MAX_DATA or MAX_STREAM_DATA frames.\n- Keep the existing terminal-stream MAX_STREAM_DATA suppression proof linked to the bounded runtime credit publication slice.\n- Add a permanent BenchmarkDotNet case for the stream-state helper branch that performs an empty read without publishing credit.\n- Add focused architecture and verification artifacts for the bounded runtime credit publication slice.",
+  "verification_plan": "Run the focused RFC 9000 S4P1/S4P2/S13P3 requirement-home tests, run the MAX_DATA and MAX_STREAM_DATA frame-codec fuzz coverage, run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-rfc9000-max-credit-runtime/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0009"
+  ],
+  "out_of_scope": [
+    "Dynamic RTT-based receiver-side flow-control autotuning.",
+    "Packet coalescing or opportunistic batching policy.",
+    "Changing DATA_BLOCKED, STREAM_DATA_BLOCKED, or STREAMS_BLOCKED behavior.",
+    "Public API surface changes.",
+    "0-RTT.",
+    "Key update.",
+    "Migration behavior.",
+    "A general stream scheduler."
+  ],
+  "completion_notes": "Completed as a proof and benchmark topoff over the existing runtime MAX_DATA and MAX_STREAM_DATA publication path; no production behavior changed."
+}

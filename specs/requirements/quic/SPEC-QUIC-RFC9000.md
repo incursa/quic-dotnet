@@ -1835,15 +1835,20 @@ Subsequently, a receiver MUST send MAX_STREAM_DATA or MAX_DATA frames to adverti
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S4P1-0007 Advertise larger stream limits with MAX_STREAM_DATA
 A receiver MAY advertise a larger limit for a stream by sending a MAX_STREAM_DATA frame with the corresponding stream ID.
@@ -1851,15 +1856,20 @@ A receiver MAY advertise a larger limit for a stream by sending a MAX_STREAM_DAT
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B7-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S4P1-0008 Make MAX_STREAM_DATA indicate an absolute stream offset
 A MAX_STREAM_DATA frame MUST indicate the maximum absolute byte offset of a stream.
@@ -1883,10 +1893,13 @@ A receiver MAY advertise a larger limit for a connection by sending a MAX_DATA f
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
@@ -1894,6 +1907,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_IgnoresSmallerConnectionLimit
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S4P1-0010 Track cumulative bytes for connection flow control
 A receiver MUST maintain a cumulative sum of bytes received on all streams to check for violations of the advertised connection or stream data limits.
@@ -2071,15 +2086,19 @@ A receiver MUST NOT wait for a STREAM_DATA_BLOCKED or DATA_BLOCKED frame before 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S4P4-0001 Tear down state and ignore later data after RESET_STREAM
 On receipt of a RESET_STREAM frame, an endpoint MUST tear down state for the matching stream and ignore further data arriving on that stream.
@@ -11517,15 +11536,20 @@ The current connection maximum data MUST be sent in MAX_DATA frames.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0015.cs::TryReadStreamData_SendsTheCurrentConnectionMaximumData
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S13P3-0016 Send updated MAX_DATA values when the frame is lost or the limit changes
 An updated value MUST be sent in a MAX_DATA frame if the packet containing the most recently sent MAX_DATA frame is declared lost or when the endpoint decides to update the limit.
@@ -11533,14 +11557,22 @@ An updated value MUST be sent in a MAX_DATA frame if the packet containing the m
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReadStreamData_UpdatesTheCurrentConnectionMaximumDataWhenAdditionalBytesAreRead
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReceiveResetStreamFrame_SendsTheUpdatedConnectionMaximumDataWhenTheResetReleasesBufferedBytes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReceiveResetStreamFrame_LeavesTheConnectionMaximumDataUnchangedWhenNoBufferedBytesAreReleased
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxDataFrameForRepair
 
 ## REQ-QUIC-RFC9000-S13P3-0017 Send current stream data offsets in MAX_STREAM_DATA frames
@@ -11549,15 +11581,22 @@ The current maximum stream data offset MUST be sent in MAX_STREAM_DATA frames.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_SendsTheCurrentStreamDataOffsetAfterARead
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_DoesNotEmitStreamCreditWhenNoBytesAreRead
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_LeavesStreamCreditAtTheMaximumFlowControlLimit
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
 
 ## REQ-QUIC-RFC9000-S13P3-0018 Send updated MAX_STREAM_DATA values when the frame is lost or the limit changes
 Like MAX_DATA, an updated value MUST be sent when the packet containing the most recent MAX_STREAM_DATA frame for a stream is lost or when the limit is updated.
@@ -11565,16 +11604,20 @@ Like MAX_DATA, an updated value MUST be sent when the packet containing the most
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_UpdatesTheCurrentStreamDataOffsetWhenAdditionalBytesAreRead
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryRegisterLoss_QueuesTheMostRecentMaxStreamDataPacketForRepairUntilAcknowledged
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxStreamDataFrameForRepair
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_LeavesTheCurrentStreamDataOffsetUnchangedAtTheMaximumFlowControlLimit
@@ -11585,13 +11628,19 @@ An endpoint SHOULD stop sending MAX_STREAM_DATA frames when the receiving part o
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0009
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0009
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0009
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs::TryReadStreamData_StopsAdvertisingStreamCreditOnceTheStreamIsClosedOrReset
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs::ReadAsync_DoesNotEmitAdditionalMaxStreamDataAfterTheStreamHasReachedItsFinalSize
 
 ## REQ-QUIC-RFC9000-S13P3-0020 Send the stream-type limit in MAX_STREAMS frames
 The limit on streams of a given type MUST be sent in MAX_STREAMS frames.

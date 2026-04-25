@@ -3327,20 +3327,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B6-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs::TryApplyMaxFrames_AdvertisesIncreasingLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed"
         ]
       }
     },
@@ -3356,20 +3361,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs::TryApplyMaxFrames_AdvertisesLargerAdvertisedLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed"
         ]
       }
     },
@@ -3414,13 +3424,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B8-P5-S1",
@@ -3429,7 +3442,9 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AdvertisesLargerConnectionLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_IgnoresSmallerConnectionLimit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs::TryApplyMaxDataFrame_AcceptsTheMaximumRepresentableConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed"
         ]
       }
     },
@@ -3743,20 +3758,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §4.2 RFC9000-S4.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed"
         ]
       }
     },
@@ -20831,20 +20850,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0015.cs::TryReadStreamData_SendsTheCurrentConnectionMaximumData"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0015.cs::TryReadStreamData_SendsTheCurrentConnectionMaximumData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed"
         ]
       }
     },
@@ -20860,19 +20884,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B10-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReadStreamData_UpdatesTheCurrentConnectionMaximumDataWhenAdditionalBytesAreRead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReceiveResetStreamFrame_SendsTheUpdatedConnectionMaximumDataWhenTheResetReleasesBufferedBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryReceiveResetStreamFrame_LeavesTheConnectionMaximumDataUnchangedWhenNoBufferedBytesAreReleased",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0016.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxDataFrameForRepair"
         ]
       }
@@ -20889,20 +20921,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_DoesNotEmitStreamCreditWhenNoBytesAreRead"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_SendsTheCurrentStreamDataOffsetAfterARead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_DoesNotEmitStreamCreditWhenNoBytesAreRead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0017.cs::TryReadStreamData_LeavesStreamCreditAtTheMaximumFlowControlLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed"
         ]
       }
     },
@@ -20918,13 +20957,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S2",
@@ -20933,6 +20975,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_UpdatesTheCurrentStreamDataOffsetWhenAdditionalBytesAreRead",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryRegisterLoss_QueuesTheMostRecentMaxStreamDataPacketForRepairUntilAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentMaxStreamDataFrameForRepair",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_LeavesTheCurrentStreamDataOffsetUnchangedAtTheMaximumFlowControlLimit"
@@ -20951,17 +20994,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0009"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0009"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0009"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B11-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs::TryReadStreamData_StopsAdvertisingStreamCreditOnceTheStreamIsClosedOrReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs::ReadAsync_DoesNotEmitAdditionalMaxStreamDataAfterTheStreamHasReachedItsFinalSize"
         ]
       }
     },

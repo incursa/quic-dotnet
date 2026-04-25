@@ -31,6 +31,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0006.json`](ARC-QUIC-RFC9000-0006.json): canonical RFC 9000 DPLPMTUD probe-tracking design source
 - [`ARC-QUIC-RFC9000-0007.json`](ARC-QUIC-RFC9000-0007.json): canonical RFC 9000 STREAMS_BLOCKED runtime emission design source
 - [`ARC-QUIC-RFC9000-0008.json`](ARC-QUIC-RFC9000-0008.json): canonical RFC 9000 DATA_BLOCKED runtime emission design source
+- [`ARC-QUIC-RFC9000-0009.json`](ARC-QUIC-RFC9000-0009.json): canonical RFC 9000 MAX_DATA and MAX_STREAM_DATA runtime credit publication design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source
