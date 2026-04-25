@@ -117,6 +117,56 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard()
+    {
+        using QuicConnectionRuntimeEndpoint endpoint = new(2, maximumStatelessResetEmissionsPerRemoteAddress: 1);
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity pathIdentity = QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity;
+        byte[] retainedRouteConnectionId = [0x66, 0x06, 0xA0, 0x09];
+        byte[] unknownRouteConnectionId = [0x66, 0x06, 0xA0, 0x0A];
+        byte[] token = QuicStatelessResetRequirementTestData.CreateToken(0xD8);
+
+        ConfigureDiscardedRetainedRouteEndpoint(endpoint, runtime, handle, pathIdentity, retainedRouteConnectionId, 6606UL, token, enteredAtTicks: 9);
+
+        QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+            CreateRetainedRouteShortHeaderDatagram(unknownRouteConnectionId, triggeringPacketLength: 76),
+            pathIdentity,
+            hasLoopPreventionState: true);
+
+        Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+        Assert.False(emission.Emitted);
+        Assert.True(emission.Datagram.IsEmpty);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard()
+    {
+        using QuicConnectionRuntimeEndpoint endpoint = new(2, maximumStatelessResetEmissionsPerRemoteAddress: 1);
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity pathIdentity = QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity;
+        byte[] routeConnectionId = [0x66, 0x06, 0xA0, 0x0B];
+
+        ConfigureDiscardedEndpointWithoutRememberedToken(endpoint, runtime, handle, pathIdentity, routeConnectionId, 6606UL, enteredAtTicks: 10);
+
+        QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+            CreateRetainedRouteShortHeaderDatagram(routeConnectionId, triggeringPacketLength: 78),
+            pathIdentity,
+            hasLoopPreventionState: true);
+
+        Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+        Assert.False(emission.Emitted);
+        Assert.True(emission.Datagram.IsEmpty);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget()
     {
@@ -186,6 +236,49 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
 
             Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.RateLimited, second.Disposition);
             Assert.False(second.Emitted);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    public void FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens()
+    {
+        Random random = new(unchecked((int)0x9001_6616));
+
+        for (int iteration = 0; iteration < 32; iteration++)
+        {
+            using QuicConnectionRuntimeEndpoint endpoint = new(2, maximumStatelessResetEmissionsPerRemoteAddress: 1);
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+            QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity retainedPath = new(
+                "203.0.113.66",
+                "198.51.100.66",
+                6616,
+                4433);
+            byte[] configuredRouteConnectionId = [0x66, 0x16, unchecked((byte)iteration), unchecked((byte)random.Next(1, 255))];
+            byte[] triggerRouteConnectionId = configuredRouteConnectionId.ToArray();
+            bool withRememberedToken = random.Next(0, 2) == 0;
+
+            if (withRememberedToken)
+            {
+                triggerRouteConnectionId[^1] ^= 0x5A;
+                byte[] token = QuicStatelessResetRequirementTestData.CreateToken((byte)(0xB0 + iteration));
+                ConfigureDiscardedRetainedRouteEndpoint(endpoint, runtime, handle, retainedPath, configuredRouteConnectionId, (ulong)(8616 + iteration), token, enteredAtTicks: iteration + 11);
+            }
+            else
+            {
+                ConfigureDiscardedEndpointWithoutRememberedToken(endpoint, runtime, handle, retainedPath, configuredRouteConnectionId, (ulong)(8616 + iteration), enteredAtTicks: iteration + 11);
+            }
+
+            QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+                CreateRetainedRouteShortHeaderDatagram(triggerRouteConnectionId, triggeringPacketLength: random.Next(72, 96)),
+                retainedPath,
+                hasLoopPreventionState: true);
+
+            Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+            Assert.False(emission.Emitted);
+            Assert.True(emission.Datagram.IsEmpty);
         }
     }
 
@@ -298,6 +391,56 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public async Task EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard()
+    {
+        using Socket serverSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        serverSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        IPEndPoint serverEndPoint = (IPEndPoint)serverSocket.LocalEndPoint!;
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+        serverSocket.Connect(clientEndPoint);
+        clientSocket.Connect(serverEndPoint);
+
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity retainedPath = new(
+            clientEndPoint.Address.ToString(),
+            serverEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            serverEndPoint.Port);
+        byte[] retainedRouteConnectionId = [0x66, 0x06, 0xA0, 0x0C];
+        byte[] unknownRouteConnectionId = [0x66, 0x06, 0xA0, 0x0D];
+        byte[] token = QuicStatelessResetRequirementTestData.CreateToken(0xD9);
+
+        ConfigureDiscardedRetainedRouteEndpoint(endpoint, runtime, handle, retainedPath, retainedRouteConnectionId, 6606UL, token, enteredAtTicks: 11);
+
+        await using QuicConnectionEndpointHost host = new(endpoint, serverSocket, retainedPath);
+        _ = host.RunAsync();
+
+        byte[] triggeringPacket = CreateRetainedRouteShortHeaderDatagram(unknownRouteConnectionId, triggeringPacketLength: 90);
+        Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
+
+        byte[] response = new byte[triggeringPacket.Length];
+        using CancellationTokenSource timeout = new(TimeSpan.FromMilliseconds(750));
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            await clientSocket.ReceiveAsync(response.AsMemory(), SocketFlags.None, timeout.Token));
+
+        QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+            triggeringPacket,
+            retainedPath,
+            hasLoopPreventionState: true);
+
+        Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+        Assert.False(emission.Emitted);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers()
     {
         await using QuicListenerHost listenerHost = new(
@@ -334,6 +477,56 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
         _ = listenerHost.RunAsync();
 
         byte[] triggeringPacket = CreateRetainedRouteShortHeaderDatagram(routeConnectionId, triggeringPacketLength: 84);
+        Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
+
+        byte[] response = new byte[triggeringPacket.Length];
+        using CancellationTokenSource timeout = new(TimeSpan.FromMilliseconds(750));
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            await clientSocket.ReceiveAsync(response.AsMemory(), SocketFlags.None, timeout.Token));
+
+        QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+            triggeringPacket,
+            retainedPath,
+            hasLoopPreventionState: true);
+
+        Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+        Assert.False(emission.Emitted);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard()
+    {
+        await using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [new SslApplicationProtocol("h3")],
+            static (_, _, _) => throw new InvalidOperationException("No connection acceptance is expected for missing-token reset suppression."),
+            listenBacklog: 1);
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
+        QuicConnectionRuntimeEndpoint endpoint = GetPrivateField<QuicConnectionRuntimeEndpoint>(listenerHost, "endpoint");
+        IPEndPoint serverEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
+        clientSocket.Connect(serverEndPoint);
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity retainedPath = new(
+            clientEndPoint.Address.ToString(),
+            serverEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            serverEndPoint.Port);
+        byte[] routeConnectionId = [0x66, 0x06, 0xA0, 0x0E];
+
+        ConfigureDiscardedEndpointWithoutRememberedToken(endpoint, runtime, handle, retainedPath, routeConnectionId, 6606UL, enteredAtTicks: 12);
+
+        _ = listenerHost.RunAsync();
+
+        byte[] triggeringPacket = CreateRetainedRouteShortHeaderDatagram(routeConnectionId, triggeringPacketLength: 94);
         Assert.Equal(triggeringPacket.Length, clientSocket.Send(triggeringPacket));
 
         byte[] response = new byte[triggeringPacket.Length];
@@ -419,6 +612,21 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
         Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: resetConnectionId));
         Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
         Assert.True(endpoint.TryRegisterStatelessResetToken(handle, resetConnectionId, token));
+        Assert.True(endpoint.TryApplyEffect(handle, new QuicConnectionDiscardConnectionStateEffect(CreateAeadLimitTerminalState(enteredAtTicks))));
+    }
+
+    private static void ConfigureDiscardedEndpointWithoutRememberedToken(
+        QuicConnectionRuntimeEndpoint endpoint,
+        QuicConnectionRuntime runtime,
+        QuicConnectionHandle handle,
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> routeConnectionId,
+        ulong resetConnectionId,
+        int enteredAtTicks)
+    {
+        Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+        Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: resetConnectionId));
+        Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
         Assert.True(endpoint.TryApplyEffect(handle, new QuicConnectionDiscardConnectionStateEffect(CreateAeadLimitTerminalState(enteredAtTicks))));
     }
 

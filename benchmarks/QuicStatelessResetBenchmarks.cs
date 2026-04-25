@@ -30,6 +30,9 @@ public class QuicStatelessResetBenchmarks
     private byte[] retainedRouteDatagram = [];
     private byte[] retainedRouteMissDatagram = [];
     private byte[] retainedRouteKnownResetDatagram = [];
+    private QuicConnectionRuntimeEndpoint missingTokenEndpoint = null!;
+    private QuicConnectionRuntime missingTokenRuntime = null!;
+    private byte[] missingTokenRetainedRouteDatagram = [];
 
     /// <summary>
     /// Prepares representative stateless-reset inputs and output buffers.
@@ -113,6 +116,20 @@ public class QuicStatelessResetBenchmarks
         {
             throw new InvalidOperationException("Failed to configure retained-route stateless reset benchmark state.");
         }
+
+        missingTokenRetainedRouteDatagram = BuildShortHeaderDatagram(alternateConnectionId, LargerDatagramLength);
+        missingTokenEndpoint = new QuicConnectionRuntimeEndpoint(
+            1,
+            maximumStatelessResetEmissionsPerRemoteAddress: int.MaxValue);
+        missingTokenRuntime = new QuicConnectionRuntime(CreateStreamState());
+        QuicConnectionHandle missingTokenHandle = missingTokenEndpoint.AllocateConnectionHandle();
+        if (!missingTokenEndpoint.TryRegisterConnection(missingTokenHandle, missingTokenRuntime)
+            || !missingTokenEndpoint.TryRegisterConnectionId(missingTokenHandle, alternateConnectionId, RetainedRouteConnectionId + 1)
+            || !missingTokenEndpoint.TryUpdateEndpointBinding(missingTokenHandle, retainedRoutePath)
+            || !missingTokenEndpoint.TryApplyEffect(missingTokenHandle, new QuicConnectionDiscardConnectionStateEffect(CreateAeadLimitTerminalState())))
+        {
+            throw new InvalidOperationException("Failed to configure missing-token retained-route stateless reset benchmark state.");
+        }
     }
 
     /// <summary>
@@ -123,6 +140,8 @@ public class QuicStatelessResetBenchmarks
     {
         retainedRouteEndpoint.Dispose();
         retainedRouteRuntime.Dispose();
+        missingTokenEndpoint.Dispose();
+        missingTokenRuntime.Dispose();
     }
 
     /// <summary>
@@ -254,6 +273,22 @@ public class QuicStatelessResetBenchmarks
             hasLoopPreventionState: true);
 
         return result.Emitted ? result.Datagram.Length : -1;
+    }
+
+    /// <summary>
+    /// Measures retained-route suppression after discard when the route had no remembered token.
+    /// </summary>
+    [Benchmark]
+    public int CreateRetainedRouteStatelessResetDatagramWithoutRememberedToken()
+    {
+        QuicConnectionStatelessResetEmissionResult result = missingTokenEndpoint.TryCreateStatelessResetDatagramForPacket(
+            missingTokenRetainedRouteDatagram,
+            retainedRoutePath,
+            hasLoopPreventionState: true);
+
+        return result.Disposition == QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable
+            ? missingTokenRetainedRouteDatagram.Length
+            : -1;
     }
 
     /// <summary>
