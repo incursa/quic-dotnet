@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9001-0004"
 artifact_type: "work_item"
 title: "QUIC RFC 9001 Post-Stop Stateless Reset Response Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9001-S6P6-0006"
@@ -54,11 +54,11 @@ Implement and prove the retained-route stateless-reset response floor after AEAD
 
 ## Verification Plan
 
-Run focused requirement-home tests for the new retained-route floor, include negative suppression coverage for remote-port mismatch, loop-prevention, and rate budget failures, refresh the stateless-reset benchmark suite, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.
+Run focused requirement-home tests for the retained-route floor, include negative suppression coverage for remote-address mismatch, remote-port mismatch, loop-prevention, and rate budget failures, refresh the stateless-reset benchmark suite, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.
 
 ## Completion Notes
 
-Planned for the retained-route response floor only. The broader response matrix remains open for any behavior that does not resolve through the retained route, remembered token, and loop/rate gates.
+Completed for the retained-route response floor only. The proof now covers same-remote-address-and-port lookup, remote-address mismatch suppression, remote-port mismatch suppression, and the loop/rate gates, while broader stateless-reset behavior remains open.
 
 ## Trace Links
 

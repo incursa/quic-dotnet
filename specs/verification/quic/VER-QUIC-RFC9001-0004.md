@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the retained-route stateless-reset response floor after AEAD-limit terminal discard, including same remote address and port lookup, missing-token suppression, loop-prevention suppression, rate-budget suppression, and host-shell forwarding through the shared endpoint helper.
+Verify the retained-route stateless-reset response floor after AEAD-limit terminal discard, including same remote address and port lookup, remote-address mismatch suppression, missing-token suppression, loop-prevention suppression, rate-budget suppression, and host-shell forwarding through the shared endpoint helper.
 
 ## Requirements Verified
 
@@ -23,14 +23,14 @@ Focused requirement-home execution, negative suppression tests, fuzz coverage fo
 ## Procedure or Approach
 
 - Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 and REQ-QUIC-RFC9001-S6P6-0006, including the endpoint-host and listener-host remote-port suppression matrix.
-- Run the retained-route response fuzz and negative suppression tests for missing token, remote-port mismatch, loop-prevention, and rate-budget cases.
+- Run the retained-route response fuzz and negative suppression tests for missing token, remote-address mismatch, remote-port mismatch, loop-prevention, and rate-budget cases.
 - Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicStatelessResetBenchmarks*"` to refresh the permanent stateless-reset benchmark evidence.
 - Render the touched SpecTrace Markdown views from JSON and run the repo-local validation checks for the changed artifacts.
 - Run `git diff --check` before committing the slice.
 
 ## Expected Result
 
-The retained-route floor emits a stateless reset only when a later packet resolves to a remembered token on the same remote address and port and the loop-prevention and rate-budget gates permit the response. Missing token state, remote-port mismatch, loop-prevention failure, or exhausted rate budget suppress the response. The refreshed benchmark suite preserves the retained-route lookup hit/miss and stateless-reset formatting paths without claiming any broader response model.
+The retained-route floor emits a stateless reset only when a later packet resolves to a remembered token on the same remote address and port and the loop-prevention and rate-budget gates permit the response. Missing token state, remote-address mismatch, remote-port mismatch, loop-prevention failure, or exhausted rate budget suppress the response. The refreshed benchmark suite preserves the retained-route lookup hit/miss and stateless-reset formatting paths without claiming any broader response model.
 
 ## Evidence
 
@@ -45,6 +45,10 @@ The retained-route floor emits a stateless reset only when a later packet resolv
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/focused-rfc9001-s6p6-tests.log
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/render.log
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/git-diff-check.log
+- artifacts/verification/20260424-rfc9001-s6p6-retained-route-address-mismatch/focused-rfc9001-s6p6-retained-route-address-tests.log
+- artifacts/verification/20260424-rfc9001-s6p6-retained-route-address-mismatch/render.log
+- artifacts/verification/20260424-rfc9001-s6p6-retained-route-address-mismatch/render-check.log
+- artifacts/verification/20260424-rfc9001-s6p6-retained-route-address-mismatch/git-diff-check.log
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260424-154648.log
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md
 - artifacts/verification/20260424-rfc9001-s6p6-retained-route-response/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.csv
@@ -52,7 +56,7 @@ The retained-route floor emits a stateless reset only when a later packet resolv
 
 ## Status
 
-Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 and REQ-QUIC-RFC9001-S6P6-0006 ran green with 21 total cases, including the new endpoint-host and listener-host remote-port suppression cases. The touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the retained-route lookup and stateless-reset helper paths. The artifact remains scoped to the retained-route same-remote-address-and-port floor; broader stateless-reset response behavior stays open.
+Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 and REQ-QUIC-RFC9001-S6P6-0006 ran green with 22 total cases, including the new remote-address mismatch, endpoint-host, and listener-host remote-port suppression cases. The touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the retained-route lookup and stateless-reset helper paths. The artifact remains scoped to the retained-route same-remote-address-and-port floor; broader stateless-reset response behavior stays open.
 
 ## Related Artifacts
 

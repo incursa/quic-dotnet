@@ -91,6 +91,32 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0006
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers()
+    {
+        using QuicConnectionRuntimeEndpoint endpoint = new(2, maximumStatelessResetEmissionsPerRemoteAddress: 1);
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity pathIdentity = QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity;
+        QuicConnectionPathIdentity triggerPath = pathIdentity with { RemoteAddress = "203.0.113.67" };
+        byte[] routeConnectionId = [0x66, 0x06, 0xA0, 0x04];
+        byte[] token = QuicStatelessResetRequirementTestData.CreateToken(0xD4);
+
+        ConfigureDiscardedRetainedRouteEndpoint(endpoint, runtime, handle, pathIdentity, routeConnectionId, 6606UL, token, enteredAtTicks: 4);
+
+        QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+            CreateRetainedRouteShortHeaderDatagram(routeConnectionId, triggeringPacketLength: 72),
+            triggerPath,
+            hasLoopPreventionState: true);
+
+        Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.TokenUnavailable, emission.Disposition);
+        Assert.False(emission.Emitted);
+        Assert.True(emission.Datagram.IsEmpty);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzEndpointRetainedRouteStatelessResetResponse_RequiresPortMatchLoopBudgetAndRateBudget()
     {
