@@ -15,6 +15,9 @@ public class QuicFrameCodecBenchmarks
     private byte[] cryptoFrame = [];
     private byte[] cryptoData = [];
     private byte[] largeStreamData = [];
+    private byte[] newConnectionIdConnectionId = [];
+    private byte[] newConnectionIdFrame = [];
+    private byte[] newConnectionIdStatelessResetToken = [];
     private byte[] streamData = [];
     private byte[] streamsBlockedFrame = [];
     private QuicStreamsBlockedFrame streamsBlockedTemplate;
@@ -76,6 +79,22 @@ public class QuicFrameCodecBenchmarks
         }
 
         ackEcnFrame = ackEcnDestination[..ackEcnBytesWritten].ToArray();
+
+        newConnectionIdConnectionId = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7];
+        newConnectionIdStatelessResetToken = [
+            0xB0, 0xB1, 0xB2, 0xB3,
+            0xB4, 0xB5, 0xB6, 0xB7,
+            0xB8, 0xB9, 0xBA, 0xBB,
+            0xBC, 0xBD, 0xBE, 0xBF];
+        QuicNewConnectionIdFrame newConnectionIdTemplate = new(0x1234, 0x1200, newConnectionIdConnectionId, newConnectionIdStatelessResetToken);
+        byte[] newConnectionIdDestination = new byte[64];
+        if (!QuicFrameCodec.TryFormatNewConnectionIdFrame(newConnectionIdTemplate, newConnectionIdDestination, out int newConnectionIdBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a NEW_CONNECTION_ID frame benchmark payload.");
+        }
+
+        newConnectionIdFrame = newConnectionIdDestination[..newConnectionIdBytesWritten].ToArray();
+
         streamsBlockedTemplate = new QuicStreamsBlockedFrame(isBidirectional: true, maximumStreams: 4);
         byte[] streamsBlockedDestination = new byte[16];
         if (!QuicFrameCodec.TryFormatStreamsBlockedFrame(streamsBlockedTemplate, streamsBlockedDestination, out int streamsBlockedBytesWritten))
@@ -193,6 +212,36 @@ public class QuicFrameCodecBenchmarks
             streamData,
             destination,
             out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures NEW_CONNECTION_ID frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseNewConnectionIdFrame()
+    {
+        return QuicFrameCodec.TryParseNewConnectionIdFrame(
+            newConnectionIdFrame,
+            out QuicNewConnectionIdFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed
+                ^ unchecked((int)frame.SequenceNumber)
+                ^ unchecked((int)frame.RetirePriorTo)
+                ^ frame.ConnectionId.Length
+                ^ frame.StatelessResetToken.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures NEW_CONNECTION_ID frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatNewConnectionIdFrame()
+    {
+        QuicNewConnectionIdFrame frame = new(0x1234, 0x1200, newConnectionIdConnectionId, newConnectionIdStatelessResetToken);
+        return QuicFrameCodec.TryFormatNewConnectionIdFrame(frame, destination, out int bytesWritten)
             ? bytesWritten
             : -1;
     }

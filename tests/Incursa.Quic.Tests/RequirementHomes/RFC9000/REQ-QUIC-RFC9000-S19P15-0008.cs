@@ -69,6 +69,9 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0008
     [Theory]
     [InlineData(1)]
     [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
+    [InlineData(20)]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0008">NEW_CONNECTION_ID frames MUST contain the following fields:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P15-0012">The Connection ID field MUST be connection ID of the specified length.</workbench-requirement>
@@ -93,6 +96,18 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0008
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0012")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0013")]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0019")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
     {

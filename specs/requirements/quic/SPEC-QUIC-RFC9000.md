@@ -20624,16 +20624,20 @@ The Type field MUST be encoded as a variable-length integer with value 0x18.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs::TryParseNewConnectionIdFrame_RejectsDifferentFrameType
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0003 The Sequence Number field MUST be encoded as a variable-length integer
 The Sequence Number field MUST be encoded as a variable-length integer.
@@ -20641,16 +20645,20 @@ The Sequence Number field MUST be encoded as a variable-length integer.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0004 The Retire Prior To field MUST be encoded as a variable-length integer
 The Retire Prior To field MUST be encoded as a variable-length integer.
@@ -20658,16 +20666,20 @@ The Retire Prior To field MUST be encoded as a variable-length integer.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0005 The Length field MUST be 8 bits long
 The Length field MUST be 8 bits long.
@@ -20675,17 +20687,21 @@ The Length field MUST be 8 bits long.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0006 The Connection ID field MUST be between 8 and 160 bits long
 The Connection ID field MUST be between 8 and 160 bits long.
@@ -20693,17 +20709,21 @@ The Connection ID field MUST be between 8 and 160 bits long.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S6
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0007 The Stateless Reset Token field MUST be 128 bits long
 The Stateless Reset Token field MUST be 128 bits long.
@@ -20711,16 +20731,20 @@ The Stateless Reset Token field MUST be 128 bits long.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S7
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0008 NEW_CONNECTION_ID frames MUST contain the following fields:
 NEW_CONNECTION_ID frames MUST contain the following fields:
@@ -20728,17 +20752,20 @@ NEW_CONNECTION_ID frames MUST contain the following fields:
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0009 Retire Prior To field
 The Retire Prior To field MUST be a variable-length integer indicating which connection IDs should be retired; see Section 5.1.2.
@@ -20746,16 +20773,21 @@ The Retire Prior To field MUST be a variable-length integer indicating which con
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0010 The Length field MUST be 8-bit unsigned integer containing the length of the connection ID
 The Length field MUST be 8-bit unsigned integer containing the length of the connection ID.
@@ -20763,18 +20795,21 @@ The Length field MUST be 8-bit unsigned integer containing the length of the con
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B9-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0011 Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error...
 Values less than 1 and greater than 20 are invalid and MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -20782,16 +20817,19 @@ Values less than 1 and greater than 20 are invalid and MUST be treated as a conn
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B9-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
 
 ## REQ-QUIC-RFC9000-S19P15-0012 The Connection ID field MUST be connection ID of the specified length
 The Connection ID field MUST be connection ID of the specified length.
@@ -20799,19 +20837,22 @@ The Connection ID field MUST be connection ID of the specified length.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B10-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0013 A 128-bit value that will be used for a stateless reset when the associated connection ID MUS...
 A 128-bit value that will be used for a stateless reset when the associated connection ID MUST be used; see Section 10.3.
@@ -20819,19 +20860,22 @@ A 128-bit value that will be used for a stateless reset when the associated conn
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B11-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
-  - tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0014 An endpoint MUST NOT send this frame if it currently requires that its peer send packets with...
 An endpoint MUST NOT send this frame if it currently requires that its peer send packets with a zero-length Destination Connection ID.
@@ -20918,10 +20962,13 @@ The value in the Retire Prior To field MUST be less than or equal to the value i
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B15-P7-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15
@@ -20930,6 +20977,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_RejectsRetirePriorToGreaterThanSequenceNumber
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P15-0020 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Numb...
 Receiving a value in the Retire Prior To field that is greater than that in the Sequence Number field MUST be treated as a connection error of type FRAME_ENCODING_ERROR.
@@ -20937,10 +20985,13 @@ Receiving a value in the Retire Prior To field that is greater than that in the 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0013
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0013
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0013
 - Source Refs:
   - RFC 9000 §19.15 RFC9000-S19.15-B15-P7-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15

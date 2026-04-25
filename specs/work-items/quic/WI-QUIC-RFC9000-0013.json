@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0013",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Frame Codec Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0013",
+    "VER-QUIC-RFC9000-0013"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P15-0002",
+    "REQ-QUIC-RFC9000-S19P15-0003",
+    "REQ-QUIC-RFC9000-S19P15-0004",
+    "REQ-QUIC-RFC9000-S19P15-0005",
+    "REQ-QUIC-RFC9000-S19P15-0006",
+    "REQ-QUIC-RFC9000-S19P15-0007",
+    "REQ-QUIC-RFC9000-S19P15-0008",
+    "REQ-QUIC-RFC9000-S19P15-0009",
+    "REQ-QUIC-RFC9000-S19P15-0010",
+    "REQ-QUIC-RFC9000-S19P15-0011",
+    "REQ-QUIC-RFC9000-S19P15-0012",
+    "REQ-QUIC-RFC9000-S19P15-0013",
+    "REQ-QUIC-RFC9000-S19P15-0019",
+    "REQ-QUIC-RFC9000-S19P15-0020"
+  ],
+  "summary": "Carve direct positive, negative, edge, deterministic fuzz, and BenchmarkDotNet Dry proof for NEW_CONNECTION_ID frame parsing and formatting without claiming broader connection-ID lifecycle behavior.",
+  "planned_changes": "- Add focused architecture, work-item, and verification artifacts for the NEW_CONNECTION_ID frame-codec proof.\n- Link the involved RFC 9000 Section 19.15 codec requirements to the focused artifact set while preserving the broad RFC9000-0001 trace.\n- Replace stale broad test references with active requirement-home tests for valid field layout, length boundaries, truncation rejection, and Retire Prior To ordering.\n- Link deterministic fuzz coverage for representative valid frame shapes and truncation rejection.\n- Add permanent BenchmarkDotNet coverage for NEW_CONNECTION_ID parsing and formatting in the existing frame-codec benchmark suite.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/`.",
+  "verification_plan": "Run the focused RFC 9000 NEW_CONNECTION_ID requirement-home tests, run `QuicFrameCodecBenchmarks` with the Dry job, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, and preserve evidence under `artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0013"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0013"
+  ],
+  "out_of_scope": [
+    "Active connection-ID limit enforcement.",
+    "Peer connection-ID registry duplicate policy.",
+    "Retire Prior To orchestration beyond codec-local ordering.",
+    "RETIRE_CONNECTION_ID frame handling.",
+    "Migration routing or preferred-address behavior.",
+    "Stateless-reset response routing.",
+    "Connection-close datagram emission.",
+    "Public API controls for connection-ID lifecycle.",
+    "Interop-runner migration success classification."
+  ],
+  "completion_notes": "Completed as a proof and benchmark topoff over the existing NEW_CONNECTION_ID frame codec; no production behavior changed."
+}
