@@ -1460,6 +1460,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint
   - benchmarks/QuicStatelessResetBenchmarks.cs::SuppressRetainedRouteKnownStatelessResetResponse
 

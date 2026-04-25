@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the retained-route known-token loop-suppression matrix cell after AEAD-limit terminal discard, including suppression when the trigger is reset-shaped and carries the retained token, continued emission for different trailing tokens, exclusion of non-reset-shaped inputs, and endpoint-host no-response behavior.
+Verify the retained-route known-token loop-suppression matrix cell after AEAD-limit terminal discard, including suppression when the trigger is reset-shaped and carries the retained token, continued emission for different trailing tokens, exclusion of non-reset-shaped inputs, and connected endpoint-host plus listener-host no-response behavior.
 
 ## Requirements Verified
 
@@ -50,10 +50,14 @@ The endpoint suppresses stateless-reset response emission before rate-budget res
 - artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/render.log
 - artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/render-check.log
 - artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/git-diff-check.log
+- artifacts/verification/20260425-rfc9001-s6p6-listener-known-reset-suppression/focused-rfc9001-s6p6-token-loop-tests.log
+- artifacts/verification/20260425-rfc9001-s6p6-listener-known-reset-suppression/render.log
+- artifacts/verification/20260425-rfc9001-s6p6-listener-known-reset-suppression/render-check.log
+- artifacts/verification/20260425-rfc9001-s6p6-listener-known-reset-suppression/git-diff-check.log
 
 ## Status
 
-Passed locally on 2026-04-25. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0008 and the adjacent S6P6 retained-route/formatting guards ran green, the Dry QuicStatelessResetBenchmarks suite covered the known-reset suppression branch, the touched SpecTrace Markdown views rendered and checked cleanly from JSON, and git diff --check passed.
+Passed locally on 2026-04-25. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0008 now cover direct endpoint suppression, different-token retained-route emission, non-reset-shaped exclusion, connected endpoint-host no-response behavior, listener-host no-response behavior, and deterministic fuzz coverage; the adjacent S6P6 retained-route/formatting guards ran green, the Dry QuicStatelessResetBenchmarks suite covered the known-reset suppression branch, the touched SpecTrace Markdown views rendered and checked cleanly from JSON, and git diff --check passed.
 
 ## Related Artifacts
 
