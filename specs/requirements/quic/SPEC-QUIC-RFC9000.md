@@ -17850,18 +17850,21 @@ QUIC implementations MUST properly handle ACK frame types 0x02 and 0x03.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S1
   - RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S5
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_AcceptsAckFrameTypes02And03
 
 Notes:
 - This clause depends on both the ACK frame type definition sentence and the combined handling sentence.
@@ -17890,17 +17893,20 @@ If the frame type is 0x03, ACK frames also MUST contain the cumulative count of 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs::TryParseAckFrame_Type03CarriesEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs::TryParseAckFrame_Type03RejectsMissingEcnCountFields
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3-0004 Use ECN information to manage congestion state
 If they have enabled ECN for packets they send, QUIC implementations SHOULD use the information in the ECN section to manage their congestion state.
@@ -17978,16 +17984,20 @@ The Type field MUST be encoded as a variable-length integer with value 0x02..0x0
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3 RFC9000-S19.3-B7-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_AcceptsAckFrameTypes02And03
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_RejectsUnsupportedAckFrameType
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3-0010 The Largest Acknowledged field MUST be encoded as a variable-length integer
 The Largest Acknowledged field MUST be encoded as a variable-length integer.
@@ -18372,16 +18382,20 @@ The ACK frame MUST use the least significant bit of the type value (that is, typ
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs::TryFormatAckFrame_Type03IndicatesEcnFeedback
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs::TryFormatAckFrame_RejectsMismatchedEcnFeedbackTypeAndCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0002 The ECT0 Count field MUST be encoded as a variable-length integer
 The ECT0 Count field MUST be encoded as a variable-length integer.
@@ -18389,17 +18403,19 @@ The ECT0 Count field MUST be encoded as a variable-length integer.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0002.cs::TryFormatAckFrame_EncodesEct0CountAsVariableLengthInteger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0003 The ECT1 Count field MUST be encoded as a variable-length integer
 The ECT1 Count field MUST be encoded as a variable-length integer.
@@ -18407,17 +18423,19 @@ The ECT1 Count field MUST be encoded as a variable-length integer.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0003.cs::TryFormatAckFrame_EncodesEct1CountAsVariableLengthInteger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0004 The ECN-CE Count field MUST be encoded as a variable-length integer
 The ECN-CE Count field MUST be encoded as a variable-length integer.
@@ -18425,17 +18443,19 @@ The ECN-CE Count field MUST be encoded as a variable-length integer.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0004.cs::TryFormatAckFrame_EncodesEcnCeCountAsVariableLengthInteger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0005 The ECT0 Count field MUST be variable-length integer representing the total number of packets...
 The ECT0 Count field MUST be variable-length integer representing the total number of packets received with the ECT(0) codepoint in the packet number space of the ACK frame.
@@ -18443,17 +18463,19 @@ The ECT0 Count field MUST be variable-length integer representing the total numb
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B7-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0005.cs::TryParseAckFrame_PreservesEct0CountValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0006 The ECT1 Count field MUST be variable-length integer representing the total number of packets...
 The ECT1 Count field MUST be variable-length integer representing the total number of packets received with the ECT(1) codepoint in the packet number space of the ACK frame.
@@ -18461,17 +18483,19 @@ The ECT1 Count field MUST be variable-length integer representing the total numb
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B8-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0006.cs::TryParseAckFrame_PreservesEct1CountValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P3P2-0007 The ECN-CE Count field MUST be variable-length integer representing the total number of packe...
 The ECN-CE Count field MUST be variable-length integer representing the total number of packets received with the ECN-CE codepoint in the packet number space of the ACK frame.
@@ -18479,17 +18503,19 @@ The ECN-CE Count field MUST be variable-length integer representing the total nu
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0012
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0012
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0012
 - Source Refs:
   - RFC 9000 §19.3.2 RFC9000-S19.3.2-B9-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2
 - Test Refs:
-  - tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts
-  - tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0007.cs::TryParseAckFrame_PreservesEcnCeCountValue
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
 
 ## REQ-QUIC-RFC9000-S19P4-0001 An endpoint MUST use a RESET_STREAM frame (type=0x04) to abruptly terminate the sending part...
 An endpoint MUST use a RESET_STREAM frame (type=0x04) to abruptly terminate the sending part of a stream.

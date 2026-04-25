@@ -31904,13 +31904,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S1",
@@ -31918,9 +31921,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_AcceptsAckFrameTypes02And03"
         ]
       },
       "notes": [
@@ -31970,22 +31973,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs::TryParseAckFrame_Type03CarriesEcnCounts",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs::TryParseAckFrame_Type03RejectsMissingEcnCountFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32131,21 +32137,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B7-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_AcceptsAckFrameTypes02And03",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs::TryParseAckFrame_RejectsUnsupportedAckFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32811,21 +32821,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs::TryFormatAckFrame_Type03IndicatesEcnFeedback",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs::TryFormatAckFrame_RejectsMismatchedEcnFeedbackTypeAndCounts",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32841,22 +32855,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0002.cs::TryFormatAckFrame_EncodesEct0CountAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32872,22 +32888,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0003.cs::TryFormatAckFrame_EncodesEct1CountAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32903,22 +32921,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B4-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0004.cs::TryFormatAckFrame_EncodesEcnCeCountAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32934,22 +32954,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0005.cs::TryParseAckFrame_PreservesEct0CountValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32965,22 +32987,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0006.cs::TryParseAckFrame_PreservesEct1CountValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -32996,22 +33020,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0012"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0012"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0012"
         ],
         "upstream_refs": [
           "RFC 9000 §19.3.2 RFC9000-S19.3.2-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0007.cs::TryParseAckFrame_PreservesEcnCeCountValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs::FuzzAckFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },

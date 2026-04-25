@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0012",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 ACK_ECN Frame Codec Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0012",
+    "VER-QUIC-RFC9000-0012"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P3-0001",
+    "REQ-QUIC-RFC9000-S19P3-0003",
+    "REQ-QUIC-RFC9000-S19P3-0009",
+    "REQ-QUIC-RFC9000-S19P3P2-0001",
+    "REQ-QUIC-RFC9000-S19P3P2-0002",
+    "REQ-QUIC-RFC9000-S19P3P2-0003",
+    "REQ-QUIC-RFC9000-S19P3P2-0004",
+    "REQ-QUIC-RFC9000-S19P3P2-0005",
+    "REQ-QUIC-RFC9000-S19P3P2-0006",
+    "REQ-QUIC-RFC9000-S19P3P2-0007"
+  ],
+  "summary": "Carve direct positive, negative, deterministic fuzz, and BenchmarkDotNet Dry proof for ACK_ECN frame parsing and formatting without claiming broader endpoint ECN deployment.",
+  "planned_changes": "- Add focused architecture, work-item, and verification artifacts for the ACK_ECN frame-codec proof.\n- Link the involved RFC 9000 ACK and ACK_ECN requirements to the focused artifact set while preserving the broad RFC9000-0001 trace.\n- Fill empty ACK_ECN requirement homes for required type 0x03 counters, type-field admission, type/count mismatch rejection, varint encoding, and count preservation.\n- Reuse the deterministic ACK frame fuzz proof for representative ACK/ACK_ECN round-trips and truncation rejection.\n- Add permanent BenchmarkDotNet coverage for ACK_ECN parsing and formatting in the existing frame-codec benchmark suite.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/`.",
+  "verification_plan": "Run the focused RFC 9000 ACK/ACK_ECN requirement-home tests, run `QuicFrameCodecBenchmarks` with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0012"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0012"
+  ],
+  "out_of_scope": [
+    "Receiver-side access to IP ECN fields.",
+    "ECN count accumulation from received packets.",
+    "Sender-side ECN ACK-count validation beyond the existing separate proof.",
+    "Congestion-control response to ECN-CE marks.",
+    "Runtime ACK scheduling or ACK delay policy.",
+    "Public API controls for ECN.",
+    "Interop-runner ECN success classification."
+  ],
+  "completion_notes": "Completed as a proof and benchmark topoff over the existing ACK_ECN frame codec; no production behavior changed."
+}

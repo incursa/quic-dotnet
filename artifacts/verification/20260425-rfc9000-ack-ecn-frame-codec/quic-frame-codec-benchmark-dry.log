@@ -1,0 +1,522 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 10 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 1.68 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 19.51 sec and exited with 0
+// ***** Done, took 00:00:21 (21.51 sec)   *****
+// Found 10 benchmarks:
+//   QuicFrameCodecBenchmarks.ParseAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.ParseAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.ParseCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatLargeStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.ParseStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicFrameCodecBenchmarks.FormatStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.ParseAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4072 2244 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.ParseAckFrame --job Dry --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 1244000.00 ns, 1.2440 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 1244000.00 ns, 1.2440 ms/op
+// GC:  0 0 0 264 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 70600 has exited with code 0.
+
+Mean = 1.244 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.244 ms, Q1 = 1.244 ms, Median = 1.244 ms, Q3 = 1.244 ms, Max = 1.244 ms
+IQR = 0.000 ms, LowerFence = 1.244 ms, UpperFence = 1.244 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 9 (90.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2248 3740 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatAckFrame --job Dry --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 286600.00 ns, 286.6000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 286600.00 ns, 286.6000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 56264 has exited with code 0.
+
+Mean = 286.600 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 286.600 us, Q1 = 286.600 us, Median = 286.600 us, Q3 = 286.600 us, Max = 286.600 us
+IQR = 0.000 us, LowerFence = 286.600 us, UpperFence = 286.600 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 8 (80.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.ParseAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2924 4020 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.ParseAckEcnFrame --job Dry --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 1355500.00 ns, 1.3555 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 1355500.00 ns, 1.3555 ms/op
+// GC:  0 0 0 264 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 42876 has exited with code 0.
+
+Mean = 1.355 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.355 ms, Q1 = 1.355 ms, Median = 1.355 ms, Q3 = 1.355 ms, Max = 1.355 ms
+IQR = 0.000 ms, LowerFence = 1.355 ms, UpperFence = 1.355 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 7 (70.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3896 2848 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatAckEcnFrame --job Dry --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 257200.00 ns, 257.2000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 257200.00 ns, 257.2000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 59052 has exited with code 0.
+
+Mean = 257.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 257.200 us, Q1 = 257.200 us, Median = 257.200 us, Q3 = 257.200 us, Max = 257.200 us
+IQR = 0.000 us, LowerFence = 257.200 us, UpperFence = 257.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 6 (60.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.ParseCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 1596 4040 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.ParseCryptoFrame --job Dry --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 942000.00 ns, 942.0000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 942000.00 ns, 942.0000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 108764 has exited with code 0.
+
+Mean = 942.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 942.000 us, Q1 = 942.000 us, Median = 942.000 us, Q3 = 942.000 us, Max = 942.000 us
+IQR = 0.000 us, LowerFence = 942.000 us, UpperFence = 942.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 5 (50.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 692 3740 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatCryptoFrame --job Dry --benchmarkId 5 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 621000.00 ns, 621.0000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 621000.00 ns, 621.0000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 107460 has exited with code 0.
+
+Mean = 621.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 621.000 us, Q1 = 621.000 us, Median = 621.000 us, Q3 = 621.000 us, Max = 621.000 us
+IQR = 0.000 us, LowerFence = 621.000 us, UpperFence = 621.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 4 (40.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatLargeStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3744 1732 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatLargeStreamFrame --job Dry --benchmarkId 6 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 468100.00 ns, 468.1000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 468100.00 ns, 468.1000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 27820 has exited with code 0.
+
+Mean = 468.100 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 468.100 us, Q1 = 468.100 us, Median = 468.100 us, Q3 = 468.100 us, Max = 468.100 us
+IQR = 0.000 us, LowerFence = 468.100 us, UpperFence = 468.100 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 3 (30.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4064 3292 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatStreamFrame --job Dry --benchmarkId 7 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 458600.00 ns, 458.6000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 458600.00 ns, 458.6000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 12728 has exited with code 0.
+
+Mean = 458.600 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 458.600 us, Q1 = 458.600 us, Median = 458.600 us, Q3 = 458.600 us, Max = 458.600 us
+IQR = 0.000 us, LowerFence = 458.600 us, UpperFence = 458.600 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 2 (20.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.ParseStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3416 3432 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.ParseStreamsBlockedFrame --job Dry --benchmarkId 8 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 858700.00 ns, 858.7000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 858700.00 ns, 858.7000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 19500 has exited with code 0.
+
+Mean = 858.700 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 858.700 us, Q1 = 858.700 us, Median = 858.700 us, Q3 = 858.700 us, Max = 858.700 us
+IQR = 0.000 us, LowerFence = 858.700 us, UpperFence = 858.700 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 1 (10.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicFrameCodecBenchmarks.FormatStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4064 3292 --benchmarkName Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks.FormatStreamsBlockedFrame --job Dry --benchmarkId 9 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 271300.00 ns, 271.3000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 271300.00 ns, 271.3000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 54372 has exited with code 0.
+
+Mean = 271.300 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 271.300 us, Q1 = 271.300 us, Median = 271.300 us, Q3 = 271.300 us, Max = 271.300 us
+IQR = 0.000 us, LowerFence = 271.300 us, UpperFence = 271.300 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:27 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts\verification\20260425-rfc9000-ack-ecn-frame-codec\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report.csv
+  artifacts\verification\20260425-rfc9000-ack-ecn-frame-codec\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report-github.md
+  artifacts\verification\20260425-rfc9000-ack-ecn-frame-codec\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report.html
+
+// * Detailed results *
+QuicFrameCodecBenchmarks.ParseAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.244 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.244 ms, Q1 = 1.244 ms, Median = 1.244 ms, Q3 = 1.244 ms, Max = 1.244 ms
+IQR = 0.000 ms, LowerFence = 1.244 ms, UpperFence = 1.244 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[1.244 ms ; 1.244 ms) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatAckFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 286.600 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 286.600 us, Q1 = 286.600 us, Median = 286.600 us, Q3 = 286.600 us, Max = 286.600 us
+IQR = 0.000 us, LowerFence = 286.600 us, UpperFence = 286.600 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[286.599 us ; 286.601 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.ParseAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.355 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.355 ms, Q1 = 1.355 ms, Median = 1.355 ms, Q3 = 1.355 ms, Max = 1.355 ms
+IQR = 0.000 ms, LowerFence = 1.355 ms, UpperFence = 1.355 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[1.355 ms ; 1.356 ms) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatAckEcnFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 257.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 257.200 us, Q1 = 257.200 us, Median = 257.200 us, Q3 = 257.200 us, Max = 257.200 us
+IQR = 0.000 us, LowerFence = 257.200 us, UpperFence = 257.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[257.200 us ; 257.200 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.ParseCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 942.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 942.000 us, Q1 = 942.000 us, Median = 942.000 us, Q3 = 942.000 us, Max = 942.000 us
+IQR = 0.000 us, LowerFence = 942.000 us, UpperFence = 942.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[942.000 us ; 942.000 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatCryptoFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 621.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 621.000 us, Q1 = 621.000 us, Median = 621.000 us, Q3 = 621.000 us, Max = 621.000 us
+IQR = 0.000 us, LowerFence = 621.000 us, UpperFence = 621.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[621.000 us ; 621.000 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatLargeStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 468.100 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 468.100 us, Q1 = 468.100 us, Median = 468.100 us, Q3 = 468.100 us, Max = 468.100 us
+IQR = 0.000 us, LowerFence = 468.100 us, UpperFence = 468.100 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[468.099 us ; 468.101 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatStreamFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 458.600 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 458.600 us, Q1 = 458.600 us, Median = 458.600 us, Q3 = 458.600 us, Max = 458.600 us
+IQR = 0.000 us, LowerFence = 458.600 us, UpperFence = 458.600 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[458.599 us ; 458.601 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.ParseStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 858.700 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 858.700 us, Q1 = 858.700 us, Median = 858.700 us, Q3 = 858.700 us, Max = 858.700 us
+IQR = 0.000 us, LowerFence = 858.700 us, UpperFence = 858.700 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[858.699 us ; 858.701 us) | @
+---------------------------------------------------
+
+QuicFrameCodecBenchmarks.FormatStreamsBlockedFrame: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 271.300 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 271.300 us, Q1 = 271.300 us, Median = 271.300 us, Q3 = 271.300 us, Max = 271.300 us
+IQR = 0.000 us, LowerFence = 271.300 us, UpperFence = 271.300 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[271.300 us ; 271.300 us) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host] : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  Dry    : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=Dry  IterationCount=1  LaunchCount=1
+RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+| Method                    | Mean       | Error | Allocated |
+|-------------------------- |-----------:|------:|----------:|
+| ParseAckFrame             | 1,244.0 us |    NA |     264 B |
+| FormatAckFrame            |   286.6 us |    NA |         - |
+| ParseAckEcnFrame          | 1,355.5 us |    NA |     264 B |
+| FormatAckEcnFrame         |   257.2 us |    NA |         - |
+| ParseCryptoFrame          |   942.0 us |    NA |         - |
+| FormatCryptoFrame         |   621.0 us |    NA |         - |
+| FormatLargeStreamFrame    |   468.1 us |    NA |         - |
+| FormatStreamFrame         |   458.6 us |    NA |         - |
+| ParseStreamsBlockedFrame  |   858.7 us |    NA |         - |
+| FormatStreamsBlockedFrame |   271.3 us |    NA |         - |
+
+// * Warnings *
+MinIterationTime
+  QuicFrameCodecBenchmarks.ParseAckFrame: Dry             -> The minimum observed iteration time is 1.244ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatAckFrame: Dry            -> The minimum observed iteration time is 286.6us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.ParseAckEcnFrame: Dry          -> The minimum observed iteration time is 1.356ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatAckEcnFrame: Dry         -> The minimum observed iteration time is 257.2us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.ParseCryptoFrame: Dry          -> The minimum observed iteration time is 942us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatCryptoFrame: Dry         -> The minimum observed iteration time is 621us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatLargeStreamFrame: Dry    -> The minimum observed iteration time is 468.1us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatStreamFrame: Dry         -> The minimum observed iteration time is 458.6us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.ParseStreamsBlockedFrame: Dry  -> The minimum observed iteration time is 858.7us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicFrameCodecBenchmarks.FormatStreamsBlockedFrame: Dry -> The minimum observed iteration time is 271.3us which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 us      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:05 (5.22 sec), executed benchmarks: 10
+
+Global total time: 00:00:27 (27.63 sec), executed benchmarks: 10
+// * Artifacts cleanup *
+Artifacts cleanup is finished

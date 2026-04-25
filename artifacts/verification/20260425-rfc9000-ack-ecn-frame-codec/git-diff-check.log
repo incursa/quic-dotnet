@@ -1,0 +1,5 @@
+warning: in the working copy of 'artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-20260425-102716.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report-github.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report.html', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/quic-frame-codec-benchmark-dry.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'artifacts/verification/20260425-rfc9000-ack-ecn-frame-codec/reciprocal-trace-check.log', CRLF will be replaced by LF the next time Git touches it

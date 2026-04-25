@@ -1,0 +1,73 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0012",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 ACK_ECN Frame Codec Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded ACK_ECN frame-codec floor that parses and formats ACK frame type 0x03 with its cumulative ECN counters while rejecting missing or mismatched counter layouts.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0012",
+    "VER-QUIC-RFC9000-0012"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P3-0001",
+    "REQ-QUIC-RFC9000-S19P3-0003",
+    "REQ-QUIC-RFC9000-S19P3-0009",
+    "REQ-QUIC-RFC9000-S19P3P2-0001",
+    "REQ-QUIC-RFC9000-S19P3P2-0002",
+    "REQ-QUIC-RFC9000-S19P3P2-0003",
+    "REQ-QUIC-RFC9000-S19P3P2-0004",
+    "REQ-QUIC-RFC9000-S19P3P2-0005",
+    "REQ-QUIC-RFC9000-S19P3P2-0006",
+    "REQ-QUIC-RFC9000-S19P3P2-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicAckFrame.cs",
+    "src/Incursa.Quic/QuicEcnCounts.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicAckEcnFrameCodecTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0007.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The frame codec treats ACK frame type 0x02 as ACK without ECN counters and type 0x03 as ACK_ECN with exactly three trailing variable-length integer counters: ECT(0), ECT(1), and ECN-CE. Parsing rejects unsupported ACK type values and truncated ACK_ECN payloads that omit any ECN count field. Formatting rejects mismatches between the frame type and the presence of ECN counters so the serializer cannot emit type 0x03 without counts or type 0x02 with hidden ECN feedback.",
+  "data_and_state_considerations": "ACK_ECN codec state is frame-local. The codec preserves parsed cumulative counters in `QuicEcnCounts` and leaves receiver-side IP ECN observation, sender-side validation, congestion response, path enablement, and runtime ACK scheduling to their owning state-machine slices.",
+  "edge_cases_and_constraints": [
+    "Type 0x03 must include all three ECN count fields before parsing succeeds.",
+    "Type 0x02 must not carry ECN counts through the formatting API.",
+    "The Type field remains a QUIC variable-length integer constrained to ACK values 0x02 and 0x03 for this parser entry point.",
+    "ECT(0), ECT(1), and ECN-CE counts are encoded and decoded independently as QUIC variable-length integers.",
+    "Deterministic fuzz coverage exercises representative ACK/ACK_ECN shapes and truncation rejection."
+  ],
+  "alternatives_considered": [
+    "Leave ACK_ECN covered only by the broad RFC 9000 artifact set; rejected because the active proof needed direct requirement-home links and benchmark coverage for the wire-facing codec.",
+    "Combine ACK_ECN codec proof with endpoint ECN deployment; rejected because IP-header access, sender validation, congestion reaction, and interop ECN success are separate requirement families."
+  ],
+  "risks": [
+    "Treating ACK_ECN codec support as endpoint ECN support would overstate behavior; this slice only proves frame parsing and formatting.",
+    "Accepting truncated type 0x03 payloads would allow silently missing ECN feedback fields.",
+    "Allowing serializer type/count mismatches would let callers emit wire-inconsistent ACK frames."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only ACK and ACK_ECN frame-codec parsing, formatting, deterministic fuzz coverage, and benchmark harness coverage for RFC 9000 Section 19.3 and Section 19.3.2. It does not claim receiver-side access to IP ECN fields, ECN count accumulation from packets, sender-side ECN validation, congestion-control response to CE marks, runtime ACK scheduling policy, public API controls, or interop-runner ECN success."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`QuicAckFrame.cs`](../../../src/Incursa.Quic/QuicAckFrame.cs)\n- [`QuicEcnCounts.cs`](../../../src/Incursa.Quic/QuicEcnCounts.cs)\n- [`QuicAckEcnFrameCodecTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicAckEcnFrameCodecTestSupport.cs)\n- [`REQ-QUIC-RFC9000-S19P3-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs)\n- [`REQ-QUIC-RFC9000-S19P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0003.cs)\n- [`REQ-QUIC-RFC9000-S19P3-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0009.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0001.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0002.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0003.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0004.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0005.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0006.cs)\n- [`REQ-QUIC-RFC9000-S19P3P2-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P2-0007.cs)\n- [`QuicFrameCodecBenchmarks.cs`](../../../benchmarks/QuicFrameCodecBenchmarks.cs)"
+    }
+  ]
+}
