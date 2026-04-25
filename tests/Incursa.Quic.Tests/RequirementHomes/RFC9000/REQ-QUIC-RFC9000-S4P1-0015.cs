@@ -167,6 +167,76 @@ public sealed class REQ_QUIC_RFC9000_S4P1_0015
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0015")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 1,
+            localBidirectionalSendLimit: 8);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> openPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+        Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+            openPacket.Key.PacketNumberSpace,
+            openPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        outboundEffects.Clear();
+
+        byte[] payload = new byte[2];
+        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
+            () => stream.WriteAsync(payload, 0, payload.Length));
+
+        Assert.Contains("flow-control credit", exception.Message);
+
+        Assert.Single(outboundEffects);
+        QuicConnectionSendDatagramEffect sendEffect = Assert.IsType<QuicConnectionSendDatagramEffect>(
+            outboundEffects[0]);
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            sendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(QuicFrameCodec.TryParseDataBlockedFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicDataBlockedFrame blockedFrame,
+            out int bytesConsumed));
+
+        Assert.True(bytesConsumed > 0);
+        Assert.True(bytesConsumed <= payloadLength);
+        Assert.Equal(1UL, blockedFrame.MaximumData);
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> blockedPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Value.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            blockedPacket.Key.PacketNumberSpace,
+            blockedPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+        Assert.True(retransmission.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0015")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight()
@@ -186,6 +256,36 @@ public sealed class REQ_QUIC_RFC9000_S4P1_0015
         outboundEffects.Clear();
 
         byte[] payload = new byte[100];
+        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
+            () => stream.WriteAsync(payload, 0, payload.Length));
+
+        Assert.Contains("flow-control credit", exception.Message);
+        Assert.Empty(outboundEffects);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P1-0015")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task WriteAsync_DoesNotEmitDataBlockedWhileAnAckElicitingPacketIsStillInFlight()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 1,
+            localBidirectionalSendLimit: 8);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] payload = new byte[2];
         NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
             () => stream.WriteAsync(payload, 0, payload.Length));
 

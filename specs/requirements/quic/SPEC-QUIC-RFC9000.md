@@ -1963,15 +1963,19 @@ A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs::TryReserveSendCapacity_GeneratesBlockedFramesWhenFlowControlLimitsAreReached
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
 
 ## REQ-QUIC-RFC9000-S4P1-0015 Periodically signal blocking while flow-control limited
 A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame when it has no ack-eliciting packets in flight.
@@ -1979,16 +1983,21 @@ A sender that is flow control limited SHOULD periodically send a STREAM_DATA_BLO
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §4.1 RFC9000-S4.1-B12-P9-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_DoesNotEmitDataBlockedWhileAnAckElicitingPacketIsStillInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::TryReserveSendCapacity_ReemitsBlockedFramesWhileTheLimitRemainsClosed
 
 ## REQ-QUIC-RFC9000-S4P2-0001 Allow repeated or early credit advertisements
@@ -11623,17 +11632,21 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0007
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0007
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0007
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0022.cs::TryReserveSendCapacity_CarriesBlockedSignalsInDedicatedFrameTypes
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S13P3-0023 Scope blocked signals appropriately
@@ -11643,17 +11656,21 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0007
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0007
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0007
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0023.cs::TryReserveSendCapacity_UsesTheCorrectScopeForEachBlockedFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted
 
 ## REQ-QUIC-RFC9000-S13P3-0024 Send a new blocked frame while blocked and the latest frame is lost
@@ -11662,10 +11679,13 @@ A new frame MUST be sent if a packet containing the most recent frame for a scop
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
@@ -11673,6 +11693,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryRegisterLoss_RetainsBlockedPacketsAndAllowsAReplacementWhileStillBlocked
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryAcknowledgePacket_DoesNotRetainTheMostRecentBlockedFrameForRepair
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs::TryRegisterLoss_RetainsStreamDataBlockedPacketsAndAllowsAReplacementWhileStillBlocked
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
 
 ## REQ-QUIC-RFC9000-S13P3-0025 Include the blocking limit in blocked frames
 These frames MUST always include the limit that is causing blocking at the time that they are transmitted.
@@ -11680,15 +11701,19 @@ These frames MUST always include the limit that is causing blocking at the time 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B13-P0-S4
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0025.cs::TryReserveSendCapacity_CarriesTheCurrentBlockingLimitInEveryBlockedFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
 
 ## REQ-QUIC-RFC9000-S13P3-0026 Send PATH_CHALLENGE periodically until validation completes or is no longer needed
 A liveness or path validation check using PATH_CHALLENGE frames MUST be sent periodically until a matching PATH_RESPONSE frame is received or until there is no remaining need for liveness or path validation checking.
@@ -19996,15 +20021,19 @@ A sender SHOULD send a DATA_BLOCKED frame (type=0x14) when it wishes to send dat
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §19.12 RFC9000-S19.12-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.12
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0001.cs::TryReserveSendCapacity_ReturnsDataBlockedFrameWhenConnectionCreditIsExhausted
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
 
 ## REQ-QUIC-RFC9000-S19P12-0002 DATA_BLOCKED frames MAY be used as input to tuning of flow control algorithms; see Section 4.2
 DATA_BLOCKED frames MAY be used as input to tuning of flow control algorithms; see Section 4.2.
@@ -20064,10 +20093,13 @@ DATA_BLOCKED frames MUST contain the following field:
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0008
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0008
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0008
 - Source Refs:
   - RFC 9000 §19.12 RFC9000-S19.12-B6-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-19.12
@@ -20075,6 +20107,7 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::Fuzz_DataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight
 
 ## REQ-QUIC-RFC9000-S19P12-0006 The Maximum Data field MUST be variable-length integer indicating the connection-level limit...
 The Maximum Data field MUST be variable-length integer indicating the connection-level limit at which blocking occurred.

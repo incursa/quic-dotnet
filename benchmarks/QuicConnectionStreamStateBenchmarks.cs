@@ -96,6 +96,26 @@ public class QuicConnectionStreamStateBenchmarks
         return blockedFrame.MaximumStreams;
     }
 
+    [Benchmark]
+    public ulong ReserveSendCapacityPublishesDataBlockedFrame()
+    {
+        QuicConnectionStreamState state = CreateState(
+            connectionSendLimit: 1,
+            localBidirectionalSendLimit: 8);
+
+        state.TryOpenLocalStream(bidirectional: true, out QuicStreamId streamId, out _);
+        state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out _,
+            out _);
+
+        return dataBlockedFrame.MaximumData;
+    }
+
     private static QuicConnectionStreamState CreateState(
         ulong connectionReceiveLimit = 512,
         ulong connectionSendLimit = 512,
