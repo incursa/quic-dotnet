@@ -10814,13 +10814,20 @@ Non-ack-eliciting packets are eventually MUST acknowledged when the endpoint sen
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0017
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0017
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0017
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B5-P4-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs::TryBuildAckFrame_IncludesPriorNonAckElicitingPacketWhenAckElicitingPacketArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs::TryBuildAckFrame_PreservesNonAckElicitingPacketAcrossGapWhenAckElicitingPacketArrives
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs::Fuzz_TryBuildAckFrame_RetainsNonAckElicitingPacketsUntilAckElicitingEvent
 
 ## REQ-QUIC-RFC9000-S13P2P1-0009 that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments are included in packets with ack-eliciting frames
 An endpoint that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments MUST be included in packets with ack-eliciting frames.
@@ -10856,13 +10863,20 @@ When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY cho
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0017
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0017
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0017
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseWhenOnlyNonAckElicitingPacketsArePending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_StillDelaysNonAckElicitingOnlyPacketsAfterMaxAckDelay
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::Fuzz_ShouldIncludeAckFrameWithOutgoingPacket_DelaysNonAckElicitingOnlyPacketSets
 
 ## REQ-QUIC-RFC9000-S13P2P1-0012 Avoid infinite feedback loops when adding ack-eliciting frames
 In that case, an endpoint MUST NOT send an ack-eliciting frame in all packets that would otherwise be non-ack-eliciting.

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0017",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Non-Ack-Eliciting ACK Deferral And Inclusion Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0017",
+    "WI-QUIC-RFC9000-0017"
+  ],
+  "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, reciprocal trace inspection, and SpecTrace render/check for the bounded non-ack-eliciting ACK deferral and inclusion proof.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0008",
+    "REQ-QUIC-RFC9000-S13P2P1-0011"
+  ],
+  "scope": "This verification covers the supported ACK-generation behavior for processed Application Data packet numbers: non-ack-eliciting-only receipts do not independently request ACK emission, and retained non-ack-eliciting packet numbers are included in ACK ranges when a later ack-eliciting event causes ACK frame construction.",
+  "expected_result": "Focused tests prove non-ack-only scheduling deferral, delayed behavior after max_ack_delay, retained non-ack packet inclusion in contiguous ACK ranges, retained inclusion across gaps, and deterministic fuzz/property samples for both surfaces. No parser, serializer, wire-format, hot-path production, loss-recovery, congestion-control, packet-builder, or public API behavior is introduced by this proof slice.",
+  "procedure": [
+    "Run the focused RFC 9000 requirement-home tests for S13P2P1-0008 and S13P2P1-0011.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm the focused artifact set is reciprocal only for the intended S13P2P1 non-ack-eliciting ACK deferral and inclusion requirements.",
+    "Confirm that no ACK serialization, packet builder selection, peer recovery, congestion response, public API, or interop claim is introduced."
+  ],
+  "preconditions": [
+    "Packet processing has already recovered packet numbers for the Application Data packet number space.",
+    "Packet processing has already classified whether each processed packet is ack-eliciting.",
+    "Actual packet construction and transmission policy remain outside this ACK-generation proof slice."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs",
+    "artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/focused-rfc9000-nonack-deferral-inclusion-tests.log",
+    "artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/render.log",
+    "artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/render-check.log",
+    "artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/reciprocal-trace-check.log",
+    "artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/git-diff-check.log",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P1_0011\""
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "No Production Hot Path Change",
+      "content": "This slice adds focused trace and requirement-home proof for existing ACK-generation behavior. It does not alter parser, serializer, wire-format, state-machine, or hot-path production code; deterministic fuzz/property coverage exercises retained range and scheduling classification without requiring a benchmark refresh."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-04-25. Focused non-ack-eliciting ACK deferral and inclusion requirement-home tests passed, including deterministic fuzz/property coverage, and the focused reciprocal trace check linked only S13P2P1-0008 and S13P2P1-0011 to the new artifact set."
+}

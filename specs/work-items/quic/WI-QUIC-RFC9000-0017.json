@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0017",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Non-Ack-Eliciting ACK Deferral And Inclusion Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0017",
+    "VER-QUIC-RFC9000-0017"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P2P1-0008",
+    "REQ-QUIC-RFC9000-S13P2P1-0011"
+  ],
+  "summary": "Add direct requirement-home proof and focused trace links for delaying non-ack-eliciting-only ACK emission while retaining those packet numbers for later ACK frame construction.",
+  "planned_changes": "- Add requirement-home tests proving only non-ack-eliciting packets do not schedule immediate, outgoing, or ACK-only ACK emission.\n- Add requirement-home tests proving retained non-ack-eliciting packet numbers are included once a later ack-eliciting event causes ACK frame construction.\n- Add deterministic fuzz/property coverage for non-ack-only packet sets and later ack-eliciting events across contiguous and gapped packet numbers.\n- Link the paired RFC 9000 Section 13.2.1 non-ack-eliciting ACK deferral and inclusion requirements to a focused architecture, work-item, and verification artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/`.",
+  "verification_plan": "Run the focused RFC 9000 non-ack-eliciting ACK deferral/inclusion requirement-home tests, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, run `git diff --check`, and preserve evidence under `artifacts/verification/20260425-rfc9000-nonack-deferral-inclusion/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0017"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0017"
+  ],
+  "out_of_scope": [
+    "ACK frame wire serialization.",
+    "Packet builder frame selection.",
+    "ACK-only feedback-loop policy beyond the scheduling hints proven here.",
+    "Peer loss recovery behavior.",
+    "Congestion-control response.",
+    "Endpoint interop success classification.",
+    "Public API exposure."
+  ],
+  "completion_notes": "Completed as a direct requirement-home proof over existing ACK-generation state; no production behavior changed."
+}

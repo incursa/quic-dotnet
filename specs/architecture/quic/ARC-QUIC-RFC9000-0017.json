@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0017",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Non-Ack-Eliciting ACK Deferral And Inclusion Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded ACK-generation proof that non-ack-eliciting packets can be delayed on their own and are retained for acknowledgment when a later event causes an ACK frame to be sent.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0017",
+    "VER-QUIC-RFC9000-0017"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P2P1-0008",
+    "REQ-QUIC-RFC9000-S13P2P1-0011"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs"
+  ],
+  "design_summary": "ACK generation records processed packet numbers regardless of whether the packet is ack-eliciting, but ACK scheduling only treats ack-eliciting state as a reason to send an ACK frame. A packet set containing only non-ack-eliciting packets therefore does not request an immediate ACK, an outgoing ACK frame, or an ACK-only packet. When a later ack-eliciting packet is processed and an ACK frame is built, the retained non-ack-eliciting packet numbers remain in the ACK ranges, including across gaps.",
+  "data_and_state_considerations": "This slice proves ACK scheduling and ACK range retention for processed Application Data packets. It does not implement packet parsing, ACK frame serialization, congestion-control response, peer loss recovery, or active packet transmission policy.",
+  "edge_cases_and_constraints": [
+    "Only non-ack-eliciting packets must not independently schedule an ACK frame, even after the max_ack_delay interval has elapsed.",
+    "A retained non-ack-eliciting packet is included when a later ack-eliciting event causes ACK frame construction.",
+    "A retained non-ack-eliciting packet across a missing packet number is preserved as an additional ACK range.",
+    "Deterministic fuzz/property coverage samples non-ack-only packet sets and later ack-eliciting events across contiguous and gapped packet-number layouts."
+  ],
+  "alternatives_considered": [
+    "Treat the broad RFC 9000 artifact as sufficient; rejected because both requirement-home files were empty and the delay/inclusion pair needs direct proof.",
+    "Force ACK emission for non-ack-eliciting-only packet sets after max_ack_delay; rejected because the RFC explicitly permits delaying those ACK frames until an ack-eliciting packet arrives.",
+    "Combine this with ACK-only feedback-loop policy or outbound frame selection; rejected because those are separate requirements and do not need to change for this retention proof."
+  ],
+  "risks": [
+    "Dropping non-ack-eliciting packet receipts would violate eventual acknowledgment when a later ACK frame is sent.",
+    "Scheduling ACK-only packets for non-ack-eliciting-only receipts would weaken feedback-loop protections.",
+    "Overstating this proof as packet transmission policy would hide the separation between ACK scheduling hints and actual packet construction."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only ACK-generation retention and scheduling hints for processed Application Data packet numbers. It does not claim ACK frame serialization, packet builder selection, peer recovery behavior, congestion response, endpoint interop, or public API behavior."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0011.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs)"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+targets=REQ-QUIC-RFC9000-S13P2P1-0008,REQ-QUIC-RFC9000-S13P2P1-0011
+target-count=2
+with-0017-count=2
+missing=0
+non-target-count=0
+non-targets=
+artifact-drift-count=0
+artifact-drift=
