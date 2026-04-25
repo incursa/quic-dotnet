@@ -40,8 +40,8 @@ Implement and prove the retained-route stateless-reset response floor after AEAD
 
 - Keep the retained-route response floor exact after AEAD-limit terminal discard.
 - Align endpoint-helper emission, connected endpoint host forwarding, and listener host forwarding on the same retained-route lookup, token ownership, loop-prevention, and rate-budget gates.
-- Add requirement-home coverage for matching-route emission, remote-port mismatch suppression, loop-prevention suppression, and rate-budget suppression.
-- Refresh the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for retained-route lookup hit/miss and stateless-reset formatting.
+- Add requirement-home coverage for matching-route emission, remote-address mismatch suppression, remote-port mismatch suppression, loop-prevention suppression, and rate-budget suppression.
+- Preserve the existing permanent `QuicStatelessResetBenchmarks` evidence as the hot-path floor for retained-route lookup hit/miss and stateless-reset formatting.
 - Keep broader stateless-reset response behavior outside the retained-route floor blocked until separately traced.
 
 ## Out of Scope
