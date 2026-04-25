@@ -4,7 +4,7 @@
 
 ## Scope
 
-Verify the repeated epoch ownership model for RFC 9001 repeated key updates, including current, next, and retained-old ownership separation, per-epoch packet-number floor selection, retained-old discard synchronized with sender/recovery cleanup, and preservation of current-phase acknowledgment and repeated-update cooldown state. The current artifact records the representative later-epoch cleanup proof across phases 6 through 32 as bounded evidence rather than claiming the unbounded model is complete.
+Verify the repeated epoch ownership model for RFC 9001 repeated key updates, including current, next, and retained-old ownership separation, per-epoch packet-number floor selection, retained-old discard synchronized with sender/recovery cleanup, and preservation of current-phase acknowledgment and repeated-update cooldown state. The current artifact combines the direct lifecycle proof slice with the representative later-epoch cleanup evidence as bounded support.
 
 ## Requirements Verified
 
@@ -12,7 +12,7 @@ Verify the repeated epoch ownership model for RFC 9001 repeated key updates, inc
 
 ## Verification Method
 
-Representative requirement-home execution, negative cleanup-isolation tests, fuzz coverage for later-epoch ownership boundaries, BenchmarkDotNet coverage for repeated old-key cleanup, and SpecTrace render/validation checks.
+Focused requirement-home execution, negative ownership-isolation tests, fuzz coverage for later-epoch ownership boundaries, preserved BenchmarkDotNet evidence for repeated old-key cleanup, and SpecTrace render/validation checks.
 
 ## Preconditions
 
@@ -22,14 +22,14 @@ Representative requirement-home execution, negative cleanup-isolation tests, fuz
 
 ## Procedure or Approach
 
-- Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0005 and the repeated later-epoch cleanup cases that exercise phases 6 through 32.
-- Run the repeated old-key cleanup benchmark cases from `QuicRepeatedKeyUpdateControlBenchmarks` to preserve the representative later-epoch packet-protection and send-state path.
+- Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0006 plus the existing next-key, old-key ordering, and repeated-retention guards that prove the packet-number floor and cleanup synchronization.
+- Preserve the repeated old-key cleanup benchmark evidence from `QuicRepeatedKeyUpdateControlBenchmarks` as the permanent hot-path floor for the representative later-epoch path.
 - Render the touched SpecTrace Markdown views from JSON and run the repo-local validation checks for the changed artifacts.
 - Run `git diff --check` before committing the slice.
 
 ## Expected Result
 
-Representative later-epoch tests keep current-phase acknowledgment and cooldown ownership intact while retaining and discarding old material per phase, and the benchmark preserves the repeated old-key cleanup hot path across later epochs. The repeated epoch ownership model remains explicitly traced by REQ-QUIC-RFC9001-S6P5-0006, while the current evidence stays representative rather than exhaustive.
+The repeated epoch ownership model keeps current, next, and retained-old ownership distinct; replacement attempts fail; retained-old discard leaves current-phase acknowledgment and repeated-update cooldown intact; and the permanent benchmark evidence preserves the repeated old-key cleanup hot path across later epochs. The model remains explicitly traced by REQ-QUIC-RFC9001-S6P5-0006 with bounded representative evidence rather than a claimed unbounded ledger.
 
 ## Evidence
 
@@ -38,15 +38,22 @@ Representative later-epoch tests keep current-phase acknowledgment and cooldown 
 - src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicSenderRecoveryRuntime.cs
-- artifacts/verification/20260424-rfc9001-s6p5-representative-later-epoch/focused-rfc9001-s6p5-representative-tests.log
-- artifacts/verification/20260424-rfc9001-s6p5-representative-later-epoch/render-check.log
-- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/render.log
-- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/render-check.log
-- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/git-diff-check.log
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-0006-tests.log
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-supporting-tests.log
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/render.log
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/render-check.log
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/git-diff-check.log
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report-github.md
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report.csv
+- artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report.html
 
 ## Status
 
-Planned. Current runtime evidence proves representative later-epoch cleanup across phases 6 through 32, but not the unbounded repeated epoch ownership model. The follow-on keeps that model explicit without widening the stateless-reset matrix.
+Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0006 ran green with 3 cases, the supporting next-key, old-key ordering, and repeated-retention guard set ran green with 31 total cases, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the permanent repeated old-key cleanup benchmark evidence remains preserved from the representative later-epoch slice.
 
 ## Related Artifacts
 

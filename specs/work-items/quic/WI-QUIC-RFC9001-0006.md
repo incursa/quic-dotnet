@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9001-0006"
 artifact_type: "work_item"
 title: "QUIC RFC 9001 Repeated Epoch Ownership Follow-On Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9001-S6P5-0006"
@@ -26,7 +26,7 @@ related_artifacts:
 
 ## Summary
 
-Trace and prove the unbounded repeated epoch ownership model that keeps current, next, and retained-old 1-RTT state distinct while repeated updates remain active.
+Trace and prove the repeated epoch ownership model that keeps current, next, and retained-old 1-RTT state distinct while repeated updates remain active.
 
 ## Requirements Addressed
 
@@ -54,11 +54,11 @@ Trace and prove the unbounded repeated epoch ownership model that keeps current,
 
 ## Verification Plan
 
-Run the representative later-epoch requirement-home tests and the repeated old-key cleanup benchmark cases, add any missing negative or fuzz coverage if the ownership model exposes a new seam, render the touched SpecTrace Markdown views from JSON, and finish with git diff --check.
+Run the new lifecycle-focused repeated-epoch ownership requirement-home tests plus the existing next-key, old-key ordering, and repeated-retention guards that prove the packet-number floor and cleanup sync, preserve the repeated old-key cleanup benchmark cases, render the touched SpecTrace Markdown views from JSON, and finish with git diff --check.
 
 ## Completion Notes
 
-Planned. The current runtime only proves representative later-epoch cleanup across phases 6 through 32; this follow-on exists to make the unbounded repeated epoch ownership model explicit and keep sender/recovery cleanup traceable.
+Completed for the direct lifecycle ownership proof slice. The representative later-epoch benchmark evidence remains the hot-path floor, and the broader stateless-reset response matrix stays separate.
 
 ## Trace Links
 

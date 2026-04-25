@@ -12,19 +12,20 @@ Define the design boundary for the repeated epoch ownership model after the repr
 
 ## Design Summary
 
-The runtime already owns the repeated epoch facts in QuicOneRttKeyUpdateLifecycle and publishes them through QuicTransportTlsBridgeState. This follow-on keeps current, next, and retained-old ownership explicit, preserves current-phase acknowledgment and repeated-update cooldown ownership for the active epoch, and keeps retained-old discard synchronized with sender/recovery cleanup rather than widening the TLS bridge into a generic unbounded ledger. Representative later-epoch property coverage across phases 6 through 32 remains the bounded evidence floor.
+The runtime already owns the repeated epoch facts in QuicOneRttKeyUpdateLifecycle and publishes them through QuicTransportTlsBridgeState. This slice keeps current, next, and retained-old ownership explicit, preserves current-phase acknowledgment and repeated-update cooldown ownership for the active epoch, and keeps retained-old discard synchronized with sender/recovery cleanup rather than widening the TLS bridge into a generic unbounded ledger. Representative later-epoch property coverage across phases 6 through 32 remains the bounded evidence floor alongside the direct lifecycle requirement-home proof.
 
 ## Key Components
 
 - src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs
 - src/Incursa.Quic/QuicTransportTlsBridgeState.cs
 - src/Incursa.Quic/QuicSenderRecoveryRuntime.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs
 - benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs
 
 ## Data and State Considerations
 
-The lifecycle object keeps retained old open/protect material, retained next open material, the retained old discard deadline, the retained old key phase, the repeated-update cooldown deadline, and the acknowledged current key phase. The sender and recovery ledgers tag repeated 1-RTT packets by retained old key phase so the runtime can expire the correct old epoch without clearing current packet-protection material or current-phase ownership. The follow-on expands that ownership model to the full repeated epoch ledger while preserving the current representative later-epoch proof.
+The lifecycle object keeps retained old open/protect material, retained next open material, the retained old discard deadline, the retained old key phase, the repeated-update cooldown deadline, and the acknowledged current key phase. The sender and recovery ledgers tag repeated 1-RTT packets by retained old key phase so the runtime can expire the correct old epoch without clearing current packet-protection material or current-phase ownership. The direct lifecycle slice exercises that ownership model alongside the existing representative later-epoch proof without introducing a broader unbounded ledger.
 
 ## Edge Cases and Constraints
 

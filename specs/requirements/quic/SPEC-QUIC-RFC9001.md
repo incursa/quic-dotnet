@@ -1263,7 +1263,13 @@ Trace:
   - RFC 9001 §6.5
   - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5
 - Test Refs:
-  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_DiscardsOnlyTheRetainedPreviousPhaseAcrossRepresentativePacketSets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs::LifecycleKeepsCurrentNextAndRetainedOldOwnershipDistinctDuringRepeatedCleanup
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs::LifecycleRejectsReplacingExistingNextAndRetainedOldOwnership
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs::FuzzLifecycleOwnershipDistinctnessAcrossSampledRepeatedEpochPhases
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeRetainsPhaseOneAndSecondSuccessorReceiveKeysForApparentRepeatedPeerUpdate
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeDoesNotRaiseKeyUpdateErrorForALowerRecoveredOldKeyPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::ActiveClientRuntimePreservesCurrentPhaseAcknowledgmentGateWhenRetainedOldKeysExpire
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs::FuzzLaterRetentionExpiry_PreservesCurrentPhaseGateAcrossSampledEpochs
   - benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs::DiscardRepeatedOldRepresentativeLaterEpochPacketProtectionAndSendState
 
