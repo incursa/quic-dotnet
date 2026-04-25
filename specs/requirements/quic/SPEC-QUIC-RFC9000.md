@@ -10846,21 +10846,24 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0018
-  - ARC-QUIC-RFC9000-0019
+  - ARC-QUIC-RFC9000-0020
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
-  - WI-QUIC-RFC9000-0019
+  - WI-QUIC-RFC9000-0020
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
-  - VER-QUIC-RFC9000-0019
+  - VER-QUIC-RFC9000-0020
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoFlush_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads
 
 ## REQ-QUIC-RFC9000-S13P2P1-0010 Send ACK frames with other frames when there is new ack-eliciting data
 An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.
@@ -10869,12 +10872,18 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0018
+  - ARC-QUIC-RFC9000-0019
+  - ARC-QUIC-RFC9000-0020
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
+  - WI-QUIC-RFC9000-0019
+  - WI-QUIC-RFC9000-0020
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
+  - VER-QUIC-RFC9000-0019
+  - VER-QUIC-RFC9000-0020
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10883,6 +10892,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoFlush_IncludesPendingInitialAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::LongHeaderCryptoPacketBuilders_DoNotInventAckFramesWhenNoAckPrefixIsProvided
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads
 
 ## REQ-QUIC-RFC9000-S13P2P1-0011 Delay ACK frames for non-ack-eliciting packets until needed
 When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.

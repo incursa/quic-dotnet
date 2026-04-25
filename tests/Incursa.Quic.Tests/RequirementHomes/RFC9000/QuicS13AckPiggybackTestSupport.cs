@@ -14,6 +14,36 @@ internal static class QuicS13AckPiggybackTestSupport
             receivedAtMicros);
     }
 
+    internal static void RecordPendingAck(
+        QuicConnectionRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong receivedAtMicros)
+    {
+        runtime.SendRuntime.FlowController.RecordIncomingPacket(
+            packetNumberSpace,
+            packetNumber,
+            ackEliciting: true,
+            receivedAtMicros);
+    }
+
+    internal static byte[] CreateAckFramePayload(ulong largestAcknowledged)
+    {
+        byte[] payload = new byte[32];
+        Assert.True(QuicFrameCodec.TryFormatAckFrame(
+            new QuicAckFrame
+            {
+                FrameType = 0x02,
+                LargestAcknowledged = largestAcknowledged,
+                AckDelay = 0,
+                FirstAckRange = 0,
+            },
+            payload,
+            out int bytesWritten));
+
+        return payload.AsSpan(0, bytesWritten).ToArray();
+    }
+
     internal static byte[] OpenOutgoingApplicationPayload(
         QuicConnectionRuntime runtime,
         QuicConnectionSendDatagramEffect sendEffect)
@@ -30,6 +60,49 @@ internal static class QuicS13AckPiggybackTestSupport
         Assert.False(keyPhase);
 
         return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
+    }
+
+    internal static void AssertPayloadStartsWithAckThenCrypto(
+        ReadOnlySpan<byte> payload,
+        ulong expectedLargestAcknowledged,
+        ReadOnlySpan<byte> expectedCryptoPayload,
+        ulong expectedCryptoOffset)
+    {
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(expectedLargestAcknowledged, ackFrame.LargestAcknowledged);
+
+        ReadOnlySpan<byte> cryptoPayload = SkipPadding(payload[ackBytesConsumed..]);
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            cryptoPayload,
+            out QuicCryptoFrame cryptoFrame,
+            out int cryptoBytesConsumed));
+        Assert.Equal(expectedCryptoOffset, cryptoFrame.Offset);
+        if (!expectedCryptoPayload.IsEmpty)
+        {
+            Assert.True(cryptoFrame.CryptoData.SequenceEqual(expectedCryptoPayload));
+        }
+        else
+        {
+            Assert.False(cryptoFrame.CryptoData.IsEmpty);
+        }
+
+        Assert.True(SkipPadding(cryptoPayload[cryptoBytesConsumed..]).IsEmpty);
+    }
+
+    internal static void AssertPayloadStartsWithCryptoWithoutAck(
+        ReadOnlySpan<byte> payload,
+        ReadOnlySpan<byte> expectedCryptoPayload,
+        ulong expectedCryptoOffset)
+    {
+        Assert.False(QuicFrameCodec.TryParseAckFrame(payload, out _, out _));
+        ReadOnlySpan<byte> cryptoPayload = SkipPadding(payload);
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            cryptoPayload,
+            out QuicCryptoFrame cryptoFrame,
+            out int cryptoBytesConsumed));
+        Assert.Equal(expectedCryptoOffset, cryptoFrame.Offset);
+        Assert.True(cryptoFrame.CryptoData.SequenceEqual(expectedCryptoPayload));
+        Assert.True(SkipPadding(cryptoPayload[cryptoBytesConsumed..]).IsEmpty);
     }
 
     internal static ReadOnlySpan<byte> SkipPadding(ReadOnlySpan<byte> payload)

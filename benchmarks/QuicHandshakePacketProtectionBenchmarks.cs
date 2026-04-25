@@ -23,9 +23,17 @@ public class QuicHandshakePacketProtectionBenchmarks
 
     private QuicHandshakePacketProtection senderProtection = default!;
     private QuicHandshakePacketProtection receiverProtection = default!;
+    private QuicTlsPacketProtectionMaterial handshakePacketMaterial;
+    private QuicInitialPacketProtection initialPacketProtection = default!;
+    private QuicHandshakeFlowCoordinator initialPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator initialAckPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator handshakePacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator handshakeAckPacketBuilder = default!;
     private byte[] plaintextPacket = [];
     private byte[] protectedPacket = [];
     private byte[] recoveredPacket = [];
+    private byte[] cryptoPayload = [];
+    private byte[] ackFramePayload = [];
 
     /// <summary>
     /// Prepares representative Handshake packet inputs and reusable buffers.
@@ -49,6 +57,7 @@ public class QuicHandshakePacketProtectionBenchmarks
             throw new InvalidOperationException("Failed to create representative Handshake packet protection material.");
         }
 
+        handshakePacketMaterial = material;
         if (!QuicHandshakePacketProtection.TryCreate(material, out senderProtection))
         {
             throw new InvalidOperationException("Failed to create a representative Handshake sender protector.");
@@ -80,6 +89,21 @@ public class QuicHandshakePacketProtectionBenchmarks
         {
             throw new InvalidOperationException("Failed to produce a representative protected Handshake packet.");
         }
+
+        if (!QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            DestinationConnectionId,
+            out initialPacketProtection))
+        {
+            throw new InvalidOperationException("Failed to create representative Initial packet protection.");
+        }
+
+        cryptoPayload = CreateSequentialBytes(0x41, 96);
+        ackFramePayload = BuildAckFramePayload(largestAcknowledged: 23);
+        initialPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        initialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        handshakePacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        handshakeAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
     }
 
     /// <summary>
@@ -101,6 +125,68 @@ public class QuicHandshakePacketProtectionBenchmarks
     {
         return receiverProtection.TryOpen(protectedPacket, recoveredPacket, out int bytesWritten)
             ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Initial CRYPTO packet construction without an ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildInitialCryptoPacket()
+    {
+        return initialPacketBuilder.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            initialPacketProtection,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Initial CRYPTO packet construction with an ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildInitialCryptoPacketWithAck()
+    {
+        return initialAckPacketBuilder.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            ackFramePayload,
+            initialPacketProtection,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Handshake CRYPTO packet construction without an ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildHandshakeCryptoPacket()
+    {
+        return handshakePacketBuilder.TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            handshakePacketMaterial,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Handshake CRYPTO packet construction with an ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildHandshakeCryptoPacketWithAck()
+    {
+        return handshakeAckPacketBuilder.TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            ackFramePayload,
+            handshakePacketMaterial,
+            out byte[] packet)
+            ? packet.Length
             : -1;
     }
 
@@ -168,6 +254,26 @@ public class QuicHandshakePacketProtectionBenchmarks
         }
 
         return buffer[..bytesWritten].ToArray();
+    }
+
+    private static byte[] BuildAckFramePayload(ulong largestAcknowledged)
+    {
+        byte[] destination = new byte[32];
+        if (!QuicFrameCodec.TryFormatAckFrame(
+            new QuicAckFrame
+            {
+                FrameType = 0x02,
+                LargestAcknowledged = largestAcknowledged,
+                AckDelay = 0,
+                FirstAckRange = 0,
+            },
+            destination,
+            out int bytesWritten))
+        {
+            throw new InvalidOperationException("Failed to encode a representative ACK frame.");
+        }
+
+        return destination[..bytesWritten];
     }
 
     private static byte[] CreateSequentialBytes(byte startValue, int length)
