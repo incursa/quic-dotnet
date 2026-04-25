@@ -75,4 +75,80 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
         Assert.Equal((ulong)stream.Id, streamFrame.StreamId.Value);
         Assert.True(streamFrame.StreamData.SequenceEqual(streamData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame()
+    {
+        QuicConnectionRuntime runtime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
+        QuicConnectionPathIdentity validatedPath = QuicS9P3TokenEmissionTestSupport.ValidatedPath;
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+            runtime,
+            packetNumber: 13,
+            receivedAtMicros: 19);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                validatedPath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            validatedPath,
+            observedAtTicks: 30);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> payload = payloadBytes;
+
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(13UL, ackFrame.LargestAcknowledged);
+
+        ReadOnlySpan<byte> tokenPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(tokenPayload, out QuicNewTokenFrame newTokenFrame, out int tokenBytesConsumed));
+        Assert.True(newTokenFrame.Token.Length > 0);
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(tokenPayload[tokenBytesConsumed..]).IsEmpty);
+        Assert.False(runtime.SendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 31,
+            maxAckDelayMicros: 0));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending()
+    {
+        QuicConnectionRuntime runtime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
+        QuicConnectionPathIdentity validatedPath = QuicS9P3TokenEmissionTestSupport.ValidatedPath;
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                validatedPath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            validatedPath,
+            observedAtTicks: 30);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> payload = payloadBytes;
+
+        Assert.False(QuicFrameCodec.TryParseAckFrame(payload, out _, out _));
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(payload, out QuicNewTokenFrame newTokenFrame, out int tokenBytesConsumed));
+        Assert.True(newTokenFrame.Token.Length > 0);
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(payload[tokenBytesConsumed..]).IsEmpty);
+    }
 }

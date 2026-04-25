@@ -1303,8 +1303,21 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
+        ReadOnlyMemory<byte> packetPayload = payload;
+        QuicAckFrame? piggybackedAckFrame = null;
+        if (TryBuildApplicationAckPiggybackPayload(
+                payload,
+                nowMicros,
+                out byte[] piggybackedPayload,
+                out QuicAckFrame includedAckFrame))
+        {
+            packetPayload = piggybackedPayload;
+            piggybackedAckFrame = includedAckFrame;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
-            payload.Span,
+            packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             out ulong packetNumber,
@@ -1368,6 +1381,16 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         TrackApplicationPacket(packetNumber, protectedPacket, plaintextPayload: payload);
+        if (piggybackedAckFrame is not null)
+        {
+            sendRuntime.FlowController.MarkAckFrameSent(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                piggybackedAckFrame,
+                nowMicros,
+                ackOnlyPacket: false);
+        }
+
         sendPathIdentity = pathIdentity;
         exception = null;
         return true;

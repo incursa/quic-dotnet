@@ -2,11 +2,6 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicS13AckPiggybackTestSupport
 {
-    private static readonly byte[] PacketConnectionId =
-    [
-        0x0A, 0x0B, 0x0C,
-    ];
-
     internal static void RecordPendingApplicationAck(
         QuicConnectionRuntime runtime,
         ulong packetNumber,
@@ -23,7 +18,8 @@ internal static class QuicS13AckPiggybackTestSupport
         QuicConnectionRuntime runtime,
         QuicConnectionSendDatagramEffect sendEffect)
     {
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.False(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+        QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
         Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
             sendEffect.Datagram.Span,
             runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,

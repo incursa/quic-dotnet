@@ -6299,16 +6299,21 @@ After verifying a new client address, the server SHOULD send new address validat
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0002
+  - ARC-QUIC-RFC9000-0019
 - Implemented By:
   - WI-QUIC-RFC9000-0002
+  - WI-QUIC-RFC9000-0019
 - Verified By:
   - VER-QUIC-RFC9000-0002
+  - VER-QUIC-RFC9000-0019
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::TryBuildOutboundNewTokenPayload_WritesANewTokenFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending
 
 ## REQ-QUIC-RFC9000-S9P3-0006 Send Subsequent Packets to the Migrated Address
 If the recipient permits the migration, it MUST send subsequent packets to the new peer address.
@@ -6403,10 +6408,13 @@ After verifying a new client address, the server SHOULD send new address validat
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0002
+  - ARC-QUIC-RFC9000-0019
 - Implemented By:
   - WI-QUIC-RFC9000-0002
+  - WI-QUIC-RFC9000-0019
 - Verified By:
   - VER-QUIC-RFC9000-0002
+  - VER-QUIC-RFC9000-0019
 - Source Refs:
   - RFC 9000 §9.3 RFC9000-S9.3-B8-P7-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3
@@ -6414,6 +6422,8 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ServerValidationOfANewClientAddressEmitsANewTokenForTheValidatedPath
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::ClientValidationOfANewAddressDoesNotEmitANewToken
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs::RevalidatingTheSameAddressDoesNotEmitAnotherNewToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending
 
 ## REQ-QUIC-RFC9000-S9P3P1-0001 Limit Sending Until Address Validation
 Until a peer's address is deemed valid, an endpoint MUST limit the amount of data it sends to that address.
@@ -10836,12 +10846,15 @@ Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
   - ARC-QUIC-RFC9000-0018
+  - ARC-QUIC-RFC9000-0019
 - Implemented By:
   - WI-QUIC-RFC9000-0001
   - WI-QUIC-RFC9000-0018
+  - WI-QUIC-RFC9000-0019
 - Verified By:
   - VER-QUIC-RFC9000-0001
   - VER-QUIC-RFC9000-0018
+  - VER-QUIC-RFC9000-0019
 - Source Refs:
   - RFC 9000 §13.2.1 RFC9000-S13.2.1-B6-P5-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1
@@ -10868,6 +10881,8 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_IncludesPendingAckFrame
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::NewTokenEmissionOnValidatedPath_DoesNotInventAckFrameWhenNoAckIsPending
 
 ## REQ-QUIC-RFC9000-S13P2P1-0011 Delay ACK frames for non-ack-eliciting packets until needed
 When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.

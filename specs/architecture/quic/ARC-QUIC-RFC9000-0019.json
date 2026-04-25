@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0019",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 NEW_TOKEN ACK Piggyback Topoff Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded explicit-path 1-RTT NEW_TOKEN packet-composition topoff that reuses the Application Data ACK piggyback policy when a server emits a token after validating a client address.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0002",
+    "ARC-QUIC-RFC9000-0018",
+    "WI-QUIC-RFC9000-0019",
+    "VER-QUIC-RFC9000-0019"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P3-0005",
+    "REQ-QUIC-RFC9000-S9P3-0011",
+    "REQ-QUIC-RFC9000-S13P2P1-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs"
+  ],
+  "design_summary": "The explicit-path 1-RTT application send helper, currently used by server NEW_TOKEN emission after path validation, performs the same transient ACK-prefix composition used by the active-path stream send helper. When Application Data ACK state is pending, the helper protects ACK plus NEW_TOKEN in one Application Data packet, marks the ACK frame as sent under the carrier packet number, and keeps the original NEW_TOKEN payload as the retransmittable plaintext. If no ACK is pending, the helper emits the NEW_TOKEN payload unchanged.",
+  "data_and_state_considerations": "The topoff does not add a second ACK scheduler or a path-selection policy. It reuses the existing Application Data ACK-generation state and the existing server-only token-emission table. ACK bytes are transient packet-composition data; the sent-packet retransmission payload remains the original NEW_TOKEN frame bytes.",
+  "edge_cases_and_constraints": [
+    "Only explicit-path 1-RTT NEW_TOKEN packet composition is in scope.",
+    "No ACK frame is invented when ACK-generation state has no pending Application Data receipt.",
+    "A piggybacked ACK frame is recorded under the actual protected packet number so duplicate ACK-only sends for the same trigger remain suppressed.",
+    "Server-only NEW_TOKEN emission and per-address deduplication remain owned by ARC-QUIC-RFC9000-0002."
+  ],
+  "alternatives_considered": [
+    "Widen ARC-QUIC-RFC9000-0018 after the fact; rejected because the active-path stream-send slice was intentionally committed with a narrower boundary.",
+    "Treat all candidate-path application sends as covered; rejected because the executable seam proven here is the explicit-path NEW_TOKEN helper only.",
+    "Delay this until Initial and Handshake packet-builder piggybacking; rejected because NEW_TOKEN uses the existing 1-RTT Application Data helper and can be proven independently."
+  ],
+  "risks": [
+    "Initial and Handshake ACK piggyback policy remains unclaimed.",
+    "General candidate-path or multipath scheduling remains unclaimed beyond the server NEW_TOKEN explicit-path topoff.",
+    "Endpoint interop success and public API behavior remain outside this architecture slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers pending Application Data ACK piggybacking on server NEW_TOKEN packets emitted through the explicit-path 1-RTT application send helper. It does not claim Initial or Handshake ACK piggybacking, a general delayed-ACK timer, endpoint interop success, or broader multipath scheduling."
+    }
+  ]
+}
