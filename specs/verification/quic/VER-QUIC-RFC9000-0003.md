@@ -23,6 +23,17 @@ Execution, inspection, and benchmark evidence.
 - The permanent benchmark suite covers the retained-profile formatter path without changing the wire shape.
 - The trace links in the canonical requirement file point at the new 0003 leaf artifacts and requirement-home tests.
 
+## Evidence
+
+- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
+- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs
+- src/Incursa.Quic/QuicStatelessReset.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0029.cs
+- tests/Incursa.Quic.Tests/QuicStatelessResetUnitTests.cs
+- benchmarks/QuicStatelessResetBenchmarks.cs
+- artifacts/benchmark-baseline/20260425-rfc9000-stateless-reset-versioning-dry/benchmark.log
+- artifacts/benchmark-baseline/20260425-rfc9000-stateless-reset-versioning-dry/BenchmarkDotNet.Artifacts/results
+
 ## Status
 
 This verification artifact records the landed stateless-reset versioning slice and points at the requirement-home, runtime, and benchmark evidence in the working tree.

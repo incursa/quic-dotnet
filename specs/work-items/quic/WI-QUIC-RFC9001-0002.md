@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9001-0002"
 artifact_type: "work_item"
 title: "QUIC RFC 9001 TLS KeyUpdate Classifier Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9001-S6-0009"
@@ -55,7 +55,7 @@ Run the RFC 9001 Section 6 requirement-home tests for the prohibited TLS KeyUpda
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+Completed for the narrow TLS KeyUpdate classifier slice. The requirement-home tests prove the prohibited KeyUpdate path while NewSessionTicket remains separately supported and the managed key-phase install path stays distinct.
 
 ## Trace Links
 

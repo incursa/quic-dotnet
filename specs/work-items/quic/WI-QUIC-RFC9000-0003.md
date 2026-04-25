@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9000-0003"
 artifact_type: "work_item"
 title: "QUIC RFC 9000 Stateless Reset Versioning Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9000-S10P3-0029"
@@ -55,7 +55,7 @@ Run the permanent Stateless Reset benchmark suite so the formatter hot path rema
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+Completed for the retained version-profile slice. Requirement-home tests prove version-profile retention after runtime disposal and empty-profile rejection, and the permanent stateless-reset benchmark evidence is preserved under artifacts/benchmark-baseline/20260425-rfc9000-stateless-reset-versioning-dry/.
 
 ## Trace Links
 

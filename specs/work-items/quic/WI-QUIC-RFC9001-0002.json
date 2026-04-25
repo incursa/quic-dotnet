@@ -5,7 +5,7 @@
   "title": "QUIC RFC 9001 TLS KeyUpdate Classifier Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "status": "planned",
+  "status": "completed",
   "related_artifacts": [
     "SPEC-QUIC-RFC9001",
     "ARC-QUIC-RFC9001-0002",
@@ -29,5 +29,5 @@
     "Changing the managed QUIC key-phase install path.",
     "Adding public API or interop surface for TLS KeyUpdate."
   ],
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items."
+  "completion_notes": "Completed for the narrow TLS KeyUpdate classifier slice. The requirement-home tests prove the prohibited KeyUpdate path while NewSessionTicket remains separately supported and the managed key-phase install path stays distinct."
 }
