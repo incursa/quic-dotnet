@@ -1,0 +1,569 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 11 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 1.66 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 17.78 sec and exited with 0
+// ***** Done, took 00:00:19 (19.79 sec)   *****
+// Found 11 benchmarks:
+//   QuicStatelessResetBenchmarks.GenerateStatelessResetToken: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.GenerateStatelessResetTokenWithAlternateConnectionIdLength: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.FormatStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.FormatLargerStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.FormatStatelessResetDatagramWithRetainedVersionProfile: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.MatchStatelessResetTokenHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.MatchStatelessResetTokenMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.MatchStatelessResetTokenAgainstLargerFlattenedTokenSet: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicStatelessResetBenchmarks.SuppressRetainedRouteKnownStatelessResetResponse: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.GenerateStatelessResetToken: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2236 3308 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.GenerateStatelessResetToken --job Dry --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 389700.00 ns, 389.7000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 389700.00 ns, 389.7000 us/op
+// GC:  0 0 0 672 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 102272 has exited with code 0.
+
+Mean = 389.700 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 389.700 us, Q1 = 389.700 us, Median = 389.700 us, Q3 = 389.700 us, Max = 389.700 us
+IQR = 0.000 us, LowerFence = 389.700 us, UpperFence = 389.700 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 10 (90.9%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.GenerateStatelessResetTokenWithAlternateConnectionIdLength: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3948 1796 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.GenerateStatelessResetTokenWithAlternateConnectionIdLength --job Dry --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 436900.00 ns, 436.9000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 436900.00 ns, 436.9000 us/op
+// GC:  0 0 0 680 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 38584 has exited with code 0.
+
+Mean = 436.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 436.900 us, Q1 = 436.900 us, Median = 436.900 us, Q3 = 436.900 us, Max = 436.900 us
+IQR = 0.000 us, LowerFence = 436.900 us, UpperFence = 436.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 9 (81.8%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.FormatStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3064 1072 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.FormatStatelessResetDatagram --job Dry --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 269900.00 ns, 269.9000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 269900.00 ns, 269.9000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 43736 has exited with code 0.
+
+Mean = 269.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 269.900 us, Q1 = 269.900 us, Median = 269.900 us, Q3 = 269.900 us, Max = 269.900 us
+IQR = 0.000 us, LowerFence = 269.900 us, UpperFence = 269.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 8 (72.7%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.FormatLargerStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3288 1792 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.FormatLargerStatelessResetDatagram --job Dry --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 281000.00 ns, 281.0000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 281000.00 ns, 281.0000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 111312 has exited with code 0.
+
+Mean = 281.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 281.000 us, Q1 = 281.000 us, Median = 281.000 us, Q3 = 281.000 us, Max = 281.000 us
+IQR = 0.000 us, LowerFence = 281.000 us, UpperFence = 281.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 7 (63.6%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.FormatStatelessResetDatagramWithRetainedVersionProfile: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3520 2356 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.FormatStatelessResetDatagramWithRetainedVersionProfile --job Dry --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 364900.00 ns, 364.9000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 364900.00 ns, 364.9000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 50192 has exited with code 0.
+
+Mean = 364.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 364.900 us, Q1 = 364.900 us, Median = 364.900 us, Q3 = 364.900 us, Max = 364.900 us
+IQR = 0.000 us, LowerFence = 364.900 us, UpperFence = 364.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 6 (54.5%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.MatchStatelessResetTokenHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3404 2504 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.MatchStatelessResetTokenHit --job Dry --benchmarkId 5 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 780000.00 ns, 780.0000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 780000.00 ns, 780.0000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 69484 has exited with code 0.
+
+Mean = 780.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 780.000 us, Q1 = 780.000 us, Median = 780.000 us, Q3 = 780.000 us, Max = 780.000 us
+IQR = 0.000 us, LowerFence = 780.000 us, UpperFence = 780.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 5 (45.5%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.MatchStatelessResetTokenMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 1764 2220 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.MatchStatelessResetTokenMiss --job Dry --benchmarkId 6 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 529100.00 ns, 529.1000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 529100.00 ns, 529.1000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 91596 has exited with code 0.
+
+Mean = 529.100 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 529.100 us, Q1 = 529.100 us, Median = 529.100 us, Q3 = 529.100 us, Max = 529.100 us
+IQR = 0.000 us, LowerFence = 529.100 us, UpperFence = 529.100 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 4 (36.4%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.MatchStatelessResetTokenAgainstLargerFlattenedTokenSet: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3288 1792 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.MatchStatelessResetTokenAgainstLargerFlattenedTokenSet --job Dry --benchmarkId 7 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 516200.00 ns, 516.2000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 516200.00 ns, 516.2000 us/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 89108 has exited with code 0.
+
+Mean = 516.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 516.200 us, Q1 = 516.200 us, Median = 516.200 us, Q3 = 516.200 us, Max = 516.200 us
+IQR = 0.000 us, LowerFence = 516.200 us, UpperFence = 516.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 3 (27.3%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4156 1072 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramHit --job Dry --benchmarkId 8 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 4500400.00 ns, 4.5004 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 4500400.00 ns, 4.5004 ms/op
+// GC:  0 0 0 336 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 78104 has exited with code 0.
+
+Mean = 4.500 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 4.500 ms, Q1 = 4.500 ms, Median = 4.500 ms, Q3 = 4.500 ms, Max = 4.500 ms
+IQR = 0.000 ms, LowerFence = 4.500 ms, UpperFence = 4.500 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 2 (18.2%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3948 4184 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramMiss --job Dry --benchmarkId 9 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 1551900.00 ns, 1.5519 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 1551900.00 ns, 1.5519 ms/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 103388 has exited with code 0.
+
+Mean = 1.552 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.552 ms, Q1 = 1.552 ms, Median = 1.552 ms, Q3 = 1.552 ms, Max = 1.552 ms
+IQR = 0.000 ms, LowerFence = 1.552 ms, UpperFence = 1.552 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 1 (9.1%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicStatelessResetBenchmarks.SuppressRetainedRouteKnownStatelessResetResponse: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 1964 3796 --benchmarkName Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks.SuppressRetainedRouteKnownStatelessResetResponse --job Dry --benchmarkId 10 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 2430500.00 ns, 2.4305 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 2430500.00 ns, 2.4305 ms/op
+// GC:  0 0 0 0 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 71452 has exited with code 0.
+
+Mean = 2.430 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.430 ms, Q1 = 2.430 ms, Median = 2.430 ms, Q3 = 2.430 ms, Max = 2.430 ms
+IQR = 0.000 ms, LowerFence = 2.430 ms, UpperFence = 2.430 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 8:13 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts\verification\20260425-rfc9001-s6p6-token-loop-suppression\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.csv
+  artifacts\verification\20260425-rfc9001-s6p6-token-loop-suppression\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md
+  artifacts\verification\20260425-rfc9001-s6p6-token-loop-suppression\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.html
+
+// * Detailed results *
+QuicStatelessResetBenchmarks.GenerateStatelessResetToken: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 389.700 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 389.700 us, Q1 = 389.700 us, Median = 389.700 us, Q3 = 389.700 us, Max = 389.700 us
+IQR = 0.000 us, LowerFence = 389.700 us, UpperFence = 389.700 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[389.700 us ; 389.700 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.GenerateStatelessResetTokenWithAlternateConnectionIdLength: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 436.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 436.900 us, Q1 = 436.900 us, Median = 436.900 us, Q3 = 436.900 us, Max = 436.900 us
+IQR = 0.000 us, LowerFence = 436.900 us, UpperFence = 436.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[436.899 us ; 436.901 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.FormatStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 269.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 269.900 us, Q1 = 269.900 us, Median = 269.900 us, Q3 = 269.900 us, Max = 269.900 us
+IQR = 0.000 us, LowerFence = 269.900 us, UpperFence = 269.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[269.899 us ; 269.901 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.FormatLargerStatelessResetDatagram: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 281.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 281.000 us, Q1 = 281.000 us, Median = 281.000 us, Q3 = 281.000 us, Max = 281.000 us
+IQR = 0.000 us, LowerFence = 281.000 us, UpperFence = 281.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[281.000 us ; 281.000 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.FormatStatelessResetDatagramWithRetainedVersionProfile: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 364.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 364.900 us, Q1 = 364.900 us, Median = 364.900 us, Q3 = 364.900 us, Max = 364.900 us
+IQR = 0.000 us, LowerFence = 364.900 us, UpperFence = 364.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[364.899 us ; 364.901 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.MatchStatelessResetTokenHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 780.000 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 780.000 us, Q1 = 780.000 us, Median = 780.000 us, Q3 = 780.000 us, Max = 780.000 us
+IQR = 0.000 us, LowerFence = 780.000 us, UpperFence = 780.000 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[780.000 us ; 780.000 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.MatchStatelessResetTokenMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 529.100 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 529.100 us, Q1 = 529.100 us, Median = 529.100 us, Q3 = 529.100 us, Max = 529.100 us
+IQR = 0.000 us, LowerFence = 529.100 us, UpperFence = 529.100 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[529.100 us ; 529.101 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.MatchStatelessResetTokenAgainstLargerFlattenedTokenSet: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 516.200 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 516.200 us, Q1 = 516.200 us, Median = 516.200 us, Q3 = 516.200 us, Max = 516.200 us
+IQR = 0.000 us, LowerFence = 516.200 us, UpperFence = 516.200 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[516.199 us ; 516.201 us) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramHit: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 4.500 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 4.500 ms, Q1 = 4.500 ms, Median = 4.500 ms, Q3 = 4.500 ms, Max = 4.500 ms
+IQR = 0.000 ms, LowerFence = 4.500 ms, UpperFence = 4.500 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[4.500 ms ; 4.500 ms) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramMiss: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.552 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 1.552 ms, Q1 = 1.552 ms, Median = 1.552 ms, Q3 = 1.552 ms, Max = 1.552 ms
+IQR = 0.000 ms, LowerFence = 1.552 ms, UpperFence = 1.552 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[1.552 ms ; 1.552 ms) | @
+---------------------------------------------------
+
+QuicStatelessResetBenchmarks.SuppressRetainedRouteKnownStatelessResetResponse: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.430 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.430 ms, Q1 = 2.430 ms, Median = 2.430 ms, Q3 = 2.430 ms, Max = 2.430 ms
+IQR = 0.000 ms, LowerFence = 2.430 ms, UpperFence = 2.430 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[2.430 ms ; 2.431 ms) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host] : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  Dry    : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=Dry  IterationCount=1  LaunchCount=1
+RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+| Method                                                     | Mean       | Error | Allocated |
+|----------------------------------------------------------- |-----------:|------:|----------:|
+| GenerateStatelessResetToken                                |   389.7 us |    NA |     672 B |
+| GenerateStatelessResetTokenWithAlternateConnectionIdLength |   436.9 us |    NA |     680 B |
+| FormatStatelessResetDatagram                               |   269.9 us |    NA |         - |
+| FormatLargerStatelessResetDatagram                         |   281.0 us |    NA |         - |
+| FormatStatelessResetDatagramWithRetainedVersionProfile     |   364.9 us |    NA |         - |
+| MatchStatelessResetTokenHit                                |   780.0 us |    NA |         - |
+| MatchStatelessResetTokenMiss                               |   529.1 us |    NA |         - |
+| MatchStatelessResetTokenAgainstLargerFlattenedTokenSet     |   516.2 us |    NA |         - |
+| CreateRetainedRouteStatelessResetDatagramHit               | 4,500.4 us |    NA |     336 B |
+| CreateRetainedRouteStatelessResetDatagramMiss              | 1,551.9 us |    NA |         - |
+| SuppressRetainedRouteKnownStatelessResetResponse           | 2,430.5 us |    NA |         - |
+
+// * Warnings *
+MinIterationTime
+  QuicStatelessResetBenchmarks.GenerateStatelessResetToken: Dry                                -> The minimum observed iteration time is 389.7us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.GenerateStatelessResetTokenWithAlternateConnectionIdLength: Dry -> The minimum observed iteration time is 436.9us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.FormatStatelessResetDatagram: Dry                               -> The minimum observed iteration time is 269.9us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.FormatLargerStatelessResetDatagram: Dry                         -> The minimum observed iteration time is 281us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.FormatStatelessResetDatagramWithRetainedVersionProfile: Dry     -> The minimum observed iteration time is 364.9us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.MatchStatelessResetTokenHit: Dry                                -> The minimum observed iteration time is 780us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.MatchStatelessResetTokenMiss: Dry                               -> The minimum observed iteration time is 529.1us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.MatchStatelessResetTokenAgainstLargerFlattenedTokenSet: Dry     -> The minimum observed iteration time is 516.2us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramHit: Dry               -> The minimum observed iteration time is 4.5ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.CreateRetainedRouteStatelessResetDatagramMiss: Dry              -> The minimum observed iteration time is 1.552ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicStatelessResetBenchmarks.SuppressRetainedRouteKnownStatelessResetResponse: Dry           -> The minimum observed iteration time is 2.431ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 us      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:06 (6.35 sec), executed benchmarks: 11
+
+Global total time: 00:00:27 (27.43 sec), executed benchmarks: 11
+// * Artifacts cleanup *
+Artifacts cleanup is finished

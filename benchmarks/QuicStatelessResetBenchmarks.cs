@@ -29,6 +29,7 @@ public class QuicStatelessResetBenchmarks
     private QuicConnectionPathIdentity retainedRoutePath;
     private byte[] retainedRouteDatagram = [];
     private byte[] retainedRouteMissDatagram = [];
+    private byte[] retainedRouteKnownResetDatagram = [];
 
     /// <summary>
     /// Prepares representative stateless-reset inputs and output buffers.
@@ -96,6 +97,9 @@ public class QuicStatelessResetBenchmarks
             LocalPort: 4433);
         retainedRouteDatagram = BuildShortHeaderDatagram(connectionId, LargerDatagramLength);
         retainedRouteMissDatagram = BuildShortHeaderDatagram(alternateConnectionId, LargerDatagramLength);
+        retainedRouteKnownResetDatagram = retainedRouteDatagram.ToArray();
+        statelessResetToken.CopyTo(retainedRouteKnownResetDatagram.AsSpan(
+            retainedRouteKnownResetDatagram.Length - QuicStatelessReset.StatelessResetTokenLength));
         retainedRouteEndpoint = new QuicConnectionRuntimeEndpoint(
             1,
             maximumStatelessResetEmissionsPerRemoteAddress: int.MaxValue);
@@ -250,6 +254,22 @@ public class QuicStatelessResetBenchmarks
             hasLoopPreventionState: true);
 
         return result.Emitted ? result.Datagram.Length : -1;
+    }
+
+    /// <summary>
+    /// Measures retained-route suppression when the triggering packet is a known Stateless Reset.
+    /// </summary>
+    [Benchmark]
+    public int SuppressRetainedRouteKnownStatelessResetResponse()
+    {
+        QuicConnectionStatelessResetEmissionResult result = retainedRouteEndpoint.TryCreateStatelessResetDatagramForPacket(
+            retainedRouteKnownResetDatagram,
+            retainedRoutePath,
+            hasLoopPreventionState: true);
+
+        return result.Disposition == QuicConnectionStatelessResetEmissionDisposition.StatelessResetLoopSuppressed
+            ? retainedRouteKnownResetDatagram.Length
+            : -1;
     }
 
     private static byte[] BuildFlattenedTokenSet(ReadOnlySpan<byte> token, int tokenCount)

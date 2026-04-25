@@ -365,8 +365,16 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 ReadOnlyMemory<byte>.Empty);
         }
 
+        if (IsKnownStatelessResetTrigger(datagram.Span, binding!.Token))
+        {
+            return new QuicConnectionStatelessResetEmissionResult(
+                QuicConnectionStatelessResetEmissionDisposition.StatelessResetLoopSuppressed,
+                pathIdentity,
+                ReadOnlyMemory<byte>.Empty);
+        }
+
         return TryCreateStatelessResetDatagram(
-            binding!,
+            binding,
             pathIdentity,
             datagram.Length,
             hasLoopPreventionState);
@@ -815,6 +823,14 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         matchKey = new QuicConnectionStatelessResetMatchKey(remoteAddress, tokenKey);
         return true;
+    }
+
+    private static bool IsKnownStatelessResetTrigger(
+        ReadOnlySpan<byte> datagram,
+        ReadOnlySpan<byte> token)
+    {
+        return QuicStatelessReset.IsPotentialStatelessReset(datagram)
+            && QuicStatelessReset.MatchesAnyStatelessResetToken(datagram, token);
     }
 
     private bool TryMoveStatelessResetBinding(

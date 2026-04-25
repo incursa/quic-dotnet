@@ -1440,6 +1440,32 @@ Trace:
 Notes:
 - This clause captures the helper-format failure branch and runtime FormatFailed suppression instead of fabricating a response datagram.
 
+## REQ-QUIC-RFC9001-S6P6-0008 Suppress reset responses to known reset triggers
+After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0007
+- Implemented By:
+  - WI-QUIC-RFC9001-0007
+- Verified By:
+  - VER-QUIC-RFC9001-0007
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S2
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint
+  - benchmarks/QuicStatelessResetBenchmarks.cs::SuppressRetainedRouteKnownStatelessResetResponse
+
+Notes:
+- This clause covers only the known-token loop-suppression cell for retained routes after AEAD-limit terminal discard; untraced non-retained response behavior remains blocked.
+
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.
 

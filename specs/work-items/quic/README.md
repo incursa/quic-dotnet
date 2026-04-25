@@ -26,6 +26,8 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source
 - [`WI-QUIC-RFC9001-0004.json`](WI-QUIC-RFC9001-0004.json): canonical RFC 9001 post-stop stateless reset response matrix work-item source
 - [`WI-QUIC-RFC9001-0005.json`](WI-QUIC-RFC9001-0005.json): canonical RFC 9001 stateless reset disposition matrix work-item source
+- [`WI-QUIC-RFC9001-0006.json`](WI-QUIC-RFC9001-0006.json): canonical RFC 9001 repeated epoch ownership work-item source
+- [`WI-QUIC-RFC9001-0007.json`](WI-QUIC-RFC9001-0007.json): canonical RFC 9001 known stateless reset loop suppression work-item source
 - [`WI-QUIC-RFC9002-0001.json`](WI-QUIC-RFC9002-0001.json): canonical RFC 9002 work-item source
 - [`WI-QUIC-CRT-0002.json`](WI-QUIC-CRT-0002.json): canonical CRT deadline-scheduling work item
 - [`WI-QUIC-CRT-0003.json`](WI-QUIC-CRT-0003.json): canonical CRT endpoint-ingress work item

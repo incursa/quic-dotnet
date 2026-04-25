@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9001-0007",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9001 Known Stateless Reset Loop Suppression Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home execution, direct endpoint and endpoint-host suppression tests, deterministic fuzz coverage for retained-route token matching, BenchmarkDotNet Dry coverage for the stateless-reset helper path, and SpecTrace render/check.",
+  "scope": "Verify the retained-route known-token loop-suppression matrix cell after AEAD-limit terminal discard, including suppression when the trigger is reset-shaped and carries the retained token, continued emission for different trailing tokens, exclusion of non-reset-shaped inputs, and endpoint-host no-response behavior.",
+  "preconditions": [
+    "REQ-QUIC-RFC9001-S6P6-0006 remains the retained-route response floor baseline.",
+    "REQ-QUIC-RFC9001-S6P6-0007 remains the malformed-formatting suppression baseline.",
+    "REQ-QUIC-RFC9001-S6P6-0008 defines the known-token loop-suppression cell being verified."
+  ],
+  "procedure": [
+    "Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0008.",
+    "Run the retained-route response and formatting matrix guards for REQ-QUIC-RFC9001-S6P6-0006 and REQ-QUIC-RFC9001-S6P6-0007.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicStatelessResetBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/BenchmarkDotNet.Artifacts` to refresh the permanent stateless-reset benchmark evidence.",
+    "Render the touched SpecTrace Markdown views from JSON and run the render check for those scopes.",
+    "Run `git diff --check` before committing the slice."
+  ],
+  "expected_result": "The endpoint suppresses stateless-reset response emission before rate-budget reservation when a retained-route trigger is reset-shaped and carries the retained token for the same remote address and port. Different trailing tokens remain eligible for the retained-route response floor, non-reset-shaped inputs do not take the known-reset suppression branch, host receive-loop behavior produces no UDP response for known reset triggers, and the permanent benchmark suite covers the suppression hot path without claiming broader non-retained behavior.",
+  "verifies": [
+    "REQ-QUIC-RFC9001-S6P6-0008"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "ARC-QUIC-RFC9001-0007",
+    "WI-QUIC-RFC9001-0007"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
+    "benchmarks/QuicStatelessResetBenchmarks.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/build-tests.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/focused-rfc9001-s6p6-token-loop-tests.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/focused-rfc9001-s6p6-matrix-guard-tests.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/benchmark-dry.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260425-081255.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.csv",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.html",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/render.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/render-check.log",
+    "artifacts/verification/20260425-rfc9001-s6p6-token-loop-suppression/git-diff-check.log"
+  ],
+  "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0008 and the adjacent S6P6 retained-route/formatting guards ran green, the Dry QuicStatelessResetBenchmarks suite covered the known-reset suppression branch, the touched SpecTrace Markdown views rendered and checked cleanly from JSON, and git diff --check passed.",
+  "completion_notes": "The proof is limited to the retained-route known-token loop-suppression cell. Remaining non-retained or untraced post-stop stateless-reset response behavior stays open in REQUIREMENT-GAPS.",
+  "open_questions": [
+    "Future non-retained response behavior needs a separate matrix cell and proof plan before implementation."
+  ]
+}

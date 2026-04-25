@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9001-0007",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC RFC 9001 Known Stateless Reset Loop Suppression Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the retained-route response-matrix cell that suppresses post-AEAD-limit stateless-reset emission when the triggering packet is itself reset-shaped and carries the same retained stateless-reset token for the same remote address and port.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0007",
+    "VER-QUIC-RFC9001-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9001-S6P6-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicStatelessReset.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
+    "benchmarks/QuicStatelessResetBenchmarks.cs"
+  ],
+  "risks": [
+    "If a known reset-shaped trigger is treated like any other retained-route packet, the host can send a stateless reset in response to a known stateless reset.",
+    "If shape-only detection suppresses retained-route packets without a matching retained token, valid post-stop response eligibility can be weakened.",
+    "If loop suppression consumes the rate budget before suppression, later eligible packets can be rate-limited incorrectly."
+  ],
+  "design_summary": "The retained-route emission helper first resolves the retained route and same remote endpoint using the existing REQ-QUIC-RFC9001-S6P6-0006 lookup boundary. Once the retained binding is known, it checks whether the triggering datagram has Stateless Reset shape and whether the trailing token matches that binding's retained token. A match returns an explicit non-emitted loop-suppressed disposition before rate-budget reservation or formatting. Different trailing tokens, non-reset-shaped packets, missing routes, and remote endpoint mismatches remain governed by the existing retained-route, token-unavailable, and formatting branches.",
+  "alternatives_considered": [
+    "Suppress every short-header packet with Stateless Reset shape. Rejected because ordinary short-header packets can share the same structural shape and only a matching retained token makes this a known reset trigger.",
+    "Rely only on response length loop prevention. Rejected because the helper has enough retained token state to suppress a known reset-to-reset response before formatting.",
+    "Handle the rule only in the UDP host shells. Rejected because both connected endpoint and listener hosts delegate to the endpoint helper and should not grow separate response policies."
+  ],
+  "edge_cases_and_constraints": [
+    "A matching retained token suppresses emission before rate-budget reservation.",
+    "A different trailing token remains eligible for retained-route response emission when the retained route, remote endpoint, loop-prevention, and rate gates pass.",
+    "A non-reset-shaped retained-route datagram does not use the known-reset suppression branch.",
+    "Remote address and remote port mismatch still suppress through the retained-route lookup boundary.",
+    "The listener host and connected endpoint host continue to use the same endpoint helper; no host-local token comparison is introduced."
+  ],
+  "data_and_state_considerations": "The retained binding already contains the route-linked stateless-reset token, version profile, and path identity preserved after AEAD-limit terminal discard. The known-reset suppression check compares only the triggering datagram shape and trailing token against that retained binding after route and same-remote lookup succeeds. This keeps the matrix cell local to retained-route response eligibility and avoids changing active stateless-reset acceptance or token generation.",
+  "open_questions": [
+    "If the endpoint later grows a non-retained ambiguity state, that state must receive a separate requirement and proof plan instead of expanding this retained-route suppression cell."
+  ]
+}

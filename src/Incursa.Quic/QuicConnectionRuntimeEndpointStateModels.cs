@@ -47,6 +47,7 @@ internal enum QuicConnectionStatelessResetEmissionDisposition
     RateLimited = 2,
     LoopOrAmplificationPrevented = 3,
     FormatFailed = 4,
+    StatelessResetLoopSuppressed = 5,
 }
 
 internal readonly record struct QuicConnectionStatelessResetEmissionResult(
