@@ -11842,10 +11842,13 @@ New connection IDs MUST be sent in NEW_CONNECTION_ID frames and retransmitted if
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0014
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0014
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0014
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3
@@ -11859,10 +11862,13 @@ Retired connection IDs MUST be sent in RETIRE_CONNECTION_ID frames and retransmi
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0014
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0014
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0014
 - Source Refs:
   - RFC 9000 §13.3 RFC9000-S13.3-B16-P0-S3
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3

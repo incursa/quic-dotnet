@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0014",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Connection-ID Retransmission Reliability Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded send-runtime proof that packets carrying NEW_CONNECTION_ID and RETIRE_CONNECTION_ID payloads remain retransmittable when loss is registered and stay queued until the matching sent packet is acknowledged.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0014",
+    "VER-QUIC-RFC9000-0014"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P3-0029",
+    "REQ-QUIC-RFC9000-S13P3-0030"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs"
+  ],
+  "design_summary": "The send-runtime retransmission ledger records sent application-data packets together with their packet bytes and retransmittable classification. When loss is registered for a tracked retransmittable packet, the runtime queues a retransmission plan that preserves the original packet number and bytes. ACK processing for unrelated packet numbers does not clear the queued repair, so NEW_CONNECTION_ID and RETIRE_CONNECTION_ID payloads remain repairable until the matching sent packet is acknowledged or dequeued for retransmission by the caller.",
+  "data_and_state_considerations": "This slice proves the sender-owned retransmission ledger behavior for already-built packet bytes. It does not create connection IDs, retire peer connection IDs, select active destination connection IDs, enforce active_connection_id_limit, or own migration routing state.",
+  "edge_cases_and_constraints": [
+    "Loss registration must target the packet number that carried the control-frame payload.",
+    "Unrelated ACKs must not clear queued connection-ID repair work.",
+    "The retransmission plan must preserve the original packet bytes so the frame payload remains unchanged.",
+    "The proof uses existing frame-codec builders to construct representative NEW_CONNECTION_ID and RETIRE_CONNECTION_ID payloads but does not widen codec behavior."
+  ],
+  "alternatives_considered": [
+    "Treat the broad RFC 9000 transport artifact as sufficient; rejected because the connection-ID repair requirements already have direct tests and benefit from focused proof links.",
+    "Combine this with full connection-ID lifecycle management; rejected because issuing, retiring, active-limit policy, migration routing, and public API behavior are separate state-machine slices."
+  ],
+  "risks": [
+    "Overstating this proof as full connection-ID lifecycle support would hide remaining state-machine work.",
+    "Clearing queued repair on unrelated ACKs would create loss-dependent control-frame disappearance.",
+    "Rebuilding instead of preserving packet bytes could silently change the retransmitted frame payload."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only retransmission-ledger preservation for packets that already contain NEW_CONNECTION_ID or RETIRE_CONNECTION_ID payloads. It does not claim connection-ID issuance policy, peer CID registry updates, active connection-ID limit enforcement, retire-prior-to orchestration, migration routing, stateless-reset routing, packet builder scheduling, or interop migration success."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicConnectionSendRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionSendRuntime.cs)\n- [`REQ-QUIC-RFC9000-S13P3-0029.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs)\n- [`REQ-QUIC-RFC9000-S13P3-0030.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs)"
+    }
+  ]
+}

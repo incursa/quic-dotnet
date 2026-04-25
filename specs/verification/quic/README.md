@@ -36,6 +36,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0011.json`](VER-QUIC-RFC9000-0011.json): canonical RFC 9000 ECN ACK count validation verification source
 - [`VER-QUIC-RFC9000-0012.json`](VER-QUIC-RFC9000-0012.json): canonical RFC 9000 ACK_ECN frame-codec verification source
 - [`VER-QUIC-RFC9000-0013.json`](VER-QUIC-RFC9000-0013.json): canonical RFC 9000 NEW_CONNECTION_ID frame-codec verification source
+- [`VER-QUIC-RFC9000-0014.json`](VER-QUIC-RFC9000-0014.json): canonical RFC 9000 connection-ID retransmission reliability verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

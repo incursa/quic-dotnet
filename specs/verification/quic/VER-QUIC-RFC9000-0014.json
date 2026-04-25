@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0014",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Connection-ID Retransmission Reliability Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0014",
+    "WI-QUIC-RFC9000-0014"
+  ],
+  "verification_method": "Requirement-home execution, reciprocal trace inspection, and SpecTrace render/check for the bounded connection-ID retransmission reliability proof.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P3-0029",
+    "REQ-QUIC-RFC9000-S13P3-0030"
+  ],
+  "scope": "This verification covers the supported send-runtime repair floor for packets carrying NEW_CONNECTION_ID and RETIRE_CONNECTION_ID payloads: loss of the tracked packet queues a retransmission plan containing the original packet bytes, and ACKs for unrelated packet numbers do not clear that repair work.",
+  "expected_result": "Focused tests prove positive loss-to-repair behavior and negative unrelated-ACK retention for both connection-ID control-frame payloads. No new parser, serializer, or hot-path production behavior is introduced by this proof-link slice.",
+  "procedure": [
+    "Run the focused RFC 9000 requirement-home tests for S13P3-0029 and S13P3-0030.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm the focused artifact set is reciprocal only for the intended S13P3 connection-ID retransmission requirements.",
+    "Confirm that no connection-ID lifecycle, migration routing, packet-builder scheduling, public API, or interop migration claim is introduced."
+  ],
+  "preconditions": [
+    "The send runtime has already tracked a retransmittable application-data packet containing the connection-ID control-frame payload.",
+    "The packet bytes are available on the sent-packet record.",
+    "The caller owns packet protection, packet builder scheduling, and connection-ID lifecycle state outside this proof slice."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs",
+    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/focused-rfc9000-cid-retransmission-reliability-tests.log",
+    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/render.log",
+    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/render-check.log",
+    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/reciprocal-trace-check.log",
+    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/git-diff-check.log",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030\""
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "No New Hot Path",
+      "content": "This slice adds focused trace and evidence for existing send-runtime behavior. It does not alter parser, serializer, state-machine, or hot-path production code, so no new fuzz or benchmark surface is introduced here."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-04-25. Focused connection-ID retransmission requirement-home tests passed 4/4, and the focused reciprocal trace check linked only S13P3-0029 and S13P3-0030 to the new artifact set."
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0014",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Connection-ID Retransmission Reliability Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0014",
+    "VER-QUIC-RFC9000-0014"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P3-0029",
+    "REQ-QUIC-RFC9000-S13P3-0030"
+  ],
+  "summary": "Carve direct positive and negative proof links for send-runtime retransmission of packets carrying NEW_CONNECTION_ID and RETIRE_CONNECTION_ID payloads without claiming broader connection-ID lifecycle behavior.",
+  "planned_changes": "- Add focused architecture, work-item, and verification artifacts for the connection-ID retransmission proof.\n- Link RFC 9000 Section 13.3 connection-ID repair requirements to the focused artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve the existing requirement-home tests that show loss queues repair and unrelated ACKs do not clear it.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/`.",
+  "verification_plan": "Run the focused RFC 9000 connection-ID retransmission requirement-home tests, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, run `git diff --check`, and preserve evidence under `artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0014"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0014"
+  ],
+  "out_of_scope": [
+    "Connection-ID issuance policy.",
+    "Peer connection-ID registry mutation.",
+    "active_connection_id_limit enforcement.",
+    "Retire Prior To orchestration.",
+    "Migration routing and path promotion.",
+    "Stateless-reset token routing.",
+    "Packet builder scheduling policy.",
+    "Interop-runner migration success classification."
+  ],
+  "completion_notes": "Completed as a proof-link closure over existing send-runtime retransmission behavior; no production behavior changed."
+}
