@@ -1,0 +1,14 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Incursa.Quic -> C:\src\incursa\quic-dotnet\src\Incursa.Quic\bin\Debug\net10.0\Incursa.Quic.dll
+  Incursa.Quic.Benchmarks -> C:\src\incursa\quic-dotnet\benchmarks\bin\Debug\net10.0\Incursa.Quic.Benchmarks.dll
+  Incursa.Quic.Fuzz -> C:\src\incursa\quic-dotnet\fuzz\bin\Debug\net10.0\Incursa.Quic.Fuzz.dll
+  Incursa.Quic.Qlog -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.Qlog\bin\Debug\net10.0\Incursa.Quic.Qlog.dll
+  Incursa.Quic.InteropHarness -> C:\src\incursa\quic-dotnet\src\Incursa.Quic.InteropHarness\bin\Debug\net10.0\Incursa.Quic.InteropHarness.dll
+  Incursa.Quic.Tests -> C:\src\incursa\quic-dotnet\tests\Incursa.Quic.Tests\bin\Debug\net10.0\Incursa.Quic.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.54

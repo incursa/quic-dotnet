@@ -41,6 +41,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0016.json`](VER-QUIC-RFC9000-0016.json): canonical RFC 9000 reordering and gap immediate ACK scheduling verification source
 - [`VER-QUIC-RFC9000-0017.json`](VER-QUIC-RFC9000-0017.json): canonical RFC 9000 non-ack-eliciting ACK deferral and inclusion verification source
 - [`VER-QUIC-RFC9000-0022.json`](VER-QUIC-RFC9000-0022.json): canonical RFC 9000 Retry replay ACK piggyback verification source
+- [`VER-QUIC-RFC9000-0023.json`](VER-QUIC-RFC9000-0023.json): canonical RFC 9000 bootstrap replay ACK piggyback verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

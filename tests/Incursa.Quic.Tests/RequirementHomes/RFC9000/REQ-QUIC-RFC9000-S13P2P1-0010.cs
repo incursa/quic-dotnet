@@ -606,6 +606,164 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        byte[] originalClientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(runtime);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalTrackedPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.Initial);
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicS13AckPiggybackTestSupport.RecordPendingAck(
+            runtime,
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 377,
+            receivedAtMicros: 2);
+
+        QuicConnectionTransitionResult probeResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = probeResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.NotEmpty(sendEffects);
+        QuicConnectionSendDatagramEffect initialProbeEffect = FindClientInitialSendEffect(sendEffects);
+        Assert.True(TryOpenClientInitialPacket(
+            initialProbeEffect,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+        AssertOrdinaryBootstrapInitialHeader(openedPacket);
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(377UL, ackFrame.LargestAcknowledged);
+
+        ReadOnlySpan<byte> cryptoPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            cryptoPayload,
+            out QuicCryptoFrame cryptoFrame,
+            out int cryptoBytesConsumed));
+        Assert.Equal(0UL, cryptoFrame.Offset);
+        Assert.True(originalClientHelloBytes.AsSpan(0, cryptoFrame.CryptoData.Length)
+            .SequenceEqual(cryptoFrame.CryptoData));
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(cryptoPayload[cryptoBytesConsumed..]).IsEmpty);
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> probeTrackedPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, initialProbeEffect.Datagram);
+        Assert.True(probeTrackedPacket.Key.PacketNumber > originalTrackedPacket.Key.PacketNumber);
+        Assert.False(runtime.SendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 3,
+            maxAckDelayMicros: 0));
+
+        foreach (QuicConnectionSendDatagramEffect laterInitialProbe in sendEffects.Skip(1)
+            .Where(sendEffect => TryOpenClientInitialPacket(sendEffect, out _, out _, out _)))
+        {
+            ReadOnlySpan<byte> laterPayload = OpenClientInitialPayload(laterInitialProbe);
+            Assert.False(QuicFrameCodec.TryParseAckFrame(laterPayload, out _, out _));
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void BootstrapInitialProbeReplay_DoesNotInventAckFrameWhenNoAckIsPending()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        byte[] originalClientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(runtime);
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+        QuicConnectionTransitionResult probeResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = probeResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.NotEmpty(sendEffects);
+        QuicConnectionSendDatagramEffect initialProbeEffect = FindClientInitialSendEffect(sendEffects);
+        Assert.True(TryOpenClientInitialPacket(
+            initialProbeEffect,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+        AssertOrdinaryBootstrapInitialHeader(openedPacket);
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.False(QuicFrameCodec.TryParseAckFrame(payload, out _, out _));
+
+        ReadOnlySpan<byte> cryptoPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payload);
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            cryptoPayload,
+            out QuicCryptoFrame cryptoFrame,
+            out int cryptoBytesConsumed));
+        Assert.Equal(0UL, cryptoFrame.Offset);
+        Assert.True(originalClientHelloBytes.AsSpan(0, cryptoFrame.CryptoData.Length)
+            .SequenceEqual(cryptoFrame.CryptoData));
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(cryptoPayload[cryptoBytesConsumed..]).IsEmpty);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection clientInitialProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection serverInitialProtection));
+
+        for (int length = 5; length <= 101; length += 16)
+        {
+            byte[] ackPayload = QuicS13AckPiggybackTestSupport.CreateAckFramePayload((ulong)(400 + length));
+            byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(
+                (byte)(0x40 + length),
+                length);
+            ulong cryptoOffset = (ulong)(length % 7);
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                cryptoPayload,
+                cryptoOffset,
+                ackPayload,
+                clientInitialProtection,
+                out byte[] protectedInitialPacket));
+            Assert.True(coordinator.TryOpenInitialPacket(
+                protectedInitialPacket,
+                serverInitialProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+            AssertOrdinaryBootstrapInitialHeader(openedPacket);
+
+            QuicS13AckPiggybackTestSupport.AssertPayloadStartsWithAckThenCrypto(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                expectedLargestAcknowledged: (ulong)(400 + length),
+                cryptoPayload,
+                cryptoOffset);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame()
     {
         using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -746,20 +904,69 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
 
     private static ReadOnlySpan<byte> OpenClientInitialPayload(QuicConnectionSendDatagramEffect sendEffect)
     {
+        Assert.True(TryOpenClientInitialPacket(
+            sendEffect,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
+    }
+
+    private static QuicConnectionSendDatagramEffect FindClientInitialSendEffect(
+        IEnumerable<QuicConnectionSendDatagramEffect> sendEffects)
+    {
+        foreach (QuicConnectionSendDatagramEffect sendEffect in sendEffects)
+        {
+            if (TryOpenClientInitialPacket(sendEffect, out _, out _, out _))
+            {
+                return sendEffect;
+            }
+        }
+
+        Assert.Fail("No client Initial packet could be opened from the emitted datagrams.");
+        return default!;
+    }
+
+    private static bool TryOpenClientInitialPacket(
+        QuicConnectionSendDatagramEffect sendEffect,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = [];
+        payloadOffset = 0;
+        payloadLength = 0;
+
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
             QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
             out QuicInitialPacketProtection serverInitialProtection));
 
         QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
-        Assert.True(coordinator.TryOpenInitialPacket(
+        return coordinator.TryOpenInitialPacket(
             sendEffect.Datagram.Span,
             serverInitialProtection,
-            out byte[] openedPacket,
-            out int payloadOffset,
-            out int payloadLength));
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
 
-        return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
+    private static void AssertOrdinaryBootstrapInitialHeader(byte[] openedPacket)
+    {
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            openedPacket,
+            out _,
+            out _,
+            out ReadOnlySpan<byte> destinationConnectionId,
+            out _,
+            out ReadOnlySpan<byte> versionSpecificData));
+        Assert.Equal(QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId, destinationConnectionId.ToArray());
+        Assert.True(QuicVariableLengthInteger.TryParse(
+            versionSpecificData,
+            out ulong tokenLength,
+            out _));
+        Assert.Equal(0UL, tokenLength);
     }
 
     private static ReadOnlySpan<byte> OpenHandshakePayload(

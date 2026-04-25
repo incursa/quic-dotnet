@@ -1,0 +1,532 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Incursa.Quic -> C:\src\incursa\quic-dotnet\src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll
+  Incursa.Quic.Benchmarks -> C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.02
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 10 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 1.58 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 17.85 sec and exited with 0
+// ***** Done, took 00:00:19 (19.67 sec)   *****
+// Found 10 benchmarks:
+//   QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 1208 4060 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket --job Dry --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 367900.00 ns, 367.9000 us/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 367900.00 ns, 367.9000 us/op
+// GC:  0 0 0 312 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 50976 has exited with code 0.
+
+Mean = 367.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 367.900 us, Q1 = 367.900 us, Median = 367.900 us, Q3 = 367.900 us, Max = 367.900 us
+IQR = 0.000 us, LowerFence = 367.900 us, UpperFence = 367.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 9 (90.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:42 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2132 2164 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket --job Dry --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 2323300.00 ns, 2.3233 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 2323300.00 ns, 2.3233 ms/op
+// GC:  0 0 0 312 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 64484 has exited with code 0.
+
+Mean = 2.323 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.323 ms, Q1 = 2.323 ms, Median = 2.323 ms, Q3 = 2.323 ms, Max = 2.323 ms
+IQR = 0.000 ms, LowerFence = 2.323 ms, UpperFence = 2.323 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 8 (80.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3668 3652 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket --job Dry --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 6186200.00 ns, 6.1862 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 6186200.00 ns, 6.1862 ms/op
+// GC:  0 0 0 2744 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 87708 has exited with code 0.
+
+Mean = 6.186 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 6.186 ms, Q1 = 6.186 ms, Median = 6.186 ms, Q3 = 6.186 ms, Max = 6.186 ms
+IQR = 0.000 ms, LowerFence = 6.186 ms, UpperFence = 6.186 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 7 (70.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2148 3424 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck --job Dry --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 5761400.00 ns, 5.7614 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 5761400.00 ns, 5.7614 ms/op
+// GC:  0 0 0 2744 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 59600 has exited with code 0.
+
+Mean = 5.761 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.761 ms, Q1 = 5.761 ms, Median = 5.761 ms, Q3 = 5.761 ms, Max = 5.761 ms
+IQR = 0.000 ms, LowerFence = 5.761 ms, UpperFence = 5.761 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 6 (60.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2208 2196 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck --job Dry --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 6015300.00 ns, 6.0153 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 6015300.00 ns, 6.0153 ms/op
+// GC:  0 0 0 2744 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 92536 has exited with code 0.
+
+Mean = 6.015 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 6.015 ms, Q1 = 6.015 ms, Median = 6.015 ms, Q3 = 6.015 ms, Max = 6.015 ms
+IQR = 0.000 ms, LowerFence = 6.015 ms, UpperFence = 6.015 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 5 (50.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4056 2228 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck --job Dry --benchmarkId 5 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 5994100.00 ns, 5.9941 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 5994100.00 ns, 5.9941 ms/op
+// GC:  0 0 0 2840 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 67112 has exited with code 0.
+
+Mean = 5.994 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.994 ms, Q1 = 5.994 ms, Median = 5.994 ms, Q3 = 5.994 ms, Max = 5.994 ms
+IQR = 0.000 ms, LowerFence = 5.994 ms, UpperFence = 5.994 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 4 (40.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2148 3424 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck --job Dry --benchmarkId 6 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 5870600.00 ns, 5.8706 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 5870600.00 ns, 5.8706 ms/op
+// GC:  0 0 0 2808 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 108928 has exited with code 0.
+
+Mean = 5.871 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.871 ms, Q1 = 5.871 ms, Median = 5.871 ms, Q3 = 5.871 ms, Max = 5.871 ms
+IQR = 0.000 ms, LowerFence = 5.871 ms, UpperFence = 5.871 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 3 (30.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3652 2216 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket --job Dry --benchmarkId 7 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 2359700.00 ns, 2.3597 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 2359700.00 ns, 2.3597 ms/op
+// GC:  0 0 0 688 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 81512 has exited with code 0.
+
+Mean = 2.360 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.360 ms, Q1 = 2.360 ms, Median = 2.360 ms, Q3 = 2.360 ms, Max = 2.360 ms
+IQR = 0.000 ms, LowerFence = 2.360 ms, UpperFence = 2.360 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 2 (20.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4044 5016 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck --job Dry --benchmarkId 8 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 2747500.00 ns, 2.7475 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 2747500.00 ns, 2.7475 ms/op
+// GC:  0 0 0 704 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 14712 has exited with code 0.
+
+Mean = 2.748 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.748 ms, Q1 = 2.748 ms, Median = 2.748 ms, Q3 = 2.748 ms, Max = 2.748 ms
+IQR = 0.000 ms, LowerFence = 2.748 ms, UpperFence = 2.748 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 1 (10.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2236 4016 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck --job Dry --benchmarkId 9 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 2589100.00 ns, 2.5891 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 2589100.00 ns, 2.5891 ms/op
+// GC:  0 0 0 768 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 109812 has exited with code 0.
+
+Mean = 2.589 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.589 ms, Q1 = 2.589 ms, Median = 2.589 ms, Q3 = 2.589 ms, Max = 2.589 ms
+IQR = 0.000 ms, LowerFence = 2.589 ms, UpperFence = 2.589 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:41 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.csv
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report-github.md
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.html
+
+// * Detailed results *
+QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 367.900 us, StdErr = 0.000 us (0.00%), N = 1, StdDev = 0.000 us
+Min = 367.900 us, Q1 = 367.900 us, Median = 367.900 us, Q3 = 367.900 us, Max = 367.900 us
+IQR = 0.000 us, LowerFence = 367.900 us, UpperFence = 367.900 us
+ConfidenceInterval = [NaN us; NaN us] (CI 99.9%), Margin = NaN us (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[367.899 us ; 367.901 us) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.323 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.323 ms, Q1 = 2.323 ms, Median = 2.323 ms, Q3 = 2.323 ms, Max = 2.323 ms
+IQR = 0.000 ms, LowerFence = 2.323 ms, UpperFence = 2.323 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[2.323 ms ; 2.323 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 6.186 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 6.186 ms, Q1 = 6.186 ms, Median = 6.186 ms, Q3 = 6.186 ms, Max = 6.186 ms
+IQR = 0.000 ms, LowerFence = 6.186 ms, UpperFence = 6.186 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[6.186 ms ; 6.186 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 5.761 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.761 ms, Q1 = 5.761 ms, Median = 5.761 ms, Q3 = 5.761 ms, Max = 5.761 ms
+IQR = 0.000 ms, LowerFence = 5.761 ms, UpperFence = 5.761 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[5.761 ms ; 5.761 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 6.015 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 6.015 ms, Q1 = 6.015 ms, Median = 6.015 ms, Q3 = 6.015 ms, Max = 6.015 ms
+IQR = 0.000 ms, LowerFence = 6.015 ms, UpperFence = 6.015 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[6.015 ms ; 6.015 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 5.994 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.994 ms, Q1 = 5.994 ms, Median = 5.994 ms, Q3 = 5.994 ms, Max = 5.994 ms
+IQR = 0.000 ms, LowerFence = 5.994 ms, UpperFence = 5.994 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[5.994 ms ; 5.994 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 5.871 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 5.871 ms, Q1 = 5.871 ms, Median = 5.871 ms, Q3 = 5.871 ms, Max = 5.871 ms
+IQR = 0.000 ms, LowerFence = 5.871 ms, UpperFence = 5.871 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[5.871 ms ; 5.871 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.360 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.360 ms, Q1 = 2.360 ms, Median = 2.360 ms, Q3 = 2.360 ms, Max = 2.360 ms
+IQR = 0.000 ms, LowerFence = 2.360 ms, UpperFence = 2.360 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[2.360 ms ; 2.360 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.748 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.748 ms, Q1 = 2.748 ms, Median = 2.748 ms, Q3 = 2.748 ms, Max = 2.748 ms
+IQR = 0.000 ms, LowerFence = 2.748 ms, UpperFence = 2.748 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[2.747 ms ; 2.748 ms) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.589 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 2.589 ms, Q1 = 2.589 ms, Median = 2.589 ms, Q3 = 2.589 ms, Max = 2.589 ms
+IQR = 0.000 ms, LowerFence = 2.589 ms, UpperFence = 2.589 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[2.589 ms ; 2.589 ms) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host] : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  Dry    : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=Dry  IterationCount=1  LaunchCount=1
+RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+| Method                                          | Mean       | Error | Allocated |
+|------------------------------------------------ |-----------:|------:|----------:|
+| ProtectHandshakePacket                          |   367.9 us |    NA |     312 B |
+| OpenHandshakePacket                             | 2,323.3 us |    NA |     312 B |
+| BuildInitialCryptoPacket                        | 6,186.2 us |    NA |    2744 B |
+| BuildInitialCryptoPacketWithAck                 | 5,761.4 us |    NA |    2744 B |
+| BuildBootstrapInitialReplayPacketWithAck        | 6,015.3 us |    NA |    2744 B |
+| BuildInitialCryptoRetransmissionPacketWithAck   | 5,994.1 us |    NA |    2840 B |
+| BuildRetrySelectedInitialReplayPacketWithAck    | 5,870.6 us |    NA |    2808 B |
+| BuildHandshakeCryptoPacket                      | 2,359.7 us |    NA |     688 B |
+| BuildHandshakeCryptoPacketWithAck               | 2,747.5 us |    NA |     704 B |
+| BuildHandshakeCryptoRetransmissionPacketWithAck | 2,589.1 us |    NA |     768 B |
+
+// * Warnings *
+MinIterationTime
+  QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: Dry                          -> The minimum observed iteration time is 367.9us which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: Dry                             -> The minimum observed iteration time is 2.323ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: Dry                        -> The minimum observed iteration time is 6.186ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: Dry                 -> The minimum observed iteration time is 5.761ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: Dry        -> The minimum observed iteration time is 6.015ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: Dry   -> The minimum observed iteration time is 5.994ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: Dry    -> The minimum observed iteration time is 5.871ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: Dry                      -> The minimum observed iteration time is 2.36ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: Dry               -> The minimum observed iteration time is 2.748ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: Dry -> The minimum observed iteration time is 2.589ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 us      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:04 (4.9 sec), executed benchmarks: 10
+
+Global total time: 00:00:25 (25.3 sec), executed benchmarks: 10
+// * Artifacts cleanup *
+Artifacts cleanup is finished

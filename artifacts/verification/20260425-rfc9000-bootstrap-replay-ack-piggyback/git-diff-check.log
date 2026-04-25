@@ -1,0 +1,25 @@
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-20260425-144131.log:479: trailing whitespace.
++Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-20260425-144131.log:480: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-20260425-144212.log:1035: trailing whitespace.
++Job=ShortRun  IterationCount=3  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-20260425-144212.log:1036: trailing whitespace.
++WarmupCount=3
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report-github.md:9: trailing whitespace.
++Job=ShortRun  IterationCount=3  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report-github.md:10: trailing whitespace.
++WarmupCount=3
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.html:22: trailing whitespace.
++<pre><code>Job=ShortRun  IterationCount=3  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.html:23: trailing whitespace.
++WarmupCount=3
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-dry.log:489: trailing whitespace.
++Job=Dry  IterationCount=1  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-dry.log:490: trailing whitespace.
++RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-short.log:1045: trailing whitespace.
++Job=ShortRun  IterationCount=3  LaunchCount=1
+artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-short.log:1046: trailing whitespace.
++WarmupCount=3
+artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/spec-trace-validate.log:8689: new blank line at EOF.

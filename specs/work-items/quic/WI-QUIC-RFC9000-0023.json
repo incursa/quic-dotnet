@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0023",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Bootstrap Replay ACK Piggyback Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0023",
+    "VER-QUIC-RFC9000-0023"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "REQ-QUIC-RFC9000-S13P2P1-0010"
+  ],
+  "summary": "Implement and prove fresh pending Initial ACK prefixing for ordinary non-Retry bootstrap Initial replay probe packets without changing retained ClientHello bytes, empty token handling, or packet-number continuity.",
+  "planned_changes": "- Wire the ordinary bootstrap Initial replay helper to build a transient Initial ACK frame payload when Initial ACK-generation state has pending ack-eliciting receipts.\n- Pass that transient ACK payload to the existing Initial packet builder before the replayed CRYPTO frame while preserving the original Initial destination connection ID and empty token.\n- Mark the piggybacked Initial ACK frame as sent only after the replay packet is tracked under its actual new Initial packet number.\n- Preserve existing behavior when no Initial ACK is pending.\n- Keep Retry-selected replay, delayed-ACK scheduling, path scheduling, interop success, and public API behavior outside this slice.\n- Add focused positive, negative, deterministic fuzz/property, and BenchmarkDotNet coverage for the ordinary bootstrap replay packet-builder path.",
+  "verification_plan": "Run the focused RFC 9000 S13P2P1-0010 requirement-home tests, run adjacent RFC 9002 bootstrap Initial PTO replay tests, run the long-header packet-protection benchmark suite with BenchmarkDotNet Dry and Short jobs, render/check the touched SpecTrace artifacts, validate JSON and preserve standing failures if present, run `git diff --check`, and preserve evidence under `artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/` and `artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0023"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0023"
+  ],
+  "out_of_scope": [
+    "Retry-selected Initial replay ACK piggybacking already owned by WI-QUIC-RFC9000-0022.",
+    "Application Data stream, NEW_TOKEN, live long-header CRYPTO, and CRYPTO retransmission ACK piggybacking already owned by earlier slices.",
+    "A general delayed-ACK timer policy.",
+    "Candidate-path or multipath scheduling.",
+    "Endpoint interop success classification.",
+    "Public API behavior."
+  ],
+  "completion_notes": "Completed as a bounded ordinary non-Retry bootstrap Initial replay packet-composition floor. Broader delayed-ACK scheduling, path scheduling, interop, and public API behavior remain outside this work item."
+}

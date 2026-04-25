@@ -1,0 +1,1078 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Incursa.Quic -> C:\src\incursa\quic-dotnet\src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll
+  Incursa.Quic.Benchmarks -> C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.62
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 10 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1
+// command took 1.56 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1
+// command took 17.53 sec and exited with 0
+// ***** Done, took 00:00:19 (19.35 sec)   *****
+// Found 10 benchmarks:
+//   QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+//   QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 3492 3272 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket --job ShortRun --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 205100.00 ns, 205.1000 us/op
+WorkloadJitting  1: 1 op, 579500.00 ns, 579.5000 us/op
+
+OverheadJitting  2: 16 op, 380200.00 ns, 23.7625 us/op
+WorkloadJitting  2: 16 op, 440200.00 ns, 27.5125 us/op
+
+WorkloadPilot    1: 16 op, 96400.00 ns, 6.0250 us/op
+WorkloadPilot    2: 32 op, 88700.00 ns, 2.7719 us/op
+WorkloadPilot    3: 64 op, 118600.00 ns, 1.8531 us/op
+WorkloadPilot    4: 128 op, 178600.00 ns, 1.3953 us/op
+WorkloadPilot    5: 256 op, 336700.00 ns, 1.3152 us/op
+WorkloadPilot    6: 512 op, 638700.00 ns, 1.2475 us/op
+WorkloadPilot    7: 1024 op, 1323000.00 ns, 1.2920 us/op
+WorkloadPilot    8: 2048 op, 2535600.00 ns, 1.2381 us/op
+WorkloadPilot    9: 4096 op, 5053800.00 ns, 1.2338 us/op
+WorkloadPilot   10: 8192 op, 10240500.00 ns, 1.2501 us/op
+WorkloadPilot   11: 16384 op, 20271100.00 ns, 1.2372 us/op
+WorkloadPilot   12: 32768 op, 40754000.00 ns, 1.2437 us/op
+WorkloadPilot   13: 65536 op, 80033300.00 ns, 1.2212 us/op
+WorkloadPilot   14: 131072 op, 181382600.00 ns, 1.3838 us/op
+WorkloadPilot   15: 262144 op, 199806300.00 ns, 762.2005 ns/op
+WorkloadPilot   16: 524288 op, 392204600.00 ns, 748.0709 ns/op
+WorkloadPilot   17: 1048576 op, 789383600.00 ns, 752.8149 ns/op
+
+OverheadWarmup   1: 1048576 op, 2687300.00 ns, 2.5628 ns/op
+OverheadWarmup   2: 1048576 op, 2684500.00 ns, 2.5601 ns/op
+OverheadWarmup   3: 1048576 op, 2657600.00 ns, 2.5345 ns/op
+OverheadWarmup   4: 1048576 op, 2799000.00 ns, 2.6693 ns/op
+OverheadWarmup   5: 1048576 op, 2669000.00 ns, 2.5454 ns/op
+OverheadWarmup   6: 1048576 op, 2655400.00 ns, 2.5324 ns/op
+OverheadWarmup   7: 1048576 op, 2798400.00 ns, 2.6688 ns/op
+OverheadWarmup   8: 1048576 op, 2649200.00 ns, 2.5265 ns/op
+
+OverheadActual   1: 1048576 op, 2656100.00 ns, 2.5331 ns/op
+OverheadActual   2: 1048576 op, 2611800.00 ns, 2.4908 ns/op
+OverheadActual   3: 1048576 op, 2646200.00 ns, 2.5236 ns/op
+OverheadActual   4: 1048576 op, 2766700.00 ns, 2.6385 ns/op
+OverheadActual   5: 1048576 op, 2617800.00 ns, 2.4965 ns/op
+OverheadActual   6: 1048576 op, 2621800.00 ns, 2.5003 ns/op
+OverheadActual   7: 1048576 op, 2652300.00 ns, 2.5294 ns/op
+OverheadActual   8: 1048576 op, 2709700.00 ns, 2.5842 ns/op
+OverheadActual   9: 1048576 op, 2636100.00 ns, 2.5140 ns/op
+OverheadActual  10: 1048576 op, 2629700.00 ns, 2.5079 ns/op
+OverheadActual  11: 1048576 op, 2636900.00 ns, 2.5147 ns/op
+OverheadActual  12: 1048576 op, 2652200.00 ns, 2.5293 ns/op
+OverheadActual  13: 1048576 op, 2658100.00 ns, 2.5350 ns/op
+OverheadActual  14: 1048576 op, 2632300.00 ns, 2.5104 ns/op
+OverheadActual  15: 1048576 op, 2619900.00 ns, 2.4985 ns/op
+
+WorkloadWarmup   1: 1048576 op, 911302000.00 ns, 869.0853 ns/op
+WorkloadWarmup   2: 1048576 op, 914357100.00 ns, 871.9989 ns/op
+WorkloadWarmup   3: 1048576 op, 910147900.00 ns, 867.9847 ns/op
+
+// BeforeActualRun
+WorkloadActual   1: 1048576 op, 1047944000.00 ns, 999.3973 ns/op
+WorkloadActual   2: 1048576 op, 982922600.00 ns, 937.3880 ns/op
+WorkloadActual   3: 1048576 op, 980252100.00 ns, 934.8413 ns/op
+
+// AfterActualRun
+WorkloadResult   1: 1048576 op, 1045307100.00 ns, 996.8825 ns/op
+WorkloadResult   2: 1048576 op, 980285700.00 ns, 934.8733 ns/op
+WorkloadResult   3: 1048576 op, 977615200.00 ns, 932.3265 ns/op
+// GC:  11 0 0 92277376 1048576
+// Threading:  0 0 1048576
+
+// AfterAll
+// Benchmark Process 104140 has exited with code 0.
+
+Mean = 954.694 ns, StdErr = 21.107 ns (2.21%), N = 3, StdDev = 36.558 ns
+Min = 932.327 ns, Q1 = 933.600 ns, Median = 934.873 ns, Q3 = 965.878 ns, Max = 996.883 ns
+IQR = 32.278 ns, LowerFence = 885.183 ns, UpperFence = 1,014.295 ns
+ConfidenceInterval = [287.732 ns; 1,621.656 ns] (CI 99.9%), Margin = 666.962 ns (69.86% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 9 (90.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 1m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 1864 2768 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket --job ShortRun --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 203900.00 ns, 203.9000 us/op
+WorkloadJitting  1: 1 op, 2652700.00 ns, 2.6527 ms/op
+
+OverheadJitting  2: 16 op, 368400.00 ns, 23.0250 us/op
+WorkloadJitting  2: 16 op, 394000.00 ns, 24.6250 us/op
+
+WorkloadPilot    1: 16 op, 50500.00 ns, 3.1563 us/op
+WorkloadPilot    2: 32 op, 87800.00 ns, 2.7438 us/op
+WorkloadPilot    3: 64 op, 114200.00 ns, 1.7844 us/op
+WorkloadPilot    4: 128 op, 196000.00 ns, 1.5313 us/op
+WorkloadPilot    5: 256 op, 362900.00 ns, 1.4176 us/op
+WorkloadPilot    6: 512 op, 715900.00 ns, 1.3982 us/op
+WorkloadPilot    7: 1024 op, 1398400.00 ns, 1.3656 us/op
+WorkloadPilot    8: 2048 op, 2528000.00 ns, 1.2344 us/op
+WorkloadPilot    9: 4096 op, 4969800.00 ns, 1.2133 us/op
+WorkloadPilot   10: 8192 op, 10051100.00 ns, 1.2269 us/op
+WorkloadPilot   11: 16384 op, 20964400.00 ns, 1.2796 us/op
+WorkloadPilot   12: 32768 op, 40081400.00 ns, 1.2232 us/op
+WorkloadPilot   13: 65536 op, 78589900.00 ns, 1.1992 us/op
+WorkloadPilot   14: 131072 op, 169621300.00 ns, 1.2941 us/op
+WorkloadPilot   15: 262144 op, 208609200.00 ns, 795.7809 ns/op
+WorkloadPilot   16: 524288 op, 411809000.00 ns, 785.4633 ns/op
+WorkloadPilot   17: 1048576 op, 845808200.00 ns, 806.6256 ns/op
+
+OverheadWarmup   1: 1048576 op, 2675400.00 ns, 2.5515 ns/op
+OverheadWarmup   2: 1048576 op, 2663200.00 ns, 2.5398 ns/op
+OverheadWarmup   3: 1048576 op, 2651600.00 ns, 2.5288 ns/op
+OverheadWarmup   4: 1048576 op, 2653200.00 ns, 2.5303 ns/op
+OverheadWarmup   5: 1048576 op, 2631000.00 ns, 2.5091 ns/op
+OverheadWarmup   6: 1048576 op, 2640300.00 ns, 2.5180 ns/op
+OverheadWarmup   7: 1048576 op, 2634200.00 ns, 2.5122 ns/op
+
+OverheadActual   1: 1048576 op, 2642600.00 ns, 2.5202 ns/op
+OverheadActual   2: 1048576 op, 2642300.00 ns, 2.5199 ns/op
+OverheadActual   3: 1048576 op, 2711700.00 ns, 2.5861 ns/op
+OverheadActual   4: 1048576 op, 2651600.00 ns, 2.5288 ns/op
+OverheadActual   5: 1048576 op, 2749700.00 ns, 2.6223 ns/op
+OverheadActual   6: 1048576 op, 2667200.00 ns, 2.5436 ns/op
+OverheadActual   7: 1048576 op, 2717300.00 ns, 2.5914 ns/op
+OverheadActual   8: 1048576 op, 2732600.00 ns, 2.6060 ns/op
+OverheadActual   9: 1048576 op, 2700900.00 ns, 2.5758 ns/op
+OverheadActual  10: 1048576 op, 2690400.00 ns, 2.5658 ns/op
+OverheadActual  11: 1048576 op, 2654200.00 ns, 2.5312 ns/op
+OverheadActual  12: 1048576 op, 2636600.00 ns, 2.5145 ns/op
+OverheadActual  13: 1048576 op, 2655700.00 ns, 2.5327 ns/op
+OverheadActual  14: 1048576 op, 2667200.00 ns, 2.5436 ns/op
+OverheadActual  15: 1048576 op, 2716400.00 ns, 2.5906 ns/op
+
+WorkloadWarmup   1: 1048576 op, 835158400.00 ns, 796.4691 ns/op
+WorkloadWarmup   2: 1048576 op, 947255300.00 ns, 903.3731 ns/op
+WorkloadWarmup   3: 1048576 op, 1045159700.00 ns, 996.7420 ns/op
+
+// BeforeActualRun
+WorkloadActual   1: 1048576 op, 977096800.00 ns, 931.8321 ns/op
+WorkloadActual   2: 1048576 op, 973161100.00 ns, 928.0787 ns/op
+WorkloadActual   3: 1048576 op, 963108500.00 ns, 918.4918 ns/op
+
+// AfterActualRun
+WorkloadResult   1: 1048576 op, 974429600.00 ns, 929.2885 ns/op
+WorkloadResult   2: 1048576 op, 970493900.00 ns, 925.5351 ns/op
+WorkloadResult   3: 1048576 op, 960441300.00 ns, 915.9482 ns/op
+// GC:  11 0 0 92277376 1048576
+// Threading:  0 0 1048576
+
+// AfterAll
+// Benchmark Process 24464 has exited with code 0.
+
+Mean = 923.591 ns, StdErr = 3.972 ns (0.43%), N = 3, StdDev = 6.879 ns
+Min = 915.948 ns, Q1 = 920.742 ns, Median = 925.535 ns, Q3 = 927.412 ns, Max = 929.288 ns
+IQR = 6.670 ns, LowerFence = 910.736 ns, UpperFence = 937.417 ns
+ConfidenceInterval = [798.084 ns; 1,049.097 ns] (CI 99.9%), Margin = 125.507 ns (13.59% of Mean)
+Skewness = -0.26, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 8 (80.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 1m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 2760 1184 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket --job ShortRun --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 192800.00 ns, 192.8000 us/op
+WorkloadJitting  1: 1 op, 5703900.00 ns, 5.7039 ms/op
+
+OverheadJitting  2: 16 op, 419700.00 ns, 26.2313 us/op
+WorkloadJitting  2: 16 op, 505100.00 ns, 31.5688 us/op
+
+WorkloadPilot    1: 16 op, 122500.00 ns, 7.6563 us/op
+WorkloadPilot    2: 32 op, 132400.00 ns, 4.1375 us/op
+WorkloadPilot    3: 64 op, 274300.00 ns, 4.2859 us/op
+WorkloadPilot    4: 128 op, 436200.00 ns, 3.4078 us/op
+WorkloadPilot    5: 256 op, 813400.00 ns, 3.1773 us/op
+WorkloadPilot    6: 512 op, 1623800.00 ns, 3.1715 us/op
+WorkloadPilot    7: 1024 op, 3481400.00 ns, 3.3998 us/op
+WorkloadPilot    8: 2048 op, 6294200.00 ns, 3.0733 us/op
+WorkloadPilot    9: 4096 op, 11433600.00 ns, 2.7914 us/op
+WorkloadPilot   10: 8192 op, 22772100.00 ns, 2.7798 us/op
+WorkloadPilot   11: 16384 op, 38880300.00 ns, 2.3731 us/op
+WorkloadPilot   12: 32768 op, 77967600.00 ns, 2.3794 us/op
+WorkloadPilot   13: 65536 op, 199768800.00 ns, 3.0482 us/op
+WorkloadPilot   14: 131072 op, 190508300.00 ns, 1.4535 us/op
+WorkloadPilot   15: 262144 op, 378187300.00 ns, 1.4427 us/op
+WorkloadPilot   16: 524288 op, 761015600.00 ns, 1.4515 us/op
+
+OverheadWarmup   1: 524288 op, 1371900.00 ns, 2.6167 ns/op
+OverheadWarmup   2: 524288 op, 1368700.00 ns, 2.6106 ns/op
+OverheadWarmup   3: 524288 op, 1386200.00 ns, 2.6440 ns/op
+OverheadWarmup   4: 524288 op, 1364300.00 ns, 2.6022 ns/op
+OverheadWarmup   5: 524288 op, 1336300.00 ns, 2.5488 ns/op
+OverheadWarmup   6: 524288 op, 1403000.00 ns, 2.6760 ns/op
+OverheadWarmup   7: 524288 op, 1370400.00 ns, 2.6138 ns/op
+
+OverheadActual   1: 524288 op, 1421600.00 ns, 2.7115 ns/op
+OverheadActual   2: 524288 op, 1359800.00 ns, 2.5936 ns/op
+OverheadActual   3: 524288 op, 1368600.00 ns, 2.6104 ns/op
+OverheadActual   4: 524288 op, 1369400.00 ns, 2.6119 ns/op
+OverheadActual   5: 524288 op, 1421600.00 ns, 2.7115 ns/op
+OverheadActual   6: 524288 op, 1363300.00 ns, 2.6003 ns/op
+OverheadActual   7: 524288 op, 1364300.00 ns, 2.6022 ns/op
+OverheadActual   8: 524288 op, 1361500.00 ns, 2.5969 ns/op
+OverheadActual   9: 524288 op, 1359100.00 ns, 2.5923 ns/op
+OverheadActual  10: 524288 op, 1365000.00 ns, 2.6035 ns/op
+OverheadActual  11: 524288 op, 1367100.00 ns, 2.6075 ns/op
+OverheadActual  12: 524288 op, 1366700.00 ns, 2.6068 ns/op
+OverheadActual  13: 524288 op, 1342400.00 ns, 2.5604 ns/op
+OverheadActual  14: 524288 op, 1391000.00 ns, 2.6531 ns/op
+OverheadActual  15: 524288 op, 1360100.00 ns, 2.5942 ns/op
+
+WorkloadWarmup   1: 524288 op, 780166600.00 ns, 1.4880 us/op
+WorkloadWarmup   2: 524288 op, 870376300.00 ns, 1.6601 us/op
+WorkloadWarmup   3: 524288 op, 882305300.00 ns, 1.6829 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 1145698000.00 ns, 2.1852 us/op
+WorkloadActual   2: 524288 op, 1133718800.00 ns, 2.1624 us/op
+WorkloadActual   3: 524288 op, 956250100.00 ns, 1.8239 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 1144333000.00 ns, 2.1826 us/op
+WorkloadResult   2: 524288 op, 1132353800.00 ns, 2.1598 us/op
+WorkloadResult   3: 524288 op, 954885100.00 ns, 1.8213 us/op
+// GC:  157 1 0 1321241152 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 42240 has exited with code 0.
+
+Mean = 2.055 us, StdErr = 0.117 us (5.69%), N = 3, StdDev = 0.202 us
+Min = 1.821 us, Q1 = 1.991 us, Median = 2.160 us, Q3 = 2.171 us, Max = 2.183 us
+IQR = 0.181 us, LowerFence = 1.720 us, UpperFence = 2.442 us
+ConfidenceInterval = [-1.637 us; 5.746 us] (CI 99.9%), Margin = 3.692 us (179.68% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 7 (70.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 1m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 1728 1292 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck --job ShortRun --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 192600.00 ns, 192.6000 us/op
+WorkloadJitting  1: 1 op, 5948700.00 ns, 5.9487 ms/op
+
+OverheadJitting  2: 16 op, 561800.00 ns, 35.1125 us/op
+WorkloadJitting  2: 16 op, 642400.00 ns, 40.1500 us/op
+
+WorkloadPilot    1: 16 op, 128700.00 ns, 8.0438 us/op
+WorkloadPilot    2: 32 op, 189400.00 ns, 5.9188 us/op
+WorkloadPilot    3: 64 op, 240000.00 ns, 3.7500 us/op
+WorkloadPilot    4: 128 op, 440500.00 ns, 3.4414 us/op
+WorkloadPilot    5: 256 op, 871900.00 ns, 3.4059 us/op
+WorkloadPilot    6: 512 op, 1686100.00 ns, 3.2932 us/op
+WorkloadPilot    7: 1024 op, 3317000.00 ns, 3.2393 us/op
+WorkloadPilot    8: 2048 op, 6427100.00 ns, 3.1382 us/op
+WorkloadPilot    9: 4096 op, 12376300.00 ns, 3.0216 us/op
+WorkloadPilot   10: 8192 op, 22381700.00 ns, 2.7321 us/op
+WorkloadPilot   11: 16384 op, 41914100.00 ns, 2.5582 us/op
+WorkloadPilot   12: 32768 op, 81794400.00 ns, 2.4962 us/op
+WorkloadPilot   13: 65536 op, 169977200.00 ns, 2.5936 us/op
+WorkloadPilot   14: 131072 op, 201138100.00 ns, 1.5346 us/op
+WorkloadPilot   15: 262144 op, 400571000.00 ns, 1.5281 us/op
+WorkloadPilot   16: 524288 op, 790933400.00 ns, 1.5086 us/op
+
+OverheadWarmup   1: 524288 op, 1322800.00 ns, 2.5230 ns/op
+OverheadWarmup   2: 524288 op, 1346500.00 ns, 2.5682 ns/op
+OverheadWarmup   3: 524288 op, 1376600.00 ns, 2.6257 ns/op
+OverheadWarmup   4: 524288 op, 1338000.00 ns, 2.5520 ns/op
+OverheadWarmup   5: 524288 op, 1501100.00 ns, 2.8631 ns/op
+OverheadWarmup   6: 524288 op, 1327200.00 ns, 2.5314 ns/op
+
+OverheadActual   1: 524288 op, 1310000.00 ns, 2.4986 ns/op
+OverheadActual   2: 524288 op, 1301100.00 ns, 2.4817 ns/op
+OverheadActual   3: 524288 op, 1519700.00 ns, 2.8986 ns/op
+OverheadActual   4: 524288 op, 1325500.00 ns, 2.5282 ns/op
+OverheadActual   5: 524288 op, 1348900.00 ns, 2.5728 ns/op
+OverheadActual   6: 524288 op, 1331400.00 ns, 2.5394 ns/op
+OverheadActual   7: 524288 op, 1370100.00 ns, 2.6133 ns/op
+OverheadActual   8: 524288 op, 1323400.00 ns, 2.5242 ns/op
+OverheadActual   9: 524288 op, 1429400.00 ns, 2.7264 ns/op
+OverheadActual  10: 524288 op, 1312000.00 ns, 2.5024 ns/op
+OverheadActual  11: 524288 op, 1417200.00 ns, 2.7031 ns/op
+OverheadActual  12: 524288 op, 1326300.00 ns, 2.5297 ns/op
+OverheadActual  13: 524288 op, 1318400.00 ns, 2.5146 ns/op
+OverheadActual  14: 524288 op, 1314800.00 ns, 2.5078 ns/op
+OverheadActual  15: 524288 op, 1400300.00 ns, 2.6709 ns/op
+
+WorkloadWarmup   1: 524288 op, 782350700.00 ns, 1.4922 us/op
+WorkloadWarmup   2: 524288 op, 866008100.00 ns, 1.6518 us/op
+WorkloadWarmup   3: 524288 op, 883752900.00 ns, 1.6856 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 912586100.00 ns, 1.7406 us/op
+WorkloadActual   2: 524288 op, 1058791200.00 ns, 2.0195 us/op
+WorkloadActual   3: 524288 op, 927470900.00 ns, 1.7690 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 911259800.00 ns, 1.7381 us/op
+WorkloadResult   2: 524288 op, 1057464900.00 ns, 2.0170 us/op
+WorkloadResult   3: 524288 op, 926144600.00 ns, 1.7665 us/op
+// GC:  157 1 0 1321241152 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 39168 has exited with code 0.
+
+Mean = 1.841 us, StdErr = 0.089 us (4.81%), N = 3, StdDev = 0.153 us
+Min = 1.738 us, Q1 = 1.752 us, Median = 1.766 us, Q3 = 1.892 us, Max = 2.017 us
+IQR = 0.139 us, LowerFence = 1.543 us, UpperFence = 2.101 us
+ConfidenceInterval = [-0.959 us; 4.640 us] (CI 99.9%), Margin = 2.800 us (152.12% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 6 (60.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 1728 1292 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck --job ShortRun --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 201600.00 ns, 201.6000 us/op
+WorkloadJitting  1: 1 op, 5830800.00 ns, 5.8308 ms/op
+
+OverheadJitting  2: 16 op, 537900.00 ns, 33.6188 us/op
+WorkloadJitting  2: 16 op, 492500.00 ns, 30.7813 us/op
+
+WorkloadPilot    1: 16 op, 98300.00 ns, 6.1438 us/op
+WorkloadPilot    2: 32 op, 161900.00 ns, 5.0594 us/op
+WorkloadPilot    3: 64 op, 230800.00 ns, 3.6063 us/op
+WorkloadPilot    4: 128 op, 420700.00 ns, 3.2867 us/op
+WorkloadPilot    5: 256 op, 761400.00 ns, 2.9742 us/op
+WorkloadPilot    6: 512 op, 1574900.00 ns, 3.0760 us/op
+WorkloadPilot    7: 1024 op, 3116900.00 ns, 3.0438 us/op
+WorkloadPilot    8: 2048 op, 6777000.00 ns, 3.3091 us/op
+WorkloadPilot    9: 4096 op, 11775700.00 ns, 2.8749 us/op
+WorkloadPilot   10: 8192 op, 22413200.00 ns, 2.7360 us/op
+WorkloadPilot   11: 16384 op, 39079900.00 ns, 2.3852 us/op
+WorkloadPilot   12: 32768 op, 80807600.00 ns, 2.4661 us/op
+WorkloadPilot   13: 65536 op, 176178900.00 ns, 2.6883 us/op
+WorkloadPilot   14: 131072 op, 195940800.00 ns, 1.4949 us/op
+WorkloadPilot   15: 262144 op, 403769700.00 ns, 1.5403 us/op
+WorkloadPilot   16: 524288 op, 813080000.00 ns, 1.5508 us/op
+
+OverheadWarmup   1: 524288 op, 1327200.00 ns, 2.5314 ns/op
+OverheadWarmup   2: 524288 op, 1348000.00 ns, 2.5711 ns/op
+OverheadWarmup   3: 524288 op, 1333900.00 ns, 2.5442 ns/op
+OverheadWarmup   4: 524288 op, 1328100.00 ns, 2.5331 ns/op
+OverheadWarmup   5: 524288 op, 1338500.00 ns, 2.5530 ns/op
+OverheadWarmup   6: 524288 op, 1319900.00 ns, 2.5175 ns/op
+
+OverheadActual   1: 524288 op, 1325800.00 ns, 2.5288 ns/op
+OverheadActual   2: 524288 op, 1343100.00 ns, 2.5618 ns/op
+OverheadActual   3: 524288 op, 1313000.00 ns, 2.5043 ns/op
+OverheadActual   4: 524288 op, 1327700.00 ns, 2.5324 ns/op
+OverheadActual   5: 524288 op, 1324500.00 ns, 2.5263 ns/op
+OverheadActual   6: 524288 op, 1321000.00 ns, 2.5196 ns/op
+OverheadActual   7: 524288 op, 1332600.00 ns, 2.5417 ns/op
+OverheadActual   8: 524288 op, 1325400.00 ns, 2.5280 ns/op
+OverheadActual   9: 524288 op, 1321800.00 ns, 2.5211 ns/op
+OverheadActual  10: 524288 op, 1313100.00 ns, 2.5045 ns/op
+OverheadActual  11: 524288 op, 1312100.00 ns, 2.5026 ns/op
+OverheadActual  12: 524288 op, 1453900.00 ns, 2.7731 ns/op
+OverheadActual  13: 524288 op, 1312300.00 ns, 2.5030 ns/op
+OverheadActual  14: 524288 op, 1313100.00 ns, 2.5045 ns/op
+OverheadActual  15: 524288 op, 1312000.00 ns, 2.5024 ns/op
+
+WorkloadWarmup   1: 524288 op, 799166100.00 ns, 1.5243 us/op
+WorkloadWarmup   2: 524288 op, 974711800.00 ns, 1.8591 us/op
+WorkloadWarmup   3: 524288 op, 913791100.00 ns, 1.7429 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 918613100.00 ns, 1.7521 us/op
+WorkloadActual   2: 524288 op, 930910400.00 ns, 1.7756 us/op
+WorkloadActual   3: 524288 op, 1018106600.00 ns, 1.9419 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 917291300.00 ns, 1.7496 us/op
+WorkloadResult   2: 524288 op, 929588600.00 ns, 1.7730 us/op
+WorkloadResult   3: 524288 op, 1016784800.00 ns, 1.9394 us/op
+// GC:  157 1 0 1321241152 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 64592 has exited with code 0.
+
+Mean = 1.821 us, StdErr = 0.060 us (3.28%), N = 3, StdDev = 0.103 us
+Min = 1.750 us, Q1 = 1.761 us, Median = 1.773 us, Q3 = 1.856 us, Max = 1.939 us
+IQR = 0.095 us, LowerFence = 1.619 us, UpperFence = 1.999 us
+ConfidenceInterval = [-0.067 us; 3.708 us] (CI 99.9%), Margin = 1.887 us (103.67% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 5 (50.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 4260 4272 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck --job ShortRun --benchmarkId 5 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 184300.00 ns, 184.3000 us/op
+WorkloadJitting  1: 1 op, 5623500.00 ns, 5.6235 ms/op
+
+OverheadJitting  2: 16 op, 363400.00 ns, 22.7125 us/op
+WorkloadJitting  2: 16 op, 524200.00 ns, 32.7625 us/op
+
+WorkloadPilot    1: 16 op, 122300.00 ns, 7.6438 us/op
+WorkloadPilot    2: 32 op, 171600.00 ns, 5.3625 us/op
+WorkloadPilot    3: 64 op, 248300.00 ns, 3.8797 us/op
+WorkloadPilot    4: 128 op, 466200.00 ns, 3.6422 us/op
+WorkloadPilot    5: 256 op, 929500.00 ns, 3.6309 us/op
+WorkloadPilot    6: 512 op, 1715500.00 ns, 3.3506 us/op
+WorkloadPilot    7: 1024 op, 3192300.00 ns, 3.1175 us/op
+WorkloadPilot    8: 2048 op, 6186500.00 ns, 3.0208 us/op
+WorkloadPilot    9: 4096 op, 11949000.00 ns, 2.9172 us/op
+WorkloadPilot   10: 8192 op, 23205900.00 ns, 2.8328 us/op
+WorkloadPilot   11: 16384 op, 40423600.00 ns, 2.4673 us/op
+WorkloadPilot   12: 32768 op, 82225900.00 ns, 2.5093 us/op
+WorkloadPilot   13: 65536 op, 181114000.00 ns, 2.7636 us/op
+WorkloadPilot   14: 131072 op, 225575600.00 ns, 1.7210 us/op
+WorkloadPilot   15: 262144 op, 398852900.00 ns, 1.5215 us/op
+WorkloadPilot   16: 524288 op, 797297400.00 ns, 1.5207 us/op
+
+OverheadWarmup   1: 524288 op, 1334000.00 ns, 2.5444 ns/op
+OverheadWarmup   2: 524288 op, 1319700.00 ns, 2.5171 ns/op
+OverheadWarmup   3: 524288 op, 1341000.00 ns, 2.5578 ns/op
+OverheadWarmup   4: 524288 op, 1324600.00 ns, 2.5265 ns/op
+OverheadWarmup   5: 524288 op, 1319500.00 ns, 2.5167 ns/op
+OverheadWarmup   6: 524288 op, 1332700.00 ns, 2.5419 ns/op
+OverheadWarmup   7: 524288 op, 1331600.00 ns, 2.5398 ns/op
+
+OverheadActual   1: 524288 op, 1336800.00 ns, 2.5497 ns/op
+OverheadActual   2: 524288 op, 1336400.00 ns, 2.5490 ns/op
+OverheadActual   3: 524288 op, 1327600.00 ns, 2.5322 ns/op
+OverheadActual   4: 524288 op, 1325600.00 ns, 2.5284 ns/op
+OverheadActual   5: 524288 op, 1334200.00 ns, 2.5448 ns/op
+OverheadActual   6: 524288 op, 1336000.00 ns, 2.5482 ns/op
+OverheadActual   7: 524288 op, 1320600.00 ns, 2.5188 ns/op
+OverheadActual   8: 524288 op, 1327400.00 ns, 2.5318 ns/op
+OverheadActual   9: 524288 op, 1332700.00 ns, 2.5419 ns/op
+OverheadActual  10: 524288 op, 1323600.00 ns, 2.5246 ns/op
+OverheadActual  11: 524288 op, 1319700.00 ns, 2.5171 ns/op
+OverheadActual  12: 524288 op, 1322100.00 ns, 2.5217 ns/op
+OverheadActual  13: 524288 op, 1374500.00 ns, 2.6217 ns/op
+OverheadActual  14: 524288 op, 1322800.00 ns, 2.5230 ns/op
+OverheadActual  15: 524288 op, 1321100.00 ns, 2.5198 ns/op
+
+WorkloadWarmup   1: 524288 op, 819025100.00 ns, 1.5622 us/op
+WorkloadWarmup   2: 524288 op, 961213800.00 ns, 1.8334 us/op
+WorkloadWarmup   3: 524288 op, 939732600.00 ns, 1.7924 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 904301900.00 ns, 1.7248 us/op
+WorkloadActual   2: 524288 op, 1035006400.00 ns, 1.9741 us/op
+WorkloadActual   3: 524288 op, 1057457500.00 ns, 2.0169 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 902974500.00 ns, 1.7223 us/op
+WorkloadResult   2: 524288 op, 1033679000.00 ns, 1.9716 us/op
+WorkloadResult   3: 524288 op, 1056130100.00 ns, 2.0144 us/op
+// GC:  163 1 0 1371574144 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 42532 has exited with code 0.
+
+Mean = 1.903 us, StdErr = 0.091 us (4.79%), N = 3, StdDev = 0.158 us
+Min = 1.722 us, Q1 = 1.847 us, Median = 1.972 us, Q3 = 1.993 us, Max = 2.014 us
+IQR = 0.146 us, LowerFence = 1.628 us, UpperFence = 2.212 us
+ConfidenceInterval = [-0.975 us; 4.781 us] (CI 99.9%), Margin = 2.878 us (151.26% of Mean)
+Skewness = -0.35, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 4 (40.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 2236 4284 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck --job ShortRun --benchmarkId 6 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 229100.00 ns, 229.1000 us/op
+WorkloadJitting  1: 1 op, 5770800.00 ns, 5.7708 ms/op
+
+OverheadJitting  2: 16 op, 452200.00 ns, 28.2625 us/op
+WorkloadJitting  2: 16 op, 435500.00 ns, 27.2188 us/op
+
+WorkloadPilot    1: 16 op, 95400.00 ns, 5.9625 us/op
+WorkloadPilot    2: 32 op, 137500.00 ns, 4.2969 us/op
+WorkloadPilot    3: 64 op, 248300.00 ns, 3.8797 us/op
+WorkloadPilot    4: 128 op, 382800.00 ns, 2.9906 us/op
+WorkloadPilot    5: 256 op, 776800.00 ns, 3.0344 us/op
+WorkloadPilot    6: 512 op, 1658400.00 ns, 3.2391 us/op
+WorkloadPilot    7: 1024 op, 3294800.00 ns, 3.2176 us/op
+WorkloadPilot    8: 2048 op, 6398400.00 ns, 3.1242 us/op
+WorkloadPilot    9: 4096 op, 12449300.00 ns, 3.0394 us/op
+WorkloadPilot   10: 8192 op, 22514100.00 ns, 2.7483 us/op
+WorkloadPilot   11: 16384 op, 40539200.00 ns, 2.4743 us/op
+WorkloadPilot   12: 32768 op, 79087900.00 ns, 2.4136 us/op
+WorkloadPilot   13: 65536 op, 174682100.00 ns, 2.6654 us/op
+WorkloadPilot   14: 131072 op, 199471400.00 ns, 1.5218 us/op
+WorkloadPilot   15: 262144 op, 386355600.00 ns, 1.4738 us/op
+WorkloadPilot   16: 524288 op, 771795200.00 ns, 1.4721 us/op
+
+OverheadWarmup   1: 524288 op, 1322700.00 ns, 2.5229 ns/op
+OverheadWarmup   2: 524288 op, 1328900.00 ns, 2.5347 ns/op
+OverheadWarmup   3: 524288 op, 1324200.00 ns, 2.5257 ns/op
+OverheadWarmup   4: 524288 op, 1314300.00 ns, 2.5068 ns/op
+OverheadWarmup   5: 524288 op, 1313700.00 ns, 2.5057 ns/op
+OverheadWarmup   6: 524288 op, 1456100.00 ns, 2.7773 ns/op
+OverheadWarmup   7: 524288 op, 1329000.00 ns, 2.5349 ns/op
+
+OverheadActual   1: 524288 op, 1320300.00 ns, 2.5183 ns/op
+OverheadActual   2: 524288 op, 1327900.00 ns, 2.5328 ns/op
+OverheadActual   3: 524288 op, 1334100.00 ns, 2.5446 ns/op
+OverheadActual   4: 524288 op, 1311600.00 ns, 2.5017 ns/op
+OverheadActual   5: 524288 op, 1319800.00 ns, 2.5173 ns/op
+OverheadActual   6: 524288 op, 1321200.00 ns, 2.5200 ns/op
+OverheadActual   7: 524288 op, 1319300.00 ns, 2.5164 ns/op
+OverheadActual   8: 524288 op, 1331500.00 ns, 2.5396 ns/op
+OverheadActual   9: 524288 op, 1299100.00 ns, 2.4778 ns/op
+OverheadActual  10: 524288 op, 1301200.00 ns, 2.4818 ns/op
+OverheadActual  11: 524288 op, 1332500.00 ns, 2.5415 ns/op
+OverheadActual  12: 524288 op, 1325600.00 ns, 2.5284 ns/op
+OverheadActual  13: 524288 op, 1335600.00 ns, 2.5475 ns/op
+OverheadActual  14: 524288 op, 1320100.00 ns, 2.5179 ns/op
+OverheadActual  15: 524288 op, 1319500.00 ns, 2.5167 ns/op
+
+WorkloadWarmup   1: 524288 op, 778506900.00 ns, 1.4849 us/op
+WorkloadWarmup   2: 524288 op, 935377100.00 ns, 1.7841 us/op
+WorkloadWarmup   3: 524288 op, 1062792900.00 ns, 2.0271 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 1029378900.00 ns, 1.9634 us/op
+WorkloadActual   2: 524288 op, 948784200.00 ns, 1.8097 us/op
+WorkloadActual   3: 524288 op, 939902800.00 ns, 1.7927 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 1028058600.00 ns, 1.9609 us/op
+WorkloadResult   2: 524288 op, 947463900.00 ns, 1.8071 us/op
+WorkloadResult   3: 524288 op, 938582500.00 ns, 1.7902 us/op
+// GC:  161 1 0 1354796480 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 94340 has exited with code 0.
+
+Mean = 1.853 us, StdErr = 0.054 us (2.93%), N = 3, StdDev = 0.094 us
+Min = 1.790 us, Q1 = 1.799 us, Median = 1.807 us, Q3 = 1.884 us, Max = 1.961 us
+IQR = 0.085 us, LowerFence = 1.671 us, UpperFence = 2.012 us
+ConfidenceInterval = [0.137 us; 3.568 us] (CI 99.9%), Margin = 1.715 us (92.58% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 3 (30.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:44 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 4116 3772 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket --job ShortRun --benchmarkId 7 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 210500.00 ns, 210.5000 us/op
+WorkloadJitting  1: 1 op, 2447500.00 ns, 2.4475 ms/op
+
+OverheadJitting  2: 16 op, 642500.00 ns, 40.1563 us/op
+WorkloadJitting  2: 16 op, 673900.00 ns, 42.1188 us/op
+
+WorkloadPilot    1: 16 op, 74600.00 ns, 4.6625 us/op
+WorkloadPilot    2: 32 op, 80600.00 ns, 2.5188 us/op
+WorkloadPilot    3: 64 op, 149600.00 ns, 2.3375 us/op
+WorkloadPilot    4: 128 op, 277100.00 ns, 2.1648 us/op
+WorkloadPilot    5: 256 op, 534900.00 ns, 2.0895 us/op
+WorkloadPilot    6: 512 op, 1054900.00 ns, 2.0604 us/op
+WorkloadPilot    7: 1024 op, 2046800.00 ns, 1.9988 us/op
+WorkloadPilot    8: 2048 op, 4156400.00 ns, 2.0295 us/op
+WorkloadPilot    9: 4096 op, 8234200.00 ns, 2.0103 us/op
+WorkloadPilot   10: 8192 op, 16466200.00 ns, 2.0100 us/op
+WorkloadPilot   11: 16384 op, 33713500.00 ns, 2.0577 us/op
+WorkloadPilot   12: 32768 op, 65506500.00 ns, 1.9991 us/op
+WorkloadPilot   13: 65536 op, 146033800.00 ns, 2.2283 us/op
+WorkloadPilot   14: 131072 op, 178463200.00 ns, 1.3616 us/op
+WorkloadPilot   15: 262144 op, 280380300.00 ns, 1.0696 us/op
+WorkloadPilot   16: 524288 op, 542483600.00 ns, 1.0347 us/op
+
+OverheadWarmup   1: 524288 op, 1326000.00 ns, 2.5291 ns/op
+OverheadWarmup   2: 524288 op, 1327900.00 ns, 2.5328 ns/op
+OverheadWarmup   3: 524288 op, 1319000.00 ns, 2.5158 ns/op
+OverheadWarmup   4: 524288 op, 1313100.00 ns, 2.5045 ns/op
+OverheadWarmup   5: 524288 op, 1312600.00 ns, 2.5036 ns/op
+OverheadWarmup   6: 524288 op, 1312400.00 ns, 2.5032 ns/op
+OverheadWarmup   7: 524288 op, 1324200.00 ns, 2.5257 ns/op
+OverheadWarmup   8: 524288 op, 1316800.00 ns, 2.5116 ns/op
+
+OverheadActual   1: 524288 op, 1312500.00 ns, 2.5034 ns/op
+OverheadActual   2: 524288 op, 1325100.00 ns, 2.5274 ns/op
+OverheadActual   3: 524288 op, 1318100.00 ns, 2.5141 ns/op
+OverheadActual   4: 524288 op, 1323400.00 ns, 2.5242 ns/op
+OverheadActual   5: 524288 op, 1318200.00 ns, 2.5143 ns/op
+OverheadActual   6: 524288 op, 1317200.00 ns, 2.5124 ns/op
+OverheadActual   7: 524288 op, 1335700.00 ns, 2.5476 ns/op
+OverheadActual   8: 524288 op, 1316700.00 ns, 2.5114 ns/op
+OverheadActual   9: 524288 op, 1320800.00 ns, 2.5192 ns/op
+OverheadActual  10: 524288 op, 1317800.00 ns, 2.5135 ns/op
+OverheadActual  11: 524288 op, 1318200.00 ns, 2.5143 ns/op
+OverheadActual  12: 524288 op, 1316700.00 ns, 2.5114 ns/op
+OverheadActual  13: 524288 op, 1326200.00 ns, 2.5295 ns/op
+OverheadActual  14: 524288 op, 1319300.00 ns, 2.5164 ns/op
+OverheadActual  15: 524288 op, 1311700.00 ns, 2.5019 ns/op
+
+WorkloadWarmup   1: 524288 op, 560199600.00 ns, 1.0685 us/op
+WorkloadWarmup   2: 524288 op, 560541000.00 ns, 1.0691 us/op
+WorkloadWarmup   3: 524288 op, 569988100.00 ns, 1.0872 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 671971200.00 ns, 1.2817 us/op
+WorkloadActual   2: 524288 op, 666615800.00 ns, 1.2715 us/op
+WorkloadActual   3: 524288 op, 651842200.00 ns, 1.2433 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 670653000.00 ns, 1.2792 us/op
+WorkloadResult   2: 524288 op, 665297600.00 ns, 1.2690 us/op
+WorkloadResult   3: 524288 op, 650524000.00 ns, 1.2408 us/op
+// GC:  29 0 0 243276352 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 107944 has exited with code 0.
+
+Mean = 1.263 us, StdErr = 0.011 us (0.91%), N = 3, StdDev = 0.020 us
+Min = 1.241 us, Q1 = 1.255 us, Median = 1.269 us, Q3 = 1.274 us, Max = 1.279 us
+IQR = 0.019 us, LowerFence = 1.226 us, UpperFence = 1.303 us
+ConfidenceInterval = [0.900 us; 1.626 us] (CI 99.9%), Margin = 0.363 us (28.72% of Mean)
+Skewness = -0.27, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 2 (20.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:43 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 1292 4284 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck --job ShortRun --benchmarkId 8 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 172100.00 ns, 172.1000 us/op
+WorkloadJitting  1: 1 op, 2548400.00 ns, 2.5484 ms/op
+
+OverheadJitting  2: 16 op, 495500.00 ns, 30.9688 us/op
+WorkloadJitting  2: 16 op, 439700.00 ns, 27.4813 us/op
+
+WorkloadPilot    1: 16 op, 75500.00 ns, 4.7188 us/op
+WorkloadPilot    2: 32 op, 107200.00 ns, 3.3500 us/op
+WorkloadPilot    3: 64 op, 222100.00 ns, 3.4703 us/op
+WorkloadPilot    4: 128 op, 308100.00 ns, 2.4070 us/op
+WorkloadPilot    5: 256 op, 567100.00 ns, 2.2152 us/op
+WorkloadPilot    6: 512 op, 1162400.00 ns, 2.2703 us/op
+WorkloadPilot    7: 1024 op, 2224100.00 ns, 2.1720 us/op
+WorkloadPilot    8: 2048 op, 4275900.00 ns, 2.0878 us/op
+WorkloadPilot    9: 4096 op, 8302700.00 ns, 2.0270 us/op
+WorkloadPilot   10: 8192 op, 16724800.00 ns, 2.0416 us/op
+WorkloadPilot   11: 16384 op, 33102700.00 ns, 2.0204 us/op
+WorkloadPilot   12: 32768 op, 65956600.00 ns, 2.0128 us/op
+WorkloadPilot   13: 65536 op, 150321500.00 ns, 2.2937 us/op
+WorkloadPilot   14: 131072 op, 164674800.00 ns, 1.2564 us/op
+WorkloadPilot   15: 262144 op, 274593300.00 ns, 1.0475 us/op
+WorkloadPilot   16: 524288 op, 539099300.00 ns, 1.0283 us/op
+
+OverheadWarmup   1: 524288 op, 1323200.00 ns, 2.5238 ns/op
+OverheadWarmup   2: 524288 op, 1327900.00 ns, 2.5328 ns/op
+OverheadWarmup   3: 524288 op, 1320900.00 ns, 2.5194 ns/op
+OverheadWarmup   4: 524288 op, 1330700.00 ns, 2.5381 ns/op
+OverheadWarmup   5: 524288 op, 1318400.00 ns, 2.5146 ns/op
+
+OverheadActual   1: 524288 op, 1320400.00 ns, 2.5185 ns/op
+OverheadActual   2: 524288 op, 1316600.00 ns, 2.5112 ns/op
+OverheadActual   3: 524288 op, 1331500.00 ns, 2.5396 ns/op
+OverheadActual   4: 524288 op, 1319500.00 ns, 2.5167 ns/op
+OverheadActual   5: 524288 op, 1325200.00 ns, 2.5276 ns/op
+OverheadActual   6: 524288 op, 1453800.00 ns, 2.7729 ns/op
+OverheadActual   7: 524288 op, 1325000.00 ns, 2.5272 ns/op
+OverheadActual   8: 524288 op, 1319400.00 ns, 2.5166 ns/op
+OverheadActual   9: 524288 op, 1429800.00 ns, 2.7271 ns/op
+OverheadActual  10: 524288 op, 1327900.00 ns, 2.5328 ns/op
+OverheadActual  11: 524288 op, 1329700.00 ns, 2.5362 ns/op
+OverheadActual  12: 524288 op, 1347800.00 ns, 2.5707 ns/op
+OverheadActual  13: 524288 op, 1335000.00 ns, 2.5463 ns/op
+OverheadActual  14: 524288 op, 1319600.00 ns, 2.5169 ns/op
+OverheadActual  15: 524288 op, 1322000.00 ns, 2.5215 ns/op
+
+WorkloadWarmup   1: 524288 op, 533275800.00 ns, 1.0171 us/op
+WorkloadWarmup   2: 524288 op, 530627200.00 ns, 1.0121 us/op
+WorkloadWarmup   3: 524288 op, 542801600.00 ns, 1.0353 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 711028500.00 ns, 1.3562 us/op
+WorkloadActual   2: 524288 op, 659629500.00 ns, 1.2581 us/op
+WorkloadActual   3: 524288 op, 618987900.00 ns, 1.1806 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 709703300.00 ns, 1.3537 us/op
+WorkloadResult   2: 524288 op, 658304300.00 ns, 1.2556 us/op
+WorkloadResult   3: 524288 op, 617662700.00 ns, 1.1781 us/op
+// GC:  30 0 0 251665184 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 29380 has exited with code 0.
+
+Mean = 1.262 us, StdErr = 0.051 us (4.02%), N = 3, StdDev = 0.088 us
+Min = 1.178 us, Q1 = 1.217 us, Median = 1.256 us, Q3 = 1.305 us, Max = 1.354 us
+IQR = 0.088 us, LowerFence = 1.085 us, UpperFence = 1.436 us
+ConfidenceInterval = [-0.343 us; 2.867 us] (CI 99.9%), Margin = 1.605 us (127.13% of Mean)
+Skewness = 0.08, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 1 (10.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:43 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-ShortRun-1.dll --anonymousPipes 4028 4060 --benchmarkName Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck --job ShortRun --benchmarkId 9 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-ShortRun-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+
+OverheadJitting  1: 1 op, 180300.00 ns, 180.3000 us/op
+WorkloadJitting  1: 1 op, 2332600.00 ns, 2.3326 ms/op
+
+OverheadJitting  2: 16 op, 408900.00 ns, 25.5563 us/op
+WorkloadJitting  2: 16 op, 440500.00 ns, 27.5313 us/op
+
+WorkloadPilot    1: 16 op, 97200.00 ns, 6.0750 us/op
+WorkloadPilot    2: 32 op, 114700.00 ns, 3.5844 us/op
+WorkloadPilot    3: 64 op, 183800.00 ns, 2.8719 us/op
+WorkloadPilot    4: 128 op, 375900.00 ns, 2.9367 us/op
+WorkloadPilot    5: 256 op, 685900.00 ns, 2.6793 us/op
+WorkloadPilot    6: 512 op, 1171500.00 ns, 2.2881 us/op
+WorkloadPilot    7: 1024 op, 2312400.00 ns, 2.2582 us/op
+WorkloadPilot    8: 2048 op, 4414200.00 ns, 2.1554 us/op
+WorkloadPilot    9: 4096 op, 8998500.00 ns, 2.1969 us/op
+WorkloadPilot   10: 8192 op, 17383500.00 ns, 2.1220 us/op
+WorkloadPilot   11: 16384 op, 35595200.00 ns, 2.1726 us/op
+WorkloadPilot   12: 32768 op, 69024100.00 ns, 2.1064 us/op
+WorkloadPilot   13: 65536 op, 151970600.00 ns, 2.3189 us/op
+WorkloadPilot   14: 131072 op, 168810500.00 ns, 1.2879 us/op
+WorkloadPilot   15: 262144 op, 281027900.00 ns, 1.0720 us/op
+WorkloadPilot   16: 524288 op, 563275800.00 ns, 1.0744 us/op
+
+OverheadWarmup   1: 524288 op, 1341300.00 ns, 2.5583 ns/op
+OverheadWarmup   2: 524288 op, 1325400.00 ns, 2.5280 ns/op
+OverheadWarmup   3: 524288 op, 1326100.00 ns, 2.5293 ns/op
+OverheadWarmup   4: 524288 op, 1333700.00 ns, 2.5438 ns/op
+OverheadWarmup   5: 524288 op, 1335800.00 ns, 2.5478 ns/op
+OverheadWarmup   6: 524288 op, 1303800.00 ns, 2.4868 ns/op
+OverheadWarmup   7: 524288 op, 1332400.00 ns, 2.5414 ns/op
+OverheadWarmup   8: 524288 op, 1328200.00 ns, 2.5333 ns/op
+
+OverheadActual   1: 524288 op, 1354700.00 ns, 2.5839 ns/op
+OverheadActual   2: 524288 op, 1320300.00 ns, 2.5183 ns/op
+OverheadActual   3: 524288 op, 1320800.00 ns, 2.5192 ns/op
+OverheadActual   4: 524288 op, 1316800.00 ns, 2.5116 ns/op
+OverheadActual   5: 524288 op, 1326100.00 ns, 2.5293 ns/op
+OverheadActual   6: 524288 op, 1338300.00 ns, 2.5526 ns/op
+OverheadActual   7: 524288 op, 1337200.00 ns, 2.5505 ns/op
+OverheadActual   8: 524288 op, 1380000.00 ns, 2.6321 ns/op
+OverheadActual   9: 524288 op, 1366200.00 ns, 2.6058 ns/op
+OverheadActual  10: 524288 op, 1330500.00 ns, 2.5377 ns/op
+OverheadActual  11: 524288 op, 1323900.00 ns, 2.5251 ns/op
+OverheadActual  12: 524288 op, 1319500.00 ns, 2.5167 ns/op
+OverheadActual  13: 524288 op, 1314900.00 ns, 2.5080 ns/op
+OverheadActual  14: 524288 op, 1305600.00 ns, 2.4902 ns/op
+OverheadActual  15: 524288 op, 1345500.00 ns, 2.5663 ns/op
+
+WorkloadWarmup   1: 524288 op, 566879300.00 ns, 1.0812 us/op
+WorkloadWarmup   2: 524288 op, 567786200.00 ns, 1.0830 us/op
+WorkloadWarmup   3: 524288 op, 664564800.00 ns, 1.2676 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 524288 op, 649008300.00 ns, 1.2379 us/op
+WorkloadActual   2: 524288 op, 679526400.00 ns, 1.2961 us/op
+WorkloadActual   3: 524288 op, 653252900.00 ns, 1.2460 us/op
+
+// AfterActualRun
+WorkloadResult   1: 524288 op, 647682200.00 ns, 1.2354 us/op
+WorkloadResult   2: 524288 op, 678200300.00 ns, 1.2936 us/op
+WorkloadResult   3: 524288 op, 651926800.00 ns, 1.2435 us/op
+// GC:  34 0 0 285220512 524288
+// Threading:  0 0 524288
+
+// AfterAll
+// Benchmark Process 58352 has exited with code 0.
+
+Mean = 1.257 us, StdErr = 0.018 us (1.45%), N = 3, StdDev = 0.032 us
+Min = 1.235 us, Q1 = 1.239 us, Median = 1.243 us, Q3 = 1.269 us, Max = 1.294 us
+IQR = 0.029 us, LowerFence = 1.196 us, UpperFence = 1.312 us
+ConfidenceInterval = [0.682 us; 1.833 us] (CI 99.9%), Margin = 0.575 us (45.75% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 14:43 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.csv
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report-github.md
+  BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicHandshakePacketProtectionBenchmarks-report.html
+
+// * Detailed results *
+QuicHandshakePacketProtectionBenchmarks.ProtectHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 954.694 ns, StdErr = 21.107 ns (2.21%), N = 3, StdDev = 36.558 ns
+Min = 932.327 ns, Q1 = 933.600 ns, Median = 934.873 ns, Q3 = 965.878 ns, Max = 996.883 ns
+IQR = 32.278 ns, LowerFence = 885.183 ns, UpperFence = 1,014.295 ns
+ConfidenceInterval = [287.732 ns; 1,621.656 ns] (CI 99.9%), Margin = 666.962 ns (69.86% of Mean)
+Skewness = 0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[931.335 ns ; 997.874 ns) | @@@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.OpenHandshakePacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 923.591 ns, StdErr = 3.972 ns (0.43%), N = 3, StdDev = 6.879 ns
+Min = 915.948 ns, Q1 = 920.742 ns, Median = 925.535 ns, Q3 = 927.412 ns, Max = 929.288 ns
+IQR = 6.670 ns, LowerFence = 910.736 ns, UpperFence = 937.417 ns
+ConfidenceInterval = [798.084 ns; 1,049.097 ns] (CI 99.9%), Margin = 125.507 ns (13.59% of Mean)
+Skewness = -0.26, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[909.688 ns ; 935.549 ns) | @@@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 2.055 us, StdErr = 0.117 us (5.69%), N = 3, StdDev = 0.202 us
+Min = 1.821 us, Q1 = 1.991 us, Median = 2.160 us, Q3 = 2.171 us, Max = 2.183 us
+IQR = 0.181 us, LowerFence = 1.720 us, UpperFence = 2.442 us
+ConfidenceInterval = [-1.637 us; 5.746 us] (CI 99.9%), Margin = 3.692 us (179.68% of Mean)
+Skewness = -0.38, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.818 us ; 2.186 us) | @@@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.841 us, StdErr = 0.089 us (4.81%), N = 3, StdDev = 0.153 us
+Min = 1.738 us, Q1 = 1.752 us, Median = 1.766 us, Q3 = 1.892 us, Max = 2.017 us
+IQR = 0.139 us, LowerFence = 1.543 us, UpperFence = 2.101 us
+ConfidenceInterval = [-0.959 us; 4.640 us] (CI 99.9%), Margin = 2.800 us (152.12% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.738 us ; 2.017 us) | @@@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildBootstrapInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.821 us, StdErr = 0.060 us (3.28%), N = 3, StdDev = 0.103 us
+Min = 1.750 us, Q1 = 1.761 us, Median = 1.773 us, Q3 = 1.856 us, Max = 1.939 us
+IQR = 0.095 us, LowerFence = 1.619 us, UpperFence = 1.999 us
+ConfidenceInterval = [-0.067 us; 3.708 us] (CI 99.9%), Margin = 1.887 us (103.67% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.655 us ; 1.855 us) | @@
+[1.855 us ; 2.034 us) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildInitialCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.903 us, StdErr = 0.091 us (4.79%), N = 3, StdDev = 0.158 us
+Min = 1.722 us, Q1 = 1.847 us, Median = 1.972 us, Q3 = 1.993 us, Max = 2.014 us
+IQR = 0.146 us, LowerFence = 1.628 us, UpperFence = 2.212 us
+ConfidenceInterval = [-0.975 us; 4.781 us] (CI 99.9%), Margin = 2.878 us (151.26% of Mean)
+Skewness = -0.35, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.579 us ; 1.849 us) | @
+[1.849 us ; 2.158 us) | @@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildRetrySelectedInitialReplayPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.853 us, StdErr = 0.054 us (2.93%), N = 3, StdDev = 0.094 us
+Min = 1.790 us, Q1 = 1.799 us, Median = 1.807 us, Q3 = 1.884 us, Max = 1.961 us
+IQR = 0.085 us, LowerFence = 1.671 us, UpperFence = 2.012 us
+ConfidenceInterval = [0.137 us; 3.568 us] (CI 99.9%), Margin = 1.715 us (92.58% of Mean)
+Skewness = 0.37, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.790 us ; 1.961 us) | @@@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacket: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.263 us, StdErr = 0.011 us (0.91%), N = 3, StdDev = 0.020 us
+Min = 1.241 us, Q1 = 1.255 us, Median = 1.269 us, Q3 = 1.274 us, Max = 1.279 us
+IQR = 0.019 us, LowerFence = 1.226 us, UpperFence = 1.303 us
+ConfidenceInterval = [0.900 us; 1.626 us] (CI 99.9%), Margin = 0.363 us (28.72% of Mean)
+Skewness = -0.27, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.223 us ; 1.256 us) | @
+[1.256 us ; 1.297 us) | @@
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.262 us, StdErr = 0.051 us (4.02%), N = 3, StdDev = 0.088 us
+Min = 1.178 us, Q1 = 1.217 us, Median = 1.256 us, Q3 = 1.305 us, Max = 1.354 us
+IQR = 0.088 us, LowerFence = 1.085 us, UpperFence = 1.436 us
+ConfidenceInterval = [-0.343 us; 2.867 us] (CI 99.9%), Margin = 1.605 us (127.13% of Mean)
+Skewness = 0.08, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.137 us ; 1.297 us) | @@
+[1.297 us ; 1.434 us) | @
+---------------------------------------------------
+
+QuicHandshakePacketProtectionBenchmarks.BuildHandshakeCryptoRetransmissionPacketWithAck: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 1.257 us, StdErr = 0.018 us (1.45%), N = 3, StdDev = 0.032 us
+Min = 1.235 us, Q1 = 1.239 us, Median = 1.243 us, Q3 = 1.269 us, Max = 1.294 us
+IQR = 0.029 us, LowerFence = 1.196 us, UpperFence = 1.312 us
+ConfidenceInterval = [0.682 us; 1.833 us] (CI 99.9%), Margin = 0.575 us (45.75% of Mean)
+Skewness = 0.36, Kurtosis = 0.67, MValue = 2
+-------------------- Histogram --------------------
+[1.207 us ; 1.268 us) | @@
+[1.268 us ; 1.322 us) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host]   : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  ShortRun : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=ShortRun  IterationCount=3  LaunchCount=1
+WarmupCount=3
+
+| Method                                          | Mean       | Error      | StdDev    | Gen0   | Gen1   | Allocated |
+|------------------------------------------------ |-----------:|-----------:|----------:|-------:|-------:|----------:|
+| ProtectHandshakePacket                          |   954.7 ns |   667.0 ns |  36.56 ns | 0.0105 |      - |      88 B |
+| OpenHandshakePacket                             |   923.6 ns |   125.5 ns |   6.88 ns | 0.0105 |      - |      88 B |
+| BuildInitialCryptoPacket                        | 2,054.6 ns | 3,691.6 ns | 202.35 ns | 0.2995 | 0.0019 |    2520 B |
+| BuildInitialCryptoPacketWithAck                 | 1,840.5 ns | 2,799.8 ns | 153.46 ns | 0.2995 | 0.0019 |    2520 B |
+| BuildBootstrapInitialReplayPacketWithAck        | 1,820.7 ns | 1,887.5 ns | 103.46 ns | 0.2995 | 0.0019 |    2520 B |
+| BuildInitialCryptoRetransmissionPacketWithAck   | 1,902.8 ns | 2,878.0 ns | 157.75 ns | 0.3109 | 0.0019 |    2616 B |
+| BuildRetrySelectedInitialReplayPacketWithAck    | 1,852.7 ns | 1,715.3 ns |  94.02 ns | 0.3071 | 0.0019 |    2584 B |
+| BuildHandshakeCryptoPacket                      | 1,263.0 ns |   362.8 ns |  19.88 ns | 0.0553 |      - |     464 B |
+| BuildHandshakeCryptoPacketWithAck               | 1,262.5 ns | 1,605.0 ns |  87.98 ns | 0.0572 |      - |     480 B |
+| BuildHandshakeCryptoRetransmissionPacketWithAck | 1,257.5 ns |   575.2 ns |  31.53 ns | 0.0648 |      - |     544 B |
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  StdDev    : Standard deviation of all measurements
+  Gen0      : GC Generation 0 collects per 1000 operations
+  Gen1      : GC Generation 1 collects per 1000 operations
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 ns      : 1 Nanosecond (0.000000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:01:21 (81.35 sec), executed benchmarks: 10
+
+Global total time: 00:01:41 (101.35 sec), executed benchmarks: 10
+// * Artifacts cleanup *
+Artifacts cleanup is finished

@@ -2204,9 +2204,16 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             ReadOnlySpan<byte> cryptoChunk = initialClientHelloBytes.Slice(replayOffset, requestedBytes);
+            ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
+            bool hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+                QuicPacketNumberSpace.Initial,
+                nowMicros,
+                out byte[] ackFramePayload,
+                out QuicAckFrame piggybackedAckFrame);
             if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                     cryptoChunk,
                     (ulong)replayOffset,
+                    ackFramePayload,
                     protection,
                     out ulong packetNumber,
                     out byte[] protectedPacket))
@@ -2215,6 +2222,16 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             TrackInitialPacket(packetNumber, protectedPacket, probePacket);
+            if (hasPiggybackedAck)
+            {
+                sendRuntime.FlowController.MarkAckFrameSent(
+                    QuicPacketNumberSpace.Initial,
+                    packetNumber,
+                    piggybackedAckFrame,
+                    nowMicros,
+                    ackOnlyPacket: false);
+            }
+
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
 

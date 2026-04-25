@@ -32,6 +32,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0016.json`](WI-QUIC-RFC9000-0016.json): canonical RFC 9000 reordering and gap immediate ACK scheduling work-item source
 - [`WI-QUIC-RFC9000-0017.json`](WI-QUIC-RFC9000-0017.json): canonical RFC 9000 non-ack-eliciting ACK deferral and inclusion work-item source
 - [`WI-QUIC-RFC9000-0022.json`](WI-QUIC-RFC9000-0022.json): canonical RFC 9000 Retry replay ACK piggyback work-item source
+- [`WI-QUIC-RFC9000-0023.json`](WI-QUIC-RFC9000-0023.json): canonical RFC 9000 bootstrap replay ACK piggyback work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

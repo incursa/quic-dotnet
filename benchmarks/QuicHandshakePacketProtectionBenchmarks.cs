@@ -27,6 +27,7 @@ public class QuicHandshakePacketProtectionBenchmarks
     private QuicInitialPacketProtection initialPacketProtection = default!;
     private QuicHandshakeFlowCoordinator initialPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator initialAckPacketBuilder = default!;
+    private QuicHandshakeFlowCoordinator bootstrapReplayAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator initialRetransmissionAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator retrySelectedInitialAckPacketBuilder = default!;
     private QuicHandshakeFlowCoordinator handshakePacketBuilder = default!;
@@ -107,6 +108,7 @@ public class QuicHandshakePacketProtectionBenchmarks
         retryToken = CreateSequentialBytes(0xA1, 32);
         initialPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         initialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
+        bootstrapReplayAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         initialRetransmissionAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         retrySelectedInitialAckPacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
         handshakePacketBuilder = new QuicHandshakeFlowCoordinator(DestinationConnectionId, SourceConnectionId);
@@ -158,6 +160,22 @@ public class QuicHandshakePacketProtectionBenchmarks
     public int BuildInitialCryptoPacketWithAck()
     {
         return initialAckPacketBuilder.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            ackFramePayload,
+            initialPacketProtection,
+            out byte[] packet)
+            ? packet.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures ordinary bootstrap Initial replay construction with an empty token and ACK prefix.
+    /// </summary>
+    [Benchmark]
+    public int BuildBootstrapInitialReplayPacketWithAck()
+    {
+        return bootstrapReplayAckPacketBuilder.TryBuildProtectedInitialPacket(
             cryptoPayload,
             cryptoPayloadOffset: 0,
             ackFramePayload,
