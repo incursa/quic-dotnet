@@ -24,6 +24,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0008.json`](WI-QUIC-RFC9000-0008.json): canonical RFC 9000 DATA_BLOCKED runtime emission work-item source
 - [`WI-QUIC-RFC9000-0009.json`](WI-QUIC-RFC9000-0009.json): canonical RFC 9000 MAX_DATA and MAX_STREAM_DATA runtime credit publication work-item source
 - [`WI-QUIC-RFC9000-0010.json`](WI-QUIC-RFC9000-0010.json): canonical RFC 9000 path validation response and retry work-item source
+- [`WI-QUIC-RFC9000-0011.json`](WI-QUIC-RFC9000-0011.json): canonical RFC 9000 ECN ACK count validation work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

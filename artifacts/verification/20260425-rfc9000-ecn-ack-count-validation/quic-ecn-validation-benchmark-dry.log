@@ -1,0 +1,287 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 5 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 1.61 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1/" /p:OutDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:OutputPath="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" /p:PublishDir="C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\publish/" --output "C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0/" in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1
+// command took 17.56 sec and exited with 0
+// ***** Done, took 00:00:19 (19.41 sec)   *****
+// Found 5 benchmarks:
+//   QuicEcnValidationBenchmarks.ValidateMatchingEct0Counts: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicEcnValidationBenchmarks.ValidateEct1CountsWithCeSubstitution: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicEcnValidationBenchmarks.RejectMissingCountsForNewlyAcknowledgedEct: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicEcnValidationBenchmarks.RejectTooSmallEct1AndCeIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+//   QuicEcnValidationBenchmarks.IgnoreReorderedAckWithoutLargestAcknowledgedIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicEcnValidationBenchmarks.ValidateMatchingEct0Counts: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2564 2580 --benchmarkName Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks.ValidateMatchingEct0Counts --job Dry --benchmarkId 0 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3958700.00 ns, 3.9587 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3958700.00 ns, 3.9587 ms/op
+// GC:  0 0 0 304 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 97940 has exited with code 0.
+
+Mean = 3.959 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.959 ms, Q1 = 3.959 ms, Median = 3.959 ms, Q3 = 3.959 ms, Max = 3.959 ms
+IQR = 0.000 ms, LowerFence = 3.959 ms, UpperFence = 3.959 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 4 (80.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:01 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicEcnValidationBenchmarks.ValidateEct1CountsWithCeSubstitution: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 4240 4256 --benchmarkName Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks.ValidateEct1CountsWithCeSubstitution --job Dry --benchmarkId 1 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3624900.00 ns, 3.6249 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3624900.00 ns, 3.6249 ms/op
+// GC:  0 0 0 304 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 59800 has exited with code 0.
+
+Mean = 3.625 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.625 ms, Q1 = 3.625 ms, Median = 3.625 ms, Q3 = 3.625 ms, Max = 3.625 ms
+IQR = 0.000 ms, LowerFence = 3.625 ms, UpperFence = 3.625 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 3 (60.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:01 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicEcnValidationBenchmarks.RejectMissingCountsForNewlyAcknowledgedEct: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2564 2580 --benchmarkName Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks.RejectMissingCountsForNewlyAcknowledgedEct --job Dry --benchmarkId 2 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3487500.00 ns, 3.4875 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3487500.00 ns, 3.4875 ms/op
+// GC:  0 0 0 304 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 65208 has exited with code 0.
+
+Mean = 3.487 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.487 ms, Q1 = 3.487 ms, Median = 3.487 ms, Q3 = 3.487 ms, Max = 3.487 ms
+IQR = 0.000 ms, LowerFence = 3.487 ms, UpperFence = 3.487 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 2 (40.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:01 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicEcnValidationBenchmarks.RejectTooSmallEct1AndCeIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 2716 3296 --benchmarkName Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks.RejectTooSmallEct1AndCeIncrease --job Dry --benchmarkId 3 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3703500.00 ns, 3.7035 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3703500.00 ns, 3.7035 ms/op
+// GC:  0 0 0 304 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 105516 has exited with code 0.
+
+Mean = 3.704 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.704 ms, Q1 = 3.704 ms, Median = 3.704 ms, Q3 = 3.704 ms, Max = 3.704 ms
+IQR = 0.000 ms, LowerFence = 3.704 ms, UpperFence = 3.704 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 1 (20.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:01 (0h 0m from now) **
+Setup power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// **************************
+// Benchmark: QuicEcnValidationBenchmarks.IgnoreReorderedAckWithoutLargestAcknowledgedIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Incursa.Quic.Benchmarks-Dry-1.dll --anonymousPipes 3088 3336 --benchmarkName Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks.IgnoreReorderedAckWithoutLargestAcknowledgedIncrease --job Dry --benchmarkId 4 in C:\src\incursa\quic-dotnet\benchmarks\bin\Release\net10.0\Incursa.Quic.Benchmarks-Dry-1\bin\Release\net10.0
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.8
+// Runtime=.NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL VectorSize=256
+// Job: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+
+// BeforeActualRun
+WorkloadActual   1: 1 op, 3520400.00 ns, 3.5204 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 1 op, 3520400.00 ns, 3.5204 ms/op
+// GC:  0 0 0 304 1
+// Threading:  0 0 1
+
+// AfterAll
+// Benchmark Process 107244 has exited with code 0.
+
+Mean = 3.520 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.520 ms, Q1 = 3.520 ms, Median = 3.520 ms, Q3 = 3.520 ms, Max = 3.520 ms
+IQR = 0.000 ms, LowerFence = 3.520 ms, UpperFence = 3.520 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2026-04-25 10:01 (0h 0m from now) **
+Successfully reverted power plan (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c FriendlyName: High performance)
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  artifacts\verification\20260425-rfc9000-ecn-ack-count-validation\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-report.csv
+  artifacts\verification\20260425-rfc9000-ecn-ack-count-validation\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-report-github.md
+  artifacts\verification\20260425-rfc9000-ecn-ack-count-validation\BenchmarkDotNet.Artifacts\results\Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-report.html
+
+// * Detailed results *
+QuicEcnValidationBenchmarks.ValidateMatchingEct0Counts: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.959 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.959 ms, Q1 = 3.959 ms, Median = 3.959 ms, Q3 = 3.959 ms, Max = 3.959 ms
+IQR = 0.000 ms, LowerFence = 3.959 ms, UpperFence = 3.959 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.959 ms ; 3.959 ms) | @
+---------------------------------------------------
+
+QuicEcnValidationBenchmarks.ValidateEct1CountsWithCeSubstitution: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.625 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.625 ms, Q1 = 3.625 ms, Median = 3.625 ms, Q3 = 3.625 ms, Max = 3.625 ms
+IQR = 0.000 ms, LowerFence = 3.625 ms, UpperFence = 3.625 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.625 ms ; 3.625 ms) | @
+---------------------------------------------------
+
+QuicEcnValidationBenchmarks.RejectMissingCountsForNewlyAcknowledgedEct: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.487 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.487 ms, Q1 = 3.487 ms, Median = 3.487 ms, Q3 = 3.487 ms, Max = 3.487 ms
+IQR = 0.000 ms, LowerFence = 3.487 ms, UpperFence = 3.487 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.487 ms ; 3.488 ms) | @
+---------------------------------------------------
+
+QuicEcnValidationBenchmarks.RejectTooSmallEct1AndCeIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.704 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.704 ms, Q1 = 3.704 ms, Median = 3.704 ms, Q3 = 3.704 ms, Max = 3.704 ms
+IQR = 0.000 ms, LowerFence = 3.704 ms, UpperFence = 3.704 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.703 ms ; 3.704 ms) | @
+---------------------------------------------------
+
+QuicEcnValidationBenchmarks.IgnoreReorderedAckWithoutLargestAcknowledgedIncrease: Dry(IterationCount=1, LaunchCount=1, RunStrategy=ColdStart, UnrollFactor=1, WarmupCount=1)
+Runtime = .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 3.520 ms, StdErr = 0.000 ms (0.00%), N = 1, StdDev = 0.000 ms
+Min = 3.520 ms, Q1 = 3.520 ms, Median = 3.520 ms, Q3 = 3.520 ms, Max = 3.520 ms
+IQR = 0.000 ms, LowerFence = 3.520 ms, UpperFence = 3.520 ms
+ConfidenceInterval = [NaN ms; NaN ms] (CI 99.9%), Margin = NaN ms (NaN% of Mean)
+Skewness = NaN, Kurtosis = NaN, MValue = 2
+-------------------- Histogram --------------------
+[3.520 ms ; 3.520 ms) | @
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8246/25H2/2025Update/HudsonValley2)
+AMD Ryzen 9 3950X 3.50GHz, 1 CPU, 32 logical and 16 physical cores
+.NET SDK 10.0.203
+  [Host] : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  Dry    : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+
+Job=Dry  IterationCount=1  LaunchCount=1
+RunStrategy=ColdStart  UnrollFactor=1  WarmupCount=1
+
+| Method                                               | Mean     | Error | Allocated |
+|----------------------------------------------------- |---------:|------:|----------:|
+| ValidateMatchingEct0Counts                           | 3.959 ms |    NA |     304 B |
+| ValidateEct1CountsWithCeSubstitution                 | 3.625 ms |    NA |     304 B |
+| RejectMissingCountsForNewlyAcknowledgedEct           | 3.487 ms |    NA |     304 B |
+| RejectTooSmallEct1AndCeIncrease                      | 3.704 ms |    NA |     304 B |
+| IgnoreReorderedAckWithoutLargestAcknowledgedIncrease | 3.520 ms |    NA |     304 B |
+
+// * Warnings *
+MinIterationTime
+  QuicEcnValidationBenchmarks.ValidateMatchingEct0Counts: Dry                           -> The minimum observed iteration time is 3.959ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicEcnValidationBenchmarks.ValidateEct1CountsWithCeSubstitution: Dry                 -> The minimum observed iteration time is 3.625ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicEcnValidationBenchmarks.RejectMissingCountsForNewlyAcknowledgedEct: Dry           -> The minimum observed iteration time is 3.488ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicEcnValidationBenchmarks.RejectTooSmallEct1AndCeIncrease: Dry                      -> The minimum observed iteration time is 3.704ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+  QuicEcnValidationBenchmarks.IgnoreReorderedAckWithoutLargestAcknowledgedIncrease: Dry -> The minimum observed iteration time is 3.52ms which is very small. It's recommended to increase it to at least 100ms using more operations.
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 ms      : 1 Millisecond (0.001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:00:02 (2.67 sec), executed benchmarks: 5
+
+Global total time: 00:00:22 (22.76 sec), executed benchmarks: 5
+// * Artifacts cleanup *
+Artifacts cleanup is finished

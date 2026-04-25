@@ -13,6 +13,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0006
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation()
     {
         QuicEcnValidationState state = new();
@@ -50,5 +51,35 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0006
             out validationFailed));
         Assert.False(validationFailed);
         Assert.True(state.IsEcnEnabled);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0006")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryValidateAcknowledgedEcnCounts_DoesNotFailForRepresentativeReorderedAckFrames()
+    {
+        QuicEcnCounts?[] reportedCountsCases =
+        [
+            null,
+            new QuicEcnCounts(0, 0, 0),
+            new QuicEcnCounts(3, 0, 0),
+            new QuicEcnCounts(0, 3, 0),
+            new QuicEcnCounts(1, 1, 1),
+        ];
+
+        foreach (QuicEcnCounts? reportedCounts in reportedCountsCases)
+        {
+            QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+                sentEct0Count: 1,
+                sentEct1Count: 1);
+
+            QuicEcnValidationTestSupport.AssertValidationSuccess(
+                state,
+                reportedCounts,
+                newlyAcknowledgedEct0Packets: 1,
+                newlyAcknowledgedEct1Packets: 1,
+                largestAcknowledgedPacketNumberIncreased: false);
+        }
     }
 }

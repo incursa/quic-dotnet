@@ -1,0 +1,76 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0011",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 ECN ACK Count Validation Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0011",
+    "WI-QUIC-RFC9000-0011"
+  ],
+  "verification_method": "Requirement-home execution, deterministic state-machine fuzz topoffs, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded ECN ACK-count validation helper slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0008",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+  ],
+  "scope": "This verification covers the supported sender-side helper floor for validating ACK ECN counts before use, failing missing or impossible counters, ignoring reordered ACK frames that do not advance largest acknowledged, disabling ECN on validation failure, and explicitly allowing later helper revalidation.",
+  "expected_result": "Focused tests prove positive, negative, edge, and deterministic fuzz coverage for ECN validation counts; the BenchmarkDotNet Dry suite executes the representative success and failure branches; the proof stays limited to helper-backed validation and does not claim endpoint ECN deployment.",
+  "procedure": [
+    "Run the focused RFC 9000 ECN validation requirement-home tests for S13P4P2P1 and S13P4P2P2.",
+    "Confirm the deterministic fuzz topoffs cover representative missing, zeroed, too-small, exceed-sent, never-applied, and reordered ACK count cases.",
+    "Run the `QuicEcnValidationBenchmarks` BenchmarkDotNet suite with the Dry job.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Confirm that no broader endpoint ECN enablement, IP-header marking, congestion response, migration, public API, or interop claim is introduced."
+  ],
+  "preconditions": [
+    "The sender-side helper can record sent ECT(0) and ECT(1) packets per packet number space.",
+    "The ACK processing caller provides newly acknowledged ECT packet counts and whether largest acknowledged advanced.",
+    "ACK frame ECN counters have already been parsed into `QuicEcnCounts` before helper validation."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicEcnValidationState.cs",
+    "src/Incursa.Quic/QuicEcnCounts.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicEcnValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs",
+    "benchmarks/QuicEcnValidationBenchmarks.cs",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/focused-rfc9000-ecn-validation-tests.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/quic-ecn-validation-benchmark-dry.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-20260425-100131.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-report-github.md",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/render.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/render-check.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/reciprocal-trace-check.log",
+    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/git-diff-check.log",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P4P2P1|FullyQualifiedName~REQ_QUIC_RFC9000_S13P4P2P2\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicEcnValidationBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Fuzz And Benchmark Scope",
+      "content": "Deterministic requirement-home fuzz topoffs cover representative missing-count, zeroed-count, too-small ECT-plus-CE, exceed-sent, never-applied, and reordered ACK cases. The permanent benchmark suite covers helper success and failure branches only; Dry validation is harness evidence and is not treated as a stable performance baseline."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-04-25. Focused ECN validation requirement-home tests passed 19/19, and the new QuicEcnValidationBenchmarks Dry suite executed all 5 cases. Dry benchmark results are harness evidence only and are not treated as stable performance baselines."
+}

@@ -12281,13 +12281,19 @@ An endpoint that receives an ACK frame with ECN counts MUST validate the counts 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B2-P1-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0002 Fail ECN validation when counts are missing for newly acknowledged ECT packets
 If an ACK frame newly acknowledges a packet that the endpoint sent with either the ECT(0) or ECT(1) codepoint set, ECN validation MUST fail if the corresponding ECN counts are not present in the ACK frame.
@@ -12295,13 +12301,21 @@ If an ACK frame newly acknowledges a packet that the endpoint sent with either t
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AckOmitsEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AckOmitsEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_AllowsMissingCountsWhenNoEctPacketIsNewlyAcknowledged
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0003 This check detects a network element that zeroes the ECN field or a peer that does not report ECN markings
 This check detects a network element that zeroes the ECN field or a peer that MUST NOT report ECN markings.
@@ -12309,13 +12323,18 @@ This check detects a network element that zeroes the ECN field or a peer that MU
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B3-P2-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedCountsStayZeroForAckedEctPackets
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0004 Fail ECN validation when ECT(0) and CE counts are too small
 ECN validation MUST fail if the sum of the increase in ECT(0) and ECN-CE counts is less than the number of newly acknowledged packets that were originally sent with an ECT(0) marking.
@@ -12323,13 +12342,20 @@ ECN validation MUST fail if the sum of the increase in ECT(0) and ECN-CE counts 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B4-P3-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AndCeIncreaseIsTooSmall
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct0PacketsReportedAsCe
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0005 Fail ECN validation when ECT(1) and CE counts are too small
 ECN validation MUST fail if the sum of the increases to ECT(1) and ECN-CE counts is less than the number of newly acknowledged packets sent with an ECT(1) marking.
@@ -12337,13 +12363,20 @@ ECN validation MUST fail if the sum of the increases to ECT(1) and ECN-CE counts
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AndCeIncreaseIsTooSmall
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct1PacketsReportedAsCe
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0006 Do not fail ECN validation for reordered ACK frames that do not increase the largest acknowledged packet number
 An endpoint MUST NOT fail ECN validation as a result of processing an ACK frame that does not increase the largest acknowledged packet number.
@@ -12351,13 +12384,19 @@ An endpoint MUST NOT fail ECN validation as a result of processing an ACK frame 
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B6-P5-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::Fuzz_TryValidateAcknowledgedEcnCounts_DoesNotFailForRepresentativeReorderedAckFrames
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0007 Fail ECN validation when received counts exceed sent counts
 ECN validation MUST fail if the received total count for either ECT(0) or ECT(1) exceeds the total number of packets sent with each corresponding ECT codepoint.
@@ -12365,13 +12404,20 @@ ECN validation MUST fail if the received total count for either ECT(0) or ECT(1)
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B7-P6-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedEct0CountExceedsSentEct0Packets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedEct1CountExceedsSentEct1Packets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P1-0008 Fail ECN validation for never-applied ECT counts
 Validation MUST fail when an endpoint receives a non-zero ECN count corresponding to an ECT codepoint that it never applied.
@@ -12379,13 +12425,20 @@ Validation MUST fail when an endpoint receives a non-zero ECN count correspondin
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.1 RFC9000-S13.4.2.1-B7-P6-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1CountIsReportedButEct1WasNeverApplied
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0CountIsReportedButEct0WasNeverApplied
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0001 Disable ECN when validation fails
 If validation fails, then the endpoint MUST disable ECN.
@@ -12393,13 +12446,26 @@ If validation fails, then the endpoint MUST disable ECN.
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B2-P1-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AckOmitsEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AckOmitsEcnCounts
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedCountsStayZeroForAckedEctPackets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AndCeIncreaseIsTooSmall
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AndCeIncreaseIsTooSmall
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedEct0CountExceedsSentEct0Packets
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1CountIsReportedButEct1WasNeverApplied
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenLaterValidationFails
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0002 It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer does not support ECN
 It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer MUST NOT support ECN.
@@ -12421,15 +12487,19 @@ Even if validation fails, an endpoint MAY revalidate ECN for the same path at an
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B3-P2-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs::TryValidateAcknowledgedEcnCounts_CanReenableValidationAfterAFailure
 
 ## REQ-QUIC-RFC9000-S13P4P2P2-0004 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable
 Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.
@@ -12451,15 +12521,19 @@ Network routing and path elements can change mid-connection; an endpoint MUST di
 Trace:
 - Satisfied By:
   - ARC-QUIC-RFC9000-0001
+  - ARC-QUIC-RFC9000-0011
 - Implemented By:
   - WI-QUIC-RFC9000-0001
+  - WI-QUIC-RFC9000-0011
 - Verified By:
   - VER-QUIC-RFC9000-0001
+  - VER-QUIC-RFC9000-0011
 - Source Refs:
   - RFC 9000 §13.4.2.2 RFC9000-S13.4.2.2-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenLaterValidationFails
 
 ## REQ-QUIC-RFC9000-S14-0001 Allow one or more QUIC packets per UDP datagram
 A UDP datagram MAY include one or more QUIC packets.

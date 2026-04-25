@@ -59,6 +59,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicPublicApiStreamTransferBenchmarks`
 - `QuicFrameCodecBenchmarks`
 - `QuicPathValidationBenchmarks`
+- `QuicEcnValidationBenchmarks`
 - `QuicCryptoBufferBenchmarks`
 - `QuicDplpmtudStateBenchmarks`
 - `QuicAeadUsageLimitCalculatorBenchmarks`

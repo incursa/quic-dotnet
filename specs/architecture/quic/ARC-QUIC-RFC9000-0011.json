@@ -1,0 +1,75 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0011",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 ECN ACK Count Validation Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded sender-side ECN ACK-count validation helper that rejects missing, impossible, decreasing, and insufficient ACK ECN counters before those counts can be used.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0011",
+    "VER-QUIC-RFC9000-0011"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0002",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0003",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0004",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0005",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0007",
+    "REQ-QUIC-RFC9000-S13P4P2P1-0008",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0001",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+    "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicEcnValidationState.cs",
+    "src/Incursa.Quic/QuicEcnCounts.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicEcnValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs",
+    "benchmarks/QuicEcnValidationBenchmarks.cs"
+  ],
+  "design_summary": "The sender-side ECN validation helper keeps sent ECT(0), sent ECT(1), and last reported ECT(0), ECT(1), and CE counters per packet number space. When an ACK frame advances the largest acknowledged packet number, the helper rejects missing ECN counters for newly acknowledged ECT packets, decreasing counters, reported ECT totals that exceed the number of packets sent with that marking, non-zero counts for markings the endpoint never applied, and ECT-plus-CE increases that are too small to account for the newly acknowledged ECT packets. A validation failure disables ECN on the current helper state. Reordered ACK frames that do not advance largest acknowledged bypass validation, and the helper exposes an explicit re-enable seam for later revalidation attempts.",
+  "data_and_state_considerations": "The state is connection-local and path-local through the owning sender/runtime path. Counts are separated by QUIC packet number space, while the enabled/disabled ECN gate belongs to the current validation state instance. This slice proves the helper boundary and does not add persistent state or public API surface.",
+  "edge_cases_and_constraints": [
+    "Missing ECN counters are only accepted when no newly acknowledged packet was originally sent with ECT(0) or ECT(1).",
+    "CE count increases can substitute for ECT count increases, but the sum still has to cover the newly acknowledged ECT-marked packets.",
+    "Reported ECT totals must never exceed the number of packets sent with the corresponding ECT marking.",
+    "A non-zero ECT count for a marking never applied by the endpoint is rejected through the same exceed-sent invariant.",
+    "Reordered ACK frames that do not advance largest acknowledged must not disable ECN.",
+    "A later revalidation attempt must be explicit and must not silently treat a previous failure as success."
+  ],
+  "alternatives_considered": [
+    "Treat ECN validation only as part of the broad RFC 9000 artifact set; rejected because several requirement homes lacked direct proof and this hot helper is a bounded sender/runtime slice.",
+    "Wire ECN validation into broader migration enablement in the same slice; rejected because path enablement, peer feedback generation, and IP-header ECN marking are separate requirements and would broaden the claim."
+  ],
+  "risks": [
+    "Confusing helper validation with complete ECN deployment would overstate support; this slice does not prove peer ECN feedback generation or IP-header marking.",
+    "Treating reordered ACK frames as normal advancing ACK frames could disable ECN incorrectly on duplicate or stale feedback.",
+    "Using reported ECN counters before validation could contaminate congestion response with impossible feedback."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers the existing helper-backed sender-side ECN ACK-count validation floor for RFC 9000 Section 13.4.2.1 and the helper disable/revalidation subset of Section 13.4.2.2. It does not claim endpoint ECN enablement, IP-header ECT marking, receiver-side ECN count generation, congestion response to CE marks, migration-triggered ECN probing, public API controls, or interop-runner ECN success."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicEcnValidationState.cs`](../../../src/Incursa.Quic/QuicEcnValidationState.cs)\n- [`QuicEcnCounts.cs`](../../../src/Incursa.Quic/QuicEcnCounts.cs)\n- [`QuicEcnValidationTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicEcnValidationTestSupport.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0004.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0006.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P2-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs)\n- [`REQ-QUIC-RFC9000-S13P4P2P2-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs)\n- [`QuicEcnValidationBenchmarks.cs`](../../../benchmarks/QuicEcnValidationBenchmarks.cs)"
+    }
+  ]
+}

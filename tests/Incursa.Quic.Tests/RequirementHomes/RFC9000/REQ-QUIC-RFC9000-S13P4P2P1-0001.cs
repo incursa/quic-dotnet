@@ -25,6 +25,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace()
     {
         QuicEcnValidationState state = new();
@@ -53,4 +54,48 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
         Assert.False(validationFailed);
         Assert.True(state.IsEcnEnabled);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas()
+    {
+        EcnValidationFuzzCase[] cases =
+        [
+            new(1, 0, null, 1, 0),
+            new(0, 1, null, 0, 1),
+            new(2, 0, new QuicEcnCounts(1, 0, 0), 2, 0),
+            new(0, 2, new QuicEcnCounts(0, 1, 0), 0, 2),
+            new(1, 0, new QuicEcnCounts(2, 0, 0), 1, 0),
+            new(0, 1, new QuicEcnCounts(0, 2, 0), 0, 1),
+            new(1, 0, new QuicEcnCounts(1, 1, 0), 1, 0),
+            new(0, 1, new QuicEcnCounts(1, 1, 0), 0, 1),
+        ];
+
+        foreach (EcnValidationFuzzCase testCase in cases)
+        {
+            QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+                testCase.SentEct0Count,
+                testCase.SentEct1Count);
+
+            QuicEcnValidationTestSupport.AssertValidationFailure(
+                state,
+                testCase.ReportedCounts,
+                testCase.NewlyAcknowledgedEct0Packets,
+                testCase.NewlyAcknowledgedEct1Packets);
+        }
+    }
+
+    private readonly record struct EcnValidationFuzzCase(
+        ulong SentEct0Count,
+        ulong SentEct1Count,
+        QuicEcnCounts? ReportedCounts,
+        ulong NewlyAcknowledgedEct0Packets,
+        ulong NewlyAcknowledgedEct1Packets);
 }
