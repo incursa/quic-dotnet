@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0024"
 artifact_type: "work_item"
 title: "QUIC CRT server revocation callback path work item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0126"

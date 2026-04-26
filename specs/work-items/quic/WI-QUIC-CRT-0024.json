@@ -19,7 +19,7 @@
     "key update",
     "broader client-auth policy beyond the callback-driven standalone CertificateRevocationCheckMode floor"
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Honor server-side CertificateRevocationCheckMode on the existing callback-driven ClientCertificateRequired path by delegating standalone revocation into BCL X509 chain primitives when CertificateChainPolicy is absent.",
   "verification_plan": "Run focused requirement-home tests for the standalone server revocation floor and the existing callback-driven server-auth floors, re-run the current CRT/API/INT guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",

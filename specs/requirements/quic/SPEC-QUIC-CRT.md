@@ -1270,6 +1270,12 @@ Notes:
 In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateRevocationCheckMode` on that same carrier by mapping the standalone revocation mode into the BCL `X509Chain` used for presented-client-certificate evaluation before invoking the callback. This floor applies only when `CertificateChainPolicy` is absent; mixed `CertificateChainPolicy` plus standalone `CertificateRevocationCheckMode` remains unsupported on this slice. This slice must remain separate from `REQ-QUIC-CRT-0125`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0024
+- Implemented By:
+  - WI-QUIC-CRT-0024
+- Verified By:
+  - VER-QUIC-CRT-0024
 - Source Refs:
   - docs/design/quic-public-api.md
   - docs/design/quic-public-api-gap-matrix.md
@@ -1288,6 +1294,10 @@ Trace:
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs::ServerRoleEmitsCertificateRequestAndHonorsStandaloneRevocationModeThroughTheCallbackSeam
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs::ServerConnectionOptionsValidatorRejectsStandaloneRevocationModeWithoutClientCertificateRequired
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0126.cs::ServerConnectionOptionsValidatorRejectsClientCertificateRequiredWhenChainPolicyAndStandaloneRevocationCustomizationAreCombined
 
 Notes:
 - This is the smallest standalone server-side revocation floor and remains server-role only.
