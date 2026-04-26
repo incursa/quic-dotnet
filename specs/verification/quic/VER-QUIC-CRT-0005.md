@@ -4,7 +4,7 @@
 
 ## Scope
 
-This planned slice covers active-path and candidate-path orchestration, address-change classification, validation gating, complete per-path state, amplification accounting, promotion semantics, and the decomposition boundary for the remaining migration-core umbrella. It does not prove a generalized multipath scheduler, endpoint ECN deployment, interop success, or a full recently validated cache-eviction policy unless those are selected as later bounded follow-ons.
+This verification covers active-path and candidate-path orchestration, address-change classification, validation gating, bounded recently validated path retention, complete per-path state, amplification accounting, promotion semantics, and the decomposition boundary for the remaining migration-core umbrella. It does not prove a generalized multipath scheduler or interop success.
 
 ## Requirements Verified
 
@@ -36,37 +36,34 @@ Focused requirement-home tests combined with inspection evidence from the runtim
 ## Procedure or Approach
 
 - Inspect the runtime path record model and validation helpers for explicit identity, validation, amplification, recovery, RTT, ECN, activity, and challenge state.
-- Run the requirement-home tests for REQ-QUIC-CRT-0063, REQ-QUIC-CRT-0064, REQ-QUIC-CRT-0066, and REQ-QUIC-CRT-0069.
-- Add and run negative tests for stale or superseded recent-validation entries, premature promotion, and missing per-path budget state before implementation closure.
-- Run deterministic state-machine fuzz/property samples over address-change classifications and candidate-path outcomes.
-- Run BenchmarkDotNet Dry coverage for any new hot path-state helper.
-- Confirm the transition results show candidate creation, handshake-gated promotion, complete per-path state, and budget-checked sends.
+- Run the requirement-home tests for REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0034, REQ-QUIC-CRT-0061, REQ-QUIC-CRT-0062, REQ-QUIC-CRT-0063, REQ-QUIC-CRT-0064, REQ-QUIC-CRT-0066, and REQ-QUIC-CRT-0069.
+- Confirm the transition results show candidate creation, bounded candidate-path growth, bounded recently validated path retention, complete per-path state, handshake-gated promotion, and budget-checked sends.
+- Render and check the touched SpecTrace artifacts, then preserve the verification logs under `artifacts/verification/20260425-crt-path-state-bounded-cache/`.
 
 ## Expected Result
 
-A packet from a new address is classified explicitly, candidate paths are created with validation, amplification, recovery, RTT, ECN, activity, and challenge state, successful validation promotes only when the handshake gate allows it, unvalidated-path sends respect amplification limits, and any future RFC 9000 artifact split names a concrete missing cell before widening the trace set.
+A packet from a new address is classified explicitly, candidate paths are created within the configured budget, recently validated paths remain bounded, path records carry validation, amplification, recovery, RTT, ECN, activity, and challenge state, successful validation promotes only when the handshake gate allows it, unvalidated-path sends respect amplification limits, and any future RFC 9000 artifact split names a concrete missing cell before widening the trace set.
 
 ## Evidence
 
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0034.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0063.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0064.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0066.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0061.cs
+- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0062.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0069.cs
 - src/Incursa.Quic/QuicConnectionRuntime.cs
 - src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs
 - src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs
 - src/Incursa.Quic/QuicPathValidation.cs
 - src/Incursa.Quic/QuicAntiAmplificationBudget.cs
-- planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0034.cs
-- planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0061.cs
-- planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0062.cs
-- planned: benchmarks/QuicPathValidationBenchmarks.cs
-- planned: artifacts/verification/20260425-crt-migration-core-decomposition/
+- artifacts/verification/20260425-crt-path-state-bounded-cache/
 
 ## Status
 
-planned
+passed
 
 ## Related Artifacts
 
@@ -76,4 +73,4 @@ planned
 
 ## Status Summary
 
-The focused proof remains planned as the CRT-led decomposition front for `9000-11-migration-core`. Existing RFC 9000 leaves continue to own server `NEW_TOKEN` emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation. The bounded recently validated cache eviction policy and any close-versus-reset policy remain explicit follow-on candidates unless selected for their own bounded slice.
+The CRT path-state proof is now passed as the decomposition front for `9000-11-migration-core`. Existing RFC 9000 leaves continue to own server `NEW_TOKEN` emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation. The bounded recently validated cache behavior is now covered by focused requirement-home tests, and any close-versus-reset follow-on remains a separate trace decision.

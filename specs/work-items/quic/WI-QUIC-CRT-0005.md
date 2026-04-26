@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0005"
 artifact_type: "work_item"
 title: "QUIC Connection Runtime Path State and Migration Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0033"
@@ -80,7 +80,7 @@ Run the narrow CRT requirement-home tests for candidate creation, handshake-gate
 
 ## Completion Notes
 
-Planned decomposition only; no production behavior or tests are implemented by this artifact update.
+The CRT path-state proof is landed. Candidate-path budgets are bounded, recently validated paths are retained within the configured cache, and the requirement-home evidence now covers the path-state inventory and migration gates without widening the RFC 9000 umbrella.
 
 ## Trace Links
 

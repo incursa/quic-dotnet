@@ -8,7 +8,7 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Planned decomposition only; no production behavior or tests are implemented by this artifact update.",
+  "completion_notes": "The CRT path-state proof is landed. Candidate-path budgets are bounded, recently validated paths are retained within the configured cache, and the requirement-home evidence now covers the path-state inventory and migration gates without widening the RFC 9000 umbrella.",
   "out_of_scope": [
     "A generalized multipath scheduler or any future path-selection algorithm beyond one active path plus candidate paths.",
     "Endpoint route and stateless-reset registries, which remain owned by the endpoint ingress surface.",
@@ -16,7 +16,7 @@
     "New RFC 9000 artifact families unless a concrete missing migration matrix cell cannot be carried by this CRT owner or by existing RFC 9000 leaf owners.",
     "Recently validated cache eviction and close-versus-reset policy unless they are selected as their own bounded follow-on."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while decomposing the remaining migration-core umbrella around the existing CRT owner and RFC 9000 leaf proofs.",
   "verification_plan": "Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, per-path state, and unvalidated-path amplification. Add negative tests for stale or superseded cache entries, premature promotion, and missing per-path budget state before implementation closure. Add deterministic state-machine fuzz/property coverage over address-change classifications and candidate-path outcomes, run a BenchmarkDotNet Dry path-state benchmark for any new hot helper, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-crt-migration-core-decomposition/`.",

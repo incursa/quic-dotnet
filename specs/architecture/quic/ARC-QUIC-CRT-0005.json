@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-CRT-0005",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "QUIC Connection Runtime Path State and Migration Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
