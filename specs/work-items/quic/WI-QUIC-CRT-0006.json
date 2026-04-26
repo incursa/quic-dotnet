@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0006",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC Transport Bridge, Diagnostics, and Sender/Recovery Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -23,7 +23,7 @@
   ],
   "planned_changes": "- Add an internal TLS bridge state that can represent transport parameters, key availability, handshake confirmation, key updates, old-key discard, and fatal alerts.\n- Thread the bridge outputs into the connection reducer so transport-parameter commits, handshake confirmation, fatal TLS closure, and Initial/Handshake key-discard cleanup are explicit state transitions.\n- Extend the connection send runtime so Initial/Handshake discard cleanup clears retained packet state and PTO backoff.\n- Add focused requirement-home tests for the bridge, runtime integration, and sender cleanup.\n- Keep the diagnostics sink abstraction and broader sender/recovery owner surface available for the existing runtime helpers.",
   "verification_plan": "Run the new CRT and RFC9001 requirement-home tests plus the solution build/test pass that includes the bridge, runtime integration, and sender-cleanup changes.",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "The transport bridge, diagnostics sink, and sender/recovery seam proof is landed. The runtime-owned bridge state, diagnostics abstraction, and sender/recovery owner now stay in the main library for later handshake and interop slices.",
   "out_of_scope": [
     "Any actual TLS stack integration, qlog format implementation, or full retransmission algorithm expansion."
   ],

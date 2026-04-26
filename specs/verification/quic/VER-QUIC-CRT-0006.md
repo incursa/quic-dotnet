@@ -49,7 +49,7 @@ The TLS bridge state can represent transport-parameter, key-lifecycle, handshake
 
 ## Status
 
-planned
+Passed locally on 2026-04-25. The focused requirement-home run passed 33/33 tests across REQ-QUIC-CRT-0022, REQ-QUIC-CRT-0043, REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0104, REQ-QUIC-CRT-0105, REQ-QUIC-RFC9001-S6-0010, REQ-QUIC-RFC9001-S8-0001, and REQ-QUIC-RFC9001-S8-0002. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/verification/20260425-crt-bridge-diagnostics-sender-recovery/.
 
 ## Related Artifacts
 

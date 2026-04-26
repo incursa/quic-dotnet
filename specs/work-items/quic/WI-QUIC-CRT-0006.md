@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0006"
 artifact_type: "work_item"
 title: "QUIC Transport Bridge, Diagnostics, and Sender/Recovery Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
@@ -53,7 +53,7 @@ Run the new CRT and RFC9001 requirement-home tests plus the solution build/test 
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The transport bridge, diagnostics sink, and sender/recovery seam proof is landed. The runtime-owned bridge state, diagnostics abstraction, and sender/recovery owner now stay in the main library for later handshake and interop slices.
 
 ## Trace Links
 
