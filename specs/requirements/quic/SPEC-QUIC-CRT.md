@@ -1163,6 +1163,12 @@ Notes:
 In the client role, the library MUST extend the local certificate-acceptance seam so that `PeerCertificatePolicyAccepted` is surfaced only when one explicit trust-material input and one exact peer-identity input are both present and match the presented peer certificate; missing trust material, missing peer identity, trust mismatch, and identity mismatch must fail deterministically through the existing fatal/update path. This slice must not add OS trust-store integration, generalized certificate-path building, revocation, broader client-auth, 0-RTT, key update, or public API widening.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0021
+- Implemented By:
+  - WI-QUIC-CRT-0021
+- Verified By:
+  - VER-QUIC-CRT-0021
 - Source Refs:
   - docs/design/quic-interop-prep-plan.md
   - docs/design/quic-public-api-gap-matrix.md
@@ -1172,6 +1178,12 @@ Trace:
   - src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs
   - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverPublishesPolicyAcceptanceOnlyWhenSnapshotValuesMatchThePresentedLeafCertificate
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMismatchedExplicitTrustMaterialDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMismatchedExactPeerIdentityDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMissingExplicitTrustMaterialDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMissingExactPeerIdentityDeterministically
 
 Notes:
 - This slice is intentionally narrower than broad TLS policy or full PKI support.

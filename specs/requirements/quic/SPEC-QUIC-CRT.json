@@ -1450,6 +1450,15 @@
       "title": "Accept peer certificates only with explicit trust material and exact peer identity",
       "statement": "In the client role, the library MUST extend the local certificate-acceptance seam so that `PeerCertificatePolicyAccepted` is surfaced only when one explicit trust-material input and one exact peer-identity input are both present and match the presented peer certificate; missing trust material, missing peer identity, trust mismatch, and identity mismatch must fail deterministically through the existing fatal/update path. This slice must not add OS trust-store integration, generalized certificate-path building, revocation, broader client-auth, 0-RTT, key update, or public API widening.",
       "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0021"
+        ],
         "upstream_refs": [
           "docs/design/quic-interop-prep-plan.md",
           "docs/design/quic-public-api-gap-matrix.md",
@@ -1459,6 +1468,13 @@
           "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0111.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverPublishesPolicyAcceptanceOnlyWhenSnapshotValuesMatchThePresentedLeafCertificate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMismatchedExplicitTrustMaterialDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMismatchedExactPeerIdentityDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMissingExplicitTrustMaterialDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0123.cs::ClientRoleDriverRejectsMissingExactPeerIdentityDeterministically"
         ]
       },
       "notes": [
