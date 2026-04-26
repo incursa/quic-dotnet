@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0010"
 artifact_type: "work_item"
 title: "QUIC Server-Role Managed TLS Crypto Floor Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
@@ -54,7 +54,7 @@ Run the updated CRT and RFC9001 requirement-home tests that cover the server-rol
 
 ## Completion Notes
 
-The resulting slice is intentionally smaller than full server handshake support. It proves only that the library can accept a supported peer ClientHello, construct a local ServerHello on the permanent seam, derive Handshake keys from that transcript boundary, and surface the ServerHello bytes for later packetization while leaving commit and wider handshake flight ownership unavailable.
+The server-role crypto floor proof is landed. The runtime-owned ClientHello-to-ServerHello seam now stays in the main library, and wider handshake flight ownership remains explicitly out of scope.
 
 ## Trace Links
 
