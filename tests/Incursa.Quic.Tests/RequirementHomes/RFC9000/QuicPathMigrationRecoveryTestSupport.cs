@@ -162,6 +162,45 @@ internal static class QuicPathMigrationRecoveryTestSupport
         Assert.NotNull(bridge.PeerTransportParameters);
     }
 
+    internal static void CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
+        QuicConnectionRuntime runtime,
+        QuicTransportParameters peerTransportParameters)
+    {
+        CommitPeerTransportParameters(runtime, peerTransportParameters);
+
+        using QuicConnectionRuntime materialRuntime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicTlsPacketProtectionMaterial oneRttOpenPacketProtectionMaterial =
+            materialRuntime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+        QuicTlsPacketProtectionMaterial oneRttProtectPacketProtectionMaterial =
+            materialRuntime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 0,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.KeysAvailable,
+                    EncryptionLevel: QuicTlsEncryptionLevel.OneRtt)),
+            nowTicks: 0).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: oneRttOpenPacketProtectionMaterial)),
+            nowTicks: 1).StateChanged);
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 2,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: oneRttProtectPacketProtectionMaterial)),
+            nowTicks: 2).StateChanged);
+
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+    }
+
     internal static void AssertChangedPeerAddressStartsPathValidationBeforePromotion(
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity changedPeerAddressPath,

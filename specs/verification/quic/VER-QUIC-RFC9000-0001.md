@@ -1479,7 +1479,7 @@ Execution, inspection, fuzzing, and benchmark evidence.
 - The spec requirements carry downstream trace links.
 - The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.
 - The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.
-- The top-level S9 peer-address validation proof is linked to focused requirement-home tests without claiming full migration-core closure.
+- The top-level S9 peer-address validation proof is linked to focused requirement-home tests for preferred-address CID handoff without claiming full migration-core closure.
 
 ## Evidence
 

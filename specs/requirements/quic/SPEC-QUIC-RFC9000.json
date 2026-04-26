@@ -12895,6 +12895,9 @@
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0009.cs::ClientUsesThePreferredAddressConnectionIdAfterPreferredAddressValidationSucceeds"
         ]
       }
     },
@@ -12921,6 +12924,11 @@
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientBeginsSendingFuturePacketsToThePreferredAddressAfterValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientKeepsUsingTheOriginalServerAddressWhilePreferredAddressValidationIsPending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientKeepsThePeerIssuedConnectionIdWhenPreferredAddressValidationCompletesAfterANewConnectionIdArrival"
         ]
       }
     },

@@ -7113,6 +7113,8 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B4-P3-S2
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0009.cs::ClientUsesThePreferredAddressConnectionIdAfterPreferredAddressValidationSucceeds
 
 ## REQ-QUIC-RFC9000-S9P6P1-0010 Move Future Packets to the New Server Address After Validation
 As soon as path validation succeeds, the client SHOULD begin sending all future packets to the new server address using the new connection ID and discontinue use of the old server address.
@@ -7127,6 +7129,10 @@ Trace:
 - Source Refs:
   - RFC 9000 §9.6.1 RFC9000-S9.6.1-B5-P4-S1
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientBeginsSendingFuturePacketsToThePreferredAddressAfterValidationSucceeds
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientKeepsUsingTheOriginalServerAddressWhilePreferredAddressValidationIsPending
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0010.cs::ClientKeepsThePeerIssuedConnectionIdWhenPreferredAddressValidationCompletesAfterANewConnectionIdArrival
 
 ## REQ-QUIC-RFC9000-S9P6P2-0001 That migrates to a preferred address MUST validate the address it chooses before migrating
 A client that migrates to a preferred address MUST validate the address it chooses before migrating; see Section 21.5.3.

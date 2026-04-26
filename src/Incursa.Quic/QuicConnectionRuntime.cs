@@ -251,9 +251,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal QuicConnectionVersionProfile VersionProfile => versionProfile;
 
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
-        => peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty
-            ? handshakeFlowCoordinator.DestinationConnectionId
-            : peerConnectionIdState.CurrentDestinationConnectionId;
+    {
+        get
+        {
+            if (!peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty)
+            {
+                return peerConnectionIdState.CurrentDestinationConnectionId;
+            }
+
+            if (preferredAddressOldPathIdentity.HasValue
+                && tlsState.PeerTransportParameters?.PreferredAddress is QuicPreferredAddress preferredAddress)
+            {
+                return preferredAddress.ConnectionId;
+            }
+
+            return handshakeFlowCoordinator.DestinationConnectionId;
+        }
+    }
 
     internal ReadOnlyMemory<byte> CurrentHandshakeSourceConnectionId
         => handshakeFlowCoordinator.SourceConnectionId;
