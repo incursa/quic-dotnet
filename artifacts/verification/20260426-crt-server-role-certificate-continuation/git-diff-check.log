@@ -1,0 +1,4 @@
+warning: in the working copy of 'specs/architecture/quic/ARC-QUIC-CRT-0012.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'specs/requirements/quic/SPEC-QUIC-CRT.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'specs/verification/quic/VER-QUIC-CRT-0012.json', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'specs/work-items/quic/WI-QUIC-CRT-0012.json', CRLF will be replaced by LF the next time Git touches it

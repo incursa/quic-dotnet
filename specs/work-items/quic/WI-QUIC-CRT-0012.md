@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0012"
 artifact_type: "work_item"
 title: "QUIC Server-Role Certificate Continuation Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0112"
@@ -53,7 +53,7 @@ Run the updated CRT requirement-home tests that cover the positive Certificate c
 
 ## Completion Notes
 
-The resulting slice is intentionally smaller than full server handshake support. It proves only that the library can continue from a supported peer ClientHello and local EncryptedExtensions into a local Certificate flight on the same handshake seam while leaving CertificateVerify, commit, and wider handshake flight ownership unavailable.
+The server-role Certificate continuation proof is landed. The library now continues from the managed EncryptedExtensions floor into one local Certificate flight on the existing handshake seam, and CertificateVerify, commit, and wider handshake flight ownership remain explicitly out of scope.
 
 ## Trace Links
 

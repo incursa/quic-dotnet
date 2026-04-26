@@ -43,10 +43,16 @@ The server role emits one local Certificate after the supported ClientHello has 
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/dotnet-test-REQ-QUIC-CRT-0114.log
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/spec-trace-render.log
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/spec-trace-check.log
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/git-diff-check.log
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/git-diff-cached-check.log
+- artifacts/verification/20260426-crt-server-role-certificate-continuation/spec-trace-validate.log
 
 ## Status
 
-planned
+Passed on 2026-04-26; focused requirement-home tests prove the server-role continuation from the managed EncryptedExtensions floor into one local Certificate flight on the existing handshake seam, including offset semantics, local leaf-certificate gating, deterministic malformed and unsupported material rejection, repeated-progression rejection, and the continued absence of server-role commit. The prerequisite managed EncryptedExtensions floor remains separately traced by REQ-QUIC-CRT-0113 and its verification evidence.
 
 ## Related Artifacts
 

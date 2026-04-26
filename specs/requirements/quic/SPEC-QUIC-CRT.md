@@ -931,10 +931,25 @@ Notes:
 In the server role, the library MUST expose a narrow local leaf-certificate material seam that accepts explicit raw DER for one supported leaf certificate, and when that material is configured after the supported `ClientHello` has been accepted, the local `ServerHello` and local `EncryptedExtensions` have been published, Handshake keys are available, and the local leaf certificate validates as the supported single-leaf ECDSA P-256 input, format one local TLS 1.3 `Certificate` message with empty `certificate_request_context` and no certificate-entry extensions from that material, append that local `Certificate` at the correct transcript boundary immediately after the local `EncryptedExtensions`, surface the local `Certificate` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `EncryptedExtensions` bytes, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `Certificate` progression through the existing fatal/update path.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0012
+- Implemented By:
+  - WI-QUIC-CRT-0012
+- Verified By:
+  - VER-QUIC-CRT-0012
 - Source Refs:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.2
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleEmitsLocalCertificateAfterLocalEncryptedExtensionsAtTheNextHandshakeOffset
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleDoesNotEmitLocalCertificateBeforeLocalEncryptedExtensionsPrerequisitesExist
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleDoesNotEmitLocalCertificateWhenLocalCertificateMaterialIsUnavailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::MalformedLocalCertificateMaterialFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::UnsupportedLocalCertificateMaterialFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleAppendsLocalCertificateToTheManagedTranscriptExplicitly
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::RepeatedServerRoleCertificateProgressionIsRejectedDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0114.cs::ServerRoleCommitRemainsUnavailableAfterLocalCertificate
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add `CertificateVerify`, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
