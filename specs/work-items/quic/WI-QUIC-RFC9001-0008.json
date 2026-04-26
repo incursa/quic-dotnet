@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9001-0008",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC RFC 9001 Non-Retained Stateless Reset Suppression Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement and prove the suppressive no-retained-route/no-token stateless-reset matrix cell after AEAD-limit terminal discard.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0004",
+    "WI-QUIC-RFC9001-0004",
+    "VER-QUIC-RFC9001-0004",
+    "ARC-QUIC-RFC9001-0008",
+    "VER-QUIC-RFC9001-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9001-0008"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9001-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9001-S6P6-0009"
+  ],
+  "planned_changes": "- Keep packets that do not resolve to a retained route suppressive instead of advancing them toward stateless-reset emission.\n- Keep packets that resolve only to route state without a remembered token suppressive instead of fabricating a response datagram.\n- Keep the positive retained-route floor from `REQ-QUIC-RFC9001-S6P6-0006` separate from this suppressive topoff.\n- Add requirement-home coverage for unknown-route suppression, missing-token suppression, a retained-route boundary check, and deterministic fuzz coverage over route/token presence.\n- Keep the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for retained-route lookup miss and no-token miss paths.",
+  "out_of_scope": [
+    "Positive emission for non-retained packets",
+    "A new ambiguity-detection route model",
+    "Token-generation or token-storage changes",
+    "Active-connection stateless-reset acceptance changes",
+    "Key-update lifecycle broadening"
+  ],
+  "verification_plan": "Run the focused REQ-QUIC-RFC9001-S6P6-0009 requirement-home tests, keep the retained-route, malformed-formatting, and known-reset matrix guards green, refresh QuicStatelessResetBenchmarks in Dry mode, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.",
+  "completion_notes": "Planned for the suppressive no-retained-route/no-token topoff. The retained-route positive floor and known-token loop-suppression cell remain separate slices."
+}

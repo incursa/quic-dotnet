@@ -1472,7 +1472,34 @@ Trace:
   - benchmarks/QuicStatelessResetBenchmarks.cs::SuppressRetainedRouteKnownStatelessResetResponse
 
 Notes:
-- This clause covers only the known-token loop-suppression cell for retained routes after AEAD-limit terminal discard; untraced non-retained response behavior remains blocked.
+- This clause covers only the known-token loop-suppression cell for retained routes after AEAD-limit terminal discard; the no-retained-route and no-token suppressive topoff is traced separately in REQ-QUIC-RFC9001-S6P6-0009.
+
+## REQ-QUIC-RFC9001-S6P6-0009 Suppress non-retained stateless-reset responses
+After AEAD-limit terminal discard, an endpoint MUST suppress stateless-reset response emission when a later received packet does not resolve to a retained route or resolves only to route state without a remembered stateless-reset token for the same remote address and port.
+
+Trace:
+- Satisfied By:
+  - ARC-QUIC-RFC9001-0008
+- Implemented By:
+  - WI-QUIC-RFC9001-0008
+- Verified By:
+  - VER-QUIC-RFC9001-0008
+- Source Refs:
+  - RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4
+  - RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1
+  - RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1
+  - https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointSuppressesStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointSuppressesStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointStillEmitsRetainedRouteResponseWhenRouteAndTokenMatch
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::FuzzEndpointSuppressesNonRetainedRouteOrMissingTokenAfterAeadLimitDiscard
+  - benchmarks/QuicStatelessResetBenchmarks.cs::CreateRetainedRouteStatelessResetDatagramMiss
+  - benchmarks/QuicStatelessResetBenchmarks.cs::CreateRetainedRouteStatelessResetDatagramWithoutRememberedToken
+
+Notes:
+- This clause isolates the no-retained-route and no-remembered-token suppression branch after AEAD-limit terminal discard; it does not claim positive emission for non-retained packets or a broader ambiguity model.
 
 ## REQ-QUIC-RFC9001-S7-0001 Use caution with unauthenticated Initial data
 Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.

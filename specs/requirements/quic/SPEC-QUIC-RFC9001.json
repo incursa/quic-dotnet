@@ -12,7 +12,19 @@
     "VER-QUIC-RFC9001-0003",
     "ARC-QUIC-RFC9001-0004",
     "WI-QUIC-RFC9001-0004",
-    "VER-QUIC-RFC9001-0004"
+    "VER-QUIC-RFC9001-0004",
+    "ARC-QUIC-RFC9001-0005",
+    "WI-QUIC-RFC9001-0005",
+    "VER-QUIC-RFC9001-0005",
+    "ARC-QUIC-RFC9001-0006",
+    "WI-QUIC-RFC9001-0006",
+    "VER-QUIC-RFC9001-0006",
+    "ARC-QUIC-RFC9001-0007",
+    "WI-QUIC-RFC9001-0007",
+    "VER-QUIC-RFC9001-0007",
+    "ARC-QUIC-RFC9001-0008",
+    "WI-QUIC-RFC9001-0008",
+    "VER-QUIC-RFC9001-0008"
   ],
   "artifact_id": "SPEC-QUIC-RFC9001",
   "scope": "This specification covers the reviewed RFC 9001 extraction outputs and preserves the distinction between RFC 9001 packet-protection behavior and overlapping TLS or transport references.",
@@ -2041,7 +2053,41 @@
         ]
       },
       "notes": [
-        "This clause covers only the known-token loop-suppression cell for retained routes after AEAD-limit terminal discard; untraced non-retained response behavior remains blocked."
+        "This clause covers only the known-token loop-suppression cell for retained routes after AEAD-limit terminal discard; the no-retained-route and no-token suppressive topoff is traced separately in REQ-QUIC-RFC9001-S6P6-0009."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P6-0009",
+      "title": "Suppress non-retained stateless-reset responses",
+      "statement": "After AEAD-limit terminal discard, an endpoint MUST suppress stateless-reset response emission when a later received packet does not resolve to a retained route or resolves only to route state without a remembered stateless-reset token for the same remote address and port.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0008"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2",
+          "RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1",
+          "RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointSuppressesStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointSuppressesStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::EndpointStillEmitsRetainedRouteResponseWhenRouteAndTokenMatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs::FuzzEndpointSuppressesNonRetainedRouteOrMissingTokenAfterAeadLimitDiscard",
+          "benchmarks/QuicStatelessResetBenchmarks.cs::CreateRetainedRouteStatelessResetDatagramMiss",
+          "benchmarks/QuicStatelessResetBenchmarks.cs::CreateRetainedRouteStatelessResetDatagramWithoutRememberedToken"
+        ]
+      },
+      "notes": [
+        "This clause isolates the no-retained-route and no-remembered-token suppression branch after AEAD-limit terminal discard; it does not claim positive emission for non-retained packets or a broader ambiguity model."
       ]
     },
     {
