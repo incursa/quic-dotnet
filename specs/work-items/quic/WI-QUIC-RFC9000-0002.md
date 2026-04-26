@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9000-0002"
 artifact_type: "work_item"
 title: "RFC 9000 Address-Validation Token Emission Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9000-S9P3-0005"
@@ -52,7 +52,7 @@ Run the RFC 9000 requirement-home tests for the two token-emission clauses and c
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+Completed for the server-only NEW_TOKEN emission slice. Requirement-home tests prove one token per validated address, keep client-role validation from emitting NEW_TOKEN traffic, and preserve the existing frame codec round-trip helper.
 
 ## Trace Links
 
