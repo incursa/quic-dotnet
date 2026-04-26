@@ -124,6 +124,12 @@ This specification is intended to unlock the architecture blockers called out fo
 - the eventual interop-runner retry enablement
 - the library-wide trim and Native AOT package-compatibility slice
 
+## Migration-Core Decomposition Boundary
+
+The `9000-11-migration-core` gap decomposes first through the connection-runtime path-state owner rather than by minting new RFC 9000 artifact families. `ARC/WI/VER-QUIC-CRT-0005` owns the runtime prerequisites under `REQ-QUIC-CRT-0059` through `REQ-QUIC-CRT-0070`: explicit path identity, last-validated remote address state, bounded recently validated paths, complete per-path validation/amplification/recovery/RTT/ECN state, address-change classification, handshake-gated promotion, validation requirements, per-path anti-amplification, challenge state, promotion gates, and path-local reset/restore semantics.
+
+Existing RFC 9000 leaf owners remain the execution proof homes for already isolated behavior: `ARC/WI/VER-QUIC-RFC9000-0002` for server `NEW_TOKEN` emission after new-address validation, `ARC/WI/VER-QUIC-RFC9000-0005` for new-local-address probing and migration recovery reset, `ARC/WI/VER-QUIC-RFC9000-0010` for `PATH_CHALLENGE` retry and `PATH_RESPONSE` behavior, and `ARC/WI/VER-QUIC-RFC9000-0011` for sender-side ECN ACK-count validation. New RFC 9000 artifact IDs should be introduced only when a concrete matrix cell cannot be executed under these existing owners, such as a separately decided recently-validated-cache eviction policy or close-versus-reset policy.
+
 ## REQ-QUIC-CRT-0001 Use one orchestration owner per connection
 Each live connection MUST have one orchestration owner that is solely responsible for mutating connection-owned state.
 

@@ -8,16 +8,18 @@
     "SPEC-QUIC-CRT"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Planned decomposition only; no production behavior or tests are implemented by this artifact update.",
   "out_of_scope": [
     "A generalized multipath scheduler or any future path-selection algorithm beyond one active path plus candidate paths.",
     "Endpoint route and stateless-reset registries, which remain owned by the endpoint ingress surface.",
-    "Unrelated recovery redesign that is not needed to classify or promote the active path."
+    "Unrelated recovery redesign that is not needed to classify or promote the active path.",
+    "New RFC 9000 artifact families unless a concrete missing migration matrix cell cannot be carried by this CRT owner or by existing RFC 9000 leaf owners.",
+    "Recently validated cache eviction and close-versus-reset policy unless they are selected as their own bounded follow-on."
   ],
   "status": "planned",
   "domain": "quic",
-  "summary": "Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while the runtime orchestrator lands.",
-  "verification_plan": "Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, and unvalidated-path amplification, then inspect the path record model for the explicit state fields that back those transitions.",
+  "summary": "Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while decomposing the remaining migration-core umbrella around the existing CRT owner and RFC 9000 leaf proofs.",
+  "verification_plan": "Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, per-path state, and unvalidated-path amplification. Add negative tests for stale or superseded cache entries, premature promotion, and missing per-path budget state before implementation closure. Add deterministic state-machine fuzz/property coverage over address-change classifications and candidate-path outcomes, run a BenchmarkDotNet Dry path-state benchmark for any new hot helper, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-crt-migration-core-decomposition/`.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
@@ -25,7 +27,7 @@
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Add active-path and candidate-path ownership to the runtime state model.\n- Track the last validated remote address and keep a bounded cache of recently validated paths.\n- Classify packets from new peer addresses explicitly and drive path validation through explicit events and effects.\n- Enforce per-path anti-amplification accounting and promotion rules, including handshake gating and path-local state restore or reset on promotion.\n- Add requirement-home tests for new-address handling, candidate creation, validation promotion, and unvalidated-path amplification behavior.",
+  "planned_changes": "- Add active-path and candidate-path ownership to the runtime state model.\n- Track the last validated remote address and keep a bounded cache of recently validated paths.\n- Classify packets from new peer addresses explicitly and drive path validation through explicit events and effects.\n- Enforce per-path anti-amplification accounting and promotion rules, including handshake gating and path-local state restore or reset on promotion.\n- Reuse the existing RFC 9000 leaf owners for server `NEW_TOKEN` emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation before adding new RFC 9000 artifact families.\n- Add requirement-home tests for new-address handling, candidate creation, validation promotion, unvalidated-path amplification behavior, cache freshness, and complete per-path state.",
   "design_links": [
     "ARC-QUIC-CRT-0005"
   ],
@@ -35,6 +37,7 @@
     "REQ-QUIC-CRT-0059",
     "REQ-QUIC-CRT-0060",
     "REQ-QUIC-CRT-0061",
+    "REQ-QUIC-CRT-0062",
     "REQ-QUIC-CRT-0063",
     "REQ-QUIC-CRT-0064",
     "REQ-QUIC-CRT-0065",

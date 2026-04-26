@@ -11,6 +11,7 @@ addresses:
   - "REQ-QUIC-CRT-0059"
   - "REQ-QUIC-CRT-0060"
   - "REQ-QUIC-CRT-0061"
+  - "REQ-QUIC-CRT-0062"
   - "REQ-QUIC-CRT-0063"
   - "REQ-QUIC-CRT-0064"
   - "REQ-QUIC-CRT-0065"
@@ -33,7 +34,7 @@ related_artifacts:
 
 ## Summary
 
-Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while the runtime orchestrator lands.
+Keep the active-path, candidate-path, validation, amplification, and migration-promotion seam traceable while decomposing the remaining migration-core umbrella around the existing CRT owner and RFC 9000 leaf proofs.
 
 ## Requirements Addressed
 
@@ -42,6 +43,7 @@ Keep the active-path, candidate-path, validation, amplification, and migration-p
 - REQ-QUIC-CRT-0059
 - REQ-QUIC-CRT-0060
 - REQ-QUIC-CRT-0061
+- REQ-QUIC-CRT-0062
 - REQ-QUIC-CRT-0063
 - REQ-QUIC-CRT-0064
 - REQ-QUIC-CRT-0065
@@ -61,21 +63,24 @@ Keep the active-path, candidate-path, validation, amplification, and migration-p
 - Track the last validated remote address and keep a bounded cache of recently validated paths.
 - Classify packets from new peer addresses explicitly and drive path validation through explicit events and effects.
 - Enforce per-path anti-amplification accounting and promotion rules, including handshake gating and path-local state restore or reset on promotion.
-- Add requirement-home tests for new-address handling, candidate creation, validation promotion, and unvalidated-path amplification behavior.
+- Reuse the existing RFC 9000 leaf owners for server `NEW_TOKEN` emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation before adding new RFC 9000 artifact families.
+- Add requirement-home tests for new-address handling, candidate creation, validation promotion, unvalidated-path amplification behavior, cache freshness, and complete per-path state.
 
 ## Out of Scope
 
 - A generalized multipath scheduler or any future path-selection algorithm beyond one active path plus candidate paths.
 - Endpoint route and stateless-reset registries, which remain owned by the endpoint ingress surface.
 - Unrelated recovery redesign that is not needed to classify or promote the active path.
+- New RFC 9000 artifact families unless a concrete missing migration matrix cell cannot be carried by this CRT owner or by existing RFC 9000 leaf owners.
+- Recently validated cache eviction and close-versus-reset policy unless they are selected as their own bounded follow-on.
 
 ## Verification Plan
 
-Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, and unvalidated-path amplification, then inspect the path record model for the explicit state fields that back those transitions.
+Run the narrow CRT requirement-home tests for candidate creation, handshake-gated promotion, validation reuse, per-path state, and unvalidated-path amplification. Add negative tests for stale or superseded cache entries, premature promotion, and missing per-path budget state before implementation closure. Add deterministic state-machine fuzz/property coverage over address-change classifications and candidate-path outcomes, run a BenchmarkDotNet Dry path-state benchmark for any new hot helper, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-crt-migration-core-decomposition/`.
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+Planned decomposition only; no production behavior or tests are implemented by this artifact update.
 
 ## Trace Links
 
@@ -86,6 +91,7 @@ Addresses:
 - REQ-QUIC-CRT-0059
 - REQ-QUIC-CRT-0060
 - REQ-QUIC-CRT-0061
+- REQ-QUIC-CRT-0062
 - REQ-QUIC-CRT-0063
 - REQ-QUIC-CRT-0064
 - REQ-QUIC-CRT-0065

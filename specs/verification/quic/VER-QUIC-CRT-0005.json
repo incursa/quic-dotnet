@@ -11,11 +11,14 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "status": "planned",
   "domain": "quic",
-  "scope": "This slice covers active-path and candidate-path orchestration, address-change classification, validation gating, amplification accounting, and promotion semantics. It does not prove a generalized multipath scheduler or the full cache-eviction policy for recently validated paths.",
+  "scope": "This planned slice covers active-path and candidate-path orchestration, address-change classification, validation gating, complete per-path state, amplification accounting, promotion semantics, and the decomposition boundary for the remaining migration-core umbrella. It does not prove a generalized multipath scheduler, endpoint ECN deployment, interop success, or a full recently validated cache-eviction policy unless those are selected as later bounded follow-ons.",
   "verifies": [
     "REQ-QUIC-CRT-0033",
+    "REQ-QUIC-CRT-0034",
     "REQ-QUIC-CRT-0059",
     "REQ-QUIC-CRT-0060",
+    "REQ-QUIC-CRT-0061",
+    "REQ-QUIC-CRT-0062",
     "REQ-QUIC-CRT-0063",
     "REQ-QUIC-CRT-0064",
     "REQ-QUIC-CRT-0065",
@@ -35,20 +38,28 @@
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
     "src/Incursa.Quic/QuicPathValidation.cs",
-    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs"
+    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+    "planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0034.cs",
+    "planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0061.cs",
+    "planned: tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0062.cs",
+    "planned: benchmarks/QuicPathValidationBenchmarks.cs",
+    "planned: artifacts/verification/20260425-crt-migration-core-decomposition/"
   ],
   "procedure": [
-    "Inspect the runtime path record model and validation helpers for explicit identity, validation, and amplification state.",
+    "Inspect the runtime path record model and validation helpers for explicit identity, validation, amplification, recovery, RTT, ECN, activity, and challenge state.",
     "Run the requirement-home tests for REQ-QUIC-CRT-0063, REQ-QUIC-CRT-0064, REQ-QUIC-CRT-0066, and REQ-QUIC-CRT-0069.",
-    "Confirm the transition results show candidate creation, handshake-gated promotion, and budget-checked sends."
+    "Add and run negative tests for stale or superseded recent-validation entries, premature promotion, and missing per-path budget state before implementation closure.",
+    "Run deterministic state-machine fuzz/property samples over address-change classifications and candidate-path outcomes.",
+    "Run BenchmarkDotNet Dry coverage for any new hot path-state helper.",
+    "Confirm the transition results show candidate creation, handshake-gated promotion, complete per-path state, and budget-checked sends."
   ],
   "supplemental_sections": [
     {
       "heading": "Status Summary",
-      "content": "The focused tests now cover candidate-path creation, handshake-gated promotion, address validation reuse, and unvalidated-path amplification budgeting. The bounded recently validated cache and any broader migration recovery policy remain documented in the design but are not directly exercised by these tests."
+      "content": "The focused proof remains planned as the CRT-led decomposition front for `9000-11-migration-core`. Existing RFC 9000 leaves continue to own server `NEW_TOKEN` emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation. The bounded recently validated cache eviction policy and any close-versus-reset policy remain explicit follow-on candidates unless selected for their own bounded slice."
     }
   ],
-  "expected_result": "A packet from a new address is classified explicitly, candidate paths are created with validation and amplification state, successful validation promotes only when the handshake gate allows it, and unvalidated-path sends respect amplification limits.",
+  "expected_result": "A packet from a new address is classified explicitly, candidate paths are created with validation, amplification, recovery, RTT, ECN, activity, and challenge state, successful validation promotes only when the handshake gate allows it, unvalidated-path sends respect amplification limits, and any future RFC 9000 artifact split names a concrete missing cell before widening the trace set.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "ARC-QUIC-CRT-0005",

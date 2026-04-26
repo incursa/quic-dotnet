@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Describe the runtime-owned active-path and candidate-path model, address-change classification, validation workflow, anti-amplification accounting, and migration promotion rules without expanding into a generalized multipath scheduler.
+Describe and decompose the runtime-owned active-path and candidate-path model, address-change classification, validation workflow, anti-amplification accounting, and migration promotion rules without expanding into a generalized multipath scheduler.
 
 ## Scope
 
@@ -33,6 +33,8 @@ The connection runtime owns one active path and a bounded set of candidate and r
 
 Handshake confirmation gates promotion of migration-sensitive behavior. Validation success can mark a candidate validated, update the last validated remote address, and promote the candidate to active path only when the gate allows it. Trusted reuse can skip a fresh probe when the address is still recent. Promotion emits an explicit effect so the endpoint can update binding state and reset path-local transport state consistently.
 
+This architecture is also the decomposition front for the remaining `9000-11-migration-core` umbrella. The current trace-safe execution order is to finish the CRT path-state prerequisites first, reuse the existing RFC 9000 leaf owners for token emission, new-local-address probing and recovery reset, path-validation response and retry, and ECN ACK-count validation, and split a new RFC 9000 artifact family only when a concrete cell cannot be carried by those owners.
+
 ## Key Components
 
 - src/Incursa.Quic/QuicConnectionRuntime.cs
@@ -53,6 +55,7 @@ Path state is intentionally split into active-path, candidate-path, and recently
 - Validated candidates should be promoted only after successful validation or a recent-validation reuse rule the runtime treats as trusted.
 - Promotion must reset or restore path-local transport state using the migration semantics already encoded in the runtime effects.
 - The recently validated cache must remain bounded so stale addresses cannot bypass the probe and promotion rules.
+- Recently validated cache eviction and close-versus-reset policy must stay explicit follow-ons if they cannot be proven under this owner.
 
 ## Alternatives Considered
 
@@ -64,6 +67,10 @@ Path state is intentionally split into active-path, candidate-path, and recently
 - Recent-validation reuse must remain bounded so stale addresses do not bypass the probe and promotion rules.
 - Promotion must keep the active-path reset path deterministic or the congestion and recovery state could drift across path changes.
 - The runtime should remain single-owner for connection state; endpoint binding changes stay effect-driven rather than inline.
+
+## Migration-Core Decomposition
+
+`9000-11-migration-core` should execute through this CRT path-state owner before adding new RFC 9000 artifact IDs. The existing supporting RFC leaves are `ARC/WI/VER-QUIC-RFC9000-0002` for server `NEW_TOKEN` emission, `ARC/WI/VER-QUIC-RFC9000-0005` for new-local-address probing and recovery reset, `ARC/WI/VER-QUIC-RFC9000-0010` for `PATH_CHALLENGE` retry and `PATH_RESPONSE`, and `ARC/WI/VER-QUIC-RFC9000-0011` for sender-side ECN ACK-count validation. Future decomposition should name a single concrete missing cell before minting a new RFC 9000 artifact family.
 
 ## Related Code And Tests
 
