@@ -1194,6 +1194,12 @@ Notes:
 In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true, the library MUST emit one TLS 1.3 `CertificateRequest` on the local server flight, accept one inbound client `Certificate` / `CertificateVerify` / `Finished` sequence for that request context, and surface client-certificate acceptance only through the existing `RemoteCertificateValidationCallback` seam on that same `SslServerAuthenticationOptions` carrier. This slice must remain separate from the server-side `CertificateChainPolicy` follow-on in `REQ-QUIC-CRT-0125`, the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0022
+- Implemented By:
+  - WI-QUIC-CRT-0022
+- Verified By:
+  - VER-QUIC-CRT-0022
 - Source Refs:
   - docs/design/quic-public-api-gap-matrix.md
   - docs/design/quic-interop-prep-plan.md
@@ -1210,6 +1216,12 @@ Trace:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicConnectionTests.cs
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\QuicListenerTests.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs::ServerRoleEmitsCertificateRequestAndAcceptsClientCertificatePresentationThroughTheCallbackSeam
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs::ServerRoleRejectsClientCertificateWhenTheCallbackReturnsFalse
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs::ServerConnectionOptionsValidatorAcceptsClientCertificateRequiredWhenCallbackDriven
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs::ServerConnectionOptionsValidatorRejectsClientCertificateRequiredWithoutCallback
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0124.cs::ServerRoleRejectsMissingClientCertificateAfterTheCertificateRequest
 
 Notes:
 - This is the smallest server-side client-auth floor and remains server-role only.

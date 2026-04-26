@@ -51,6 +51,11 @@ Execution, inspection, and regression evidence.
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0012.cs
 - tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0013.cs
 - scripts/Validate-SpecTraceJson.ps1
+- artifacts/verification/20260426-crt-server-client-auth-certificate-request/dotnet-test-REQ-QUIC-CRT-0124.log
+- artifacts/verification/20260426-crt-server-client-auth-certificate-request/spec-trace-render.log
+- artifacts/verification/20260426-crt-server-client-auth-certificate-request/spec-trace-check.log
+- artifacts/verification/20260426-crt-server-client-auth-certificate-request/git-diff-check.log
+- artifacts/verification/20260426-crt-server-client-auth-certificate-request/spec-trace-validate.log
 
 ## Status
 

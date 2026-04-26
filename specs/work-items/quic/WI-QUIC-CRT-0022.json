@@ -19,7 +19,7 @@
     "client-side certificate-presentation prerequisite",
     "broader client-auth policy beyond the requested server-auth slice"
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Open the existing public server carrier to callback-driven `ClientCertificateRequired` acceptance on top of the already-landed managed server-auth prerequisite, without widening broader PKI, transfer, or retry behavior.",
   "verification_plan": "Run focused requirement-home tests for the public validator gate and the internal server-auth path, re-run the current CRT and API guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",
