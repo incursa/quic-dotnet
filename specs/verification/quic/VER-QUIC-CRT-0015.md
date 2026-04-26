@@ -26,6 +26,7 @@ Focused requirement-home tests and inspection evidence for the narrow server-rol
 - Run the CRT requirement-home tests that cover the supported server-role Finished continuation and inbound Finished proof path, outbound local Finished exposure, Handshake key-availability publication ordering, offset semantics, local CertificateVerify gating, transcript append behavior, premature or repeated progression rejection, and malformed or mismatched verify-data failure cases.
 - Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, the local EncryptedExtensions continuation, the local Certificate continuation, and the role-aware transcript-progress boundary.
 - Inspect the bridge driver, transcript-progress owner, key-schedule implementation, and connection-runtime pass-through to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback.
+- Render and check the touched SpecTrace markdown views, then run git diff --check and keep the repo-wide validator log as standing backlog evidence.
 
 ## Expected Result
 
@@ -55,7 +56,7 @@ The server role emits one local Finished after the supported ClientHello has bee
 
 ## Status
 
-planned
+Focused requirement-home tests, render/check, and git diff --check passed on 2026-04-26 for REQ-QUIC-CRT-0117.
 
 ## Related Artifacts
 

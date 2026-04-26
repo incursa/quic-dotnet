@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0015",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Server-Role Inbound Client Finished Proof Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -13,6 +13,7 @@
     "WI-QUIC-CRT-0015"
   ],
   "expected_result": "The server role emits one local Finished after the supported ClientHello has been accepted, the local ServerHello has been published, local EncryptedExtensions has been published, local Certificate has been published, local CertificateVerify has been published, Handshake keys are available, and the local signing material validates as compatible with the supported single-leaf input; verifies one inbound client Finished cryptographically against the complete local server flight; exposes PeerFinishedVerified only after that verification succeeds; exposes PeerHandshakeTranscriptCompleted as the next honest server-side post-proof milestone; rejects premature, repeated, malformed, incompatible, or mismatched inbound Finished progression deterministically; and still leaves server-role commit and wider handshake support unavailable.",
+  "status_summary": "Focused requirement-home tests, render/check, and git diff --check passed on 2026-04-26 for REQ-QUIC-CRT-0117.",
   "verifies": [
     "REQ-QUIC-CRT-0103",
     "REQ-QUIC-CRT-0107",
@@ -21,7 +22,8 @@
   "procedure": [
     "Run the CRT requirement-home tests that cover the supported server-role Finished continuation and inbound Finished proof path, outbound local Finished exposure, Handshake key-availability publication ordering, offset semantics, local CertificateVerify gating, transcript append behavior, premature or repeated progression rejection, and malformed or mismatched verify-data failure cases.",
     "Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, the local EncryptedExtensions continuation, the local Certificate continuation, and the role-aware transcript-progress boundary.",
-    "Inspect the bridge driver, transcript-progress owner, key-schedule implementation, and connection-runtime pass-through to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback."
+    "Inspect the bridge driver, transcript-progress owner, key-schedule implementation, and connection-runtime pass-through to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback.",
+    "Render and check the touched SpecTrace markdown views, then run git diff --check and keep the repo-wide validator log as standing backlog evidence."
   ],
   "scope": "This slice verifies only the permanent server-role continuation from peer ClientHello and local ServerHello through local EncryptedExtensions, local Certificate, local CertificateVerify, local Finished, and inbound client Finished proof, plus Handshake packet-protection material availability. It does not prove server-role commit, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
   "evidence": [
@@ -43,7 +45,12 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
-    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs",
+    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/dotnet-test-REQ-QUIC-CRT-0117.log",
+    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-render.log",
+    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-check.log",
+    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/git-diff-check.log",
+    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",

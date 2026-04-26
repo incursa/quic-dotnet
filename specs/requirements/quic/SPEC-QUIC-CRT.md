@@ -1013,10 +1013,22 @@ Notes:
 In the server role, the library MUST verify one inbound TLS 1.3 `Finished` message for the same supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset only after the supported `ClientHello` has been accepted, the local `ServerHello`, local `EncryptedExtensions`, local `Certificate`, local `CertificateVerify`, and local `Finished` have all been published, Handshake keys are available, and the local server flight is complete, derive the expected client Finished verify data from the transcript boundary that includes that complete local server flight, verify that Finished cryptographically with the managed TLS 1.3 key schedule, surface `PeerFinishedVerified` only after that verification succeeds, surface `PeerHandshakeTranscriptCompleted` as the next honest server-role post-proof milestone, and deterministically reject premature, repeated, conflicting, malformed, or mismatched inbound Finished progression through the existing fatal/update path.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0015
+- Implemented By:
+  - WI-QUIC-CRT-0015
+- Verified By:
+  - VER-QUIC-CRT-0015
 - Source Refs:
   - RFC 8446 Section 4.4.4
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::ServerRoleDriverVerifiesInboundClientFinishedAfterTheFullLocalFlight
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::ServerRoleDriverRejectsInboundClientFinishedBeforeTheFullLocalFlightExists
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::ServerRoleDriverRejectsMalformedOrMismatchedInboundClientFinishedDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::RuntimePromotesAValidatedCandidatePathWhenHandshakePacketIngressCarriesFinishedCompletion
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0117.cs::ServerRoleDriverRejectsRepeatedOrConflictingInboundClientFinishedProgressionDeterministically
 
 Notes:
 - This slice is intentionally server-role only. It does not add client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT data-path processing, 1-RTT data-path processing, key update, endpoint-host wiring, or interop-runner handshake support.
