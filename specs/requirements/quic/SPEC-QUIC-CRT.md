@@ -1111,10 +1111,19 @@ Notes:
 In the client role, the library MUST publish `OneRttKeysAvailable` and the first TLS 1.3 application packet-protection material only after the peer Finished has been cryptographically verified by the managed TLS 1.3 key schedule for the supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset. After that proof boundary, the library must surface `KeysAvailable` for `QuicTlsEncryptionLevel.OneRtt` together with `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable`; malformed, unsupported, premature, repeated, conflicting, terminal-state, or mismatched 1-RTT publication must fail deterministically through the existing fatal/update path. This slice does not add 1-RTT data-path processing, key update, trust-store policy, hostname validation, certificate-path validation, revocation, or transfer enablement.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0019
+- Implemented By:
+  - WI-QUIC-CRT-0019
+- Verified By:
+  - VER-QUIC-CRT-0019
 - Source Refs:
   - RFC 8446 Sections 4.4.4 and 7.1
   - RFC 9001 Sections 4.1.2 and 4.1.4
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs::ClientRoleDriverPublishes1RttReadinessOnlyAfterPeerFinishedProof
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0121.cs::ClientRoleBridgeStateRejectsPrematureOneRttKeysBeforePeerFinishedVerification
 
 Notes:
 - This slice is intentionally client-role only and permanent. It does not add transfer or retry enablement, 0-RTT, key update, or server-role handshake crypto.
