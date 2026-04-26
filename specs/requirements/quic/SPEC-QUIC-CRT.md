@@ -1234,6 +1234,12 @@ Notes:
 In the server role, when `QuicServerConnectionOptions.ServerAuthenticationOptions.ClientCertificateRequired` is true and `RemoteCertificateValidationCallback` is supplied, the library MUST honor `SslServerAuthenticationOptions.CertificateChainPolicy` on that same carrier by delegating presented-client-certificate evaluation to BCL `X509Chain` / `X509ChainPolicy` primitives before invoking the callback. The callback must observe the built chain and computed `SslPolicyErrors`, and absent callback override the library must fail closed when that delegated policy evaluation does not succeed. This slice must remain separate from the standalone `CertificateRevocationCheckMode` floor in `REQ-QUIC-CRT-0126`, broader PKI or path-building behavior, 0-RTT, key update, transfer, retry, and any public API widening beyond the existing carrier.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0023
+- Implemented By:
+  - WI-QUIC-CRT-0023
+- Verified By:
+  - VER-QUIC-CRT-0023
 - Source Refs:
   - docs/design/quic-public-api.md
   - docs/design/quic-public-api-gap-matrix.md
@@ -1248,6 +1254,11 @@ Trace:
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\src\System\Net\Quic\QuicConnection.SslConnectionOptions.cs
   - C:\src\dotnet\runtime\src\libraries\System.Net.Security\src\System\Net\Security\SslAuthenticationOptions.cs
   - C:\src\dotnet\runtime\src\libraries\System.Net.Quic\tests\FunctionalTests\MsQuicTests.cs
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs::ServerRoleEmitsCertificateRequestAndAcceptsClientCertificatePresentationWithCustomChainPolicyThroughTheCallbackSeam
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs::ServerRoleRejectsClientCertificatePresentationWhenTheCustomChainPolicyDoesNotTrustThePresentedLeaf
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs::ServerConnectionOptionsValidatorAcceptsClientCertificateRequiredWhenChainCustomizationIsSupplied
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0125.cs::ServerConnectionOptionsValidatorRejectsCertificateChainPolicyWithoutClientCertificateRequired
 
 Notes:
 - This is a narrow server-role follow-on to REQ-QUIC-CRT-0124 and does not widen the public carrier shape.

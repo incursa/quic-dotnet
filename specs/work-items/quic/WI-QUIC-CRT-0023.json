@@ -19,7 +19,7 @@
     "key update",
     "broader client-auth policy beyond the callback-driven CertificateChainPolicy floor"
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Honor server-side CertificateChainPolicy on the existing callback-driven ClientCertificateRequired path by delegating presented-client-certificate evaluation to BCL X509 chain primitives without widening broader policy promises.",
   "verification_plan": "Run focused requirement-home tests for the server chain-policy floor and the existing callback-driven floor, re-run the current CRT/API/INT guards that must remain unchanged, re-run the full REQ_QUIC_CRT_ sweep, and run repo-local SpecTrace validation/render checks after the canonical JSON updates.",

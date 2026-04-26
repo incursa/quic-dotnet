@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0023"
 artifact_type: "work_item"
 title: "QUIC CRT server chain-policy callback path work item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0125"
