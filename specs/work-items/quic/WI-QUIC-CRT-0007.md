@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0007"
 artifact_type: "work_item"
 title: "QUIC Handshake Flow Coordinator Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0106"
@@ -51,7 +51,7 @@ Run the new CRT and RFC9001 requirement-home tests that cover the handshake flow
 
 ## Completion Notes
 
-The runtime-owned smoke proof remains intentionally narrow. The evidence now includes a deterministic CRYPTO transcript-progress owner that stages role-specific peer transport parameters and preserves handshake metadata without claiming certificate validation, signature verification, 1-RTT, or production handshake support.
+The Handshake flow coordinator proof is landed. The runtime-owned coordinator and transcript-progress owner now stay in the main library as the narrow packet-flow seam for later handshake and interop slices.
 
 ## Trace Links
 

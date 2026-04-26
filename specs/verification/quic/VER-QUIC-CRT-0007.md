@@ -51,7 +51,7 @@ Inbound Handshake packets can be opened with the existing handshake packet-prote
 
 ## Status
 
-planned
+Passed locally on 2026-04-25. The focused requirement-home run passed 42/42 tests across REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0106, REQ-QUIC-CRT-0107, REQ-QUIC-RFC9001-S4-0001, REQ-QUIC-RFC9001-S4-0003, REQ-QUIC-RFC9001-S4-0004, REQ-QUIC-RFC9001-S4-0005, REQ-QUIC-RFC9001-S7-0002, and REQ-QUIC-RFC9001-S8-0002. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/verification/20260425-crt-handshake-flow-coordinator/.
 
 ## Related Artifacts
 
