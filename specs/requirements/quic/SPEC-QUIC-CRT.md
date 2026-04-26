@@ -831,10 +831,28 @@ Notes:
 In the server role, the library MUST own a permanent managed TLS 1.3 crypto floor behind the transport-facing TLS bridge that accepts only the supported peer `ClientHello` subset for TLS 1.3 with `TLS_AES_128_GCM_SHA256` and `secp256r1`, semantically validates the peer key-share and QUIC transport-parameters placement needed for that subset, constructs one local `ServerHello` for the same subset from the local ephemeral key-share state, appends that `ServerHello` at the `ClientHello` plus `ServerHello` transcript boundary, derives server-role Handshake traffic secrets and Handshake packet-protection material from the peer key share, the local ephemeral share, and the resulting transcript hash, surfaces explicit bridge-visible Handshake key-availability updates, surfaces the local `ServerHello` bytes through the existing Handshake-crypto output seam for later packetization, and deterministically rejects malformed, unsupported, premature, or conflicting `ClientHello` progression through the existing fatal/update path.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0010
+- Implemented By:
+  - WI-QUIC-CRT-0010
+- Verified By:
+  - VER-QUIC-CRT-0010
 - Source Refs:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 7.1
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleKeySchedulePublishesServerHelloBeforeHandshakeKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleAcceptsClientHelloThatOffersApplicationProtocolNegotiation
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::HandshakeKeysStayUnavailableUntilTheSupportedClientHelloCompletes
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloTlsVersionFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloCipherSuiteFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::EmptyClientHelloApplicationProtocolNameFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloNamedGroupWithoutAdvertisedSecp256r1SupportFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloSupportedGroupsFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::MalformedClientHelloFramingFailsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::RepeatedServerRoleClientHelloProgressionIsRejectedDeterministically
 
 Notes:
 - This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
@@ -885,10 +903,24 @@ Notes:
 In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0011
+- Implemented By:
+  - WI-QUIC-CRT-0011
+- Verified By:
+  - VER-QUIC-CRT-0011
 - Source Refs:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 7.1
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleEmitsEncryptedExtensionsAfterServerHelloAtTheNextHandshakeOffset
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleDoesNotEmitEncryptedExtensionsBeforeServerHelloExists
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleEmitsEncryptedExtensionsOnlyAfterHandshakeKeysBecomeAvailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleDoesNotEmitEncryptedExtensionsWhenLocalTransportParametersAreUnavailable
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleAppendsEncryptedExtensionsToTheManagedTranscriptExplicitly
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::RepeatedServerRoleEncryptedExtensionsProgressionIsRejectedDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs::ServerRoleCommitRemainsUnavailableAfterEncryptedExtensions
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.

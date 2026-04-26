@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0011",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Server-Role EncryptedExtensions Continuation Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -19,9 +19,11 @@
   "procedure": [
     "Run the CRT requirement-home tests that cover the supported server-role EncryptedExtensions continuation path, outbound local EncryptedExtensions exposure, Handshake key-availability publication ordering, offset semantics, local transport-parameter availability gating, transcript append behavior, and repeated or conflicting progression rejection.",
     "Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, and Handshake key-availability publication ordering.",
+    "Render and check the touched SpecTrace markdown views from the updated JSON artifacts, then run `git diff --check` to confirm the slice has no whitespace drift.",
     "Inspect the bridge driver, transcript-progress owner, and key-schedule implementation to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback."
   ],
   "scope": "This slice verifies only the permanent server-role continuation from peer ClientHello and local ServerHello through local EncryptedExtensions and Handshake packet-protection material availability. It does not prove certificate flight, server Finished, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
+  "status_summary": "Passed on 2026-04-25; focused requirement-home tests prove the server-role continuation from the managed ServerHello floor into one local EncryptedExtensions flight on the existing handshake seam, including offset semantics, local transport-parameter gating, deterministic repeated-progression rejection, and the continued absence of server-role commit. The prerequisite managed ServerHello floor remains separately traced by REQ-QUIC-CRT-0112 and its verification evidence.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
@@ -33,7 +35,12 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
-    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+    "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs",
+    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log",
+    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log",
+    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log",
+    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log",
+    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
@@ -42,7 +49,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
     }
   ]
 }

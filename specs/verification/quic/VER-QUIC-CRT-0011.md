@@ -23,6 +23,7 @@ Focused requirement-home tests and inspection evidence for the narrow server-rol
 
 - Run the CRT requirement-home tests that cover the supported server-role EncryptedExtensions continuation path, outbound local EncryptedExtensions exposure, Handshake key-availability publication ordering, offset semantics, local transport-parameter availability gating, transcript append behavior, and repeated or conflicting progression rejection.
 - Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, and Handshake key-availability publication ordering.
+- Render and check the touched SpecTrace markdown views from the updated JSON artifacts, then run `git diff --check` to confirm the slice has no whitespace drift.
 - Inspect the bridge driver, transcript-progress owner, and key-schedule implementation to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback.
 
 ## Expected Result
@@ -42,10 +43,15 @@ The server role emits one local EncryptedExtensions after the supported ClientHe
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs
+- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log
+- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log
+- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log
+- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log
+- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log
 
 ## Status
 
-planned
+Passed on 2026-04-25; focused requirement-home tests prove the server-role continuation from the managed ServerHello floor into one local EncryptedExtensions flight on the existing handshake seam, including offset semantics, local transport-parameter gating, deterministic repeated-progression rejection, and the continued absence of server-role commit. The prerequisite managed ServerHello floor remains separately traced by REQ-QUIC-CRT-0112 and its verification evidence.
 
 ## Related Artifacts
 
