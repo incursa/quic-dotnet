@@ -23,6 +23,7 @@ Focused requirement-home tests and inspection evidence for the narrow server-rol
 
 - Run the CRT requirement-home tests that cover the supported server-role CertificateVerify continuation path, outbound local CertificateVerify exposure, Handshake key-availability publication ordering, offset semantics, local signing-material availability gating, transcript append behavior, and repeated or conflicting progression rejection.
 - Run the prerequisite server-role floor tests that cover the supported ClientHello path, outbound ServerHello exposure, the local EncryptedExtensions continuation, and the local Certificate continuation.
+- Render and check the touched SpecTrace markdown views from the updated JSON artifacts, then run `git diff --check` to confirm the slice has no whitespace drift.
 - Inspect the bridge driver, transcript-progress owner, key-schedule implementation, and connection-runtime pass-through to confirm the slice stays inside the main library seam, keeps runtime or host wiring unchanged, keeps commit unavailable, and does not add native TLS fallback.
 
 ## Expected Result
@@ -46,10 +47,16 @@ The server role emits one local CertificateVerify after the supported ClientHell
 - src/Incursa.Quic/QuicTlsTranscriptProgress.cs
 - src/Incursa.Quic/QuicTlsKeySchedule.cs
 - src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/dotnet-test-REQ-QUIC-CRT-0115.log
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/spec-trace-render.log
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/spec-trace-check.log
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/git-diff-check.log
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/git-diff-cached-check.log
+- artifacts/verification/20260426-crt-server-role-certificateverify-continuation/spec-trace-validate.log
 
 ## Status
 
-planned
+Passed on 2026-04-26; focused requirement-home tests prove the server-role continuation from the managed Certificate floor into one local CertificateVerify flight on the existing handshake seam, including offset semantics, local signing-material gating, deterministic malformed and incompatible material rejection, repeated-progression rejection, and the continued absence of server-role commit. The prerequisite managed Certificate floor remains separately traced by REQ-QUIC-CRT-0114 and its verification evidence.
 
 ## Related Artifacts
 
