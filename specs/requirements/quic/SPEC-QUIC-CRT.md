@@ -1040,10 +1040,21 @@ Notes:
 In the server role, the library MUST allow `PeerTransportParametersCommitted` only after `PeerFinishedVerified` has been surfaced, the transcript boundary is at the completed local server flight with `HandshakeTranscriptPhase` set to `Completed`, `HandshakeMessageType` set to `Finished`, `HandshakeMessageLength`, `SelectedCipherSuite`, and `TranscriptHashAlgorithm` present, and the supplied peer transport parameters are equivalent to the staged peer transport parameters; malformed, unsupported, repeated, conflicting, terminal, or mismatched commit progression must fail deterministically through the existing fatal/update path, and `PeerHandshakeTranscriptCompleted` remains a transcript milestone rather than a commit prerequisite.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0016
+- Implemented By:
+  - WI-QUIC-CRT-0016
+- Verified By:
+  - VER-QUIC-CRT-0016
 - Source Refs:
   - RFC 8446 Section 4.4.4
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0118.cs::ServerRoleBridgeStateKeepsCommitExplicitAndSeparateFromTranscriptCompletion
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0118.cs::ServerRoleDriverPublishesCommitOnlyAfterInboundClientFinishedProof
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0118.cs::ServerRoleCommitRejectsRepeatedConflictingFatalAndMismatchedAttemptsDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0118.cs::ServerRoleRuntimeConsumesCommitWithoutImplyingTranscriptCompletion
 
 Notes:
 - This slice is intentionally server-role only and narrow. It does not add client identity, certificate trust, hostname validation, client-certificate authentication, 0-RTT data-path processing, 1-RTT data-path processing, key update, or interop-runner handshake support.

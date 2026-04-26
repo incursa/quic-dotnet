@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0016",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Server-Role Post-Proof Peer Transport-Parameter Commit Gate Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -13,6 +13,7 @@
     "WI-QUIC-CRT-0016"
   ],
   "expected_result": "The server role does not auto-commit staged peer transport parameters before the explicit gate conditions are met, does commit them only after the inbound client Finished proof exists for the same supported TLS session and the commit candidate matches the staged parameters, rejects repeated, conflicting, fatal-state, and mismatched commit attempts deterministically, keeps PeerHandshakeTranscriptCompleted separate from the commit gate, and does not widen the proof into client identity, client-certificate authentication, 1-RTT readiness, or interop support.",
+  "status_summary": "Focused requirement-home tests, render/check, and git diff --check passed on 2026-04-26 for REQ-QUIC-CRT-0118.",
   "verifies": [
     "REQ-QUIC-CRT-0103",
     "REQ-QUIC-CRT-0118",
@@ -21,7 +22,8 @@
   "procedure": [
     "Run the CRT requirement-home tests that cover the server-role bridge-state post-proof gate, driver commit publication after real inbound client Finished verification, deterministic rejection of premature, repeated, conflicting, fatal-state, and mismatched commit attempts, and explicit separation between PeerTransportParametersCommitted and PeerHandshakeTranscriptCompleted.",
     "Run the RFC9001 requirement-home tests that cover authentication of server-role staged peer transport parameters through the explicit post-proof commit gate.",
-    "Inspect the bridge state, bridge driver, and connection runtime integration to confirm the gate stays explicit, role-aware, and on the existing PeerTransportParametersCommitted update path without adding new broad handshake-completion semantics or interop support."
+    "Inspect the bridge state, bridge driver, and connection runtime integration to confirm the gate stays explicit, role-aware, and on the existing PeerTransportParametersCommitted update path without adding new broad handshake-completion semantics or interop support.",
+    "Render and check the touched SpecTrace markdown views, then run git diff --check and keep the repo-wide validator log as standing backlog evidence."
   ],
   "scope": "This slice verifies only the explicit server-role post-proof gate for peer transport-parameter commit above the existing inbound client Finished proof boundary. It does not prove client identity, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, harness changes, or interop-runner handshake support.",
   "evidence": [
@@ -31,7 +33,12 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicTlsTransport.cs",
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
-    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs"
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "artifacts/verification/20260426-crt-server-role-transport-parameter-commit/dotnet-test-REQ-QUIC-CRT-0118.log",
+    "artifacts/verification/20260426-crt-server-role-transport-parameter-commit/spec-trace-render.log",
+    "artifacts/verification/20260426-crt-server-role-transport-parameter-commit/spec-trace-check.log",
+    "artifacts/verification/20260426-crt-server-role-transport-parameter-commit/git-diff-check.log",
+    "artifacts/verification/20260426-crt-server-role-transport-parameter-commit/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",

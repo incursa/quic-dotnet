@@ -26,6 +26,7 @@ Focused requirement-home tests and inspection evidence for the explicit server-r
 - Run the CRT requirement-home tests that cover the server-role bridge-state post-proof gate, driver commit publication after real inbound client Finished verification, deterministic rejection of premature, repeated, conflicting, fatal-state, and mismatched commit attempts, and explicit separation between PeerTransportParametersCommitted and PeerHandshakeTranscriptCompleted.
 - Run the RFC9001 requirement-home tests that cover authentication of server-role staged peer transport parameters through the explicit post-proof commit gate.
 - Inspect the bridge state, bridge driver, and connection runtime integration to confirm the gate stays explicit, role-aware, and on the existing PeerTransportParametersCommitted update path without adding new broad handshake-completion semantics or interop support.
+- Render and check the touched SpecTrace markdown views, then run git diff --check and keep the repo-wide validator log as standing backlog evidence.
 
 ## Expected Result
 
@@ -43,7 +44,7 @@ The server role does not auto-commit staged peer transport parameters before the
 
 ## Status
 
-planned
+Focused requirement-home tests, render/check, and git diff --check passed on 2026-04-26 for REQ-QUIC-CRT-0118.
 
 ## Related Artifacts
 

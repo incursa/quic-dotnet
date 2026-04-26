@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0016"
 artifact_type: "work_item"
 title: "QUIC Server-Role Post-Proof Peer Transport-Parameter Commit Gate Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-CRT-0016",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "QUIC Server-Role Post-Proof Peer Transport-Parameter Commit Gate Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
