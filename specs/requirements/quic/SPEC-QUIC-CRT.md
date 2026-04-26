@@ -1065,10 +1065,20 @@ Notes:
 In the server role, the library MUST derive the first TLS 1.3 application packet-protection material from the transcript boundary that includes the completed local server flight through local Finished, surface explicit bridge-visible `OneRttOpenPacketProtectionMaterialAvailable` and `OneRttProtectPacketProtectionMaterialAvailable` updates only after `PeerFinishedVerified` has been surfaced for the same supported TLS session, and deterministically reject premature, repeated, conflicting, malformed, terminal-state, or unsupported 1-RTT publication through the existing fatal/update path; this slice must not add 1-RTT data-path processing, key update, endpoint-host wiring, or broader handshake-completion semantics.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0017
+- Implemented By:
+  - WI-QUIC-CRT-0017
+- Verified By:
+  - VER-QUIC-CRT-0017
 - Source Refs:
   - RFC 8446 Sections 4.4.4 and 7.1
   - RFC 9001 Sections 4.1.2 and 4.1.4
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs::ServerRoleDriverPublishes1RttPacketProtectionMaterialOnlyAfterPeerFinishedProof
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs::ServerRoleBridgeStateRejectsPrematureRepeatedConflictingAndTerminal1RttPublicationDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0119.cs::ClientRoleKeepsGenericOneRttPacketProtectionMaterialAndRejectsServerOnlyDirectionalUpdates
 
 Notes:
 - This slice is intentionally server-role only and narrow. It does not add 1-RTT stream or application-data processing, key update, peer transport-parameter commit, endpoint-host wiring, or interop-runner handshake support.
