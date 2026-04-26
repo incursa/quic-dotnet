@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9000-0004"
 artifact_type: "work_item"
 title: "QUIC RFC 9000 PMTU Path-State Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9000-S14P2-0003"

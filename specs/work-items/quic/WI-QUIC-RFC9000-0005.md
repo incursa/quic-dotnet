@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9000-0005"
 artifact_type: "work_item"
 title: "QUIC RFC 9000 Migration Path Probing and Recovery Reset Work Item"
 domain: "quic"
-status: "planned"
+status: "completed"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9000-S9P1-0001"

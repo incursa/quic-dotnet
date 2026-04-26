@@ -4,7 +4,7 @@
   "artifact_type": "work_item",
   "title": "QUIC RFC 9000 PMTU Path-State Work Item",
   "domain": "quic",
-  "status": "planned",
+  "status": "completed",
   "owner": "quic-maintainers",
   "related_artifacts": [
     "SPEC-QUIC-RFC9000",
