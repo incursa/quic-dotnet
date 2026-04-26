@@ -50,7 +50,7 @@ The bridge accepts a pinned leaf SHA-256 fingerprint only after the peer Certifi
 
 ## Status
 
-planned
+Passed locally on 2026-04-25. The focused requirement-home run passed 29/29 tests across REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0109, REQ-QUIC-CRT-0111, REQ-QUIC-CRT-0022, REQ-QUIC-INT-0003, and REQ-QUIC-RFC9001-S8-0002. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/verification/20260425-crt-client-certificate-acceptance-policy/.
 
 ## Related Artifacts
 

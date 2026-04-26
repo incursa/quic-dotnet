@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0009",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Client Certificate Acceptance Policy Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -40,6 +40,7 @@
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs"
   ],
+  "status_summary": "Passed locally on 2026-04-25. The focused requirement-home run passed 29/29 tests across REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0109, REQ-QUIC-CRT-0111, REQ-QUIC-CRT-0022, REQ-QUIC-INT-0003, and REQ-QUIC-RFC9001-S8-0002. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/verification/20260425-crt-client-certificate-acceptance-policy/.",
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
     "The tests project can access internal library seams through the existing friend assembly relationship."

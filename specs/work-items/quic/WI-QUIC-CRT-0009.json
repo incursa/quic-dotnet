@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0009",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC Client Certificate Acceptance Policy Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -23,7 +23,7 @@
   ],
   "planned_changes": "- Add a permanent client-side acceptance policy seam inside the main library and thread an optional pinned leaf SHA-256 fingerprint through the existing bridge/runtime constructor path.\n- Keep the acceptance surface narrow and explicit: compare the pinned fingerprint against the leaf certificate facts already surfaced by the managed proof path, and publish PeerCertificatePolicyAccepted only when the proof state exists and the fingerprint matches.\n- Default to no acceptance when no policy is configured, and route fingerprint mismatch through the existing fatal/update path rather than silently accepting.\n- Tighten the commit gate so peer transport-parameter commit requires PeerCertificateVerifyVerified, PeerCertificatePolicyAccepted, and PeerFinishedVerified.\n- Add focused requirement-home tests for the default-deny path, pinned-fingerprint match, pinned-fingerprint mismatch, explicit acceptance-state behavior, runtime propagation, and the tightened commit gate.\n- Keep the transcript-progress owner narrow and transcript-focused; do not move orchestration into the interop harness, add a native TLS fallback, or widen the slice to trust-store integration, hostname validation, certificate-path building, revocation, 0-RTT, 1-RTT, key update, or server-role handshake crypto.",
   "verification_plan": "Run the updated CRT and RFC9001 requirement-home tests that cover the explicit acceptance seam, the pinned-fingerprint positive and negative paths, and the tightened commit gate, then run the relevant solution build/test pass for the main library and tests project.",
-  "completion_notes": "The resulting slice is intentionally narrower than full handshake support. It separates proof from local acceptance, keeps the policy surface pinned to one leaf SHA-256 fingerprint, and requires explicit policy acceptance before peer transport-parameter commit can open.",
+  "completion_notes": "The client acceptance-policy proof is landed. The runtime now keeps the pinned-leaf policy seam separate from cryptographic proof and leaves peer transport-parameter commit policy-gated inside the main library.",
   "out_of_scope": [
     "Certificate trust, hostname validation, identity authentication, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, server-role handshake crypto, or any native TLS / QUIC fallback."
   ],

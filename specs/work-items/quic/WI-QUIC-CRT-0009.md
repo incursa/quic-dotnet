@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0009"
 artifact_type: "work_item"
 title: "QUIC Client Certificate Acceptance Policy Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
@@ -54,7 +54,7 @@ Run the updated CRT and RFC9001 requirement-home tests that cover the explicit a
 
 ## Completion Notes
 
-The resulting slice is intentionally narrower than full handshake support. It separates proof from local acceptance, keeps the policy surface pinned to one leaf SHA-256 fingerprint, and requires explicit policy acceptance before peer transport-parameter commit can open.
+The client acceptance-policy proof is landed. The runtime now keeps the pinned-leaf policy seam separate from cryptographic proof and leaves peer transport-parameter commit policy-gated inside the main library.
 
 ## Trace Links
 
