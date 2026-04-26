@@ -1089,6 +1089,12 @@ Notes:
 The library MUST remain trimmable and Native AOT compatible when it is consumed through `PackageReference` as the shipped NuGet package on the supported `net10.0` target, and the package must not require unsupported reflection, runtime code generation, or other trim or AOT incompatible behavior on the supported public and internal QUIC slices.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0018
+- Implemented By:
+  - WI-QUIC-CRT-0018
+- Verified By:
+  - VER-QUIC-CRT-0018
 - Source Refs:
   - docs/packaging.md
   - src/Incursa.Quic/Incursa.Quic.csproj

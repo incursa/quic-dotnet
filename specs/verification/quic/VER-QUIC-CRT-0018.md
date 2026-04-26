@@ -48,7 +48,7 @@ Build, publish, and warning-inspection evidence.
 
 ## Status
 
-planned
+The package boundary now has build, publish, and warning-inspection evidence on 2026-04-26, including a successful fallback NativeAOT publish after the regular toolchain lookup failed locally.
 
 ## Related Artifacts
 

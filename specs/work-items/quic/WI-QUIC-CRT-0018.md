@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0018"
 artifact_type: "work_item"
 title: "QUIC CRT trim and Native AOT compatibility work item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0120"
@@ -52,7 +52,7 @@ Build the library with trim and Native AOT analyzers enabled, then publish a dow
 
 ## Completion Notes
 
-Optional implementation notes, deviations, or follow-up items.
+The package compatibility slice now proves the shipped PackageReference boundary. The library packs on net10.0, the downstream consumer publishes successfully under both trimmed and Native AOT modes, and the supported surface remains limited to the package-compatible QUIC API without introducing unsupported reflection or runtime code generation.
 
 ## Trace Links
 

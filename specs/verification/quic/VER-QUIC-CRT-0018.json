@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0018",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC CRT trim and Native AOT compatibility verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -17,6 +17,7 @@
   ],
   "scope": "Verify that the shipped Incursa.Quic package remains trimmable and Native AOT compatible when consumed through PackageReference on the supported net10.0 target. The verification covers the package boundary, not only direct project references.",
   "expected_result": "- A downstream PackageReference consumer publishes successfully with `PublishTrimmed=true`.\n- The same downstream consumer publishes successfully with `PublishAot=true`.\n- No trim or AOT analyzer warnings such as IL2125 or IL3058 are introduced on the supported slice.\n- The supported public QUIC surface remains usable from the consumer app after trimming or AOT publishing.\n- Unsupported plugin, reflection-extension, or multi-target scenarios remain out of scope.",
+  "status_summary": "The package boundary now has build, publish, and warning-inspection evidence on 2026-04-26, including a successful fallback NativeAOT publish after the regular toolchain lookup failed locally.",
   "procedure": [
     "Pack the library on the supported net10.0 target.",
     "Create or refresh a minimal downstream consumer that references the packed NuGet package through PackageReference.",
@@ -31,7 +32,12 @@
     "src/Incursa.Quic/PublicAPI.Shipped.txt",
     "docs/packaging.md",
     "tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
-    "scripts/quality/run-aot-publish.ps1"
+    "scripts/quality/run-aot-publish.ps1",
+    "artifacts/verification/20260426-crt-package-aot-compatibility/run-aot-publish.log",
+    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-render.log",
+    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-check.log",
+    "artifacts/verification/20260426-crt-package-aot-compatibility/git-diff-check.log",
+    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic library builds successfully on net10.0.",
