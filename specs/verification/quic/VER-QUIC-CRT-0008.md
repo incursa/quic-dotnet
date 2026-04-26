@@ -51,7 +51,7 @@ The bridge exposes handshake-key availability only after the managed key-schedul
 
 ## Status
 
-planned
+Passed locally on 2026-04-25. The focused requirement-home run passed 42/42 tests across REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0108, REQ-QUIC-CRT-0110, REQ-QUIC-RFC9001-S5-0001, REQ-QUIC-RFC9001-S5-0002, REQ-QUIC-RFC9001-S7-0002, and REQ-QUIC-RFC9001-S8-0002. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/verification/20260425-crt-managed-tls-13-handshake-crypto/.
 
 ## Related Artifacts
 

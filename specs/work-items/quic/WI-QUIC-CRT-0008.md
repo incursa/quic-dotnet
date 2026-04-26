@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0008"
 artifact_type: "work_item"
 title: "QUIC Managed TLS 1.3 Handshake Crypto Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-CRT-0103"
@@ -53,7 +53,7 @@ Run the new CRT requirement-home tests that cover the managed TLS 1.3 key schedu
 
 ## Completion Notes
 
-The resulting slice is intentionally narrower than full handshake support. It proves client-only handshake cryptography for one explicit suite and group, publishes PeerCertificateVerifyVerified as a bridge-visible state, and leaves PeerHandshakeTranscriptCompleted and peer transport-parameter commit to the later policy seam.
+The managed TLS 1.3 handshake-crypto proof is landed. The client-only key-schedule owner, transcript bridge, and proof-state publication now stay in the main library for later local-acceptance and server-role slices.
 
 ## Trace Links
 
