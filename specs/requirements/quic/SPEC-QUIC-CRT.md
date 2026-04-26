@@ -988,10 +988,21 @@ Notes:
 In the server role, the library MUST emit one local TLS 1.3 `Finished` message for the same supported `TLS_AES_128_GCM_SHA256` over `secp256r1` subset only after the supported `ClientHello` has been accepted, the local `ServerHello`, local `EncryptedExtensions`, local `Certificate`, and local `CertificateVerify` have all been published, Handshake keys are available, and the local `CertificateVerify` has already been emitted, derive that local `Finished` from the server handshake traffic secret and the transcript hash that includes the local `CertificateVerify` boundary, append that local `Finished` at the correct transcript boundary immediately after the local `CertificateVerify`, surface the local `Finished` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after `ServerHello || EncryptedExtensions || Certificate || CertificateVerify`, and deterministically reject premature, repeated, conflicting, malformed, or unsupported local `Finished` progression through the existing fatal/update path.
 
 Trace:
+- Satisfied By:
+  - ARC-QUIC-CRT-0014
+- Implemented By:
+  - WI-QUIC-CRT-0014
+- Verified By:
+  - VER-QUIC-CRT-0014
 - Source Refs:
   - RFC 8446 Sections 4.1.2, 4.1.3, and 4.4.4
   - RFC 9001 Sections 5 and 8
   - connection-runtime-state-machine.md
+- Test Refs:
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs::ServerRoleAppendsLocalFinishedToTheManagedTranscriptExplicitly
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs::ServerRoleDoesNotEmitLocalFinishedBeforeLocalCertificateVerifyExists
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs::RepeatedServerRoleFinishedProgressionIsRejectedDeterministically
+  - tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0116.cs::ServerRoleCommitRemainsUnavailableAfterLocalFinished
 
 Notes:
 - This slice extends the permanent server-role crypto floor and remains server-role only. It does not add inbound client `Finished` proof, server-role transport-parameter commit, client-certificate authentication, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.
