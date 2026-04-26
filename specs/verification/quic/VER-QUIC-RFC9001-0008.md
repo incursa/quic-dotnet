@@ -37,13 +37,17 @@ Later packets that do not resolve to a retained route or that resolve only to ro
 
 - tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs
 - benchmarks/QuicStatelessResetBenchmarks.cs
-- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs
-- src/Incursa.Quic/QuicConnectionEndpointHost.cs
-- src/Incursa.Quic/QuicListenerHost.cs
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/benchmark.log
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/focused-rfc9001-s6p6-non-retained-suppression-tests.log
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/quic-stateless-reset-benchmark-dry.log
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/render.log
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/render-check.log
+- artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/git-diff-check.log
 
 ## Status
 
-planned
+Passed locally on 2026-04-25. Focused requirement-home tests passed 29/29, the QuicStatelessResetBenchmarks Dry suite executed 12/12 cases, and the touched SpecTrace markdown views rendered and rechecked cleanly with git diff --check.
 
 ## Related Artifacts
 

@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-RFC9001-0008"
 artifact_type: "work_item"
 title: "QUIC RFC 9001 Non-Retained Stateless Reset Suppression Work Item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-RFC9001-S6P6-0009"
@@ -58,7 +58,7 @@ Run the focused REQ-QUIC-RFC9001-S6P6-0009 requirement-home tests, keep the reta
 
 ## Completion Notes
 
-Planned for the suppressive no-retained-route/no-token topoff. The retained-route positive floor and known-token loop-suppression cell remain separate slices.
+Completed as the suppressive no-retained-route/no-token topoff after the proof landed. The retained-route positive floor and known-token loop-suppression cell remain separate slices.
 
 ## Trace Links
 

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-RFC9001-0008",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC RFC 9001 Non-Retained Stateless Reset Suppression Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -33,5 +33,5 @@
     "Key-update lifecycle broadening"
   ],
   "verification_plan": "Run the focused REQ-QUIC-RFC9001-S6P6-0009 requirement-home tests, keep the retained-route, malformed-formatting, and known-reset matrix guards green, refresh QuicStatelessResetBenchmarks in Dry mode, render the touched SpecTrace markdown views from JSON, and finish with git diff --check.",
-  "completion_notes": "Planned for the suppressive no-retained-route/no-token topoff. The retained-route positive floor and known-token loop-suppression cell remain separate slices."
+  "completion_notes": "Completed as the suppressive no-retained-route/no-token topoff after the proof landed. The retained-route positive floor and known-token loop-suppression cell remain separate slices."
 }
