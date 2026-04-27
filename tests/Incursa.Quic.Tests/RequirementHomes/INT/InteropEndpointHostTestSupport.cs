@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 
@@ -107,7 +108,11 @@ internal static class InteropEndpointHostTestSupport
         QuicTransportParameters clientTransportParameters = transportParameters ?? CreateBootstrapLocalTransportParameters();
         clientTransportParameters.InitialSourceConnectionId = sourceConnectionId.ToArray();
 
-        QuicTlsKeySchedule clientKeySchedule = new(QuicTlsRole.Client);
+        // The listener-host INT slice expects a real Http3 ClientHello so the server
+        // negotiates ALPN and emits the Initial flight instead of a TLS alert close.
+        QuicTlsKeySchedule clientKeySchedule = new(
+            QuicTlsRole.Client,
+            applicationProtocols: [SslApplicationProtocol.Http3]);
         Assert.True(clientKeySchedule.TryCreateClientHello(clientTransportParameters, out byte[] clientHello));
 
         Assert.True(QuicInitialPacketProtection.TryCreate(
