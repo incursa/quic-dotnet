@@ -8355,6 +8355,7 @@ Trace:
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::ReceiveDatagram_DispatchesPotentialStatelessResetDatagramsIntoTheRuntime
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::ReceiveDatagram_RoutesPotentialStatelessResetDatagramsWhenThePacketCanBeAssociatedWithAnActiveConnection
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::EndpointHostSendsStatelessResetForAnUnattributedPacket
 
 ## REQ-QUIC-RFC9000-S10P3-0002 That wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able
 An endpoint that wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able.
@@ -8601,6 +8602,7 @@ Trace:
   - https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3
 - Test Refs:
   - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::TryCreateStatelessResetDatagram_AllowsLongHeaderSizedTriggers
+  - tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::EndpointHostSendsStatelessResetForALongHeaderPacket
 
 ## REQ-QUIC-RFC9000-S10P3-0016 Make reset tokens hard to guess
 The stateless reset token MUST be difficult to guess.

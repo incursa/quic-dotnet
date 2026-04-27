@@ -52,7 +52,7 @@ The planning artifacts validate and render cleanly, the repository records the r
 
 ## Status
 
-Planned; this verification slice proves the repo's remaining-work partition and planner reset at the lane-catalog and render boundary without claiming that the remaining protocol behavior has already landed.
+Passed on 2026-04-26. The repo-wide SpecTrace validator still reports unrelated canonical backlog failures, but the rendered markdown and lane-catalog checks for this slice succeeded and the recommended frontier remains `remaining-hard-gap-programs`.
 
 ## Related Artifacts
 

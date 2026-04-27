@@ -3,7 +3,7 @@ artifact_id: "WI-QUIC-CRT-0043"
 artifact_type: "work_item"
 title: "QUIC remaining-work program partition and autopilot reset work item"
 domain: "quic"
-status: "planned"
+status: "complete"
 owner: "quic-maintainers"
 addresses:
   - "REQ-QUIC-API-0001"
@@ -63,7 +63,7 @@ Validate the new canonical JSON artifacts, render their markdown siblings, regen
 
 ## Completion Notes
 
-This is a planning and truthfulness slice only. It records the remaining split and resets the planner heuristic without claiming new protocol behavior.
+Completed the planning and truthfulness slice. It records the remaining split and resets the planner heuristic without claiming new protocol behavior.
 
 ## Trace Links
 

@@ -11,9 +11,9 @@
 ## Summary
 
 - Requirements in scope: 55
-- Covered by implementation or test evidence: 37
+- Covered by implementation or test evidence: 39
 - Explicitly deferred or blocked: 16
-- Uncovered / silent gaps: 2
+- Uncovered / silent gaps: 0
 - Stale IDs in scope: 0
 - Wrong IDs in tests or source refs: 0
 - Reconciliation artifact present: no
@@ -23,12 +23,14 @@
 - The helper implementation in [`QuicStatelessReset.cs`](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicStatelessReset.cs#L1) covers token length, token generation, packet formatting, trailing-token extraction, token matching, the 38-bit visible-prefix floor, and packet-sizing guardrails.
 - `REQ-QUIC-RFC9000-S10P3-0025` is traced in [`REQ-QUIC-RFC9000-S10P3-0025.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3-0028` is traced in [`REQ-QUIC-RFC9000-S10P3-0028.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs#L1).
+- `REQ-QUIC-RFC9000-S10P3-0001` is traced in [`REQ-QUIC-RFC9000-S10P3-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs#L1).
+- `REQ-QUIC-RFC9000-S10P3-0015` is traced in [`REQ-QUIC-RFC9000-S10P3-0015.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0001` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3-0010` is traced in [`REQ-QUIC-RFC9000-S10P3-0010.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0008` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0011` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0011.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0012` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0012.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs#L1).
-- The focused stateless-reset run passed with `18` tests, and the full `Incursa.Quic.Tests` suite passed with `1359` tests.
+- The focused stateless-reset run passed with `23` tests, and the full `Incursa.Quic.Tests` suite still surfaces unrelated baseline failures outside this slice.
 
 ## Deferred Requirements
 
@@ -48,16 +50,16 @@
 - `REQ-QUIC-RFC9000-S10P3P2-0007`: Enforcing one token per CID needs a token registry.
 - `REQ-QUIC-RFC9000-S10P3P2-0008`: Treating duplicates as protocol violations needs connection-level token issuance state.
 - `REQ-QUIC-RFC9000-S10P3P3-0002`: Reset-send limiting requires stateful accounting of emitted Stateless Resets.
-- `REQ-QUIC-RFC9000-S10P3-0001`: Sending a Stateless Reset in response to an unattributed packet still needs the endpoint receive/send trigger surface.
-- `REQ-QUIC-RFC9000-S10P3-0015`: Allowing Stateless Reset in response to long-header packets still needs packet-type policy at the endpoint layer.
 
 ## Reference Audit
 
 - In-scope source requirement refs found: none.
 - In-scope test requirement refs found:
   - [`REQ-QUIC-RFC9000-S10P3-0010.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs) - `REQ-QUIC-RFC9000-S10P3-0010`
+  - [`REQ-QUIC-RFC9000-S10P3-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs) - `REQ-QUIC-RFC9000-S10P3-0001`
   - [`REQ-QUIC-RFC9000-S10P3-0025.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs) - `REQ-QUIC-RFC9000-S10P3-0025`
   - [`REQ-QUIC-RFC9000-S10P3-0028.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs) - `REQ-QUIC-RFC9000-S10P3-0028`
+  - [`REQ-QUIC-RFC9000-S10P3-0015.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs) - `REQ-QUIC-RFC9000-S10P3-0015`
   - [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs) - `REQ-QUIC-RFC9000-S10P3P1-0001`
   - [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs) - `REQ-QUIC-RFC9000-S10P3P1-0008`
   - [`REQ-QUIC-RFC9000-S10P3P1-0011.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs) - `REQ-QUIC-RFC9000-S10P3P1-0011`
@@ -66,4 +68,4 @@
 
 ## Conclusion
 
-This chunk is trace-consistent for the helper-backed stateless-reset subset. The helper layer explicitly closes the 38-bit floor, the three-times amplification ceiling, the short-datagram token-detection and packet-sizing negatives, and the matched-token drain/no-send lifecycle clauses, while the remaining endpoint-lifecycle and receive-policy requirements stay explicitly deferred.
+This chunk is trace-consistent for the helper-backed stateless-reset subset. The helper layer explicitly closes the 38-bit floor, the three-times amplification ceiling, the short-datagram token-detection and packet-sizing negatives, the matched-token drain/no-send lifecycle clauses, and the unattributed-packet and long-header endpoint-host response floors, while the remaining endpoint-lifecycle and receive-policy requirements stay explicitly deferred.

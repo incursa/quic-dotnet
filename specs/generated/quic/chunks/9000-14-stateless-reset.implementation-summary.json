@@ -46,22 +46,29 @@
     "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.json",
     "specs/generated/quic/chunks/9000-14-stateless-reset.implementation-summary.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.md",
+    "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStatelessResetEndpointHostTestSupport.cs"
   ],
   "tests_covering_requirement": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_UsesOneByteShorterWhenPossible",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsLengthsThatCannotBeMadeShorter",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs::TryGetRecommendedDatagramLength_RejectsNonPositiveLengths",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs::EndpointHostSendsStatelessResetForAnUnattributedPacket",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_ExposesTheThirtyEightBitFloor",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_AreSatisfiedAtTheBoundaryDatagramLength",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs::MinimumUnpredictableBits_RejectsDatagramsShorterThanTheBoundary",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_AllowsResponsesBelowTheThreeTimesAmplificationLimit",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs::CanSendStatelessReset_RejectsResponsesAtTheThreeTimesAmplificationLimit",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::EndpointHostSendsStatelessResetForALongHeaderPacket",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_UsesTheTrailingSixteenBytes",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_RejectsDatagramsShorterThanSixteenBytes",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken",
@@ -74,18 +81,16 @@
   ],
   "direct_refs_added_or_updated": [
     "REQ-QUIC-RFC9000-S10P3-0010",
+    "REQ-QUIC-RFC9000-S10P3-0001",
     "REQ-QUIC-RFC9000-S10P3-0025",
     "REQ-QUIC-RFC9000-S10P3-0028",
+    "REQ-QUIC-RFC9000-S10P3-0015",
     "REQ-QUIC-RFC9000-S10P3P1-0001",
     "REQ-QUIC-RFC9000-S10P3P1-0008",
     "REQ-QUIC-RFC9000-S10P3P1-0011",
     "REQ-QUIC-RFC9000-S10P3P1-0012"
   ],
   "remaining_gap": [
-    {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0002",
-      "reason": "Connection-close preference is blocked by the missing connection error routing and close-path surface."
-    },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S10P3-0014",
       "reason": "Token-ending packet recognition has helper evidence, but endpoint shutdown and receive-path orchestration are still missing."
@@ -148,8 +153,9 @@
     }
   ],
   "notes": [
-    "The helper slice now explicitly closes the 38-bit visible-prefix floor, the three-times amplification ceiling, and the matched-reset drain/no-send lifecycle clauses without inventing endpoint orchestration.",
-    "This prompt also tightened packet-sizing and trailing-token negatives in the requirement-home suite.",
+    "The helper slice now explicitly closes the 38-bit visible-prefix floor, the three-times amplification ceiling, the matched-reset drain/no-send lifecycle clauses, and the unattributed-packet and long-header endpoint-host response floors without inventing extra endpoint orchestration.",
+    "This prompt also tightened packet-sizing, trailing-token negatives, and endpoint-host response coverage in the requirement-home suite.",
+    "The focused stateless-reset requirement-home run passed with 23 tests; the full Incursa.Quic.Tests suite still surfaces unrelated baseline failures outside this slice.",
     "The helper and benchmarked code paths were unchanged in this prompt, so the standard verification gate was sufficient and no benchmark dry run was required."
   ]
 }

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0043",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC remaining-work program partition and autopilot reset work item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -45,5 +45,5 @@
       "content": "- [`prompts/mission.md`](../../../prompts/mission.md)\n- [`scripts/Invoke-QuicInteropAutopilot.ps1`](../../../scripts/Invoke-QuicInteropAutopilot.ps1)\n- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../../../specs/requirements/quic/REQUIREMENT-GAPS.md)\n- [`specs/generated/quic/quic-requirement-coverage-triage.json`](../../../specs/generated/quic/quic-requirement-coverage-triage.json)\n- [`.artifacts/interop-autopilot/lane-catalog.json`](../../../.artifacts/interop-autopilot/lane-catalog.json)\n- [`.artifacts/interop-autopilot/orchestration-state.json`](../../../.artifacts/interop-autopilot/orchestration-state.json)"
     }
   ],
-  "completion_notes": "This is a planning and truthfulness slice only. It records the remaining split and resets the planner heuristic without claiming new protocol behavior."
+  "completion_notes": "Completed the planning and truthfulness slice. It records the remaining split and resets the planner heuristic without claiming new protocol behavior."
 }
