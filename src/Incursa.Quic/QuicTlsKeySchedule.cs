@@ -89,7 +89,10 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
-    private static readonly QuicAeadUsageLimits HandshakeUsageLimits = new(64, 128);
+    /// <summary>
+    /// Gets the RFC 9001 Appendix B usage limits used for supported packet-protection materials.
+    /// </summary>
+    private static readonly QuicAeadUsageLimits PacketProtectionUsageLimits = CreatePacketProtectionUsageLimits();
 
     private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
@@ -1370,8 +1373,22 @@ internal sealed class QuicTlsKeySchedule
             aeadKey,
             aeadIv,
             headerProtectionKey,
-            HandshakeUsageLimits,
+            PacketProtectionUsageLimits,
             out material);
+    }
+
+    private static QuicAeadUsageLimits CreatePacketProtectionUsageLimits()
+    {
+        if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+                QuicAeadAlgorithm.Aes128Gcm,
+                QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+                QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+                out QuicAeadUsageLimits usageLimits))
+        {
+            throw new InvalidOperationException("The supported packet-protection usage limits are unavailable.");
+        }
+
+        return usageLimits;
     }
 
     private static byte[] DeriveHeaderProtectionKey(ReadOnlySpan<byte> trafficSecret)
