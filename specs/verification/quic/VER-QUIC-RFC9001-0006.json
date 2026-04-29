@@ -51,8 +51,14 @@
     "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report.html"
   ],
   "status_summary": "Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0006 ran green with 3 cases, the supporting next-key, old-key ordering, and repeated-retention guard set ran green with 31 total cases, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the permanent repeated old-key cleanup benchmark evidence remains preserved from the representative later-epoch slice.",
-  "completion_notes": "Completed for the direct lifecycle ownership proof slice. The representative later-epoch benchmark evidence remains the hot-path floor, and broader stateless-reset behavior stays in its own gap.",
-  "open_questions": [
-    "If a future phase range or epoch identifier model diverges from the current lifecycle object, split it out instead of collapsing it into the retained-old cleanup branch."
+  "supplemental_sections": [
+    {
+      "heading": "Completion Notes",
+      "content": "Completed for the direct lifecycle ownership proof slice. The representative later-epoch benchmark evidence remains the hot-path floor, and broader stateless-reset behavior stays in its own gap."
+    },
+    {
+      "heading": "Open Questions",
+      "content": "- If a future phase range or epoch identifier model diverges from the current lifecycle object, split it out instead of collapsing it into the retained-old cleanup branch."
+    }
   ]
 }

@@ -5,7 +5,7 @@
   "title": "QUIC RFC 9001 TLS KeyUpdate Classifier Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "status": "completed",
+  "status": "complete",
   "related_artifacts": [
     "SPEC-QUIC-RFC9001",
     "ARC-QUIC-RFC9001-0002",
@@ -19,7 +19,10 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010"
+    "REQ-QUIC-RFC9001-S6-0010",
+    "REQ-QUIC-RFC9001-S3-0003",
+    "REQ-QUIC-RFC9001-S3-0004",
+    "REQ-QUIC-RFC9001-S3-0005"
   ],
   "summary": "Add the narrow post-handshake TLS KeyUpdate classifier seam, preserve the separate managed key-phase install path, and route prohibited KeyUpdate messages into the existing KeyUpdateError close behavior.",
   "planned_changes": "- Add a TLS KeyUpdate post-handshake classifier in QuicTlsTranscriptProgress.\n- Publish a prohibited KeyUpdate update from the bridge driver.\n- Keep QuicTransportTlsBridgeState and QuicConnectionRuntime on the existing close path.\n- Add positive and negative requirement-home coverage for the real message-processing seam.\n- Update the RFC 9001 gap ledger and spec trace to point the 0009/0010 proof at this slice.",

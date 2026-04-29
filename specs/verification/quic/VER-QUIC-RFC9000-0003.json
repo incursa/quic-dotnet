@@ -25,5 +25,12 @@
     "artifacts/benchmark-baseline/20260425-rfc9000-stateless-reset-versioning-dry/benchmark.log",
     "artifacts/benchmark-baseline/20260425-rfc9000-stateless-reset-versioning-dry/BenchmarkDotNet.Artifacts/results"
   ],
-  "status_summary": "This verification artifact records the landed stateless-reset versioning slice and points at the requirement-home, runtime, and benchmark evidence in the working tree."
+  "status_summary": "This verification artifact records the landed stateless-reset versioning slice and points at the requirement-home, runtime, and benchmark evidence in the working tree.",
+  "domain": "quic",
+  "owner": "quic-maintainers",
+  "procedure": [
+    "Run the focused requirement-home tests linked from this verification artifact.",
+    "Run the benchmark or inspection evidence listed in this artifact when the slice owns a hot path.",
+    "Run the repo-local SpecTrace validation flow for the linked canonical JSON artifacts."
+  ]
 }

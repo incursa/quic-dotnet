@@ -29,7 +29,8 @@
     "REQ-QUIC-RFC9002-SAP11-0003",
     "REQ-QUIC-RFC9002-SBP9-0001",
     "REQ-QUIC-RFC9002-SBP9-0002",
-    "REQ-QUIC-RFC9002-SBP9-0003"
+    "REQ-QUIC-RFC9002-SBP9-0003",
+    "REQ-QUIC-RFC9002-S2-0001"
   ],
   "risks": [
     "Selective 0-RTT cleanup must remove only sender-owned recovery state that belongs to rejected early data and must leave OneRtt packets intact.",
@@ -55,5 +56,6 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0003.cs"
-  ]
+  ],
+  "domain": "quic"
 }

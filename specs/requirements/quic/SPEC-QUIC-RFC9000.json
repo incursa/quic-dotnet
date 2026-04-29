@@ -19060,7 +19060,7 @@
     {
       "id": "REQ-QUIC-RFC9000-S13-0004",
       "title": "A single QUIC packet can include multiple STREAM frames from one or more streams",
-      "statement": "A single QUIC packet can include multiple STREAM frames from one or more streams.",
+      "statement": "An endpoint MAY include multiple STREAM frames from one or more streams in a single QUIC packet.",
       "coverage": {
         "positive": "required",
         "negative": "optional",
@@ -19089,7 +19089,7 @@
     {
       "id": "REQ-QUIC-RFC9000-S13-0005",
       "title": "Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets",
-      "statement": "Implementations are advised to include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.",
+      "statement": "Implementations SHOULD include as few streams as necessary in outgoing packets without losing transmission efficiency to underfilled packets.",
       "coverage": {
         "positive": "required",
         "negative": "optional",
@@ -20603,7 +20603,7 @@
     {
       "id": "REQ-QUIC-RFC9000-S13P2P6-0004",
       "title": "This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost",
-      "statement": "This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost.",
+      "statement": "A client MAY be unable to use 0-RTT acknowledgments when the server cryptographic handshake messages are delayed or lost.",
       "coverage": {
         "positive": "required",
         "negative": "optional",

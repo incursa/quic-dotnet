@@ -4,7 +4,7 @@
   "artifact_type": "work_item",
   "title": "QUIC RFC 9000 Migration Path Probing and Recovery Reset Work Item",
   "domain": "quic",
-  "status": "completed",
+  "status": "complete",
   "owner": "quic-maintainers",
   "related_artifacts": [
     "SPEC-QUIC-RFC9000",

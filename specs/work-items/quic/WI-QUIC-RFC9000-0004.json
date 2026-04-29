@@ -4,7 +4,7 @@
   "artifact_type": "work_item",
   "title": "QUIC RFC 9000 PMTU Path-State Work Item",
   "domain": "quic",
-  "status": "completed",
+  "status": "complete",
   "owner": "quic-maintainers",
   "related_artifacts": [
     "SPEC-QUIC-RFC9000",
@@ -29,5 +29,8 @@
     "Automatic alternative-path search.",
     "Probe generation beyond the admissibility helper."
   ],
-  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here."
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, REQ-QUIC-RFC9000-S14P2-0007, REQ-QUIC-RFC9000-S14P2-0008, and REQ-QUIC-RFC9000-S14P2-0009. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here.",
+  "design_links": [
+    "ARC-QUIC-RFC9000-0004"
+  ]
 }

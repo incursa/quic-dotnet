@@ -67,8 +67,14 @@
     "artifacts/verification/20260425-rfc9001-s6p6-retained-route-token-miss/git-diff-check.log"
   ],
   "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0005 through REQ-QUIC-RFC9001-S6P6-0008 ran green, including the direct unknown-route and missing-token suppressions, endpoint-host unknown-route suppression, listener-host missing-token suppression, and deterministic route/token fuzz topoff. The touched SpecTrace markdown rendered and checked cleanly from JSON, git diff --check stayed clean, and the refreshed Dry QuicStatelessResetBenchmarks suite preserves retained-route lookup hit/miss, no-token miss, known-reset suppression, and formatting helper paths. The artifact remains scoped to the retained-route same-remote-address-and-port floor; broader stateless-reset response behavior stays open.",
-  "completion_notes": "The repository already has the shared retained-route helper and host shells. This verification stays bounded to the exact retained-route, remembered-token, same-remote-address-and-port, remote-address-mismatch, remote-port-mismatch, loop-prevention, and rate-budget floor instead of broadening stateless-reset behavior.",
-  "open_questions": [
-    "Any future ambiguity-specific lookup model should be traced as a separate gap instead of expanding this floor."
+  "supplemental_sections": [
+    {
+      "heading": "Completion Notes",
+      "content": "The repository already has the shared retained-route helper and host shells. This verification stays bounded to the exact retained-route, remembered-token, same-remote-address-and-port, remote-address-mismatch, remote-port-mismatch, loop-prevention, and rate-budget floor instead of broadening stateless-reset behavior."
+    },
+    {
+      "heading": "Open Questions",
+      "content": "- Any future ambiguity-specific lookup model should be traced as a separate gap instead of expanding this floor."
+    }
   ]
 }

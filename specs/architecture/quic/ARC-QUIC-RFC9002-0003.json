@@ -26,5 +26,6 @@
     "REQ-QUIC-RFC9002-S6P3-0001",
     "REQ-QUIC-RFC9002-S6P3-0002",
     "REQ-QUIC-RFC9002-S6P3-0003"
-  ]
+  ],
+  "design_summary": "The client Retry path resets congestion and loss-recovery state while preserving handshake transcript bytes needed to replay the bootstrap ClientHello, keeping Retry handling limited to the RFC 9002 Section 6.3 requirements."
 }

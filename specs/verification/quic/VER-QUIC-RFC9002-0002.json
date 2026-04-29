@@ -19,7 +19,8 @@
     "REQ-QUIC-RFC9002-SAP11-0003",
     "REQ-QUIC-RFC9002-SBP9-0001",
     "REQ-QUIC-RFC9002-SBP9-0002",
-    "REQ-QUIC-RFC9002-SBP9-0003"
+    "REQ-QUIC-RFC9002-SBP9-0003",
+    "REQ-QUIC-RFC9002-S2-0001"
   ],
   "artifact_type": "verification",
   "status": "passed",
@@ -51,5 +52,7 @@
     "src/Incursa.Quic/QuicCongestionControlState.cs",
     "dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_SBP9|FullyQualifiedName~REQ_QUIC_RFC9002_SAP11_0003\""
   ],
-  "status_summary": "This verification artifact records the landed runtime-owned sender-ledger cleanup slice, with requirement-home tests and targeted runtime inspection showing Initial and Handshake key discard reset PTO and loss detection while rejected 0-RTT cleanup removes bytes in flight and queued retransmissions. The same runtime-owned evidence now closes the overlapping Appendix B SBP9 key-discard requirements without treating the older helper-only persistent-congestion tests as sufficient by themselves."
+  "status_summary": "This verification artifact records the landed runtime-owned sender-ledger cleanup slice, with requirement-home tests and targeted runtime inspection showing Initial and Handshake key discard reset PTO and loss detection while rejected 0-RTT cleanup removes bytes in flight and queued retransmissions. The same runtime-owned evidence now closes the overlapping Appendix B SBP9 key-discard requirements without treating the older helper-only persistent-congestion tests as sufficient by themselves.",
+  "domain": "quic",
+  "owner": "quic-maintainers"
 }

@@ -2,7 +2,7 @@
 param(
     [string]$RepoRoot = (Join-Path $PSScriptRoot '..'),
     [string[]]$Profiles = @('core'),
-    [string]$SchemaUri = 'https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json',
+    [string]$SchemaUri = (Join-Path $PSScriptRoot '..\model\model.schema.json'),
     [string]$JsonReportPath
 )
 
@@ -93,6 +93,28 @@ function Get-SpecTraceJsonSchemaText {
         [Parameter(Mandatory)]
         [string]$SchemaUri
     )
+
+    if (Test-Path -LiteralPath $SchemaUri -PathType Leaf) {
+        return Get-Content -LiteralPath $SchemaUri -Raw
+    }
+
+    $schemaUriValue = $null
+    if (-not [System.Uri]::TryCreate($SchemaUri, [System.UriKind]::Absolute, [ref]$schemaUriValue)) {
+        throw "SpecTrace JSON schema '$SchemaUri' was not found as a local file and is not an absolute URI."
+    }
+
+    if ($schemaUriValue.Scheme -eq 'file') {
+        $schemaLocalPath = $schemaUriValue.LocalPath
+        if (-not (Test-Path -LiteralPath $schemaLocalPath -PathType Leaf)) {
+            throw "SpecTrace JSON schema file URI '$SchemaUri' does not resolve to an existing file."
+        }
+
+        return Get-Content -LiteralPath $schemaLocalPath -Raw
+    }
+
+    if ($schemaUriValue.Scheme -ne 'http' -and $schemaUriValue.Scheme -ne 'https') {
+        throw "SpecTrace JSON schema URI '$SchemaUri' must use http, https, or file."
+    }
 
     try {
         $response = Invoke-WebRequest -Uri $SchemaUri -MaximumRedirection 5 -ErrorAction Stop

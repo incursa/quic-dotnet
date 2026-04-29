@@ -14,7 +14,10 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010"
+    "REQ-QUIC-RFC9001-S6-0010",
+    "REQ-QUIC-RFC9001-S3-0003",
+    "REQ-QUIC-RFC9001-S3-0004",
+    "REQ-QUIC-RFC9001-S3-0005"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicTlsTransport.cs",

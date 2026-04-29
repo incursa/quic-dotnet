@@ -35,5 +35,8 @@
     "Migration path switching.",
     "Treating PTO expiry as a packet-loss declaration."
   ],
-  "completion_notes": "The PTO timer discipline slice is proven by the targeted requirement-home tests and the runtime helper seams already present in the repository. PTO expiry remains scheduler state only, and the probe, retry, and migration follow-ons stay separate."
+  "completion_notes": "The PTO timer discipline slice is proven by the targeted requirement-home tests and the runtime helper seams already present in the repository. PTO expiry remains scheduler state only, and the probe, retry, and migration follow-ons stay separate.",
+  "design_links": [
+    "ARC-QUIC-RFC9002-0004"
+  ]
 }

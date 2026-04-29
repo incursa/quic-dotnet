@@ -183,6 +183,39 @@
         }
       ]
     },
+    "requirementCoverageExpectation": {
+      "type": "string",
+      "enum": [
+        "required",
+        "optional",
+        "not_applicable",
+        "deferred"
+      ]
+    },
+    "requirementCoverage": {
+      "type": "object",
+      "required": [
+        "positive",
+        "negative",
+        "edge",
+        "fuzz"
+      ],
+      "properties": {
+        "positive": {
+          "$ref": "#/$defs/requirementCoverageExpectation"
+        },
+        "negative": {
+          "$ref": "#/$defs/requirementCoverageExpectation"
+        },
+        "edge": {
+          "$ref": "#/$defs/requirementCoverageExpectation"
+        },
+        "fuzz": {
+          "$ref": "#/$defs/requirementCoverageExpectation"
+        }
+      },
+      "additionalProperties": false
+    },
     "supplementalSection": {
       "type": "object",
       "required": [
@@ -255,6 +288,9 @@
         },
         "statement": {
           "$ref": "#/$defs/requirementStatement"
+        },
+        "coverage": {
+          "$ref": "#/$defs/requirementCoverage"
         },
         "trace": {
           "$ref": "#/$defs/requirementTrace"

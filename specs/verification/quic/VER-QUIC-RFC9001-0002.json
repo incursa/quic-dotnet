@@ -19,13 +19,15 @@
   "verification_method": "Requirement-home tests plus focused execution and trace inspection.",
   "verifies": [
     "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010"
+    "REQ-QUIC-RFC9001-S6-0010",
+    "REQ-QUIC-RFC9001-S3-0003",
+    "REQ-QUIC-RFC9001-S3-0004",
+    "REQ-QUIC-RFC9001-S3-0005"
   ],
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
   ],
-  "status_summary": "This verification artifact records the landed KeyUpdate classifier slice and points at the requirement-home and runtime evidence in the working tree.",
   "procedure": [
     "Run the RFC 9001 Section 6 requirement-home tests for the prohibited TLS KeyUpdate and connection-error clauses.",
     "Confirm the real TLS message-processing seam emits the prohibited-update state for a TLS KeyUpdate message and still emits post-handshake ticket publication for NewSessionTicket.",

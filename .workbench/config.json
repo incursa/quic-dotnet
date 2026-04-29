@@ -35,6 +35,7 @@
     "LinkExclude": [
       ".artifacts/interop-autopilot/",
       ".dotnet-home/",
+      "benchmarks/artifacts/",
       "artifacts/spec-trace-migration/backups/",
       "artifacts/spec-trace-json-migration/backups/",
       "specs/generated/",
@@ -43,6 +44,7 @@
     "DocExclude": [
       ".artifacts/interop-autopilot/",
       ".dotnet-home/",
+      "benchmarks/artifacts/",
       "artifacts/spec-trace-migration/backups/",
       "artifacts/spec-trace-json-migration/backups/",
       "specs/generated/",

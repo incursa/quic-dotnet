@@ -10,7 +10,6 @@
   "artifact_type": "architecture",
   "status": "draft",
   "purpose": "Describe how the endpoint-owned version-profile snapshot keeps RFC 9000 Stateless Reset generation acceptable after connection-state loss.",
-  "scope": "This design covers the narrow RFC 9000 stateless-reset versioning slice. The runtime endpoint retains an immutable version-profile snapshot alongside the token and path state so a later Stateless Reset emission can still be framed from the connection's supported-version history after the connection runtime is disposed.\nIt does not widen supported versions, add new packet formats, or claim version-specific on-wire fields beyond the existing short-header Stateless Reset layout.",
   "satisfies": [
     "REQ-QUIC-RFC9000-S10P3-0029"
   ],
@@ -18,6 +17,13 @@
     {
       "heading": "Related Artifacts",
       "content": "- SPEC-QUIC-RFC9000\n- WI-QUIC-RFC9000-0003\n- VER-QUIC-RFC9000-0003"
+    },
+    {
+      "heading": "Scope",
+      "content": "This design covers the narrow RFC 9000 stateless-reset versioning slice. The runtime endpoint retains an immutable version-profile snapshot alongside the token and path state so a later Stateless Reset emission can still be framed from the connection's supported-version history after the connection runtime is disposed.\nIt does not widen supported versions, add new packet formats, or claim version-specific on-wire fields beyond the existing short-header Stateless Reset layout."
     }
-  ]
+  ],
+  "domain": "quic",
+  "owner": "quic-maintainers",
+  "design_summary": "The runtime endpoint retains an immutable version-profile snapshot with token and path state so later stateless-reset emission can still be framed after connection-state loss, while keeping version support and packet-format promises unchanged."
 }

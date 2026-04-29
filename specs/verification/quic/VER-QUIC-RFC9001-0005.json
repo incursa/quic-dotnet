@@ -48,8 +48,14 @@
     "artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/20260424-161924/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.html"
   ],
   "status_summary": "Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0006 and REQ-QUIC-RFC9001-S6P6-0007 ran green with 11 total cases, the runtime endpoint returned FormatFailed when the retained version profile was forced empty, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the formatting and retained-route lookup paths.",
-  "completion_notes": "The repository already contains the helper and retained-route floor. This verification stays bounded to malformed formatting suppression and the runtime FormatFailed caller proof rather than broadening stateless-reset response behavior, and the new helper-format branch now has an explicit trace slice under REQ-QUIC-RFC9001-S6P6-0007.",
-  "open_questions": [
-    "If a future ambiguity-specific lookup model appears, it should be traced as a separate gap instead of expanding this helper failure slice."
+  "supplemental_sections": [
+    {
+      "heading": "Completion Notes",
+      "content": "The repository already contains the helper and retained-route floor. This verification stays bounded to malformed formatting suppression and the runtime FormatFailed caller proof rather than broadening stateless-reset response behavior, and the new helper-format branch now has an explicit trace slice under REQ-QUIC-RFC9001-S6P6-0007."
+    },
+    {
+      "heading": "Open Questions",
+      "content": "- If a future ambiguity-specific lookup model appears, it should be traced as a separate gap instead of expanding this helper failure slice."
+    }
   ]
 }

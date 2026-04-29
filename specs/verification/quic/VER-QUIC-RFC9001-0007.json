@@ -53,8 +53,14 @@
     "artifacts/verification/20260425-rfc9001-s6p6-listener-known-reset-suppression/git-diff-check.log"
   ],
   "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0008 now cover direct endpoint suppression, different-token retained-route emission, non-reset-shaped exclusion, connected endpoint-host no-response behavior, listener-host no-response behavior, and deterministic fuzz coverage; the adjacent S6P6 retained-route/formatting guards ran green, the Dry QuicStatelessResetBenchmarks suite covered the known-reset suppression branch, the touched SpecTrace Markdown views rendered and checked cleanly from JSON, and git diff --check passed.",
-  "completion_notes": "The proof is limited to the retained-route known-token loop-suppression cell. Remaining non-retained or untraced post-stop stateless-reset response behavior stays open in REQUIREMENT-GAPS.",
-  "open_questions": [
-    "Future non-retained response behavior needs a separate matrix cell and proof plan before implementation."
+  "supplemental_sections": [
+    {
+      "heading": "Completion Notes",
+      "content": "The proof is limited to the retained-route known-token loop-suppression cell. Remaining non-retained or untraced post-stop stateless-reset response behavior stays open in REQUIREMENT-GAPS."
+    },
+    {
+      "heading": "Open Questions",
+      "content": "- Future non-retained response behavior needs a separate matrix cell and proof plan before implementation."
+    }
   ]
 }

@@ -18,7 +18,7 @@
     "RFC 9002 loss-detection and congestion-control implementation details.",
     "New QUIC version support."
   ],
-  "status": "completed",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the RFC 9000 Stateless Reset emission path honest when the runtime endpoint retains a version-profile snapshot instead of assuming version 1 forever.\nThread the retained profile through the reset-generation seam without widening public support claims or changing the wire layout.",
   "verification_plan": "Run the requirement-home proof that retains the version profile after runtime disposal and the unit test coverage that rejects empty version profiles.\nRun the permanent Stateless Reset benchmark suite so the formatter hot path remains discoverable under the repo's benchmark inventory.",
