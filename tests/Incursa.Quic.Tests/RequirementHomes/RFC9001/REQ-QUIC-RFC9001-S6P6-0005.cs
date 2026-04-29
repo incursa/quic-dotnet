@@ -36,13 +36,14 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
         QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
 
-        QuicAeadKeyLifecycle openLifecycle = runtime.TlsState.CurrentOneRttOpenKeyLifecycle!;
+        QuicAeadKeyLifecycle openLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttOpenKeyLifecycleForTest(runtime);
         Assert.NotNull(openLifecycle);
         QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
         byte[] paddingPayload = [0x00];
 
         QuicConnectionTransitionResult result = default;
-        for (int packet = 0; packet < 128; packet++)
+        for (int packet = 0; packet < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets; packet++)
         {
             Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
                 paddingPayload,
@@ -67,7 +68,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         }
 
         Assert.True(result.StateChanged);
-        Assert.Equal(128d, openLifecycle.OpenedPacketCount);
+        Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets, openLifecycle.OpenedPacketCount);
         Assert.True(openLifecycle.HasReachedIntegrityLimit);
         Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
         Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);
@@ -84,9 +85,10 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         QuicRfc9001KeyUpdateRetentionTestSupport.ConfigureRuntime(runtime);
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
 
-        QuicAeadKeyLifecycle retainedOldOpenLifecycle = runtime.TlsState.RetainedOldOneRttOpenKeyLifecycle!;
+        QuicAeadKeyLifecycle retainedOldOpenLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceRetainedOldOneRttOpenKeyLifecycleForTest(runtime);
         Assert.NotNull(retainedOldOpenLifecycle);
-        for (int packet = 0; packet < 128; packet++)
+        for (int packet = 0; packet < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets; packet++)
         {
             Assert.True(retainedOldOpenLifecycle.TryUseForOpening());
         }
@@ -109,7 +111,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
             nowTicks: 129);
 
         Assert.True(result.StateChanged);
-        Assert.Equal(128d, retainedOldOpenLifecycle.OpenedPacketCount);
+        Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets, retainedOldOpenLifecycle.OpenedPacketCount);
         Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
         Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
@@ -707,13 +709,14 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
 
     private static QuicConnectionTransitionResult ExhaustCurrentOpenIntegrityLimit(QuicConnectionRuntime runtime)
     {
-        QuicAeadKeyLifecycle openLifecycle = runtime.TlsState.CurrentOneRttOpenKeyLifecycle!;
+        QuicAeadKeyLifecycle openLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttOpenKeyLifecycleForTest(runtime);
         Assert.NotNull(openLifecycle);
         QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
         byte[] paddingPayload = [0x00];
         QuicConnectionTransitionResult result = default;
 
-        for (int packet = 0; packet < 128; packet++)
+        for (int packet = 0; packet < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets; packet++)
         {
             Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacket(
                 paddingPayload,
@@ -730,7 +733,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
                 nowTicks: packet + 1);
         }
 
-        Assert.Equal(128d, openLifecycle.OpenedPacketCount);
+        Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestIntegrityLimitPackets, openLifecycle.OpenedPacketCount);
         Assert.True(openLifecycle.HasReachedIntegrityLimit);
         Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
         Assert.Equal(QuicTransportErrorCode.AeadLimitReached, runtime.TerminalState?.Close.TransportErrorCode);

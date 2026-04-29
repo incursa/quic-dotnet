@@ -5,10 +5,43 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicRfc9001KeyUpdateRetentionTestSupport
 {
+    internal const double RuntimeTestConfidentialityLimitPackets = 64d;
+    internal const double RuntimeTestIntegrityLimitPackets = 128d;
+
     internal static void ConfigureRuntime(QuicConnectionRuntime runtime)
     {
         QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
         MarkServerHandshakeDoneAsAlreadySent(runtime);
+    }
+
+    internal static QuicAeadKeyLifecycle ReplaceCurrentOneRttProtectKeyLifecycleForTest(
+        QuicConnectionRuntime runtime)
+    {
+        return ReplaceOneRttAeadKeyLifecycleForTest(
+            runtime,
+            "currentOneRttProtectKeyLifecycle",
+            RuntimeTestConfidentialityLimitPackets,
+            RuntimeTestIntegrityLimitPackets);
+    }
+
+    internal static QuicAeadKeyLifecycle ReplaceCurrentOneRttOpenKeyLifecycleForTest(
+        QuicConnectionRuntime runtime)
+    {
+        return ReplaceOneRttAeadKeyLifecycleForTest(
+            runtime,
+            "currentOneRttOpenKeyLifecycle",
+            RuntimeTestConfidentialityLimitPackets,
+            RuntimeTestIntegrityLimitPackets);
+    }
+
+    internal static QuicAeadKeyLifecycle ReplaceRetainedOldOneRttOpenKeyLifecycleForTest(
+        QuicConnectionRuntime runtime)
+    {
+        return ReplaceOneRttAeadKeyLifecycleForTest(
+            runtime,
+            "retainedOldOneRttOpenKeyLifecycle",
+            RuntimeTestConfidentialityLimitPackets,
+            RuntimeTestIntegrityLimitPackets);
     }
 
     internal static QuicConnectionTransitionResult ReceiveCurrentPhaseOnePacket(
@@ -132,5 +165,23 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
             "handshakeDonePacketSent",
             BindingFlags.NonPublic | BindingFlags.Instance)!;
         handshakeDonePacketSentField.SetValue(runtime, true);
+    }
+
+    private static QuicAeadKeyLifecycle ReplaceOneRttAeadKeyLifecycleForTest(
+        QuicConnectionRuntime runtime,
+        string fieldName,
+        double confidentialityLimitPackets,
+        double integrityLimitPackets)
+    {
+        QuicAeadKeyLifecycle lifecycle = new(new QuicAeadUsageLimits(
+            confidentialityLimitPackets,
+            integrityLimitPackets));
+        Assert.True(lifecycle.TryActivate());
+
+        FieldInfo lifecycleField = typeof(QuicTransportTlsBridgeState).GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Instance)!;
+        lifecycleField.SetValue(runtime.TlsState, lifecycle);
+        return lifecycle;
     }
 }

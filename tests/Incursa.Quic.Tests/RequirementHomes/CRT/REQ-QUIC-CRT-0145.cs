@@ -195,7 +195,8 @@ public sealed class REQ_QUIC_CRT_0145
             entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && entry.Value.Retransmittable);
         Assert.Equal(QuicPacketNumberSpace.ApplicationData, trackedPacket.Key.PacketNumberSpace);
-        Assert.Equal(1UL, trackedPacket.Key.PacketNumber);
+        Assert.Equal(1U, trackedPacket.Value.OneRttKeyPhase);
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, trackedPacket.Value.PacketProtectionLevel);
         Assert.Equal((ulong)sendEffect.Datagram.Length, trackedPacket.Value.PayloadBytes);
 
         QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
@@ -342,7 +343,7 @@ public sealed class REQ_QUIC_CRT_0145
             CreateSequentialBytes(0x41, 16),
             CreateSequentialBytes(0x51, 12),
             CreateSequentialBytes(0x61, 16),
-            new QuicAeadUsageLimits(64, 128),
+            QuicRfc9001KeyPhaseTestSupport.CreateSupportedAes128GcmPacketProtectionUsageLimits(),
             out QuicTlsPacketProtectionMaterial material));
 
         return material;

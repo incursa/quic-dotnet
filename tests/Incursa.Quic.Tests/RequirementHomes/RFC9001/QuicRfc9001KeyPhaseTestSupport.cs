@@ -183,8 +183,19 @@ internal static class QuicRfc9001KeyPhaseTestSupport
             aeadKey,
             aeadIv,
             retainedHeaderProtectionKey,
-            new QuicAeadUsageLimits(64, 128),
+            CreateSupportedAes128GcmPacketProtectionUsageLimits(),
             out material);
+    }
+
+    internal static QuicAeadUsageLimits CreateSupportedAes128GcmPacketProtectionUsageLimits()
+    {
+        Assert.True(QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+            QuicAeadAlgorithm.Aes128Gcm,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            out QuicAeadUsageLimits usageLimits));
+
+        return usageLimits;
     }
 
     internal static byte[] CreateSuccessorPhaseOneApplicationPacket(QuicTlsPacketProtectionMaterial openMaterial)

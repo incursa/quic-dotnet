@@ -34,6 +34,8 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
     public async Task RuntimeSendPathInstallsFirstKeyUpdateBeforeProtectingBeyondConfidentialityLimit()
     {
         using QuicConnectionRuntime runtime = CreateConfirmedClientRuntimeWithAeadLimitHeadroom();
+        QuicAeadKeyLifecycle originalProtectLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttProtectKeyLifecycleForTest(runtime);
         List<QuicConnectionEffect> outboundEffects = [];
         DispatchRuntimeEvents(runtime, outboundEffects);
 
@@ -41,10 +43,9 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         AcknowledgeTrackedPackets(runtime);
         outboundEffects.Clear();
 
-        QuicAeadKeyLifecycle originalProtectLifecycle = runtime.TlsState.CurrentOneRttProtectKeyLifecycle!;
         Assert.NotNull(originalProtectLifecycle);
         byte[] payload = new byte[32];
-        while (originalProtectLifecycle.ProtectedPacketCount < 64d)
+        while (originalProtectLifecycle.ProtectedPacketCount < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets)
         {
             await stream.WriteAsync(payload, 0, payload.Length);
             AcknowledgeTrackedPackets(runtime);
@@ -60,7 +61,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Same(originalProtectLifecycle, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle);
-        Assert.Equal(64d, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
+        Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Equal(1d, runtime.TlsState.CurrentOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Contains(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
         Assert.DoesNotContain(outboundEffects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
@@ -81,6 +82,8 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
             probeTimeoutMicros: 25_000));
         ulong notBeforeMicros = runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros!.Value;
         clock.Advance(Stopwatch.Frequency * 2L);
+        QuicAeadKeyLifecycle phaseOneProtectLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttProtectKeyLifecycleForTest(runtime);
 
         List<QuicConnectionEffect> outboundEffects = [];
         DispatchRuntimeEvents(runtime, outboundEffects);
@@ -94,7 +97,6 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.True(runtime.TlsState.CanInitiateRepeatedLocalOneRttKeyUpdate(notBeforeMicros));
 
-        QuicAeadKeyLifecycle phaseOneProtectLifecycle = runtime.TlsState.CurrentOneRttProtectKeyLifecycle!;
         await ProtectUntilConfidentialityLimitAsync(stream, runtime, outboundEffects, phaseOneProtectLifecycle, payload);
 
         Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
@@ -104,7 +106,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
 
         Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Same(phaseOneProtectLifecycle, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle);
-        Assert.Equal(64d, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
+        Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Equal(1d, runtime.TlsState.CurrentOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Contains(outboundEffects, effect => effect is QuicConnectionSendDatagramEffect);
         Assert.DoesNotContain(outboundEffects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
@@ -223,7 +225,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         QuicAeadKeyLifecycle keyLifecycle,
         byte[] payload)
     {
-        while (keyLifecycle.ProtectedPacketCount < 64d)
+        while (keyLifecycle.ProtectedPacketCount < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets)
         {
             await stream.WriteAsync(payload, 0, payload.Length);
             AcknowledgeTrackedPackets(runtime);
