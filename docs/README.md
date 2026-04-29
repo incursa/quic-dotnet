@@ -1,6 +1,8 @@
 # Documentation
 
-This folder contains the main repository guides for building, packaging, testing, and contributing to `Incursa.Quic`.
+This folder contains the main repository guides for building, packaging,
+testing, and contributing to `Incursa.Quic`. Start with the current status
+snapshot before interpreting older planning or closeout notes.
 
 ## Core Guides
 

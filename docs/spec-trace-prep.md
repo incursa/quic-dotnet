@@ -48,4 +48,7 @@ dotnet tool run workbench -- --format json validate --profile core
 dotnet tool run workbench -- doctor --json
 ```
 
-`Validate-SpecTraceJson.ps1` pulls the canonical model schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) so the repository does not need to mirror that file locally.
+`Validate-SpecTraceJson.ps1` defaults to the repo-local
+[`../model/model.schema.json`](../model/model.schema.json) so local validation
+is pinned to the checked-in model. Pass `-SchemaUri` when a deliberate remote or
+alternate local schema comparison is needed.

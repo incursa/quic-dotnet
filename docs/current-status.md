@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-04-27.
+Last verified: 2026-04-29.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -8,45 +8,54 @@ architecture, work items, or verification artifacts under `specs/`.
 
 ## Executive Read
 
-The repository is a real but narrow managed QUIC implementation. It is not a
-broad QUIC-complete implementation and should not be described as interop-ready.
+The repository now has a green local executable and SpecTrace baseline. The
+Release build passes, the full requirement-linked test suite passes, the
+repo-local SpecTrace validator passes, Workbench core validation passes, and
+the repo-defined Dry and Short benchmark baseline jobs complete.
 
-The current code builds cleanly, but the test and SpecTrace validation baselines
-are red. The next useful work is a bounded stabilization slice around
-Application Data control-packet protection on the active transfer and
-multiconnect paths, especially `MAX_DATA`, `MAX_STREAM_DATA`, and stream
-capacity release packet emission.
+This is not a broad QUIC-complete claim and should not be described as
+interop-ready. The supported boundary remains narrow: managed loopback,
+selected stream/control behavior, selected TLS/trust floors, and local harness
+contracts that are backed by requirement-home proof. External runner
+corroboration and any public-surface widening remain separate work.
 
 ## Verified Commands
 
 Run from the repository root.
 
 ```powershell
-git status --short --branch
 dotnet tool restore
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release --no-build -m:1
 pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core
 dotnet tool run workbench -- --format json validate --profile core
+.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry
+.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
 ```
 
-Observed results on 2026-04-27:
+Observed results on 2026-04-29:
 
 | Command | Result |
 |---|---|
-| `git status --short --branch` | Clean `main`, tracking `origin/main` |
-| `dotnet tool restore` | Passed |
+| `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Failed: 3,233 passed, 38 failed, 0 skipped, 3,271 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Failed with 6,975 errors |
-| `dotnet tool run workbench -- --format json validate --profile core` | Failed with schema, link, and repo-state errors |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed: 3,271 passed, 0 failed, 0 skipped, 3,271 total |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed: validated 307 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed: 0 errors, 0 warnings, 100 work items, 301 markdown files |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
 
-The latest observed commit during this snapshot was `46c8f6ab` on `main`.
+BenchmarkDotNet reported expected evidence-quality warnings in these smoke
+lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
+warnings for trivial helper methods. Treat the benchmark results as preserved
+local evidence that the benchmark suites execute, not as a rigorous public
+performance comparison.
 
 ## Trace Surface
 
-The QUIC trace corpus is large and useful, but the repo-wide validation baseline
-is currently noisy.
+The QUIC trace corpus is now green under the repo-local core validation path.
+Canonical SpecTrace artifacts are JSON-first; generated summaries and
+documentation remain derived surfaces.
 
 Current artifact inventory:
 
@@ -75,15 +84,8 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
 | Architecture | 68 implemented | 31 draft |
-| Work items | 88 complete/completed | 12 planned |
+| Work items | 88 complete | 12 planned |
 | Verification | 88 passed | 13 planned |
-
-Important: the repo-wide SpecTrace validators currently report known broad
-baseline failures, including schema shape issues, unresolved references, and
-residual canonical Markdown siblings. For a bounded runtime slice, do not treat
-that global noise as proof that the local slice failed unless the slice makes it
-worse. If canonical JSON artifacts are changed, run scoped render/check commands
-for the touched artifacts and record the repo-wide baseline separately.
 
 ## Implementation State
 
@@ -100,82 +102,37 @@ The current honest support boundary is narrow:
 
 - Public facade and core option/error/stream types exist.
 - Managed loopback connect/listen and narrow stream open/accept behavior exist.
-- Narrow write/completion, abort, stream-capacity, and selected TLS/trust floors
-  are implemented and traced.
+- Narrow write/completion, abort, stream-capacity, retry replay, packet
+  protection, recovery, and selected TLS/trust floors are implemented and
+  traced.
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
-  `multiconnect`, `retry`, and `transfer`, but the current test baseline shows
-  the transfer and multiconnect paths are not green.
+  `multiconnect`, `retry`, and `transfer`, with local requirement-home and
+  integration proof now green.
 
 Do not claim broad QUIC support, broad public early-data support, broad key
-update support, or broad interop readiness from the current state.
+update support, public API stability beyond the traced facade, or broad interop
+readiness from this state.
 
-## Current Red Clusters
+## Remaining Work
 
-The failing tests are not isolated random failures. They cluster around a few
-runtime seams:
+There are no known red clusters in the current local full test or core trace
+baseline. Remaining work should be selected from explicit requirements and gap
+records, not inferred from the green baseline.
 
-- Active-path control-packet protection for `MAX_DATA`, `MAX_STREAM_DATA`, and
-  stream-capacity release packets.
-- Interop endpoint-host handshake, transfer, and multiconnect smoke paths.
-- 0-RTT and early-data packet emission and cleanup.
-- First key-phase and key-update behavior.
-- Retry Initial replay expectations.
-- Stream reset and `STOP_SENDING` retransmission/protection retention.
-- ACK and recovery details.
+The next useful lanes are:
 
-Representative failure messages:
+- External CI and interop-runner corroboration for the local green harness
+  paths.
+- Narrow public-surface hardening only where the existing API requirements
+  already authorize it.
+- Additional fuzz and benchmark evidence for any newly touched wire-facing or
+  hot-path code.
+- Planned or draft trace artifacts that still need implementation or proof,
+  without treating their planned status as a failure of the current executable
+  baseline.
 
-```text
-The connection runtime could not protect the MAX_DATA packet.
-The connection runtime could not protect the MAX_STREAM_DATA packet.
-The connection runtime could not protect the stream capacity release packet.
-```
-
-## Recommended Next Slice
-
-Start with the active-path flow-control/control-packet protection slice.
-
-Why this is the best next slice:
-
-- It is a bounded runtime stabilization problem, not a broad protocol rewrite.
-- It explains multiple red interop and transfer/multiconnect failures.
-- It directly affects the honest supported loopback and harness paths.
-- It should not require public API widening or global SpecTrace cleanup.
-
-Primary focused repro:
-
-```powershell
-dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0010|FullyQualifiedName~REQ_QUIC_INT_0014|FullyQualifiedName~REQ_QUIC_INT_0015|FullyQualifiedName~REQ_QUIC_INT_0008"
-```
-
-Likely starting files:
-
-- [`src/Incursa.Quic/QuicConnectionRuntime.Streams.cs`](../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)
-- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../src/Incursa.Quic/QuicConnectionRuntime.cs)
-- [`src/Incursa.Quic/QuicConnectionSendRuntime.cs`](../src/Incursa.Quic/QuicConnectionSendRuntime.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs`](../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0010.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0014.cs`](../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0014.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0015.cs`](../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0015.cs)
-- [`tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs`](../tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0008.cs)
-
-Nearest trace owners to inspect before editing:
-
-- [`docs/requirements-workflow.md`](requirements-workflow.md)
-- [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md)
-- [`specs/requirements/quic/SPEC-QUIC-INT.json`](../specs/requirements/quic/SPEC-QUIC-INT.json)
-- [`specs/requirements/quic/SPEC-QUIC-RFC9000.json`](../specs/requirements/quic/SPEC-QUIC-RFC9000.json)
-- [`specs/architecture/quic/ARC-QUIC-INT-0003.json`](../specs/architecture/quic/ARC-QUIC-INT-0003.json)
-- [`specs/architecture/quic/ARC-QUIC-INT-0007.json`](../specs/architecture/quic/ARC-QUIC-INT-0007.json)
-- [`specs/architecture/quic/ARC-QUIC-INT-0008.json`](../specs/architecture/quic/ARC-QUIC-INT-0008.json)
-- [`specs/architecture/quic/ARC-QUIC-RFC9000-0009.json`](../specs/architecture/quic/ARC-QUIC-RFC9000-0009.json)
-- [`specs/work-items/quic/WI-QUIC-INT-0003.json`](../specs/work-items/quic/WI-QUIC-INT-0003.json)
-- [`specs/work-items/quic/WI-QUIC-INT-0007.json`](../specs/work-items/quic/WI-QUIC-INT-0007.json)
-- [`specs/work-items/quic/WI-QUIC-INT-0008.json`](../specs/work-items/quic/WI-QUIC-INT-0008.json)
-- [`specs/work-items/quic/WI-QUIC-RFC9000-0009.json`](../specs/work-items/quic/WI-QUIC-RFC9000-0009.json)
-- [`specs/verification/quic/VER-QUIC-INT-0003.json`](../specs/verification/quic/VER-QUIC-INT-0003.json)
-- [`specs/verification/quic/VER-QUIC-INT-0007.json`](../specs/verification/quic/VER-QUIC-INT-0007.json)
-- [`specs/verification/quic/VER-QUIC-INT-0008.json`](../specs/verification/quic/VER-QUIC-INT-0008.json)
-- [`specs/verification/quic/VER-QUIC-RFC9000-0009.json`](../specs/verification/quic/VER-QUIC-RFC9000-0009.json)
-
-The paste-ready prompt for this slice lives at
-[`prompts/next-runtime-control-packet-protection.md`](../prompts/next-runtime-control-packet-protection.md).
+When starting a new protocol slice, follow
+[`docs/requirements-workflow.md`](requirements-workflow.md), inspect
+[`specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md),
+and use the owning `SPEC-...`, `ARC-...`, `WI-...`, and `VER-...` artifacts
+before editing code.

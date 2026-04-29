@@ -10,16 +10,15 @@ Use this guide to validate the repository and produce local packages.
 ## Validate The Repository
 
 See [Current repository status](current-status.md) before interpreting these
-commands. As of 2026-04-27, `dotnet build` is green, while the full solution
-test run and repo-wide SpecTrace validation are known-red baselines.
+commands. As of 2026-04-29, the local Release build, full no-build test suite,
+repo-local SpecTrace validation, and Workbench core validation are green.
 
 ```bash
 dotnet tool restore
 pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
 dotnet tool run workbench -- --format json validate --profile core
-dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
-dotnet test Incursa.Quic.slnx -c Release
+dotnet test Incursa.Quic.slnx -c Release --no-build -m:1
 ```
 
 ## Produce Local Packages
