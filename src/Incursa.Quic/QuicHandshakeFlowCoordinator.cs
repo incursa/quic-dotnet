@@ -2011,7 +2011,11 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        packet[0] ^= (byte)(mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask);
+        byte firstByteMask = (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
+            ? QuicPacketHeaderBits.ShortTypeSpecificBitsMask
+            : QuicPacketHeaderBits.TypeSpecificBitsMask;
+
+        packet[0] ^= (byte)(mask[0] & firstByteMask);
         for (int i = 0; i < packetNumberLength; i++)
         {
             packet[packetNumberOffset + i] ^= mask[1 + i];

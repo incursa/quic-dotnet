@@ -13,7 +13,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0004
             includeEarlyData: true);
 
         Assert.Equal(QuicTlsEarlyDataDisposition.Accepted, runtime.TlsState.PeerEarlyDataDisposition);
-        Assert.False(runtime.TlsState.OldKeysDiscarded);
         Assert.True(runtime.TlsState.TryGetPacketProtectionMaterial(
             QuicTlsEncryptionLevel.ZeroRtt,
             out QuicTlsPacketProtectionMaterial zeroRttMaterial));

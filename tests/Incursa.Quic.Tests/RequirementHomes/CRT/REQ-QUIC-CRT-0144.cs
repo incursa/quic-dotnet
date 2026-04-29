@@ -55,9 +55,14 @@ public sealed class REQ_QUIC_CRT_0144
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
 
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out _));
+
         byte[] protectedPacket = BuildProtectedApplicationPacket(
             CreatePacketCoordinator(),
-            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            successorOpenMaterial,
             keyPhase: true);
 
         QuicConnectionTransitionResult result = runtime.Transition(
@@ -196,7 +201,7 @@ public sealed class REQ_QUIC_CRT_0144
             CreateSequentialBytes(0x41, 16),
             CreateSequentialBytes(0x51, 12),
             CreateSequentialBytes(0x61, 16),
-            new QuicAeadUsageLimits(64, 128),
+            QuicRfc9001KeyPhaseTestSupport.CreateSupportedAes128GcmPacketProtectionUsageLimits(),
             out QuicTlsPacketProtectionMaterial material));
 
         return material;

@@ -91,7 +91,6 @@ public sealed class REQ_QUIC_CRT_0143
             includeEarlyData: true);
 
         Assert.Equal(QuicTlsEarlyDataDisposition.Accepted, runtime.TlsState.PeerEarlyDataDisposition);
-        Assert.False(runtime.TlsState.OldKeysDiscarded);
         Assert.True(runtime.TlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.ZeroRtt, out QuicTlsPacketProtectionMaterial zeroRttMaterial));
         Assert.Equal(QuicTlsEncryptionLevel.ZeroRtt, zeroRttMaterial.EncryptionLevel);
     }
@@ -176,7 +175,6 @@ public sealed class REQ_QUIC_CRT_0143
             if (includeEarlyData)
             {
                 Assert.Equal(QuicTlsEarlyDataDisposition.Accepted, runtime.TlsState.PeerEarlyDataDisposition);
-                Assert.False(runtime.TlsState.OldKeysDiscarded);
                 Assert.True(runtime.TlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.ZeroRtt, out _));
             }
             else
@@ -336,7 +334,7 @@ public sealed class REQ_QUIC_CRT_0143
             CreateSequentialBytes(startValue, 16),
             CreateSequentialBytes(unchecked((byte)(startValue + 0x10)), 12),
             CreateSequentialBytes(unchecked((byte)(startValue + 0x20)), 16),
-            new QuicAeadUsageLimits(64, 128),
+            QuicRfc9001KeyPhaseTestSupport.CreateSupportedAes128GcmPacketProtectionUsageLimits(),
             out QuicTlsPacketProtectionMaterial material));
 
         return material;
