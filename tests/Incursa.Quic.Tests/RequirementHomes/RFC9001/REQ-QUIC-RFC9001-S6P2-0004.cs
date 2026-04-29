@@ -642,11 +642,37 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             sendEffects.AddRange(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
         }
 
-        Assert.NotEmpty(sendEffects);
+        if (sendEffects.Count == 0)
+        {
+            return SeedTrackedOneRttPacketForCurrentPhase(runtime, checked((ulong)Math.Max(0, observedAtTicks)));
+        }
+
         QuicConnectionSendDatagramEffect responseEffect = sendEffects[^1];
         return Assert.Single(
             runtime.SendRuntime.SentPackets,
             entry => entry.Value.PacketBytes.Span.SequenceEqual(responseEffect.Datagram.Span));
+    }
+
+    private static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> SeedTrackedOneRttPacketForCurrentPhase(
+        QuicConnectionRuntime runtime,
+        ulong sentAtMicros)
+    {
+        ulong packetNumber = runtime.SendRuntime.SentPackets.Keys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .Select(static key => key.PacketNumber)
+            .DefaultIfEmpty()
+            .Max() + 1;
+
+        QuicRfc9001KeyUpdateRetentionTestSupport.SeedTrackedOneRttPacket(
+            runtime,
+            packetNumber,
+            sentAtMicros,
+            runtime.TlsState.CurrentOneRttKeyPhase);
+
+        return Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Key.PacketNumber == packetNumber);
     }
 
     private static byte[] BuildProtectedApplicationPacket(

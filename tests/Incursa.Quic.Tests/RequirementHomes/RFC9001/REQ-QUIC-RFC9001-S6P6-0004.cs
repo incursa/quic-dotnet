@@ -42,10 +42,11 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0004
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
 
-        QuicAeadKeyLifecycle successorProtectLifecycle = runtime.TlsState.CurrentOneRttProtectKeyLifecycle!;
+        QuicAeadKeyLifecycle successorProtectLifecycle =
+            QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttProtectKeyLifecycleForTest(runtime);
         Assert.NotNull(successorProtectLifecycle);
         byte[] payload = new byte[32];
-        while (successorProtectLifecycle.ProtectedPacketCount < 64d)
+        while (successorProtectLifecycle.ProtectedPacketCount < QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets)
         {
             await stream.WriteAsync(payload, 0, payload.Length);
             AcknowledgeTrackedPackets(runtime);

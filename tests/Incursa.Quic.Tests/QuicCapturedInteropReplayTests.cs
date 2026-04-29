@@ -761,6 +761,14 @@ public sealed class QuicCapturedInteropReplayTests
         byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], 16);
         byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], 12);
         byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], 16);
+        if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+            QuicAeadAlgorithm.Aes128Gcm,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            out QuicAeadUsageLimits usageLimits))
+        {
+            return false;
+        }
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             QuicTlsEncryptionLevel.Handshake,
@@ -768,7 +776,7 @@ public sealed class QuicCapturedInteropReplayTests
             aeadKey,
             aeadIv,
             headerProtectionKey,
-            new QuicAeadUsageLimits(64, 128),
+            usageLimits,
             out material);
     }
 
@@ -781,6 +789,14 @@ public sealed class QuicCapturedInteropReplayTests
         byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], 16);
         byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], 12);
         byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], 16);
+        if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+            QuicAeadAlgorithm.Aes128Gcm,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            out QuicAeadUsageLimits usageLimits))
+        {
+            return false;
+        }
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             QuicTlsEncryptionLevel.OneRtt,
@@ -788,7 +804,7 @@ public sealed class QuicCapturedInteropReplayTests
             aeadKey,
             aeadIv,
             headerProtectionKey,
-            new QuicAeadUsageLimits(64, 128),
+            usageLimits,
             out material);
     }
 

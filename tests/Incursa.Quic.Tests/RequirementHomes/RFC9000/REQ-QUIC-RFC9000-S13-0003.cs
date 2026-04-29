@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0003
         Assert.Equal(new QuicConnectionPathIdentity("203.0.113.11", RemotePort: 443), runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
 
-        byte[] payload = Enumerable.Range(0, 21).Select(value => (byte)value).ToArray();
+        byte[] payload = Enumerable.Range(0, 32).Select(value => (byte)value).ToArray();
         await stream.WriteAsync(payload, 0, payload.Length);
 
         bool sawExpectedStreamFrame = false;
@@ -61,7 +61,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0003
 
             Assert.False(keyPhase);
             ReadOnlySpan<byte> packetPayload = openedPacket.AsSpan(payloadOffset, payloadLength);
-            if (QuicStreamParser.TryParseStreamFrame(packetPayload, out QuicStreamFrame frame)
+            if (TryFindStreamFrame(packetPayload, out QuicStreamFrame frame)
                 && frame.StreamId.Value == (ulong)stream.Id
                 && frame.Offset == 0UL
                 && frame.StreamData.SequenceEqual(payload))
@@ -76,5 +76,31 @@ public sealed class REQ_QUIC_RFC9000_S13_0003
             effect is QuicConnectionArmTimerEffect arm
             && arm.TimerKind == QuicConnectionTimerKind.ApplicationSendDelay);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+    }
+
+    private static bool TryFindStreamFrame(ReadOnlySpan<byte> payload, out QuicStreamFrame frame)
+    {
+        frame = default;
+
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            return QuicStreamParser.TryParseStreamFrame(remaining, out frame);
+        }
+
+        return false;
     }
 }
