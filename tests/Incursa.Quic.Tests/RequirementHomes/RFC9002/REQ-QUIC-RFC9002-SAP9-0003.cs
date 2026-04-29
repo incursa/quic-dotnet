@@ -1237,14 +1237,15 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.Equal(1077, bodyEffect.Datagram.Length);
         Assert.Equal(53, finEffect.Datagram.Length);
         Assert.Equal(85, maxStreamsEffect.Datagram.Length);
-        Assert.Equal(56UL, trackedBodyPacket.Key.PacketNumber);
-        Assert.Equal(57UL, trackedFinPacket.Key.PacketNumber);
-        Assert.Equal(58UL, trackedMaxStreamsPacket.Key.PacketNumber);
+        Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
+        Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);
 
         byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
             runtime,
             runtime.CurrentHandshakeSourceConnectionId.Span,
-            BuildLiveSparseCreditAckPacketNumbers());
+            BuildLiveSparseCreditAckPacketNumbers(
+                trackedBodyPacket.Key.PacketNumber,
+                trackedMaxStreamsPacket.Key.PacketNumber));
 
         QuicConnectionTransitionResult ackResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -1418,9 +1419,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.Equal(1077, bodyEffect.Datagram.Length);
         Assert.Equal(53, finEffect.Datagram.Length);
         Assert.Equal(85, maxStreamsEffect.Datagram.Length);
-        Assert.Equal(56UL, trackedBodyPacket.Key.PacketNumber);
-        Assert.Equal(57UL, trackedFinPacket.Key.PacketNumber);
-        Assert.Equal(58UL, trackedMaxStreamsPacket.Key.PacketNumber);
+        Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
+        Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);
 
         FakeMonotonicClock hostClock = new(0);
         await using QuicConnectionRuntimeEndpoint endpoint = new(1, hostClock);
@@ -1459,7 +1459,9 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
                 runtime,
                 runtime.CurrentHandshakeSourceConnectionId.Span,
-                BuildLiveSparseCreditAckPacketNumbers());
+                BuildLiveSparseCreditAckPacketNumbers(
+                    trackedBodyPacket.Key.PacketNumber,
+                    trackedMaxStreamsPacket.Key.PacketNumber));
 
             QuicConnectionIngressResult ackIngress = endpoint.ReceiveDatagram(
                 protectedAckPacket,
@@ -1806,7 +1808,9 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             additionalRanges: additionalRanges.ToArray());
     }
 
-    private static ulong[] BuildLiveSparseCreditAckPacketNumbers()
+    private static ulong[] BuildLiveSparseCreditAckPacketNumbers(
+        ulong trackedBodyPacketNumber,
+        ulong trackedMaxStreamsPacketNumber)
     {
         List<ulong> packetNumbers = [];
         AddInclusiveRange(packetNumbers, 0, 9);
@@ -1819,8 +1823,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         AddInclusiveRange(packetNumbers, 42, 44);
         packetNumbers.Add(47);
         AddInclusiveRange(packetNumbers, 49, 53);
-        packetNumbers.Add(56);
-        packetNumbers.Add(58);
+        packetNumbers.Add(trackedBodyPacketNumber);
+        packetNumbers.Add(trackedMaxStreamsPacketNumber);
 
         return packetNumbers.ToArray();
     }

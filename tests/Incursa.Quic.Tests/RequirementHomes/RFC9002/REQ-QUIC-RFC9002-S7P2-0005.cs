@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_RFC9002_S7P2_0005
     }
 
     [Theory]
-    [InlineData(1UL, 2UL)]
+    [InlineData(1UL, 2_400UL)]
     [InlineData(ulong.MaxValue, ulong.MaxValue)]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]

@@ -114,6 +114,13 @@ public sealed class REQ_QUIC_RFC9002_SAP1_0001
 
         sender.MarkAckFrameSent(QuicPacketNumberSpace.ApplicationData, sentAtMicros: 1300, ackOnlyPacket: true);
         Assert.False(sender.CanSendAckOnlyPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 1400, maxAckDelayMicros: 1000));
+        Assert.False(sender.ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 3400, maxAckDelayMicros: 1000));
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            ackEliciting: true,
+            receivedAtMicros: 3400);
         Assert.True(sender.ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 3400, maxAckDelayMicros: 1000));
     }
 }
