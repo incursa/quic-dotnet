@@ -66,9 +66,16 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0009
             out QuicTransportErrorCode errorCode));
         Assert.Equal(default, errorCode);
 
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId.Value, 0x99, 0),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(default, errorCode);
+
         Assert.False(state.TryReceiveResetStreamFrame(
             new QuicResetStreamFrame(streamId.Value, 0x99, 1),
-            out QuicMaxDataFrame maxDataFrame,
+            out maxDataFrame,
             out errorCode));
         Assert.Equal(default, maxDataFrame);
         Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);

@@ -41,9 +41,10 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0011
             out int payloadOffset,
             out int payloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseStopSendingFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicStopSendingFrame stopSendingFrame,
+            out _,
             out _));
         Assert.Equal(0UL, stopSendingFrame.StreamId);
         Assert.Equal(0x99UL, stopSendingFrame.ApplicationProtocolErrorCode);
@@ -68,9 +69,10 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0011
             out int retransmissionPayloadOffset,
             out int retransmissionPayloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseStopSendingFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
             retransmissionOpenedPacket.AsSpan(retransmissionPayloadOffset, retransmissionPayloadLength),
             out QuicStopSendingFrame retransmissionFrame,
+            out _,
             out _));
         Assert.Equal(stopSendingFrame.StreamId, retransmissionFrame.StreamId);
         Assert.Equal(stopSendingFrame.ApplicationProtocolErrorCode, retransmissionFrame.ApplicationProtocolErrorCode);

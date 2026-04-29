@@ -41,9 +41,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0013
             out int payloadOffset,
             out int payloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseStopSendingFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicStopSendingFrame stopSendingFrame,
+            out _,
             out _));
         Assert.Equal(0UL, stopSendingFrame.StreamId);
         Assert.Equal(0x99UL, stopSendingFrame.ApplicationProtocolErrorCode);

@@ -41,9 +41,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0011
             out int payloadOffset,
             out int payloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseResetStreamFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindResetStreamFrame(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicResetStreamFrame resetStreamFrame,
+            out _,
             out _));
         Assert.Equal(0UL, resetStreamFrame.StreamId);
         Assert.Equal(0x99UL, resetStreamFrame.ApplicationProtocolErrorCode);

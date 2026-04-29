@@ -41,9 +41,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0012
             out int payloadOffset,
             out int payloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseResetStreamFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindResetStreamFrame(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicResetStreamFrame parsedResetFrame,
+            out int parsedFrameOffset,
             out int parsedBytesConsumed));
 
         Span<byte> reformattedFrame = stackalloc byte[64];
@@ -52,7 +53,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0012
             reformattedFrame,
             out int reformattedBytesWritten));
         Assert.True(reformattedFrame[..reformattedBytesWritten].SequenceEqual(
-            openedPacket.AsSpan(payloadOffset, parsedBytesConsumed)));
+            openedPacket.AsSpan(payloadOffset + parsedFrameOffset, parsedBytesConsumed)));
 
         Assert.True(runtime.SendRuntime.TryRegisterLoss(
             resetPacket.Key.PacketNumberSpace,
@@ -68,9 +69,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0012
             out int retransmissionPayloadOffset,
             out int retransmissionPayloadLength));
 
-        Assert.True(QuicFrameCodec.TryParseResetStreamFrame(
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindResetStreamFrame(
             retransmissionOpenedPacket.AsSpan(retransmissionPayloadOffset, retransmissionPayloadLength),
             out QuicResetStreamFrame retransmissionFrame,
+            out _,
             out _));
         Assert.Equal(parsedResetFrame.StreamId, retransmissionFrame.StreamId);
         Assert.Equal(parsedResetFrame.ApplicationProtocolErrorCode, retransmissionFrame.ApplicationProtocolErrorCode);
