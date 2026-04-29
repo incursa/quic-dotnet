@@ -1438,6 +1438,7 @@ internal static class InteropHarnessRunner
                 catch
                 {
                     TryAbortStreamWriteSide(stream);
+                    await TryCloseConnectionForFailedRequestAsync(connection).ConfigureAwait(false);
                     throw;
                 }
             }
@@ -1633,6 +1634,18 @@ internal static class InteropHarnessRunner
         try
         {
             stream.Abort(QuicAbortDirection.Write, 1);
+        }
+        catch
+        {
+            // Best-effort failure signaling only.
+        }
+    }
+
+    private static async Task TryCloseConnectionForFailedRequestAsync(QuicConnection connection)
+    {
+        try
+        {
+            await connection.CloseAsync(1).ConfigureAwait(false);
         }
         catch
         {

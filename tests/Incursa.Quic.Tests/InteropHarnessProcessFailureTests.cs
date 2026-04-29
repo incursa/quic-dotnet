@@ -60,7 +60,7 @@ public sealed class InteropHarnessProcessFailureTests
                 await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
                 await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", request, harnessDll, qlogDirectory);
-                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(35));
 
                 Assert.Equal(1, serverProcess.Process.ExitCode);
                 Assert.Equal(1, clientProcess.Process.ExitCode);

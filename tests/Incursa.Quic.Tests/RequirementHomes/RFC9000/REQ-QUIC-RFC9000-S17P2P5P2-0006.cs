@@ -36,7 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0006
 
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
-            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
             out QuicInitialPacketProtection serverProtection));
 
         QuicHandshakeFlowCoordinator packetCoordinator = new();
