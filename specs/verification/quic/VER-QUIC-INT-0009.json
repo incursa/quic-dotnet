@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0009",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC Hosted Interop-Runner Handshake Corroboration Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Workflow review, local helper dry-run, local helper execution, artifact inspection, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0009",
+    "WI-QUIC-INT-0009"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0016"
+  ],
+  "preconditions": [
+    "Docker is available on the local machine for the local helper replay.",
+    "Python 3 is available for the external runner checkout.",
+    "The local runner checkout exists at `C:\\src\\quic-interop\\quic-interop-runner`.",
+    "Hosted dispatch requires GitHub Actions access and a current `quic-interop-runner` checkout from the public runner repository."
+  ],
+  "scope": "Verify that the repository defines a manual hosted lane for the narrow server-role `handshake` helper cell, keeps the lane outside ordinary CI gates, uploads artifacts regardless of helper outcome, and preserves the helper's advisory classification boundary without claiming broad interop readiness.",
+  "procedure": [
+    "Review `.github/workflows/interop-runner-handshake.yml` and confirm it is `workflow_dispatch` only.",
+    "Confirm the workflow checks out this repository and the external `quic-interop-runner` checkout as separate workspaces.",
+    "Confirm the workflow invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with `-LocalRole server`, `-PeerImplementationSlots quic-go`, `-TestCases handshake`, and an explicit `-RunnerRoot` path.",
+    "Confirm the workflow uploads the full `artifacts/interop-runner/` tree with `if: always()` so helper failures and advisory outcomes still preserve evidence.",
+    "Run the helper in dry-run mode for the same server-role handshake shape.",
+    "Run the helper locally for the same server-role handshake shape and inspect the preserved artifact bundle.",
+    "Run SpecTrace validation after adding the canonical requirement, design, work-item, and verification artifacts."
+  ],
+  "expected_result": "The manual workflow is available for hosted artifact collection, remains outside ordinary CI, invokes the same narrow helper shape proven locally, and preserves uploaded evidence on success, advisory, or failure. The verification does not require a hosted dispatch result and does not claim general interop readiness.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "artifacts/interop-runner/20260429-170106187-server-nginx/",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/architecture/quic/ARC-QUIC-INT-0009.json",
+    "specs/work-items/quic/WI-QUIC-INT-0009.json",
+    "specs/verification/quic/VER-QUIC-INT-0009.json"
+  ],
+  "status_summary": "Passed for the repository configuration slice on 2026-04-29. The dry-run resolved to server-role `nginx` replacement against quic-go for `handshake`; the real local helper run built the harness image, invoked the runner, exited successfully with an advisory, and preserved `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream runner post-check failed. Hosted GitHub workflow dispatch remains the next external artifact to collect and is not represented as already passed.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "No broad matrix, no hosted success artifact, no runner registry change, no protocol runtime change, no public API change, and no interop-ready claim are covered by this verification."
+    }
+  ]
+}

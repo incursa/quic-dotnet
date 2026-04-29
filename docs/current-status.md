@@ -11,13 +11,15 @@ architecture, work items, or verification artifacts under `specs/`.
 The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
-the repo-defined Dry and Short benchmark baseline jobs complete.
+the repo-defined Dry and Short benchmark baseline jobs complete. A manual
+hosted interop-runner handshake workflow is now configured as an advisory
+artifact-collection lane; hosted dispatch evidence has not yet been collected.
 
 This is not a broad QUIC-complete claim and should not be described as
 interop-ready. The supported boundary remains narrow: managed loopback,
 selected stream/control behavior, selected TLS/trust floors, and local harness
-contracts that are backed by requirement-home proof. External runner
-corroboration and any public-surface widening remain separate work.
+contracts that are backed by requirement-home proof. External hosted runner
+results and any public-surface widening remain separate work.
 
 ## Verified Commands
 
@@ -31,6 +33,8 @@ pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core
 dotnet tool run workbench -- --format json validate --profile core
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
 ```
 
 Observed results on 2026-04-29:
@@ -40,10 +44,12 @@ Observed results on 2026-04-29:
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
 | `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed: 3,271 passed, 0 failed, 0 skipped, 3,271 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed: validated 307 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed: 0 errors, 0 warnings, 100 work items, 301 markdown files |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed: validated 310 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed: 0 errors, 0 warnings, 101 work items, 303 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
+| `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
+| `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -62,10 +68,10 @@ Current artifact inventory:
 | Surface | Count |
 |---|---:|
 | Requirement specs in `specs/requirements/quic` | 7 |
-| Requirement clauses | 1,946 |
-| Architecture artifacts | 99 |
-| Work-item artifacts | 100 |
-| Verification artifacts | 101 |
+| Requirement clauses | 1,947 |
+| Architecture artifacts | 100 |
+| Work-item artifacts | 101 |
+| Verification artifacts | 102 |
 
 Requirement family counts:
 
@@ -73,7 +79,7 @@ Requirement family counts:
 |---|---:|
 | `SPEC-QUIC-API` | 16 |
 | `SPEC-QUIC-CRT` | 148 |
-| `SPEC-QUIC-INT` | 12 |
+| `SPEC-QUIC-INT` | 13 |
 | `SPEC-QUIC-RFC8999` | 8 |
 | `SPEC-QUIC-RFC9000` | 1,443 |
 | `SPEC-QUIC-RFC9001` | 95 |
@@ -83,9 +89,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 68 implemented | 31 draft |
-| Work items | 88 complete | 12 planned |
-| Verification | 88 passed | 13 planned |
+| Architecture | 69 implemented | 31 draft |
+| Work items | 89 complete | 12 planned |
+| Verification | 89 passed | 13 planned |
 
 ## Implementation State
 
@@ -108,6 +114,9 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
+- A manual hosted GitHub Actions lane now runs the server-role `handshake`
+  helper cell against quic-go and uploads the complete interop-runner artifact
+  tree for advisory review. No hosted run has been claimed as passed yet.
 
 Do not claim broad QUIC support, broad public early-data support, broad key
 update support, public API stability beyond the traced facade, or broad interop
@@ -121,8 +130,9 @@ records, not inferred from the green baseline.
 
 The next useful lanes are:
 
-- External CI and interop-runner corroboration for the local green harness
-  paths.
+- Dispatch the manual hosted interop-runner handshake workflow and inspect the
+  uploaded artifact bundle before expanding to any broader role, peer, or
+  testcase matrix.
 - Narrow public-surface hardening only where the existing API requirements
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or

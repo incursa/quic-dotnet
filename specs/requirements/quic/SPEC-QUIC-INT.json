@@ -17,6 +17,7 @@
     "ARC-QUIC-INT-0006",
     "ARC-QUIC-INT-0007",
     "ARC-QUIC-INT-0008",
+    "ARC-QUIC-INT-0009",
     "WI-QUIC-INT-0001",
     "WI-QUIC-INT-0002",
     "WI-QUIC-INT-0003",
@@ -25,6 +26,7 @@
     "WI-QUIC-INT-0006",
     "WI-QUIC-INT-0007",
     "WI-QUIC-INT-0008",
+    "WI-QUIC-INT-0009",
     "VER-QUIC-INT-0001",
     "VER-QUIC-INT-0002",
     "VER-QUIC-INT-0003",
@@ -32,11 +34,12 @@
     "VER-QUIC-INT-0005",
     "VER-QUIC-INT-0006",
     "VER-QUIC-INT-0007",
-    "VER-QUIC-INT-0008"
+    "VER-QUIC-INT-0008",
+    "VER-QUIC-INT-0009"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, and CI participation.",
-  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as an ordered one-connection child-process transfer contract on the existing active-phase path, the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`, and the sequential `multiconnect` slice now dispatches sequential HTTP/0.9 downloads through the same real endpoint-host transfer path with one fresh connection per URL. Server-role `multiconnect` runs must also tolerate the runner's empty server-side `REQUESTS` list by accepting an open sequential plan, deriving each response from the observed HTTP/0.9 request target, serving after the request line, and lingering for peer close or a bounded timeout without initiating application close or blocking later accepts. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`, and the new localhost preflight lane in `REQ-QUIC-INT-0014` exists so harness setup and endpoint selection can be isolated locally before the external runner is involved.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, and CI participation.",
+  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness still owns process-facing adapter concerns, but it now includes a thin endpoint-host shell that composes the library-owned runtime bridge for real UDP socket plumbing and a handshake-only dispatch path into the managed client/listener bootstrap seam. The smaller `post-handshake-stream` contract is tracked separately as a child-process-only open/accept contract on the existing managed path and is now green in the current implementation, the narrow transfer slice is now wired as an ordered one-connection child-process transfer contract on the existing active-phase path, the narrow `retry` slice now dispatches into the managed one-Retry replay path instead of falling through to `127`, and the sequential `multiconnect` slice now dispatches sequential HTTP/0.9 downloads through the same real endpoint-host transfer path with one fresh connection per URL. Server-role `multiconnect` runs must also tolerate the runner's empty server-side `REQUESTS` list by accepting an open sequential plan, deriving each response from the observed HTTP/0.9 request target, serving after the request line, and lingering for peer close or a bounded timeout without initiating application close or blocking later accepts. The one-Retry bootstrap handoff itself remains library-owned under `REQ-QUIC-CRT-0122`, this spec still owns the child-process dispatch and proof under `REQ-QUIC-INT-0012`, the localhost preflight lane in `REQ-QUIC-INT-0014` exists so harness setup and endpoint selection can be isolated locally before the external runner is involved, and the hosted interop-runner workflow in `REQ-QUIC-INT-0016` remains a manual advisory corroboration lane rather than a broad interop-readiness claim.",
   "open_questions": [
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
   ],
@@ -51,7 +54,11 @@
     },
     {
       "heading": "Local Execution Loop",
-      "content": "The next repo-local slice keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository. That local helper now needs to support same-slot both-role runs as well as split client/server runs that replace only the local side and leave the opposite side on an established implementation such as quic-go or msquic."
+      "content": "The repo-local helper keeps the external interop runner unmodified, builds the harness image locally, and uses the runner's image-replacement path to capture JSON, Markdown, and log artifacts under `artifacts/interop-runner/...` without requiring a registry change in the runner repository. It supports same-slot both-role runs as well as split client/server runs that replace only the local side and leave the opposite side on an established implementation such as quic-go or msquic."
+    },
+    {
+      "heading": "Hosted Corroboration",
+      "content": "The manual hosted workflow dispatches the narrow server-role `handshake` helper cell against a quic-go client slot and uploads the full artifact bundle regardless of result. It is intentionally advisory and is not part of push, pull-request, or package gating."
     },
     {
       "heading": "Standalone Local Preflight",
@@ -437,6 +444,38 @@
         "The ordered `REQUESTS` list must fail honestly when it contains malformed input or conflicting host and port values.",
         "A response that stops making progress after the request line is sent must leave the testcase in a failed state and clean up partial output instead of waiting indefinitely for the external runner to time out.",
         "Server-role open-plan support exists because the external runner supplies an empty `REQUESTS` list to the server side while the peer client still opens sequential connections and sends concrete HTTP/0.9 targets."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0016",
+      "title": "Provide a manual hosted interop-runner handshake corroboration lane",
+      "statement": "The repository MUST provide a manually dispatched hosted-CI workflow that checks out both this repository and an external `quic-interop-runner` checkout, invokes the repo-local interop helper in server-role `handshake` mode against an established `quic-go` client slot, uploads the complete interop-runner artifact tree regardless of helper outcome, and keeps the lane advisory and outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0009"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0009"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0009"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0013",
+          "REQ-QUIC-INT-0014",
+          "REQ-QUIC-INT-0015",
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          ".github/workflows/interop-runner-handshake.yml",
+          "scripts/interop/Invoke-QuicInteropRunner.ps1",
+          "scripts/interop/README.md"
+        ]
+      },
+      "notes": [
+        "The workflow exists to collect hosted artifacts for one narrow runner cell; it does not alter the runner repository, add a registry entry, or enable a broader matrix.",
+        "The helper's advisory classification remains evidence-backed by preserved logs, and the uploaded runner report can still show an upstream runner post-check failure.",
+        "A passed manual workflow run is not a claim that Incursa.Quic is QUIC-complete, interop-ready, or public-surface stable."
       ]
     }
   ]

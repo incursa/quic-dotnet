@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Hosted Interop-Runner Handshake Corroboration Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the manual hosted workflow boundary for collecting one narrow interop-runner handshake artifact bundle without changing ordinary CI gates or public support claims.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0009",
+    "VER-QUIC-INT-0009"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0016"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "artifacts/interop-runner"
+  ],
+  "design_summary": "The hosted lane is a `workflow_dispatch`-only GitHub Actions workflow. It checks out `quic-dotnet` and a separate `quic-interop-runner` workspace, verifies that Docker and Python are available, then runs the repo-local helper in server-role mode for the single `handshake` testcase against the established `quic-go` client slot. The helper remains responsible for image build, runner invocation, report capture, and evidence-backed advisory classification. The workflow always uploads the `artifacts/interop-runner/` tree so a failed or advisory runner outcome still leaves the JSON report, Markdown report, stderr, invocation summary, build log, qlogs, pcaps, and output logs available for review.",
+  "alternatives_considered": [
+    "Add the interop runner invocation to ordinary push or pull-request CI. Rejected because the current evidence is advisory and should not block the green local build/test/package baseline.",
+    "Create a broad hosted matrix across roles, peers, and testcases. Rejected because the first hosted lane should corroborate the smallest already-supported helper cell before expanding scope.",
+    "Treat a hosted artifact upload as a public interop-readiness proof. Rejected because the lane is explicitly advisory and depends on preserved evidence inspection."
+  ],
+  "edge_cases_and_constraints": [
+    "The runner checkout may fail or its CLI may drift independently of this repository.",
+    "The workflow must upload artifacts on both success and failure so diagnostic evidence is not lost.",
+    "Manual dispatch keeps the lane outside push, pull-request, build, test, and package gates.",
+    "The workflow must not rewrite the runner registry or imply Incursa.Quic has an upstream interop-runner implementation entry.",
+    "The helper's advisory classification must remain narrow and evidence-backed; the runner's own failed report remains part of the audit bundle when its post-check fails."
+  ],
+  "data_and_state_considerations": "Hosted runs produce transient GitHub Actions artifacts containing the repo-local `artifacts/interop-runner/` tree. They do not commit generated reports, modify the runner checkout, or persist transport state beyond the uploaded artifact bundle.",
+  "risks": [
+    "Hosted Docker, Python, or runner dependency drift can fail the manual workflow even when the repo-local baseline is green.",
+    "A manual workflow badge or successful dispatch could be overread as broad interop readiness unless the advisory boundary remains explicit.",
+    "Uploading the whole artifact tree can be large if the lane is widened without a separate requirement and proof review."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only the manual hosted `handshake` corroboration lane. It does not change protocol runtime behavior, the public API surface, ordinary CI gating, or the external runner repository."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Hosted Interop-Runner Handshake Corroboration Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a manual GitHub Actions workflow that runs the existing interop helper for one server-role handshake cell and uploads the artifact bundle for hosted review.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0009",
+    "VER-QUIC-INT-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0009"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0016"
+  ],
+  "planned_changes": "- Add a `workflow_dispatch` GitHub Actions workflow for the narrow server-role `handshake` helper cell against a quic-go client slot.\n- Check out this repository and `quic-interop-runner` as separate workspaces, then pass the explicit runner path to the existing helper.\n- Upload the full `artifacts/interop-runner/` bundle with `if: always()` so success, advisory, and failure outcomes all preserve evidence.\n- Document the hosted lane in the interop helper README and keep it out of ordinary push, pull-request, build, test, and package gates.\n- Keep the helper's advisory classification and preserved runner report semantics unchanged.",
+  "out_of_scope": [
+    "protocol/runtime behavior changes",
+    "public API surface changes",
+    "new runner testcase enablement",
+    "runner repository registry updates",
+    "broad peer or role matrix expansion",
+    "making interop corroboration blocking in ordinary CI",
+    "benchmark work",
+    "fuzzing work"
+  ],
+  "verification_plan": "Run the existing helper locally in dry-run mode and real server-role handshake mode against the local `C:\\src\\quic-interop\\quic-interop-runner` checkout, then validate the SpecTrace JSON/profile surfaces. Hosted dispatch evidence remains a follow-up external artifact rather than a prerequisite for this repository configuration slice.",
+  "completion_notes": "Implemented the manual hosted workflow at `.github/workflows/interop-runner-handshake.yml`, documented the lane in `scripts/interop/README.md`, and verified the same server-role handshake helper shape locally on 2026-04-29. The local helper exited successfully with an advisory after the upstream runner post-check failed, preserving `artifacts/interop-runner/20260429-170106187-server-nginx/` for audit. This does not claim broad interop readiness."
+}

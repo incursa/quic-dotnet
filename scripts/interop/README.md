@@ -44,6 +44,13 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
 
+Hosted corroboration:
+
+- `.github/workflows/interop-runner-handshake.yml` exposes a manual `workflow_dispatch` lane for the narrow server-role `handshake` cell.
+- The workflow checks out this repository and `quic-interop-runner` separately, then runs this helper with `-LocalRole server -PeerImplementationSlots quic-go -TestCases handshake`.
+- It uploads `artifacts/interop-runner/` with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
+- The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
+
 Plan-only mode:
 
 - `-DryRun` is aliased as `-PlanOnly`.
