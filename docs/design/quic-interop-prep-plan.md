@@ -14,6 +14,28 @@ Source of truth for this plan:
 
 The current narrow supported slice is real. The remaining work is about keeping the public promise truthful while the deeper runtime, TLS, stream, and interop surfaces catch up.
 
+## 2026-04-27 Verification Overlay
+
+This planning document records the intended decomposition and several slices
+that have been traced as landed. The live repository baseline on 2026-04-27 is
+not green: `dotnet build Incursa.Quic.slnx -c Release` passes with 0 warnings
+and 0 errors, but `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1`
+fails with 38 failing tests out of 3,271.
+
+The failures are concentrated around active-path control-packet protection,
+interop transfer/multiconnect smoke paths, 0-RTT and key-phase follow-ons,
+retry replay, stream reset/stop-sending retention, and ACK/recovery details.
+The most actionable next interop-prep stabilizer is the shared
+`MAX_DATA` / `MAX_STREAM_DATA` / stream-capacity release packet-protection
+failure on the active transfer and multiconnect paths. Treat the older landed
+status notes below as trace intent unless the current targeted tests prove the
+runtime path still holds.
+
+See [`docs/current-status.md`](../current-status.md) for the current status
+snapshot and
+[`prompts/next-runtime-control-packet-protection.md`](../../prompts/next-runtime-control-packet-protection.md)
+for the paste-ready next work prompt.
+
 ## Remaining-Work Buckets
 
 ### 1. Public-Surface Truthfulness And Freeze

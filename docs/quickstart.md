@@ -9,6 +9,10 @@ Use this guide to validate the repository and produce local packages.
 
 ## Validate The Repository
 
+See [Current repository status](current-status.md) before interpreting these
+commands. As of 2026-04-27, `dotnet build` is green, while the full solution
+test run and repo-wide SpecTrace validation are known-red baselines.
+
 ```bash
 dotnet tool restore
 pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core

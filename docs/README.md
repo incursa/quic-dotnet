@@ -5,6 +5,7 @@ This folder contains the main repository guides for building, packaging, testing
 ## Core Guides
 
 - [Quickstart](quickstart.md)
+- [Current repository status](current-status.md)
 - [Packaging](packaging.md)
 - [Requirements workflow](requirements-workflow.md)
 - [SpecTrace prep](spec-trace-prep.md)
@@ -21,7 +22,8 @@ This folder contains the main repository guides for building, packaging, testing
 ## Suggested Reading Order
 
 1. [Quickstart](quickstart.md)
-2. [Packaging](packaging.md)
-3. [Requirements workflow](requirements-workflow.md)
-4. [SpecTrace prep](spec-trace-prep.md)
-5. [Testing docs](testing/README.md)
+2. [Current repository status](current-status.md)
+3. [Packaging](packaging.md)
+4. [Requirements workflow](requirements-workflow.md)
+5. [SpecTrace prep](spec-trace-prep.md)
+6. [Testing docs](testing/README.md)
