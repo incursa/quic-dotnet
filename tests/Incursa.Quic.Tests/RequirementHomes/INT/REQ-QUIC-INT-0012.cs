@@ -53,14 +53,17 @@ public sealed class REQ_QUIC_INT_0012
     {
         await InteropHarnessTestSupport.WithDefaultPortHarnessAsync(async () =>
         {
-            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+            {
+                string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
 
-            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", string.Empty, harnessDll);
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", string.Empty, harnessDll);
 
-            await serverProcess.WaitForStdoutContainsAsync("retry contract enabled", TimeSpan.FromSeconds(10));
-            Assert.Contains("requestCount=0", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Empty(serverProcess.Stderr);
+                await serverProcess.WaitForStdoutContainsAsync("retry contract enabled", TimeSpan.FromSeconds(10));
+                Assert.Contains("requestCount=0", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("listening on", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Empty(serverProcess.Stderr);
+            });
         });
     }
 
