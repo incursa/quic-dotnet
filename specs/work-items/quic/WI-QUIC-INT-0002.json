@@ -5,7 +5,7 @@
   "title": "QUIC Interop Endpoint-Host Shell Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "status": "planned",
+  "status": "complete",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -29,7 +29,7 @@
     "Moving packet open/protect or TLS ownership into the harness.",
     "Adding 0-RTT, 1-RTT data-path ownership, key update, or native TLS fallback."
   ],
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Implemented the narrow endpoint-host shell and handshake-dispatch boundary. The focused `REQ_QUIC_INT_0008` requirement-home filter passed 8/8 on 2026-04-30, proving client Initial/DCID ownership, server Initial-response emission, routed ingress, outbound datagram handoff, handshake testcase dispatch, real child-process completion with exit `0`, and unroutable route-miss handling. This does not claim `retry`, 0-RTT, 1-RTT data-path ownership, key update, or broad interop readiness.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

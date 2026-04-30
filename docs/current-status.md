@@ -49,6 +49,7 @@ dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-b
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0134|FullyQualifiedName~REQ_QUIC_CRT_0135"
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0008"
 ```
 
 Observed results through 2026-04-30:
@@ -73,6 +74,7 @@ Observed results through 2026-04-30:
 | full `REQ_QUIC_CRT_` requirement-home filter | Passed on 2026-04-30: 304 passed, 0 failed, 0 skipped |
 | focused diagnostics CRT filter | Passed on 2026-04-30: 4 passed, 0 failed, 0 skipped |
 | `QuicDiagnosticsBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; disabled no-op/guarded paths allocated 0 B and enabled typed-event construction allocated 192 B |
+| focused endpoint-host shell INT filter | Passed on 2026-04-30: 8 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -112,9 +114,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 89 implemented | 11 draft |
-| Work items | 91 complete | 10 planned |
-| Verification | 91 passed | 11 planned |
+| Architecture | 90 implemented | 10 draft |
+| Work items | 92 complete | 9 planned |
+| Verification | 92 passed | 10 planned |
 
 ## Implementation State
 
