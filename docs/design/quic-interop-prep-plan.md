@@ -127,8 +127,8 @@ Still missing:
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
 - 0-RTT receive handling, anti-replay, and any public early-data promise.
 - Public resumed-handshake support.
-- Broader key-update lifecycle or public key-update support beyond the narrow
-  internal epoch-cap slice.
+- Public key-update support and interop key-update proof beyond the internal
+  repeated lifecycle.
 
 Why this stays separate:
 
@@ -311,7 +311,8 @@ Notes on dependency:
 - The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but public early-data support, 0-RTT receive handling, and anti-replay remain out of scope.
 - The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but broader receive, anti-replay, and public-promise families remain separate.
 - The peer early-data disposition observation slice under `REQ-QUIC-CRT-0143` is now closed. The managed client/runtime path now observes peer EncryptedExtensions early_data disposition and discards dormant ZeroRtt material on rejection, but public early-data support remains explicitly closed.
-- The narrow internal key-update epoch-cap slice under `REQ-QUIC-RFC9001-S6P5-0007`, `ARC-QUIC-RFC9001-0009`, `WI-QUIC-RFC9001-0009`, and `VER-QUIC-RFC9001-0009` is now closed. The internal epoch identifier can advance past the old 32-bit boundary without confusing the one-bit packet Key Phase signal, but broader repeated key-update lifecycle proof and public key-update support remain separate.
+- The narrow internal key-update epoch-cap slice under `REQ-QUIC-RFC9001-S6P5-0007`, `ARC-QUIC-RFC9001-0009`, `WI-QUIC-RFC9001-0009`, and `VER-QUIC-RFC9001-0009` is now closed. The internal epoch identifier can advance past the old 32-bit boundary without confusing the one-bit packet Key Phase signal, while public key-update support remains separate.
+- The internal repeated 1-RTT key-update lifecycle under `ARC-QUIC-RFC9001-0003`, `WI-QUIC-RFC9001-0003`, and `VER-QUIC-RFC9001-0003` is now closed for the bounded moving-window runtime model. Public key-update support and interop key-update proof remain out of scope.
 
 ## Trace Links
 

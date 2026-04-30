@@ -134,6 +134,7 @@ Observed results through 2026-04-30:
 | `QuicHandshakePacketProtectionBenchmarks` Dry run | Passed on 2026-04-30: 10 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
 | `QuicRetryIntegrityBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
 | `QuicAeadUsageLimitCalculatorBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
+| focused RFC 9001 repeated key-update lifecycle filter | Passed on 2026-04-30 after local commit `df0414f3`: 229 passed, 0 failed, 0 skipped |
 | focused RFC 9002 recovery/congestion filter | Passed on 2026-04-30: 576 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
@@ -174,9 +175,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 99 implemented | 2 draft |
-| Work items | 100 complete | 2 planned |
-| Verification | 101 passed | 2 planned |
+| Architecture | 100 implemented | 1 draft |
+| Work items | 101 complete | 1 planned |
+| Verification | 102 passed | 1 planned |
 
 ## Implementation State
 
@@ -199,6 +200,9 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
+- Internal repeated 1-RTT key-update lifecycle proof is closed for the bounded
+  moving-window runtime model, including wide internal epoch identifiers, but
+  this remains outside the public support promise.
 - Hosted CI and CodeQL workflows passed on `main` for the latest hosted-validated runtime/trace
   commit `ee86bb13` (`25149821476` and `25149821187`).
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
@@ -230,11 +234,10 @@ The next useful lanes are:
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
   hot-path code.
 - Planned or draft trace artifacts that still need implementation or proof:
-  repeated 1-RTT key update lifecycle (`RFC9001-0003`) and broader RFC 9002
-  recovery/congestion closure (`RFC9002-0001`) remain explicit work items even
-  though the current executable baseline is green. The narrow internal
-  key-update epoch-cap slice (`RFC9001-0009`) is closed, but it is not a broad
-  key-update support claim.
+  broader RFC 9002 recovery/congestion closure (`RFC9002-0001`) remains an
+  explicit work item even though the current executable baseline is green. The
+  internal repeated key-update lifecycle and epoch-cap slices are closed, but
+  they are not broad public key-update support claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
