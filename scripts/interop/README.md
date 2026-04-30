@@ -50,7 +50,7 @@ Hosted corroboration:
 - The workflow checks out this repository and `quic-interop-runner` separately, then runs this helper with `-LocalRole server -PeerImplementationSlots quic-go -TestCases handshake`.
 - It uploads `artifacts/interop-runner/` with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
 - The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
-- The helper marks only the local image-replacement slot as compliant for the requested local role so the runner's registry compliance preflight does not skip before the replaced image can run; peer implementation compliance checks are left intact.
+- The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.
 
 Plan-only mode:
 
