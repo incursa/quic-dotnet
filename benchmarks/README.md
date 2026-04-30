@@ -80,12 +80,14 @@ The benchmark project also contains the following permanent suites:
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`
 - `QuicStatelessResetBenchmarks`
 - `QuicAckPiggybackPolicyBenchmarks`
+- `QuicDiagnosticsBenchmarks`
 
 Target a specific suite with `--filter` when iterating locally:
 
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 ```
 
 BenchmarkDotNet writes reports under `BenchmarkDotNet.Artifacts/results`

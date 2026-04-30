@@ -52,6 +52,21 @@ public sealed class REQ_QUIC_CRT_0135
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionEmitDiagnosticEffect);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void DisabledRetryReplayDoesNotAppendDiagnosticEffects()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
+            nowTicks: 1);
+
+        Assert.True(retryResult.StateChanged);
+        Assert.DoesNotContain(retryResult.Effects, effect => effect is QuicConnectionEmitDiagnosticEffect);
+    }
+
     private static QuicConnectionRuntime InvokeCreateRuntime(Type hostType, object settings)
     {
         if (hostType == typeof(QuicClientConnectionHost))

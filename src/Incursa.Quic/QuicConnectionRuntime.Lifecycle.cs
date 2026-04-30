@@ -534,6 +534,11 @@ internal sealed partial class QuicConnectionRuntime
 
     private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
     {
+        if (!diagnosticsEnabled)
+        {
+            return;
+        }
+
         diagnosticsSink.Emit(diagnosticEvent);
         AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
     }

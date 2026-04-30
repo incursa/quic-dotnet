@@ -154,7 +154,11 @@ internal sealed partial class QuicConnectionRuntime
 
         bool stateChanged = true;
         stateChanged |= TrySetHandshakeDestinationConnectionId(retryReceivedEvent.RetrySourceConnectionId.Span);
-        EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived(retryReceivedEvent.Datagram.Span));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.RetryReceived(retryReceivedEvent.Datagram.Span));
+        }
+
         stateChanged |= TryFlushInitialPackets(ref effects);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return stateChanged;
@@ -190,7 +194,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        EmitDiagnostic(ref effects, QuicDiagnostics.VersionNegotiationReceived(versionNegotiationReceivedEvent.Datagram.Span));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.VersionNegotiationReceived(versionNegotiationReceivedEvent.Datagram.Span));
+        }
+
         return DiscardConnection(
             versionNegotiationReceivedEvent.ObservedAtTicks,
             QuicConnectionCloseOrigin.VersionNegotiation,
@@ -2249,7 +2257,11 @@ internal sealed partial class QuicConnectionRuntime
                     ackOnlyPacket: false);
             }
 
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            }
+
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             stateChanged = true;
 
@@ -2318,7 +2330,11 @@ internal sealed partial class QuicConnectionRuntime
                     ackOnlyPacket: false);
             }
 
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            }
+
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
 
             replayOffset += requestedBytes;
@@ -2439,7 +2455,11 @@ internal sealed partial class QuicConnectionRuntime
                     ackOnlyPacket: false);
             }
 
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+            }
+
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
             replayOffset += requestedBytes;
             datagramsSent++;

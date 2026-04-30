@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0032",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC core diagnostics sink and per-connection resolution verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -27,6 +27,7 @@
     "src/Incursa.Quic/Incursa.Quic.csproj",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0134.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0135.cs",
+    "benchmarks/QuicDiagnosticsBenchmarks.cs",
     "benchmarks/README.md"
   ],
   "supplemental_sections": [
@@ -43,6 +44,7 @@
     "Run repo-local SpecTrace validation and markdown render checks after the canonical JSON updates."
   ],
   "expected_result": "The library exposes a typed diagnostics sink, resolves it once per connection, and keeps the disabled path extremely cheap without coupling the transport core to qlog or serialization.",
+  "status_summary": "Passed with focused REQ-QUIC-CRT-0134/0135 requirement-home coverage, a disabled retry-replay regression that proves disabled connections do not append diagnostic effects, and a BenchmarkDotNet Dry run of QuicDiagnosticsBenchmarks showing the disabled no-op/guarded paths allocate 0 B while the enabled typed-event path allocates 192 B.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "ARC-QUIC-CRT-0032",
