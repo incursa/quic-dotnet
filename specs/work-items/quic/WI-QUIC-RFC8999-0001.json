@@ -8,12 +8,12 @@
     "SPEC-QUIC-RFC8999"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Implemented and verified the RFC 8999 shared packet-invariant slice. The focused `REQ_QUIC_RFC8999_S5P1` requirement-home filter passed 22/22, the fuzz harness built successfully, `dotnet tool run sharpfuzz -- fuzz\\bin\\Release\\net10.0\\Incursa.Quic.dll` instrumented the built library dependency, stdin smoke through `Incursa.Quic.Fuzz.dll` passed, and the `QuicHeaderParsingBenchmarks` Dry run executed 9/9 benchmarks on 2026-04-30. The benchmark evidence is execution smoke only and not a public performance claim.",
   "out_of_scope": [
     "RFC 9000-only short-header semantics.",
     "Protocol behavior that does not affect the shared RFC 8999 wire shape."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the RFC 8999 packet-invariant surface, tests, and evidence wiring aligned\nwith the canonical requirements and their overlapping RFC 9000 neighbors.",
   "verification_plan": "Prove the slice through unit tests, property tests, fuzz tests, benchmark\ncoverage, and repo-local JSON validation and quality evidence passes.",

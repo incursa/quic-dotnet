@@ -19,7 +19,7 @@
     "REQ-QUIC-RFC8999-S5P1-0008"
   ],
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "procedure": [
     "Run the RFC 8999 and overlap-focused unit and property tests.",
     "Run the header and version-negotiation fuzz suites.",
@@ -39,8 +39,16 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs",
     "benchmarks/QuicHeaderParsingBenchmarks.cs",
     "quality/benchmarks/header-parsing-benchmarks.md",
-    "quality/testing-intent.yaml"
+    "quality/testing-intent.yaml",
+    "fuzz/Program.cs",
+    "fuzz/README.md",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC8999_S5P1\"",
+    "dotnet build fuzz\\Incursa.Quic.Fuzz.csproj -c Release",
+    "dotnet tool run sharpfuzz -- fuzz\\bin\\Release\\net10.0\\Incursa.Quic.dll",
+    "\"abc\" | dotnet fuzz\\bin\\Release\\net10.0\\Incursa.Quic.Fuzz.dll",
+    "dotnet run -c Release --project benchmarks\\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicHeaderParsingBenchmarks*\""
   ],
+  "status_summary": "Passed on 2026-04-30. The focused RFC 8999 requirement-home filter passed 22/22, the fuzz project built successfully, SharpFuzz instrumented the built `Incursa.Quic.dll` dependency, stdin smoke through the fuzz executable passed, and the `QuicHeaderParsingBenchmarks` Dry job executed 9/9 benchmarks. BenchmarkDotNet reported expected Dry minimum-iteration-time warnings, so this is execution evidence only and not a performance claim.",
   "title": "QUIC RFC 8999 Invariants Verification",
   "owner": "quic-maintainers",
   "preconditions": [
@@ -51,7 +59,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- [`REQ-QUIC-RFC8999-S5P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0007.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)\n- [`header-parsing-benchmarks.md`](../../../quality/benchmarks/header-parsing-benchmarks.md)\n- [`testing-intent.yaml`](../../../quality/testing-intent.yaml)"
+      "content": "- [`REQ-QUIC-RFC8999-S5P1-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0004.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0007.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0007.cs)\n- [`REQ-QUIC-RFC8999-S5P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs)\n- [`QuicHeaderParsingBenchmarks.cs`](../../../benchmarks/QuicHeaderParsingBenchmarks.cs)\n- [`Program.cs`](../../../fuzz/Program.cs)\n- [`README.md`](../../../fuzz/README.md)\n- [`header-parsing-benchmarks.md`](../../../quality/benchmarks/header-parsing-benchmarks.md)\n- [`testing-intent.yaml`](../../../quality/testing-intent.yaml)"
     }
   ],
   "domain": "quic"

@@ -34,7 +34,7 @@
     "Which future packet slices should reuse this shared wire-shape model without inheriting the long-header-only invariants?"
   ],
   "data_and_state_considerations": "- The form bit controls packet classification.\n- The remaining seven control bits stay opaque to the shared layer.\n- Connection-ID length bytes are preserved on the wire and bounded by 255\n  bytes.\n- The version-specific remainder is preserved as trailing opaque data.",
-  "status": "draft",
+  "status": "implemented",
   "domain": "quic",
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "related_artifacts": [

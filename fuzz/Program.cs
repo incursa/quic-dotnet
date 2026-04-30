@@ -7,7 +7,7 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        Fuzzer.OutOfProcess.Run(ConsumeInput);
+        Fuzzer.Run(ConsumeInput);
     }
 
     private static void ConsumeInput(Stream stream)

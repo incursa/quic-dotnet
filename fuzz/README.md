@@ -18,3 +18,15 @@ dotnet build fuzz/Incursa.Quic.Fuzz.csproj -c Release
 ## Tooling
 
 Run `dotnet tool restore` from the repo root to make the local `sharpfuzz` command available through the `SharpFuzz.CommandLine` tool package.
+
+Instrument the built library dependency, not the harness executable:
+
+```bash
+dotnet tool run sharpfuzz -- fuzz/bin/Release/net10.0/Incursa.Quic.dll
+```
+
+For a local smoke run after instrumentation, pipe any byte sequence to the harness:
+
+```bash
+printf abc | dotnet fuzz/bin/Release/net10.0/Incursa.Quic.Fuzz.dll
+```
