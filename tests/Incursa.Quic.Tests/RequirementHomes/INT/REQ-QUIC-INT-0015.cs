@@ -203,6 +203,39 @@ public sealed class REQ_QUIC_INT_0015
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void MulticonnectClientUsesBoundedLossTimingForEachSequentialConnection()
+    {
+        // Hosted run 25186263470 reached connection 21/50 under the runner's handshakeloss scenario
+        // and then failed the child process at the public 10-second handshake default while Initial
+        // and Handshake packets were still being exchanged. The interop-only multiconnect lane needs
+        // a bounded loss budget without changing the public default or broadening support claims.
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "client",
+                testcase: "multiconnect",
+                requests: "https://server4:443/loss-budget"),
+            out InteropHarnessEnvironment? settings,
+            out string? errorMessage));
+        Assert.Null(errorMessage);
+        Assert.NotNull(settings);
+
+        InteropHarnessPreflightPlanner planner = new(settings!, TextWriter.Null);
+        QuicClientConnectionOptions options = planner.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, 443),
+            "server4");
+
+        Assert.Equal(TimeSpan.FromSeconds(10), options.HandshakeTimeout);
+        Assert.Equal(TimeSpan.Zero, options.IdleTimeout);
+
+        InteropHarnessRunner.ApplyMulticonnectLossTimingOptions(options);
+
+        Assert.Equal(InteropHarnessRunner.MulticonnectLossHandshakeBudget, options.HandshakeTimeout);
+        Assert.Equal(InteropHarnessRunner.MulticonnectLossHandshakeBudget, options.IdleTimeout);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task MulticonnectClientFailsHonestlyWhenASequentialResponseStallsAfterTheRequestLine()

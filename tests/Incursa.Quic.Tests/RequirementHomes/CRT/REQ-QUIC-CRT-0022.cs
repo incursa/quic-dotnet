@@ -132,10 +132,10 @@ public sealed class REQ_QUIC_CRT_0022
         Assert.True(runtime.TlsState.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
-        Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
-        Assert.Equal(30UL, runtime.PeerMaxIdleTimeoutMicros);
+        Assert.Equal(15_000UL, runtime.LocalMaxIdleTimeoutMicros);
+        Assert.Equal(30_000UL, runtime.PeerMaxIdleTimeoutMicros);
         Assert.NotNull(runtime.IdleTimeoutState);
-        Assert.Equal(15UL, runtime.IdleTimeoutState!.EffectiveIdleTimeoutMicros);
+        Assert.Equal(15_000UL, runtime.IdleTimeoutState!.EffectiveIdleTimeoutMicros);
     }
 
     [Fact]

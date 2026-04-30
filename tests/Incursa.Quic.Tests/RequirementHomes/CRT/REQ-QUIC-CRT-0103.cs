@@ -494,7 +494,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.PeerTransportParametersCommitted));
-        Assert.Equal(30UL, runtime.PeerMaxIdleTimeoutMicros);
+        Assert.Equal(30_000UL, runtime.PeerMaxIdleTimeoutMicros);
     }
 
     [Fact]
@@ -546,7 +546,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.Equal(QuicConnectionEventKind.HandshakeBootstrapRequested, bootstrapResult.EventKind);
         Assert.NotSame(localParameters, runtime.TlsState.LocalTransportParameters);
         Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
-        Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
+        Assert.Equal(15_000UL, runtime.LocalMaxIdleTimeoutMicros);
         Assert.False(runtime.TlsState.HandshakeKeysAvailable);
         Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
@@ -666,7 +666,7 @@ public sealed class REQ_QUIC_CRT_0103
 
         Assert.True(firstBootstrapResult.StateChanged);
         Assert.False(repeatedBootstrapResult.StateChanged);
-        Assert.Equal(15UL, runtime.LocalMaxIdleTimeoutMicros);
+        Assert.Equal(15_000UL, runtime.LocalMaxIdleTimeoutMicros);
         Assert.NotNull(runtime.TlsState.LocalTransportParameters);
         Assert.Equal(15UL, runtime.TlsState.LocalTransportParameters!.MaxIdleTimeout);
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);

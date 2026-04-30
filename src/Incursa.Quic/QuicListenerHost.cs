@@ -15,7 +15,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
     private const int RetryBootstrapTokenLength = 16;
-    private const ulong TicksPerMicrosecond = (ulong)TimeSpan.TicksPerSecond / 1_000_000UL;
     private const int RetryBootstrapReplayValidationFailureParseHeader = 2;
     private const int RetryBootstrapReplayValidationFailureVersionOrType = 3;
     private const int RetryBootstrapReplayValidationFailureDestinationConnectionIdMismatch = 4;
@@ -911,9 +910,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         return new QuicTransportParameters
         {
-            MaxIdleTimeout = options.IdleTimeout > TimeSpan.Zero
-                ? checked((ulong)options.IdleTimeout.Ticks / TicksPerMicrosecond)
-                : 0,
+            MaxIdleTimeout = QuicTransportParameterTimeUnits.IdleTimeoutToMaxIdleTimeoutMilliseconds(options.IdleTimeout),
             InitialMaxData = (ulong)Math.Max(0, receiveWindowSizes.Connection),
             InitialMaxStreamDataBidiLocal = (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
             InitialMaxStreamDataBidiRemote = (ulong)Math.Max(0, receiveWindowSizes.RemotelyInitiatedBidirectionalStream),

@@ -2860,7 +2860,8 @@ internal sealed partial class QuicConnectionRuntime
             new QuicConnectionTransportParametersCommittedEvent(
                 ObservedAtTicks: nowTicks,
                 TransportFlags: QuicConnectionTransportState.None,
-                LocalMaxIdleTimeoutMicros: localTransportParameters.MaxIdleTimeout),
+                LocalMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
+                    localTransportParameters.MaxIdleTimeout)),
             nowTicks,
             ref effects);
     }
@@ -3008,7 +3009,8 @@ internal sealed partial class QuicConnectionRuntime
             new QuicConnectionTransportParametersCommittedEvent(
                 ObservedAtTicks: nowTicks,
                 TransportFlags: committedTransportFlags,
-                PeerMaxIdleTimeoutMicros: peerTransportParameters.MaxIdleTimeout),
+                PeerMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
+                    peerTransportParameters.MaxIdleTimeout)),
             nowTicks,
             ref effects);
         return stateChanged;

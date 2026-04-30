@@ -17,6 +17,7 @@ internal static class InteropHarnessRunner
     private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
     private const string FlowControlCreditExhaustedMessage = "Writes that wait for additional flow-control credit are not supported by this slice.";
     private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
+    internal static readonly TimeSpan MulticonnectLossHandshakeBudget = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
@@ -57,6 +58,14 @@ internal static class InteropHarnessRunner
     private static InteropHarnessPreflightPlanner CreatePlanner(InteropHarnessEnvironment settings, TextWriter stdout)
     {
         return new InteropHarnessPreflightPlanner(settings, stdout);
+    }
+
+    internal static void ApplyMulticonnectLossTimingOptions(QuicClientConnectionOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        options.HandshakeTimeout = MulticonnectLossHandshakeBudget;
+        options.IdleTimeout = MulticonnectLossHandshakeBudget;
     }
 
     internal static int Run(System.Collections.IDictionary environment, TextWriter stdout, TextWriter stderr)
@@ -762,6 +771,7 @@ internal static class InteropHarnessRunner
                 QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(
                     transferPlan.RemoteEndPoint,
                     transferPlan.RequestUri.Host);
+                ApplyMulticonnectLossTimingOptions(clientOptions);
                 WriteDeterministicClientKeySelection(settings, stdout);
                 await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
                 long bytesDownloaded = await DownloadHttp09ResponseAsync(

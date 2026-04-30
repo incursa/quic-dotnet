@@ -1497,6 +1497,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs",
@@ -1547,12 +1548,13 @@
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "benchmarks/QuicStreamParsingBenchmarks.cs",
     "benchmarks/QuicVariableLengthIntegerBenchmarks.cs",
+    "src/Incursa.Quic/QuicTransportParameterTimeUnits.cs",
     "quality/benchmarks/README.md",
     "quality/testing-intent.yaml"
   ],
   "title": "QUIC RFC 9000 Transport Verification",
   "owner": "quic-maintainers",
-  "status_summary": "Passed on 2026-04-30 for the bounded RFC 9000 transport trace surface. The focused requirement-home and codec/fuzz filter (`FullyQualifiedName~RFC9000|...transport/parser/codec/fuzz classes`) passed 1,682/1,682. Dry benchmark smoke executed `QuicHeaderParsingBenchmarks` (9), `QuicFrameCodecBenchmarks` (12), `QuicStreamParsingBenchmarks` (4), and `QuicVariableLengthIntegerBenchmarks` (8). BenchmarkDotNet reported expected Dry minimum-iteration-time warnings, so the benchmark evidence proves suite execution only and is not a performance claim. Full sender/recovery orchestration and broad STOP_SENDING/RESET orchestration remain outside this umbrella except where separately traced.",
+  "status_summary": "Passed on 2026-04-30 for the bounded RFC 9000 transport trace surface. The focused requirement-home and codec/fuzz filter (`FullyQualifiedName~RFC9000|...transport/parser/codec/fuzz classes`) passed 1,682/1,682. Dry benchmark smoke executed `QuicHeaderParsingBenchmarks` (9), `QuicFrameCodecBenchmarks` (12), `QuicStreamParsingBenchmarks` (4), and `QuicVariableLengthIntegerBenchmarks` (8). A same-day idle-timeout follow-up added focused `REQ-QUIC-RFC9000-S18P2-0002` proof that public `TimeSpan` idle-timeout values are encoded as RFC 9000 `max_idle_timeout` milliseconds on the wire and converted to runtime microseconds only after transport-parameter commit. BenchmarkDotNet reported expected Dry minimum-iteration-time warnings, so the benchmark evidence proves suite execution only and is not a performance claim. Full sender/recovery orchestration and broad STOP_SENDING/RESET orchestration remain outside this umbrella except where separately traced.",
   "preconditions": [
     "The `Incursa.Quic` solution builds successfully.",
     "The RFC9000 requirement traits are discoverable by the quality inventory.",
