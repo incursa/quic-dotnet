@@ -60,6 +60,12 @@ jobs:
           tshark --version
           editcap --version
 
+      - name: Pre-pull runner peer images
+        shell: bash
+        run: |
+          docker pull martenseemann/quic-network-simulator
+          docker pull martenseemann/quic-go-interop:latest
+
       - name: Run server-handshake-quic-go cell
         working-directory: quic-dotnet
         shell: pwsh
@@ -150,6 +156,12 @@ jobs:
           python --version
           tshark --version
           editcap --version
+
+      - name: Pre-pull runner peer images
+        shell: bash
+        run: |
+          docker pull martenseemann/quic-network-simulator
+          docker pull martenseemann/quic-go-interop:latest
 
       - name: Run interop runner cell
         working-directory: quic-dotnet

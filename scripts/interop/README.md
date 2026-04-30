@@ -56,6 +56,7 @@ Hosted corroboration:
 - The workflow uses Node 24-compatible action majors for Python setup and artifact upload; Docker setup remains on v5, whose v5 release also defaults to Node 24.
 - The workflow installs the latest stable Docker Engine through `docker/setup-docker-action@v5` before the helper runs because the upstream runner compose file uses `interface_name`, which requires Docker Engine 28.1 or later.
 - The workflow installs `tshark` and `editcap` through Ubuntu packages so the runner can perform its packet trace post-check.
+- It pre-pulls the simulator and quic-go peer images before each timed runner cell so first-use Docker image downloads do not consume the runner testcase timeout.
 - It uploads a distinct per-cell `artifacts/interop-runner/<cell>/` bundle with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
 - The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
 - The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.
@@ -94,7 +95,7 @@ When `QLOGDIR` is enabled by the runner, the harness writes contained qlog JSON 
 - If the runner aborts with `Unable to create certificates`, check `runner.stderr.log` first. That comes from the upstream runner's shell-based certificate bootstrap, not from the helper itself.
 - The helper still keeps the build log, runner stdout/Markdown, stderr, invocation summary, and the partial log tree so you can inspect the failure without rerunning with extra flags.
 - On the narrow advisory-only `FileNotFoundError` path, the helper itself exits `0` and prints an `Advisory:` line, but it intentionally preserves the upstream runner's own inner exit code plus the failed `runner-report.json` and `runner-report.md` bundle for audit. Treat the helper exit code and advisory text as the local classification result, and treat the preserved runner report as evidence of the external post-check failure rather than a managed transport regression.
-- If a real local run fails preflight because `tshark` or `editcap` is missing, install Wireshark or add its tools directory to `PATH`, then rerun. A `DryRun` plan does not require these tools.
+- If a real local run fails preflight because `tshark` or `editcap` is missing, install Wireshark or add its tools directory to `PATH`, then rerun. On Windows, the helper also recognizes the standard per-user Wireshark install under `%LOCALAPPDATA%\Programs\Wireshark`. A `DryRun` plan does not require these tools.
 
 ## `Invoke-QuicInteropAutopilot.ps1`
 
