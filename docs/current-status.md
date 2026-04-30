@@ -50,6 +50,7 @@ gh run watch 25147993693 --repo incursa/quic-dotnet --exit-status
 gh run watch 25147993402 --repo incursa/quic-dotnet --exit-status
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0012|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_CRT_0123"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0002|FullyQualifiedName~REQ_QUIC_API_0003|FullyQualifiedName~REQ_QUIC_API_0004|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0006|FullyQualifiedName~REQ_QUIC_API_0007|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009|FullyQualifiedName~REQ_QUIC_API_0010|FullyQualifiedName~REQ_QUIC_API_0011"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0134|FullyQualifiedName~REQ_QUIC_CRT_0135"
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
@@ -65,7 +66,7 @@ Observed results through 2026-04-30:
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,285 passed, 0 failed, 0 skipped, 3,285 total |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,287 passed, 0 failed, 0 skipped, 3,287 total |
 | `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
 | `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 315 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
@@ -82,6 +83,7 @@ Observed results through 2026-04-30:
 | `gh run watch 25147993402 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `16e575e4` |
 | focused API stream-capacity filter | Passed on 2026-04-30: 48 passed, 0 failed, 0 skipped |
 | focused pinned-policy API/CRT filter | Passed on 2026-04-30: 28 passed, 0 failed, 0 skipped |
+| focused public API surface filter | Passed on 2026-04-30: 81 passed, 0 failed, 0 skipped |
 | full `REQ_QUIC_CRT_` requirement-home filter | Passed on 2026-04-30: 304 passed, 0 failed, 0 skipped |
 | focused diagnostics CRT filter | Passed on 2026-04-30: 4 passed, 0 failed, 0 skipped |
 | `QuicDiagnosticsBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; disabled no-op/guarded paths allocated 0 B and enabled typed-event construction allocated 192 B |
@@ -128,9 +130,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 93 implemented | 7 draft |
-| Work items | 95 complete | 6 planned |
-| Verification | 95 passed | 7 planned |
+| Architecture | 94 implemented | 6 draft |
+| Work items | 96 complete | 5 planned |
+| Verification | 96 passed | 6 planned |
 
 ## Implementation State
 

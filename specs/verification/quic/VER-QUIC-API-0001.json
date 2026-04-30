@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-API-0001",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Incursa.Quic Public API Surface Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -51,6 +51,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
@@ -59,13 +60,14 @@
     "docs/design/quic-public-api.md",
     "specs/requirements/quic/SPEC-QUIC-API.json",
     "specs/architecture/quic/ARC-QUIC-API-0001.json",
-    "specs/work-items/quic/WI-QUIC-API-0001.json"
+    "specs/work-items/quic/WI-QUIC-API-0001.json",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0002|FullyQualifiedName~REQ_QUIC_API_0003|FullyQualifiedName~REQ_QUIC_API_0004|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0006|FullyQualifiedName~REQ_QUIC_API_0007|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009|FullyQualifiedName~REQ_QUIC_API_0010|FullyQualifiedName~REQ_QUIC_API_0011\""
   ],
-  "status_summary": "Execution evidence now covers the supported positive client/server loopback boundary, the listener/server slice, the connected-session facade, the supported positive stream open/accept boundary on the active loopback path, the supported write/completion plus narrow reset/stop-sending abort pair and supported combined abort composition on that same path, the supported stream-capacity callback boundary on that same path, the shared support-marker slice, and the pending client-connect handshake-timeout boundary. The proof target includes client option/connect validation, unsupported TLS rejection, support-marker determinism, terminal cancellation/disposal plus handshake-timeout behavior, and the narrow stream-entry, write/completion, abort-pair, combined-abort, plus stream-capacity boundaries; full TLS-auth parity and broader stream-management remain out of scope.",
+  "status_summary": "Passed on 2026-04-30. The focused public-surface filter passed 81/81 across `REQ_QUIC_API_0001` through `REQ_QUIC_API_0011`, covering approved public type shape, internal seam hiding, listener/server validation, connected-session facade mapping, supported positive loopback establishment, stream open/accept, supported write/completion, narrow reset/stop-sending abort pair, supported combined abort composition, supported stream-capacity callback behavior, shared support-marker semantics, pending client-connect timeout/cancellation/disposal behavior, and unsupported TLS rejection. Full TLS-auth parity, broad public early-data support, and broader stream-management remain out of scope.",
   "supplemental_sections": [
     {
       "heading": "Evidence Notes",
-      "content": "The current proof includes build output and focused requirement-home tests for `REQ-QUIC-API-0001`, `REQ-QUIC-API-0002`, `REQ-QUIC-API-0003`, `REQ-QUIC-API-0004`, `REQ-QUIC-API-0005`, `REQ-QUIC-API-0006`, `REQ-QUIC-API-0008`, `REQ-QUIC-API-0009`, `REQ-QUIC-API-0010`, and `REQ-QUIC-API-0011`, including the supported positive loopback establishment, stream-entry, supported write/completion plus reset/stop-sending abort pair, supported combined `Abort(Both, ...)` composition, shared support-marker checks, the pending client-connect handshake-timeout completion path, and stream-capacity callback tests covering the initial delta, later growth, and real close-driven release. The remaining evidence addendum work is now focused on broader TLS/auth parity and broader stream-management follow-ons."
+      "content": "The current proof includes build output and focused requirement-home tests for `REQ-QUIC-API-0001`, `REQ-QUIC-API-0002`, `REQ-QUIC-API-0003`, `REQ-QUIC-API-0004`, `REQ-QUIC-API-0005`, `REQ-QUIC-API-0006`, `REQ-QUIC-API-0007`, `REQ-QUIC-API-0008`, `REQ-QUIC-API-0009`, `REQ-QUIC-API-0010`, and `REQ-QUIC-API-0011`, including the supported positive loopback establishment, stream-entry, supported write/completion plus reset/stop-sending abort pair, supported combined `Abort(Both, ...)` composition, shared support-marker checks, the pending client-connect handshake-timeout completion path, stream-capacity callback tests covering the initial delta, later growth, real close-driven release, and direct proof that the TLS, handshake, packet-protection, runtime, host, endpoint, and validator seams remain internal. Broader TLS/auth parity and broader stream-management follow-ons remain out of scope."
     },
     {
       "heading": "Reference Behavioral Evidence",

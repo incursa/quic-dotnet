@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-API-0001",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "Incursa.Quic Public API Surface Promotion Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -16,7 +16,7 @@
     "Adding new transport features beyond the approved facade."
   ],
   "verification_plan": "Use API-diff and reflection-based surface checks, plus compile-time access tests, to prove the approved public types are visible and the listed seam types are not. Add focused consumer-behavior tests for `QuicStreamType` shape, close/dispose/error projection, read-side terminal behavior, write-side completion behavior, supported `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` loopback behavior, supported `Abort(Both, ...)` loopback behavior, listener setup validation, listener disposal semantics, accept cancellation, supported positive loopback establishment, supported stream open/accept on the active loopback path, supported write/completion on the active loopback path, supported initial stream-capacity callback payloads, pending client-connect cancellation/disposal semantics, pending client-connect handshake-timeout completion semantics, unsupported TLS rejection, and the connection/stream/listener/client facade mapping to `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicStream`. Keep the proof focused on surface shape, positive-establishment honesty, the initial stream-capacity subset, and terminal behavior rather than full wire success; later stream-capacity evolution, fuzzing, and benchmarks remain separate slices.",
-  "completion_notes": "This item keeps the stream-capacity callback narrow and truthful for the initial delta, later real MAX_STREAMS growth, and real peer stream-close-driven capacity release on the supported loopback path. The shared `IsSupported` marker is now part of the same public surface promotion slice, the supported `Abort(Both, ...)` composition now rides the same reset/stop-sending lanes on the bidirectional loopback path, the pending client-connect wait now honors the captured HandshakeTimeout budget through the public ConnectionTimeout error surface, and broader write-heavy stream behavior remains separate slices.",
+  "completion_notes": "Completed and verified the narrow public API facade, including approved public type shape, internal seam hiding, listener/client/stream entry points, pending-connect timeout/error projection, supported write/completion, narrow read/write/Both abort behavior, stream-capacity callback proof, shared `IsSupported` marker semantics, and unsupported TLS rejection. The focused `REQ_QUIC_API_0001` through `REQ_QUIC_API_0011` public-surface filter passed 81/81 on 2026-04-30. This does not broaden the support boundary beyond the traced managed loopback and selected stream/control behavior.",
   "design_links": [
     "ARC-QUIC-API-0001"
   ],
@@ -42,7 +42,7 @@
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- `src/Incursa.Quic/PublicAPI.Unshipped.txt`\n- `src/Incursa.Quic/PublicAPI.Shipped.txt`\n- `src/Incursa.Quic/QuicConnectionRuntime.cs`\n- `src/Incursa.Quic/QuicConnectionStreamState.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeHost.cs`\n- `src/Incursa.Quic/QuicListener.cs`\n- `src/Incursa.Quic/QuicListenerHost.cs`\n- `src/Incursa.Quic/QuicListenerOptions.cs`\n- `src/Incursa.Quic/QuicServerConnectionOptions.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeShard.cs`\n- `src/Incursa.Quic/QuicConnectionSendRuntime.cs`\n- `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`\n- `src/Incursa.Quic/QuicTlsKeySchedule.cs`\n- `src/Incursa.Quic/QuicTlsTranscriptProgress.cs`\n- `src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`"
+      "content": "- `src/Incursa.Quic/PublicAPI.Unshipped.txt`\n- `src/Incursa.Quic/PublicAPI.Shipped.txt`\n- `src/Incursa.Quic/QuicConnectionRuntime.cs`\n- `src/Incursa.Quic/QuicConnectionStreamState.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeHost.cs`\n- `src/Incursa.Quic/QuicListener.cs`\n- `src/Incursa.Quic/QuicListenerHost.cs`\n- `src/Incursa.Quic/QuicListenerOptions.cs`\n- `src/Incursa.Quic/QuicServerConnectionOptions.cs`\n- `src/Incursa.Quic/QuicConnectionRuntimeShard.cs`\n- `src/Incursa.Quic/QuicConnectionSendRuntime.cs`\n- `src/Incursa.Quic/QuicTransportTlsBridgeState.cs`\n- `src/Incursa.Quic/QuicTlsKeySchedule.cs`\n- `src/Incursa.Quic/QuicTlsTranscriptProgress.cs`\n- `src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`\n- `tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0007.cs`"
     },
     {
       "heading": "Reference Behavioral Evidence",
