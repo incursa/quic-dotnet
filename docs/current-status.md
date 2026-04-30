@@ -236,11 +236,11 @@ The next useful lanes are:
 - No known planned or draft trace artifacts remain in the current core QUIC
   artifact set. The RFC 9002 recovery/congestion front door is closed for the
   current repository-owned executable proof surface. Future work should be
-  selected from explicit gap records such as path migration, hosted interop
-  expansion, public-surface hardening, 0-RTT receive/anti-replay, or newly
-  discovered behavior gaps. The internal repeated key-update lifecycle and
-  epoch-cap slices are closed, but they are not broad public key-update support
-  claims.
+  selected from explicit gap records such as hosted interop expansion,
+  public-surface hardening, 0-RTT receive/anti-replay, concrete future
+  path-migration matrix cells, or newly discovered behavior gaps. The internal
+  repeated key-update lifecycle and epoch-cap slices are closed, but they are
+  not broad public key-update support claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
