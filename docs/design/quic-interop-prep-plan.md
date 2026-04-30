@@ -22,7 +22,10 @@ local commit `7dda7669` is green for the repo-owned executable and trace
 checks: Release build passes with 0 warnings and 0 errors, the full no-build
 test run passes 3,299 of 3,299 tests, the repo-local SpecTrace core profile
 validates 313 artifacts, and Workbench core validation reports 0 errors and
-0 warnings.
+0 warnings. The later local trace/gap closure train through commit `cbe8d8d1`
+closes the stale RFC 9002, migration-core, handshake-orchestration, and ACK
+piggyback proof-tail ledger entries without changing the public support
+boundary.
 
 This green local baseline does not make the repository QUIC-complete or
 interop-ready. Treat older landed status notes below as trace intent, and keep
@@ -84,20 +87,30 @@ Supported today:
 - The connection runtime already owns phase, close/drain, timers, stream registry coordination, send/recovery ownership, and the current supported loopback handshake path.
 - The handshake-flow and TLS bridge seams already exist internally and are test-backed.
 - The server-role 1-RTT publication floor and the client-role post-Finished 1-RTT readiness seam are now proven internally.
+- The handshake-orchestration umbrella, migration-core path-state decomposition
+  front, RFC 9002 recovery front door, and ACK packet-composition proof-tail
+  are closed under the local requirement-home and trace validators.
 
 Partially implemented but not yet promised:
 
-- Endpoint-host and runtime bootstrap plumbing that can already be exercised by the shell tests, but not yet by a fully honest interop runner path.
+- Endpoint-host and runtime bootstrap plumbing that can already drive the
+  supported narrow interop cells, while broader testcase dispatch remains
+  separate from the public promise.
 
 Still missing:
 
-- A stable interop-facing bootstrap story for Initial/DCID handling on the runner path.
-- Enough runtime cleanup to treat the current handshake floor as stable instead of partially proven.
-- Broader sender/recovery and diagnostics ownership that the interop harness still depends on.
+- Hosted or broader peer-matrix evidence beyond the narrow recorded
+  server-role handshake cell and local harness contracts.
+- Public API decisions for any broader runtime metadata, migration behavior, or
+  connection-management surface.
+- Requirement-owned expansion for unsupported interop testcases before they stop
+  returning the honest unsupported status.
 
 Why this stays separate:
 
-- The current broader API+CRT requirement-home pass still shows red areas in the handshake floor, so this bucket must be stabilized before interop work can claim more than a narrow shell.
+- The local trace baseline is green, but external peer coverage and public API
+  promises still need their own requirement-owned evidence before interop work
+  can claim more than the narrow supported shell.
 
 ### 4. TLS / Policy / Trust / Validation
 

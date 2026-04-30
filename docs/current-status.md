@@ -12,8 +12,11 @@ The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
 the repo-defined Dry and Short benchmark baseline jobs complete after local
-commit `7dda7669`. Hosted CI and CodeQL workflows also passed for the latest
-hosted-validated runtime/trace commit `ee86bb13`.
+commit `7dda7669`. The local trace/gap closure train through commit
+`cbe8d8d1` also closes the stale RFC 9002, migration-core,
+handshake-orchestration, and ACK-piggyback proof-tail ledger items without
+widening the public support promise. Hosted CI and CodeQL workflows also passed
+for the latest hosted-validated runtime/trace commit `ee86bb13`.
 A manual hosted
 interop-runner handshake workflow is configured as an advisory artifact
 collection lane, and the narrow server-role handshake dispatch passed on GitHub
@@ -136,6 +139,10 @@ Observed results through 2026-04-30:
 | `QuicAeadUsageLimitCalculatorBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
 | focused RFC 9001 repeated key-update lifecycle filter | Passed on 2026-04-30 after local commit `df0414f3`: 229 passed, 0 failed, 0 skipped |
 | focused RFC 9002 recovery/congestion filter | Passed on 2026-04-30: 576 passed, 0 failed, 0 skipped |
+| focused CRT migration path-state verification-artifact filter | Passed on 2026-04-30: 9 passed, 0 failed, 0 skipped |
+| focused CRT migration direct requirement filter | Passed on 2026-04-30: 6 passed, 0 failed, 0 skipped |
+| focused handshake/`HANDSHAKE_DONE`/wide-epoch guard | Passed on 2026-04-30: 256 passed, 0 failed, 0 skipped |
+| focused S13P2P1 ACK packet-composition filter | Passed on 2026-04-30: 29 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -233,14 +240,16 @@ The next useful lanes are:
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
   hot-path code.
-- No known planned or draft trace artifacts remain in the current core QUIC
-  artifact set. The RFC 9002 recovery/congestion front door is closed for the
-  current repository-owned executable proof surface. Future work should be
-  selected from explicit gap records such as hosted interop expansion,
-  public-surface hardening, 0-RTT receive/anti-replay, concrete future
-  path-migration matrix cells, or newly discovered behavior gaps. The internal
-  repeated key-update lifecycle and epoch-cap slices are closed, but they are
-  not broad public key-update support claims.
+- No known planned or draft trace artifacts, stale open local proof-tail gaps,
+  or red local executable clusters remain in the current core QUIC artifact
+  set. The RFC 9002 recovery/congestion front door, migration-core
+  path-state decomposition front, handshake-orchestration umbrella, and ACK
+  piggyback proof-tail are closed for their current repository-owned proof
+  surfaces. Future work should be selected from explicit gap records such as
+  hosted interop expansion, public-surface hardening, 0-RTT receive/anti-replay,
+  concrete future path-migration matrix cells, or newly discovered behavior
+  gaps. The internal repeated key-update lifecycle and epoch-cap slices are
+  closed, but they are not broad public key-update support claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
