@@ -98,7 +98,7 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 70 implemented | 30 draft |
+| Architecture | 87 implemented | 13 draft |
 | Work items | 90 complete | 11 planned |
 | Verification | 89 passed | 13 planned |
 

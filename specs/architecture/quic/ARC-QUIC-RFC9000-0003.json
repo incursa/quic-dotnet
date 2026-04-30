@@ -8,7 +8,7 @@
   ],
   "artifact_id": "ARC-QUIC-RFC9000-0003",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "purpose": "Describe how the endpoint-owned version-profile snapshot keeps RFC 9000 Stateless Reset generation acceptable after connection-state loss.",
   "satisfies": [
     "REQ-QUIC-RFC9000-S10P3-0029"

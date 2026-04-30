@@ -4,7 +4,7 @@
   "artifact_type": "architecture",
   "title": "QUIC RFC 9002 Retry Recovery Reset Architecture",
   "domain": "quic",
-  "status": "draft",
+  "status": "implemented",
   "owner": "quic-maintainers",
   "related_artifacts": [
     "SPEC-QUIC-RFC9002",
