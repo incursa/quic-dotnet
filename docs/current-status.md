@@ -175,9 +175,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 100 implemented | 1 draft |
-| Work items | 101 complete | 1 planned |
-| Verification | 102 passed | 1 planned |
+| Architecture | 101 implemented | 0 draft |
+| Work items | 102 complete | 0 planned |
+| Verification | 103 passed | 0 planned |
 
 ## Implementation State
 
@@ -233,11 +233,14 @@ The next useful lanes are:
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
   hot-path code.
-- Planned or draft trace artifacts that still need implementation or proof:
-  broader RFC 9002 recovery/congestion closure (`RFC9002-0001`) remains an
-  explicit work item even though the current executable baseline is green. The
-  internal repeated key-update lifecycle and epoch-cap slices are closed, but
-  they are not broad public key-update support claims.
+- No known planned or draft trace artifacts remain in the current core QUIC
+  artifact set. The RFC 9002 recovery/congestion front door is closed for the
+  current repository-owned executable proof surface. Future work should be
+  selected from explicit gap records such as path migration, hosted interop
+  expansion, public-surface hardening, 0-RTT receive/anti-replay, or newly
+  discovered behavior gaps. The internal repeated key-update lifecycle and
+  epoch-cap slices are closed, but they are not broad public key-update support
+  claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect

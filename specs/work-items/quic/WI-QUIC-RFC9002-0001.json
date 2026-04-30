@@ -8,16 +8,16 @@
     "SPEC-QUIC-RFC9002"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Closed for the current repo-owned executable RFC 9002 recovery and congestion-control proof surface. The 2026-04-30 focused RFC9002 requirement-home filter passed 576/576, the full local suite passed 3,299/3,299, core SpecTrace validation passed for 313 artifacts, Workbench core validation returned zero errors/warnings, and the local Dry/Short benchmark baseline completed. This does not claim broad public interop readiness, public API stability, or broader support beyond the traced facade.",
   "out_of_scope": [
     "RFC 8999 version-independent invariants.",
     "RFC 9000 transport framing that does not affect recovery state.",
     "RFC 9001 packet-protection behavior."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
-  "summary": "Keep the RFC 9002 loss-detection and congestion-control contract visible in the trace system even while the implementation surface is still growing.\nPreserve the ability to add direct test and benchmark evidence as the recovery code matures.",
-  "verification_plan": "Run the recovery-oriented unit and property tests as the implementation surface grows.\nRun the ACK, transport-parameter, and parser fuzz/benchmark evidence that feeds the RFC 9002 proof plan.\nRun the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links.",
+  "summary": "Keep the RFC 9002 loss-detection and congestion-control contract visible in the trace system for the current repository-owned executable floor.\nFuture work must enter through a named gap, requirement, or split artifact rather than treating this front-door work item as an implicit promise of broader public support.",
+  "verification_plan": "Run the focused RFC9002 requirement-home filter, then keep the full solution test, core SpecTrace JSON validation, Workbench core validation, and benchmark baseline evidence current when recovery behavior changes.\nRun ACK, transport-parameter, parser, fuzz, and benchmark evidence for newly touched recovery slices before closing any additional gap.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
@@ -25,7 +25,7 @@
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Keep the loss-detection, ACK-processing, and congestion-control helpers aligned with the RFC 9002 requirement set as the implementation lands.\n- Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.\n- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically.",
+  "planned_changes": "- Keep the loss-detection, ACK-processing, and congestion-control helpers aligned with the RFC 9002 requirement set when new behavior lands.\n- Keep the unit, property, fuzz, and benchmark suites discoverable by the quality inventory.\n- Keep the trace links stable so the derived trace reports can backfill downstream proof automatically.",
   "design_links": [
     "ARC-QUIC-RFC9002-0001"
   ],

@@ -17,7 +17,7 @@
   ],
   "artifact_id": "ARC-QUIC-RFC9002-0001",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "purpose": "Describe how the loss-detection and congestion-control slice is intended to satisfy the RFC 9002 requirements, including the packet-number-space and transport-parameter surfaces it depends on.",
   "satisfies": [
     "REQ-QUIC-RFC9002-S2-0001",
@@ -246,10 +246,10 @@
     "REQ-QUIC-RFC9002-SBP9-0003"
   ],
   "risks": [
-    "RFC 9002 currently has less dedicated implementation surface in the repository than RFC 9000 and RFC 9001, so the verification artifact needs to stay honest about what is implemented versus what is still planned.",
+    "The front-door recovery architecture is implemented for the repo-owned executable proof surface, but this is still not a broad public interop or product-support claim.",
     "If ACK, transport-parameter, and recovery evidence are not kept separate, the loss-detection proof surface will become harder to audit."
   ],
-  "design_summary": "The current repository surface keeps the RFC 9002 recovery concerns visible even where the implementation is still thin, so the requirements can be traced without collapsing the slice into unrelated transport rules.\nThe design keeps the proof boundary explicit: transport-parameter helpers and ACK-frame surfaces are evidence inputs, while dedicated recovery logic can grow without changing the requirement IDs.",
+  "design_summary": "The repository-owned RFC 9002 recovery and congestion-control surface is now implemented for the current traced executable floor. The proof boundary remains explicit: ACK-frame, transport-parameter, RTT, congestion-control, PTO, sender/recovery ledger, packet-number-space cleanup, and benchmark evidence are linked through the RFC 9002 requirement homes and split artifacts.\nFuture recovery work must continue under a named gap or requirement slice, such as path migration, hosted interop widening, public-surface support, or newly discovered recovery behavior, rather than reopening this front-door artifact as an implicit umbrella.",
   "title": "QUIC RFC 9002 Loss-Detection Architecture",
   "owner": "quic-maintainers",
   "key_components": [
@@ -259,8 +259,14 @@
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/QuicVariableLengthInteger.cs",
+    "src/Incursa.Quic/QuicPacketNumberSpace.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicRttEstimator.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
-    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs"
+    "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/"
   ],
   "domain": "quic"
 }
