@@ -41,21 +41,21 @@ This is a planning artifact only. It does not change code.
 
 ## Cross-Cutting Finding
 
-The approved public facade is now in place, and the current slice includes narrow but real client-entry establishment, stream-entry, write/completion, a narrow `RESET_STREAM` / `STOP_SENDING` abort pair, the supported `Abort(Both, ...)` composition on the bidirectional loopback path, the supported stream-data-loss suppression follow-on on the reset/stop-sending path, the outbound-open disposal terminalization behavior, the shared `IsSupported` capability marker, and the stream-capacity callback boundary. The remaining gaps are behavioral rather than boundary-shape gaps: fuller client TLS/auth parity and later stream-management evolution beyond the supported abort/capacity subset.
+The approved public facade is now in place, and the current slice includes narrow but real client-entry establishment, stream-entry, write/completion, a `RESET_STREAM` / `STOP_SENDING` abort pair, supported `Abort(Both, ...)` composition on the bidirectional loopback path, supported stream-data-loss suppression on the reset/stop-sending path, outbound-open disposal terminalization, the shared `IsSupported` capability marker, the stream-capacity callback boundary, the exact-pinning floor, the mainstream BCL client-validation path, and the callback-driven server-side client-auth floors. The remaining gaps are behavioral rather than boundary-shape gaps and require a new traced requirement before public support widens.
 
 - `src/Incursa.Quic/PublicAPI.Unshipped.txt` now matches the approved public facade instead of leaking helper, frame, runtime, and transport types.
 - `QuicStreamType` is now the approved direction-only `Bidirectional` / `Unidirectional` model.
 - `QuicConnectionLifecycleState` and `QuicIdleTimeoutState` are no longer part of the public facade.
 - The listener/server entry points are now promoted on top of a small internal host shell, and the client entry point is present as a pending/cancelable shell over the existing endpoint-host/runtime seams.
 
-That boundary trim is complete for this slice; the remaining work is about stream behavior and the remaining client API follow-ons.
+That boundary trim is complete for this slice. Remaining work is about future behavior, not hidden public helper types or already-landed client TLS/auth follow-ons.
 
 ## B. Gap Matrix
 
 | Concept | Category | Current implementation | Why it lands here |
 |---|---|---|---|
 | Public boundary trim | 0. Closed | The analyzer file now matches the approved facade, and the helper/runtime/wire surface is back behind the boundary. | The remaining work is behavioral, not surface-shape enforcement. |
-| `QuicConnection` family | 1. Implemented at the approved boundary | `QuicConnectionRuntime` already owns phase, close/drain, timers, TLS bridge state, stream registry, and send/recovery, and `QuicConnection.ConnectAsync(...)` now has the supported positive loopback establishment boundary on the existing client host/runtime seams. The same runtime/stream-state seam now backs the narrow active-loopback `AcceptInboundStreamAsync(...)`, `OpenOutboundStreamAsync(...)`, supported write/completion boundary, the narrow `RESET_STREAM` / `STOP_SENDING` abort pair, the supported `Abort(Both, ...)` composition, the outbound-open disposal terminalization behavior, the shared `IsSupported` capability marker, and the narrow stream-capacity callback subset over a minimal 1-RTT short-header stream-control path with later real peer `MAX_STREAMS` growth and real peer stream-close-driven capacity release on the active-loopback path. | Endpoint metadata and later stream-management evolution beyond the supported abort/capacity subset stay out of scope. |
+| `QuicConnection` family | 1. Implemented at the approved boundary | `QuicConnectionRuntime` already owns phase, close/drain, timers, TLS bridge state, stream registry, and send/recovery, and `QuicConnection.ConnectAsync(...)` now has the supported positive loopback establishment boundary on the existing client host/runtime seams. The same runtime/stream-state seam now backs the narrow active-loopback `AcceptInboundStreamAsync(...)`, `OpenOutboundStreamAsync(...)`, supported write/completion boundary, the `RESET_STREAM` / `STOP_SENDING` abort pair, the supported `Abort(Both, ...)` composition, the outbound-open disposal terminalization behavior, the shared `IsSupported` capability marker, and the narrow stream-capacity callback subset over a minimal 1-RTT short-header stream-control path with later real peer `MAX_STREAMS` growth and real peer stream-close-driven capacity release on the active-loopback path. | Endpoint metadata and later stream-management evolution beyond the supported abort/capacity subset stay out of scope. |
 | `QuicListener` family | 1. Implemented at the approved boundary | `QuicListenerHost` binds a UDP socket, owns the accept queue, and bridges the narrow callback into provisional `QuicConnection` instances. | Listener startup and accept are now honest and narrow; the next gaps are on the client and stream sides. |
 | `QuicStream` family | 1. Implemented at the approved boundary | `QuicConnectionStreamState` already tracks send/receive state, final size, reset handling, flow control, stream snapshots, and the narrow peer-stream openness needed for the supported stream-entry slice, and `QuicStream` now has a real supported write/completion lane plus a real `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Write, ...)` / `Abort(QuicAbortDirection.Read, ...)` pair on the active loopback path. The runtime now also suppresses retransmission of single-stream data packets once the supported reset/stop-sending abort path has committed. | The read-side facade is promoted, the supported stream-entry/write-completion/read-write-abort boundary is real, the supported bidirectional path already composes those lanes for `Abort(Both, ...)`, and the remaining follow-ons are later stream-management evolution beyond the supported abort/capacity subset. |
 | `QuicConnectionOptions` / `QuicReceiveWindowSizes` | 1. Implemented at the approved boundary | Internal state already carries the numerical flow-control and idle-timeout knobs through `QuicConnectionStreamStateOptions`, `QuicIdleTimeoutState`, and `QuicConnectionRuntime`. | The remaining work is not the option bags themselves but the follow-on stream and establishment features. |
@@ -68,26 +68,26 @@ That boundary trim is complete for this slice; the remaining work is about strea
 | `QuicStreamCapacityChangedArgs` | 1. Implemented at the approved boundary | The public args type and `QuicConnectionOptions.StreamCapacityCallback` now exist, and the callback is backed by real peer stream-limit commit bookkeeping on the supported loopback and active-loopback paths. | The supported subset is intentionally narrow: it reports the initial non-zero outbound stream-open capacity increments committed from peer transport parameters plus later real peer `MAX_STREAMS` growth and real peer stream-close-driven capacity release on the supported active loopback path. |
 | `QuicConnection.IsSupported` / `QuicListener.IsSupported` | 1. Implemented at the approved boundary | The two public static properties now share one cached runtime-capability probe over the supported managed slice prerequisites. | The marker is intentionally narrow and does not imply feature completeness, interop-runner readiness, 0-RTT, or key update. |
 
-## C. 10 Highest-Value Gaps
+## C. Highest-Value Guardrails
 
-1. Promote fuller client TLS/auth parity and any later stream-management evolution beyond the supported abort/capacity subset.
-2. Keep the standard BCL client-validation path and the exact-pinning floor covered by focused requirement-home tests, including mixed-mode rejection.
+1. Keep the standard BCL client-validation path, the exact-pinning floor, and mixed-mode rejection covered by focused requirement-home tests.
+2. Add later stream-management evolution only under a new traced requirement.
 3. Keep the remainder of the packet, frame, transport-parameter, recovery, congestion, and stream-identity helpers internal.
 
-## D. Gaps That Must Be Solved Before an Honest First Public Preview
+## D. Current Public Preview Boundary
 
-- The public boundary is trimmed; the remaining preview blocker is honest behavior, not exposed helper types.
+- The public boundary is trimmed; there is no known exposed-helper cleanup blocker in the current local baseline.
 - `QuicConnection` now has the supported positive establishment path, the narrow active-loopback stream-entry path, and the narrow stream-capacity callback path.
 - `QuicStream` now has a real supported write/completion lane and a narrow `RESET_STREAM` / `STOP_SENDING`-backed abort pair, and the supported bidirectional path already composes those lanes for `Abort(Both, ...)`; later stream-contract widening stays separate.
 - The stream-capacity callback surface is now present on the supported loopback and active-loopback paths, including real stream-close-driven capacity release on the supported active-loopback path.
 - The client TLS/auth subset now includes the mainstream standard validation path on the existing carrier, while the exact-pinning floor remains separate and mixed-mode configuration is rejected.
 
-## E. Smallest Next Implementation Slice
+## E. Smallest Next Public-Surface Slice
 
-The smallest high-value slice after this one is the richer stream-behavior follow-on:
+There is no automatic public-surface widening to take from this matrix alone. The smallest next public-surface slice must be opened by a concrete requirement:
 
 - Add any later stream-management evolution only if a new traced requirement opens it.
-- Leave any remaining broader stream-management follow-on work for after the current callback subset.
+- Keep `0-RTT`, public key update, migration controls, and broader interop support outside this matrix until their own requirements authorize them.
 
 ## F. Current State Summary
 
@@ -106,11 +106,12 @@ The smallest high-value slice after this one is the richer stream-behavior follo
 
 ### Main Blockers By Type
 
-- Richer TLS policy / trust / validation: hostname validation, chain policy, and the fuller client-side auth contract.
-- Missing behavior: later stream-management evolution beyond the supported abort/capacity subset.
+- External evidence: hosted peer-matrix interop beyond the narrow recorded cells.
+- Missing behavior: any later stream-management evolution beyond the supported abort/capacity subset must be traced first.
+- Support-boundary decisions: `0-RTT`, public key update, migration controls, and broader public interop promises remain outside this matrix.
 
 ### Recommended Next Slice
 
-Promote fuller client TLS/auth parity next, and keep any later stream-management follow-ons separately traced if they become necessary, backed by the existing runtime, TLS bridge, and narrow stream-entry plus stream-capacity boundaries, so they can build on a real connection instead of a pending shell.
+Do not widen the public API from this matrix alone. Use `docs/design/quic-interop-prep-plan.md` and `specs/requirements/quic/REQUIREMENT-GAPS.md` to open the next concrete behavior slice, then update this matrix only after the requirement, proof plan, implementation, and verification are aligned.
 
 For the broader cleanup / interop-prep sequence beyond this public-surface matrix, see `docs/design/quic-interop-prep-plan.md`. This matrix stays limited to the public boundary and the nearest follow-on gaps.

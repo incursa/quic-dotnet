@@ -39,12 +39,12 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 - `QuicConnection.OpenOutboundStreamAsync(...)`
 - `QuicStreamType` with the direction-only `Bidirectional` and `Unidirectional` values
 
-### Deferred After This Slice
+### Still Deferred Outside This Slice
 
-The following remain intentionally out of scope for this pass:
+The following remain intentionally out of scope for this public API slice:
 
-- combined `Abort(Both, ...)`
 - broader server-side client-auth beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors on the existing `SslServerAuthenticationOptions` carrier
+- broader stream-management parity beyond the supported abort, capacity, close-driven release, and stream-data-loss suppression subset
 - `0-RTT`
 - key update
 - interop-runner enablement
@@ -65,7 +65,7 @@ They imply these public-behavior expectations:
 
 - Listener setup is validation-heavy: `ListenEndPoint`, `ApplicationProtocols`, and the narrow server callback are required, and the callback sees a cancellation token that is canceled on timeout or listener disposal.
 - Listener accept, pending client connect, blocked stream open, and close operations must honor cancellation while the operation is still pending, and a still-pending client connect must also honor `HandshakeTimeout` by surfacing `QuicError.ConnectionTimeout` instead of hanging.
-- `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams, plus a narrow `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` pair and matching `ReadsClosed` / `WritesClosed` outcomes on that same path; `Flush` stays a narrow no-op, and combined `Abort(Both, ...)` plus broader abort-heavy behavior remains out of scope.
+- `QuicStream` is a consumer-facing `Stream` abstraction, and this repo now supports a narrow read-side plus write/completion subset honestly on send-capable streams, plus `RESET_STREAM` / `STOP_SENDING`-backed `Abort(QuicAbortDirection.Read, ...)`, `Abort(QuicAbortDirection.Write, ...)`, and supported bidirectional-loopback `Abort(QuicAbortDirection.Both, ...)` composition with matching `ReadsClosed` / `WritesClosed` outcomes on that same path; `Flush` stays a narrow no-op, and broader abort-heavy behavior remains out of scope.
 - Stream entry points are only honest on an active connection that already has the minimal 1-RTT application-data lane; the supported loopback path opens and accepts a real QUIC stream facade and can now publish bytes, EOF, and the supported abort pair without exposing the broader abort-heavy contract.
 - The stream-capacity callback is only honest for the initial peer stream-capacity increment committed from peer transport parameters on the supported loopback path, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release subset where a peer-initiated stream reaches the supported locally closed state and the runtime emits one real `MAX_STREAMS` increment on that same path.
 - `IsSupported` is only honest as a narrow runtime capability marker, not as a full native-QUIC or feature-completeness flag.
@@ -75,7 +75,7 @@ They imply these public-behavior expectations:
 
 ## Spec Refinements
 
-This pass promotes the connection/stream facade, the listener/server entry surface, and the first honest client-entry shell while keeping the remaining TLS and stream work narrow:
+This pass promotes the connection/stream facade, the listener/server entry surface, the first honest client-entry shell, and the landed narrow TLS and stream follow-ons while keeping the remaining public promise narrow:
 
 - `REQ-QUIC-API-0001` keeps the helper/runtime/wire surface internal while the facade is promoted.
 - `REQ-QUIC-API-0002` covers the server listener and client connect entry surfaces and their honest pending/terminal behavior.
@@ -122,7 +122,7 @@ The listener entry points are now part of this slice.
 - Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side while honoring the narrow read/write abort pair without surfacing the broader abort-heavy pipeline.
 - The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release path where the runtime emits one real `MAX_STREAMS` increment only after a peer-initiated stream reaches the supported locally closed state.
 - The supported `SslClientAuthenticationOptions` subset is standard-shaped on the mainstream path: non-empty ALPN, TLS 1.3 or the default protocol selection, `TargetHost` when supplied, `CertificateChainPolicy` when supplied, `CertificateRevocationCheckMode` delegation, and `RemoteCertificateValidationCallback` overrides. Unsupported broader client-auth settings, cipher-suite policies, and resumption/renegotiation knobs outside the current slice are still rejected deterministically instead of being ignored.
-- Broader stream-management parity and any close-driven release behavior outside that supported locally closed subset remain deferred until the fuller stream-capacity path exists end to end.
+- Broader stream-management parity outside the supported locally closed, close-driven capacity release, and abort-composition subset remains deferred until a future traced requirement opens it.
 
 ## Standard Client Validation
 
@@ -195,7 +195,7 @@ The remainder of the packet, frame, transport-parameter, recovery, congestion, a
 
 ## Intentional Deviations
 
-The only intentional deviation in this slice is that `IsSupported` is defined as a narrower managed capability marker rather than a native MsQuic availability flag, and combined `Abort(Both, ...)` remains unsupported until a combined read/write abort slice exists.
+The intentional deviation in this slice is that `IsSupported` is defined as a narrower managed capability marker rather than a native MsQuic availability flag. Supported bidirectional-loopback `Abort(Both, ...)` composition is now landed, but broader abort-heavy behavior remains outside this public promise.
 
 The repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, the supported client TLS/auth subset is explicit and reject-first, and the public surface does not grow into a general middleware model.
 
