@@ -11,8 +11,9 @@ architecture, work items, or verification artifacts under `specs/`.
 The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
-the repo-defined Dry and Short benchmark baseline jobs complete. Hosted CI and
-CodeQL workflows also passed for the latest runtime/trace commit `ee86bb13`.
+the repo-defined Dry and Short benchmark baseline jobs complete after local
+commit `7dda7669`. Hosted CI and CodeQL workflows also passed for the latest
+hosted-validated runtime/trace commit `ee86bb13`.
 A manual hosted
 interop-runner handshake workflow is configured as an advisory artifact
 collection lane, and the narrow server-role handshake dispatch passed on GitHub
@@ -89,11 +90,11 @@ Observed results through 2026-04-30:
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,296 passed, 0 failed, 0 skipped, 3,296 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 319 markdown files |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after commit `ee86bb13`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after commit `ee86bb13`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 after local commit `7dda7669`: 3,299 passed, 0 failed, 0 skipped, 3,299 total |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 after local commit `7dda7669`: validated 313 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 after local commit `7dda7669`: 0 errors, 0 warnings, 102 work items, 319 markdown files |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after local commit `7dda7669`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after local commit `7dda7669`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m53s on commit `e6dcbb80`; the run used Node 24-compatible Python setup and artifact upload actions, uploaded the runner bundle, and had no Node.js deprecation log hits |
@@ -152,10 +153,10 @@ Current artifact inventory:
 | Surface | Count |
 |---|---:|
 | Requirement specs in `specs/requirements/quic` | 7 |
-| Requirement clauses | 1,947 |
-| Architecture artifacts | 100 |
-| Work-item artifacts | 101 |
-| Verification artifacts | 102 |
+| Requirement clauses | 1,948 |
+| Architecture artifacts | 101 |
+| Work-item artifacts | 102 |
+| Verification artifacts | 103 |
 
 Requirement family counts:
 
@@ -166,16 +167,16 @@ Requirement family counts:
 | `SPEC-QUIC-INT` | 13 |
 | `SPEC-QUIC-RFC8999` | 8 |
 | `SPEC-QUIC-RFC9000` | 1,443 |
-| `SPEC-QUIC-RFC9001` | 95 |
+| `SPEC-QUIC-RFC9001` | 96 |
 | `SPEC-QUIC-RFC9002` | 224 |
 
 Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 98 implemented | 2 draft |
-| Work items | 99 complete | 2 planned |
-| Verification | 100 passed | 2 planned |
+| Architecture | 99 implemented | 2 draft |
+| Work items | 100 complete | 2 planned |
+| Verification | 101 passed | 2 planned |
 
 ## Implementation State
 
@@ -198,7 +199,7 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
-- Hosted CI and CodeQL workflows passed on `main` for the latest runtime/trace
+- Hosted CI and CodeQL workflows passed on `main` for the latest hosted-validated runtime/trace
   commit `ee86bb13` (`25149821476` and `25149821187`).
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
@@ -231,7 +232,9 @@ The next useful lanes are:
 - Planned or draft trace artifacts that still need implementation or proof:
   repeated 1-RTT key update lifecycle (`RFC9001-0003`) and broader RFC 9002
   recovery/congestion closure (`RFC9002-0001`) remain explicit work items even
-  though the current executable baseline is green.
+  though the current executable baseline is green. The narrow internal
+  key-update epoch-cap slice (`RFC9001-0009`) is closed, but it is not a broad
+  key-update support claim.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect

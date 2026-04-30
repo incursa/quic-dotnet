@@ -14,14 +14,15 @@ Source of truth for this plan:
 
 The current narrow supported slice is real. The remaining work is about keeping the public promise truthful while the deeper runtime, TLS, stream, and interop surfaces catch up.
 
-## 2026-04-29 Verification Overlay
+## 2026-04-30 Verification Overlay
 
 This planning document records the intended decomposition and several slices
-that have been traced as landed. The live local baseline on 2026-04-29 is
-green for the repo-owned executable and trace checks: Release build passes with
-0 warnings and 0 errors, the full no-build test run passes 3,271 of 3,271
-tests, the repo-local SpecTrace core profile validates 307 artifacts, and
-Workbench core validation reports 0 errors and 0 warnings.
+that have been traced as landed. The live local baseline on 2026-04-30 after
+local commit `7dda7669` is green for the repo-owned executable and trace
+checks: Release build passes with 0 warnings and 0 errors, the full no-build
+test run passes 3,299 of 3,299 tests, the repo-local SpecTrace core profile
+validates 313 artifacts, and Workbench core validation reports 0 errors and
+0 warnings.
 
 This green local baseline does not make the repository QUIC-complete or
 interop-ready. Treat older landed status notes below as trace intent, and keep
@@ -111,7 +112,7 @@ Supported today:
 - The narrow internal post-Finished ticket seam under `REQ-QUIC-CRT-0128`, `ARC-QUIC-CRT-0026`, `WI-QUIC-CRT-0026`, and `VER-QUIC-CRT-0026`, plus the separate client-side 1-RTT post-handshake ticket-ingress slice under `REQ-QUIC-CRT-0129`, `ARC-QUIC-CRT-0027`, `WI-QUIC-CRT-0027`, and `VER-QUIC-CRT-0027`, are now landed internal/runtime slices. They surface opaque ticket bytes after Finished, consume only a valid `NewSessionTicket` message on `OneRtt` CRYPTO, and ignore unsupported 1-RTT post-handshake TLS messages instead of broadening the parser.
 - The detached resumption-ticket handoff slice under `REQ-QUIC-CRT-0130`, `ARC-QUIC-CRT-0028`, `WI-QUIC-CRT-0028`, and `VER-QUIC-CRT-0028` is now landed as a cross-lifetime internal carrier slice. The originating client/runtime path can export a detached opaque carrier from the owned ticket snapshot, and a later managed client setup can accept that carrier as dormant internal state without changing handshake or early-data behavior.
 - The detached resumption-credential material capture slice under `REQ-QUIC-CRT-0131`, `ARC-QUIC-CRT-0029`, `WI-QUIC-CRT-0029`, and `VER-QUIC-CRT-0029`, and the client-side ClientHello PSK-attempt slice under `REQ-QUIC-CRT-0132`, `ARC-QUIC-CRT-0030`, `WI-QUIC-CRT-0030`, and `VER-QUIC-CRT-0030`, are now landed internal/runtime slices. They retain the opaque ticket bytes, nonce, lifetime, age add, capture timestamp, and resumption master secret as dormant internal state, then consume that dormant carrier to emit a PSK-capable ClientHello attempt with binder material while keeping early data closed.
-- The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140`, `ARC-QUIC-CRT-0035`, `WI-QUIC-CRT-0037`, and `VER-QUIC-CRT-0037` is now landed as a narrow internal observation slice. The managed client/runtime path can recognize that the dormant carrier is ready for a later 0-RTT attempt when both the resumption credential material and the early-data prerequisite material are present, while early data stays explicitly closed and actual 0-RTT packet emission remains a separate family.
+- The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140`, `ARC-QUIC-CRT-0035`, `WI-QUIC-CRT-0037`, and `VER-QUIC-CRT-0037` is now landed as a narrow internal observation slice. The managed client/runtime path can recognize that the dormant carrier is ready for a later 0-RTT attempt when both the resumption credential material and the early-data prerequisite material are present, while broader receive, anti-replay, and public-promise families remain separate.
 
 Partially implemented but not yet promised:
 
@@ -124,9 +125,10 @@ Still missing:
 
 - Broader client-auth or TLS-option support.
 - Broader server-side client-auth / client-certificate handling on the existing `SslServerAuthenticationOptions` carrier beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors traced by `REQ-QUIC-CRT-0124`, `REQ-QUIC-CRT-0125`, and `REQ-QUIC-CRT-0126`.
-- The first client-side 0-RTT packet-emission attempt floor.
-- `resumed-handshake success`.
-- `Key update`.
+- 0-RTT receive handling, anti-replay, and any public early-data promise.
+- Public resumed-handshake support.
+- Broader key-update lifecycle or public key-update support beyond the narrow
+  internal epoch-cap slice.
 
 Why this stays separate:
 
@@ -271,7 +273,7 @@ Notes on dependency:
 17. `Dormant early-data attempt readiness`
    - Goal: keep the narrow readiness observation traceable under `REQ-QUIC-CRT-0140`, `ARC-QUIC-CRT-0035`, `WI-QUIC-CRT-0037`, and `VER-QUIC-CRT-0037`.
    - Focus: dormant detached carrier readiness observation when resumption credential material and early-data prerequisite material are both present, preserved early-data closure, and no 0-RTT packet emission claim.
-   - Status: landed. The managed client/runtime path now surfaces a narrow readiness observation when the dormant carrier has both ingredients, but actual 0-RTT packet emission remains a separate family.
+   - Status: landed. The managed client/runtime path now surfaces a narrow readiness observation when the dormant carrier has both ingredients, while broader receive, anti-replay, and public-promise families remain separate.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, and the internal early-data prerequisite capture slice staying stable.
 
 18. `First client-side 0-RTT packet-emission attempt`
@@ -292,7 +294,8 @@ Notes on dependency:
 - Keep `IsSupported` as a narrow managed capability marker. It must not become a feature-completeness claim.
 - Keep `Abort(Both, ...)` support narrow and confined to the supported bidirectional loopback slice.
 - Keep `0-RTT` and key update out of the public promise.
-- Keep early-data admission explicitly closed until the actual 0-RTT family exists.
+- Keep public early-data support, 0-RTT receive handling, and anti-replay out of
+  the promise until they are implemented and proven.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
 - Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry`, `post-handshake-stream`, and `multiconnect` child-process contracts.
@@ -305,9 +308,10 @@ Notes on dependency:
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story now has a public exact peer-identity and explicit trust-material carrier plus the internal snapshot seam, and the remaining trust-policy story still does not widen to trust-store or hostname-validation semantics.
-- The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but early data stays explicitly closed and the repo still does not claim 0-RTT packet support or anti-replay.
-- The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but actual 0-RTT packet emission remains a separate family.
+- The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but public early-data support, 0-RTT receive handling, and anti-replay remain out of scope.
+- The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but broader receive, anti-replay, and public-promise families remain separate.
 - The peer early-data disposition observation slice under `REQ-QUIC-CRT-0143` is now closed. The managed client/runtime path now observes peer EncryptedExtensions early_data disposition and discards dormant ZeroRtt material on rejection, but public early-data support remains explicitly closed.
+- The narrow internal key-update epoch-cap slice under `REQ-QUIC-RFC9001-S6P5-0007`, `ARC-QUIC-RFC9001-0009`, `WI-QUIC-RFC9001-0009`, and `VER-QUIC-RFC9001-0009` is now closed. The internal epoch identifier can advance past the old 32-bit boundary without confusing the one-bit packet Key Phase signal, but broader repeated key-update lifecycle proof and public key-update support remain separate.
 
 ## Trace Links
 
