@@ -41,6 +41,8 @@ public sealed class InteropRunnerScriptPreflightFailureTests
         yield return [PreflightFailureMode.MissingDockerfile];
         yield return [PreflightFailureMode.MissingDockerOnPath];
         yield return [PreflightFailureMode.MissingPythonOnPath];
+        yield return [PreflightFailureMode.MissingTsharkOnPath];
+        yield return [PreflightFailureMode.MissingEditcapOnPath];
     }
 
     private static string GetExpectedReason(PreflightFailureMode mode)
@@ -53,6 +55,8 @@ public sealed class InteropRunnerScriptPreflightFailureTests
             PreflightFailureMode.MissingDockerfile => "Harness Dockerfile was not found",
             PreflightFailureMode.MissingDockerOnPath => "docker is required but was not found on PATH.",
             PreflightFailureMode.MissingPythonOnPath => "python is required but was not found on PATH.",
+            PreflightFailureMode.MissingTsharkOnPath => "tshark is required for quic-interop-runner packet analysis",
+            PreflightFailureMode.MissingEditcapOnPath => "editcap is required for quic-interop-runner packet analysis",
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null),
         };
     }
@@ -106,6 +110,8 @@ public sealed class InteropRunnerScriptPreflightFailureTests
         MissingDockerfile,
         MissingDockerOnPath,
         MissingPythonOnPath,
+        MissingTsharkOnPath,
+        MissingEditcapOnPath,
     }
 
     private sealed class InteropRunnerScriptFixture : IDisposable
@@ -133,28 +139,28 @@ public sealed class InteropRunnerScriptPreflightFailureTests
             {
                 case PreflightFailureMode.MissingRunnerCheckout:
                     CreateRepoDockerfile();
-                    CreateCommandStubs(includeDocker: true, includePython: true);
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: true, includeEditcap: true);
                     break;
 
                 case PreflightFailureMode.MissingImplementationsRegistry:
                     Directory.CreateDirectory(RunnerRoot);
                     CreateRepoDockerfile();
                     CreateRunnerScript();
-                    CreateCommandStubs(includeDocker: true, includePython: true);
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: true, includeEditcap: true);
                     break;
 
                 case PreflightFailureMode.MissingRunPy:
                     Directory.CreateDirectory(RunnerRoot);
                     CreateRepoDockerfile();
                     CreateRunnerRegistry();
-                    CreateCommandStubs(includeDocker: true, includePython: true);
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: true, includeEditcap: true);
                     break;
 
                 case PreflightFailureMode.MissingDockerfile:
                     Directory.CreateDirectory(RunnerRoot);
                     CreateRunnerRegistry();
                     CreateRunnerScript();
-                    CreateCommandStubs(includeDocker: true, includePython: true);
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: true, includeEditcap: true);
                     break;
 
                 case PreflightFailureMode.MissingDockerOnPath:
@@ -162,7 +168,7 @@ public sealed class InteropRunnerScriptPreflightFailureTests
                     CreateRepoDockerfile();
                     CreateRunnerRegistry();
                     CreateRunnerScript();
-                    CreateCommandStubs(includeDocker: false, includePython: true);
+                    CreateCommandStubs(includeDocker: false, includePython: true, includeTshark: true, includeEditcap: true);
                     break;
 
                 case PreflightFailureMode.MissingPythonOnPath:
@@ -170,7 +176,23 @@ public sealed class InteropRunnerScriptPreflightFailureTests
                     CreateRepoDockerfile();
                     CreateRunnerRegistry();
                     CreateRunnerScript();
-                    CreateCommandStubs(includeDocker: true, includePython: false);
+                    CreateCommandStubs(includeDocker: true, includePython: false, includeTshark: true, includeEditcap: true);
+                    break;
+
+                case PreflightFailureMode.MissingTsharkOnPath:
+                    Directory.CreateDirectory(RunnerRoot);
+                    CreateRepoDockerfile();
+                    CreateRunnerRegistry();
+                    CreateRunnerScript();
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: false, includeEditcap: true);
+                    break;
+
+                case PreflightFailureMode.MissingEditcapOnPath:
+                    Directory.CreateDirectory(RunnerRoot);
+                    CreateRepoDockerfile();
+                    CreateRunnerRegistry();
+                    CreateRunnerScript();
+                    CreateCommandStubs(includeDocker: true, includePython: true, includeTshark: true, includeEditcap: false);
                     break;
 
                 default:
@@ -216,6 +238,8 @@ public sealed class InteropRunnerScriptPreflightFailureTests
             startInfo.ArgumentList.Add(ArtifactsRoot);
 
             startInfo.Environment["PATH"] = toolRoot;
+            startInfo.Environment["ProgramFiles"] = Path.Combine(tempDirectoryFixture.RootDirectory, "program-files");
+            startInfo.Environment["ProgramFiles(x86)"] = Path.Combine(tempDirectoryFixture.RootDirectory, "program-files-x86");
 
             using Process process = Process.Start(startInfo)
                 ?? throw new InvalidOperationException("Unable to start the interop runner helper script.");
@@ -284,7 +308,7 @@ public sealed class InteropRunnerScriptPreflightFailureTests
                 "# fake runner entry point\n");
         }
 
-        private void CreateCommandStubs(bool includeDocker, bool includePython)
+        private void CreateCommandStubs(bool includeDocker, bool includePython, bool includeTshark, bool includeEditcap)
         {
             if (OperatingSystem.IsWindows())
             {
@@ -310,6 +334,16 @@ public sealed class InteropRunnerScriptPreflightFailureTests
                         Path.Combine(toolRoot, "py.cmd"),
                         PythonInvocationSentinelPath,
                         "fake runner invocation");
+                }
+
+                if (includeTshark)
+                {
+                    CreateWindowsNoOpStub(Path.Combine(toolRoot, "tshark.cmd"));
+                }
+
+                if (includeEditcap)
+                {
+                    CreateWindowsNoOpStub(Path.Combine(toolRoot, "editcap.cmd"));
                 }
             }
             else
@@ -337,6 +371,16 @@ public sealed class InteropRunnerScriptPreflightFailureTests
                         PythonInvocationSentinelPath,
                         "fake runner invocation");
                 }
+
+                if (includeTshark)
+                {
+                    CreateUnixNoOpStub(Path.Combine(toolRoot, "tshark"));
+                }
+
+                if (includeEditcap)
+                {
+                    CreateUnixNoOpStub(Path.Combine(toolRoot, "editcap"));
+                }
             }
         }
 
@@ -350,6 +394,16 @@ exit /b 0
 ");
         }
 
+        private static void CreateWindowsNoOpStub(string path)
+        {
+            File.WriteAllText(
+                path,
+                """
+                @echo off
+                exit /b 0
+                """);
+        }
+
         private static void CreateUnixStub(string path, string sentinelPath, string message)
         {
             File.WriteAllText(
@@ -358,6 +412,24 @@ exit /b 0
 printf '%s\n' '{message}' > ""{sentinelPath}""
 exit 0
 ");
+
+#pragma warning disable CA1416
+            File.SetUnixFileMode(
+                path,
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
+                UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
+                UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
+#pragma warning restore CA1416
+        }
+
+        private static void CreateUnixNoOpStub(string path)
+        {
+            File.WriteAllText(
+                path,
+                """
+                #!/bin/sh
+                exit 0
+                """);
 
 #pragma warning disable CA1416
             File.SetUnixFileMode(

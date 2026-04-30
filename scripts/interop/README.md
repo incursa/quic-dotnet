@@ -20,6 +20,7 @@ Default behavior:
 - The helper translates local `multiconnect` into the runner's CLI testcase name `handshakeloss`, because the upstream runner uses `multiconnect` only for the container-facing `TESTCASE_*` values.
 - The smaller `post-handshake-stream` proof remains available through the local harness requirement-home lane; this helper does not expose that testcase yet.
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
+- Non-`DryRun` execution now preflights Docker, Python, `tshark`, and `editcap` before the image build starts, because the upstream runner needs packet-analysis tools for its post-checks.
 
 Example:
 
@@ -93,6 +94,7 @@ When `QLOGDIR` is enabled by the runner, the harness writes contained qlog JSON 
 - If the runner aborts with `Unable to create certificates`, check `runner.stderr.log` first. That comes from the upstream runner's shell-based certificate bootstrap, not from the helper itself.
 - The helper still keeps the build log, runner stdout/Markdown, stderr, invocation summary, and the partial log tree so you can inspect the failure without rerunning with extra flags.
 - On the narrow advisory-only `FileNotFoundError` path, the helper itself exits `0` and prints an `Advisory:` line, but it intentionally preserves the upstream runner's own inner exit code plus the failed `runner-report.json` and `runner-report.md` bundle for audit. Treat the helper exit code and advisory text as the local classification result, and treat the preserved runner report as evidence of the external post-check failure rather than a managed transport regression.
+- If a real local run fails preflight because `tshark` or `editcap` is missing, install Wireshark or add its tools directory to `PATH`, then rerun. A `DryRun` plan does not require these tools.
 
 ## `Invoke-QuicInteropAutopilot.ps1`
 

@@ -34,6 +34,43 @@ function Assert-CommandAvailable {
     }
 }
 
+function Test-WindowsWiresharkToolAvailable {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if (-not [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        return $false
+    }
+
+    $candidatePaths = @(
+        (Join-Path ${env:ProgramFiles} "Wireshark\$Name.exe"),
+        (Join-Path ${env:ProgramFiles(x86)} "Wireshark\$Name.exe")
+    )
+
+    foreach ($candidatePath in $candidatePaths) {
+        if (-not [string]::IsNullOrWhiteSpace($candidatePath) -and (Test-Path -LiteralPath $candidatePath)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Assert-PacketAnalysisToolAvailable {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if ((Get-Command $Name -ErrorAction SilentlyContinue) -or (Test-WindowsWiresharkToolAvailable -Name $Name)) {
+        return
+    }
+
+    throw "$Name is required for quic-interop-runner packet analysis but was not found on PATH or in the standard Wireshark install directories."
+}
+
 function ConvertTo-WindowsProcessArgument {
     param(
         [AllowEmptyString()]
@@ -1110,6 +1147,9 @@ try {
     if ($null -eq $pythonCommand) {
         throw 'python is required but was not found on PATH.'
     }
+
+    Assert-PacketAnalysisToolAvailable -Name 'tshark'
+    Assert-PacketAnalysisToolAvailable -Name 'editcap'
 
     $pythonCommandPath = if ($pythonCommand.PSObject.Properties.Match('Path').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$pythonCommand.Path)) {
         [string]$pythonCommand.Path

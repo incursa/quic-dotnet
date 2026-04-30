@@ -1384,6 +1384,8 @@ public sealed class REQ_QUIC_INT_0013
                 CreateWindowsStub(Path.Combine(toolRoot, "python.cmd"), GetPythonStubContent());
                 CreateWindowsStub(Path.Combine(toolRoot, "python3.cmd"), GetPythonStubContent());
                 CreateWindowsStub(Path.Combine(toolRoot, "py.cmd"), GetPythonStubContent());
+                CreateWindowsStub(Path.Combine(toolRoot, "tshark.cmd"), GetNoOpWindowsStubContent());
+                CreateWindowsStub(Path.Combine(toolRoot, "editcap.cmd"), GetNoOpWindowsStubContent());
             }
             else
             {
@@ -1391,6 +1393,8 @@ public sealed class REQ_QUIC_INT_0013
                 CreateUnixStub(Path.Combine(toolRoot, "python"), GetPythonStubContent());
                 CreateUnixStub(Path.Combine(toolRoot, "python3"), GetPythonStubContent());
                 CreateUnixStub(Path.Combine(toolRoot, "py"), GetPythonStubContent());
+                CreateUnixStub(Path.Combine(toolRoot, "tshark"), GetNoOpUnixStubContent());
+                CreateUnixStub(Path.Combine(toolRoot, "editcap"), GetNoOpUnixStubContent());
             }
         }
 
@@ -1431,6 +1435,22 @@ public sealed class REQ_QUIC_INT_0013
             return """
             #!/usr/bin/env sh
             printf '%s\n' 'fake docker build'
+            exit 0
+            """;
+        }
+
+        private static string GetNoOpWindowsStubContent()
+        {
+            return """
+            @echo off
+            exit /b 0
+            """;
+        }
+
+        private static string GetNoOpUnixStubContent()
+        {
+            return """
+            #!/bin/sh
             exit 0
             """;
         }

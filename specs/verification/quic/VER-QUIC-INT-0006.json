@@ -19,6 +19,7 @@
   "preconditions": [
     "Docker is available on the local machine.",
     "Python 3 is available for the external runner checkout.",
+    "`tshark` and `editcap` are available on PATH or in the standard Windows Wireshark install directories for non-DryRun execution.",
     "The local runner checkout exists at `C:\\src\\quic-interop\\quic-interop-runner`.",
     "The supported INT harness slices remain available through the existing local harness path."
   ],
@@ -31,9 +32,10 @@
     "Inspect the captured output to verify unsupported testcases still map to the runner's honest unsupported result, build failures remain build failures rather than pass results, and any advisory-only `FileNotFoundError` downgrade stays tied to testcase-specific preserved evidence.",
     "Inspect the preserved server-local helper reruns at `artifacts/interop-runner/20260422-135904895-server-nginx/`, `artifacts/interop-runner/20260422-140055122-server-nginx/`, and `artifacts/interop-runner/20260422-141632722-server-nginx/` to confirm the helper now exits successfully with advisories for server-role handshake, retry, and transfer once the preserved output proves the managed lane completed and only the upstream runner's post-check still failed.",
     "For the client-role `multiconnect` advisory path, confirm the helper itself exits `0`, prints an advisory that cites the preserved `output.txt`, and leaves the upstream runner's own inner exit code and failed report bundle intact for audit.",
+    "Confirm missing Docker, Python, `tshark`, or `editcap` prerequisites fail during helper preflight before the Docker image build or runner launch starts.",
     "If the tree is temporarily mid-edit and the first run fails for an unrelated build reason, wait briefly and rerun once to confirm the helper still behaves honestly after the transient issue clears."
   ],
-  "expected_result": "The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, unsupported or build-blocked cases are not misreported as successful runs, and the runner's post-check `FileNotFoundError` is downgraded to advisory only on testcase-specific, evidence-backed paths.",
+  "expected_result": "The helper produces repo-local execution-report artifacts for local runner runs without requiring any change to the runner repository, supported server-role paths tolerate empty runner REQUESTS, split-role client/server local executions work, missing local prerequisites fail before expensive build or runner work starts, unsupported or build-blocked cases are not misreported as successful runs, and the runner's post-check `FileNotFoundError` is downgraded to advisory only on testcase-specific, evidence-backed paths.",
   "evidence": [
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",

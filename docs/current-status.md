@@ -106,15 +106,18 @@ Observed results through 2026-04-30:
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed on 2026-04-30 in the interop coverage refresh: 0 warnings, 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 in the interop coverage refresh: 3,302 passed, 0 failed, 0 skipped, 3,302 total |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 in the interop coverage refresh: 3,304 passed, 0 failed, 0 skipped, 3,304 total |
 | `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 in the interop coverage refresh: validated 316 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 in the interop coverage refresh: 0 errors, 0 warnings, 103 work items, 319 markdown files |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 in the interop coverage refresh: 0 errors, 0 warnings, 103 work items, 320 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed on 2026-04-30: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -PeerImplementationSlots quic-go -TestCases handshake,retry,transfer,multiconnect` | Passed on 2026-04-30: resolved the supported local helper subset and translated local `multiconnect` to the runner `handshakeloss` testcase |
 | supported-subset per-cell dry-run plans | Passed on 2026-04-30: resolved same-slot `retry`, split-role client `transfer`, split-role server `transfer`, and client-role `multiconnect` plans with distinct role, slot, peer, and testcase mappings |
 | focused interop coverage workflow filter | Passed on 2026-04-30: 46 passed, 0 failed, 0 skipped across `REQ_QUIC_INT_0017`, `REQ_QUIC_INT_0013`, and interop helper dry-run/failure-summary tests |
+| focused interop helper preflight/filter | Passed on 2026-04-30: 52 passed, 0 failed, 0 skipped across preflight, artifact-validation, failure-summary, and `REQ_QUIC_INT_0013` helper tests |
+| local non-DryRun `retry` interop-runner attempt | Reached managed client/server Retry success on 2026-04-30, then the external runner failed its packet-analysis post-check because local `tshark` was not installed; evidence was preserved under `artifacts/interop-runner/local-supported-subset/both-retry-quic-go/20260430-091716463-both-quic-go/` |
+| local non-DryRun packet-tool preflight | Passed as an honest blocker on 2026-04-30: the helper now fails before Docker build or runner launch when `tshark`/`editcap` packet-analysis tools are missing |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m53s on commit `e6dcbb80`; the run used Node 24-compatible Python setup and artifact upload actions, uploaded the runner bundle, and had no Node.js deprecation log hits |
 | `gh run watch 25145022368 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `Library Fast Quality` workflow completed in 1m13s on commit `e6dcbb80` after its artifact upload action moved to the Node 24-compatible major |
@@ -264,6 +267,9 @@ The next useful lanes are:
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
   the server-role `handshake` cell against quic-go.
+- Install Wireshark packet-analysis tools locally, or use the hosted workflow
+  that installs them, before attempting additional non-DryRun local
+  interop-runner cells.
 - Narrow public-surface hardening only where the existing API requirements
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
