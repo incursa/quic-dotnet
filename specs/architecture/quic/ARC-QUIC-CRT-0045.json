@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0045",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC server-side 0-RTT receive admission closed gate",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the managed endpoint/runtime boundary that keeps server-side 0-RTT receive admission closed until a future anti-replay and early-data admission owner exists.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0047",
+    "VER-QUIC-CRT-0047"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0149"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs"
+  ],
+  "risks": [
+    "If unrouted 0-RTT datagrams are treated as admission input before anti-replay exists, the server can appear to support early data without replay protection or a traced delivery contract.",
+    "If the closed gate is hidden behind the RFC discard allowance only, future work can accidentally widen server admission while still pointing at a permissive RFC requirement.",
+    "If the Retry bootstrap exception is folded into this boundary, retry-specific evidence can be confused with server 0-RTT receive support."
+  ],
+  "design_summary": "The managed server receive floor keeps 0-RTT admission closed by relying on the existing endpoint route lookup boundary: Version 1 0-RTT long-header datagrams that do not match a retained live connection route are returned as unroutable and therefore do not create a connection, open streams, deliver application bytes, or install server-side ZeroRtt open material. The runtime's early-data admission observation remains false for the server role. The listener's Retry bootstrap branch remains a separate explicit exception that can consume a 0-RTT datagram only for Retry issuance; that path does not imply 0-RTT acceptance or application delivery. The closed gate is recorded as an internal CRT boundary so later receive/decrypt/admission work must add its own requirement, anti-replay design, and verification evidence before widening behavior.",
+  "alternatives_considered": [
+    "Treat the existing RFC 9000 discard allowance as sufficient proof. Rejected because it proves a protocol permission but not the managed server admission boundary or public-promise guard.",
+    "Add buffering for unrouted 0-RTT datagrams. Rejected because buffering is observable admission-adjacent behavior and needs anti-replay and ownership work first.",
+    "Expose a public early-data or 0-RTT admission option while the gate is closed. Rejected because this slice intentionally preserves the current supported boundary."
+  ],
+  "edge_cases_and_constraints": [
+    "Server role only.",
+    "Only unrouted Version 1 0-RTT long-header datagrams are owned by this closed-gate slice.",
+    "Datagrams explicitly consumed by Retry bootstrap remain under the existing Retry requirement.",
+    "The slice does not add 0-RTT decrypt, accept, buffer, stream delivery, anti-replay, transfer, retry widening, public API widening, IsSupported widening, or interop readiness."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs)"
+    }
+  ]
+}

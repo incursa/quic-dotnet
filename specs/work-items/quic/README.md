@@ -93,6 +93,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0043.json`](WI-QUIC-CRT-0043.json): canonical CRT remaining-work program partition and autopilot reset work item
 - [`WI-QUIC-CRT-0044.json`](WI-QUIC-CRT-0044.json): canonical CRT client-side replacement peer Initial reset work item
 - [`WI-QUIC-CRT-0045.json`](WI-QUIC-CRT-0045.json): canonical CRT server-role secp256r1 HelloRetryRequest work item
+- [`WI-QUIC-CRT-0047.json`](WI-QUIC-CRT-0047.json): canonical CRT server-side 0-RTT receive closed-gate work item
 
 ## Notes
 

@@ -1117,6 +1117,37 @@
       ]
     },
     {
+      "id": "REQ-QUIC-CRT-0149",
+      "title": "Keep server-side 0-RTT receive admission closed for unrouted datagrams",
+      "statement": "In the server role, before a future early-data admission and anti-replay owner exists, the managed endpoint/runtime path MUST keep server-side 0-RTT receive admission closed. A Version 1 0-RTT long-header datagram that is not already routed to a live connection and has not been consumed by the explicit Retry bootstrap path must be classified as outside the supported early-data boundary and left unrouted without creating a connection, opening streams, delivering application data, installing server-side ZeroRtt open material, or widening the public promise. The slice must preserve the existing Retry bootstrap exception, must not add 0-RTT acceptance, buffering, anti-replay, server admission, transfer, retry widening, public API widening, or IsSupported widening, and must not claim 0-RTT interop readiness.",
+      "trace": {
+        "upstream_refs": [
+          "RFC 9000 Section 17.2.3",
+          "RFC 9000 Section 17.2.5.1",
+          "RFC 9001 Section 4.6.2",
+          "docs/design/quic-interop-prep-plan.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs::ServerRuntimeKeepsEarlyDataAdmissionClosed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs::EndpointLeavesUnroutedZeroRttDatagramsOutsideAdmission",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs::FuzzUnroutedZeroRttDatagramsRemainOutsideServerAdmission",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs::PublicSurfaceStillDoesNotExposeServerEarlyDataAdmissionOrAntiReplayPromises"
+        ]
+      },
+      "notes": [
+        "This is a server-side closed-gate receive boundary, not 0-RTT acceptance or buffering.",
+        "Retry bootstrap from 0-RTT datagrams remains owned by REQ-QUIC-RFC9000-S17P2P5P1-0005 and is not broadened here.",
+        "Public early-data support, server anti-replay, and 0-RTT receive/decrypt/deliver behavior remain future work."
+      ]
+    },
+    {
       "id": "REQ-QUIC-CRT-0113",
       "title": "Emit local server EncryptedExtensions on the permanent handshake seam",
       "statement": "In the server role, the library MUST emit one local `EncryptedExtensions` message for the same supported TLS 1.3 subset using the local QUIC transport parameters only after the supported `ClientHello` has been accepted, the local `ServerHello` has been published, Handshake keys are available, and the local transport parameters are available, append that local `EncryptedExtensions` at the correct transcript boundary immediately after the local `ServerHello`, surface the local `EncryptedExtensions` bytes through the existing Handshake-crypto output seam with offset semantics that place the message immediately after the local `ServerHello` bytes, and deterministically reject premature, repeated, conflicting, or malformed local `EncryptedExtensions` progression through the existing fatal/update path.",

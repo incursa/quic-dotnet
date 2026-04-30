@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0047",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC server-side 0-RTT receive closed-gate work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Record and prove the current managed server-side 0-RTT receive boundary as closed for unrouted datagrams without adding early-data admission, buffering, anti-replay, or public API surface.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0045"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0047"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0149"
+  ],
+  "planned_changes": "- Add a canonical CRT requirement for the server-side 0-RTT receive closed gate.\n- Link architecture, work-item, and verification artifacts that distinguish closed server admission from the RFC 9000 discard permission and from the existing Retry bootstrap exception.\n- Add focused requirement-home proof that server early-data admission remains closed, unrouted Version 1 0-RTT datagrams remain outside admission, randomized unrouted 0-RTT datagrams keep the same disposition, and the public surface remains free of early-data and anti-replay promises.\n- Leave runtime behavior, public API, IsSupported, Retry bootstrap, transfer, and interop classification unchanged.",
+  "verification_plan": "Run the focused `REQ_QUIC_CRT_0149` requirement-home tests, validate canonical SpecTrace JSON, and run `git diff --check`. Because this slice records and proves an existing internal closed gate without runtime-code changes, a full rebuild is not required unless the focused test build fails.",
+  "completion_notes": "Closed the server-side 0-RTT receive/admission gap as an explicitly non-admitting internal boundary. The managed runtime keeps `IsEarlyDataAdmissionOpen` false for the server role, and unrouted 0-RTT long-header datagrams stay unroutable rather than creating connections, streams, application delivery, or server-side ZeroRtt open material.",
+  "out_of_scope": [
+    "0-RTT acceptance",
+    "0-RTT buffering",
+    "0-RTT decryption or stream delivery",
+    "server-side anti-replay",
+    "Retry bootstrap widening",
+    "transfer or interop classification changes",
+    "public API widening",
+    "IsSupported widening"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs)"
+    }
+  ]
+}

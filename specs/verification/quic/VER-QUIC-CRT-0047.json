@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0047",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC server-side 0-RTT receive closed-gate verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with positive, negative, fuzz, and public-surface guard coverage plus SpecTrace JSON validation.",
+  "scope": "Verify that the current managed server endpoint/runtime path keeps early-data admission closed for unrouted 0-RTT datagrams without creating connections, streams, application delivery, server-side ZeroRtt open material, or public early-data promises.",
+  "preconditions": [
+    "REQ-QUIC-RFC9000-S17P2P5P1-0005 remains the Retry bootstrap owner for 0-RTT-triggered Retry issuance.",
+    "REQ-QUIC-RFC9000-S17P2P5P1-0006 remains the RFC 9000 discard-permission owner.",
+    "No separate server-side early-data admission or anti-replay owner exists yet."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~REQ_QUIC_CRT_0149\"",
+    "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0149 requirement-home tests.",
+    "Confirm the server runtime reports early-data admission closed.",
+    "Confirm structurally valid unrouted Version 1 0-RTT datagrams are classified as application-data packets but remain unroutable at the endpoint boundary.",
+    "Fuzz randomized unrouted 0-RTT datagrams to prove the disposition remains non-admitting.",
+    "Confirm exported public members do not expose early-data admission or anti-replay promises.",
+    "Validate the edited canonical SpecTrace JSON and run whitespace diff checks."
+  ],
+  "expected_result": "Server-side 0-RTT receive remains a closed internal gate for unrouted datagrams: no connection is created, no streams are opened, no application data is delivered, no server-side ZeroRtt open material is installed, Retry bootstrap remains separately owned, and public early-data or anti-replay promises remain absent.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0045",
+    "WI-QUIC-CRT-0047"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Server runtime early-data admission remains closed.\n- Unrouted Version 1 0-RTT datagrams return `Unroutable` with no connection handle and no endpoint handling side effect.\n- Randomized structurally valid unrouted 0-RTT datagrams keep the same non-admitting disposition.\n- The public surface still exposes no early-data admission or anti-replay promise.\n- Retry bootstrap behavior remains under its existing RFC 9000 requirement and is not broadened."
+    }
+  ],
+  "status_summary": "Passed for the focused REQ-QUIC-CRT-0149 requirement-home coverage and canonical SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-CRT-0149"
+  ]
+}
