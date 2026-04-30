@@ -53,7 +53,7 @@ public sealed class REQ_QUIC_CRT_0144
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(KeyPhaseDestinationConnectionId));
         Assert.NotNull(runtime.TlsState.OneRttOpenPacketProtectionMaterial);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
             runtime,
@@ -77,7 +77,7 @@ public sealed class REQ_QUIC_CRT_0144
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public sealed class REQ_QUIC_CRT_0144
         QuicConnectionRuntime runtime = CreateEstablishingClientRuntime();
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(KeyPhaseDestinationConnectionId));
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         byte[] protectedPacket = BuildProtectedApplicationPacket(
             CreatePacketCoordinator(),
@@ -145,7 +145,7 @@ public sealed class REQ_QUIC_CRT_0144
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     [Fact]

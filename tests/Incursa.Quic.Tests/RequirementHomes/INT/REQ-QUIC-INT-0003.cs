@@ -82,7 +82,7 @@ public sealed class REQ_QUIC_INT_0003
         Assert.True(state.OldKeysDiscarded);
         Assert.True(state.PeerTransportParametersCommitted);
         Assert.True(state.PeerHandshakeTranscriptCompleted);
-        Assert.Equal(2U, state.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, state.CurrentOneRttKeyPhase);
     }
 
     [Fact]

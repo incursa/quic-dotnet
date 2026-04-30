@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0004
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
 
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         QuicTlsPacketProtectionMaterial priorProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
         QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0004
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
 
         QuicTlsPacketProtectionMaterial installedProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
@@ -76,7 +76,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0004
 
         Assert.False(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(installedProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }
 
@@ -94,7 +94,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0004
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
             runtime,
             repeatedUpdateNotBeforeMicros));
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
 
         QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();

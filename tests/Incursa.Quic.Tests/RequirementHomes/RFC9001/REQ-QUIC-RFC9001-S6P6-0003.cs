@@ -53,13 +53,13 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         }
 
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(originalProtectLifecycle.HasReachedConfidentialityLimit);
 
         await stream.WriteAsync(payload, 0, payload.Length);
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Same(originalProtectLifecycle, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle);
         Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Equal(1d, runtime.TlsState.CurrentOneRttProtectKeyLifecycle!.ProtectedPacketCount);
@@ -93,18 +93,18 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0003
         outboundEffects.Clear();
 
         byte[] payload = new byte[32];
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.True(runtime.TlsState.CanInitiateRepeatedLocalOneRttKeyUpdate(notBeforeMicros));
 
         await ProtectUntilConfidentialityLimitAsync(stream, runtime, outboundEffects, phaseOneProtectLifecycle, payload);
 
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(phaseOneProtectLifecycle.HasReachedConfidentialityLimit);
 
         await stream.WriteAsync(payload, 0, payload.Length);
 
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Same(phaseOneProtectLifecycle, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle);
         Assert.Equal(QuicRfc9001KeyUpdateRetentionTestSupport.RuntimeTestConfidentialityLimitPackets, runtime.TlsState.RetainedOldOneRttProtectKeyLifecycle!.ProtectedPacketCount);
         Assert.Equal(1d, runtime.TlsState.CurrentOneRttProtectKeyLifecycle!.ProtectedPacketCount);

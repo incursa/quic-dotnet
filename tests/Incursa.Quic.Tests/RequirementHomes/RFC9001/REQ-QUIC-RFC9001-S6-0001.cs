@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
             runtime,
@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
             successorOpenMaterial,
             successorProtectMaterial);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
             runtime,
@@ -66,7 +66,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
             successorOpenMaterial,
             successorProtectMaterial);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.False(runtime.TlsState.OneRttKeysAvailable);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         Assert.False(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
             runtime,
@@ -88,7 +88,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0001
             out _));
 
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     private static QuicConnectionRuntime CreateEstablishingClientRuntime()

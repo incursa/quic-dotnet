@@ -24,7 +24,7 @@ internal readonly record struct QuicConnectionSentPacket(
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
-    uint? OneRttKeyPhase = null);
+    ulong? OneRttKeyPhase = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
@@ -37,7 +37,7 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
-    uint? OneRttKeyPhase = null);
+    ulong? OneRttKeyPhase = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -343,7 +343,7 @@ internal sealed class QuicConnectionSendRuntime
     /// <summary>
     /// Discards retained send state for 1-RTT packets protected with a specific Key Phase.
     /// </summary>
-    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    internal bool TryDiscardOneRttKeyPhase(ulong keyPhase)
     {
         bool updated = flowController.TryDiscardOneRttKeyPhase(keyPhase);
 

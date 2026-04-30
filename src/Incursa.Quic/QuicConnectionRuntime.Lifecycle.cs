@@ -392,7 +392,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        uint retainedKeyPhase = tlsState.RetainedOldOneRttPacketProtectionKeyPhase.Value;
+        ulong retainedKeyPhase = tlsState.RetainedOldOneRttPacketProtectionKeyPhase.Value;
         bool stateChanged = tlsState.TryDiscardRetainedOneRttKeyUpdateMaterial();
         stateChanged |= sendRuntime.TryDiscardOneRttKeyPhase(retainedKeyPhase);
         stateChanged |= recoveryController.TryDiscardOneRttKeyPhase(retainedKeyPhase);

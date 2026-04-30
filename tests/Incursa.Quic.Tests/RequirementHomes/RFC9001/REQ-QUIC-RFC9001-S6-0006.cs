@@ -42,7 +42,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0006
         Assert.True(result.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtimeSuccessorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(runtimeSuccessorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
         Assert.False(priorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
@@ -85,7 +85,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0006
         Assert.True(result.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtimeSuccessorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(runtimeSuccessorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
         Assert.False(priorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
@@ -118,7 +118,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0006
         Assert.True(result.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(priorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }

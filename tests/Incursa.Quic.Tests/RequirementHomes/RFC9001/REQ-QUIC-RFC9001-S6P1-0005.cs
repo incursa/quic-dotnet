@@ -28,7 +28,7 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0005
         Assert.False(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(secondSuccessorOpenMaterial.Matches(installedOpenMaterial));
         Assert.False(secondSuccessorProtectMaterial.Matches(installedProtectMaterial));
         Assert.True(installedOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));

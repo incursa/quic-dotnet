@@ -77,8 +77,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(TryBuildApplicationAckFrame(runtime, 40_000, out QuicAckFrame ackFrame));
         Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
         Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
-        Assert.Equal(1U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -135,8 +135,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(TryBuildApplicationAckFrame(runtime, 60_000, out QuicAckFrame ackFrame));
         Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
         Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-        Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
-        Assert.Equal(2U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(3UL, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -193,8 +193,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(TryBuildApplicationAckFrame(runtime, 80_000, out QuicAckFrame ackFrame));
         Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
         Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-        Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
-        Assert.Equal(3U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(4UL, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(3UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -251,8 +251,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(TryBuildApplicationAckFrame(runtime, 100_000, out QuicAckFrame ackFrame));
         Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
         Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-        Assert.Equal(5U, runtime.TlsState.CurrentOneRttKeyPhase);
-        Assert.Equal(4U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(5UL, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(4UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -303,7 +303,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(currentPacketNumber > oldPacketNumber);
         Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
         Assert.Equal(0UL, ackFrame.FirstAckRange);
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -411,7 +411,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             Assert.True(TryBuildApplicationAckFrame(runtime, 40_000 + (iteration * 2), out QuicAckFrame ackFrame));
             Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
             Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-            Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
             Assert.Null(runtime.TerminalState);
             Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -466,7 +466,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             Assert.True(TryBuildApplicationAckFrame(runtime, 60_000 + (iteration * 2), out QuicAckFrame ackFrame));
             Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
             Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-            Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(3UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
             Assert.Null(runtime.TerminalState);
             Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -521,7 +521,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             Assert.True(TryBuildApplicationAckFrame(runtime, 80_000 + (iteration * 2), out QuicAckFrame ackFrame));
             Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
             Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-            Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(4UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
             Assert.Null(runtime.TerminalState);
             Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -576,7 +576,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
             Assert.True(TryBuildApplicationAckFrame(runtime, 100_000 + (iteration * 2), out QuicAckFrame ackFrame));
             Assert.Equal(currentPacketNumber, ackFrame.LargestAcknowledged);
             Assert.Equal(currentPacketNumber - oldPacketNumber, ackFrame.FirstAckRange);
-            Assert.Equal(5U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(5UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
             Assert.Null(runtime.TerminalState);
             Assert.Null(runtime.TlsState.FatalAlertCode);
@@ -699,7 +699,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0001
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(
             runtime,
             repeatedUpdateNotBeforeMicros));
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     private static void SkipPacketNumbers(

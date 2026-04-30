@@ -52,6 +52,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9001-0005.json`](VER-QUIC-RFC9001-0005.json): canonical RFC 9001 stateless reset disposition matrix verification source
 - [`VER-QUIC-RFC9001-0006.json`](VER-QUIC-RFC9001-0006.json): canonical RFC 9001 repeated epoch ownership verification source
 - [`VER-QUIC-RFC9001-0007.json`](VER-QUIC-RFC9001-0007.json): canonical RFC 9001 known stateless reset loop suppression verification source
+- [`VER-QUIC-RFC9001-0009.json`](VER-QUIC-RFC9001-0009.json): canonical RFC 9001 large key-update epoch verification source
 - [`VER-QUIC-RFC9002-0001.json`](VER-QUIC-RFC9002-0001.json): canonical RFC 9002 verification source
 - [`VER-QUIC-CRT-0001.json`](VER-QUIC-CRT-0001.json): canonical CRT verification source
 - [`VER-QUIC-CRT-0002.json`](VER-QUIC-CRT-0002.json): canonical CRT deadline-scheduling verification source

@@ -11,9 +11,9 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     private QuicTlsPacketProtectionMaterial? retainedOldProtectPacketProtectionMaterial;
     private QuicTlsPacketProtectionMaterial? retainedNextOpenPacketProtectionMaterial;
     private ulong? retainedOldPacketProtectionDiscardAtMicros;
-    private uint? retainedOldPacketProtectionKeyPhase;
+    private ulong? retainedOldPacketProtectionKeyPhase;
     private ulong? repeatedLocalPacketProtectionUpdateNotBeforeMicros;
-    private uint? acknowledgedCurrentPacketProtectionKeyPhase;
+    private ulong? acknowledgedCurrentPacketProtectionKeyPhase;
 
     internal QuicTlsPacketProtectionMaterial? RetainedOldOpenPacketProtectionMaterial =>
         retainedOldOpenPacketProtectionMaterial;
@@ -27,7 +27,7 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     internal ulong? RetainedOldPacketProtectionDiscardAtMicros =>
         retainedOldPacketProtectionDiscardAtMicros;
 
-    internal uint? RetainedOldPacketProtectionKeyPhase =>
+    internal ulong? RetainedOldPacketProtectionKeyPhase =>
         retainedOldPacketProtectionKeyPhase;
 
     internal ulong? RepeatedLocalPacketProtectionUpdateNotBeforeMicros =>
@@ -50,7 +50,7 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
         HasRetainedOldPacketProtectionMaterial
         || HasRetainedNextOpenPacketProtectionMaterial;
 
-    internal bool CanInitiateRepeatedLocalPacketProtectionUpdate(uint keyPhase, ulong nowMicros)
+    internal bool CanInitiateRepeatedLocalPacketProtectionUpdate(ulong keyPhase, ulong nowMicros)
     {
         return repeatedLocalPacketProtectionUpdateNotBeforeMicros.HasValue
             && acknowledgedCurrentPacketProtectionKeyPhase.HasValue
@@ -76,7 +76,7 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
     }
 
     internal bool TryRecordCurrentPacketProtectionPhaseAcknowledgment(
-        uint keyPhase,
+        ulong keyPhase,
         ulong acknowledgedAtMicros,
         ulong probeTimeoutMicros)
     {
@@ -125,7 +125,7 @@ internal sealed class QuicOneRttKeyUpdateLifecycle
 
     internal bool TryArmRetainedOldPacketProtectionMaterialDiscard(
         ulong discardAtMicros,
-        uint keyPhase)
+        ulong keyPhase)
     {
         if (!HasRetainedOldPacketProtectionMaterial
             || HasRetainedOldPacketProtectionDiscardDeadline)

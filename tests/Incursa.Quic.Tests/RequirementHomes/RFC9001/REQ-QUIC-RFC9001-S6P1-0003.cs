@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0003
             runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         QuicTlsPacketProtectionMaterial installedProtectMaterial =
             runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;

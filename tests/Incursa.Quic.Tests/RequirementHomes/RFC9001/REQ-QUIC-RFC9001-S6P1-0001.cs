@@ -45,7 +45,7 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0001
 
         Assert.True(successorProtectMaterial.Matches(installedProtectMaterial));
         Assert.False(priorProtectMaterial.Matches(installedProtectMaterial));
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
         Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(

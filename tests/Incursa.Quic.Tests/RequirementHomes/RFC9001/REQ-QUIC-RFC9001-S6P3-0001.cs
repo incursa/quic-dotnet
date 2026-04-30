@@ -45,7 +45,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0001
 
         AssertInvalidKeyPhaseDidNotSignal(runtime, result);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(currentOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
     }
 
@@ -73,7 +73,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0001
         Assert.True(result.StateChanged);
         AssertInvalidKeyPhaseDidNotSignal(runtime, result);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(currentOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(successorOpenMaterial.Matches(
             runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial!.Value));
@@ -114,7 +114,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0001
 
             AssertInvalidKeyPhaseDidNotSignal(runtime, result);
             Assert.False(runtime.TlsState.KeyUpdateInstalled);
-            Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.True(currentOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         }
     }
@@ -142,7 +142,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0001
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(successorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(successorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }

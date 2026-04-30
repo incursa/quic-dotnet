@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0003
         Assert.Null(runtime.TerminalState);
         Assert.Null(runtime.TlsState.FatalAlertCode);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
     }
 
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0003
 
         AssertApparentConsecutiveUpdateDidNotSignal(runtime, result);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
     }
 
@@ -81,7 +81,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0003
 
         AssertApparentConsecutiveUpdateDidNotSignal(runtime, result);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.False(runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(currentPhaseOneMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
@@ -113,7 +113,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0003
 
             AssertApparentConsecutiveUpdateDidNotSignal(runtime, result);
             Assert.True(runtime.TlsState.KeyUpdateInstalled);
-            Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         }
     }

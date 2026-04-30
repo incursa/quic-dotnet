@@ -113,7 +113,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
             repeatedUpdateNotBeforeMicros));
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.Null(runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
@@ -148,7 +148,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
             phaseThreeNotBeforeMicros));
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(3UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseBit);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.Null(runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
@@ -183,7 +183,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
             phaseFourNotBeforeMicros));
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(4UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseBit);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.Null(runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
@@ -218,7 +218,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
             phaseFiveNotBeforeMicros));
 
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(5U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(5UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.CurrentOneRttKeyPhaseBit);
         Assert.False(runtime.TlsState.CurrentOneRttKeyPhaseAcknowledged);
         Assert.Null(runtime.TlsState.RepeatedLocalOneRttKeyUpdateNotBeforeMicros);
@@ -304,7 +304,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0003
             runtime,
             repeatedUpdateNotBeforeMicros));
 
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(phaseOneOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(phaseOneProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }

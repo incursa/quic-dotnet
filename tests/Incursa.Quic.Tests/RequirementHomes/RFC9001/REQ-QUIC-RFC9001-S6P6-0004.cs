@@ -40,7 +40,7 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0004
 
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
 
         QuicAeadKeyLifecycle successorProtectLifecycle =
             QuicRfc9001KeyUpdateRetentionTestSupport.ReplaceCurrentOneRttProtectKeyLifecycleForTest(runtime);

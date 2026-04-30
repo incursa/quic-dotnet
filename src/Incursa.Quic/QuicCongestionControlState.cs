@@ -820,7 +820,7 @@ internal sealed class QuicSenderFlowController
         bool isAckOnlyPacket = false,
         bool isProbePacket = false,
         QuicTlsEncryptionLevel? packetProtectionLevel = null,
-        uint? oneRttKeyPhase = null)
+        ulong? oneRttKeyPhase = null)
     {
         CongestionControlState.RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
         if (isAckOnlyPacket)
@@ -1018,7 +1018,7 @@ internal sealed class QuicSenderFlowController
     /// <summary>
     /// Discards retained 1-RTT packets that were protected with a specific Key Phase.
     /// </summary>
-    internal bool TryDiscardOneRttKeyPhase(uint keyPhase)
+    internal bool TryDiscardOneRttKeyPhase(ulong keyPhase)
     {
         bool updated = false;
         List<QuicPacketNumberSpace>? emptyPacketNumberSpaces = null;
@@ -1206,5 +1206,5 @@ internal sealed class QuicSenderFlowController
         bool InFlight,
         bool IsProbePacket,
         QuicTlsEncryptionLevel? PacketProtectionLevel = null,
-        uint? OneRttKeyPhase = null);
+        ulong? OneRttKeyPhase = null);
 }

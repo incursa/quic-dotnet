@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_CRT_0145
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
         Assert.False(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
@@ -89,7 +89,7 @@ public sealed class REQ_QUIC_CRT_0145
 
         Assert.True(result.StateChanged);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
     }
@@ -118,7 +118,7 @@ public sealed class REQ_QUIC_CRT_0145
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public sealed class REQ_QUIC_CRT_0145
 
         Assert.True(result.StateChanged);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(previousProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
     }
 
@@ -160,7 +160,7 @@ public sealed class REQ_QUIC_CRT_0145
 
         Assert.False(driver.TryInstallOneRttKeyUpdate());
         Assert.True(driver.State.KeyUpdateInstalled);
-        Assert.Equal(1U, driver.State.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, driver.State.CurrentOneRttKeyPhase);
         Assert.True(installedOpenMaterial.Matches(driver.State.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(installedProtectMaterial.Matches(driver.State.OneRttProtectPacketProtectionMaterial!.Value));
     }
@@ -182,7 +182,7 @@ public sealed class REQ_QUIC_CRT_0145
 
         QuicStream outboundStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
 
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
@@ -283,7 +283,7 @@ public sealed class REQ_QUIC_CRT_0145
         QuicConnectionTransitionResult result = InstallFirstObservedKeyPhaseTransition(runtime);
         Assert.True(result.StateChanged);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         return runtime;
     }
 

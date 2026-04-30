@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
 
         ulong notBeforeMicros = QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareRepeatedLocalUpdateEligibility(runtime);
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeRepeatedOneRttKeyUpdate(runtime, notBeforeMicros));
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
 
         long observedAtTicks = Stopwatch.Frequency * 3L;
@@ -95,7 +95,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
             QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
 
         Assert.True(result.StateChanged);
-        Assert.Equal(2U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.CurrentOneRttKeyPhase);
         AssertRetainedPhaseOneTimer(runtime, observedAtTicks);
     }
 
@@ -126,7 +126,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         Assert.True(secondResult.StateChanged);
         Assert.Equal(firstDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
         Assert.Equal(firstDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
-        Assert.Equal(1U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }
@@ -139,7 +139,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
 
-        Assert.Equal(3U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(3UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
 
         long observedAtTicks = Stopwatch.Frequency * 5L;
@@ -174,7 +174,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         Assert.True(secondResult.StateChanged);
         Assert.Equal(firstDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
         Assert.Equal(firstDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
-        Assert.Equal(2U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(2UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }
@@ -187,7 +187,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFourWithPhaseThreeRetained(runtime);
 
-        Assert.Equal(4U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(4UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
 
         long observedAtTicks = Stopwatch.Frequency * 7L;
@@ -222,7 +222,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         Assert.True(secondResult.StateChanged);
         Assert.Equal(firstDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
         Assert.Equal(firstDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
-        Assert.Equal(3U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(3UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }
@@ -235,7 +235,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFiveWithPhaseFourRetained(runtime);
 
-        Assert.Equal(5U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(5UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
 
         long observedAtTicks = Stopwatch.Frequency * 9L;
@@ -270,7 +270,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         Assert.True(secondResult.StateChanged);
         Assert.Equal(firstDueTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.KeyUpdateRetention));
         Assert.Equal(firstDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
-        Assert.Equal(4U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(4UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }
@@ -298,7 +298,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0004
         ulong expectedDiscardAtMicros = observedAtMicros + expectedRetentionMicros;
 
         Assert.Equal(expectedDiscardAtMicros, runtime.TlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros);
-        Assert.Equal(0U, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.RetainedOldOneRttPacketProtectionKeyPhase);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial);
         Assert.NotNull(runtime.TlsState.RetainedOldOneRttProtectPacketProtectionMaterial);
     }

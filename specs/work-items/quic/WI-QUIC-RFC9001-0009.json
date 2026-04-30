@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9001-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9001 Large Key-Update Epoch Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Remove the artificial 32-bit repeated key-update epoch ceiling from the internal runtime model while preserving existing one-bit Key Phase behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0009",
+    "VER-QUIC-RFC9001-0009",
+    "ARC-QUIC-RFC9001-0003",
+    "ARC-QUIC-RFC9001-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9001-0009"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9001-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9001-S6P5-0007"
+  ],
+  "planned_changes": "- Add the canonical RFC 9001 Section 6.5 requirement for internal repeated key-update epochs wider than the one-bit packet Key Phase signal.\n- Widen repeated 1-RTT key-update epoch identifiers in the bridge, lifecycle, sender ledger, congestion-control ledger, and recovery ledger.\n- Remove the repeated local and peer install guard that rejected updates at the previous 32-bit maximum.\n- Add requirement-home tests that install repeated local and peer updates across the old 32-bit boundary and prove lifecycle cleanup state keeps the wide retained-old epoch.\n- Keep public support claims narrow and avoid broad key-update API or interop promises.",
+  "out_of_scope": [
+    "A general unbounded key-update ledger redesign",
+    "Public key-update API surface",
+    "0-RTT, retry, or key-update interop widening",
+    "Stateless-reset matrix behavior"
+  ],
+  "verification_plan": "Run the focused RFC 9001 S6P5 large-epoch requirement-home tests, rerun adjacent repeated key-update ownership and acknowledgment tests, build the solution, run SpecTrace core validation and Workbench core validation, and finish with git diff --check before committing.",
+  "completion_notes": "Completed for the narrow large internal epoch identifier slice. The old 32-bit repeated-update guard is removed, sender/recovery cleanup follows the wide retained-old epoch, and broader unbounded key-update lifecycle support remains outside this slice."
+}

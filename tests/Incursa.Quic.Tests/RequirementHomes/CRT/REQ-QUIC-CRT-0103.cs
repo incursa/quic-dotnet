@@ -137,7 +137,7 @@ public sealed class REQ_QUIC_CRT_0103
         Assert.True(bridge.PeerFinishedVerified);
         Assert.True(bridge.KeyUpdateInstalled);
         Assert.True(bridge.OldKeysDiscarded);
-        Assert.Equal(2U, bridge.CurrentOneRttKeyPhase);
+        Assert.Equal(2UL, bridge.CurrentOneRttKeyPhase);
         Assert.True(bridge.HasAnyAvailableKeys);
         Assert.False(bridge.IsTerminal);
         Assert.Equal(new byte[] { 0xAA, 0xBB, 0xCC }, bridge.PeerTransportParameters.InitialSourceConnectionId);

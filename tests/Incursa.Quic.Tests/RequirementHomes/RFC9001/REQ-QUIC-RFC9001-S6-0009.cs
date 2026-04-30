@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0009
         Assert.Equal(QuicTransportErrorCode.KeyUpdateError, driver.State.FatalAlertCode);
         Assert.Equal("TLS KeyUpdate was prohibited.", driver.State.FatalAlertDescription);
         Assert.False(driver.State.KeyUpdateInstalled);
-        Assert.Equal(0U, driver.State.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, driver.State.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -43,6 +43,6 @@ public sealed class REQ_QUIC_RFC9001_S6_0009
         Assert.True(driver.State.HasPostHandshakeTicket);
         Assert.False(driver.State.IsTerminal);
         Assert.False(driver.State.KeyUpdateInstalled);
-        Assert.Equal(0U, driver.State.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, driver.State.CurrentOneRttKeyPhase);
     }
 }

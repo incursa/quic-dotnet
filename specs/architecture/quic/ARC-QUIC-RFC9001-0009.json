@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9001-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9001 Large Key-Update Epoch Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the narrow runtime boundary for repeated 1-RTT key-update epoch identifiers that can advance beyond the previous 32-bit implementation ceiling while preserving the existing one-bit packet Key Phase signal.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "WI-QUIC-RFC9001-0009",
+    "VER-QUIC-RFC9001-0009",
+    "ARC-QUIC-RFC9001-0003",
+    "ARC-QUIC-RFC9001-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9001-S6P5-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs"
+  ],
+  "risks": [
+    "If the runtime treats the one-bit packet Key Phase signal as the epoch counter, repeated updates can stop at an artificial implementation ceiling.",
+    "If sender and recovery ledgers keep a narrower phase type than the TLS bridge, retained-old cleanup can stop matching the actual epoch.",
+    "If this slice is presented as full unbounded key-update support, it overstates the remaining RFC 9001 lifecycle proof."
+  ],
+  "design_summary": "The bridge, lifecycle, sender ledger, congestion-control state, and recovery timing state keep the repeated 1-RTT key-update epoch identifier as an internal wide integer. Packet protection still emits and evaluates only the low-bit Key Phase value on the wire. Repeated local and peer installs advance the wide epoch across the old 32-bit boundary, retain the previous epoch with the same wide identifier, and keep cleanup matching the retained-old epoch in sender and recovery ledgers.",
+  "alternatives_considered": [
+    "Keep the 32-bit epoch and document it as bounded support. Rejected because repeated key updates are keyed by a one-bit packet signal and the runtime should not impose a small internal epoch ceiling.",
+    "Replace the lifecycle with a general unbounded epoch ledger. Rejected because the current closure slice only needs to remove the concrete 32-bit implementation cap and preserve existing retained-old semantics.",
+    "Saturate the published epoch at 32 bits while using a hidden wide counter. Rejected because it would leave adjacent runtime code vulnerable to accidentally using the narrowed value."
+  ],
+  "edge_cases_and_constraints": [
+    "The low bit of the wide epoch remains the only Key Phase value carried in packets.",
+    "Existing first-update and repeated-update cooldown gates remain unchanged.",
+    "Retained-old cleanup must use the same wide epoch identifier recorded when the old material was retained.",
+    "The slice does not add public key-update API surface, 0-RTT behavior, retry behavior, or interop claims."
+  ],
+  "data_and_state_considerations": "The wide epoch flows through QuicTransportTlsBridgeState, QuicOneRttKeyUpdateLifecycle retained-old and acknowledged-current state, QuicConnectionSentPacket and retransmission records, QuicCongestionControlState sent-packet records, and QuicRecoveryTiming sent-packet records. Existing KeyPhase material derivation and packet header behavior continue to use the epoch low bit for the packet Key Phase field.",
+  "open_questions": [
+    "The remaining product/runtime model for an exhaustive unbounded epoch ledger and long-lived cleanup policy is still tracked by the broader RFC 9001 key-update lifecycle gap."
+  ]
+}

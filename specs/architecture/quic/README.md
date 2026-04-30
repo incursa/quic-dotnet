@@ -52,6 +52,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9001-0005.json`](ARC-QUIC-RFC9001-0005.json): canonical RFC 9001 stateless reset disposition matrix design source
 - [`ARC-QUIC-RFC9001-0006.json`](ARC-QUIC-RFC9001-0006.json): canonical RFC 9001 repeated epoch ownership design source
 - [`ARC-QUIC-RFC9001-0007.json`](ARC-QUIC-RFC9001-0007.json): canonical RFC 9001 known stateless reset loop suppression design source
+- [`ARC-QUIC-RFC9001-0009.json`](ARC-QUIC-RFC9001-0009.json): canonical RFC 9001 large key-update epoch design source
 - [`ARC-QUIC-RFC9002-0001.json`](ARC-QUIC-RFC9002-0001.json): canonical RFC 9002 design source
 - [`ARC-QUIC-CRT-0001.json`](ARC-QUIC-CRT-0001.json): canonical CRT design source
 - [`ARC-QUIC-CRT-0002.json`](ARC-QUIC-CRT-0002.json): canonical CRT deadline-scheduling design source

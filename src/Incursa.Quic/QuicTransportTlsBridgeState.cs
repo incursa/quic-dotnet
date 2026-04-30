@@ -102,7 +102,7 @@ internal sealed class QuicTransportTlsBridgeState
     public ulong? RetainedOldOneRttPacketProtectionDiscardAtMicros =>
         oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionDiscardAtMicros;
 
-    public uint? RetainedOldOneRttPacketProtectionKeyPhase =>
+    public ulong? RetainedOldOneRttPacketProtectionKeyPhase =>
         oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionKeyPhase;
 
     internal bool CurrentOneRttKeyPhaseAcknowledged =>
@@ -133,9 +133,9 @@ internal sealed class QuicTransportTlsBridgeState
 
     public QuicTlsEarlyDataDisposition PeerEarlyDataDisposition { get; private set; } = QuicTlsEarlyDataDisposition.Unknown;
 
-    public uint CurrentOneRttKeyPhase { get; private set; }
+    public ulong CurrentOneRttKeyPhase { get; private set; }
 
-    internal bool CurrentOneRttKeyPhaseBit => (CurrentOneRttKeyPhase & 1U) == 1U;
+    internal bool CurrentOneRttKeyPhaseBit => (CurrentOneRttKeyPhase & 1UL) == 1UL;
 
     public QuicTlsTranscriptPhase HandshakeTranscriptPhase { get; private set; } = QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage;
 
@@ -816,7 +816,6 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal
             || !KeyUpdateInstalled
             || CurrentOneRttKeyPhase == 0
-            || CurrentOneRttKeyPhase == uint.MaxValue
             || !oneRttOpenPacketProtectionMaterial.HasValue
             || !oneRttProtectPacketProtectionMaterial.HasValue
             || !CanInitiateRepeatedLocalOneRttKeyUpdate(nowMicros)
@@ -855,7 +854,6 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal
             || !KeyUpdateInstalled
             || CurrentOneRttKeyPhase == 0
-            || CurrentOneRttKeyPhase == uint.MaxValue
             || !CurrentOneRttKeyPhaseAcknowledged
             || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
             || !oneRttOpenPacketProtectionMaterial.HasValue
@@ -921,7 +919,7 @@ internal sealed class QuicTransportTlsBridgeState
 
     internal bool TryArmRetainedOneRttKeyUpdateMaterialDiscard(
         ulong discardAtMicros,
-        uint keyPhase)
+        ulong keyPhase)
     {
         return !IsTerminal
             && oneRttKeyUpdateLifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(

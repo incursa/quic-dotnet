@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TlsState.FatalAlertCode);
         Assert.Equal("TLS KeyUpdate was prohibited.", runtime.TlsState.FatalAlertDescription);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
     }
 
@@ -58,7 +58,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TlsState.FatalAlertCode);
         Assert.Equal("TLS KeyUpdate was prohibited.", runtime.TlsState.FatalAlertDescription);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
     }
 
@@ -85,7 +85,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.Equal("TLS KeyUpdate was prohibited.", driver.State.FatalAlertDescription);
         Assert.False(driver.State.HasPostHandshakeTicket);
         Assert.False(driver.State.KeyUpdateInstalled);
-        Assert.Equal(0U, driver.State.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, driver.State.CurrentOneRttKeyPhase);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public sealed class REQ_QUIC_RFC9001_S6_0010
         Assert.Equal("TLS KeyUpdate was prohibited.", driver.State.FatalAlertDescription);
         Assert.False(driver.State.HasPostHandshakeTicket);
         Assert.False(driver.State.KeyUpdateInstalled);
-        Assert.Equal(0U, driver.State.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, driver.State.CurrentOneRttKeyPhase);
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()

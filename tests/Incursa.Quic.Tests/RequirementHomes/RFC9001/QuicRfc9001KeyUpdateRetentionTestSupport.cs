@@ -88,7 +88,7 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
         QuicConnectionRuntime runtime,
         ulong packetNumber,
         ulong sentAtMicros,
-        uint keyPhase)
+        ulong keyPhase)
     {
         runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -113,7 +113,7 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
         QuicConnectionRuntime runtime,
         ulong packetNumber,
         ulong sentAtMicros,
-        uint keyPhase)
+        ulong keyPhase)
     {
         SeedTrackedOneRttPacket(runtime, packetNumber, sentAtMicros, keyPhase);
         Assert.True(runtime.SendRuntime.TryRegisterLoss(

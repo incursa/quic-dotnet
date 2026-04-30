@@ -24,7 +24,10 @@
     "VER-QUIC-RFC9001-0007",
     "ARC-QUIC-RFC9001-0008",
     "WI-QUIC-RFC9001-0008",
-    "VER-QUIC-RFC9001-0008"
+    "VER-QUIC-RFC9001-0008",
+    "ARC-QUIC-RFC9001-0009",
+    "WI-QUIC-RFC9001-0009",
+    "VER-QUIC-RFC9001-0009"
   ],
   "artifact_id": "SPEC-QUIC-RFC9001",
   "scope": "This specification covers the reviewed RFC 9001 extraction outputs and preserves the distinction between RFC 9001 packet-protection behavior and overlapping TLS or transport references.",
@@ -1798,6 +1801,34 @@
           "benchmarks/QuicRepeatedKeyUpdateControlBenchmarks.cs::DiscardRepeatedOldRepresentativeLaterEpochPacketProtectionAndSendState"
         ]
       }
+    },
+    {
+      "id": "REQ-QUIC-RFC9001-S6P5-0007",
+      "title": "Keep repeated key-update epochs wider than the wire Key Phase bit",
+      "statement": "While repeated 1-RTT key updates remain active, an endpoint MUST keep its internal key-update epoch identifier wide enough to advance beyond the 32-bit boundary without treating the one-bit packet Key Phase signal as the epoch counter.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9001-0009"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9001-0009"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9001-0009"
+        ],
+        "upstream_refs": [
+          "RFC 9001 §6.5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs::TransportBridgeInstallsRepeatedLocalUpdateBeyondTheThirtyTwoBitEpochBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs::TransportBridgeInstallsRepeatedPeerUpdateBeyondTheThirtyTwoBitEpochBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs::LifecyclePreservesAcknowledgmentAndRetainedOldStateBeyondTheThirtyTwoBitEpochBoundary"
+        ]
+      },
+      "notes": [
+        "This requirement removes the old 32-bit implementation ceiling for internal epoch identifiers; it does not claim an unbounded epoch ledger or public key-update support."
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S6P6-0001",

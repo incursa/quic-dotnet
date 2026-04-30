@@ -71,7 +71,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
 
         Assert.True(validResult.StateChanged);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.Null(runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial);
         Assert.True(successorOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
     }
@@ -104,7 +104,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
 
         Assert.True(result.StateChanged);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(currentPhaseOneMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(secondSuccessorOpenMaterial.Matches(
             runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial!.Value));
@@ -160,7 +160,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
 
             Assert.True(result.StateChanged);
             Assert.False(runtime.TlsState.KeyUpdateInstalled);
-            Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+            Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
             Assert.True(currentOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
             Assert.True(successorOpenMaterial.Matches(
                 runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial!.Value));
@@ -197,7 +197,7 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
 
         Assert.True(result.StateChanged);
         Assert.False(runtime.TlsState.KeyUpdateInstalled);
-        Assert.Equal(0U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(0UL, runtime.TlsState.CurrentOneRttKeyPhase);
         Assert.True(currentOpenMaterial.Matches(runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value));
         Assert.True(successorOpenMaterial.Matches(
             runtime.TlsState.RetainedNextOneRttOpenPacketProtectionMaterial!.Value));

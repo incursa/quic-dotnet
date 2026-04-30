@@ -62,6 +62,6 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0007
         Assert.True(retainedProtectMaterial.Matches(priorProtectMaterial));
         Assert.False(retainedOpenMaterial.Matches(currentOpenMaterial));
         Assert.False(retainedProtectMaterial.Matches(currentProtectMaterial));
-        Assert.Equal(1U, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
     }
 }

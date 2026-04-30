@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0006
 
         Assert.True(lifecycle.HasRetainedNextOpenPacketProtectionMaterial);
         Assert.True(lifecycle.HasRetainedOldPacketProtectionMaterial);
-        Assert.Equal(16U, lifecycle.RetainedOldPacketProtectionKeyPhase);
+        Assert.Equal(16UL, lifecycle.RetainedOldPacketProtectionKeyPhase);
         Assert.True(lifecycle.CurrentPacketProtectionPhaseAcknowledged);
         Assert.Equal(notBeforeMicros, lifecycle.RepeatedLocalPacketProtectionUpdateNotBeforeMicros);
 
@@ -102,7 +102,7 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0006
         for (int iteration = 0; iteration < 32; iteration++)
         {
             QuicOneRttKeyUpdateLifecycle lifecycle = new();
-            uint keyPhase = (uint)random.Next(1, 1_024);
+            ulong keyPhase = (ulong)random.Next(1, 1_024);
             ulong acknowledgedAtMicros = (ulong)random.Next(1_000, 100_000);
             ulong probeTimeoutMicros = (ulong)random.Next(1, 25_000);
             ulong currentNotBeforeMicros = acknowledgedAtMicros + (probeTimeoutMicros * 3UL);
@@ -124,11 +124,11 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0006
                 retainedOldProtectMaterial));
             Assert.True(lifecycle.TryArmRetainedOldPacketProtectionMaterialDiscard(
                 currentNotBeforeMicros,
-                keyPhase - 1U));
+                keyPhase - 1UL));
 
             Assert.False(lifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(keyPhase, currentNotBeforeMicros - 1));
             Assert.True(lifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(keyPhase, currentNotBeforeMicros));
-            Assert.False(lifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(keyPhase + 1U, currentNotBeforeMicros));
+            Assert.False(lifecycle.CanInitiateRepeatedLocalPacketProtectionUpdate(keyPhase + 1UL, currentNotBeforeMicros));
 
             Assert.True(lifecycle.TryDiscardRetainedOldPacketProtectionMaterial());
             Assert.True(lifecycle.CurrentPacketProtectionPhaseAcknowledged);

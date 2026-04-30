@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9001-0009",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9001 Large Key-Update Epoch Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home execution, adjacent repeated key-update regression tests, solution build, SpecTrace JSON validation, Workbench core validation, and git diff hygiene.",
+  "scope": "Verify that repeated 1-RTT key-update epoch identifiers are no longer capped at the old 32-bit implementation boundary, while the packet Key Phase signal remains derived from the epoch low bit and retained-old cleanup keeps matching the retained wide epoch.",
+  "preconditions": [
+    "REQ-QUIC-RFC9001-S6P5-0006 remains the repeated epoch ownership baseline.",
+    "The runtime already owns repeated local and peer install gates, current-phase acknowledgment, cooldown state, retained-old material, and sender/recovery cleanup synchronization."
+  ],
+  "procedure": [
+    "Run the focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0007.",
+    "Rerun adjacent REQ-QUIC-RFC9001-S6P5-0006 and REQ-QUIC-RFC9001-S6P5-0003 regression tests.",
+    "Build the solution in Release.",
+    "Run `pwsh -NoProfile -File scripts\\Validate-SpecTraceJson.ps1 -Profiles core`.",
+    "Run `dotnet tool run workbench -- --format json validate --profile core`.",
+    "Run `git diff --check` before committing the slice."
+  ],
+  "expected_result": "The bridge installs repeated local and peer 1-RTT key updates from epoch uint.MaxValue to uint.MaxValue + 1, the packet Key Phase bit wraps to zero, retained-old state records the previous wide epoch, and lifecycle cleanup state preserves current acknowledgment and cooldown ownership without narrowing the epoch.",
+  "verifies": [
+    "REQ-QUIC-RFC9001-S6P5-0007"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9001",
+    "ARC-QUIC-RFC9001-0009",
+    "WI-QUIC-RFC9001-0009",
+    "ARC-QUIC-RFC9001-0003",
+    "ARC-QUIC-RFC9001-0006"
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs",
+    "src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs"
+  ],
+  "status_summary": "Passed locally on 2026-04-30. `dotnet build Incursa.Quic.slnx -c Release` completed with 0 warnings and 0 errors. Focused execution for `REQ_QUIC_RFC9001_S6P5_0007|REQ_QUIC_RFC9001_S6P5_0006|REQ_QUIC_RFC9001_S6P5_0003` passed 18/18. `pwsh -NoProfile -File scripts\\Validate-SpecTraceJson.ps1 -Profiles core` validated 313 SpecTrace JSON artifacts. `dotnet tool run workbench -- --format json validate --profile core` returned ok with 0 errors and 0 warnings. `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` passed 3,299/3,299. Broader unbounded key-update lifecycle support remains out of scope."
+}

@@ -265,7 +265,7 @@ public class QuicRepeatedKeyUpdateControlBenchmarks
         QuicConnectionSendRuntime sendRuntime,
         QuicRecoveryController recoveryController,
         ulong packetNumber,
-        uint keyPhase)
+        ulong keyPhase)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
