@@ -58,6 +58,7 @@ dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-b
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0001|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0003|FullyQualifiedName~REQ_QUIC_INT_0004|FullyQualifiedName~REQ_QUIC_INT_0005"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0045|FullyQualifiedName~REQ_QUIC_CRT_0047|FullyQualifiedName~REQ_QUIC_CRT_0048|FullyQualifiedName~REQ_QUIC_CRT_0049|FullyQualifiedName~REQ_QUIC_CRT_0050|FullyQualifiedName~REQ_QUIC_CRT_0051|FullyQualifiedName~REQ_QUIC_CRT_0052|FullyQualifiedName~REQ_QUIC_CRT_0053|FullyQualifiedName~REQ_QUIC_CRT_0054|FullyQualifiedName~REQ_QUIC_CRT_0057"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0002|FullyQualifiedName~REQ_QUIC_CRT_0012|FullyQualifiedName~REQ_QUIC_CRT_0013|FullyQualifiedName~REQ_QUIC_CRT_0014|FullyQualifiedName~REQ_QUIC_CRT_0015|FullyQualifiedName~REQ_QUIC_CRT_0016|FullyQualifiedName~REQ_QUIC_CRT_0080|FullyQualifiedName~REQ_QUIC_CRT_0082|FullyQualifiedName~REQ_QUIC_CRT_0083|FullyQualifiedName~REQ_QUIC_CRT_0085|FullyQualifiedName~REQ_QUIC_CRT_0086"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0001|FullyQualifiedName~REQ_QUIC_CRT_0004|FullyQualifiedName~REQ_QUIC_CRT_0005|FullyQualifiedName~REQ_QUIC_CRT_0006|FullyQualifiedName~REQ_QUIC_CRT_0008|FullyQualifiedName~REQ_QUIC_CRT_0009|FullyQualifiedName~REQ_QUIC_CRT_0010|FullyQualifiedName~REQ_QUIC_CRT_0014|FullyQualifiedName~REQ_QUIC_CRT_0017|FullyQualifiedName~REQ_QUIC_CRT_0018|FullyQualifiedName~REQ_QUIC_CRT_0020|FullyQualifiedName~REQ_QUIC_CRT_0093|FullyQualifiedName~REQ_QUIC_CRT_0094|FullyQualifiedName~REQ_QUIC_CRT_0095|FullyQualifiedName~REQ_QUIC_CRT_0096"
 ```
 
 Observed results through 2026-04-30:
@@ -66,7 +67,7 @@ Observed results through 2026-04-30:
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,287 passed, 0 failed, 0 skipped, 3,287 total |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,296 passed, 0 failed, 0 skipped, 3,296 total |
 | `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
 | `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 315 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
@@ -91,6 +92,7 @@ Observed results through 2026-04-30:
 | focused harness-foundation INT filter | Passed on 2026-04-30: 11 passed, 0 failed, 0 skipped |
 | focused CRT deadline-scheduler filter | Passed on 2026-04-30: 12 passed, 0 failed, 0 skipped |
 | focused CRT endpoint-ingress filter | Passed on 2026-04-30: 20 passed, 0 failed, 0 skipped |
+| focused CRT high-density execution filter | Passed on 2026-04-30: 18 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -130,9 +132,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 94 implemented | 6 draft |
+| Architecture | 95 implemented | 5 draft |
 | Work items | 96 complete | 5 planned |
-| Verification | 96 passed | 6 planned |
+| Verification | 97 passed | 5 planned |
 
 ## Implementation State
 
