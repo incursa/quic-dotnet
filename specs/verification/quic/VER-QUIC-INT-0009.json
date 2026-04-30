@@ -20,7 +20,7 @@
     "Docker is available on the local machine for the local helper replay.",
     "Python 3 is available for the external runner checkout.",
     "The local runner checkout exists at `C:\\src\\quic-interop\\quic-interop-runner`.",
-    "Hosted dispatch requires GitHub Actions access, a current `quic-interop-runner` checkout from the public runner repository, Docker Engine 28.1 or later for the runner compose file, Python 3.12 for the runner dependency set, and Wireshark packet-analysis tools for the runner post-check."
+    "Hosted dispatch requires GitHub Actions access, a GitHub-hosted runner or Actions Runner v2.327.1 or later for Node 24 action majors, a current `quic-interop-runner` checkout from the public runner repository, Docker Engine 28.1 or later for the runner compose file, Python 3.12 for the runner dependency set, and Wireshark packet-analysis tools for the runner post-check."
   ],
   "scope": "Verify that the repository defines a manual hosted lane for the narrow server-role `handshake` helper cell, keeps the lane outside ordinary CI gates, uploads artifacts regardless of helper outcome, and preserves the helper's advisory classification boundary without claiming broad interop readiness.",
   "procedure": [
@@ -40,12 +40,13 @@
     "scripts/interop/README.md",
     "artifacts/interop-runner/20260429-170106187-server-nginx/",
     "https://github.com/incursa/quic-dotnet/actions/runs/25141407138",
+    "https://github.com/incursa/quic-dotnet/actions/runs/25145021654",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0009.json",
     "specs/work-items/quic/WI-QUIC-INT-0009.json",
     "specs/verification/quic/VER-QUIC-INT-0009.json"
   ],
-  "status_summary": "Passed for the repository configuration slice on 2026-04-29 and for the narrow hosted corroboration lane on 2026-04-30. The dry-run resolved to server-role `nginx` replacement against quic-go for `handshake`; the real local helper run built the harness image, invoked the runner, exited successfully with an advisory, and preserved `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream runner post-check failed. Hosted GitHub Actions run 25141407138 passed on commit 2d869bdf0095a45cecadf2a34f920480bf4309b9; its runner report recorded `handshake` as `succeeded` for the narrow `nginx` replacement server versus quic-go client cell and uploaded the runner artifact bundle.",
+  "status_summary": "Passed for the repository configuration slice on 2026-04-29 and for the narrow hosted corroboration lane on 2026-04-30. The dry-run resolved to server-role `nginx` replacement against quic-go for `handshake`; the real local helper run built the harness image, invoked the runner, exited successfully with an advisory, and preserved `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream runner post-check failed. Hosted GitHub Actions run 25141407138 passed on commit 2d869bdf0095a45cecadf2a34f920480bf4309b9; its runner report recorded `handshake` as `succeeded` for the narrow `nginx` replacement server versus quic-go client cell and uploaded the runner artifact bundle. Follow-up workflow-maintenance run 25145021654 passed on commit e6dcbb804a02202dd2d0c11179b7564634a9adae after updating the workflow's repo-controlled Python setup and artifact upload action pins to Node 24-compatible majors; the log contained no Node.js deprecation hits.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

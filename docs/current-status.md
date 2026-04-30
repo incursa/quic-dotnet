@@ -123,11 +123,17 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
-- Hosted CI and CodeQL workflows passed on `main` at commit `2b3833d6`.
+- Hosted CI and CodeQL workflows passed on `main` at commit `e6dcbb80`
+  (`25145016884` and `25145016640`).
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
-  tree for advisory review. Run `25141407138` passed on 2026-04-30 for commit
-  `2d869bdf`.
+  tree for advisory review. Run `25145021654` passed on 2026-04-30 for commit
+  `e6dcbb80` after the workflow moved its repo-controlled Python setup and
+  artifact upload actions to Node 24-compatible majors; the log had no Node.js
+  deprecation hits.
+- The manual Library Fast Quality workflow passed on run `25145022368` at
+  commit `e6dcbb80` after its artifact upload action moved to the
+  Node 24-compatible major.
 
 Do not claim broad QUIC support, broad public early-data support, broad key
 update support, public API stability beyond the traced facade, or broad interop
@@ -143,9 +149,6 @@ The next useful lanes are:
 
 - Keep any hosted interop expansion separate and requirement-owned; the current
   hosted proof covers only the server-role `handshake` cell against quic-go.
-- Track the GitHub Actions Node.js 20 deprecation warning observed on run
-  `25141407138` and update action versions or runner settings when the
-  dependency path is ready.
 - Narrow public-surface hardening only where the existing API requirements
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or

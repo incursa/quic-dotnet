@@ -12,8 +12,10 @@ Use this guide to validate the repository and produce local packages.
 See [Current repository status](current-status.md) before interpreting these
 commands. As of 2026-04-30, the local Release build, full no-build test suite,
 repo-local SpecTrace validation, Workbench core validation, Dry and Short
-benchmark baselines, hosted CI, hosted CodeQL, and the advisory hosted
-interop-runner handshake lane are green.
+benchmark baselines, hosted CI, hosted CodeQL, manual library fast-quality, and
+the advisory hosted interop-runner handshake lane are green. The repo-controlled
+Python setup and artifact upload action pins in the hosted workflows are on
+Node 24-compatible majors.
 
 ```bash
 dotnet tool restore
