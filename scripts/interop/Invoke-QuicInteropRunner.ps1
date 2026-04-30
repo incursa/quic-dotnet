@@ -34,7 +34,7 @@ function Assert-CommandAvailable {
     }
 }
 
-function Test-WindowsWiresharkToolAvailable {
+function Resolve-WindowsWiresharkToolPath {
     param(
         [Parameter(Mandatory)]
         [string]$Name
@@ -44,31 +44,54 @@ function Test-WindowsWiresharkToolAvailable {
         return $false
     }
 
-    $candidatePaths = @(
-        (Join-Path ${env:ProgramFiles} "Wireshark\$Name.exe"),
-        (Join-Path ${env:ProgramFiles(x86)} "Wireshark\$Name.exe")
+    $installRoots = @(
+        ${env:ProgramFiles},
+        ${env:ProgramFiles(x86)}
     )
 
-    foreach ($candidatePath in $candidatePaths) {
+    if (-not [string]::IsNullOrWhiteSpace(${env:LOCALAPPDATA})) {
+        $installRoots += (Join-Path ${env:LOCALAPPDATA} 'Programs')
+    }
+
+    foreach ($installRoot in $installRoots) {
+        if ([string]::IsNullOrWhiteSpace($installRoot)) {
+            continue
+        }
+
+        $candidatePath = Join-Path $installRoot "Wireshark\$Name.exe"
         if (-not [string]::IsNullOrWhiteSpace($candidatePath) -and (Test-Path -LiteralPath $candidatePath)) {
-            return $true
+            return $candidatePath
         }
     }
 
-    return $false
+    return $null
 }
 
-function Assert-PacketAnalysisToolAvailable {
+function Resolve-PacketAnalysisToolPath {
     param(
         [Parameter(Mandatory)]
         [string]$Name
     )
 
-    if ((Get-Command $Name -ErrorAction SilentlyContinue) -or (Test-WindowsWiresharkToolAvailable -Name $Name)) {
-        return
+    $command = Get-Command $Name -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $command) {
+        if ($command.PSObject.Properties.Match('Path').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$command.Path)) {
+            return [string]$command.Path
+        }
+
+        if ($command.PSObject.Properties.Match('Source').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$command.Source)) {
+            return [string]$command.Source
+        }
+
+        return $Name
     }
 
-    throw "$Name is required for quic-interop-runner packet analysis but was not found on PATH or in the standard Wireshark install directories."
+    $windowsToolPath = Resolve-WindowsWiresharkToolPath -Name $Name
+    if (-not [string]::IsNullOrWhiteSpace($windowsToolPath)) {
+        return $windowsToolPath
+    }
+
+    throw "$Name is required for quic-interop-runner packet analysis but was not found on PATH or in the standard system or per-user Wireshark install directories."
 }
 
 function ConvertTo-WindowsProcessArgument {
@@ -1148,8 +1171,16 @@ try {
         throw 'python is required but was not found on PATH.'
     }
 
-    Assert-PacketAnalysisToolAvailable -Name 'tshark'
-    Assert-PacketAnalysisToolAvailable -Name 'editcap'
+    $tsharkPath = Resolve-PacketAnalysisToolPath -Name 'tshark'
+    $editcapPath = Resolve-PacketAnalysisToolPath -Name 'editcap'
+    $patchPysharkTsharkPath =
+        [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows) -and
+        -not (Get-Command 'tshark' -ErrorAction SilentlyContinue)
+    $packetAnalysisToolDirectories = @(@($tsharkPath, $editcapPath) |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and [System.IO.Path]::IsPathRooted([string]$_) } |
+        ForEach-Object { Split-Path -Parent ([string]$_) } |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Select-Object -Unique)
 
     $pythonCommandPath = if ($pythonCommand.PSObject.Properties.Match('Path').Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$pythonCommand.Path)) {
         [string]$pythonCommand.Path
@@ -1221,6 +1252,25 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.getcwd())
+
+_tshark_path = os.environ.get("INCURSA_QUIC_INTEROP_TSHARK_PATH")
+if _tshark_path:
+    import pyshark.capture.capture as _pyshark_capture
+    import pyshark.tshark.tshark as _pyshark_tshark
+
+    _real_pyshark_get_process_path = _pyshark_tshark.get_process_path
+
+    def _patched_pyshark_get_process_path(tshark_path=None, process_name="tshark"):
+        if process_name == "tshark":
+            return _tshark_path.replace("\\", "/")
+
+        return _real_pyshark_get_process_path(
+            tshark_path=tshark_path,
+            process_name=process_name,
+        )
+
+    _pyshark_tshark.get_process_path = _patched_pyshark_get_process_path
+    _pyshark_capture.get_process_path = _patched_pyshark_get_process_path
 
 import testcase
 import testcases_quic
@@ -1640,12 +1690,27 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
 
     Push-Location $runnerRootResolved
     $previousPrecheckedSlots = $env:INCURSA_QUIC_INTEROP_PRECHECKED_SLOTS
+    $previousInteropTsharkPath = $env:INCURSA_QUIC_INTEROP_TSHARK_PATH
+    $previousPath = $env:PATH
     $precheckedSlots = @(
         $executionPlan.RunnerClientImplementations
         $executionPlan.RunnerServerImplementations
     ) | Select-Object -Unique
     $env:INCURSA_QUIC_INTEROP_PRECHECKED_SLOTS = $precheckedSlots -join ','
     try {
+        if ($packetAnalysisToolDirectories.Count -gt 0) {
+            $pathEntries = @($packetAnalysisToolDirectories)
+            if (-not [string]::IsNullOrWhiteSpace($previousPath)) {
+                $pathEntries += $previousPath
+            }
+
+            $env:PATH = $pathEntries -join [System.IO.Path]::PathSeparator
+        }
+
+        if ($patchPysharkTsharkPath) {
+            $env:INCURSA_QUIC_INTEROP_TSHARK_PATH = $tsharkPath
+        }
+
         Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
         $runnerProcessArguments = @('-X', 'utf8', $runnerShimPath) + $runnerArgs
         $runnerExitCode = Invoke-ProcessToFiles `
@@ -1661,6 +1726,20 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
         }
         else {
             $env:INCURSA_QUIC_INTEROP_PRECHECKED_SLOTS = $previousPrecheckedSlots
+        }
+
+        if ($null -eq $previousPath) {
+            Remove-Item Env:\PATH -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:PATH = $previousPath
+        }
+
+        if ($null -eq $previousInteropTsharkPath) {
+            Remove-Item Env:\INCURSA_QUIC_INTEROP_TSHARK_PATH -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:INCURSA_QUIC_INTEROP_TSHARK_PATH = $previousInteropTsharkPath
         }
 
         Pop-Location

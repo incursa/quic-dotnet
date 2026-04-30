@@ -240,6 +240,7 @@ public sealed class InteropRunnerScriptPreflightFailureTests
             startInfo.Environment["PATH"] = toolRoot;
             startInfo.Environment["ProgramFiles"] = Path.Combine(tempDirectoryFixture.RootDirectory, "program-files");
             startInfo.Environment["ProgramFiles(x86)"] = Path.Combine(tempDirectoryFixture.RootDirectory, "program-files-x86");
+            startInfo.Environment["LOCALAPPDATA"] = Path.Combine(tempDirectoryFixture.RootDirectory, "local-app-data");
 
             using Process process = Process.Start(startInfo)
                 ?? throw new InvalidOperationException("Unable to start the interop runner helper script.");
