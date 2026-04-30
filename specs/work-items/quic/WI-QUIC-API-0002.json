@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-API-0002",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "Incursa.Quic Stream Capacity Callback Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -24,7 +24,7 @@
   ],
   "planned_changes": "- Add the public `QuicStreamCapacityChangedArgs` type.\n- Add `QuicConnectionOptions.StreamCapacityCallback`.\n- Wire the initial peer stream-capacity delta from `QuicConnectionRuntime` into `QuicConnection` and listener-accepted connections.\n- Add truthful later peer `MAX_STREAMS` growth reporting on the supported active loopback path without turning the callback into a general event pipeline.\n- Add truthful real peer stream-close-driven capacity release reporting on the supported active loopback path without turning the callback into a general event pipeline.\n- Keep the callback silent when the supported boundary is not reached or the connection is canceled or disposed before peer limits commit.\n- Keep `QuicStream` write/completion behavior unchanged unless a truthful minimum expansion becomes necessary.\n- Reconcile the public API analyzer file, trace artifacts, and requirement-home tests with the approved subset.",
   "verification_plan": "Use API-diff, reflection, and focused requirement-home tests to prove the callback surface exists, the initial peer delta is observed once on the supported loopback path, later real MAX_STREAMS growth is observed on the supported active loopback path, real stream-close-driven release is observed on the supported active loopback path, zero-delta and pre-commit cases remain silent, cancellation/disposal stay honest, and the public boundary remains narrow. No write-side expansion is expected for this slice.",
-  "completion_notes": "This item keeps the stream-capacity callback narrow and truthful for the initial delta, later real MAX_STREAMS growth, and real peer stream-close-driven capacity release on the supported loopback path. Reset/stop-sending parity and broader write-heavy stream behavior remain separate slices.",
+  "completion_notes": "This item keeps the stream-capacity callback narrow and truthful for the initial delta, later real MAX_STREAMS growth, and real peer stream-close-driven capacity release on the supported loopback path. Reset/stop-sending parity and broader write-heavy stream behavior remain separate slices. A 2026-04-30 evidence refresh passed the focused Release no-build requirement-home filter for REQ-QUIC-API-0001, REQ-QUIC-API-0005, REQ-QUIC-API-0008, and REQ-QUIC-API-0009 with 48/48 tests.",
   "out_of_scope": [
     "Write-heavy stream-action pipeline.",
     "Reset and stop-sending parity.",

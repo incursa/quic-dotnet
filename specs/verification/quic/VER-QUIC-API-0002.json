@@ -45,5 +45,5 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs"
   ],
-  "status_summary": "This verification artifact records the landed stream-capacity callback slice and points at the requirement-home and runtime evidence that proves the initial peer delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. Broader write-heavy stream behavior remains out of scope."
+  "status_summary": "This verification artifact records the landed stream-capacity callback slice and points at the requirement-home and runtime evidence that proves the initial peer delta, later real MAX_STREAMS growth, real peer stream-close-driven capacity release, zero-delta suppression, and cancellation/disposal honesty. A 2026-04-30 evidence refresh passed the focused Release no-build requirement-home filter for REQ-QUIC-API-0001, REQ-QUIC-API-0005, REQ-QUIC-API-0008, and REQ-QUIC-API-0009 with 48/48 tests. Broader write-heavy stream behavior remains out of scope."
 }
