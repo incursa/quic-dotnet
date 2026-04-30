@@ -72,7 +72,7 @@
     "REQ-QUIC-RFC9001-SBP2-0002"
   ],
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "procedure": [
     "Run the relevant unit, property, and fuzz tests.",
     "Run the Handshake, Retry-integrity, and AEAD usage-limit benchmark suites and any other available benchmark evidence for the slice.",
@@ -141,6 +141,7 @@
   ],
   "title": "QUIC RFC 9001 TLS Verification",
   "owner": "quic-maintainers",
+  "status_summary": "Passed on 2026-04-30 for the bounded RFC 9001 packet-protection and TLS-coordination helper surface. The focused RFC9001/TLS helper filter passed 323/323. Dry benchmark smoke executed `QuicInitialPacketProtectionBenchmarks` (3), `QuicHandshakePacketProtectionBenchmarks` (10), `QuicRetryIntegrityBenchmarks` (4), and `QuicAeadUsageLimitCalculatorBenchmarks` (4). BenchmarkDotNet reported expected Dry minimum-iteration-time warnings, so the benchmark evidence proves suite execution only and is not a performance claim. Broad endpoint handshake completeness, public early-data support, general repeated key-update support, and interop readiness remain outside this umbrella except where separately traced.",
   "preconditions": [
     "The `Incursa.Quic` solution builds successfully.",
     "The RFC9001 requirement traits are discoverable by the quality inventory.",

@@ -8,13 +8,13 @@
     "SPEC-QUIC-RFC9001"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Implemented and verified the bounded RFC 9001 packet-protection and TLS-coordination helper surface. The focused RFC9001/TLS helper filter passed 323/323 on 2026-04-30. The `QuicInitialPacketProtectionBenchmarks`, `QuicHandshakePacketProtectionBenchmarks`, `QuicRetryIntegrityBenchmarks`, and `QuicAeadUsageLimitCalculatorBenchmarks` Dry jobs executed 21 total benchmarks with expected BenchmarkDotNet Dry minimum-iteration-time warnings. This closes the helper-surface trace status without claiming broad endpoint handshake completeness, public early-data support, general repeated key-update support, or interop readiness.",
   "out_of_scope": [
     "RFC 8999 version-independent invariants.",
     "RFC 9000 transport-only behavior that is not part of packet protection.",
     "RFC 9002 loss-detection and congestion-control logic."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the RFC 9001 packet-protection and TLS-coordination surface aligned with the canonical requirements and their test evidence.\nPreserve the distinction between TLS-specific behavior and the transport and recovery slices that live in other specs.\nAdd a narrow Handshake packet-protection helper that consumes QuicTlsPacketProtectionMaterial without broadening into a generic TLS backend.\nKeep Retry integrity isolated as a focused helper rather than broadening packet protection into a generic subsystem.\nKeep the Appendix B AEAD usage-limit calculator traced as a helper-backed proof surface rather than a generic AEAD policy engine.",
   "verification_plan": "Run the TLS-coordination, CRYPTO-frame, transport-parameter, version-negotiation, Initial packet-protection, Handshake packet-protection, Retry-integrity, and Appendix B AEAD usage-limit tests that prove the RFC 9001 slice.\nRun the non-Initial packet-protection material tests that prove AEAD binding, level typing, and bridge-state threading.\nRun the packet-format and benchmark evidence paths that exercise the CRYPTO, transport-parameter, Initial packet-protection, Handshake packet-protection, Retry-integrity, and AEAD usage-limit helpers.\nRun the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links.",
