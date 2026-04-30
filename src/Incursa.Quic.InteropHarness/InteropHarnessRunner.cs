@@ -437,19 +437,22 @@ internal static class InteropHarnessRunner
                 return 1;
             }
 
-            if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true) ||
-                requestUri is null)
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
             {
-                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
                 return 1;
             }
 
-            IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
+            IPEndPoint remoteEndPoint = firstPlan.RemoteEndPoint;
             WriteLineAndFlush(
                 stdout,
                 $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
 
-            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, requestUri.Host);
+            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
             QuicClientConnectionSettings clientSettings = QuicClientConnectionOptionsValidator.Capture(
                 clientOptions,
                 nameof(clientOptions),
@@ -525,6 +528,27 @@ internal static class InteropHarnessRunner
             WriteLineAndFlush(
                 stdout,
                 $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} observed exactly one Retry transition and completed managed client bootstrap.");
+
+            for (int index = 0; index < transferPlans.Count; index++)
+            {
+                SequentialTransferPlan transferPlan = transferPlans[index];
+                long bytesDownloaded = await DownloadHttp09ResponseAsync(
+                    connection,
+                    transferPlan,
+                    stdout,
+                    settings.TestCase,
+                    settings.Requests.Count,
+                    index,
+                    transferPlans.Count,
+                    responseReadTimeout: InteropRequestWaitTimeout,
+                    sendCreditRetryTimeout: InteropRequestWaitTimeout).ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} completed managed retry download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
+            }
+
+            await connection.CloseAsync(0).ConfigureAwait(false);
             return 0;
         }
         catch (Exception ex)
@@ -653,6 +677,31 @@ internal static class InteropHarnessRunner
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=server, testcase=retry, requestCount={settings.Requests.Count} issued exactly one Retry and completed managed listener bootstrap.");
+
+                    int expectedRetryRequestCount = settings.Requests.Count > 0 ? settings.Requests.Count : 1;
+                    int servedRequestCount = await ServeHttp09RequestsAsync(
+                        connection,
+                        stdout,
+                        "retry",
+                        expectedRequestCount: expectedRetryRequestCount,
+                        configuredRequestCount: settings.Requests.Count).ConfigureAwait(false);
+
+                    if (servedRequestCount == 0)
+                    {
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=retry did not observe an HTTP/0.9 request stream.");
+                        return 1;
+                    }
+
+                    if (settings.Requests.Count > 0)
+                    {
+                        await LingerForPeerCloseAfterFinalResponseAsync(
+                            connection,
+                            stdout,
+                            "retry",
+                            settings.Requests.Count,
+                            ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
+                    }
+
                     return 0;
                 }
             }

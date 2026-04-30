@@ -6,7 +6,7 @@
   "title": "QUIC Interop Retry Child-Process Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Focused requirement-home tests, build execution, and artifact inspection.",
+  "verification_method": "Focused requirement-home tests, local preflight smoke execution, local interop-runner execution, build execution, and artifact inspection.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -21,14 +21,17 @@
     "The harness can dispatch `retry` through the managed child-process path.",
     "Loopback UDP sockets and the test TLS material are available."
   ],
-  "scope": "Verify the managed child-process `retry` testcase, the one-valid-Retry emission gate, the client replay, the replayed Initial acceptance, and exit-code honesty only after post-Retry handshake completion.",
+  "scope": "Verify the managed child-process `retry` testcase, the one-valid-Retry emission gate, the client replay, the replayed Initial acceptance, the runner-generated single HTTP/0.9 request after post-Retry handshake completion, mounted file byte delivery plus EOF, and exit-code honesty only after that retry request completes.",
   "procedure": [
-    "Run the new retry requirement-home test and confirm the server issues one Retry while the client observes exactly one Retry transition and the handshake completes on the replayed path.",
+    "Run the retry requirement-home tests and confirm the server issues one Retry while the client observes exactly one Retry transition, the handshake completes on the replayed path, the client sends the configured HTTP/0.9 request, the server serves the mounted source file, and the client writes the expected destination bytes.",
+    "Run the negative retry requirement-home test and confirm a missing mounted source file fails both managed endpoints without writing a destination file.",
+    "Run the local preflight retry smoke test so the direct localhost path proves qlog capture and post-Retry byte delivery together.",
+    "Run the local interop helper against quic-go in same-slot retry mode, then inspect `runner.stderr.log`, `runner-report.json`, and `runner-logs/**/retry/output.txt` for exact outcomes.",
     "Run the current interop and CRT guard tests that protect the supported floor.",
     "Run the full `REQ_QUIC_CRT_` sweep.",
     "Render and validate the SpecTrace JSON and Markdown artifacts after any canonical JSON updates."
   ],
-  "expected_result": "The child-process harness proves exactly one valid Retry on the real managed path, the client replays exactly once, the server accepts the replayed Initial, and exit code 0 is returned only after post-Retry handshake completion. Unsupported testcases continue to return `127`.",
+  "expected_result": "The child-process harness proves exactly one valid Retry on the real managed path, the client replays exactly once, the server accepts the replayed Initial, the runner-generated single HTTP/0.9 request is served from `/www` and written under `/downloads`, and exit code 0 is returned only after byte delivery plus EOF complete. Unsupported testcases continue to return `127`.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
@@ -47,15 +50,16 @@
     "src/Incursa.Quic/QuicRetryIntegrity.cs",
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "src/Incursa.Quic/QuicVariableLengthInteger.cs",
+    "artifacts/interop-runner/retry-investigation/20260430-134602678-both-quic-go/",
     "docs/design/quic-interop-prep-plan.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
   ],
-  "status_summary": "Landed; this verification slice records the proof contract for the managed child-process retry contract.",
+  "status_summary": "Passed on 2026-04-30; the focused requirement-home and local preflight retry tests proved one-Retry bootstrap plus single-request byte delivery and missing-file failure locally, and the fresh local quic-go same-slot runner bundle at `artifacts/interop-runner/retry-investigation/20260430-134602678-both-quic-go/` shows the external runner retry cell succeeded after downloaded-file and Retry checks both passed.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "Public API widening, IsSupported widening, transfer enablement, multi-Retry support, broader token lifecycle or NEW_TOKEN behavior, broader TLS policy, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, and key update remain intentionally deferred."
+      "content": "Public API widening, IsSupported widening, transfer generalization outside the retry testcase, multi-Retry support, broader token lifecycle or NEW_TOKEN behavior, broader TLS policy, trust-store policy, hostname validation, certificate-path validation, revocation, 0-RTT, and key update remain intentionally deferred."
     }
   ]
 }

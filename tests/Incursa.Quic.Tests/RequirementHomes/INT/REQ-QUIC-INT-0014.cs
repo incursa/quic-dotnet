@@ -189,22 +189,45 @@ public sealed class REQ_QUIC_INT_0014
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
         (string CertificatePath, string PrivateKeyPath) = CreateServerCertificateFiles(fixture, "localhost");
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-        string request = $"https://localhost:{listenEndPoint.Port}/retry";
+        string relativePath = $"preflight-retry-{Guid.NewGuid():N}.txt";
+        string request = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
+        string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+        string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+        string sourcePath = Path.Combine(sourceRoot, relativePath);
+        string destinationPath = Path.Combine(destinationRoot, relativePath);
+        byte[] payload = Encoding.UTF8.GetBytes($"preflight retry payload {Guid.NewGuid():N}");
 
-        (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairAsync(
-            "retry",
-            request,
-            CertificatePath,
-            PrivateKeyPath,
-            qlogDirectory);
+        Directory.CreateDirectory(sourceRoot);
+        Directory.CreateDirectory(destinationRoot);
+        File.WriteAllBytes(sourcePath, payload);
+        TryDelete(destinationPath);
 
-        Assert.Equal(0, server.ExitCode);
-        Assert.Equal(0, client.ExitCode);
-        Assert.Contains("issued exactly one Retry", server.Stdout, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("observed exactly one Retry transition", client.Stdout, StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            (HarnessRunResult server, HarnessRunResult client) = await RunHarnessPairAsync(
+                "retry",
+                request,
+                CertificatePath,
+                PrivateKeyPath,
+                qlogDirectory);
 
-        string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
-        Assert.NotEmpty(qlogFiles);
+            Assert.Equal(0, server.ExitCode);
+            Assert.Equal(0, client.ExitCode);
+            Assert.Contains("issued exactly one Retry", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("observed exactly one Retry transition", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed retry response", server.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("completed managed retry download", client.Stdout, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(destinationPath));
+            Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+
+            string[] qlogFiles = Directory.GetFiles(qlogDirectory, "*.qlog");
+            Assert.NotEmpty(qlogFiles);
+        }
+        finally
+        {
+            TryDelete(sourcePath);
+            TryDelete(destinationPath);
+        }
     }
 
     [Fact]

@@ -112,37 +112,60 @@ public sealed class InteropHarnessProcessObservabilityTests
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string requests = $"https://localhost:{listenEndPoint.Port}/retry";
+            string relativePath = $"retry-{Guid.NewGuid():N}.txt";
+            string requests = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = Encoding.UTF8.GetBytes($"managed retry proof {Guid.NewGuid():N}");
 
-            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
-            await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
+            TryDelete(destinationPath);
 
-            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
-            await WaitForPairMarkersAsync(
-                serverProcess,
-                clientProcess,
-                "completed managed listener bootstrap",
-                "completed managed client bootstrap",
-                TimeSpan.FromSeconds(20));
-            await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
-            Assert.Equal(0, serverProcess.Process.ExitCode);
-            Assert.Equal(0, clientProcess.Process.ExitCode);
-            Assert.Empty(serverProcess.Stderr);
-            Assert.Empty(clientProcess.Stderr);
-            Assert.Contains("role=server, testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("role=client, testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            AssertContainsInOrder(
-                serverProcess.Stdout,
-                "listening on",
-                "issued exactly one Retry",
-                "completed managed listener bootstrap");
-            AssertContainsInOrder(
-                clientProcess.Stdout,
-                "connecting to",
-                "observed exactly one Retry transition",
-                "completed managed client bootstrap");
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
+                await WaitForPairMarkersAsync(
+                    serverProcess,
+                    clientProcess,
+                    "completed managed retry response",
+                    "completed managed retry download",
+                    TimeSpan.FromSeconds(25));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(25));
+
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Empty(serverProcess.Stderr);
+                Assert.Empty(clientProcess.Stderr);
+                Assert.True(File.Exists(destinationPath));
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("role=server, testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("role=client, testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    serverProcess.Stdout,
+                    "listening on",
+                    "issued exactly one Retry",
+                    "completed managed listener bootstrap",
+                    "completed managed retry response");
+                AssertContainsInOrder(
+                    clientProcess.Stdout,
+                    "connecting to",
+                    "observed exactly one Retry transition",
+                    "completed managed client bootstrap",
+                    "completed managed retry download");
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
         });
     }
 

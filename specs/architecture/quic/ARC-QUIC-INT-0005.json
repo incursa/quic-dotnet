@@ -6,7 +6,7 @@
   "title": "QUIC Interop Retry Child-Process Contract Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the smallest managed child-process boundary that proves one valid Retry can be emitted by the server, observed and replayed by the client, and completed on the real managed path without widening public support or broad token behavior.",
+  "purpose": "Describe the smallest managed child-process boundary that proves one valid Retry can be emitted by the server, observed and replayed by the client, completed on the real managed path, and followed by the runner-generated single HTTP/0.9 file delivery without widening public support, broad transfer behavior, or broad token behavior.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -30,7 +30,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0012.cs"
   ],
-  "design_summary": "The child-process retry path is split across one small server prelude and one existing client replay seam. The server side owns a one-shot Retry emission inside `QuicListenerHost`, using the library-owned Retry integrity helper to send a valid Retry with its own source CID and opaque token on the first Initial. The client side already owns Retry receipt parsing and one replay through `QuicClientConnectionHost` and `QuicConnectionRuntime`. After the replayed Initial arrives, the listener threads the original destination connection ID and Retry source connection ID into the local transport parameters so the existing binding validation can complete on the managed path. The harness runner dispatches `retry` on both roles and exits `0` only after the post-Retry handshake completes. This does not widen public API, transfer, or broader TLS policy.",
+  "design_summary": "The child-process retry path is split across one small server prelude, one existing client replay seam, and one narrow post-Retry application-data confirmation. The server side owns a one-shot Retry emission inside `QuicListenerHost`, using the library-owned Retry integrity helper to send a valid Retry with its own source CID and opaque token on the first Initial. The client side already owns Retry receipt parsing and one replay through `QuicClientConnectionHost` and `QuicConnectionRuntime`. After the replayed Initial arrives, the listener threads the original destination connection ID and Retry source connection ID into the local transport parameters so the existing binding validation can complete on the managed path. Once the post-Retry handshake completes, the harness reuses the same mounted-path HTTP/0.9 helpers as the transfer slice for the runner-generated single request only: the client sends one request, the server derives the `/www` source path from the observed target, the client writes the response under `/downloads`, and the harness exits `0` only after byte delivery plus EOF complete. This does not widen public API, broader transfer behavior, or broader TLS policy.",
   "alternatives_considered": [
     "Treat retry as a client-only replay proof. Rejected because the child-process harness must prove both issuance and completion on the real server path.",
     "Expose a new public retry knob on `QuicListenerOptions`. Rejected because it would widen the public boundary.",
@@ -40,13 +40,13 @@
     "Exactly one valid Retry is in scope.",
     "No multi-Retry behavior or general token persistence is in scope.",
     "The replayed Initial must use the Retry source connection ID and token emitted by the server prelude.",
-    "The slice stays child-process only and does not widen the public API, `IsSupported`, transfer, or broader TLS policy."
+    "The slice stays child-process only and does not widen the public API, `IsSupported`, transfer generalization outside retry, or broader TLS policy."
   ],
-  "data_and_state_considerations": "The listener host holds one retry bootstrap state record only until the replayed Initial is admitted. The client host continues to retain original destination connection ID and Retry token only across one replay. The Retry token is opaque state, not generalized NEW_TOKEN persistence.",
+  "data_and_state_considerations": "The listener host holds one retry bootstrap state record only until the replayed Initial is admitted. The client host continues to retain original destination connection ID and Retry token only across one replay. The Retry token is opaque state, not generalized NEW_TOKEN persistence. The post-Retry file request uses the existing `/www` and `/downloads` mount contract and does not introduce a retry-specific persistence or file-server state model.",
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This slice covers the managed child-process testcase that proves the server can emit one valid Retry, the client can observe and replay it once, and the real managed handshake can complete on the replayed path. It does not claim transfer enablement, byte delivery, EOF, or broader token behavior."
+      "content": "This slice covers the managed child-process testcase that proves the server can emit one valid Retry, the client can observe and replay it once, the real managed handshake can complete on the replayed path, and the runner-generated single HTTP/0.9 request can complete byte delivery plus EOF on that same path. It does not claim broader transfer enablement or broader token behavior."
     },
     {
       "heading": "Boundary Split",
@@ -60,6 +60,7 @@
   "risks": [
     "A later change could accidentally widen the test into generic token lifecycle support instead of one-shot Retry replay.",
     "A synthetic bypass would hide the real child-process sequencing gap rather than proving the managed seam.",
-    "The runtime already owns the replay and binding primitives, so the remaining risk is in harness sequencing and proof discipline, not in inventing new protocol behavior."
+    "The runner retry testcase generates a file request even though the original retry proof stopped at handshake completion, so the success gate must remain tied to preserved byte-delivery evidence instead of bootstrap markers alone.",
+    "The runtime already owns the replay, binding, active stream, and EOF primitives, so the remaining risk is in harness sequencing and proof discipline, not in inventing new protocol behavior."
   ]
 }

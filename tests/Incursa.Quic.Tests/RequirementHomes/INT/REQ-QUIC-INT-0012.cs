@@ -11,38 +11,61 @@ public sealed class REQ_QUIC_INT_0012
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task ManagedChildProcessHarnessEmitsAndConsumesExactlyOneRetryBeforeHandshakeCompletes()
+    public async Task ManagedChildProcessHarnessEmitsAndConsumesExactlyOneRetryBeforeDeliveringRequestedData()
     {
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
         {
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
-            string requests = $"https://localhost:{listenEndPoint.Port}/retry";
+            string relativePath = $"retry-{Guid.NewGuid():N}.txt";
+            string requests = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
             string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = Encoding.UTF8.GetBytes($"managed retry delivery proof {Guid.NewGuid():N}");
 
-            await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
-            await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
+            TryDelete(destinationPath);
 
-            await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
-            await WaitForRetryLifecycleAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
-            await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
 
-            Assert.Equal(0, clientProcess.Process.ExitCode);
-            Assert.Equal(0, serverProcess.Process.ExitCode);
-            Assert.Empty(clientProcess.Stderr);
-            Assert.Empty(serverProcess.Stderr);
-            Assert.Contains("testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            AssertContainsInOrder(
-                clientProcess.Stdout,
-                "connecting to",
-                "observed exactly one Retry transition (token=",
-                "observed exactly one Retry transition and completed managed client bootstrap.");
-            Assert.Contains("testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
-            AssertContainsInOrder(
-                serverProcess.Stdout,
-                "listening on",
-                "issued exactly one Retry (token=",
-                "issued exactly one Retry and completed managed listener bootstrap.");
+                await WaitForRetryLifecycleAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(25));
+
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Empty(clientProcess.Stderr);
+                Assert.Empty(serverProcess.Stderr);
+                Assert.True(File.Exists(destinationPath), $"Expected destination file '{destinationPath}' to exist.");
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("testcase=retry", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    clientProcess.Stdout,
+                    "connecting to",
+                    "observed exactly one Retry transition (token=",
+                    "observed exactly one Retry transition and completed managed client bootstrap.",
+                    "completed managed retry download");
+                Assert.Contains("testcase=retry", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    serverProcess.Stdout,
+                    "listening on",
+                    "issued exactly one Retry (token=",
+                    "issued exactly one Retry and completed managed listener bootstrap.",
+                    "completed managed retry response");
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
         });
     }
 
@@ -65,6 +88,69 @@ public sealed class REQ_QUIC_INT_0012
                 Assert.Empty(serverProcess.Stderr);
             });
         });
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ManagedChildProcessHarnessFailsRetryDeliveryWhenTheRequestedServerFileIsMissing()
+    {
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string relativePath = $"retry-missing-{Guid.NewGuid():N}.txt";
+            string requests = $"https://localhost:{listenEndPoint.Port}/{relativePath}";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            TryDelete(sourcePath);
+            TryDelete(destinationPath);
+
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "retry", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "retry", requests, harnessDll);
+
+                await WaitForRetryLifecycleAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(15));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(45));
+
+                Assert.Equal(1, clientProcess.Process.ExitCode);
+                Assert.Equal(1, serverProcess.Process.ExitCode);
+                Assert.Contains(sourcePath, serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("was not found", serverProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.StartsWith("interop harness: role=client, testcase=retry failed:", clientProcess.Stderr, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("completed managed retry download", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("completed managed retry response", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.False(File.Exists(destinationPath));
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
+        });
+    }
+
+    private static void TryDelete(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch
+        {
+            // Best-effort cleanup only.
+        }
     }
 
     private static async Task WaitForExitAsync(

@@ -6,7 +6,7 @@
   "title": "QUIC Interop Retry Child-Process Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Define and land the smallest child-process Retry contract that proves the server issues one valid Retry, the client replays exactly once, and the managed handshake completes on the real harness path.",
+  "summary": "Define and land the smallest child-process Retry contract that proves the server issues one valid Retry, the client replays exactly once, the managed handshake completes on the real harness path, and the runner-generated single HTTP/0.9 request reaches byte delivery plus EOF.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -22,12 +22,12 @@
   "addresses": [
     "REQ-QUIC-INT-0012"
   ],
-  "planned_changes": "- Keep the `retry` testcase branch on the managed child-process path in `InteropHarnessRunner`.\n- Sequence the server to emit exactly one valid Retry and the client to replay the Initial exactly once on the real harness path.\n- Advance the managed handshake only after the post-Retry path completes and keep the harness exit code truthful.\n- Add focused requirement-home coverage for one-valid-Retry issuance, one-replay client behavior, and successful post-Retry handshake completion without widening transfer or public API scope.",
-  "completion_notes": "The managed child-process path now dispatches `retry` through the managed one-Retry replay path, the server emits exactly one Retry, the client observes and replays it once, and the harness returns `0` only after the post-Retry handshake completes.",
+  "planned_changes": "- Keep the `retry` testcase branch on the managed child-process path in `InteropHarnessRunner`.\n- Sequence the server to emit exactly one valid Retry and the client to replay the Initial exactly once on the real harness path.\n- Advance the managed handshake only after the post-Retry path completes, then serve the runner-generated single HTTP/0.9 request through the existing mounted `/www` to `/downloads` contract.\n- Keep the harness exit code truthful by returning `0` only after byte delivery plus EOF complete for the retry request.\n- Add focused requirement-home coverage for one-valid-Retry issuance, one-replay client behavior, successful post-Retry handshake completion, post-Retry byte delivery, and missing-file failure without widening broader transfer or public API scope.",
+  "completion_notes": "The managed child-process path now dispatches `retry` through the managed one-Retry replay path, the server emits exactly one Retry, the client observes and replays it once, the post-Retry handshake completes, and the harness returns `0` only after the runner-generated single HTTP/0.9 request reaches byte delivery plus EOF.",
   "out_of_scope": [
     "public API widening",
     "IsSupported widening",
-    "transfer enablement",
+    "transfer generalization outside the retry testcase",
     "multi-Retry behavior",
     "broad token-lifecycle work",
     "trust-store policy",
@@ -37,7 +37,7 @@
     "0-RTT",
     "key update"
   ],
-  "verification_plan": "Run the new retry requirement-home test, the current guards, the library-owned retry bootstrap tests, and the full `REQ_QUIC_CRT_` sweep; then render and validate the SpecTrace markdown views after the canonical JSON artifacts change.",
+  "verification_plan": "Run the retry requirement-home tests, the local preflight retry smoke test, the helper-script regression tests for runner output classification, the library-owned retry bootstrap tests, and the current interop guards; then rerun the local quic-go retry helper and render/validate SpecTrace artifacts after canonical JSON changes.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
