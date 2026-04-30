@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
@@ -28,10 +29,20 @@ public sealed class REQ_QUIC_API_0008
         QuicConnection connection = new(runtime, options);
 
         Action<int, int> observer = GetStreamCapacityObserver(runtime);
-        observer(4, 0);
+        QueuedSynchronizationContext context = new();
+        SynchronizationContext? previousContext = SynchronizationContext.Current;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+            observer(4, 0);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previousContext);
+        }
 
         await connection.DisposeAsync();
-        await Task.Delay(200);
+        context.Drain();
 
         Assert.Equal(0, Volatile.Read(ref callbackCount));
     }
@@ -513,5 +524,37 @@ public sealed class REQ_QUIC_API_0008
 
     private sealed class TestQuicConnectionOptions : QuicConnectionOptions
     {
+    }
+
+    private sealed class QueuedSynchronizationContext : SynchronizationContext
+    {
+        private readonly Queue<(SendOrPostCallback Callback, object? State)> queue = new();
+
+        public override void Post(SendOrPostCallback d, object? state)
+        {
+            lock (queue)
+            {
+                queue.Enqueue((d, state));
+            }
+        }
+
+        public void Drain()
+        {
+            while (true)
+            {
+                (SendOrPostCallback Callback, object? State) item;
+                lock (queue)
+                {
+                    if (queue.Count == 0)
+                    {
+                        return;
+                    }
+
+                    item = queue.Dequeue();
+                }
+
+                item.Callback(item.State);
+            }
+        }
     }
 }

@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
         using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
         int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
 
-        Assert.True(listenerHost.RetryBootstrapIssued);
+        await WaitForRetryBootstrapIssuedAsync(listenerHost);
         Assert.False(callbackEntered.Task.IsCompleted);
         Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
             initialDestinationConnectionId,
@@ -123,7 +123,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
         using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
         int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
 
-        Assert.True(listenerHost.RetryBootstrapIssued);
+        await WaitForRetryBootstrapIssuedAsync(listenerHost);
         Assert.False(callbackEntered.Task.IsCompleted);
         Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
             initialDestinationConnectionId,
@@ -132,5 +132,21 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
         Assert.NotEmpty(retryMetadata.RetrySourceConnectionId);
         Assert.NotEmpty(retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
+    }
+
+    private static async Task WaitForRetryBootstrapIssuedAsync(QuicListenerHost listenerHost)
+    {
+        DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
+        while (DateTime.UtcNow < deadline)
+        {
+            if (listenerHost.RetryBootstrapIssued)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(10));
+        }
+
+        Assert.True(listenerHost.RetryBootstrapIssued);
     }
 }
