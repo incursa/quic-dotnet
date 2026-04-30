@@ -17,7 +17,7 @@
   ],
   "artifact_id": "ARC-QUIC-RFC9000-0001",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "purpose": "Describe how the current transport surface satisfies the RFC 9000 requirements across packet parsing, frames, streams, transport parameters, version negotiation, and recovery-oriented behaviors.",
   "satisfies": [
     "REQ-QUIC-RFC9000-S2-0001",

@@ -1456,7 +1456,7 @@
     "REQ-QUIC-RFC9000-S22P5-0005"
   ],
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "procedure": [
     "Run the relevant unit and property tests for the bounded stream/runtime flow-control foundation, including final-size accounting and supported termination-packet retransmission preservation.",
     "Run the fuzz suites against the stream parser and any new helper/runtime-path boundary cases.",
@@ -1552,6 +1552,7 @@
   ],
   "title": "QUIC RFC 9000 Transport Verification",
   "owner": "quic-maintainers",
+  "status_summary": "Passed on 2026-04-30 for the bounded RFC 9000 transport trace surface. The focused requirement-home and codec/fuzz filter (`FullyQualifiedName~RFC9000|...transport/parser/codec/fuzz classes`) passed 1,682/1,682. Dry benchmark smoke executed `QuicHeaderParsingBenchmarks` (9), `QuicFrameCodecBenchmarks` (12), `QuicStreamParsingBenchmarks` (4), and `QuicVariableLengthIntegerBenchmarks` (8). BenchmarkDotNet reported expected Dry minimum-iteration-time warnings, so the benchmark evidence proves suite execution only and is not a performance claim. Full sender/recovery orchestration and broad STOP_SENDING/RESET orchestration remain outside this umbrella except where separately traced.",
   "preconditions": [
     "The `Incursa.Quic` solution builds successfully.",
     "The RFC9000 requirement traits are discoverable by the quality inventory.",

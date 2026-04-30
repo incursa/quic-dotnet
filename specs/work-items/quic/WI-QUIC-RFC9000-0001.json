@@ -8,13 +8,13 @@
     "SPEC-QUIC-RFC9000"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Implemented and verified the bounded RFC 9000 transport trace surface. The focused transport requirement-home and codec/fuzz filter passed 1,682/1,682 on 2026-04-30. The `QuicHeaderParsingBenchmarks`, `QuicFrameCodecBenchmarks`, `QuicStreamParsingBenchmarks`, and `QuicVariableLengthIntegerBenchmarks` Dry jobs executed 33 total benchmarks on 2026-04-30 with expected BenchmarkDotNet Dry minimum-iteration-time warnings. This closes the trace status for the bounded transport surface without claiming full retransmission-driven sender orchestration or broader STOP_SENDING/RESET orchestration beyond separately traced slices.",
   "out_of_scope": [
     "RFC 8999 version-independent invariants.",
     "RFC 9001 TLS-protection details.",
     "RFC 9002 loss-detection and congestion-control implementation details beyond the already-traced packet retransmission ledger seams."
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Keep the RFC 9000 transport surface, tests, and evidence wiring aligned with the canonical transport requirements.\nScope the flow-control slice to connection-scoped stream opening, ordered receive buffering, final-size accounting, MAX_* credit publication/repair, and bounded final-size-bearing FIN/RESET retransmission preservation without claiming full retransmission or STOP_SENDING/RESET orchestration.\nPreserve the ability to backfill direct test and code evidence from the quality inventory without losing the canonical requirement references.",
   "verification_plan": "Run the RFC 9000-oriented unit, property, and fuzz suites that target the bounded stream/runtime flow-control foundation, including the requirement-home final-size reliability top-off for supported FIN and RESET termination paths.\nRun the frame, transport-parameter, version-negotiation, and header parsing benchmark suites where relevant, and add a small helper/runtime-path benchmark if the new stream registry becomes hot.\nRun the repo-local quality evidence scripts and JSON validation checks so the downstream trace surface reflects the updated requirement links and the bounded exclusions.",
