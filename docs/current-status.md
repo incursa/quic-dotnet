@@ -18,18 +18,22 @@ handshake-orchestration, and ACK-piggyback proof-tail ledger items, and commit
 `dd73ac26` refreshes the public API boundary notes without widening the public
 support promise. Hosted CI and CodeQL workflows also passed for the latest
 hosted-validated runtime/trace commit `ee86bb13`.
-A manual hosted
-interop-runner handshake workflow is configured as an advisory artifact
-collection lane, and the narrow server-role handshake dispatch passed on GitHub
-Actions run `25145021654` for commit `e6dcbb80` after the workflow moved its
-repo-controlled Python setup and artifact upload actions to Node 24-compatible
-majors.
+A manual hosted interop-runner workflow is configured as an advisory artifact
+collection lane. The default profile keeps the narrow server-role handshake
+dispatch, which passed on GitHub Actions run `25145021654` for commit
+`e6dcbb80` after the workflow moved its repo-controlled Python setup and
+artifact upload actions to Node 24-compatible majors. The workflow now also
+has an opt-in `supported-subset` profile for already-supported helper cells
+covering retry, split-role transfer, and client-role multiconnect planning;
+that profile has local dry-run and requirement-home proof, but it has not yet
+been refreshed as hosted GitHub Actions evidence.
 
 This is not a broad QUIC-complete claim and should not be described as
 interop-ready. The supported boundary remains narrow: managed loopback,
 selected stream/control behavior, selected TLS/trust floors, and local harness
 contracts that are backed by requirement-home proof. Broader hosted runner
-matrices and any public-surface widening remain separate work.
+matrices beyond the explicit supported-subset profile, hosted execution of that
+profile, and any public-surface widening remain separate work.
 
 ## Verified Commands
 
@@ -45,8 +49,13 @@ dotnet tool run workbench -- --format json validate --profile core
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -PeerImplementationSlots quic-go -TestCases handshake,retry,transfer,multiconnect
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -ImplementationSlot quic-go -PeerImplementationSlots quic-go -TestCases retry
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole client -ImplementationSlot chrome -PeerImplementationSlots quic-go -TestCases transfer
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -ImplementationSlot nginx -PeerImplementationSlots quic-go -TestCases transfer
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole client -ImplementationSlot chrome -PeerImplementationSlots quic-go -TestCases multiconnect
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
-gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main
+gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=hosted-handshake
+gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=supported-subset
 gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status
 gh run watch 25145022368 --repo incursa/quic-dotnet --exit-status
 gh run watch 25146253564 --repo incursa/quic-dotnet --exit-status
@@ -96,14 +105,16 @@ Observed results through 2026-04-30:
 | Command | Result |
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
-| `dotnet build Incursa.Quic.slnx -c Release` | Passed on 2026-04-30 after local commit `dd73ac26`: 0 warnings, 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 after local commit `dd73ac26`: 3,299 passed, 0 failed, 0 skipped, 3,299 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 in the final-evidence refresh: validated 313 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 in the final-evidence refresh: 0 errors, 0 warnings, 102 work items, 319 markdown files |
+| `dotnet build Incursa.Quic.slnx -c Release` | Passed on 2026-04-30 in the interop coverage refresh: 0 warnings, 0 errors |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 in the interop coverage refresh: 3,302 passed, 0 failed, 0 skipped, 3,302 total |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 in the interop coverage refresh: validated 316 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 in the interop coverage refresh: 0 errors, 0 warnings, 103 work items, 319 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed on 2026-04-30: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -PeerImplementationSlots quic-go -TestCases handshake,retry,transfer,multiconnect` | Passed on 2026-04-30: resolved the supported local helper subset and translated local `multiconnect` to the runner `handshakeloss` testcase |
+| supported-subset per-cell dry-run plans | Passed on 2026-04-30: resolved same-slot `retry`, split-role client `transfer`, split-role server `transfer`, and client-role `multiconnect` plans with distinct role, slot, peer, and testcase mappings |
+| focused interop coverage workflow filter | Passed on 2026-04-30: 46 passed, 0 failed, 0 skipped across `REQ_QUIC_INT_0017`, `REQ_QUIC_INT_0013`, and interop helper dry-run/failure-summary tests |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m53s on commit `e6dcbb80`; the run used Node 24-compatible Python setup and artifact upload actions, uploaded the runner bundle, and had no Node.js deprecation log hits |
 | `gh run watch 25145022368 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `Library Fast Quality` workflow completed in 1m13s on commit `e6dcbb80` after its artifact upload action moved to the Node 24-compatible major |
@@ -168,10 +179,10 @@ Current artifact inventory:
 | Surface | Count |
 |---|---:|
 | Requirement specs in `specs/requirements/quic` | 7 |
-| Requirement clauses | 1,948 |
-| Architecture artifacts | 101 |
-| Work-item artifacts | 102 |
-| Verification artifacts | 103 |
+| Requirement clauses | 1,949 |
+| Architecture artifacts | 102 |
+| Work-item artifacts | 103 |
+| Verification artifacts | 104 |
 
 Requirement family counts:
 
@@ -179,7 +190,7 @@ Requirement family counts:
 |---|---:|
 | `SPEC-QUIC-API` | 16 |
 | `SPEC-QUIC-CRT` | 148 |
-| `SPEC-QUIC-INT` | 13 |
+| `SPEC-QUIC-INT` | 14 |
 | `SPEC-QUIC-RFC8999` | 8 |
 | `SPEC-QUIC-RFC9000` | 1,443 |
 | `SPEC-QUIC-RFC9001` | 96 |
@@ -189,9 +200,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 101 implemented | 0 draft |
-| Work items | 102 complete | 0 planned |
-| Verification | 103 passed | 0 planned |
+| Architecture | 102 implemented | 0 draft |
+| Work items | 103 complete | 0 planned |
+| Verification | 104 passed | 0 planned |
 
 ## Implementation State
 
@@ -217,14 +228,22 @@ The current honest support boundary is narrow:
 - Internal repeated 1-RTT key-update lifecycle proof is closed for the bounded
   moving-window runtime model, including wide internal epoch identifiers, but
   this remains outside the public support promise.
-- Hosted CI and CodeQL workflows passed on `main` for the latest hosted-validated runtime/trace
-  commit `ee86bb13` (`25149821476` and `25149821187`).
-- A manual hosted GitHub Actions lane now runs the server-role `handshake`
-  helper cell against quic-go and uploads the complete interop-runner artifact
-  tree for advisory review. Run `25145021654` passed on 2026-04-30 for commit
+- Hosted CI and CodeQL workflows passed on `main` for the latest
+  hosted-validated runtime/trace commit `ee86bb13` (`25149821476` and
+  `25149821187`).
+- A manual hosted GitHub Actions lane runs the server-role `handshake` helper
+  cell against quic-go and uploads the complete interop-runner artifact tree
+  for advisory review. Run `25145021654` passed on 2026-04-30 for commit
   `e6dcbb80` after the workflow moved its repo-controlled Python setup and
   artifact upload actions to Node 24-compatible majors; the log had no Node.js
   deprecation hits.
+- The same manual hosted workflow now exposes an opt-in `supported-subset`
+  profile for the already-supported helper cells: same-slot `retry`, split-role
+  `transfer`, and client-role `multiconnect` through the runner
+  `handshakeloss` mapping. Local dry-run planning, requirement-home tests,
+  SpecTrace core validation, and Workbench core validation passed for the
+  profile on 2026-04-30; hosted execution of that wider profile has not yet
+  been collected.
 - The manual Library Fast Quality workflow passed on run `25145022368` at
   commit `e6dcbb80` after its artifact upload action moved to the
   Node 24-compatible major.
@@ -241,8 +260,10 @@ explicit requirements and gap records, not inferred from the green baseline.
 
 The next useful lanes are:
 
-- Keep any hosted interop expansion separate and requirement-owned; the current
-  hosted proof covers only the server-role `handshake` cell against quic-go.
+- Dispatch and inspect the opt-in hosted `supported-subset` interop profile
+  when a fresh hosted artifact refresh is needed; current local proof covers
+  the workflow shape and helper plans, while hosted evidence still covers only
+  the server-role `handshake` cell against quic-go.
 - Narrow public-surface hardening only where the existing API requirements
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or

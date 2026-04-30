@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Hosted Interop-Runner Supported-Subset Coverage Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add an opt-in manual GitHub Actions coverage profile that runs the existing interop helper across selected already-supported external-runner cells and uploads distinct artifact bundles.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0010",
+    "VER-QUIC-INT-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0010"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0017"
+  ],
+  "planned_changes": "- Add a `workflow_dispatch` choice input that defaults to the existing `hosted-handshake` behavior and exposes an explicit `supported-subset` coverage profile.\n- Keep the workflow outside push, pull-request, build, test, package, and support-readiness gates.\n- Preserve the existing server-role handshake cell and add supported-subset matrix cells for a bounded same-slot retry cell, split-role transfer cells, and a client-role multiconnect cell using the helper's existing `handshakeloss` runner mapping.\n- Write each attempted cell to a cell-specific artifact root and upload that tree with `if: always()`.\n- Document the coverage profiles and add requirement-home tests that verify the workflow shape.",
+  "out_of_scope": [
+    "protocol/runtime behavior changes",
+    "public API surface changes",
+    "new helper testcase support",
+    "external-runner `post-handshake-stream` mapping",
+    "runner repository registry updates",
+    "making interop corroboration blocking in ordinary CI",
+    "claiming broad interop readiness"
+  ],
+  "verification_plan": "Run the focused interop helper/script tests, run dry-run helper plans for the default handshake and supported-subset shapes, run SpecTrace core validation, and run Workbench core validation. Hosted `supported-subset` dispatch remains an external advisory artifact collection step rather than a prerequisite for this repository configuration slice.",
+  "completion_notes": "Implemented an opt-in `supported-subset` coverage profile in `.github/workflows/interop-runner-handshake.yml`, preserved the default one-cell hosted handshake profile, documented both profiles in `scripts/interop/README.md`, and added requirement-home tests under `REQ-QUIC-INT-0017` to lock the manual/advisory workflow shape."
+}

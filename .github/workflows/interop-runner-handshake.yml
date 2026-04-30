@@ -1,10 +1,20 @@
-name: Interop Runner Handshake
+name: Interop Runner Advisory Matrix
 
 on:
   workflow_dispatch:
+    inputs:
+      coverage_profile:
+        description: "Interop coverage profile to run."
+        required: true
+        default: hosted-handshake
+        type: choice
+        options:
+          - hosted-handshake
+          - supported-subset
 
 jobs:
-  handshake-corroboration:
+  hosted-handshake:
+    if: ${{ github.event.inputs.coverage_profile == 'hosted-handshake' || github.event.inputs.coverage_profile == 'supported-subset' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -50,20 +60,113 @@ jobs:
           tshark --version
           editcap --version
 
-      - name: Run server-role handshake cell
+      - name: Run server-handshake-quic-go cell
         working-directory: quic-dotnet
         shell: pwsh
         run: |
           pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
             -RunnerRoot "${{ github.workspace }}/quic-interop-runner" `
             -LocalRole server `
+            -ImplementationSlot nginx `
             -PeerImplementationSlots quic-go `
-            -TestCases handshake
+            -TestCases handshake `
+            -ArtifactsRoot "${{ github.workspace }}/quic-dotnet/artifacts/interop-runner/server-handshake-quic-go"
+
+      - name: Upload server-handshake-quic-go artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: interop-runner-server-handshake-quic-go-${{ github.run_id }}
+          path: quic-dotnet/artifacts/interop-runner/server-handshake-quic-go/
+          if-no-files-found: warn
+
+  supported-subset:
+    if: ${{ github.event.inputs.coverage_profile == 'supported-subset' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cell: both-retry-quic-go
+            local_role: both
+            implementation_slot: quic-go
+            peer_slots: quic-go
+            testcases: retry
+          - cell: client-transfer-quic-go
+            local_role: client
+            implementation_slot: chrome
+            peer_slots: quic-go
+            testcases: transfer
+          - cell: server-transfer-quic-go
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: quic-go
+            testcases: transfer
+          - cell: client-multiconnect-quic-go
+            local_role: client
+            implementation_slot: chrome
+            peer_slots: quic-go
+            testcases: multiconnect
+
+    steps:
+      - name: Checkout quic-dotnet
+        uses: actions/checkout@v6
+        with:
+          path: quic-dotnet
+
+      - name: Checkout quic-interop-runner
+        uses: actions/checkout@v6
+        with:
+          repository: quic-interop/quic-interop-runner
+          path: quic-interop-runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+        with:
+          version: latest
+
+      - name: Install runner packet-analysis tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tshark
+
+      - name: Install runner Python dependencies
+        shell: pwsh
+        run: python -m pip install -r quic-interop-runner/requirements.txt
+
+      - name: Show runner prerequisites
+        shell: pwsh
+        run: |
+          docker --version
+          python --version
+          tshark --version
+          editcap --version
+
+      - name: Run interop runner cell
+        working-directory: quic-dotnet
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
+            -RunnerRoot "${{ github.workspace }}/quic-interop-runner" `
+            -LocalRole "${{ matrix.local_role }}" `
+            -ImplementationSlot "${{ matrix.implementation_slot }}" `
+            -PeerImplementationSlots "${{ matrix.peer_slots }}" `
+            -TestCases "${{ matrix.testcases }}" `
+            -ArtifactsRoot "${{ github.workspace }}/quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}"
 
       - name: Upload interop runner artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: interop-runner-handshake-${{ github.run_id }}
-          path: quic-dotnet/artifacts/interop-runner/
+          name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
+          path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
           if-no-files-found: warn

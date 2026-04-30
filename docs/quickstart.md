@@ -16,9 +16,11 @@ benchmark baselines, and final local trace/gap closure checks are green across
 the current closure train, including the 2026-04-30 final-evidence refresh.
 Hosted CI, hosted CodeQL, manual library
 fast-quality, and the advisory hosted interop-runner handshake lane are green
-on their latest recorded hosted runs. The repo-controlled Python setup and
-artifact upload action pins in the hosted workflows are on Node 24-compatible
-majors.
+on their latest recorded hosted runs. The interop workflow also exposes an
+opt-in `supported-subset` profile for already-supported helper cells; that
+profile is advisory and is not a broad interop-readiness claim. The
+repo-controlled Python setup and artifact upload action pins in the hosted
+workflows are on Node 24-compatible majors.
 
 ```bash
 dotnet tool restore

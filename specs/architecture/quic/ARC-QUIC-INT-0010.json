@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0010",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Hosted Interop-Runner Supported-Subset Coverage Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory hosted matrix profile that collects external-runner artifacts for already-supported interop helper cells without changing protocol support or ordinary CI gates.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0010",
+    "VER-QUIC-INT-0010"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0017"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "artifacts/interop-runner"
+  ],
+  "design_summary": "The hosted workflow remains `workflow_dispatch` only. It adds a `coverage_profile` choice input whose default preserves the existing one-cell `hosted-handshake` behavior, while the explicit `supported-subset` profile runs the hosted handshake job and fans out an additional matrix over selected helper-supported cells: same-slot retry through the local replacement slot, split-role transfer in both local client and local server modes, and client-role multiconnect against quic-go with the helper's existing `multiconnect` to `handshakeloss` runner mapping. Each attempted cell invokes the existing repo-local helper, writes to a cell-specific artifact root, and uploads that cell's artifact bundle with `if: always()` so success, advisory, and failure outcomes all preserve evidence.",
+  "alternatives_considered": [
+    "Run the supported-subset profile on every push or pull request. Rejected because interop-runner coverage is advisory, expensive, externally dependent, and not yet a support-readiness gate.",
+    "Expose `post-handshake-stream` through the external-runner helper as part of the matrix. Rejected because that testcase remains a local child-process harness proof and does not have an external-runner helper mapping in this slice.",
+    "Treat a matrix pass as broad interop readiness. Rejected because the profile covers selected helper cells only and still depends on external runner behavior, peer images, and preserved artifact inspection."
+  ],
+  "edge_cases_and_constraints": [
+    "The default manual dispatch must remain the existing narrow hosted-handshake cell to avoid surprising expensive fan-out.",
+    "The wider matrix must be opt-in and advisory, with `fail-fast` disabled so one cell does not prevent evidence from other attempted cells.",
+    "Each cell must upload a distinct artifact bundle so partial evidence is attributable to the role, peer, and testcase combination that produced it.",
+    "The workflow must not add a runner registry entry or imply upstream runner support beyond image replacement."
+  ],
+  "data_and_state_considerations": "Hosted matrix cells write transient artifacts under `artifacts/interop-runner/<cell>/` and upload them as GitHub Actions artifacts. The workflow does not commit generated runner reports, alter the external runner checkout, or persist transport state beyond uploaded artifacts.",
+  "risks": [
+    "External runner, Docker, Python, or peer image drift can fail individual cells even when local helper planning and the library test baseline are green.",
+    "The supported-subset profile may be overread as public interop readiness unless the advisory boundary remains explicit.",
+    "Uploading several runner bundles can be larger and slower than the default handshake cell."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only hosted workflow orchestration for already-supported helper cells. It does not change protocol runtime behavior, the public API surface, helper testcase support, or the external runner repository."
+    }
+  ]
+}

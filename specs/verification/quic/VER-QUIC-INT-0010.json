@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0010",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC Hosted Interop-Runner Supported-Subset Coverage Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Workflow review, requirement-home tests, local helper dry-run plans, SpecTrace validation, and Workbench validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0010",
+    "WI-QUIC-INT-0010"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0017"
+  ],
+  "preconditions": [
+    "The repo-local helper continues to own image replacement, runner invocation, artifact capture, and advisory classification under `REQ-QUIC-INT-0013`.",
+    "Hosted dispatch requires GitHub Actions access, a current external `quic-interop-runner` checkout, Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools."
+  ],
+  "scope": "Verify that the hosted workflow exposes an opt-in `supported-subset` coverage profile for already-supported helper cells while preserving the default hosted-handshake profile, manual-only trigger, per-cell artifact preservation, and advisory boundary. This verification does not prove broad interop readiness or execute a hosted matrix dispatch.",
+  "procedure": [
+    "Review `.github/workflows/interop-runner-handshake.yml` and confirm it is `workflow_dispatch` only.",
+    "Confirm the workflow exposes a `coverage_profile` choice input whose default is `hosted-handshake` and whose wider option is `supported-subset`.",
+    "Confirm the workflow includes the narrow server-role handshake cell plus supported-subset matrix cells for retry, transfer, and multiconnect using the existing helper arguments.",
+    "Confirm the workflow invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided `LocalRole`, `ImplementationSlot`, `PeerImplementationSlots`, and `TestCases` values plus an explicit `RunnerRoot` path.",
+    "Confirm each cell writes to a cell-specific artifact root and uploads that tree with `if: always()`.",
+    "Run the requirement-home tests for `REQ-QUIC-INT-0017` and the focused interop helper script tests.",
+    "Run dry-run helper plans for the hosted-handshake shape and supported-subset shape.",
+    "Run SpecTrace core validation and Workbench core validation."
+  ],
+  "expected_result": "The repository configuration provides a manual default handshake profile and an opt-in supported-subset coverage profile that collect hosted artifacts for already-supported helper cells without changing ordinary CI gates, helper testcase support, public API support, runner registry participation, or broad interop-readiness claims.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0017.cs",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/architecture/quic/ARC-QUIC-INT-0010.json",
+    "specs/work-items/quic/WI-QUIC-INT-0010.json",
+    "specs/verification/quic/VER-QUIC-INT-0010.json"
+  ],
+  "status_summary": "Passed for the repository configuration slice on 2026-04-30. Focused requirement-home and helper tests passed locally, dry-run helper plans resolved for the hosted-handshake and supported-subset shapes, and core SpecTrace plus Workbench validation stayed green. Hosted supported-subset dispatch is an external advisory evidence refresh step and is not yet a broad readiness claim.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "External-runner `post-handshake-stream`, public 0-RTT, public key update, migration controls, runner registry participation, and broad peer matrices remain outside this verification."
+    }
+  ]
+}
