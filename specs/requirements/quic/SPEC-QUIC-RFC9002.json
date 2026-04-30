@@ -276,6 +276,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0005.cs::TryBuildProtectedApplicationDataPacket_DoesNotReusePacketNumbersWithinOneSpace"
         ]
       }
     },
@@ -302,6 +305,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0006.cs::TryBuildProtectedApplicationDataPacket_SendsPacketNumbersMonotonicallyWithinOneSpace"
         ]
       }
     },
@@ -328,6 +334,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B2-P1-S5",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0007.cs::AckGenerationRetainsRangesWhenPacketNumbersHaveIntentionalGaps"
         ]
       }
     },
@@ -383,6 +392,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0009.cs::TrackedReliablePacketsResolveByAcknowledgmentOrLoss"
         ]
       }
     },
@@ -409,6 +421,9 @@
         "upstream_refs": [
           "RFC 9002 §3 RFC9002-S3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0010.cs::RecoveryTimerExpired_RetransmitsLostHandshakeCryptoInANewPacket"
         ]
       }
     },
@@ -3116,6 +3131,9 @@
         "upstream_refs": [
           "RFC 9002 §7 RFC9002-S7-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0001.cs::SenderFlowControllerUsesTheBuiltInRfc9002ControllerWhenNoAlternateControllerSurfaceExists"
         ]
       }
     },
@@ -3506,6 +3524,9 @@
         "upstream_refs": [
           "RFC 9002 §7.3.1 RFC9002-S7.3.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P1-0002.cs::IsInSlowStartFollowsTheCongestionWindowThresholdRelationship"
         ]
       }
     },
@@ -3943,6 +3964,9 @@
         "upstream_refs": [
           "RFC 9002 §7.6 RFC9002-S7.6-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6-0001.cs::TryDetectPersistentCongestion_DeclaresOnlyLongEnoughAllLostWindows"
         ]
       }
     },
@@ -3970,6 +3994,9 @@
           "RFC 9002 §7.6.1 RFC9002-S7.6.1-B2-P1-S1",
           "RFC 9002 §7.6.1 RFC9002-S7.6.1-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper"
         ]
       }
     },
@@ -3996,6 +4023,9 @@
         "upstream_refs": [
           "RFC 9002 §7.6.1 RFC9002-S7.6.1-B4-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0002.cs::TryComputePersistentCongestionDurationMicros_IncludesMaxAckDelayForEverySpace"
         ]
       }
     },
@@ -4022,6 +4052,9 @@
         "upstream_refs": [
           "RFC 9002 §7.6.1 RFC9002-S7.6.1-B7-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0003.cs::RecommendedPersistentCongestionThresholdIsThree"
         ]
       }
     },
@@ -4051,6 +4084,9 @@
           "RFC 9002 §7.6.2 RFC9002-S7.6.2-B4-P0-S1",
           "RFC 9002 §7.6.2 RFC9002-S7.6.2-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
         ]
       }
     },
@@ -4402,6 +4438,10 @@
         "upstream_refs": [
           "RFC 9002 §7.8 RFC9002-S7.8-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs::TryProcessAckFrame_GrowsTheCongestionWindowWhenPacingDelayWouldHaveMaskedUtilization",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs::TryProcessAckFrame_DoesNotGrowTheCongestionWindowWhenApplicationLimitedIsSet"
         ]
       }
     },
@@ -4428,6 +4468,10 @@
         "upstream_refs": [
           "RFC 9002 §7.8 RFC9002-S7.8-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0003.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0003.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged"
         ]
       }
     },
