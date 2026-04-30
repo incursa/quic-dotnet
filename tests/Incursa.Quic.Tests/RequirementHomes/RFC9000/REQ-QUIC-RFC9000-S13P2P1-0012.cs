@@ -19,7 +19,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
 
         Assert.Empty(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Equal(
-            10 + (25 * TimeSpan.TicksPerMillisecond),
+            10 + StopwatchTicksFromMicros(25_000),
             runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
         Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm
             && arm.TimerKind == QuicConnectionTimerKind.AckDelay);
@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
 
         Assert.Empty(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Equal(
-            10 + (12 * TimeSpan.TicksPerMillisecond),
+            10 + StopwatchTicksFromMicros(12_000),
             runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
     }
 
@@ -252,5 +252,25 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
     private static QuicConnectionRuntime CreateAckDelayRuntime(ulong? localMaxAckDelayMicros = null)
     {
         return QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath(localMaxAckDelayMicros);
+    }
+
+    private static long StopwatchTicksFromMicros(ulong micros)
+    {
+        const ulong MicrosecondsPerSecond = 1_000_000UL;
+
+        if (micros == 0)
+        {
+            return 0;
+        }
+
+        ulong frequency = (ulong)System.Diagnostics.Stopwatch.Frequency;
+        ulong wholeTicks = micros > ulong.MaxValue / frequency
+            ? ulong.MaxValue
+            : micros * frequency;
+        ulong roundedUp = wholeTicks == ulong.MaxValue
+            ? wholeTicks
+            : wholeTicks + (MicrosecondsPerSecond - 1);
+        ulong ticks = roundedUp / MicrosecondsPerSecond;
+        return ticks >= long.MaxValue ? long.MaxValue : (long)ticks;
     }
 }

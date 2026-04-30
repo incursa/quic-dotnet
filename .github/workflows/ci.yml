@@ -84,6 +84,7 @@ jobs:
 
       - name: Prepare interop harness mount roots
         run: |
+          sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
           sudo mkdir -p /certs /www /downloads /logs/qlog
           sudo chmod -R a+rwx /certs /www /downloads /logs
 

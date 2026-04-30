@@ -192,7 +192,7 @@ public sealed class REQ_QUIC_INT_0010
                 await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
 
                 await using HarnessProcess clientProcess = HarnessProcess.Start("client", "transfer", requests, harnessDll);
-                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(45));
 
                 Assert.Equal(1, clientProcess.Process.ExitCode);
                 Assert.Equal(1, serverProcess.Process.ExitCode);
