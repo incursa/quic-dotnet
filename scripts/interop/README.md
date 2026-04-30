@@ -57,6 +57,7 @@ Plan-only mode:
 - It resolves the effective repo root, runner root, slot selection, testcase list, artifact paths, and runner arguments.
 - It prints the plan and exits `0` without building the image or launching the runner.
 - It does not require Docker or a live `quic-interop-runner` checkout.
+- Real runs stage a pruned Docker build context with PowerShell/.NET file-copy APIs rather than Windows-only tools, so the same helper path can run on Windows workstations and hosted Ubuntu runners.
 
 Example:
 

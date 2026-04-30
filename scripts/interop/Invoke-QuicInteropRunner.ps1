@@ -200,6 +200,72 @@ function Get-RepoRelativePath {
     return $Path
 }
 
+function Copy-DirectoryTreeWithExcludes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$SourceRoot,
+
+        [Parameter(Mandatory)]
+        [string]$DestinationRoot,
+
+        [AllowEmptyCollection()]
+        [Parameter(Mandatory)]
+        [string[]]$ExcludedDirectoryNames
+    )
+
+    $sourceDirectory = [System.IO.DirectoryInfo]::new($SourceRoot)
+    if (-not $sourceDirectory.Exists) {
+        throw "Source directory '$SourceRoot' does not exist."
+    }
+
+    $sourceFullName = $sourceDirectory.FullName.TrimEnd(
+        [System.IO.Path]::DirectorySeparatorChar,
+        [System.IO.Path]::AltDirectorySeparatorChar)
+
+    $excludedDirectories = [System.Collections.Generic.HashSet[string]]::new(
+        [System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($name in $ExcludedDirectoryNames) {
+        if (-not [string]::IsNullOrWhiteSpace($name)) {
+            [void]$excludedDirectories.Add($name)
+        }
+    }
+
+    $directories = [System.Collections.Generic.Stack[System.IO.DirectoryInfo]]::new()
+    $directories.Push($sourceDirectory)
+
+    while ($directories.Count -gt 0) {
+        $currentDirectory = $directories.Pop()
+        $relativePath = ''
+        if ($currentDirectory.FullName.Length -gt $sourceFullName.Length) {
+            $relativePath = $currentDirectory.FullName.Substring($sourceFullName.Length).TrimStart(
+                [System.IO.Path]::DirectorySeparatorChar,
+                [System.IO.Path]::AltDirectorySeparatorChar)
+        }
+
+        $destinationDirectory = if ([string]::IsNullOrEmpty($relativePath)) {
+            $DestinationRoot
+        }
+        else {
+            Join-Path $DestinationRoot $relativePath
+        }
+
+        New-Item -Path $destinationDirectory -ItemType Directory -Force | Out-Null
+
+        foreach ($childDirectory in $currentDirectory.GetDirectories()) {
+            if ($excludedDirectories.Contains($childDirectory.Name)) {
+                continue
+            }
+
+            $directories.Push($childDirectory)
+        }
+
+        foreach ($file in $currentDirectory.GetFiles()) {
+            $destinationPath = Join-Path $destinationDirectory $file.Name
+            $file.CopyTo($destinationPath, $true) | Out-Null
+        }
+    }
+}
+
 function Get-RunnerImplementationRegistry {
     param(
         [Parameter(Mandatory)]
@@ -1450,10 +1516,10 @@ raise SystemExit(run.main())
         'node_modules'
     )
 
-    & robocopy $repoRootResolved (Join-Path $dockerBuildStageRoot 'quic-dotnet') /MIR /NFL /NDL /NJH /NJS /NP /XD @stagingExcludes | Out-Null
-    if ($LASTEXITCODE -ge 8) {
-        throw "Failed to stage the quic-dotnet build context copy with robocopy exit code $LASTEXITCODE."
-    }
+    Copy-DirectoryTreeWithExcludes `
+        -SourceRoot $repoRootResolved `
+        -DestinationRoot (Join-Path $dockerBuildStageRoot 'quic-dotnet') `
+        -ExcludedDirectoryNames $stagingExcludes
 
     @"
 **/.git
