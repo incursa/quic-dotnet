@@ -57,6 +57,7 @@ Hosted corroboration:
 - The workflow installs the latest stable Docker Engine through `docker/setup-docker-action@v5` before the helper runs because the upstream runner compose file uses `interface_name`, which requires Docker Engine 28.1 or later.
 - The workflow installs `tshark` and `editcap` through Ubuntu packages so the runner can perform its packet trace post-check.
 - It pre-pulls the simulator and quic-go peer images before each timed runner cell so first-use Docker image downloads do not consume the runner testcase timeout.
+- Hosted transfer cells pass a narrow runner timeout override because GitHub-hosted Docker startup is slower than the local cached-image path; local helper runs keep the upstream runner's default timeout unless `-RunnerTimeoutSeconds` is supplied.
 - It uploads a distinct per-cell `artifacts/interop-runner/<cell>/` bundle with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
 - The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
 - The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.

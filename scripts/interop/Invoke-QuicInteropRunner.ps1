@@ -10,6 +10,8 @@ param(
         'msquic'
     ),
     [string]$ImageTag = 'incursa-quic-interop-harness:local',
+    [ValidateRange(0, 3600)]
+    [int]$RunnerTimeoutSeconds = 0,
     [string[]]$TestCases = @(
         'handshake',
         'retry',
@@ -464,6 +466,9 @@ function Get-InteropRunnerExecutionPlan {
         [string]$ImageTag,
 
         [Parameter(Mandatory)]
+        [int]$RunnerTimeoutSeconds,
+
+        [Parameter(Mandatory)]
         [string]$RunStamp
     )
 
@@ -505,6 +510,7 @@ function Get-InteropRunnerExecutionPlan {
         RunnerClientImplementations = $runnerClientImplementations
         RunnerServerImplementations = $runnerServerImplementations
         ImageTag = $ImageTag
+        RunnerTimeoutSeconds = $RunnerTimeoutSeconds
         TestCases = $TestCases
         RunnerRequestedTestCases = $runnerRequestedTestCases
         ArtifactRoot = $ArtifactRootResolved
@@ -557,6 +563,7 @@ function Write-InteropRunnerPlan {
     Write-Host "  Runner server implementations: $($Plan.RunnerServerImplementations -join ',')"
     Write-Host "  Test cases:                   $($Plan.TestCases -join ',')"
     Write-Host "  Runner test cases:            $($Plan.RunnerRequestedTestCases -join ',')"
+    Write-Host "  Runner timeout override:      $($Plan.RunnerTimeoutSeconds)"
     Write-Host "  Artifact root:                $($Plan.ArtifactRoot)"
     Write-Host "  Run root:                     $($Plan.RunRoot)"
     Write-Host "  Dockerfile:                   $($Plan.DockerfilePath)"
@@ -624,6 +631,7 @@ PeerImplementationSlots: $($Plan.PeerImplementationSlots -join ',')
 ImageTag: $($Plan.ImageTag)
 TestCases: $($Plan.TestCases -join ',')
 RunnerTestCases: $($Plan.RunnerRequestedTestCases -join ',')
+RunnerTimeoutSeconds: $($Plan.RunnerTimeoutSeconds)
 ArtifactsRoot: $($Plan.ArtifactRoot)
 RunRoot: $($Plan.RunRoot)
 RunnerJson: $($Plan.RunnerJson)
@@ -1126,6 +1134,7 @@ $executionPlan = Get-InteropRunnerExecutionPlan `
     -PeerImplementationSlots $PeerImplementationSlots `
     -TestCases $TestCases `
     -ImageTag $ImageTag `
+    -RunnerTimeoutSeconds $RunnerTimeoutSeconds `
     -RunStamp $runStamp
 
 if ($DryRun) {
@@ -1274,6 +1283,17 @@ if _tshark_path:
 
 import testcase
 import testcases_quic
+
+_runner_timeout_seconds = os.environ.get("INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS")
+if _runner_timeout_seconds:
+    _runner_timeout_seconds = int(_runner_timeout_seconds)
+
+    if _runner_timeout_seconds > 0:
+        def _patched_runner_timeout():
+            return _runner_timeout_seconds
+
+        for _runner_testcase in list(testcases_quic.TESTCASES_QUIC) + list(testcases_quic.MEASUREMENTS):
+            _runner_testcase.timeout = staticmethod(_patched_runner_timeout)
 
 _real_subprocess_run = subprocess.run
 
@@ -1691,6 +1711,7 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
     Push-Location $runnerRootResolved
     $previousPrecheckedSlots = $env:INCURSA_QUIC_INTEROP_PRECHECKED_SLOTS
     $previousInteropTsharkPath = $env:INCURSA_QUIC_INTEROP_TSHARK_PATH
+    $previousInteropTimeoutSeconds = $env:INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS
     $previousPath = $env:PATH
     $precheckedSlots = @(
         $executionPlan.RunnerClientImplementations
@@ -1709,6 +1730,10 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
 
         if ($patchPysharkTsharkPath) {
             $env:INCURSA_QUIC_INTEROP_TSHARK_PATH = $tsharkPath
+        }
+
+        if ($executionPlan.RunnerTimeoutSeconds -gt 0) {
+            $env:INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS = [string]$executionPlan.RunnerTimeoutSeconds
         }
 
         Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
@@ -1740,6 +1765,13 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
         }
         else {
             $env:INCURSA_QUIC_INTEROP_TSHARK_PATH = $previousInteropTsharkPath
+        }
+
+        if ($null -eq $previousInteropTimeoutSeconds) {
+            Remove-Item Env:\INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS = $previousInteropTimeoutSeconds
         }
 
         Pop-Location

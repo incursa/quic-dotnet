@@ -101,21 +101,25 @@ jobs:
             implementation_slot: quic-go
             peer_slots: quic-go
             testcases: retry
+            runner_timeout_seconds: 0
           - cell: client-transfer-quic-go
             local_role: client
             implementation_slot: chrome
             peer_slots: quic-go
             testcases: transfer
+            runner_timeout_seconds: 180
           - cell: server-transfer-quic-go
             local_role: server
             implementation_slot: nginx
             peer_slots: quic-go
             testcases: transfer
+            runner_timeout_seconds: 180
           - cell: client-multiconnect-quic-go
             local_role: client
             implementation_slot: chrome
             peer_slots: quic-go
             testcases: multiconnect
+            runner_timeout_seconds: 0
 
     steps:
       - name: Checkout quic-dotnet
@@ -173,6 +177,7 @@ jobs:
             -ImplementationSlot "${{ matrix.implementation_slot }}" `
             -PeerImplementationSlots "${{ matrix.peer_slots }}" `
             -TestCases "${{ matrix.testcases }}" `
+            -RunnerTimeoutSeconds "${{ matrix.runner_timeout_seconds }}" `
             -ArtifactsRoot "${{ github.workspace }}/quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}"
 
       - name: Upload interop runner artifacts
