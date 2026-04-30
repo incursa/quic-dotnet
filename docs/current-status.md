@@ -12,7 +12,7 @@ The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
 the repo-defined Dry and Short benchmark baseline jobs complete. Hosted CI and
-CodeQL workflows also passed on `main` through commit `7df0d60d`. A manual hosted
+CodeQL workflows also passed on `main` through commit `16e575e4`. A manual hosted
 interop-runner handshake workflow is configured as an advisory artifact
 collection lane, and the narrow server-role handshake dispatch passed on GitHub
 Actions run `25145021654` for commit `e6dcbb80` after the workflow moved its
@@ -46,6 +46,8 @@ gh run watch 25146253564 --repo incursa/quic-dotnet --exit-status
 gh run watch 25146253205 --repo incursa/quic-dotnet --exit-status
 gh run watch 25147850307 --repo incursa/quic-dotnet --exit-status
 gh run watch 25147850047 --repo incursa/quic-dotnet --exit-status
+gh run watch 25147993693 --repo incursa/quic-dotnet --exit-status
+gh run watch 25147993402 --repo incursa/quic-dotnet --exit-status
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0012|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_CRT_0123"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_"
@@ -53,6 +55,7 @@ dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 -
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0008"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0001|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0003|FullyQualifiedName~REQ_QUIC_INT_0004|FullyQualifiedName~REQ_QUIC_INT_0005"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0045|FullyQualifiedName~REQ_QUIC_CRT_0047|FullyQualifiedName~REQ_QUIC_CRT_0048|FullyQualifiedName~REQ_QUIC_CRT_0049|FullyQualifiedName~REQ_QUIC_CRT_0050|FullyQualifiedName~REQ_QUIC_CRT_0051|FullyQualifiedName~REQ_QUIC_CRT_0052|FullyQualifiedName~REQ_QUIC_CRT_0053|FullyQualifiedName~REQ_QUIC_CRT_0054|FullyQualifiedName~REQ_QUIC_CRT_0057"
 ```
 
 Observed results through 2026-04-30:
@@ -61,9 +64,9 @@ Observed results through 2026-04-30:
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,274 passed, 0 failed, 0 skipped, 3,274 total |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,280 passed, 0 failed, 0 skipped, 3,280 total |
 | `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 314 markdown files |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 315 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
@@ -74,6 +77,8 @@ Observed results through 2026-04-30:
 | `gh run watch 25146253205 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed `actions` and `csharp` analysis jobs on commit `c26008e7` |
 | `gh run watch 25147850307 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CI` workflow completed `build-test-pack` in 2m36s on commit `7df0d60d` |
 | `gh run watch 25147850047 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `7df0d60d` |
+| `gh run watch 25147993693 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CI` workflow completed `build-test-pack` in 2m33s on commit `16e575e4` |
+| `gh run watch 25147993402 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `16e575e4` |
 | focused API stream-capacity filter | Passed on 2026-04-30: 48 passed, 0 failed, 0 skipped |
 | focused pinned-policy API/CRT filter | Passed on 2026-04-30: 28 passed, 0 failed, 0 skipped |
 | full `REQ_QUIC_CRT_` requirement-home filter | Passed on 2026-04-30: 304 passed, 0 failed, 0 skipped |
@@ -81,6 +86,7 @@ Observed results through 2026-04-30:
 | `QuicDiagnosticsBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; disabled no-op/guarded paths allocated 0 B and enabled typed-event construction allocated 192 B |
 | focused endpoint-host shell INT filter | Passed on 2026-04-30: 8 passed, 0 failed, 0 skipped |
 | focused harness-foundation INT filter | Passed on 2026-04-30: 11 passed, 0 failed, 0 skipped |
+| focused CRT deadline-scheduler filter | Passed on 2026-04-30: 12 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -120,9 +126,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 91 implemented | 9 draft |
-| Work items | 93 complete | 8 planned |
-| Verification | 93 passed | 9 planned |
+| Architecture | 92 implemented | 8 draft |
+| Work items | 94 complete | 7 planned |
+| Verification | 94 passed | 8 planned |
 
 ## Implementation State
 
@@ -145,8 +151,8 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
-- Hosted CI and CodeQL workflows passed on `main` at commit `7df0d60d`
-  (`25147850307` and `25147850047`).
+- Hosted CI and CodeQL workflows passed on `main` at commit `16e575e4`
+  (`25147993693` and `25147993402`).
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
   tree for advisory review. Run `25145021654` passed on 2026-04-30 for commit
