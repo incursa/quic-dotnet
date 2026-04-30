@@ -5,7 +5,7 @@
   "title": "QUIC Interop Harness Foundation Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "status": "planned",
+  "status": "complete",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT"
@@ -36,7 +36,7 @@
     "Adding interop-runner environment semantics to the library project.",
     "Completing the full QUIC transport stack or selecting a final TLS provider."
   ],
-  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "completion_notes": "Implemented the companion harness project boundary, runner-facing process plumbing, unsupported-testcase honesty, qlog snapshot hook, invalid-configuration failure path, and reusable library seams needed by the foundation slice. The focused `REQ_QUIC_INT_0001` through `REQ_QUIC_INT_0005` requirement-home filter passed 11/11 on 2026-04-30, including the new companion-project proof for `REQ-QUIC-INT-0001`. This closes the harness foundation only and does not claim broad interop readiness, new testcase support beyond separately traced slices, or protocol behavior ownership in the harness.",
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",

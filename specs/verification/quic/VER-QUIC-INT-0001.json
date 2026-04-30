@@ -5,7 +5,7 @@
   "title": "QUIC Interop Harness Foundation Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "status": "planned",
+  "status": "passed",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0001",
@@ -33,7 +33,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0005.cs",
     "src/Incursa.Quic.InteropHarness/README.md",
     "src/Incursa.Quic.InteropHarness/Dockerfile",
-    "src/Incursa.Quic.InteropHarness/run_endpoint.sh"
+    "src/Incursa.Quic.InteropHarness/run_endpoint.sh",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0001|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0003|FullyQualifiedName~REQ_QUIC_INT_0004|FullyQualifiedName~REQ_QUIC_INT_0005\""
   ],
   "procedure": [
     "Run the focused INT requirement-home tests for environment parsing, unsupported dispatch semantics, qlog snapshot persistence, SSL key log TODO behavior, and invalid-configuration handling.",
@@ -41,7 +42,7 @@
     "Inspect the README, Dockerfile, and startup script to confirm the runner contract stays in the harness and that unsupported cases are documented honestly."
   ],
   "expected_result": "The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, qlog snapshots are emitted when `QLOGDIR` is enabled for supported client/listener paths, and the repository can build the harness project and its Docker image without polluting the library boundary.",
-  "status_summary": "The expected first-pass outcome is a traceable harness foundation, not successful end-to-end interop. `retry` remains unsupported until later transport work lands.",
+  "status_summary": "Passed on 2026-04-30. The focused `REQ_QUIC_INT_0001` through `REQ_QUIC_INT_0005` requirement-home filter passed 11/11, covering the companion-project shape, runner environment parsing, unsupported-testcase honesty, qlog snapshot hook, SSL keylog TODO honesty, invalid-configuration failure path, diagnostics sink behavior, and sender-runtime foundation seams. This proves a traceable harness foundation, not broad end-to-end interop readiness.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

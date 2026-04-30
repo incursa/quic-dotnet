@@ -85,7 +85,8 @@
         ],
         "x_code_refs": [
           "src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj",
-          "Incursa.Quic.slnx"
+          "Incursa.Quic.slnx",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0001.cs"
         ]
       },
       "notes": [
