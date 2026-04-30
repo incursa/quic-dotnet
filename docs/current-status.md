@@ -11,10 +11,11 @@ architecture, work items, or verification artifacts under `specs/`.
 The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
-the repo-defined Dry and Short benchmark baseline jobs complete. A manual
-hosted interop-runner handshake workflow is configured as an advisory
-artifact-collection lane, and the narrow server-role handshake dispatch passed
-on GitHub Actions run `25141407138` for commit `2d869bdf`.
+the repo-defined Dry and Short benchmark baseline jobs complete. Hosted CI and
+CodeQL workflows also passed on `main` at commit `2b3833d6`. A manual hosted
+interop-runner handshake workflow is configured as an advisory artifact
+collection lane, and the narrow server-role handshake dispatch passed on GitHub
+Actions run `25141407138` for commit `2d869bdf`.
 
 This is not a broad QUIC-complete claim and should not be described as
 interop-ready. The supported boundary remains narrow: managed loopback,
@@ -38,6 +39,8 @@ pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -Loca
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
 gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main
 gh run watch 25141407138 --repo incursa/quic-dotnet --exit-status
+gh run watch 25143001630 --repo incursa/quic-dotnet --exit-status
+gh run watch 25143001408 --repo incursa/quic-dotnet --exit-status
 ```
 
 Observed results through 2026-04-30:
@@ -54,6 +57,8 @@ Observed results through 2026-04-30:
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25141407138 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m43s on commit `2d869bdf`; `runner-report.json` recorded `handshake` as `succeeded` for the narrow `nginx` replacement server versus quic-go client cell |
+| `gh run watch 25143001630 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CI` workflow completed `build-test-pack` in 2m26s on commit `2b3833d6` |
+| `gh run watch 25143001408 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed `actions` and `csharp` analysis jobs on commit `2b3833d6` |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -118,6 +123,7 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
+- Hosted CI and CodeQL workflows passed on `main` at commit `2b3833d6`.
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
   tree for advisory review. Run `25141407138` passed on 2026-04-30 for commit
@@ -129,9 +135,9 @@ readiness from this state.
 
 ## Remaining Work
 
-There are no known red clusters in the current local full test or core trace
-baseline. Remaining work should be selected from explicit requirements and gap
-records, not inferred from the green baseline.
+There are no known red clusters in the current local full test, core trace,
+hosted CI, or hosted CodeQL baseline. Remaining work should be selected from
+explicit requirements and gap records, not inferred from the green baseline.
 
 The next useful lanes are:
 

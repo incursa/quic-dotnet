@@ -58,6 +58,7 @@ dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ## Documentation
 
 - [Quickstart](docs/quickstart.md)
+- [Current repository status](docs/current-status.md)
 - [Packaging](docs/packaging.md)
 - [Requirements workflow](docs/requirements-workflow.md)
 - [SpecTrace prep](docs/spec-trace-prep.md)
