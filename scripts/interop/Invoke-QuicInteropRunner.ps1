@@ -43,7 +43,7 @@ function Resolve-WindowsWiresharkToolPath {
     )
 
     if (-not [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
-        return $false
+        return $null
     }
 
     $installRoots = @(
