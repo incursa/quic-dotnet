@@ -12,7 +12,8 @@ The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
 the repo-defined Dry and Short benchmark baseline jobs complete. Hosted CI and
-CodeQL workflows also passed on `main` through commit `88a3172e`. A manual hosted
+CodeQL workflows also passed for the latest runtime/trace commit `ee86bb13`.
+A manual hosted
 interop-runner handshake workflow is configured as an advisory artifact
 collection lane, and the narrow server-role handshake dispatch passed on GitHub
 Actions run `25145021654` for commit `e6dcbb80` after the workflow moved its
@@ -52,6 +53,8 @@ gh run watch 25149446012 --repo incursa/quic-dotnet --exit-status
 gh run watch 25149445624 --repo incursa/quic-dotnet --exit-status
 gh run watch 25149650001 --repo incursa/quic-dotnet --exit-status
 gh run watch 25149649726 --repo incursa/quic-dotnet --exit-status
+gh run watch 25149821476 --repo incursa/quic-dotnet --exit-status
+gh run watch 25149821187 --repo incursa/quic-dotnet --exit-status
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0012|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_CRT_0123"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0002|FullyQualifiedName~REQ_QUIC_API_0003|FullyQualifiedName~REQ_QUIC_API_0004|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0006|FullyQualifiedName~REQ_QUIC_API_0007|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009|FullyQualifiedName~REQ_QUIC_API_0010|FullyQualifiedName~REQ_QUIC_API_0011"
@@ -77,6 +80,7 @@ dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicHandshakePacketProtectionBenchmarks*"
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetryIntegrityBenchmarks*"
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAeadUsageLimitCalculatorBenchmarks*"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~RFC9002"
 ```
 
 Observed results through 2026-04-30:
@@ -88,8 +92,8 @@ Observed results through 2026-04-30:
 | `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30: 3,296 passed, 0 failed, 0 skipped, 3,296 total |
 | `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
 | `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 319 markdown files |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 for congestion-control, RTT-estimator, and connection stream-state benchmark slices after commit `c26008e7` |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after commit `ee86bb13`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after commit `ee86bb13`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m53s on commit `e6dcbb80`; the run used Node 24-compatible Python setup and artifact upload actions, uploaded the runner bundle, and had no Node.js deprecation log hits |
@@ -104,6 +108,8 @@ Observed results through 2026-04-30:
 | `gh run watch 25149445624 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `b03f879e` |
 | `gh run watch 25149650001 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CI` workflow completed `build-test-pack` in 2m29s on commit `88a3172e` |
 | `gh run watch 25149649726 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `88a3172e` |
+| `gh run watch 25149821476 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CI` workflow completed `build-test-pack` in 2m26s on commit `ee86bb13` |
+| `gh run watch 25149821187 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `CodeQL` workflow completed on commit `ee86bb13` |
 | focused API stream-capacity filter | Passed on 2026-04-30: 48 passed, 0 failed, 0 skipped |
 | focused pinned-policy API/CRT filter | Passed on 2026-04-30: 28 passed, 0 failed, 0 skipped |
 | focused public API surface filter | Passed on 2026-04-30: 81 passed, 0 failed, 0 skipped |
@@ -127,6 +133,7 @@ Observed results through 2026-04-30:
 | `QuicHandshakePacketProtectionBenchmarks` Dry run | Passed on 2026-04-30: 10 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
 | `QuicRetryIntegrityBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
 | `QuicAeadUsageLimitCalculatorBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; BenchmarkDotNet reported expected Dry minimum-iteration-time warnings |
+| focused RFC 9002 recovery/congestion filter | Passed on 2026-04-30: 576 passed, 0 failed, 0 skipped |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -191,8 +198,8 @@ The current honest support boundary is narrow:
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
   `multiconnect`, `retry`, and `transfer`, with local requirement-home and
   integration proof now green.
-- Hosted CI and CodeQL workflows passed on `main` at commit `88a3172e`
-  (`25149650001` and `25149649726`).
+- Hosted CI and CodeQL workflows passed on `main` for the latest runtime/trace
+  commit `ee86bb13` (`25149821476` and `25149821187`).
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
   tree for advisory review. Run `25145021654` passed on 2026-04-30 for commit
@@ -221,9 +228,10 @@ The next useful lanes are:
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
   hot-path code.
-- Planned or draft trace artifacts that still need implementation or proof,
-  without treating their planned status as a failure of the current executable
-  baseline.
+- Planned or draft trace artifacts that still need implementation or proof:
+  repeated 1-RTT key update lifecycle (`RFC9001-0003`) and broader RFC 9002
+  recovery/congestion closure (`RFC9002-0001`) remain explicit work items even
+  though the current executable baseline is green.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
