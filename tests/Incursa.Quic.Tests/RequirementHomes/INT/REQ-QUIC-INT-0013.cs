@@ -1209,12 +1209,12 @@ public sealed class REQ_QUIC_INT_0013
         {
             string[] relativePaths =
             [
-                ".artifacts\\interop\\context-marker.txt",
-                ".config\\context-marker.txt",
-                ".dotnet-home\\cache\\context-marker.txt",
-                ".workbench\\context-marker.txt",
-                "BenchmarkDotNet.Artifacts\\context-marker.txt",
-                "StrykerOutput\\context-marker.txt",
+                Path.Combine(".artifacts", "interop", "context-marker.txt"),
+                Path.Combine(".config", "context-marker.txt"),
+                Path.Combine(".dotnet-home", "cache", "context-marker.txt"),
+                Path.Combine(".workbench", "context-marker.txt"),
+                Path.Combine("BenchmarkDotNet.Artifacts", "context-marker.txt"),
+                Path.Combine("StrykerOutput", "context-marker.txt"),
             ];
 
             foreach (string relativePath in relativePaths)

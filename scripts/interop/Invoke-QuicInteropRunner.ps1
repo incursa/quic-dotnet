@@ -242,6 +242,13 @@ function Copy-DirectoryTreeWithExcludes {
                 [System.IO.Path]::AltDirectorySeparatorChar)
         }
 
+        $relativeSegments = $relativePath.Split(
+            [char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar),
+            [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($relativeSegments | Where-Object { $excludedDirectories.Contains($_) }) {
+            continue
+        }
+
         $destinationDirectory = if ([string]::IsNullOrEmpty($relativePath)) {
             $DestinationRoot
         }
@@ -261,6 +268,11 @@ function Copy-DirectoryTreeWithExcludes {
 
         foreach ($file in $currentDirectory.GetFiles()) {
             $destinationPath = Join-Path $destinationDirectory $file.Name
+            $destinationParent = Split-Path -Parent $destinationPath
+            if (-not [string]::IsNullOrEmpty($destinationParent)) {
+                New-Item -Path $destinationParent -ItemType Directory -Force | Out-Null
+            }
+
             $file.CopyTo($destinationPath, $true) | Out-Null
         }
     }

@@ -82,6 +82,11 @@ jobs:
       - name: Build
         run: dotnet build Incursa.Quic.slnx --no-restore --configuration Release -p:ContinuousIntegrationBuild=true
 
+      - name: Prepare interop harness mount roots
+        run: |
+          sudo mkdir -p /certs /www /downloads /logs/qlog
+          sudo chmod -R a+rwx /certs /www /downloads /logs
+
       - name: Test
         run: dotnet test Incursa.Quic.slnx --no-build --configuration Release
 
