@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0003",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Connection Runtime Endpoint Ingress Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -27,15 +27,17 @@
     "REQ-QUIC-CRT-0086"
   ],
   "procedure": [
-    "Run the endpoint ingress requirement-home tests for REQ-QUIC-CRT-0012, REQ-QUIC-CRT-0013, REQ-QUIC-CRT-0015, REQ-QUIC-CRT-0016, REQ-QUIC-CRT-0080, REQ-QUIC-CRT-0082, REQ-QUIC-CRT-0083, REQ-QUIC-CRT-0085, and REQ-QUIC-CRT-0086.",
+    "Run the endpoint ingress requirement-home tests for REQ-QUIC-CRT-0002, REQ-QUIC-CRT-0012, REQ-QUIC-CRT-0013, REQ-QUIC-CRT-0014, REQ-QUIC-CRT-0015, REQ-QUIC-CRT-0016, REQ-QUIC-CRT-0080, REQ-QUIC-CRT-0082, REQ-QUIC-CRT-0083, REQ-QUIC-CRT-0085, and REQ-QUIC-CRT-0086.",
     "Confirm the routed cases deliver `QuicConnectionPacketReceivedEvent` to the correct runtime and the reset cases only match when the endpoint binding and token ownership are current.",
     "Confirm discard and retire effects remove the endpoint-owned route and token entries before later datagrams are retried.",
     "Confirm the endpoint emission policy rejects reset responses that would violate loop-prevention or per-remote-address send limits."
   ],
   "scope": "This slice covers ingress classification, routing, endpoint-owned stateless-reset bookkeeping, and the endpoint emission policy that bounds reset send frequency. It does not prove the broader connection lifecycle or migration policy.",
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0014.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs",
@@ -44,8 +46,10 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0085.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0086.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
-    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0002|FullyQualifiedName~REQ_QUIC_CRT_0012|FullyQualifiedName~REQ_QUIC_CRT_0013|FullyQualifiedName~REQ_QUIC_CRT_0014|FullyQualifiedName~REQ_QUIC_CRT_0015|FullyQualifiedName~REQ_QUIC_CRT_0016|FullyQualifiedName~REQ_QUIC_CRT_0080|FullyQualifiedName~REQ_QUIC_CRT_0082|FullyQualifiedName~REQ_QUIC_CRT_0083|FullyQualifiedName~REQ_QUIC_CRT_0085|FullyQualifiedName~REQ_QUIC_CRT_0086\""
   ],
+  "status_summary": "Passed on 2026-04-30. The focused CRT endpoint-ingress requirement-home filter passed 20/20, covering version-negotiation classification before routing, route-before-reset handling for known short-header traffic, route-miss stateless-reset screening, endpoint-scoped concurrent route/token registries, destination-CID routing, reset-token scoping, binding retargeting, token retirement, emission limiting, and connection-ID retirement cleanup. This does not prove broader connection lifecycle or migration policy.",
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
     "The CRT requirement traits are discoverable by the test runner.",
@@ -54,7 +58,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0014.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
     }
   ]
 }
