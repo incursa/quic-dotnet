@@ -48,6 +48,7 @@ internal sealed class TempDirectoryFixture : IDisposable
 
 internal static class InteropHarnessTestSupport
 {
+    private static readonly SemaphoreSlim DefaultPortHarnessGate = new(1, 1);
     private static readonly SemaphoreSlim HarnessCertificateGate = new(1, 1);
 
     public static IDictionary CreateEnvironment(
@@ -145,6 +146,21 @@ internal static class InteropHarnessTestSupport
                     HarnessCertificateGate.Release();
                 }
             }
+        }
+    }
+
+    public static async Task WithDefaultPortHarnessAsync(Func<Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        await DefaultPortHarnessGate.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await action().ConfigureAwait(false);
+        }
+        finally
+        {
+            DefaultPortHarnessGate.Release();
         }
     }
 

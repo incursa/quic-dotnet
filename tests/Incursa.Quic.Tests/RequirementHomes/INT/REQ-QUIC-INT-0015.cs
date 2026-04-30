@@ -129,17 +129,20 @@ public sealed class REQ_QUIC_INT_0015
             HarnessRunResult? serverResult = null;
             HarnessRunResult? clientResult = null;
 
-            await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+            await InteropHarnessTestSupport.WithDefaultPortHarnessAsync(async () =>
             {
-                string clientRequests = $"https://localhost:443/{relativePathOne} https://localhost:443/{relativePathTwo}";
+                await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+                {
+                    string clientRequests = $"https://localhost:443/{relativePathOne} https://localhost:443/{relativePathTwo}";
 
-                (serverResult, clientResult) = await RunHarnessPairAsync(
-                    testcase: "multiconnect",
-                    serverRequest: string.Empty,
-                    clientRequest: clientRequests,
-                    certificatePath: InteropHarnessEnvironment.CertificatePath,
-                    privateKeyPath: InteropHarnessEnvironment.PrivateKeyPath,
-                    qlogDirectory: qlogDirectory);
+                    (serverResult, clientResult) = await RunHarnessPairAsync(
+                        testcase: "multiconnect",
+                        serverRequest: string.Empty,
+                        clientRequest: clientRequests,
+                        certificatePath: InteropHarnessEnvironment.CertificatePath,
+                        privateKeyPath: InteropHarnessEnvironment.PrivateKeyPath,
+                        qlogDirectory: qlogDirectory);
+                });
             });
 
             Assert.NotNull(serverResult);
