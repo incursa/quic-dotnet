@@ -11,12 +11,13 @@ architecture, work items, or verification artifacts under `specs/`.
 The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
-the repo-defined Dry and Short benchmark baseline jobs complete after local
-commit `7dda7669`. The local trace/gap closure train through commit
-`cbe8d8d1` also closes the stale RFC 9002, migration-core,
-handshake-orchestration, and ACK-piggyback proof-tail ledger items without
-widening the public support promise. Hosted CI and CodeQL workflows also passed
-for the latest hosted-validated runtime/trace commit `ee86bb13`.
+the repo-defined Dry and Short benchmark baseline jobs complete in the
+2026-04-30 final-evidence refresh. The local trace/gap closure train through
+commit `cbe8d8d1` closes the stale RFC 9002, migration-core,
+handshake-orchestration, and ACK-piggyback proof-tail ledger items, and commit
+`dd73ac26` refreshes the public API boundary notes without widening the public
+support promise. Hosted CI and CodeQL workflows also passed for the latest
+hosted-validated runtime/trace commit `ee86bb13`.
 A manual hosted
 interop-runner handshake workflow is configured as an advisory artifact
 collection lane, and the narrow server-role handshake dispatch passed on GitHub
@@ -43,6 +44,7 @@ dotnet tool run workbench -- --format json validate --profile core
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
+pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -PeerImplementationSlots quic-go -TestCases handshake,retry,transfer,multiconnect
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
 gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main
 gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status
@@ -62,7 +64,9 @@ gh run watch 25149821187 --repo incursa/quic-dotnet --exit-status
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0012|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_CRT_0123"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0002|FullyQualifiedName~REQ_QUIC_API_0003|FullyQualifiedName~REQ_QUIC_API_0004|FullyQualifiedName~REQ_QUIC_API_0005|FullyQualifiedName~REQ_QUIC_API_0006|FullyQualifiedName~REQ_QUIC_API_0007|FullyQualifiedName~REQ_QUIC_API_0008|FullyQualifiedName~REQ_QUIC_API_0009|FullyQualifiedName~REQ_QUIC_API_0010|FullyQualifiedName~REQ_QUIC_API_0011"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_API|FullyQualifiedName~REQ_QUIC_CRT_0124|FullyQualifiedName~REQ_QUIC_CRT_0125|FullyQualifiedName~REQ_QUIC_CRT_0126"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0134|FullyQualifiedName~REQ_QUIC_CRT_0135"
 dotnet run -c Release --project benchmarks\Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_INT_0008"
@@ -92,13 +96,14 @@ Observed results through 2026-04-30:
 | Command | Result |
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
-| `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
-| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 after local commit `7dda7669`: 3,299 passed, 0 failed, 0 skipped, 3,299 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 after local commit `7dda7669`: validated 313 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 after local commit `7dda7669`: 0 errors, 0 warnings, 102 work items, 319 markdown files |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after local commit `7dda7669`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
-| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after local commit `7dda7669`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
-| `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
+| `dotnet build Incursa.Quic.slnx -c Release` | Passed on 2026-04-30 after local commit `dd73ac26`: 0 warnings, 0 errors |
+| `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed on 2026-04-30 after local commit `dd73ac26`: 3,299 passed, 0 failed, 0 skipped, 3,299 total |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30 in the final-evidence refresh: validated 313 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30 in the final-evidence refresh: 0 errors, 0 warnings, 102 work items, 319 markdown files |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Dry slices |
+| `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed on 2026-04-30 after local commit `dd73ac26`: built the benchmark project and executed the congestion-control, RTT-estimator, and connection stream-state Short slices |
+| `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed on 2026-04-30: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
+| `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole both -PeerImplementationSlots quic-go -TestCases handshake,retry,transfer,multiconnect` | Passed on 2026-04-30: resolved the supported local helper subset and translated local `multiconnect` to the runner `handshakeloss` testcase |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
 | `gh run watch 25145021654 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m53s on commit `e6dcbb80`; the run used Node 24-compatible Python setup and artifact upload actions, uploaded the runner bundle, and had no Node.js deprecation log hits |
 | `gh run watch 25145022368 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted `Library Fast Quality` workflow completed in 1m13s on commit `e6dcbb80` after its artifact upload action moved to the Node 24-compatible major |
@@ -117,7 +122,9 @@ Observed results through 2026-04-30:
 | focused API stream-capacity filter | Passed on 2026-04-30: 48 passed, 0 failed, 0 skipped |
 | focused pinned-policy API/CRT filter | Passed on 2026-04-30: 28 passed, 0 failed, 0 skipped |
 | focused public API surface filter | Passed on 2026-04-30: 81 passed, 0 failed, 0 skipped |
+| focused public API/CRT boundary filter | Passed on 2026-04-30 after local commit `dd73ac26`: 109 passed, 0 failed, 0 skipped |
 | full `REQ_QUIC_CRT_` requirement-home filter | Passed on 2026-04-30: 304 passed, 0 failed, 0 skipped |
+| full `REQ_QUIC_INT` requirement-home filter | Passed on 2026-04-30 after local commit `dd73ac26`: 72 passed, 0 failed, 0 skipped |
 | focused diagnostics CRT filter | Passed on 2026-04-30: 4 passed, 0 failed, 0 skipped |
 | `QuicDiagnosticsBenchmarks` Dry run | Passed on 2026-04-30: 4 benchmarks executed; disabled no-op/guarded paths allocated 0 B and enabled typed-event construction allocated 192 B |
 | focused endpoint-host shell INT filter | Passed on 2026-04-30: 8 passed, 0 failed, 0 skipped |

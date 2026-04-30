@@ -3,8 +3,9 @@
 This folder contains the main repository guides for building, packaging,
 testing, and contributing to `Incursa.Quic`. Start with the current status
 snapshot before interpreting older planning or closeout notes; it separates the
-latest local validation baseline from hosted CI/CodeQL status, manual quality
-and interop workflow status, and the advisory hosted interop handshake evidence.
+latest local build, test, trace, and benchmark baseline from hosted CI/CodeQL
+status, manual quality and interop workflow status, and the advisory hosted
+interop handshake evidence.
 
 ## Core Guides
 
