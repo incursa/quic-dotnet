@@ -6,7 +6,7 @@
   "title": "QUIC Hosted Interop-Runner Supported-Subset Coverage Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Workflow review, requirement-home tests, local helper dry-run plans, SpecTrace validation, and Workbench validation.",
+  "verification_method": "Workflow review, requirement-home tests, local helper dry-run plans, hosted workflow dispatch, artifact inspection, SpecTrace validation, and Workbench validation.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -20,7 +20,7 @@
     "The repo-local helper continues to own image replacement, runner invocation, artifact capture, and advisory classification under `REQ-QUIC-INT-0013`.",
     "Hosted dispatch requires GitHub Actions access, a current external `quic-interop-runner` checkout, Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools."
   ],
-  "scope": "Verify that the hosted workflow exposes an opt-in `supported-subset` coverage profile for already-supported helper cells while preserving the default hosted-handshake profile, manual-only trigger, per-cell artifact preservation, and advisory boundary. This verification does not prove broad interop readiness or execute a hosted matrix dispatch.",
+  "scope": "Verify that the hosted workflow exposes an opt-in `supported-subset` coverage profile for already-supported helper cells while preserving the default hosted-handshake profile, manual-only trigger, per-cell artifact preservation, and advisory boundary. This verification records one hosted supported-subset dispatch as advisory evidence and does not prove broad interop readiness.",
   "procedure": [
     "Review `.github/workflows/interop-runner-handshake.yml` and confirm it is `workflow_dispatch` only.",
     "Confirm the workflow exposes a `coverage_profile` choice input whose default is `hosted-handshake` and whose wider option is `supported-subset`.",
@@ -29,6 +29,7 @@
     "Confirm each cell writes to a cell-specific artifact root and uploads that tree with `if: always()`.",
     "Run the requirement-home tests for `REQ-QUIC-INT-0017` and the focused interop helper script tests.",
     "Run dry-run helper plans for the hosted-handshake shape and supported-subset shape.",
+    "Dispatch the hosted supported-subset profile on the feature branch and inspect each uploaded `runner-report.json` plus selected output logs for exact cell results.",
     "Run SpecTrace core validation and Workbench core validation."
   ],
   "expected_result": "The repository configuration provides a manual default handshake profile and an opt-in supported-subset coverage profile that collect hosted artifacts for already-supported helper cells without changing ordinary CI gates, helper testcase support, public API support, runner registry participation, or broad interop-readiness claims.",
@@ -40,9 +41,11 @@
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0010.json",
     "specs/work-items/quic/WI-QUIC-INT-0010.json",
-    "specs/verification/quic/VER-QUIC-INT-0010.json"
+    "specs/verification/quic/VER-QUIC-INT-0010.json",
+    "https://github.com/incursa/quic-dotnet/actions/runs/25187885762",
+    "artifacts/hosted-interop/25187885762-redownload/"
   ],
-  "status_summary": "Passed for the repository configuration slice on 2026-04-30. Focused requirement-home and helper tests passed locally, dry-run helper plans resolved for the hosted-handshake and supported-subset shapes, and core SpecTrace plus Workbench validation stayed green. Hosted supported-subset dispatch is an external advisory evidence refresh step and is not yet a broad readiness claim.",
+  "status_summary": "Passed for the repository configuration slice on 2026-04-30. Focused requirement-home and helper tests passed locally, dry-run helper plans resolved for the hosted-handshake and supported-subset shapes, and core SpecTrace plus Workbench validation stayed green. Hosted supported-subset run 25187885762 on commit 512a97764658bd3edab7a5b4113e72fcda908a0d completed successfully and the uploaded runner reports recorded `handshake=succeeded`, client `transfer=succeeded`, server `transfer=succeeded`, both-role `retry=succeeded`, and client-role `handshakeloss=succeeded`. This is advisory supported-subset evidence, not a broad readiness claim.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

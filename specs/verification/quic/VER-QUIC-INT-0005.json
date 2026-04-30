@@ -51,11 +51,13 @@
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "src/Incursa.Quic/QuicVariableLengthInteger.cs",
     "artifacts/interop-runner/retry-investigation/20260430-134602678-both-quic-go/",
+    "https://github.com/incursa/quic-dotnet/actions/runs/25187885762",
+    "artifacts/hosted-interop/25187885762-redownload/interop-runner-both-retry-quic-go-25187885762/20260430-203334846-both-quic-go/runner-report.json",
     "docs/design/quic-interop-prep-plan.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1"
   ],
-  "status_summary": "Passed on 2026-04-30; the focused requirement-home and local preflight retry tests proved one-Retry bootstrap plus single-request byte delivery and missing-file failure locally, and the fresh local quic-go same-slot runner bundle at `artifacts/interop-runner/retry-investigation/20260430-134602678-both-quic-go/` shows the external runner retry cell succeeded after downloaded-file and Retry checks both passed.",
+  "status_summary": "Passed on 2026-04-30; the focused requirement-home and local preflight retry tests proved one-Retry bootstrap plus single-request byte delivery and missing-file failure locally, and the fresh local quic-go same-slot runner bundle at `artifacts/interop-runner/retry-investigation/20260430-134602678-both-quic-go/` shows the external runner retry cell succeeded after downloaded-file and Retry checks both passed. Hosted supported-subset run 25187885762 on commit 512a97764658bd3edab7a5b4113e72fcda908a0d also reported the both-role `retry` cell as `succeeded`, with `Check of downloaded files succeeded` and `Check of Retry succeeded` in the uploaded output log.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
