@@ -1496,6 +1496,33 @@ import run
 raise SystemExit(run.main())
 '@
 
+    $runnerShimContent = $runnerShimContent -replace 'import interop', @'
+import interop
+
+_local_replacement_slot = os.environ.get("INCURSA_QUIC_INTEROP_LOCAL_SLOT", "")
+_local_replacement_role = os.environ.get("INCURSA_QUIC_INTEROP_LOCAL_ROLE", "")
+_real_check_impl_is_compliant = interop.InteropRunner._check_impl_is_compliant
+
+
+def _patched_check_impl_is_compliant(self, name, role):
+    role_name = getattr(role, "name", "").lower()
+    if name == _local_replacement_slot and (
+        _local_replacement_role == "both" or role_name == _local_replacement_role
+    ):
+        logging.debug(
+            "Treating local replacement slot %s as compliant for %s preflight.",
+            name,
+            role_name,
+        )
+        self.compliant.setdefault(name, {})[role] = True
+        return True
+
+    return _real_check_impl_is_compliant(self, name, role)
+
+
+interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_compliant
+'@
+
     Set-Content -LiteralPath $runnerShimPath -Value $runnerShimContent -Encoding utf8
 
     $dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$runStamp"
@@ -1559,6 +1586,10 @@ raise SystemExit(run.main())
     }
 
     Push-Location $runnerRootResolved
+    $previousLocalSlot = $env:INCURSA_QUIC_INTEROP_LOCAL_SLOT
+    $previousLocalRole = $env:INCURSA_QUIC_INTEROP_LOCAL_ROLE
+    $env:INCURSA_QUIC_INTEROP_LOCAL_SLOT = $ImplementationSlot
+    $env:INCURSA_QUIC_INTEROP_LOCAL_ROLE = $LocalRole
     try {
         Write-Host "Running quic-interop-runner locally..." -ForegroundColor Cyan
         $runnerProcessArguments = @('-X', 'utf8', $runnerShimPath) + $runnerArgs
@@ -1570,6 +1601,20 @@ raise SystemExit(run.main())
             -StdErrPath $runnerStdErr
     }
     finally {
+        if ($null -eq $previousLocalSlot) {
+            Remove-Item Env:\INCURSA_QUIC_INTEROP_LOCAL_SLOT -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:INCURSA_QUIC_INTEROP_LOCAL_SLOT = $previousLocalSlot
+        }
+
+        if ($null -eq $previousLocalRole) {
+            Remove-Item Env:\INCURSA_QUIC_INTEROP_LOCAL_ROLE -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:INCURSA_QUIC_INTEROP_LOCAL_ROLE = $previousLocalRole
+        }
+
         Pop-Location
         if (Test-Path -LiteralPath $runnerShimPath) {
             Remove-Item -LiteralPath $runnerShimPath -Force -ErrorAction SilentlyContinue
