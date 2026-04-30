@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-04-29.
+Last verified: 2026-04-30.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -12,14 +12,15 @@ The repository now has a green local executable and SpecTrace baseline. The
 Release build passes, the full requirement-linked test suite passes, the
 repo-local SpecTrace validator passes, Workbench core validation passes, and
 the repo-defined Dry and Short benchmark baseline jobs complete. A manual
-hosted interop-runner handshake workflow is now configured as an advisory
-artifact-collection lane; hosted dispatch evidence has not yet been collected.
+hosted interop-runner handshake workflow is configured as an advisory
+artifact-collection lane, and the narrow server-role handshake dispatch passed
+on GitHub Actions run `25141407138` for commit `2d869bdf`.
 
 This is not a broad QUIC-complete claim and should not be described as
 interop-ready. The supported boundary remains narrow: managed loopback,
 selected stream/control behavior, selected TLS/trust floors, and local harness
-contracts that are backed by requirement-home proof. External hosted runner
-results and any public-surface widening remain separate work.
+contracts that are backed by requirement-home proof. Broader hosted runner
+matrices and any public-surface widening remain separate work.
 
 ## Verified Commands
 
@@ -35,21 +36,24 @@ dotnet tool run workbench -- --format json validate --profile core
 .\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
 pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake
+gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main
+gh run watch 25141407138 --repo incursa/quic-dotnet --exit-status
 ```
 
-Observed results on 2026-04-29:
+Observed results through 2026-04-30:
 
 | Command | Result |
 |---|---|
 | `dotnet tool restore` | Passed; restored `dotnet-stryker` 4.14.0, `sharpfuzz.commandline` 2.2.0, and `incursa.workbench` 2026.4.15.1172 |
 | `dotnet build Incursa.Quic.slnx -c Release` | Passed with 0 warnings and 0 errors |
 | `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` | Passed: 3,271 passed, 0 failed, 0 skipped, 3,271 total |
-| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed: validated 310 SpecTrace JSON artifacts |
-| `dotnet tool run workbench -- --format json validate --profile core` | Passed: 0 errors, 0 warnings, 101 work items, 303 markdown files |
+| `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core` | Passed on 2026-04-30: validated 310 SpecTrace JSON artifacts |
+| `dotnet tool run workbench -- --format json validate --profile core` | Passed on 2026-04-30: 0 errors, 0 warnings, 101 work items, 313 markdown files |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Dry` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
 | `.\scripts\benchmarks\Invoke-QuicBaseline.ps1 -Job Short` | Passed for congestion-control, RTT-estimator, and connection stream-state benchmark slices |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed: resolved the hosted-corresponding plan to server-role `nginx` replacement against quic-go for `handshake` |
 | `pwsh -NoProfile -File scripts\interop\Invoke-QuicInteropRunner.ps1 -LocalRole server -PeerImplementationSlots quic-go -TestCases handshake` | Passed through the helper's advisory path: harness image build was cached, the runner exited `1`, the helper exited `0`, and artifacts were preserved under `artifacts/interop-runner/20260429-170106187-server-nginx/` after the upstream post-check failed |
+| `gh run watch 25141407138 --repo incursa/quic-dotnet --exit-status` | Passed on 2026-04-30: hosted workflow `Interop Runner Handshake` completed in 1m43s on commit `2d869bdf`; `runner-report.json` recorded `handshake` as `succeeded` for the narrow `nginx` replacement server versus quic-go client cell |
 
 BenchmarkDotNet reported expected evidence-quality warnings in these smoke
 lanes, including Dry minimum-iteration-time warnings and Short zero-measurement
@@ -116,7 +120,8 @@ The current honest support boundary is narrow:
   integration proof now green.
 - A manual hosted GitHub Actions lane now runs the server-role `handshake`
   helper cell against quic-go and uploads the complete interop-runner artifact
-  tree for advisory review. No hosted run has been claimed as passed yet.
+  tree for advisory review. Run `25141407138` passed on 2026-04-30 for commit
+  `2d869bdf`.
 
 Do not claim broad QUIC support, broad public early-data support, broad key
 update support, public API stability beyond the traced facade, or broad interop
@@ -130,9 +135,11 @@ records, not inferred from the green baseline.
 
 The next useful lanes are:
 
-- Dispatch the manual hosted interop-runner handshake workflow and inspect the
-  uploaded artifact bundle before expanding to any broader role, peer, or
-  testcase matrix.
+- Keep any hosted interop expansion separate and requirement-owned; the current
+  hosted proof covers only the server-role `handshake` cell against quic-go.
+- Track the GitHub Actions Node.js 20 deprecation warning observed on run
+  `25141407138` and update action versions or runner settings when the
+  dependency path is ready.
 - Narrow public-surface hardening only where the existing API requirements
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or

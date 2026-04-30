@@ -2,7 +2,9 @@
 
 This folder contains the main repository guides for building, packaging,
 testing, and contributing to `Incursa.Quic`. Start with the current status
-snapshot before interpreting older planning or closeout notes.
+snapshot before interpreting older planning or closeout notes; it includes the
+latest local validation baseline and the advisory hosted interop handshake
+evidence.
 
 ## Core Guides
 
