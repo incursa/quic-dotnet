@@ -23,7 +23,7 @@ jobs:
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload interop runner artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: interop-runner-handshake-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/
