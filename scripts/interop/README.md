@@ -50,6 +50,7 @@ Hosted corroboration:
 - The workflow checks out this repository and `quic-interop-runner` separately, then runs this helper with `-LocalRole server -PeerImplementationSlots quic-go -TestCases handshake`.
 - The workflow pins Python 3.12 for the external runner dependencies instead of floating to the newest hosted-toolcache Python.
 - The workflow installs the latest stable Docker Engine through `docker/setup-docker-action@v5` before the helper runs because the upstream runner compose file uses `interface_name`, which requires Docker Engine 28.1 or later.
+- The workflow installs `tshark` and `editcap` through Ubuntu packages so the runner can perform its packet trace post-check.
 - It uploads `artifacts/interop-runner/` with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
 - The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
 - The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.
