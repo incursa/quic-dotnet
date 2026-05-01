@@ -2919,6 +2919,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs::TryReceiveStopSendingFrame_CopiesTheApplicationProtocolErrorCodeIntoTheResetStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs::TryReceiveStopSendingFrame_DoesNotCopyRejectedStopSendingErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs::TryReceiveStopSendingFrame_CopiesMaximumApplicationProtocolErrorCode"
         ]
       },
       "notes": [
