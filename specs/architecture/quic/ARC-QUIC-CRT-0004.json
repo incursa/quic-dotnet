@@ -29,6 +29,7 @@
     "REQ-QUIC-CRT-0076",
     "REQ-QUIC-CRT-0077",
     "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0079",
     "REQ-QUIC-CRT-0084",
     "REQ-QUIC-CRT-0087"
   ],
@@ -39,7 +40,7 @@
     "src/Incursa.Quic/QuicIdleTimeoutState.cs",
     "src/Incursa.Quic/QuicConnectionStreamRegistry.cs"
   ],
-  "design_summary": "The runtime remains the single owner of lifecycle ordering. It derives the effective idle timeout through the helper state, restarts the idle deadline only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or accepted stateless reset, and arms or cancels close, drain, and idle timers through explicit effects.\n\nOrdinary send legality is surfaced as a phase-derived property so callers do not need to infer it from scattered helpers. When the connection reaches a terminal lifetime boundary, the runtime discards connection-owned state, notifies live streams of the terminal state, and emits the discard effect as an explicit outcome.\n\nThe close/drain lifetime must preserve its end time when Draining follows Closing, and monotonic time remains the only source for timeout and deadline calculations.\n\nThis slice is landed and is proven by requirement-home tests for immediate close, repeated close suppression, peer-close draining, and close/drain lifetime expiry.",
+  "design_summary": "The runtime remains the single owner of lifecycle ordering. It derives the effective idle timeout through the helper state, restarts the idle deadline only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or accepted stateless reset, and arms or cancels close, drain, and idle timers through explicit effects.\n\nOrdinary send legality is surfaced as a phase-derived property so callers do not need to infer it from scattered helpers. When the connection reaches a terminal lifetime boundary, the runtime discards connection-owned state, notifies live streams of the terminal state, and emits the discard effect as an explicit outcome.\n\nThe close/drain lifetime must preserve its end time when Draining follows Closing, and monotonic time remains the only source for timeout and deadline calculations. Later close-like events are ignored once the runtime is already Draining or Discarded, so terminalization cannot reopen the connection or downgrade its phase.\n\nThis slice is landed and is proven by requirement-home tests for immediate close, repeated close suppression, peer-close draining, close/drain lifetime expiry, and terminal idempotence.",
   "risks": [
     "Timer conversion must stay monotonic and saturating so close and idle deadlines never move backward.",
     "Draining after Closing must preserve the existing terminal end tick or a peer close could shorten the drain period.",
@@ -48,7 +49,7 @@
   "supplemental_sections": [
     {
       "heading": "Lifecycle Model",
-      "content": "The runtime keeps a single phase value as the source of truth for ordinary sending, close-only sending, or no sending.\nIdle timeout state is created only when both transport-parameter sides and the PTO floor produce an effective timeout.\nClosing retains close-relevant state and arms a close lifetime.\nDraining preserves the existing terminal end time when entered from Closing.\nDiscard clears lifecycle timers and emits explicit discard effects."
+      "content": "The runtime keeps a single phase value as the source of truth for ordinary sending, close-only sending, or no sending.\nIdle timeout state is created only when both transport-parameter sides and the PTO floor produce an effective timeout.\nClosing retains close-relevant state and arms a close lifetime.\nDraining preserves the existing terminal end time when entered from Closing.\nDraining and Discarded ignore later close, reset, and stale timer attempts rather than reentering terminal phases.\nDiscard clears lifecycle timers and emits explicit discard effects."
     },
     {
       "heading": "Effect Contract",

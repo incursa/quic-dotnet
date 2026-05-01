@@ -745,12 +745,24 @@
     {
       "id": "REQ-QUIC-CRT-0074",
       "title": "Allow ordinary sending only in operational phases",
-      "statement": "Ordinary packet sending MUST be legal only while the connection is in Establishing or Active."
+      "statement": "Ordinary packet sending MUST be legal only while the connection is in Establishing or Active.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0074.cs::EstablishingAndActivePhasesAllowOrdinarySending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0074.cs::TerminalPhasesDoNotAllowOrdinarySending"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0075",
       "title": "Restrict Closing to close-related traffic",
-      "statement": "While in Closing, the runtime MUST limit sending to close-related packets and any required attribution responses."
+      "statement": "While in Closing, the runtime MUST limit sending to close-related packets and any required attribution responses.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0075.cs::ClosingLimitsSendingToConnectionCloseDatagrams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0075.cs::ClosingDoesNotFlushOrdinaryPacketProcessingForAttributedPackets"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0076",
@@ -760,13 +772,23 @@
         "upstream_refs": [
           "RFC 9000 Section 10.2.2",
           "RFC 9000 Section 10.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0076.cs::DrainingDoesNotEmitPacketsForLaterDatagrams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0076.cs::DiscardedDoesNotEmitPacketsForLaterDatagrams"
         ]
       }
     },
     {
       "id": "REQ-QUIC-CRT-0077",
       "title": "Enter terminal phases at most once",
-      "statement": "Closing and Draining transitions MUST be idempotent and occur at most once."
+      "statement": "Closing and Draining transitions MUST be idempotent and occur at most once.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0077.cs::RepeatedLocalCloseDoesNotReenterClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0077.cs::RepeatedPeerCloseDoesNotReenterDraining"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0078",
@@ -775,13 +797,22 @@
       "trace": {
         "upstream_refs": [
           "RFC 9000 Section 10.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0078.cs::DrainingAfterClosingPreservesTheExistingTerminalEndTime"
         ]
       }
     },
     {
       "id": "REQ-QUIC-CRT-0079",
       "title": "Ignore later close-like events after terminalization",
-      "statement": "Later close, reset, or timer events MUST NOT reopen the connection or downgrade its terminal phase."
+      "statement": "Later close, reset, or timer events MUST NOT reopen the connection or downgrade its terminal phase.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0079.cs::LaterCloseAndResetEventsDoNotDowngradeDraining",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0079.cs::LaterCloseAndResetEventsDoNotReopenDiscarded"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0080",

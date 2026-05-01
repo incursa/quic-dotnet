@@ -30,14 +30,16 @@
     "REQ-QUIC-CRT-0076",
     "REQ-QUIC-CRT-0077",
     "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0079",
     "REQ-QUIC-CRT-0084",
     "REQ-QUIC-CRT-0087"
   ],
   "procedure": [
-    "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0027, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, REQ-QUIC-CRT-0056, and REQ-QUIC-CRT-0084.",
+    "Run the lifecycle requirement-home tests for REQ-QUIC-CRT-0023, REQ-QUIC-CRT-0025, REQ-QUIC-CRT-0026, REQ-QUIC-CRT-0027, REQ-QUIC-CRT-0030, REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0035, REQ-QUIC-CRT-0055, REQ-QUIC-CRT-0056, REQ-QUIC-CRT-0074, REQ-QUIC-CRT-0075, REQ-QUIC-CRT-0076, REQ-QUIC-CRT-0077, REQ-QUIC-CRT-0078, REQ-QUIC-CRT-0079, and REQ-QUIC-CRT-0084.",
     "Run the RFC 9000 requirement-home tests for REQ-QUIC-RFC9000-S10P2-0006, REQ-QUIC-RFC9000-S10P2-0009, REQ-QUIC-RFC9000-S10P2P1-0010, REQ-QUIC-RFC9000-S10P2P2-0002, REQ-QUIC-RFC9000-S10P2P2-0005, and REQ-QUIC-RFC9000-S10P2P2-0001.",
     "Confirm local close enters Closing, repeated local close while already Closing is ignored, and a pathless local close still arms the terminal lifetime without emitting a datagram.",
     "Confirm the close and drain transitions arm the expected terminal-lifetime timer and emit the explicit send, notify-streams, and discard effects required by the lifecycle reducer.",
+    "Confirm later close-like events after Draining or Discarded leave the terminal state, phase, and terminal deadline unchanged.",
     "Confirm the runtime keeps the idle timer unchanged for disallowed events and re-arms it only when peer activity is permitted by the helper state.",
     "Confirm accepted stateless reset transitions the runtime to Draining without emitting a close-handshake datagram."
   ],
@@ -54,6 +56,12 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0074.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0075.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0076.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0077.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0078.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0079.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0084.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
@@ -68,7 +76,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs\n- src/Incursa.Quic/QuicIdleTimeoutState.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0074.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0075.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0076.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0077.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0078.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0079.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs\n- src/Incursa.Quic/QuicIdleTimeoutState.cs"
     }
   ]
 }
