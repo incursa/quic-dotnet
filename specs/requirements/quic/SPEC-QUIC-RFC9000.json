@@ -20864,6 +20864,11 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0007.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeCryptoRetransmissionData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0007.cs::TryDiscardPacketNumberSpace_DoesNotDiscardCryptoDataForOtherPacketNumberSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0007.cs::TlsKeyDiscardUpdate_RemovesStillTrackedCryptoDataBeforeItCanBeQueuedForRetransmission"
         ]
       }
     },
