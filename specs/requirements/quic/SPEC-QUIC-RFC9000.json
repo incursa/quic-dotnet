@@ -2857,6 +2857,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs::TryReceiveStopSendingFrame_AllowsDataSentAndProducesResetStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs::TryReceiveStopSendingFrame_RejectsAfterDataSentHasBeenAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs::TryReceiveStopSendingFrame_DataSentBidirectionalStreamTerminatesOnlyTheSendDirection"
         ]
       }
     },
