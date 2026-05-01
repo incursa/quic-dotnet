@@ -2525,6 +2525,9 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs::ReceiveSideAcceptsDelayedStateChangingFramesAfterDataRecvd"
         ]
       }
     },
@@ -2551,6 +2554,9 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs::TryReadStreamData_EmitsMaxStreamDataWhileReceiveStateIsRecv"
         ]
       }
     },
@@ -2603,6 +2609,9 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0006.cs::SenderSideAcceptsDelayedMaxStreamDataAndStopSendingAfterDataSent"
         ]
       }
     },
