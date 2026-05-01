@@ -81,6 +81,75 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0011
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P5-0011")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task StopSendingLossFlushesANewProtectedStopSendingPacket()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        await runtime.AbortStreamReadsAsync(0, 0x99);
+
+        QuicConnectionSendDatagramEffect originalSendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, originalSendEffect.Datagram);
+
+        byte[] originalPlaintext = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(
+            runtime,
+            originalSendEffect);
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
+            originalPlaintext,
+            out QuicStopSendingFrame originalFrame,
+            out _,
+            out _));
+        Assert.Equal(0UL, originalFrame.StreamId);
+        Assert.Equal(0x99UL, originalFrame.ApplicationProtocolErrorCode);
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            originalPacket.Key.PacketNumberSpace,
+            originalPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        List<QuicConnectionEffect>? retransmissionEffects = [];
+        Assert.True(QuicS13AckPiggybackTestSupport.InvokeTryFlushPendingRetransmissions(
+            runtime,
+            QuicPacketNumberSpace.ApplicationData,
+            nowTicks: 20,
+            probePacket: false,
+            ref retransmissionEffects));
+
+        QuicConnectionSendDatagramEffect retransmissionSendEffect = Assert.Single(
+            retransmissionEffects!.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> retransmissionPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, retransmissionSendEffect.Datagram);
+
+        Assert.NotEqual(originalPacket.Key.PacketNumber, retransmissionPacket.Key.PacketNumber);
+        Assert.False(retransmissionSendEffect.Datagram.Span.SequenceEqual(originalSendEffect.Datagram.Span));
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+
+        byte[] retransmissionPlaintext = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(
+            runtime,
+            retransmissionSendEffect);
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
+            retransmissionPlaintext,
+            out QuicStopSendingFrame retransmissionFrame,
+            out _,
+            out _));
+        Assert.Equal(originalFrame.StreamId, retransmissionFrame.StreamId);
+        Assert.Equal(originalFrame.ApplicationProtocolErrorCode, retransmissionFrame.ApplicationProtocolErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P5-0011")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task StopSendingRetransmissionStaysQueuedAfterAnUnrelatedPacketIsAcknowledged()
