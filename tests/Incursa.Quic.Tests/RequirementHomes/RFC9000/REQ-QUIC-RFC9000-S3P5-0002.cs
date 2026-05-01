@@ -61,6 +61,57 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0002
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task AbortStreamReadsAsync_EmitsStopSendingFromSizeKnownState()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream targetStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, targetStream.Id);
+        outboundEffects.Clear();
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0F, (ulong)targetStream.Id, [], offset: 4),
+            out QuicStreamFrame finalSizeFrame));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(finalSizeFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)targetStream.Id, out QuicConnectionStreamSnapshot sizeKnownSnapshot));
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, sizeKnownSnapshot.ReceiveState);
+
+        await runtime.AbortStreamReadsAsync((ulong)targetStream.Id, 0x77);
+
+        QuicConnectionSendDatagramEffect stopSendingEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            stopSendingEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicStopSendingFrame stopSendingFrame,
+            out _,
+            out _));
+        Assert.Equal((ulong)targetStream.Id, stopSendingFrame.StreamId);
+        Assert.Equal(0x77UL, stopSendingFrame.ApplicationProtocolErrorCode);
+
+        await targetStream.DisposeAsync();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortStreamReadsAsync_DoesNotEmitResetStreamOrWriteAbortedNotification()

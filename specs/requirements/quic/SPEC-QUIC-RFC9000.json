@@ -2718,6 +2718,10 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs::AbortRead_UsesThePublicAbortApiWithAnApplicationErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs::AbortRead_RejectsStreamsWithoutReadableSides"
         ]
       }
     },
@@ -2744,6 +2748,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs::AbortStreamReadsAsync_EmitsStopSendingAndRaisesReadAbortedNotification",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs::AbortStreamReadsAsync_EmitsStopSendingFromSizeKnownState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs::AbortStreamReadsAsync_DoesNotEmitResetStreamOrWriteAbortedNotification"
         ]
       }
     },
@@ -2770,6 +2779,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs::AbortStreamReadsAsync_KeepsCountingSubsequentStreamFramesTowardFlowControl",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs::AbortStreamReadsAsync_CountsOnlyNewOverlappingBytesAfterStopSending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs::AbortStreamReadsAsync_StillEnforcesFlowControlForDiscardedStreamFrames"
         ]
       }
     },
