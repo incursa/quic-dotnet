@@ -1481,6 +1481,7 @@
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",

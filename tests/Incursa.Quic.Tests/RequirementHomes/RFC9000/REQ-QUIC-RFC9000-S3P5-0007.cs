@@ -69,6 +69,88 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0007
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task AbortStreamWrites_ReplacesQueuedStreamDataRetransmissionWithResetStream()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        byte[] payload = [0x33];
+
+        await stream.WriteAsync(payload, 0, payload.Length);
+
+        QuicConnectionSendDatagramEffect streamSendEffect = GetSingleStreamSendEffect(runtime, outboundEffects);
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> streamPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Value.PacketBytes.Span.SequenceEqual(streamSendEffect.Datagram.Span));
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            streamPacket.Key.PacketNumberSpace,
+            streamPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        outboundEffects.Clear();
+        await runtime.AbortStreamWritesAsync((ulong)stream.Id, 0x99);
+
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+
+        QuicConnectionSendDatagramEffect resetSendEffect = GetSingleStreamSendEffect(runtime, outboundEffects);
+        Assert.False(resetSendEffect.Datagram.Span.SequenceEqual(streamSendEffect.Datagram.Span));
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> resetPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Value.PacketBytes.Span.SequenceEqual(resetSendEffect.Datagram.Span));
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            resetSendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedResetPacket,
+            out int resetPayloadOffset,
+            out int resetPayloadLength,
+            out bool resetKeyPhase));
+        Assert.False(resetKeyPhase);
+
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindResetStreamFrame(
+            openedResetPacket.AsSpan(resetPayloadOffset, resetPayloadLength),
+            out QuicResetStreamFrame resetStreamFrame,
+            out _,
+            out _));
+        Assert.Equal((ulong)stream.Id, resetStreamFrame.StreamId);
+        Assert.Equal(0x99UL, resetStreamFrame.ApplicationProtocolErrorCode);
+        Assert.Equal((ulong)payload.Length, resetStreamFrame.FinalSize);
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            resetPacket.Key.PacketNumberSpace,
+            resetPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+        Assert.True(retransmission.PacketBytes.Span.SequenceEqual(resetSendEffect.Datagram.Span));
+        Assert.False(retransmission.PacketBytes.Span.SequenceEqual(streamSendEffect.Datagram.Span));
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortStreamWrites_RemovesTheQueuedStreamDataRetransmission()

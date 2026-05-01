@@ -2874,6 +2874,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs::TryRegisterLoss_QueuesStreamDataForRepairBeforeTheStreamIsAborted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs::AbortStreamWrites_ReplacesQueuedStreamDataRetransmissionWithResetStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs::AbortStreamWrites_RemovesTheQueuedStreamDataRetransmission"
         ]
       }
     },
