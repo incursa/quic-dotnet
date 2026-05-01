@@ -663,7 +663,12 @@
     {
       "id": "REQ-QUIC-CRT-0071",
       "title": "Emit binding updates when the active path changes",
-      "statement": "An active-path switch MUST be reported as an explicit effect so endpoint bindings and diagnostics can be updated outside the reducer."
+      "statement": "An active-path switch MUST be reported as an explicit effect so endpoint bindings and diagnostics can be updated outside the reducer.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0071.cs::ActivePathPromotionEmitsAnEndpointApplicableBindingEffect"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0072",
@@ -672,6 +677,9 @@
       "trace": {
         "upstream_refs": [
           "RFC 9000 Section 9.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0072.cs::CandidateValidationFailureKeepsTheLastValidatedActivePath"
         ]
       }
     },
@@ -681,7 +689,12 @@
       "statement": "Loss of every validated path MUST become an explicit runtime condition that policy can map to waiting, silent discard, or connection closure.",
       "notes": [
         "This keeps no-viable-path behavior testable instead of implicit."
-      ]
+      ],
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0073.cs::ValidationFailureWithoutAnyValidatedPathSurfacesDiagnosticsAndDiscard"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0074",
