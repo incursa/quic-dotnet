@@ -8,8 +8,8 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0004
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P2-0004")]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryReserveSendCapacity_ResumesAfterCreditRestorationWithoutAnyBlockedSignalExchange()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
