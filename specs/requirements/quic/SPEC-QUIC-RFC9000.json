@@ -20868,6 +20868,9 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0008.cs::LostStreamDataIsRebuiltInANewStreamFrameBeforeReset"
         ]
       }
     },
@@ -20894,6 +20897,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0009.cs::ResetStreamActionRemovesQueuedStreamDataRetransmission",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0009.cs::ResetStreamActionSuppressesQueuedDelayedStreamFrames"
         ]
       }
     },
