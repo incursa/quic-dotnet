@@ -21013,7 +21013,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingActionRetainsTheProtectedPacketUntilAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionIsSuppressedWhenReceivePartReachesDataRecvd",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0013.cs::StopSendingRetransmissionIsSuppressedWhenResetStreamArrives"
         ]
       }
     },

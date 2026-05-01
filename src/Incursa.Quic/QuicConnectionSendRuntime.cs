@@ -543,6 +543,60 @@ internal sealed class QuicConnectionSendRuntime
         return updated;
     }
 
+    public bool TrySuppressStopSendingRetransmissionForStream(ulong streamId)
+    {
+        bool updated = false;
+        List<QuicConnectionSentPacketKey>? updatedPacketKeys = null;
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (!entry.Value.Retransmittable
+                || !ContainsStopSendingFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+            {
+                continue;
+            }
+
+            (updatedPacketKeys ??= []).Add(entry.Key);
+        }
+
+        if (updatedPacketKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in updatedPacketKeys)
+            {
+                sentPackets[key] = sentPackets[key] with { Retransmittable = false };
+                updated = true;
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (!ContainsStopSendingFrameForStream(retransmission.PlaintextPayload.Span, streamId))
+                {
+                    retainedRetransmissions.Enqueue(retransmission);
+                    continue;
+                }
+
+                updated = true;
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
     public bool TryArmProbeTimeout(
         QuicPacketNumberSpace packetNumberSpace,
         ulong nowMicros,
@@ -690,6 +744,44 @@ internal sealed class QuicConnectionSendRuntime
                 packetNumberSpace = default;
                 return false;
         }
+    }
+
+    private static bool ContainsStopSendingFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseStopSendingFrame(
+                remaining,
+                out QuicStopSendingFrame stopSendingFrame,
+                out int stopSendingBytesConsumed))
+            {
+                if (stopSendingFrame.StreamId == streamId)
+                {
+                    return true;
+                }
+
+                offset += stopSendingBytesConsumed;
+                continue;
+            }
+
+            return false;
+        }
+
+        return false;
     }
 
     private static ulong SaturatingAdd(ulong left, ulong right)

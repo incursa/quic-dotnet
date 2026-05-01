@@ -1463,6 +1463,13 @@ internal sealed partial class QuicConnectionRuntime
                 _ = errorCode;
                 return false;
             }
+            if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                    streamFrame.StreamId.Value,
+                    out QuicConnectionStreamSnapshot updatedStreamSnapshot)
+                && updatedStreamSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd)
+            {
+                _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
+            }
 
             if (!streamPreviouslyKnown)
             {

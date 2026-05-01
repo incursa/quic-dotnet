@@ -3436,6 +3436,7 @@ internal sealed partial class QuicConnectionRuntime
         if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(resetStreamFrame.StreamId, out QuicConnectionStreamSnapshot snapshot)
             && snapshot.ReceiveState == QuicStreamReceiveState.ResetRecvd)
         {
+            _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(resetStreamFrame.StreamId);
             NotifyStreamObservers(
                 resetStreamFrame.StreamId,
                 new QuicStreamNotification(
