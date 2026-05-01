@@ -2473,6 +2473,10 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs::TryAbortLocalStreamWrites_AllowsResetStreamBeforeTerminalState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetRecvd"
         ]
       }
     },
@@ -2499,6 +2503,11 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_EmitsStreamDataBlockedBeforeResetSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_RejectsStreamDataBlockedAfterResetSentAtCreditBoundary"
         ]
       }
     },
@@ -2583,6 +2592,11 @@
         "upstream_refs": [
           "RFC 9000 §3.3 RFC9000-S3.3-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs::TryReceiveStopSendingFrame_AllowsStopSendingBeforeResetReception",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs::TryReceiveStopSendingFrame_RejectsStopSendingAfterResetReception",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs::TryReceiveStopSendingFrame_AllowsStopSendingAfterReceiveSideDataRead"
         ]
       }
     },

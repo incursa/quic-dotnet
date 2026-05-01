@@ -8,6 +8,39 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0002
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReserveSendCapacity_EmitsStreamDataBlockedBeforeResetSent()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localUnidirectionalSendLimit: 0,
+            peerUnidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: false,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 1,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, errorCode);
+        Assert.Equal(streamId.Value, streamDataBlockedFrame.StreamId);
+        Assert.Equal(0UL, streamDataBlockedFrame.MaximumStreamData);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.Send, snapshot.SendState);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsStreamFramesAfterResetSent()
@@ -28,6 +61,42 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0002
 
         Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 1,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReserveSendCapacity_RejectsStreamDataBlockedAfterResetSentAtCreditBoundary()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localUnidirectionalSendLimit: 0,
+            peerUnidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: false,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryAbortLocalStreamWrites(streamId.Value, out ulong finalSize, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(0UL, finalSize);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot resetSnapshot));
+        Assert.Equal(QuicStreamSendState.ResetSent, resetSnapshot.SendState);
 
         Assert.False(state.TryReserveSendCapacity(
             streamId.Value,
