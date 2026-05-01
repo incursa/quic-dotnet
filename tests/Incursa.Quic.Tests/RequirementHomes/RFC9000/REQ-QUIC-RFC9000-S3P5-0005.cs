@@ -83,6 +83,39 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0005
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P5-0005")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReceiveStopSendingFrame_OnBidirectionalStreamTerminatesOnlyTheSendDirection()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState();
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReceiveStopSendingFrame(
+            new QuicStopSendingFrame(streamId.Value, 0x55),
+            out QuicResetStreamFrame resetStreamFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(streamId.Value, resetStreamFrame.StreamId);
+        Assert.Equal(0x55UL, resetStreamFrame.ApplicationProtocolErrorCode);
+        Assert.Equal(0UL, resetStreamFrame.FinalSize);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamType.Bidirectional, snapshot.StreamType);
+        Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(0UL, snapshot.FinalSize);
+        Assert.True(snapshot.HasSendAbortErrorCode);
+        Assert.Equal(0x55UL, snapshot.SendAbortErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P5-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_RejectsPeerInitiatedUnidirectionalStreams()
