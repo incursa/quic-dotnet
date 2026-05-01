@@ -45,7 +45,10 @@ jobs:
             $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
           }
 
-          $scopes = @(git diff --name-only $baseSha $headSha -- 'specs/**/*.json' | Where-Object { $_ })
+          $scopes = @(
+            git diff --name-only $baseSha $headSha -- 'specs/**/*.json' |
+              Where-Object { $_ -and -not $_.StartsWith('specs/generated/', [System.StringComparison]::OrdinalIgnoreCase) }
+          )
           if ($scopes.Count -eq 0) {
             "scope=" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
             exit 0
