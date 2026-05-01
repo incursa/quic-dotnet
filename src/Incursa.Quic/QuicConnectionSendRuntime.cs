@@ -71,6 +71,19 @@ internal sealed class QuicConnectionSendRuntime
 
     public int PendingRetransmissionCount => pendingRetransmissions.Count;
 
+    internal bool HasPendingRetransmission(QuicPacketNumberSpace packetNumberSpace)
+    {
+        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
+        {
+            if (retransmission.PacketNumberSpace == packetNumberSpace)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     internal ulong? GetLargestTrackedPacketNumber(QuicPacketNumberSpace packetNumberSpace)
     {
         ulong largestPacketNumber = default;

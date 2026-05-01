@@ -322,6 +322,19 @@ internal sealed partial class QuicConnectionRuntime
                 new InvalidOperationException("The connection runtime could not build the stream write payload."));
         }
 
+        if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+        {
+            QueuePendingApplicationSend(streamId, streamPayload, nowTicks, ref effects);
+            _ = TryFlushPendingRetransmissions(
+                QuicPacketNumberSpace.ApplicationData,
+                nowTicks,
+                probePacket: false,
+                ref effects);
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            completion.TrySetResult(null);
+            return true;
+        }
+
         if (ShouldDelayApplicationSend(streamData.Span))
         {
             QueuePendingApplicationSend(streamId, streamPayload, nowTicks, ref effects);

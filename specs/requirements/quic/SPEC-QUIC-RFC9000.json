@@ -21757,6 +21757,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TryRegisterLoss_LeavesQueuedRetransmissionsAvailableAfterLaterTrackedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::WriteAsync_QueuesNewStreamDataBehindPendingStreamRetransmission",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0034.cs::TrackSentPacket_DoesNotCreateRetransmissionsWithoutLoss"
         ],
         "upstream_refs": [
