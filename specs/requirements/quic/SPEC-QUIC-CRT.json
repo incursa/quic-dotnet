@@ -556,7 +556,12 @@
     {
       "id": "REQ-QUIC-CRT-0059",
       "title": "Represent path identity explicitly",
-      "statement": "Each path record MUST use an explicit path identity that includes the remote endpoint address and any relevant local sending address information."
+      "statement": "Each path record MUST use an explicit path identity that includes the remote endpoint address and any relevant local sending address information.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0059.cs::PathIdentityIncludesRemoteAndLocalEndpointComponents"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0060",
@@ -566,6 +571,9 @@
         "upstream_refs": [
           "connection-runtime-state-machine.md",
           "RFC 9000 Section 9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0060.cs::SuccessfulCandidateValidationUpdatesTheLastValidatedRemoteAddress"
         ]
       }
     },
@@ -576,6 +584,9 @@
       "trace": {
         "upstream_refs": [
           "RFC 9000 Section 9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0061.cs::RecentlyValidatedPathsRemainBoundedAndKeepTheMostRecentEntry"
         ]
       },
       "notes": [
@@ -585,12 +596,22 @@
     {
       "id": "REQ-QUIC-CRT-0062",
       "title": "Store complete per-path state",
-      "statement": "Each path record MUST include validation state, amplification budget state, recovery and RTT state, ECN validation state, last-activity ticks, and any outstanding challenge metadata."
+      "statement": "Each path record MUST include validation state, amplification budget state, recovery and RTT state, ECN validation state, last-activity ticks, and any outstanding challenge metadata.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0062.cs::PathRecordsCarryValidationAmplificationRecoveryAndChallengeState"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0063",
       "title": "Classify address changes explicitly",
-      "statement": "A packet that arrives from a different peer address MUST be classified explicitly as same-path traffic, probable NAT rebinding, migration candidate, preferred-address transition, or noise or attack."
+      "statement": "A packet that arrives from a different peer address MUST be classified explicitly as same-path traffic, probable NAT rebinding, migration candidate, preferred-address transition, or noise or attack.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0063.cs::PacketFromANewAddressBeforeHandshakeConfirmationCreatesACandidatePathAndProbe"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0064",
@@ -599,6 +620,9 @@
       "trace": {
         "upstream_refs": [
           "RFC 9000 Section 9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0064.cs::ValidationBeforePeerHandshakeTranscriptCompletionDoesNotPromoteThePath"
         ]
       }
     },
@@ -609,6 +633,9 @@
       "trace": {
         "upstream_refs": [
           "RFC 9000 Section 9.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0065.cs::ChangedPeerAddressStartsValidationUnlessThePathWasRecentlyValidated"
         ]
       }
     },
@@ -620,13 +647,21 @@
         "upstream_refs": [
           "RFC 9000 Section 8.1",
           "QuicAntiAmplificationBudget.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0066.cs::LocalCloseDoesNotEmitADatagramWhenTheActivePathHasNoAmplificationBudget"
         ]
       }
     },
     {
       "id": "REQ-QUIC-CRT-0067",
       "title": "Prevent unvalidated paths from bypassing amplification limits",
-      "statement": "The sender MUST budget-check every packet sent on an unvalidated path against that path's amplification limits."
+      "statement": "The sender MUST budget-check every packet sent on an unvalidated path against that path's amplification limits.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0067.cs::CandidatePathValidationDoesNotSendWhenAmplificationBudgetIsInsufficient"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0068",
@@ -636,13 +671,21 @@
         "upstream_refs": [
           "RFC 9000 Section 8.2",
           "QuicPathValidation.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0068.cs::CandidatePathTracksChallengePayloadSendCountDeadlineAndTerminalOutcome"
         ]
       }
     },
     {
       "id": "REQ-QUIC-CRT-0069",
       "title": "Promote paths only after validation or trusted reuse",
-      "statement": "A candidate path MUST become the active path only after successful validation or a recent-validation reuse rule that the runtime treats as trusted."
+      "statement": "A candidate path MUST become the active path only after successful validation or a recent-validation reuse rule that the runtime treats as trusted.",
+      "trace": {
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0069.cs::ValidationSuccessPromotesTheValidatedCandidatePathWhenPeerHandshakeTranscriptCompletes"
+        ]
+      }
     },
     {
       "id": "REQ-QUIC-CRT-0070",
@@ -653,6 +696,9 @@
           "RFC 9000 Section 9.2",
           "RFC 9000 Section 9.3",
           "RFC 9000 Section 9.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0070.cs::FreshPathPromotionResetsRecoveryWhilePortOnlyPromotionRequestsStateRestore"
         ]
       },
       "notes": [
