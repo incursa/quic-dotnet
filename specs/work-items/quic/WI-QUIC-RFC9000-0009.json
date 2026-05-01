@@ -41,5 +41,5 @@
     "Migration behavior.",
     "A general stream scheduler."
   ],
-  "completion_notes": "Completed as a proof and benchmark topoff over the existing runtime MAX_DATA and MAX_STREAM_DATA publication path; no production behavior changed."
+  "completion_notes": "Completed as a proof and benchmark topoff over the existing runtime MAX_DATA and MAX_STREAM_DATA publication path; no production behavior changed. A 2026-05-01 S4P2 blocked-signal topoff added direct negative and edge requirement-home proof that blocked signals do not create credit without application consumption and do not alter the credit values computed after bytes are consumed."
 }

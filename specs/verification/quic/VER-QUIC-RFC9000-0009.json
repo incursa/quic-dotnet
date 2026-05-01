@@ -24,7 +24,7 @@
     "REQ-QUIC-RFC9000-S13P3-0019"
   ],
   "scope": "This verification covers active-runtime protected MAX_DATA and MAX_STREAM_DATA publication after supported application reads consume receive-side bytes, confirms no credit frames are emitted when no bytes are consumed, keeps terminal-stream MAX_STREAM_DATA suppression linked, and preserves sender/recovery loss-repair linkage for the protected MAX_* packets.",
-  "expected_result": "The requirement-home tests show protected MAX_DATA and MAX_STREAM_DATA packets carrying the current connection and stream limits after bytes are consumed, no protected credit packets for an empty read, no additional MAX_STREAM_DATA after the stream has reached its terminal receive state, existing MAX_DATA and MAX_STREAM_DATA frame-codec fuzz coverage remains linked, and the updated BenchmarkDotNet Dry suite executes.",
+  "expected_result": "The requirement-home tests show protected MAX_DATA and MAX_STREAM_DATA packets carrying the current connection and stream limits after bytes are consumed, direct S4P2 blocked-signal-independent credit proof covers positive, negative, and edge dimensions, no protected credit packets are emitted for an empty read, no additional MAX_STREAM_DATA is emitted after the stream has reached its terminal receive state, existing MAX_DATA and MAX_STREAM_DATA frame-codec fuzz coverage remains linked, and the updated BenchmarkDotNet Dry suite executes.",
   "procedure": [
     "Run the focused RFC 9000 S4P1/S4P2/S13P3 requirement-home tests.",
     "Run the MAX_DATA and MAX_STREAM_DATA frame-codec fuzz coverage.",
@@ -42,11 +42,17 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs",
+    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-s4p2-0005-tests.log",
+    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-runtime-tests.log",
+    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-fuzz-tests.log",
+    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/quic-connection-stream-state-benchmark-dry.log",
+    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md",
     "artifacts/verification/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-runtime-tests.log",
     "artifacts/verification/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-fuzz-tests.log",
     "artifacts/verification/20260425-rfc9000-max-credit-runtime/quic-connection-stream-state-benchmark-dry.log",
@@ -61,5 +67,5 @@
       "content": "The existing `QuicFrameCodecFuzzSupport.FuzzMaxDataFrame` and `QuicFrameCodecFuzzSupport.FuzzMaxStreamDataFrame` coverage remains the fuzz proof for untrusted MAX_DATA and MAX_STREAM_DATA parse/format boundaries. The permanent `QuicConnectionStreamStateBenchmarks` suite now includes both the credit-publishing read branch and the empty-read no-credit branch; Dry validation proves the benchmark harness executes but is not treated as a stable performance baseline."
     }
   ],
-  "status_summary": "Passed locally for the focused requirement-home coverage, MAX_DATA and MAX_STREAM_DATA frame-codec fuzz linkage, BenchmarkDotNet Dry validation, and SpecTrace render/check. The proof remains limited to active-runtime credit publication on the supported application-read path."
+  "status_summary": "Passed locally for the focused requirement-home coverage, MAX_DATA and MAX_STREAM_DATA frame-codec fuzz linkage, BenchmarkDotNet Dry validation, and SpecTrace JSON core validation. A 2026-05-01 S4P2 blocked-signal topoff added direct `REQ-QUIC-RFC9000-S4P2-0005` proof that blocked signals do not create credit without application consumption and do not alter the credit values computed after bytes are consumed; the focused S4P2 requirement home passed 3/3, the wider MAX credit runtime filter passed 25/25, the linked MAX_DATA/MAX_STREAM_DATA fuzz filter passed 4/4, and the `QuicConnectionStreamStateBenchmarks` Dry smoke executed 7 benchmarks. The proof remains limited to active-runtime credit publication on the supported application-read path."
 }

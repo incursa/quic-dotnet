@@ -40,6 +40,7 @@
     "MAX_DATA must carry the current connection maximum data value computed after bytes are consumed.",
     "MAX_STREAM_DATA must carry the current absolute stream offset and matching stream ID.",
     "No protected MAX_DATA or MAX_STREAM_DATA packet may be emitted when no bytes were consumed.",
+    "Inbound blocked signals must not create receiver credit without application consumption or alter the advertised credit values computed after bytes are consumed.",
     "After a stream reaches a terminal receive state, the runtime must not emit additional MAX_STREAM_DATA frames for that stream.",
     "The protected MAX_* packets must remain visible to the application-data sender/recovery ledger for ordinary loss repair."
   ],

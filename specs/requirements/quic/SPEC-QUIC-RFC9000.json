@@ -3873,6 +3873,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReceiveStreamDataBlockedFrame_DoesNotAdvertiseCreditWithoutApplicationConsumption",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs::TryReadStreamData_UsesConsumedBytesAfterPriorBlockedSignal",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed"
         ]
       }
