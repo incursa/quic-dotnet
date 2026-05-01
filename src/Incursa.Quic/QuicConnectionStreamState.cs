@@ -549,8 +549,12 @@ internal sealed class QuicConnectionStreamState
             state.AccountedBytes = newAccountedBytes;
             connectionAccountedBytesReceived += additionalAccountedBytes;
             state.ReceiveState = QuicStreamReceiveState.ResetRecvd;
-            state.ReceiveAbortErrorCode = frame.ApplicationProtocolErrorCode;
-            state.HasReceiveAbortErrorCode = true;
+            if (!state.LocalStopSendingFrameSent)
+            {
+                state.ReceiveAbortErrorCode = frame.ApplicationProtocolErrorCode;
+                state.HasReceiveAbortErrorCode = true;
+            }
+
             return true;
         }
     }
@@ -621,6 +625,24 @@ internal sealed class QuicConnectionStreamState
             state.SendAbortErrorCode = frame.ApplicationProtocolErrorCode;
             state.HasSendAbortErrorCode = true;
             resetStreamFrame = new QuicResetStreamFrame(frame.StreamId, frame.ApplicationProtocolErrorCode, finalSize);
+            return true;
+        }
+    }
+
+    public bool TryMarkLocalStopSendingFrameSent(
+        ulong streamIdValue,
+        out QuicTransportErrorCode errorCode)
+    {
+        lock (syncRoot)
+        {
+            errorCode = default;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state) || !state.HasReceivePart)
+            {
+                errorCode = QuicTransportErrorCode.StreamStateError;
+                return false;
+            }
+
+            state.LocalStopSendingFrameSent = true;
             return true;
         }
     }
@@ -1260,6 +1282,7 @@ internal sealed class QuicConnectionStreamState
         public bool HasReceiveAbortErrorCode { get; set; }
         public ulong SendAbortErrorCode { get; set; }
         public bool HasSendAbortErrorCode { get; set; }
+        public bool LocalStopSendingFrameSent { get; set; }
         public bool PeerCapacityReleaseReported { get; set; }
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();

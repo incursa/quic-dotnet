@@ -2953,6 +2953,10 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs::AbortStreamReadsAsync_IgnoresSubsequentResetStreamErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs::TryReceiveResetStreamFrame_RejectsFinalSizeChangesAfterStopSendingIsSent"
         ]
       }
     },

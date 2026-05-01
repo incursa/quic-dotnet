@@ -961,6 +961,7 @@ internal sealed partial class QuicConnectionRuntime
             currentPath.Identity,
             protectedPacket));
 
+        _ = streamRegistry.Bookkeeping.TryMarkLocalStopSendingFrameSent(streamId, out _);
         TryReleasePeerStreamCapacity(streamId, ref effects);
         _ = sendRuntime.TrySuppressRetransmissionForStream(streamId);
         NotifyStreamObservers(
@@ -3457,11 +3458,14 @@ internal sealed partial class QuicConnectionRuntime
             && snapshot.ReceiveState == QuicStreamReceiveState.ResetRecvd)
         {
             _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(resetStreamFrame.StreamId);
-            NotifyStreamObservers(
-                resetStreamFrame.StreamId,
-                new QuicStreamNotification(
-                    QuicStreamNotificationKind.ReadAborted,
-                    CreateStreamReadAbortedException(resetStreamFrame.ApplicationProtocolErrorCode)));
+            if (snapshot.HasReceiveAbortErrorCode)
+            {
+                NotifyStreamObservers(
+                    resetStreamFrame.StreamId,
+                    new QuicStreamNotification(
+                        QuicStreamNotificationKind.ReadAborted,
+                        CreateStreamReadAbortedException(snapshot.ReceiveAbortErrorCode)));
+            }
 
             _ = streamRegistry.Bookkeeping.TryAcknowledgeReset(resetStreamFrame.StreamId);
             TryReleasePeerStreamCapacity(resetStreamFrame.StreamId, ref effects);
