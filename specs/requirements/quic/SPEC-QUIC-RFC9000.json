@@ -20954,7 +20954,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamActionRetainsTheProtectedPacketUntilAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamRetransmissionStaysQueuedWhenAnUnrelatedPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs::ResetStreamRetransmissionWaitsUntilAllStreamDataIsAcknowledged"
         ]
       }
     },

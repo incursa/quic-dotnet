@@ -109,4 +109,91 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0011
         Assert.True(retransmission.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0011")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task ResetStreamRetransmissionWaitsUntilAllStreamDataIsAcknowledged()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 96,
+            localBidirectionalSendLimit: 96);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, stream.Id);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        byte[] firstPayload = new byte[32];
+        firstPayload.AsSpan().Fill(0x33);
+        await stream.WriteAsync(firstPayload, 0, firstPayload.Length);
+
+        QuicConnectionSendDatagramEffect firstStreamSendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> firstStreamPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Value.PacketBytes.Span.SequenceEqual(firstStreamSendEffect.Datagram.Span));
+
+        outboundEffects.Clear();
+
+        byte[] secondPayload = new byte[32];
+        secondPayload.AsSpan().Fill(0x44);
+        await stream.WriteAsync(secondPayload, 0, secondPayload.Length);
+
+        QuicConnectionSendDatagramEffect secondStreamSendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> secondStreamPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Value.PacketBytes.Span.SequenceEqual(secondStreamSendEffect.Datagram.Span));
+
+        outboundEffects.Clear();
+        await runtime.AbortStreamWritesAsync((ulong)stream.Id, 0x99);
+
+        QuicConnectionSendDatagramEffect resetSendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> resetPacket = Assert.Single(
+            runtime.SendRuntime.SentPackets,
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Value.PacketBytes.Span.SequenceEqual(resetSendEffect.Datagram.Span));
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            resetPacket.Key.PacketNumberSpace,
+            resetPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+            firstStreamPacket.Key.PacketNumberSpace,
+            firstStreamPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+            secondStreamPacket.Key.PacketNumberSpace,
+            secondStreamPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
+
+    private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+        }
+    }
 }

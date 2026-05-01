@@ -174,11 +174,16 @@ internal sealed class QuicConnectionSendRuntime
         bool handshakeConfirmed = false)
     {
         QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
-        bool removedSentPacket = sentPackets.Remove(key);
+        bool removedSentPacket = sentPackets.Remove(key, out QuicConnectionSentPacket acknowledgedPacket);
         bool removedPendingRetransmission = TryRemovePendingRetransmission(key);
         if (!removedSentPacket && !removedPendingRetransmission)
         {
             return false;
+        }
+
+        if (removedSentPacket)
+        {
+            _ = TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(acknowledgedPacket.PlaintextPayload.Span);
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -597,6 +602,101 @@ internal sealed class QuicConnectionSendRuntime
         return updated;
     }
 
+    private bool TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(ReadOnlySpan<byte> payload)
+    {
+        ulong[] acknowledgedStreamDataStreamIds = GetStreamDataStreamIds(payload);
+        if (acknowledgedStreamDataStreamIds.Length == 0)
+        {
+            return false;
+        }
+
+        bool updated = false;
+        foreach (ulong streamId in acknowledgedStreamDataStreamIds)
+        {
+            if (!ContainsOutstandingStreamDataForStream(streamId))
+            {
+                updated |= TrySuppressResetStreamRetransmissionForStream(streamId);
+            }
+        }
+
+        return updated;
+    }
+
+    private bool ContainsOutstandingStreamDataForStream(ulong streamId)
+    {
+        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
+        {
+            if (ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
+            {
+                return true;
+            }
+        }
+
+        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
+        {
+            if (ContainsStreamDataForStream(retransmission.PlaintextPayload.Span, streamId))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TrySuppressResetStreamRetransmissionForStream(ulong streamId)
+    {
+        bool updated = false;
+        List<QuicConnectionSentPacketKey>? updatedPacketKeys = null;
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            if (!entry.Value.Retransmittable
+                || !ContainsResetStreamFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+            {
+                continue;
+            }
+
+            (updatedPacketKeys ??= []).Add(entry.Key);
+        }
+
+        if (updatedPacketKeys is not null)
+        {
+            foreach (QuicConnectionSentPacketKey key in updatedPacketKeys)
+            {
+                sentPackets[key] = sentPackets[key] with { Retransmittable = false };
+                updated = true;
+            }
+        }
+
+        if (pendingRetransmissions.Count > 0)
+        {
+            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
+            while (pendingRetransmissions.Count > 0)
+            {
+                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
+                if (!ContainsResetStreamFrameForStream(retransmission.PlaintextPayload.Span, streamId))
+                {
+                    retainedRetransmissions.Enqueue(retransmission);
+                    continue;
+                }
+
+                updated = true;
+            }
+
+            while (retainedRetransmissions.Count > 0)
+            {
+                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            }
+        }
+
+        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        {
+            LossDetectionDeadlineMicros = null;
+        }
+
+        return updated;
+    }
+
     public bool TryArmProbeTimeout(
         QuicPacketNumberSpace packetNumberSpace,
         ulong nowMicros,
@@ -782,6 +882,121 @@ internal sealed class QuicConnectionSendRuntime
         }
 
         return false;
+    }
+
+    private static ulong[] GetStreamDataStreamIds(ReadOnlySpan<byte> payload)
+    {
+        List<ulong>? streamIds = null;
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                if (streamFrame.StreamDataLength > 0)
+                {
+                    AddDistinctStreamId(ref streamIds, streamFrame.StreamId.Value);
+                }
+
+                offset += streamFrame.ConsumedLength;
+                continue;
+            }
+
+            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
+            {
+                offset += bytesConsumed;
+                continue;
+            }
+
+            break;
+        }
+
+        return streamIds?.ToArray() ?? [];
+    }
+
+    private static bool ContainsStreamDataForStream(ReadOnlySpan<byte> payload, ulong streamId)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                if (streamFrame.StreamId.Value == streamId && streamFrame.StreamDataLength > 0)
+                {
+                    return true;
+                }
+
+                offset += streamFrame.ConsumedLength;
+                continue;
+            }
+
+            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
+            {
+                offset += bytesConsumed;
+                continue;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    private static bool ContainsResetStreamFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicFrameCodec.TryParseResetStreamFrame(
+                remaining,
+                out QuicResetStreamFrame resetStreamFrame,
+                out int resetStreamBytesConsumed))
+            {
+                if (resetStreamFrame.StreamId == streamId)
+                {
+                    return true;
+                }
+
+                offset += resetStreamBytesConsumed;
+                continue;
+            }
+
+            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
+            {
+                offset += bytesConsumed;
+                continue;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    private static bool TryConsumeNonStreamDataFrame(ReadOnlySpan<byte> remaining, out int bytesConsumed)
+    {
+        if (QuicFrameCodec.TryParsePaddingFrame(remaining, out bytesConsumed)
+            || QuicFrameCodec.TryParseAckFrame(remaining, out _, out bytesConsumed)
+            || QuicFrameCodec.TryParsePingFrame(remaining, out bytesConsumed)
+            || QuicFrameCodec.TryParseStopSendingFrame(remaining, out _, out bytesConsumed)
+            || QuicFrameCodec.TryParseResetStreamFrame(remaining, out _, out bytesConsumed))
+        {
+            return true;
+        }
+
+        bytesConsumed = 0;
+        return false;
+    }
+
+    private static void AddDistinctStreamId(ref List<ulong>? streamIds, ulong streamId)
+    {
+        streamIds ??= [];
+        if (!streamIds.Contains(streamId))
+        {
+            streamIds.Add(streamId);
+        }
     }
 
     private static ulong SaturatingAdd(ulong left, ulong right)
