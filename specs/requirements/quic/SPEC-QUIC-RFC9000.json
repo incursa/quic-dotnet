@@ -20677,6 +20677,10 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0001.cs::LostStreamDataRetransmissionUsesANewProtectedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0001.cs::UntrackedPacketLossDoesNotQueueAWholePacketRetransmission"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
@@ -20702,6 +20706,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0002.cs::LostStreamFrameInformationIsCarriedByAFrameInANewPacket"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B2-P1-S2",
@@ -20729,6 +20736,9 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0003.cs::LostStreamDataInformationIsSentAgainInARetransmissionFrame"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
@@ -20755,6 +20765,9 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0004.cs::LostStreamDataRepairUsesANewFrameInANewPacket"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
@@ -20780,6 +20793,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0005.cs::LostStreamDataIsSentAgainAndStopsAfterRetransmissionIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0005.cs::AcknowledgingAnUnrelatedPacketDoesNotStopQueuedLostInformation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0005.cs::AcknowledgingTheOriginalLostPacketRemovesTheQueuedRetransmission"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B3-P2-S2",
