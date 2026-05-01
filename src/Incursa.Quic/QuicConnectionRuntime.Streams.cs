@@ -925,6 +925,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot)
+            && snapshot.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
+        {
+            completion.TrySetResult(null);
+            return true;
+        }
+
         if (!TryBuildOutboundStopSendingPayload(streamId, applicationErrorCode, out byte[] streamPayload))
         {
             completion.TrySetException(new InvalidOperationException("The connection runtime could not build the stream stop-sending payload."));

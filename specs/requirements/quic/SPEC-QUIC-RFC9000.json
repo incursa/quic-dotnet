@@ -2979,6 +2979,11 @@
         "upstream_refs": [
           "RFC 9000 §3.5 RFC9000-S3.5-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs::TryReceiveStopSendingFrame_AllowsStreamsThatHaveNotBeenResetByThePeer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs::TryReceiveStopSendingFrame_RejectsStreamsThatHaveAlreadyBeenResetByThePeer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs::AbortStreamReadsAsync_DoesNotSendStopSendingAfterPeerResetStream"
         ]
       }
     },

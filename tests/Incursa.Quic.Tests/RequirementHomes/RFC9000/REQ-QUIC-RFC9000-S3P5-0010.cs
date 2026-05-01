@@ -6,6 +6,8 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S3P5-0010")]
 public sealed class REQ_QUIC_RFC9000_S3P5_0010
 {
+    private static readonly byte[] PacketConnectionId = [0x0A, 0x0B, 0x0C];
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P5-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -69,5 +71,71 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0010
         Assert.True(state.TryGetStreamSnapshot(streamId.Value, out snapshot));
         Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
         Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P5-0010")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task AbortStreamReadsAsync_DoesNotSendStopSendingAfterPeerResetStream()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, stream.Id);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult resetResult = ReceiveProtectedApplicationPayload(
+            runtime,
+            QuicFrameTestData.BuildResetStreamFrame(new QuicResetStreamFrame(
+                streamId: (ulong)stream.Id,
+                applicationProtocolErrorCode: 0x22,
+                finalSize: 0)));
+        Assert.True(resetResult.StateChanged);
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(
+            (ulong)stream.Id,
+            out QuicConnectionStreamSnapshot resetSnapshot));
+        Assert.Equal(QuicStreamReceiveState.ResetRead, resetSnapshot.ReceiveState);
+
+        outboundEffects.Clear();
+        int sentPacketCount = runtime.SendRuntime.SentPackets.Count;
+
+        await runtime.AbortStreamReadsAsync((ulong)stream.Id, 0x99);
+
+        Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(sentPacketCount, runtime.SendRuntime.SentPackets.Count);
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(
+            (ulong)stream.Id,
+            out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.ResetRead, snapshot.ReceiveState);
+    }
+
+    private static QuicConnectionTransitionResult ReceiveProtectedApplicationPayload(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> payload)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            out byte[] protectedPacket));
+
+        Assert.NotNull(runtime.ActivePath);
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 1,
+                runtime.ActivePath.Value.Identity,
+                protectedPacket),
+            nowTicks: 1);
     }
 }
