@@ -422,6 +422,42 @@ function New-EvidenceRecord {
     }
 }
 
+function Test-RequirementHasCoverageContract {
+    param($Requirement)
+
+    return ($Requirement.PSObject.Properties.Name -contains 'coverage') -and $null -ne $Requirement.coverage
+}
+
+function Get-CoverageExpectationValue {
+    param(
+        $Requirement,
+        [string]$Name
+    )
+
+    if (-not (Test-RequirementHasCoverageContract -Requirement $Requirement))
+    {
+        return 'missing'
+    }
+
+    if ($Requirement.coverage.PSObject.Properties.Name -contains $Name)
+    {
+        return $Requirement.coverage.$Name
+    }
+
+    return 'missing'
+}
+
+function Get-CoverageExpectations {
+    param($Requirement)
+
+    return [ordered]@{
+        positive = Get-CoverageExpectationValue -Requirement $Requirement -Name 'positive'
+        negative = Get-CoverageExpectationValue -Requirement $Requirement -Name 'negative'
+        edge     = Get-CoverageExpectationValue -Requirement $Requirement -Name 'edge'
+        fuzz     = Get-CoverageExpectationValue -Requirement $Requirement -Name 'fuzz'
+    }
+}
+
 function Get-RequirementState {
     param(
         $Requirement,
@@ -430,6 +466,17 @@ function Get-RequirementState {
         [bool]$HasUnresolvedXrefs,
         $GapEntries
     )
+
+    if (-not (Test-RequirementHasCoverageContract -Requirement $Requirement))
+    {
+        return @{
+            state = 'missing_coverage_contract'
+            missing_required_kinds = @()
+            work_queue_tags = @('coverage_contract_needed', 'metadata_only')
+            primary_issue = 'coverage_metadata'
+            rationale = 'The canonical requirement has no coverage contract, so proof sufficiency cannot be classified until positive, negative, edge, and fuzz expectations are recorded.'
+        }
+    }
 
     $requiredKinds = @(
         foreach ($name in 'positive', 'negative', 'edge', 'fuzz')
@@ -626,6 +673,7 @@ foreach ($specFile in $specFiles)
         $evidence = @($evidenceList | Sort-Object file, member, source -Unique)
         $gapEntries = @(Get-MatchingGapEntries -RequirementId $requirement.id -SectionPrefix $sectionPrefix -GapMappings $gapMappings)
         $classification = Get-RequirementState -Requirement $requirement -Evidence $evidence -HasSpecXrefs (@($specXrefs).Count -gt 0) -HasUnresolvedXrefs (@($unresolvedXrefs).Count -gt 0) -GapEntries $gapEntries
+        $coverageExpectations = Get-CoverageExpectations -Requirement $requirement
 
         $kindCounts = [ordered]@{
             positive = 0
@@ -654,12 +702,7 @@ foreach ($specFile in $specFiles)
                 section_prefix         = $sectionPrefix
                 title                  = $requirement.title
                 statement              = $requirement.statement
-                coverage_expectations  = [ordered]@{
-                    positive = $requirement.coverage.positive
-                    negative = $requirement.coverage.negative
-                    edge     = $requirement.coverage.edge
-                    fuzz     = $requirement.coverage.fuzz
-                }
+                coverage_expectations  = $coverageExpectations
                 state                  = $classification.state
                 primary_issue          = $classification.primary_issue
                 work_queue_tags        = $classification.work_queue_tags
@@ -736,7 +779,8 @@ $report = [ordered]@{
         classification_notes = @(
             'RequirementHomes scaffolds are not counted as proof because they contain no executable test methods.',
             'Trait(\"Category\", ...) is treated as the current evidence tag source because CoverageType is not yet widely adopted in real tests.',
-            'Requirement-owned homes with executable methods are treated as focused proof when they own exactly one requirement; methods with more than six associated requirements and the broad transport/frame codec aggregation tests are still treated as broad proof.'
+            'Requirement-owned homes with executable methods are treated as focused proof when they own exactly one requirement; methods with more than six associated requirements and the broad transport/frame codec aggregation tests are still treated as broad proof.',
+            'Requirements without a canonical coverage object are reported as missing_coverage_contract instead of inferred clean or uncovered.'
         )
     }
     summary      = $summary
@@ -759,10 +803,12 @@ if (-not (Test-Path $markdownDirectory))
 $report | ConvertTo-Json -Depth 100 | Set-Content -Path $OutputJsonPath -NoNewline
 
 $metadataExamples = @($requirementsArray | Where-Object { $_.work_queue_tags -contains 'metadata_only' } | Select-Object -First 12 -ExpandProperty requirement_id)
+$coverageContractExamples = @($requirementsArray | Where-Object { $_.work_queue_tags -contains 'coverage_contract_needed' } | Select-Object -First 12 -ExpandProperty requirement_id)
 $restructureExamples = @($requirementsArray | Where-Object { $_.work_queue_tags -contains 'restructure_needed' } | Select-Object -First 12 -ExpandProperty requirement_id)
 $newTestExamples = @($requirementsArray | Where-Object { $_.work_queue_tags -contains 'new_tests_needed' -and $_.state -ne 'uncovered_blocked' } | Select-Object -First 12 -ExpandProperty requirement_id)
 $blockedExamples = @($requirementsArray | Where-Object { $_.state -eq 'uncovered_blocked' } | Select-Object -First 12 -ExpandProperty requirement_id)
 $blockedQueueCount = if ($summary.by_work_queue_tag.Contains('blocked')) { $summary.by_work_queue_tag['blocked'] } else { 0 }
+$coverageContractQueueCount = if ($summary.by_work_queue_tag.Contains('coverage_contract_needed')) { $summary.by_work_queue_tag['coverage_contract_needed'] } else { 0 }
 
 $markdown = [System.Text.StringBuilder]::new()
 [void]$markdown.AppendLine('# QUIC Requirement Coverage Triage')
@@ -778,7 +824,7 @@ $markdown = [System.Text.StringBuilder]::new()
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine("| State | Count |")
 [void]$markdown.AppendLine('| --- | ---: |')
-foreach ($state in 'trace_clean', 'covered_but_missing_xrefs', 'covered_but_proof_too_broad', 'partially_covered', 'uncovered_blocked', 'uncovered_unblocked')
+foreach ($state in 'trace_clean', 'missing_coverage_contract', 'covered_but_missing_xrefs', 'covered_but_proof_too_broad', 'partially_covered', 'uncovered_blocked', 'uncovered_unblocked')
 {
     $count = if ($summary.by_state.Contains($state)) { $summary.by_state[$state] } else { 0 }
     [void]$markdown.AppendLine("| $state | $count |")
@@ -787,7 +833,7 @@ foreach ($state in 'trace_clean', 'covered_but_missing_xrefs', 'covered_but_proo
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine("| Work queue tag | Count |")
 [void]$markdown.AppendLine('| --- | ---: |')
-foreach ($tag in 'clean', 'metadata_only', 'restructure_needed', 'new_tests_needed', 'blocked')
+foreach ($tag in 'clean', 'coverage_contract_needed', 'metadata_only', 'restructure_needed', 'new_tests_needed', 'blocked')
 {
     $count = if ($summary.by_work_queue_tag.Contains($tag)) { $summary.by_work_queue_tag[$tag] } else { 0 }
     [void]$markdown.AppendLine("| $tag | $count |")
@@ -796,6 +842,7 @@ foreach ($tag in 'clean', 'metadata_only', 'restructure_needed', 'new_tests_need
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('## Queue')
 [void]$markdown.AppendLine()
+[void]$markdown.AppendLine("- Missing coverage contracts: $coverageContractQueueCount requirements. Examples: $([string]::Join(', ', $coverageContractExamples)).")
 [void]$markdown.AppendLine("- Metadata-only fixes: $($summary.by_work_queue_tag['metadata_only']) requirements. Examples: $([string]::Join(', ', $metadataExamples)).")
 [void]$markdown.AppendLine("- Restructure-needed proof: $($summary.by_work_queue_tag['restructure_needed']) requirements. Examples: $([string]::Join(', ', $restructureExamples)).")
 [void]$markdown.AppendLine("- New proof or implementation work: $($summary.by_work_queue_tag['new_tests_needed']) requirements. Examples: $([string]::Join(', ', $newTestExamples)).")
@@ -803,18 +850,19 @@ foreach ($tag in 'clean', 'metadata_only', 'restructure_needed', 'new_tests_need
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('## RFC Breakdown')
 [void]$markdown.AppendLine()
-[void]$markdown.AppendLine('| RFC | Total | trace_clean | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |')
-[void]$markdown.AppendLine('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |')
+[void]$markdown.AppendLine('| RFC | Total | trace_clean | missing_coverage_contract | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |')
+[void]$markdown.AppendLine('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |')
 foreach ($rfcSummary in $rfcSummaries)
 {
     $byState = $rfcSummary.by_state
     $traceClean = if ($byState.Contains('trace_clean')) { $byState['trace_clean'] } else { 0 }
+    $missingCoverageContract = if ($byState.Contains('missing_coverage_contract')) { $byState['missing_coverage_contract'] } else { 0 }
     $missingXrefs = if ($byState.Contains('covered_but_missing_xrefs')) { $byState['covered_but_missing_xrefs'] } else { 0 }
     $proofTooBroad = if ($byState.Contains('covered_but_proof_too_broad')) { $byState['covered_but_proof_too_broad'] } else { 0 }
     $partial = if ($byState.Contains('partially_covered')) { $byState['partially_covered'] } else { 0 }
     $blocked = if ($byState.Contains('uncovered_blocked')) { $byState['uncovered_blocked'] } else { 0 }
     $unblocked = if ($byState.Contains('uncovered_unblocked')) { $byState['uncovered_unblocked'] } else { 0 }
-    [void]$markdown.AppendLine("| $($rfcSummary.rfc) | $($rfcSummary.total) | $traceClean | $missingXrefs | $proofTooBroad | $partial | $blocked | $unblocked |")
+    [void]$markdown.AppendLine("| $($rfcSummary.rfc) | $($rfcSummary.total) | $traceClean | $missingCoverageContract | $missingXrefs | $proofTooBroad | $partial | $blocked | $unblocked |")
 }
 
 $markdown.ToString() | Set-Content -Path $OutputMarkdownPath -NoNewline

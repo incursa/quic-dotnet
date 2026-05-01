@@ -147,29 +147,31 @@ function Get-TriageSnapshot {
     $byState = $json.summary.by_state
 
     $traceClean = Get-StateCount -StateObject $byState -Name "trace_clean"
+    $missingCoverageContract = Get-StateCount -StateObject $byState -Name "missing_coverage_contract"
     $missingXrefs = Get-StateCount -StateObject $byState -Name "covered_but_missing_xrefs"
     $proofTooBroad = Get-StateCount -StateObject $byState -Name "covered_but_proof_too_broad"
     $partial = Get-StateCount -StateObject $byState -Name "partially_covered"
     $uncoveredUnblocked = Get-StateCount -StateObject $byState -Name "uncovered_unblocked"
     $uncoveredBlocked = Get-StateCount -StateObject $byState -Name "uncovered_blocked"
 
-    $fingerprint = "$traceClean|$missingXrefs|$proofTooBroad|$partial|$uncoveredUnblocked|$uncoveredBlocked"
+    $fingerprint = "$traceClean|$missingCoverageContract|$missingXrefs|$proofTooBroad|$partial|$uncoveredUnblocked|$uncoveredBlocked"
 
     return [pscustomobject]@{
-        TraceClean           = $traceClean
-        MissingXrefs         = $missingXrefs
-        ProofTooBroad        = $proofTooBroad
-        Partial              = $partial
-        UncoveredUnblocked   = $uncoveredUnblocked
-        UncoveredBlocked     = $uncoveredBlocked
-        Fingerprint          = $fingerprint
+        TraceClean              = $traceClean
+        MissingCoverageContract = $missingCoverageContract
+        MissingXrefs            = $missingXrefs
+        ProofTooBroad           = $proofTooBroad
+        Partial                 = $partial
+        UncoveredUnblocked      = $uncoveredUnblocked
+        UncoveredBlocked        = $uncoveredBlocked
+        Fingerprint             = $fingerprint
     }
 }
 
 function Format-TriageSnapshot {
     param([Parameter(Mandatory = $true)]$Snapshot)
 
-    return "trace_clean=$($Snapshot.TraceClean), missing_xrefs=$($Snapshot.MissingXrefs), proof_too_broad=$($Snapshot.ProofTooBroad), partially_covered=$($Snapshot.Partial), uncovered_unblocked=$($Snapshot.UncoveredUnblocked), uncovered_blocked=$($Snapshot.UncoveredBlocked)"
+    return "trace_clean=$($Snapshot.TraceClean), missing_coverage_contract=$($Snapshot.MissingCoverageContract), missing_xrefs=$($Snapshot.MissingXrefs), proof_too_broad=$($Snapshot.ProofTooBroad), partially_covered=$($Snapshot.Partial), uncovered_unblocked=$($Snapshot.UncoveredUnblocked), uncovered_blocked=$($Snapshot.UncoveredBlocked)"
 }
 
 function Get-LoopPlan {
