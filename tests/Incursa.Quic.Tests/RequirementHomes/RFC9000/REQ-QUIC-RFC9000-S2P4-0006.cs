@@ -1,6 +1,111 @@
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
 namespace Incursa.Quic.Tests;
 
+/// <workbench-requirements generated="true" source="manual">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0006">An application protocol MAY read data from a stream.</workbench-requirement>
+/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
 public sealed class REQ_QUIC_RFC9000_S2P4_0006
 {
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_DeliversPeerBytesAndThenEof()
+    {
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+
+        Task<QuicStream> serverAcceptTask = pair.ServerConnection.AcceptInboundStreamAsync().AsTask();
+        await Task.Yield();
+        Task<QuicStream> clientOpenTask = pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask();
+
+        await Task.WhenAll(serverAcceptTask, clientOpenTask);
+
+        await using QuicStream serverStream = await serverAcceptTask;
+        await using QuicStream clientStream = await clientOpenTask;
+
+        byte[] payload = [0x11, 0x22, 0x33, 0x44];
+        await serverStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        await serverStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+
+        byte[] buffer = new byte[payload.Length];
+        int bytesRead = await clientStream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(payload.Length, bytesRead);
+        Assert.True(payload.AsSpan().SequenceEqual(buffer));
+
+        Assert.Equal(0, await clientStream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(5)));
+        await clientStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ReadAsync_RejectsAStreamWithoutReadableSides()
+    {
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+        await using QuicStream stream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional);
+
+        // QuicStream derives from Stream, and CA2022 still flags this exact read-path assertion.
+#pragma warning disable CA2022
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await stream.ReadAsync(new byte[1].AsMemory()));
+#pragma warning restore CA2022
+    }
+
+    private sealed class LoopbackConnectionPair : IAsyncDisposable
+    {
+        private LoopbackConnectionPair(
+            QuicListener listener,
+            QuicConnection serverConnection,
+            QuicConnection clientConnection)
+        {
+            Listener = listener;
+            ServerConnection = serverConnection;
+            ClientConnection = clientConnection;
+        }
+
+        public QuicListener Listener { get; }
+
+        public QuicConnection ServerConnection { get; }
+
+        public QuicConnection ClientConnection { get; }
+
+        public static async Task<LoopbackConnectionPair> CreateAsync()
+        {
+            using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+            QuicListenerOptions listenerOptions = new()
+            {
+                ListenEndPoint = listenEndPoint,
+                ApplicationProtocols = [SslApplicationProtocol.Http3],
+                ListenBacklog = 1,
+                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                    QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            };
+
+            QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+            Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+            Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+                    new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+
+            await Task.WhenAll(acceptConnectionTask, connectTask);
+
+            QuicConnection serverConnection = await acceptConnectionTask;
+            QuicConnection clientConnection = await connectTask;
+            return new LoopbackConnectionPair(listener, serverConnection, clientConnection);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await ServerConnection.DisposeAsync();
+            await ClientConnection.DisposeAsync();
+            await Listener.DisposeAsync();
+        }
+    }
 }

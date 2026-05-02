@@ -1178,6 +1178,10 @@
         "upstream_refs": [
           "RFC 9000 §2.4 RFC9000-S2.4-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P4-0006.cs::ReadAsync_DeliversPeerBytesAndThenEof",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P4-0006.cs::ReadAsync_RejectsAStreamWithoutReadableSides"
         ]
       }
     },
