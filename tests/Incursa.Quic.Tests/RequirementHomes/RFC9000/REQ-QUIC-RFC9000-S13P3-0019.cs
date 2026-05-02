@@ -8,8 +8,8 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0019
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0019")]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryReadStreamData_StopsAdvertisingStreamCreditOnceTheStreamIsClosedOrReset()
     {
         QuicConnectionStreamState closedState = QuicConnectionStreamStateTestHelpers.CreateState(
