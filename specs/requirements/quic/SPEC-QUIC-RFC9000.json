@@ -3368,6 +3368,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_AllowsBytesThroughConnectionAndStreamSendLimits",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondConnectionSendLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs::TryReserveSendCapacity_RejectsBytesBeyondStreamSendLimit"
         ]

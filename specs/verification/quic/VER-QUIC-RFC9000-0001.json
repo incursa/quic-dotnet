@@ -1594,6 +1594,10 @@
     {
       "heading": "2026-05-01 S3P3 Terminal And STOP_SENDING Topoff",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005\"` passed 14/14.\n- `REQ-QUIC-RFC9000-S3P3-0001` now has direct positive and negative proof for allowing pre-terminal RESET_STREAM generation while rejecting terminal-state STREAM/RESET attempts.\n- `REQ-QUIC-RFC9000-S3P3-0002` now has direct positive, negative, and edge proof for allowing STREAM_DATA_BLOCKED before reset while suppressing STREAM and STREAM_DATA_BLOCKED after Reset Sent.\n- `REQ-QUIC-RFC9000-S3P3-0005` now has direct positive, negative, and edge proof for STOP_SENDING admission before RESET_STREAM reception, including the Data Read receive-side boundary."
+    },
+    {
+      "heading": "2026-05-02 S4P1 Send-Limit Guard Topoff",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0004\"` passed 3/3.\n- `REQ-QUIC-RFC9000-S4P1-0004` now has direct positive proof that send reservation can proceed through the current connection and stream limits while the paired negative proof continues to reject connection-level and stream-level send-limit excesses with the appropriate blocked signal.\n- This remains bounded to the stream-state helper/runtime send-limit guard and does not claim broad sender/recovery orchestration."
     }
   ],
   "domain": "quic"
