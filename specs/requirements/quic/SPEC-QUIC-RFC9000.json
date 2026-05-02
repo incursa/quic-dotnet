@@ -3808,7 +3808,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_MakesCreditFramesAvailableForOpportunisticSerialization"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_MakesCreditFramesAvailableForOpportunisticSerialization",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_DoesNotCreateCreditFramesWhenNoApplicationBytesAreRead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs::TryReadStreamData_PublishesOnlyCreditForBytesConsumedByPartialReads"
         ]
       }
     },
