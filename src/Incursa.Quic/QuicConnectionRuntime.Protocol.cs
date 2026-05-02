@@ -2113,6 +2113,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.Initial, ref effects))
+        {
+            return true;
+        }
+
         if (retryBootstrapPendingReplay)
         {
             if (retrySourceConnectionId is null
@@ -2374,6 +2379,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
+        }
+
         Span<byte> applicationPayload = stackalloc byte[ApplicationMinimumProtectedPayloadLength];
         applicationPayload.Clear();
         if (!QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten)
@@ -2494,6 +2504,11 @@ internal sealed partial class QuicConnectionRuntime
             || !tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial packetProtectionMaterial))
         {
             return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.Handshake, ref effects))
+        {
+            return true;
         }
 
         bool stateChanged = false;

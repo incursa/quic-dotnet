@@ -636,6 +636,12 @@
         "upstream_refs": [
           "RFC 9000 §2.1 RFC9000-S2.1-B12-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0014.cs::TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0014.cs::TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0014.cs::TryApplyMaxStreamDataFrame_RejectsLocallyInitiatedStreamIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P1-0014.cs::TryReceiveStopSendingFrame_RejectsLocallyInitiatedStreamIds"
         ]
       }
     },
@@ -21165,6 +21171,10 @@
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0014.cs::LocalCloseRequested_EmitsConnectionCloseAndEntersClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0014.cs::LocalCloseRequested_DoesNotTrackTheConnectionCloseDatagramForRetransmission"
         ]
       }
     },

@@ -44,6 +44,11 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (terminalState is QuicConnectionTerminalState terminalStateValue)
             {
+                if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+                {
+                    return true;
+                }
+
                 AppendConnectionClosePacket(ref effects, terminalStateValue.Close);
             }
         }
@@ -321,6 +326,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
+        }
+
         EnterTerminalPhase(
             QuicConnectionPhase.Closing,
             QuicConnectionCloseOrigin.Local,
@@ -344,6 +354,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool shouldSendReplyClosePacket = phase != QuicConnectionPhase.Closing;
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
+        }
 
         EnterTerminalPhase(
             QuicConnectionPhase.Draining,
@@ -1167,6 +1182,11 @@ internal sealed partial class QuicConnectionRuntime
             || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
         }
 
         Span<byte> applicationPayload = stackalloc byte[ApplicationMinimumProtectedPayloadLength];

@@ -194,6 +194,48 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
+    private bool TryStopUsingConnectionForPacketNumberExhaustion(
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase == QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: null,
+            ReasonPhrase: "The connection reached the packet number exhaustion limit.");
+
+        _ = DiscardConnection(
+            lastTransitionTicks,
+            QuicConnectionCloseOrigin.Local,
+            closeMetadata,
+            ref effects);
+        return true;
+    }
+
+    private bool TryHandlePacketNumberExhaustion(
+        QuicPacketNumberSpace packetNumberSpace,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        _ = packetNumberSpace;
+
+        if (phase == QuicConnectionPhase.Discarded)
+        {
+            return true;
+        }
+
+        if (!handshakeFlowCoordinator.HasExhaustedPacketNumbers
+            && !handshakeFlowCoordinator.HasExhaustedApplicationPacketNumbers)
+        {
+            return false;
+        }
+
+        return TryStopUsingConnectionForPacketNumberExhaustion(ref effects);
+    }
+
     private bool CanInstallOneRttKeyUpdateForAeadLimit()
     {
         if (phase != QuicConnectionPhase.Active || !HandshakeConfirmed)

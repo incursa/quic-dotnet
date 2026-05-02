@@ -313,13 +313,22 @@
     {
       "id": "REQ-QUIC-API-0014",
       "title": "Keep blocked outbound stream opens pending until later real MAX_STREAMS growth",
-      "statement": "On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available, honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008`, avoid fabricating success or a synthetic wake-up, and treat advisory `STREAMS_BLOCKED` emission as insufficient by itself to complete the pending open or claim broader stream-management parity.",
-      "trace": {
-        "upstream_refs": [
-          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs",
-          "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs"
-        ]
-      },
+        "statement": "On the supported active loopback path, `QuicConnection.OpenOutboundStreamAsync(...)` MUST remain pending when the peer's current stream limit for the requested direction is exhausted, complete that pending open only after a later real `MAX_STREAMS` increase makes a stream of that direction available, honor cancellation and terminal-state behavior under `REQ-QUIC-API-0008`, avoid fabricating success or a synthetic wake-up, and treat advisory `STREAMS_BLOCKED` emission as insufficient by itself to complete the pending open or claim broader stream-management parity.",
+        "trace": {
+          "satisfied_by": [
+            "ARC-QUIC-API-0005"
+          ],
+          "implemented_by": [
+            "WI-QUIC-API-0005"
+          ],
+          "verified_by": [
+            "VER-QUIC-API-0005"
+          ],
+          "upstream_refs": [
+            "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\MsQuicTests.cs",
+            "C:\\src\\dotnet\\runtime\\src\\libraries\\System.Net.Quic\\tests\\FunctionalTests\\QuicConnectionTests.cs"
+          ]
+        },
       "notes": [
         "The supported subset is limited to the active loopback path and keeps the pending open request in the runtime queue until a real peer `MAX_STREAMS` update makes the requested direction available.",
         "Cancellation, disposal, and terminal-state behavior stay owned by `REQ-QUIC-API-0008`, while later real `MAX_STREAMS` growth on the same path remains the only supported completion mechanism for the queued request.",

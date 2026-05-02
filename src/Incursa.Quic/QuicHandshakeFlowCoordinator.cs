@@ -68,6 +68,10 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     internal ReadOnlyMemory<byte> SourceConnectionId => sourceConnectionId;
 
+    internal bool HasExhaustedPacketNumbers => nextPacketNumber >= QuicVariableLengthInteger.MaxValue;
+
+    internal bool HasExhaustedApplicationPacketNumbers => nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue;
+
     /// <summary>
     /// Opens a protected Handshake packet and returns the unprotected packet bytes plus payload layout.
     /// </summary>
@@ -336,10 +340,17 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        if (nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
         ulong currentPacketNumber = nextApplicationPacketNumber;
+
         if (!TryBuildApplicationDataPlaintextPacket(
             applicationPayload,
             keyPhase,
+            currentPacketNumber,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
             out int packetNumberLength))
@@ -358,7 +369,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         packetNumber = currentPacketNumber;
-        nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
+        nextApplicationPacketNumber = currentPacketNumber + 1;
         return true;
     }
 
@@ -379,10 +390,17 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        if (nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
         ulong currentPacketNumber = nextApplicationPacketNumber;
+
         if (!TryBuildApplicationDataPlaintextPacket(
                 applicationPayload,
                 keyPhase,
+                currentPacketNumber,
                 out QuicBufferLease plaintextPacket,
                 out int packetNumberOffset,
                 out int packetNumberLength))
@@ -403,7 +421,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             }
 
             packetNumber = currentPacketNumber;
-            nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
+            nextApplicationPacketNumber = currentPacketNumber + 1;
             return true;
         }
         finally
@@ -423,8 +441,9 @@ internal sealed class QuicHandshakeFlowCoordinator
         protectedPacket = [];
         packetNumber = default;
 
-        if (minimumPacketNumberExclusive == ulong.MaxValue)
+        if (minimumPacketNumberExclusive >= QuicVariableLengthInteger.MaxValue - 1)
         {
+            nextApplicationPacketNumber = QuicVariableLengthInteger.MaxValue;
             return false;
         }
 
@@ -474,9 +493,16 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        if (nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
         ulong currentPacketNumber = nextApplicationPacketNumber;
+
         if (!TryBuildZeroRttApplicationPlaintextPacket(
             applicationPayload,
+            currentPacketNumber,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
             out int packetNumberLength))
@@ -495,7 +521,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         packetNumber = currentPacketNumber;
-        nextApplicationPacketNumber = nextApplicationPacketNumber == ulong.MaxValue ? 0 : nextApplicationPacketNumber + 1;
+        nextApplicationPacketNumber = currentPacketNumber + 1;
         return true;
     }
 
@@ -1113,6 +1139,13 @@ internal sealed class QuicHandshakeFlowCoordinator
                 return false;
             }
 
+            if (nextPacketNumber >= QuicVariableLengthInteger.MaxValue)
+            {
+                return false;
+            }
+
+            ulong currentPacketNumber = nextPacketNumber;
+
             int framePayloadLength = prefixFramePayload.Length + cryptoFramePayloadLength;
             int paddedPayloadLength = Math.Max(framePayloadLength, HandshakeMinimumProtectedPayloadLength);
             int packetNumberLength = HandshakePacketNumberLength;
@@ -1134,7 +1167,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
                 BinaryPrimitives.WriteUInt32BigEndian(
                     versionSpecificData.AsSpan(versionSpecificDataIndex, packetNumberLength),
-                    unchecked((uint)nextPacketNumber));
+                    unchecked((uint)currentPacketNumber));
                 versionSpecificDataIndex += packetNumberLength;
 
                 prefixFramePayload.CopyTo(versionSpecificData.AsSpan(versionSpecificDataIndex));
@@ -1148,7 +1181,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     versionSpecificData.AsSpan(versionSpecificDataIndex, paddedPayloadLength - framePayloadLength).Fill(0);
                 }
 
-                packetNumber = nextPacketNumber;
+                packetNumber = currentPacketNumber;
                 byte headerControlBits = (byte)(
                     QuicPacketHeaderBits.FixedBitMask
                     | (QuicLongPacketTypeBits.Handshake << QuicPacketHeaderBits.LongPacketTypeBitsShift)
@@ -1163,7 +1196,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     versionSpecificData.AsSpan(0, lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength),
                     includeTokenLengthField: false);
 
-                nextPacketNumber = nextPacketNumber == ulong.MaxValue ? 0 : nextPacketNumber + 1;
+                nextPacketNumber = currentPacketNumber + 1;
                 return true;
             }
             finally
@@ -1241,6 +1274,13 @@ internal sealed class QuicHandshakeFlowCoordinator
                 paddedPayloadLength += QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - minimumProtectedPacketLength;
             }
 
+            if (nextPacketNumber >= QuicVariableLengthInteger.MaxValue)
+            {
+                return false;
+            }
+
+            ulong currentPacketNumber = nextPacketNumber;
+
             byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength);
             try
             {
@@ -1251,7 +1291,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
                 BinaryPrimitives.WriteUInt32BigEndian(
                     versionSpecificData.AsSpan(versionSpecificDataIndex, packetNumberLength),
-                    unchecked((uint)nextPacketNumber));
+                    unchecked((uint)currentPacketNumber));
                 versionSpecificDataIndex += packetNumberLength;
 
                 prefixFramePayload.CopyTo(versionSpecificData.AsSpan(versionSpecificDataIndex));
@@ -1265,7 +1305,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     versionSpecificData.AsSpan(versionSpecificDataIndex, paddedPayloadLength - framePayloadLength).Fill(0);
                 }
 
-                packetNumber = nextPacketNumber;
+                packetNumber = currentPacketNumber;
                 byte headerControlBits = (byte)(
                     QuicPacketHeaderBits.FixedBitMask
                     | (QuicLongPacketTypeBits.Initial << QuicPacketHeaderBits.LongPacketTypeBitsShift)
@@ -1280,7 +1320,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     versionSpecificData.AsSpan(0, lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength),
                     includeTokenLengthField: true);
 
-                nextPacketNumber = nextPacketNumber == ulong.MaxValue ? 0 : nextPacketNumber + 1;
+                nextPacketNumber = currentPacketNumber + 1;
                 return true;
             }
             finally
@@ -1474,6 +1514,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
+        ulong packetNumber,
         out byte[] plaintextPacket,
         out int packetNumberOffset,
         out int packetNumberLength)
@@ -1502,7 +1543,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         BinaryPrimitives.WriteUInt32BigEndian(
             packet.AsSpan(packetNumberOffset, packetNumberLength),
-            unchecked((uint)nextApplicationPacketNumber));
+            unchecked((uint)packetNumber));
 
         applicationPayload.CopyTo(packet.AsSpan(packetNumberOffset + packetNumberLength));
 
@@ -1518,6 +1559,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
+        ulong packetNumber,
         out QuicBufferLease plaintextPacket,
         out int packetNumberOffset,
         out int packetNumberLength)
@@ -1549,7 +1591,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
             BinaryPrimitives.WriteUInt32BigEndian(
                 packet.Slice(packetNumberOffset, packetNumberLength),
-                unchecked((uint)nextApplicationPacketNumber));
+                unchecked((uint)packetNumber));
 
             applicationPayload.CopyTo(packet.Slice(packetNumberOffset + packetNumberLength));
 
@@ -1573,6 +1615,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     private bool TryBuildZeroRttApplicationPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
+        ulong packetNumber,
         out byte[] plaintextPacket,
         out int packetNumberOffset,
         out int packetNumberLength)
@@ -1618,7 +1661,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             lengthFieldBuffer.Slice(0, lengthFieldBytes).CopyTo(versionSpecificData);
             BinaryPrimitives.WriteUInt32BigEndian(
                 versionSpecificData.AsSpan(lengthFieldBytes, packetNumberLength),
-                unchecked((uint)nextApplicationPacketNumber));
+                unchecked((uint)packetNumber));
 
             applicationPayload.CopyTo(versionSpecificData.AsSpan(lengthFieldBytes + packetNumberLength));
             if (paddedPayloadLength > applicationPayload.Length)

@@ -1194,6 +1194,18 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            exception = terminalState is QuicConnectionTerminalState terminalStateValue
+                ? CreateTerminalException(terminalStateValue)
+                : new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)QuicTransportErrorCode.ProtocolViolation,
+                    "The connection reached the packet number exhaustion limit.");
+            return false;
+        }
+
         ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
@@ -1323,6 +1335,18 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            exception = terminalState is QuicConnectionTerminalState terminalStateValue
+                ? CreateTerminalException(terminalStateValue)
+                : new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)QuicTransportErrorCode.ProtocolViolation,
+                    "The connection reached the packet number exhaustion limit.");
+            return false;
+        }
+
         ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
@@ -1445,6 +1469,11 @@ internal sealed partial class QuicConnectionRuntime
         if (activePath is null || sendRuntime.PendingRetransmissionCount == 0)
         {
             return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(packetNumberSpace, ref effects))
+        {
+            return true;
         }
 
         ulong sentAtMicros = GetElapsedMicros(nowTicks);
@@ -1934,6 +1963,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (TryHandlePacketNumberExhaustion(firstPacketNumberSpace, ref effects))
+        {
+            return true;
+        }
+
         bool initialDequeued = TryDequeuePreferredProbeRetransmission(
             QuicPacketNumberSpace.Initial,
             out QuicConnectionRetransmissionPlan initialRetransmission);
@@ -2094,6 +2128,12 @@ internal sealed partial class QuicConnectionRuntime
         if (activePath is null)
         {
             return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.Handshake, ref effects)
+            || TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
         }
 
         bool applicationDequeued = TryDequeuePreferredProbeRetransmission(
