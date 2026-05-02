@@ -15069,6 +15069,11 @@
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedWithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
         ]
       }
     },
@@ -15199,6 +15204,11 @@
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedWithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
         ]
       }
     },
