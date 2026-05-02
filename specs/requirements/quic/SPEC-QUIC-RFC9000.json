@@ -3312,7 +3312,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit"
         ]
       }
     },

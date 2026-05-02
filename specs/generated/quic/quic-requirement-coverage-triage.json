@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-02T11:42:57.7418050-06:00",
+  "generated_at": "2026-05-02T12:00:09.9930339-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-02T11:42:57.7381268-06:00",
+    "generated_at": "2026-05-02T12:00:09.9892032-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 51,
       "covered_but_proof_too_broad": 154,
-      "partially_covered": 301,
-      "trace_clean": 787,
+      "partially_covered": 300,
+      "trace_clean": 788,
       "uncovered_blocked": 96,
       "uncovered_unblocked": 382
     },
     "by_work_queue_tag": {
       "blocked": 96,
-      "clean": 787,
+      "clean": 788,
       "metadata_only": 51,
-      "new_tests_needed": 921,
+      "new_tests_needed": 920,
       "restructure_needed": 232
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 42,
           "covered_but_proof_too_broad": 153,
-          "partially_covered": 268,
-          "trace_clean": 519,
+          "partially_covered": 267,
+          "trace_clean": 520,
           "uncovered_blocked": 79,
           "uncovered_unblocked": 382
         }
@@ -141675,31 +141675,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -141714,9 +141715,97 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
           "class": "REQ_QUIC_RFC9000_S4P1_0002",
+          "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit",
+          "method": "TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit",
+          "line": 64,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0002",
+          "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit",
+          "method": "TryReadStreamData_AdvancesOnlyTheConsumedStreamReceiveLimit",
+          "line": 64,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0002",
+          "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "method": "TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs::TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0002",
+          "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "method": "TryReceiveStreamFrame_AllowsEachStreamThroughItsOwnReceiveLimit",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S4P1_0002",
           "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
           "method": "TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
-          "line": 10,
+          "line": 41,
           "kinds": [
             "negative"
           ],
@@ -141738,7 +141827,7 @@
           "class": "REQ_QUIC_RFC9000_S4P1_0002",
           "member": "REQ_QUIC_RFC9000_S4P1_0002.TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
           "method": "TryReceiveStreamFrame_LimitsThePerStreamReceiveBufferUse",
-          "line": 10,
+          "line": 41,
           "kinds": [
             "negative"
           ],
