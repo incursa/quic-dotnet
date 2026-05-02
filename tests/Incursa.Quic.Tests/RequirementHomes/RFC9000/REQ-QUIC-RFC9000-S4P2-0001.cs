@@ -6,6 +6,8 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
 public sealed class REQ_QUIC_RFC9000_S4P2_0001
 {
+    private const ulong MaximumFlowControlLimit = QuicVariableLengthInteger.MaxValue;
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -56,5 +58,32 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0001
 
         Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(10UL, snapshot.SendLimit);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryApplyMaxFrames_AllowsMaximumRepresentableCreditAdvertisements()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: MaximumFlowControlLimit - 1,
+            peerBidirectionalReceiveLimit: MaximumFlowControlLimit - 1);
+
+        Assert.True(state.TryApplyMaxDataFrame(new QuicMaxDataFrame(MaximumFlowControlLimit)));
+        Assert.False(state.TryApplyMaxDataFrame(new QuicMaxDataFrame(MaximumFlowControlLimit)));
+        Assert.Equal(MaximumFlowControlLimit, state.ConnectionSendLimit);
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(
+            new QuicMaxStreamDataFrame(1, MaximumFlowControlLimit),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.False(state.TryApplyMaxStreamDataFrame(
+            new QuicMaxStreamDataFrame(1, MaximumFlowControlLimit),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(MaximumFlowControlLimit, snapshot.SendLimit);
     }
 }

@@ -3749,7 +3749,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_AllowsRepeatedCreditAdvertisements",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_IgnoresRepeatedCreditAdvertisementsThatDoNotIncreaseTheLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_IgnoresRepeatedCreditAdvertisementsThatDoNotIncreaseTheLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs::TryApplyMaxFrames_AllowsMaximumRepresentableCreditAdvertisements"
         ]
       }
     },
