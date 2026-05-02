@@ -573,6 +573,11 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0003.cs::QuicConnection_ExposesTheApprovedStreamEntryMethods",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::QuicStream_ExposesTheNarrowAbortAndCompletionSurface",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::SupportedLoopbackStreamEntry_ReturnsRealQuicStreamFacades"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -764,6 +769,10 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::QuicStream_ExposesTheNarrowAbortAndCompletionSurface",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0004.cs::SupportedLoopbackStreamEntry_ReturnsRealQuicStreamFacades"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -1068,6 +1077,12 @@
         "edge": "required",
         "fuzz": "deferred"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::SupportedLoopbackWriteAndDisposeCompletion_DeliversBytesAndPeerEof",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::StreamOperationsAfterDispose_AreRejectedHonestly",
+        "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::StreamWritesAfterConnectionClose_AreRejectedWithTheTerminalConnectionOutcome"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
