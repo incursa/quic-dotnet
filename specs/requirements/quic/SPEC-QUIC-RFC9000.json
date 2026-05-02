@@ -3281,7 +3281,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_AdvertisesTotalBytesPreparedToReceive"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_AdvertisesTotalBytesPreparedToReceive",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_DoesNotAdvertiseDuplicateBytesTwice",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs::TryReadStreamData_WaitsForContiguousPreparedBytesBeforeAdvertisingCredit"
         ]
       }
     },
