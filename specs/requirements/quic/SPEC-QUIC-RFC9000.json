@@ -25,6 +25,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0010.cs::TryReserveSendCapacity_AllowsBytesWithinTheUpdatedPeerFlowControlLimits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0010.cs::TryReserveSendCapacity_ReturnsStreamDataBlockedWhenPeerStreamLimitIsExhausted",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0010.cs::TryReserveSendCapacity_EnforcesAReducedPeerLimitOnAPartiallySentStream"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
