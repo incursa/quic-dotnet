@@ -5412,9 +5412,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0005.cs::TryParseNewConnectionIdFrame_CommunicatesAnAdditionalConnectionIdToThePeer"
         ]
       }
     },
@@ -5943,9 +5941,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0004.cs::ConnectionIdRetiredEvent_SendsRetireConnectionIdFrameForTheRetiredSequenceNumber"
         ]
       }
     },
@@ -5974,9 +5970,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0005.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheRetiredSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0005.cs::TryParseRetireConnectionIdFrame_AllowsSequenceNumberZero"
         ]
       }
     },
