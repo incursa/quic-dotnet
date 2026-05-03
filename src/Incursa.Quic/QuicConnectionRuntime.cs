@@ -88,6 +88,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool handshakeDonePacketSent;
     private bool hasSuccessfullyProcessedAnotherPacket;
     private ulong highestConnectionIdIssuedToPeer;
+    private ulong totalIssuedConnectionIdCount;
 
     private int consumerStarted;
     private int disposed;
@@ -144,7 +145,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
         IQuicDiagnosticsSink? diagnosticsSink = null,
         bool enableRandomizedSpinBitSelection = false,
-        uint[]? supportedVersions = null)
+        uint[]? supportedVersions = null,
+        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -206,6 +208,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         MaximumCandidatePaths = maximumCandidatePaths;
         MaximumRecentlyValidatedPaths = maximumRecentlyValidatedPaths;
+        MaximumLocallyIssuedConnectionIds = maximumLocallyIssuedConnectionIds;
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
     }
 
@@ -306,6 +309,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     public int MaximumCandidatePaths { get; }
 
     public int MaximumRecentlyValidatedPaths { get; }
+
+    public ulong MaximumLocallyIssuedConnectionIds { get; }
 
     public long LastTransitionTicks => lastTransitionTicks;
 
@@ -1010,6 +1015,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         issuedConnectionIdBytesByConnectionId.Clear();
         usedIssuedConnectionIds.Clear();
         highestConnectionIdIssuedToPeer = 0;
+        totalIssuedConnectionIdCount = 0;
     }
 
     public void Dispose()

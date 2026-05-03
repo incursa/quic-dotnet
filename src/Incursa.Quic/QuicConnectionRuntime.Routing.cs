@@ -502,7 +502,8 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects)
     {
         if (connectionIdIssuedEvent.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
-            || statelessResetTokensByConnectionId.ContainsKey(connectionIdIssuedEvent.ConnectionId))
+            || statelessResetTokensByConnectionId.ContainsKey(connectionIdIssuedEvent.ConnectionId)
+            || !CanIssueAnotherConnectionId())
         {
             return false;
         }
@@ -544,6 +545,8 @@ internal sealed partial class QuicConnectionRuntime
         {
             highestConnectionIdIssuedToPeer = connectionIdIssuedEvent.ConnectionId;
         }
+
+        totalIssuedConnectionIdCount++;
 
         if (connectionIdBytes is not null)
         {
@@ -614,6 +617,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
         if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit()
             || highestConnectionIdIssuedToPeer == ulong.MaxValue
+            || !CanIssueAnotherConnectionId()
             || !TryValidateStreamSendBoundary(out _)
             || !TryGenerateUniqueIssuedConnectionIdBytes(out byte[] connectionIdBytes))
         {
@@ -652,6 +656,7 @@ internal sealed partial class QuicConnectionRuntime
         statelessResetTokensByConnectionId.Add(replacementConnectionId, statelessResetToken);
         issuedConnectionIdBytesByConnectionId.Add(replacementConnectionId, connectionIdBytes);
         highestConnectionIdIssuedToPeer = replacementConnectionId;
+        totalIssuedConnectionIdCount++;
         activePath = currentPath with
         {
             AmplificationState = updatedAmplificationState,
@@ -661,6 +666,11 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(replacementConnectionId, statelessResetToken));
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(currentPath.Identity, protectedPacket));
         return true;
+    }
+
+    private bool CanIssueAnotherConnectionId()
+    {
+        return totalIssuedConnectionIdCount < MaximumLocallyIssuedConnectionIds;
     }
 
     private bool TryGenerateUniqueIssuedConnectionIdBytes(out byte[] connectionIdBytes)

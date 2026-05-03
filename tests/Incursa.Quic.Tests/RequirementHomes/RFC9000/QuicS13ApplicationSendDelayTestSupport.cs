@@ -27,7 +27,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8,
         ulong? localMaxAckDelayMicros = null,
-        ulong? peerActiveConnectionIdLimit = null)
+        ulong? peerActiveConnectionIdLimit = null,
+        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
@@ -58,6 +59,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             clock ?? new FakeMonotonicClock(0),
             maximumCandidatePaths: maximumCandidatePaths,
             maximumRecentlyValidatedPaths: maximumRecentlyValidatedPaths,
+            maximumLocallyIssuedConnectionIds: maximumLocallyIssuedConnectionIds,
             tlsRole: QuicTlsRole.Client,
             localHandshakePrivateKey: localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256);
