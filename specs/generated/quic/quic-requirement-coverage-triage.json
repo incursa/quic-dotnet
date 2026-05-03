@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T11:36:37.4660469-06:00",
+  "generated_at": "2026-05-03T11:41:52.2539647-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T11:36:37.4619604-06:00",
+    "generated_at": "2026-05-03T11:41:52.2506108-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 78,
       "covered_but_proof_too_broad": 146,
-      "partially_covered": 321,
-      "trace_clean": 828,
+      "partially_covered": 316,
+      "trace_clean": 833,
       "uncovered_blocked": 81,
       "uncovered_unblocked": 317
     },
     "by_work_queue_tag": {
       "blocked": 81,
-      "clean": 828,
+      "clean": 833,
       "metadata_only": 78,
-      "new_tests_needed": 855,
+      "new_tests_needed": 850,
       "restructure_needed": 228
     },
     "by_rfc": [
@@ -70,8 +70,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 8,
           "covered_but_proof_too_broad": 1,
-          "partially_covered": 30,
-          "trace_clean": 183,
+          "partially_covered": 25,
+          "trace_clean": 188,
           "uncovered_blocked": 2
         }
       }
@@ -208583,39 +208583,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -208627,7 +208620,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary",
           "method": "TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary",
-          "line": 37,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -208650,7 +208643,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary",
           "method": "TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary",
-          "line": 37,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -208673,7 +208666,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "method": "TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
-          "line": 18,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -208695,12 +208688,56 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "method": "TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
-          "line": 18,
+          "line": 35,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
+          "method": "TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0001",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0001.TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
+          "method": "TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -208724,39 +208761,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -208768,7 +208798,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
           "method": "TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
-          "line": 17,
+          "line": 34,
           "kinds": [
             "negative"
           ],
@@ -208790,7 +208820,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
           "method": "TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
-          "line": 17,
+          "line": 34,
           "kinds": [
             "negative"
           ],
@@ -208810,9 +208840,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs",
           "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
+          "method": "TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
+          "method": "TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces",
           "method": "TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces",
-          "line": 35,
+          "line": 52,
           "kinds": [
             "edge"
           ],
@@ -208835,7 +208909,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0002.TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces",
           "method": "TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces",
-          "line": 35,
+          "line": 52,
           "kinds": [
             "edge"
           ],
@@ -208865,39 +208939,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -208909,7 +208976,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor",
           "method": "TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor",
-          "line": 37,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -208932,7 +208999,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor",
           "method": "TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor",
-          "line": 37,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -208955,7 +209022,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "method": "TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
-          "line": 18,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -208977,12 +209044,56 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "method": "TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
-          "line": 18,
+          "line": 35,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "method": "TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0003",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0003.TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "method": "TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -209006,39 +209117,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -209050,7 +209154,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
           "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
-          "line": 17,
+          "line": 30,
           "kinds": [
             "negative"
           ],
@@ -209072,7 +209176,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
           "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
-          "line": 17,
+          "line": 30,
           "kinds": [
             "negative"
           ],
@@ -209092,9 +209196,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs",
           "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch",
           "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch",
-          "line": 29,
+          "line": 42,
           "kinds": [
             "edge"
           ],
@@ -209117,7 +209265,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0004.TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch",
           "method": "TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch",
-          "line": 29,
+          "line": 42,
           "kinds": [
             "edge"
           ],
@@ -209147,43 +209295,31 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 3,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
-        "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 1,
-          "negative": 0,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -209195,7 +209331,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0005",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0005.ActiveClientRuntimeSkipsApplicationDataPtoUntilHandshakeDoneConfirmsTheHandshake",
           "method": "ActiveClientRuntimeSkipsApplicationDataPtoUntilHandshakeDoneConfirmsTheHandshake",
-          "line": 38,
+          "line": 55,
           "kinds": [
             "positive"
           ],
@@ -209217,7 +209353,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0005",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0005.TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation",
           "method": "TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation",
-          "line": 21,
+          "line": 38,
           "kinds": [
             "edge"
           ],
@@ -209240,13 +209376,57 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0005",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0005.TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation",
           "method": "TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation",
-          "line": 21,
+          "line": 38,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge",
             "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0005",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0005.TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "method": "TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0005",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0005.TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "method": "TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

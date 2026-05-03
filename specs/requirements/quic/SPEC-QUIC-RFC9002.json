@@ -1889,7 +1889,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_UsesTheRfcPtoFormula",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0001.cs::TryComputeProbeTimeoutMicros_ClampsTheVarianceComponentAtTheGranularityBoundary"
         ]
@@ -1920,7 +1920,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_UsesZeroMaxAckDelayForInitialPto",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_PreservesMaxAckDelayForApplicationDataSpace",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0002.cs::TryComputeProbeTimeoutMicros_ZeroesMaxAckDelayInTheInitialAndHandshakeSpaces"
         ]
@@ -1951,7 +1951,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
         ]
@@ -1982,7 +1982,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheEarlierValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
         ]
@@ -2013,8 +2013,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_UsesThePerSpaceFormula",
-          "tests/Incursa.Quic.Tests/QuicRecoveryTimingTests.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
         ]
       }

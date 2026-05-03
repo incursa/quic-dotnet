@@ -13,6 +13,19 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0004
     };
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline()
+    {
+        Assert.True(QuicRecoveryTiming.TrySelectInitialOrHandshakeProbeTimeoutMicros(
+            initialProbeTimeoutMicros: 3_000,
+            handshakeProbeTimeoutMicros: 2_500,
+            out ulong selectedProbeTimeoutMicros));
+
+        Assert.Equal(2_500UL, selectedProbeTimeoutMicros);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing()
     {

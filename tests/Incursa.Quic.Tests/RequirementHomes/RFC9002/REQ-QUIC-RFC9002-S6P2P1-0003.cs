@@ -14,6 +14,23 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0003
     };
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor()
+    {
+        Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
+            QuicPacketNumberSpace.Initial,
+            smoothedRttMicros: 0,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            out ulong probeTimeoutMicros,
+            timerGranularityMicros: 252));
+
+        Assert.Equal(252UL, probeTimeoutMicros);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity()
     {
