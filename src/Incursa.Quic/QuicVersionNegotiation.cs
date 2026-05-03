@@ -35,6 +35,11 @@ internal static class QuicVersionNegotiation
     private const uint ReservedVersionMask = 0x0F0F0F0F;
 
     /// <summary>
+    /// The mask that identifies versions with the top 16 bits cleared.
+    /// </summary>
+    private const uint FutureIetfConsensusReservedVersionMask = 0xFFFF0000;
+
+    /// <summary>
     /// The reserved-version pattern value used by RFC 9000, 0x0A0A0A0A.
     /// </summary>
     private const uint ReservedVersionPattern = 0x0A0A0A0A;
@@ -238,6 +243,14 @@ internal static class QuicVersionNegotiation
     }
 
     /// <summary>
+    /// Gets whether the supplied version falls in the future IETF consensus reserved range.
+    /// </summary>
+    internal static bool IsFutureIetfConsensusReservedVersion(uint version)
+    {
+        return (version & FutureIetfConsensusReservedVersionMask) == 0;
+    }
+
+    /// <summary>
     /// Creates a reserved version number using the high nibbles from the template value.
     /// </summary>
     internal static uint CreateReservedVersion(uint template)
@@ -262,4 +275,3 @@ internal static class QuicVersionNegotiation
         return false;
     }
 }
-
