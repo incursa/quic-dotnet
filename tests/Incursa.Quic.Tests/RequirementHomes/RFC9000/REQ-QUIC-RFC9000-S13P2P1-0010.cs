@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame()
@@ -46,6 +47,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2-0004")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer()

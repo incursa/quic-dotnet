@@ -14,6 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S14_0003
     [Requirement("REQ-QUIC-RFC9000-S14-0004")]
     [Requirement("REQ-QUIC-RFC9000-S6-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S15-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1()
     {

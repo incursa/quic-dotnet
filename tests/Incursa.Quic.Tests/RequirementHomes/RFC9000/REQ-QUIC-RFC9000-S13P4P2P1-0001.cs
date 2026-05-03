@@ -16,6 +16,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P2-0004">Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S13P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0006")]

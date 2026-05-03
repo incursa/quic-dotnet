@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P2P1_0011
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseWhenOnlyNonAckElicitingPacketsArePending()
@@ -31,6 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0011
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2-0002")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void ShouldIncludeAckFrameWithOutgoingPacket_StillDelaysNonAckElicitingOnlyPacketsAfterMaxAckDelay()

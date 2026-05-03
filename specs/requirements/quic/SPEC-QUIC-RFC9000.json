@@ -1431,6 +1431,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAfterPacketNumberExhaustionDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_DoesNotEmitBeforePacketNumberExhaustionDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAtTheMinimumStatelessResetLengthAfterPacketNumberExhaustionDiscard"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -16946,8 +16951,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0001.cs::UnusableConnectionErrorsAreSignaledUsingConnectionCloseFrames"
         ]
       }
     },
@@ -17088,7 +17092,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0002.cs::ApplicationErrorsUseConnectionCloseTypeOneD"
         ]
       }
     },
@@ -17117,7 +17121,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC"
         ]
       }
     },
@@ -17805,7 +17809,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0006.cs::TryBuildProtectedApplicationDataPacket_CanCarryMultipleStreamFramesAtTheSameEncryptionLevel",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0006.cs::TryParseShortHeader_TreatsASecondApplicationPacketAtTheSameEncryptionLevelAsOpaqueTrailingData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0006.cs::TryBuildProtectedApplicationDataPacket_CanCarryTheSmallestMultiFramePayloadAtThePacketBoundary"
         ]
       }
     },
@@ -17834,8 +17840,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseLongHeader_TreatsRetryPacketsAsOpaqueTrailingDataSoTheyCannotBeFollowedByAnotherPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0013.cs::TryParseVersionNegotiation_TreatsSubsequentPacketsAsPartOfTheSupportedVersionList"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0007.cs::ReceiveDatagram_RoutesBasedOnTheFirstPacketEvenWhenTheTrailingPacketTargetsAnotherConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0007.cs::ReceiveDatagram_DoesNotUseTheTrailingPacketToRecoverARouteWhenTheFirstPacketMisses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0007.cs::ReceiveDatagram_RoutesTheSmallestValidLeadingPacketBeforeAnyTrailingPacket"
         ]
       }
     },
@@ -17914,6 +17921,11 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
         ]
       }
     },
@@ -18641,6 +18653,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0010.cs::TryHandleInitialPacketReceived_AllowsTransportConnectionCloseInAnInitialPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0010.cs::TryHandleInitialPacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAnApplicationConnectionCloseFrame",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedWithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
@@ -18672,6 +18686,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0011.cs::ApplicationDataPacketReceived_AllowsRepresentativeControlAndStreamFramesInAOneRttPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0011.cs::TryParseShortHeader_RecognizesApplicationDataPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
@@ -18759,6 +18774,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0014.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForCMarkedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0014.cs::RegisterPacketSent_CountsPacketsWithoutTheCMarkingTowardBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0014.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForCMarkedPacketsAtTheCongestionWindowLimit"
         ],
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B42-P0-S1",
@@ -19186,6 +19206,9 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P5-0007.cs::EndpointCanDiscardZeroRttPacketsContainingForbiddenFramesByLeavingThemUnrouted"
+        ],
         "upstream_refs": [
           "RFC 9000 §12.5 RFC9000-S12.5-B7-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.5"
@@ -19504,6 +19527,10 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseWhenOnlyNonAckElicitingPacketsArePending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_StillDelaysNonAckElicitingOnlyPacketsAfterMaxAckDelay"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.2 RFC9000-S13.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2"
@@ -19530,6 +19557,10 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.2 RFC9000-S13.2-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2"
@@ -19555,6 +19586,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2 RFC9000-S13.2-B3-P2-S1",
@@ -22184,6 +22219,11 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace"
+        ],
         "upstream_refs": [
           "RFC 9000 §13.4 RFC9000-S13.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4"
@@ -23039,6 +23079,10 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0007.cs::ReceiveDatagram_RoutesBasedOnTheFirstPacketEvenWhenTheTrailingPacketTargetsAnotherConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::RuntimeProcessesTheTrailingHandshakePacketAfterTheLeadingInitialPacket"
         ]
       }
     },
@@ -23065,6 +23109,9 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
         ]
       }
     },
@@ -23091,6 +23138,9 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0002.cs::ConstructorAndUpdate_TrackTheCurrentMaximumDatagramSize"
         ]
       }
     },
@@ -23117,6 +23167,9 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0001.cs::TryFormatVersion1InitialDatagramPadding_WritesPaddingFramesUpToTheRFCMinimum"
         ]
       }
     },
@@ -23143,6 +23196,9 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize"
         ]
       }
     },
@@ -23169,6 +23225,10 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets"
         ]
       }
     },
@@ -23195,6 +23255,9 @@
         "upstream_refs": [
           "RFC 9000 §14 RFC9000-S14-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs::TryFormatPathValidationDatagramPadding_ExpandsTheProbePayloadWhenBudgetPermits"
         ]
       }
     },
@@ -24228,6 +24291,9 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
         ]
       }
     },
@@ -24284,6 +24350,9 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1"
         ]
       }
     },
@@ -24310,6 +24379,9 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0001.cs::TryBuildProtectedPackets_ProducePacketHeadersAndProtectedPayloads"
         ]
       }
     },
@@ -24652,6 +24724,9 @@
         "upstream_refs": [
           "RFC 9000 §17 RFC9000-S17-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
         ]
       }
     },

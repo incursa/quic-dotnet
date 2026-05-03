@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0012
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0001")]
     [Trait("Category", "Positive")]
     public void RuntimeProcessesTheTrailingHandshakePacketAfterTheLeadingInitialPacket()
     {
@@ -35,6 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0012
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0002")]
     [Trait("Category", "Positive")]
     public void TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram()
     {
