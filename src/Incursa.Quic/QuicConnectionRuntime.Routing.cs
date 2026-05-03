@@ -49,6 +49,11 @@ internal sealed partial class QuicConnectionRuntime
                     return true;
                 }
 
+                if (TryHandleClosingPacketReceived(packetReceivedEvent, nowTicks, ref effects))
+                {
+                    return true;
+                }
+
                 AppendConnectionClosePacket(ref effects, terminalStateValue.Close);
             }
         }
@@ -68,6 +73,86 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged;
+    }
+
+    private bool TryHandleClosingPacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!tlsState.OneRttKeysAvailable
+            || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        if (TryStopUsingConnectionForOneRttOpenAeadLimit(
+                tlsState.CurrentOneRttOpenKeyLifecycle,
+                ref effects))
+        {
+            return true;
+        }
+
+        QuicBufferLease openedPacket = default;
+        bool openedPacketOwned = false;
+        try
+        {
+            if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
+                    packetReceivedEvent.Datagram.Span,
+                    tlsState.OneRttOpenPacketProtectionMaterial.Value,
+                    out openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength,
+                    out _))
+            {
+                return false;
+            }
+
+            openedPacketOwned = true;
+            int payloadEnd = payloadOffset + payloadLength;
+            int offset = payloadOffset;
+
+            while (offset < payloadEnd)
+            {
+                ReadOnlySpan<byte> remaining = openedPacket.Span.Slice(offset, payloadEnd - offset);
+                if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+                {
+                    if (paddingBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    offset += paddingBytesConsumed;
+                    continue;
+                }
+
+                if (!QuicFrameCodec.TryParseConnectionCloseFrame(
+                        remaining,
+                        out QuicConnectionCloseFrame connectionCloseFrame,
+                        out int connectionCloseBytesConsumed)
+                    || connectionCloseBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                QuicConnectionCloseMetadata closeMetadata = CreateCloseMetadata(connectionCloseFrame);
+                return HandleConnectionCloseFrameReceived(
+                    new QuicConnectionConnectionCloseFrameReceivedEvent(
+                        nowTicks,
+                        closeMetadata),
+                    nowTicks,
+                    ref effects);
+            }
+
+            return false;
+        }
+        finally
+        {
+            if (openedPacketOwned)
+            {
+                openedPacket.Dispose();
+            }
+        }
     }
 
     private bool TryHandleReceivedPacketDatagram(
