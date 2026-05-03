@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0026",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Stream Priority Runtime Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime path that stores a local stream priority on each writable stream and uses that priority to order queued application sends without introducing any on-wire prioritization exchange.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-RFC9000-0026",
+    "VER-QUIC-RFC9000-0026"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S2P3-0001",
+    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-S2P3-0003"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "benchmarks/QuicApplicationSendPriorityBenchmarks.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs"
+  ],
+  "design_summary": "Each writable stream owns a local priority value in stream bookkeeping, and the public QuicStream facade exposes that value as a simple local-only property. The runtime snapshots the current priority when it queues delayed application sends, then flushes queued writes in descending priority order with FIFO tie-breaking for equal priorities. The priority never changes the wire format, does not introduce a built-in priority exchange, and does not alter the existing stream frame codec or transport-parameter surfaces. A small permanent benchmark suite exercises the exact queue-ordering comparator so the delayed-send hot path remains visible in the repo's performance evidence.",
+  "data_and_state_considerations": "The priority value is runtime-local state. It is not serialized, persisted, or advertised to the peer. A write that has already been queued keeps the priority snapshot captured at queue time; later priority changes affect subsequent writes only. Equal-priority queued writes preserve their original enqueue order so the runtime remains stable under repeated writes.",
+  "edge_cases_and_constraints": [
+    "Setting priority on a stream without a writable side should fail rather than pretending to affect scheduling.",
+    "Priority must not introduce any new on-wire exchange or frame type.",
+    "Queued application sends must preserve FIFO order when priorities are equal.",
+    "Already-protected packets are not preempted by a later priority change.",
+    "The local priority model remains separate from candidate-path, multipath, and HTTP/3 priority behavior."
+  ],
+  "alternatives_considered": [
+    "Add a wire-level priority exchange; rejected because the requirement set explicitly says QUIC must not provide a built-in prioritization exchange.",
+    "Use a single connection-wide priority instead of a per-stream value; rejected because the requirement set asks for application-visible stream controls and per-stream resource allocation.",
+    "Defer all priority handling to a higher protocol layer; rejected because the current runtime already owns the write queue that can honor a local stream priority without any protocol change."
+  ],
+  "risks": [
+    "A local snapshot taken at queue time means priority changes do not reorder bytes already waiting to flush.",
+    "Sorting queued sends adds a small amount of work on the delayed-write path.",
+    "The slice should not be mistaken for HTTP/3 or wire-level prioritization support."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers only local stream-priority storage and priority-aware ordering of queued application sends on the active runtime. It does not claim transport-parameter negotiation, wire-level priority exchange, HTTP/3 dependency trees, multipath scheduling, or candidate-path selection."
+    },
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`QuicStream.cs`](../../../src/Incursa.Quic/QuicStream.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicApplicationSendPriorityBenchmarks.cs`](../../../benchmarks/QuicApplicationSendPriorityBenchmarks.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs)"
+    }
+  ]
+}

@@ -818,6 +818,35 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    public bool TryGetStreamPriority(ulong streamIdValue, out int priority)
+    {
+        lock (syncRoot)
+        {
+            priority = default;
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+            {
+                return false;
+            }
+
+            priority = state.Priority;
+            return true;
+        }
+    }
+
+    public bool TrySetStreamPriority(ulong streamIdValue, int priority)
+    {
+        lock (syncRoot)
+        {
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state))
+            {
+                return false;
+            }
+
+            state.Priority = priority;
+            return true;
+        }
+    }
+
     public bool TryGetStreamSnapshot(ulong streamIdValue, out QuicConnectionStreamSnapshot snapshot)
     {
         lock (syncRoot)
@@ -1049,15 +1078,15 @@ internal sealed class QuicConnectionStreamState
     private StreamState CreateLocalStreamState(QuicStreamId streamId)
     {
         return streamId.IsBidirectional
-            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, localBidirectionalSendLimit, initialLocalBidirectionalReceiveLimit)
-            : new StreamState(streamId.StreamType, true, false, QuicStreamSendState.Ready, QuicStreamReceiveState.None, localUnidirectionalSendLimit, 0);
+            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, localBidirectionalSendLimit, initialLocalBidirectionalReceiveLimit, priority: 0)
+            : new StreamState(streamId.StreamType, true, false, QuicStreamSendState.Ready, QuicStreamReceiveState.None, localUnidirectionalSendLimit, 0, priority: 0);
     }
 
     private StreamState CreatePeerStreamState(QuicStreamId streamId)
     {
         return streamId.IsBidirectional
-            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, peerBidirectionalSendLimit, initialPeerBidirectionalReceiveLimit)
-            : new StreamState(streamId.StreamType, false, true, QuicStreamSendState.None, QuicStreamReceiveState.Recv, 0, initialPeerUnidirectionalReceiveLimit);
+            ? new StreamState(streamId.StreamType, true, true, QuicStreamSendState.Ready, QuicStreamReceiveState.Recv, peerBidirectionalSendLimit, initialPeerBidirectionalReceiveLimit, priority: 0)
+            : new StreamState(streamId.StreamType, false, true, QuicStreamSendState.None, QuicStreamReceiveState.Recv, 0, initialPeerUnidirectionalReceiveLimit, priority: 0);
     }
 
     private ulong ResolveCurrentSendLimit(QuicStreamId streamId)
@@ -1262,7 +1291,8 @@ internal sealed class QuicConnectionStreamState
         QuicStreamSendState sendState,
         QuicStreamReceiveState receiveState,
         ulong sendLimit,
-        ulong receiveLimit)
+        ulong receiveLimit,
+        int priority)
     {
         public QuicStreamType StreamType { get; } = streamType;
         public bool HasSendPart { get; } = hasSendPart;
@@ -1271,6 +1301,7 @@ internal sealed class QuicConnectionStreamState
         public QuicStreamReceiveState ReceiveState { get; set; } = receiveState;
         public ulong SendLimit { get; set; } = sendLimit;
         public ulong ReceiveLimit { get; set; } = receiveLimit;
+        public int Priority { get; set; } = priority;
         public ulong? SendFinalSize { get; set; }
         public ulong? ReceiveFinalSize { get; set; }
         public ulong AccountedBytes { get; set; }

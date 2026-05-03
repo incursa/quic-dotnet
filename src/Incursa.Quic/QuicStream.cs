@@ -66,6 +66,36 @@ public sealed class QuicStream : Stream
     public QuicStreamType Type => type;
 
     /// <summary>
+    /// Gets or sets the local scheduling priority for this stream.
+    /// Higher values are scheduled before lower values when pending application sends are flushed.
+    /// This priority is local-only and is not exchanged on the wire.
+    /// </summary>
+    public int Priority
+    {
+        get
+        {
+            if (!bookkeeping.TryGetStreamPriority(streamId, out int priority))
+            {
+                throw new InvalidOperationException("The stream state is unavailable.");
+            }
+
+            return priority;
+        }
+        set
+        {
+            if (!canWrite)
+            {
+                throw new InvalidOperationException("This stream does not have a writable side.");
+            }
+
+            if (!bookkeeping.TrySetStreamPriority(streamId, value))
+            {
+                throw new InvalidOperationException("The stream state is unavailable.");
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets a task that completes when the read side is closed.
     /// </summary>
     public Task ReadsClosed => readsClosed.Task;

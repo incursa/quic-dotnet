@@ -557,7 +557,11 @@ internal sealed partial class QuicConnectionRuntime
         return left + right;
     }
 
-    private sealed record PendingApplicationSendRequest(ulong StreamId, byte[] StreamPayload);
+    internal sealed record PendingApplicationSendRequest(
+        long Sequence,
+        ulong StreamId,
+        int Priority,
+        byte[] StreamPayload);
 
     private sealed class QuicConnectionNewTokenEmissionRecord
     {

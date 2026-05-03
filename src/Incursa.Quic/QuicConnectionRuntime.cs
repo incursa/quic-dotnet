@@ -111,6 +111,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong observedCurrentOneRttKeyPhase;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
+    private long nextPendingApplicationSendSequence;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;

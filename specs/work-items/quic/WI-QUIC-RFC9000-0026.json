@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0026",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Stream Priority Runtime Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0026",
+    "VER-QUIC-RFC9000-0026"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S2P3-0001",
+    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-S2P3-0003"
+  ],
+  "summary": "Add a local stream-priority property and use it to order queued application sends in the active runtime without introducing any built-in prioritization exchange.",
+  "planned_changes": "- Add a writable-stream-local `Priority` property on `QuicStream` that round-trips through stream bookkeeping.\n- Snapshot the current stream priority when application writes are queued and keep the snapshot local to the runtime.\n- Sort delayed application sends by priority and preserve FIFO order for equal priorities when the queue flushes.\n- Keep the wire codec, transport-parameter surface, and any built-in exchange mechanism unchanged.\n- Add requirement-home coverage for the local-only priority property, priority-aware queued flush ordering, and no-wire-exchange behavior.\n- Add a permanent benchmark for the priority-sorted queued-send flush path so the delayed-write hot path remains visible in the repo's performance evidence.",
+  "verification_plan": "Run the focused RFC 9000 S2P3 requirement-home tests, run the new priority-sort benchmark suite, render/check the touched SpecTrace artifacts, run canonical SpecTrace JSON validation, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0026"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0026"
+  ],
+  "out_of_scope": [
+    "Wire-level prioritization exchange.",
+    "HTTP/3 priority dependency trees.",
+    "Candidate-path or multipath scheduling.",
+    "Transport-parameter negotiation of priority metadata.",
+    "Changing the DF-bit socket surface."
+  ],
+  "completion_notes": "Implemented as a local-only stream-priority slice over the existing queued application send path, with requirement-home proof and a permanent benchmark suite covering the queue-ordering comparator."
+}

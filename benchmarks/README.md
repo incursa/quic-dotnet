@@ -11,6 +11,7 @@ estimation, and sender-adjacent stream state:
 - `QuicCongestionControlBenchmarks`
 - `QuicRttEstimatorBenchmarks`
 - `QuicConnectionStreamStateBenchmarks`
+- `QuicApplicationSendPriorityBenchmarks`
 
 Run them through the launcher:
 
@@ -88,6 +89,7 @@ Target a specific suite with `--filter` when iterating locally:
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
 ```
 
 BenchmarkDotNet writes reports under `BenchmarkDotNet.Artifacts/results`

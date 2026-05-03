@@ -322,9 +322,14 @@ internal sealed partial class QuicConnectionRuntime
                 new InvalidOperationException("The connection runtime could not build the stream write payload."));
         }
 
+        if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int streamPriority))
+        {
+            streamPriority = 0;
+        }
+
         if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
         {
-            QueuePendingApplicationSend(streamId, streamPayload, nowTicks, ref effects);
+            QueuePendingApplicationSend(streamId, streamPriority, streamPayload, nowTicks, ref effects);
             _ = TryFlushPendingRetransmissions(
                 QuicPacketNumberSpace.ApplicationData,
                 nowTicks,
@@ -337,7 +342,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (ShouldDelayApplicationSend(streamData.Span))
         {
-            QueuePendingApplicationSend(streamId, streamPayload, nowTicks, ref effects);
+            QueuePendingApplicationSend(streamId, streamPriority, streamPayload, nowTicks, ref effects);
             completion.TrySetResult(null);
             return true;
         }
@@ -405,11 +410,16 @@ internal sealed partial class QuicConnectionRuntime
 
     private void QueuePendingApplicationSend(
         ulong streamId,
+        int priority,
         byte[] streamPayload,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        pendingApplicationSendRequests.Add(new PendingApplicationSendRequest(streamId, streamPayload));
+        pendingApplicationSendRequests.Add(new PendingApplicationSendRequest(
+            nextPendingApplicationSendSequence++,
+            streamId,
+            priority,
+            streamPayload));
 
         if (pendingApplicationSendRequests.Count == 1)
         {
@@ -442,7 +452,10 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            pendingApplicationSendRequests[index] = new PendingApplicationSendRequest(streamId, finalPayload);
+            pendingApplicationSendRequests[index] = queuedWrite with
+            {
+                StreamPayload = finalPayload,
+            };
             return true;
         }
 
@@ -468,6 +481,8 @@ internal sealed partial class QuicConnectionRuntime
         PendingApplicationSendRequest[] queuedWrites = pendingApplicationSendRequests.ToArray();
         pendingApplicationSendRequests.Clear();
         pendingApplicationSendDelayDueTicks = null;
+
+        Array.Sort(queuedWrites, ComparePendingApplicationSendRequests);
 
         int combinedPayloadLength = 0;
         foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
@@ -573,6 +588,19 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return streamIds;
+    }
+
+    internal static int ComparePendingApplicationSendRequests(
+        PendingApplicationSendRequest left,
+        PendingApplicationSendRequest right)
+    {
+        int priorityComparison = right.Priority.CompareTo(left.Priority);
+        if (priorityComparison != 0)
+        {
+            return priorityComparison;
+        }
+
+        return left.Sequence.CompareTo(right.Sequence);
     }
 
     private bool TryEmitFlowControlBlockedSignal(

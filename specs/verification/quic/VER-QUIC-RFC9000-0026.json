@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0026",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Stream Priority Runtime Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0026",
+    "WI-QUIC-RFC9000-0026"
+  ],
+  "verification_method": "Requirement-home execution, packet-order inspection, benchmark validation for the priority-sorted flush path, SpecTrace render/check, and canonical JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S2P3-0001",
+    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-S2P3-0003"
+  ],
+  "scope": "This verification covers local-only stream priority storage and priority-aware ordering of queued application sends on the active runtime. It does not cover wire-level prioritization exchange, HTTP/3 priority trees, candidate-path scheduling, or multipath behavior.",
+  "expected_result": "Requirement-home tests prove that writable streams can store and retrieve a local priority value, higher-priority queued writes flush before lower-priority queued writes, equal priorities preserve FIFO order, and no new prioritization frame appears on the wire. The permanent benchmark suite exercises the delayed-write priority comparison path without claiming a stable performance baseline.",
+  "procedure": [
+    "Run the focused RFC 9000 S2P3 requirement-home tests.",
+    "Run the priority-sort benchmark suite with BenchmarkDotNet Dry validation and preserve the generated BenchmarkDotNet artifacts.",
+    "Render and check the touched SpecTrace artifacts.",
+    "Run canonical SpecTrace JSON validation.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "The runtime has a validated active path and can queue delayed application sends.",
+    "The tested streams have writable sides so their local priority controls are meaningful.",
+    "The packet-opening helper can inspect protected 1-RTT packet payloads for frame ordering."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "benchmarks/README.md",
+    "benchmarks/Incursa.Quic.Benchmarks.csproj",
+    "benchmarks/QuicApplicationSendPriorityBenchmarks.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs",
+    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report-github.md",
+    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report.csv",
+    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report.html"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Packet Inspection Boundary",
+      "content": "The proof should inspect the protected application packet bytes after opening them with the existing handshake coordinator so the test can verify stream-frame order without inventing a new packet format."
+    },
+    {
+      "heading": "Benchmark Boundary",
+      "content": "The benchmark evidence is an internal Incursa-only queue-ordering comparator suite. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
+    }
+  ],
+  "status_summary": "Passed for the local-only stream-priority slice over the existing queued application send path. Focused requirement-home tests proved the no-wire-exchange floor, the public stream priority round-trip, and the priority-aware queued-send ordering floor; the permanent queue-ordering benchmark suite was added as internal performance evidence and validated with a BenchmarkDotNet Dry run on 2026-05-03. This verification does not claim wire-level prioritization, HTTP/3 dependency trees, candidate-path scheduling, multipath behavior, or public API widening."
+}
