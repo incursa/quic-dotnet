@@ -95,12 +95,16 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0007
         Assert.Equal(retryResponse1.AsSpan(0, retryBytes1).ToArray(), retryResponse2.AsSpan(0, retryBytes2).ToArray());
         Assert.False(callbackEntered.Task.IsCompleted);
 
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            retryMetadata.RetrySourceConnectionId,
+            out QuicInitialPacketProtection retryClientProtection));
         Assert.True(coordinator.TryBuildProtectedInitialPacket(
             cryptoPayload,
             cryptoPayloadOffset: 0,
             retryMetadata.RetrySourceConnectionId,
             retryMetadata.RetryToken,
-            clientProtection,
+            retryClientProtection,
             out byte[] replayPacket));
 
         bytesSent = clientSocket.Send(replayPacket);
@@ -173,12 +177,16 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0007
 
         byte[] wrongRetryToken = retryMetadata.RetryToken.ToArray();
         wrongRetryToken[^1] ^= 0x01;
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            retryMetadata.RetrySourceConnectionId,
+            out QuicInitialPacketProtection retryClientProtection));
         Assert.True(coordinator.TryBuildProtectedInitialPacket(
             cryptoPayload,
             cryptoPayloadOffset: 0,
             retryMetadata.RetrySourceConnectionId,
             wrongRetryToken,
-            clientProtection,
+            retryClientProtection,
             out byte[] wrongReplayPacket));
 
         bytesSent = clientSocket.Send(wrongReplayPacket);

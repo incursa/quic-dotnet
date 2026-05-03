@@ -543,14 +543,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         try
         {
-            ReadOnlySpan<byte> initialProtectionDestinationConnectionId =
-                isRetryBootstrapReplayCandidate && retryBootstrapOriginalDestinationConnectionId is not null
-                    ? retryBootstrapOriginalDestinationConnectionId
-                    : initialDestinationConnectionId;
-
             if (!QuicInitialPacketProtection.TryCreate(
                 QuicTlsRole.Server,
-                initialProtectionDestinationConnectionId,
+                initialDestinationConnectionId,
                 out QuicInitialPacketProtection initialProtection))
             {
                 return false;

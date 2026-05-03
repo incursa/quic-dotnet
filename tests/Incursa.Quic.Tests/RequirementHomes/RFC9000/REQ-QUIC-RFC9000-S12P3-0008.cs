@@ -76,12 +76,10 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0008
                 recoveryGeneration),
             nowTicks: recoveryDueTicks.Value);
 
-        QuicConnectionSendDatagramEffect coalescedProbeEffect = Assert.Single(
-            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
-        Assert.True(TrySplitCoalescedDatagram(
-            coalescedProbeEffect.Datagram,
+        QuicS12P3TestSupport.AssertInitialAndHandshakeRecoveryPackets(
+            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
             out ReadOnlyMemory<byte> rebuiltInitialPacket,
-            out ReadOnlyMemory<byte> rebuiltHandshakePacket));
+            out ReadOnlyMemory<byte> rebuiltHandshakePacket);
 
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Client,
@@ -181,24 +179,6 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0008
         {
             await stream.DisposeAsync();
         }
-    }
-
-    private static bool TrySplitCoalescedDatagram(
-        ReadOnlyMemory<byte> datagram,
-        out ReadOnlyMemory<byte> initialPacket,
-        out ReadOnlyMemory<byte> handshakePacket)
-    {
-        initialPacket = default;
-        handshakePacket = default;
-
-        if (!QuicPacketParser.TryGetPacketLength(datagram.Span, out int initialPacketLength))
-        {
-            return false;
-        }
-
-        initialPacket = datagram[..initialPacketLength];
-        handshakePacket = datagram[initialPacketLength..];
-        return handshakePacket.Length > 0;
     }
 
     private static ulong ReadLongHeaderPacketNumber(byte[] openedPacket, int payloadOffset)

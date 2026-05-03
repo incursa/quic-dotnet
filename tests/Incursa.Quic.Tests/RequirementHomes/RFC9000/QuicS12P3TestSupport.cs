@@ -21,6 +21,45 @@ internal static class QuicS12P3TestSupport
         return payload;
     }
 
+    internal static void AssertInitialAndHandshakeRecoveryPackets(
+        IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,
+        out ReadOnlyMemory<byte> initialPacket,
+        out ReadOnlyMemory<byte> handshakePacket)
+    {
+        initialPacket = default;
+        handshakePacket = default;
+
+        foreach (QuicConnectionSendDatagramEffect sendEffect in sendEffects)
+        {
+            ReadOnlyMemory<byte> datagram = sendEffect.Datagram;
+            if (TrySplitCoalescedDatagram(datagram, out ReadOnlyMemory<byte> coalescedInitialPacket, out ReadOnlyMemory<byte> coalescedHandshakePacket))
+            {
+                initialPacket = coalescedInitialPacket;
+                handshakePacket = coalescedHandshakePacket;
+                return;
+            }
+
+            if (!QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace))
+            {
+                continue;
+            }
+
+            if (packetNumberSpace == QuicPacketNumberSpace.Initial && initialPacket.IsEmpty)
+            {
+                initialPacket = datagram;
+                continue;
+            }
+
+            if (packetNumberSpace == QuicPacketNumberSpace.Handshake && handshakePacket.IsEmpty)
+            {
+                handshakePacket = datagram;
+            }
+        }
+
+        Assert.False(initialPacket.IsEmpty, "Expected a recovery probe in the Initial packet number space.");
+        Assert.False(handshakePacket.IsEmpty, "Expected a recovery probe in the Handshake packet number space.");
+    }
+
     internal static bool TryCreatePacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
         out QuicTlsPacketProtectionMaterial material)
@@ -33,5 +72,23 @@ internal static class QuicS12P3TestSupport
             CreateSequentialBytes(0x31, 16),
             new QuicAeadUsageLimits(64, 128),
             out material);
+    }
+
+    private static bool TrySplitCoalescedDatagram(
+        ReadOnlyMemory<byte> datagram,
+        out ReadOnlyMemory<byte> initialPacket,
+        out ReadOnlyMemory<byte> handshakePacket)
+    {
+        initialPacket = default;
+        handshakePacket = default;
+
+        if (!QuicPacketParser.TryGetPacketLength(datagram.Span, out int initialPacketLength))
+        {
+            return false;
+        }
+
+        initialPacket = datagram[..initialPacketLength];
+        handshakePacket = datagram[initialPacketLength..];
+        return handshakePacket.Length > 0;
     }
 }

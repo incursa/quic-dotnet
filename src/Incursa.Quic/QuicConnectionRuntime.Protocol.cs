@@ -386,6 +386,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        if (ShouldDiscardInvalidInitialPayload(payload))
+        {
+            return false;
+        }
+
         byte[]? acceptedPeerInitialSourceConnectionId = null;
         if (tlsState.Role == QuicTlsRole.Client
             && phase == QuicConnectionPhase.Establishing
@@ -459,6 +464,75 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return processed;
+    }
+
+    private static bool ShouldDiscardInvalidInitialPayload(ReadOnlySpan<byte> payload)
+    {
+        int payloadOffset = 0;
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                if (paddingBytesConsumed <= 0)
+                {
+                    return true;
+                }
+
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                if (pingBytesConsumed <= 0)
+                {
+                    return true;
+                }
+
+                payloadOffset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return true;
+                }
+
+                payloadOffset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseConnectionCloseFrame(
+                    remaining,
+                    out _,
+                    out int connectionCloseBytesConsumed))
+            {
+                if (connectionCloseBytesConsumed <= 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
+            {
+                if (cryptoBytesConsumed <= 0)
+                {
+                    return true;
+                }
+
+                payloadOffset += cryptoBytesConsumed;
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private bool TryResetClientPeerHandshakeAttempt(
