@@ -36,6 +36,8 @@ internal enum QuicConnectionEffectKind
     NotifyStreamsOfTerminalState = 7,
     DiscardConnectionState = 8,
     EmitDiagnostic = 9,
+    RegisterConnectionIdRoute = 10,
+    RetireConnectionIdRoute = 11,
 }
 
 internal enum QuicConnectionStreamActionKind
@@ -144,7 +146,8 @@ internal sealed record QuicConnectionTransportParametersCommittedEvent(
 internal sealed record QuicConnectionConnectionIdIssuedEvent(
     long ObservedAtTicks,
     ulong ConnectionId,
-    ReadOnlyMemory<byte> StatelessResetToken)
+    ReadOnlyMemory<byte> StatelessResetToken,
+    ReadOnlyMemory<byte> ConnectionIdBytes = default)
     : QuicConnectionEvent(QuicConnectionEventKind.ConnectionIdIssued, ObservedAtTicks);
 
 internal sealed record QuicConnectionConnectionIdRetiredEvent(
@@ -203,6 +206,16 @@ internal sealed record QuicConnectionRegisterStatelessResetTokenEffect(
 
 internal sealed record QuicConnectionRetireStatelessResetTokenEffect(ulong ConnectionId)
     : QuicConnectionEffect(QuicConnectionEffectKind.RetireStatelessResetToken);
+
+internal sealed record QuicConnectionRegisterConnectionIdRouteEffect(
+    ulong ConnectionId,
+    ReadOnlyMemory<byte> ConnectionIdBytes)
+    : QuicConnectionEffect(QuicConnectionEffectKind.RegisterConnectionIdRoute);
+
+internal sealed record QuicConnectionRetireConnectionIdRouteEffect(
+    ulong ConnectionId,
+    ReadOnlyMemory<byte> ConnectionIdBytes)
+    : QuicConnectionEffect(QuicConnectionEffectKind.RetireConnectionIdRoute);
 
 internal sealed record QuicConnectionNotifyStreamsOfTerminalStateEffect(
     QuicConnectionTerminalState TerminalState)

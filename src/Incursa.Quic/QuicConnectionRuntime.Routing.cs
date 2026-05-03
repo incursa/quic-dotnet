@@ -502,6 +502,26 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        byte[]? connectionIdBytes = null;
+        if (!connectionIdIssuedEvent.ConnectionIdBytes.IsEmpty)
+        {
+            ReadOnlySpan<byte> candidateConnectionIdBytes = connectionIdIssuedEvent.ConnectionIdBytes.Span;
+            if (!QuicConnectionIdKey.TryCreate(candidateConnectionIdBytes, out _))
+            {
+                return false;
+            }
+
+            foreach (byte[] activeConnectionIdBytes in issuedConnectionIdBytesByConnectionId.Values)
+            {
+                if (activeConnectionIdBytes.AsSpan().SequenceEqual(candidateConnectionIdBytes))
+                {
+                    return false;
+                }
+            }
+
+            connectionIdBytes = candidateConnectionIdBytes.ToArray();
+        }
+
         ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
         if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit())
         {
@@ -510,9 +530,19 @@ internal sealed partial class QuicConnectionRuntime
 
         byte[] token = connectionIdIssuedEvent.StatelessResetToken.ToArray();
         statelessResetTokensByConnectionId.Add(connectionIdIssuedEvent.ConnectionId, token);
+        if (connectionIdBytes is not null)
+        {
+            issuedConnectionIdBytesByConnectionId.Add(connectionIdIssuedEvent.ConnectionId, connectionIdBytes);
+        }
+
         if (connectionIdIssuedEvent.ConnectionId > highestConnectionIdIssuedToPeer)
         {
             highestConnectionIdIssuedToPeer = connectionIdIssuedEvent.ConnectionId;
+        }
+
+        if (connectionIdBytes is not null)
+        {
+            AppendEffect(ref effects, new QuicConnectionRegisterConnectionIdRouteEffect(connectionIdIssuedEvent.ConnectionId, connectionIdBytes));
         }
 
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(connectionIdIssuedEvent.ConnectionId, token));
@@ -526,6 +556,11 @@ internal sealed partial class QuicConnectionRuntime
         if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out _))
         {
             return false;
+        }
+
+        if (issuedConnectionIdBytesByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out byte[]? connectionIdBytes))
+        {
+            AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionIdRetiredEvent.ConnectionId, connectionIdBytes));
         }
 
         AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionIdRetiredEvent.ConnectionId));
@@ -1372,6 +1407,11 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (statelessResetTokensByConnectionId.Remove(connectionId))
             {
+                if (issuedConnectionIdBytesByConnectionId.Remove(connectionId, out byte[]? connectionIdBytes))
+                {
+                    AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));
+                }
+
                 AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
             }
         }

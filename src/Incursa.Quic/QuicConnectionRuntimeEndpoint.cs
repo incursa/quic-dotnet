@@ -555,6 +555,10 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 => TryUpdateEndpointBinding(handle, promoteActivePathEffect.PathIdentity),
             QuicConnectionUpdateEndpointBindingsEffect updateEndpointBindingsEffect
                 => TryUpdateEndpointBinding(handle, updateEndpointBindingsEffect.PathIdentity),
+            QuicConnectionRegisterConnectionIdRouteEffect registerConnectionIdRouteEffect
+                => TryRegisterConnectionId(handle, registerConnectionIdRouteEffect.ConnectionIdBytes.Span, registerConnectionIdRouteEffect.ConnectionId),
+            QuicConnectionRetireConnectionIdRouteEffect retireConnectionIdRouteEffect
+                => TryRetireConnectionId(handle, retireConnectionIdRouteEffect.ConnectionIdBytes.Span),
             QuicConnectionRegisterStatelessResetTokenEffect registerStatelessResetTokenEffect
                 => TryRegisterStatelessResetToken(handle, registerStatelessResetTokenEffect.ConnectionId, registerStatelessResetTokenEffect.Token.Span),
             QuicConnectionRetireStatelessResetTokenEffect retireStatelessResetTokenEffect
