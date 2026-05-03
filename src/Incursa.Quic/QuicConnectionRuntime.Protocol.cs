@@ -4,6 +4,23 @@ namespace Incursa.Quic;
 internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
+    // RFC 9000 section 12.4 allows only the narrow Initial/Handshake control-frame set.
+    private const ulong HandshakePacketResetStreamFrameType = 0x04UL;
+    private const ulong HandshakePacketStopSendingFrameType = 0x05UL;
+    private const ulong HandshakePacketNewTokenFrameType = 0x07UL;
+    private const ulong HandshakePacketMaxDataFrameType = 0x10UL;
+    private const ulong HandshakePacketMaxStreamDataFrameType = 0x11UL;
+    private const ulong HandshakePacketMaxStreamsBidirectionalFrameType = 0x12UL;
+    private const ulong HandshakePacketMaxStreamsUnidirectionalFrameType = 0x13UL;
+    private const ulong HandshakePacketDataBlockedFrameType = 0x14UL;
+    private const ulong HandshakePacketStreamDataBlockedFrameType = 0x15UL;
+    private const ulong HandshakePacketStreamsBlockedBidirectionalFrameType = 0x16UL;
+    private const ulong HandshakePacketStreamsBlockedUnidirectionalFrameType = 0x17UL;
+    private const ulong HandshakePacketNewConnectionIdFrameType = 0x18UL;
+    private const ulong HandshakePacketRetireConnectionIdFrameType = 0x19UL;
+    private const ulong HandshakePacketPathChallengeFrameType = 0x1AUL;
+    private const ulong HandshakePacketPathResponseFrameType = 0x1BUL;
+    private const ulong HandshakePacketHandshakeDoneFrameType = 0x1EUL;
     private static readonly bool ApplicationReceiveDebugEnabled =
         string.Equals(
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
@@ -763,9 +780,49 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseConnectionCloseFrame(
+                    remaining,
+                    out QuicConnectionCloseFrame connectionCloseFrame,
+                    out int connectionCloseBytesConsumed))
+            {
+                if (connectionCloseBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (connectionCloseFrame.IsApplicationError)
+                {
+                    return HandleFatalTlsSignal(
+                        nowTicks,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent an application CONNECTION_CLOSE frame in a packet type that is not permitted.",
+                        ref effects);
+                }
+
+                QuicConnectionCloseMetadata closeMetadata = CreateCloseMetadata(connectionCloseFrame);
+                stateChanged |= HandleConnectionCloseFrameReceived(
+                    new QuicConnectionConnectionCloseFrameReceivedEvent(
+                        nowTicks,
+                        closeMetadata),
+                    nowTicks,
+                    ref effects);
+                return stateChanged;
+            }
+
             if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int bytesConsumed)
                 || bytesConsumed <= 0)
             {
+                if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
+                    && frameTypeBytesConsumed > 0
+                    && IsHandshakePacketForbiddenFrameType(frameType))
+                {
+                    return HandleFatalTlsSignal(
+                        nowTicks,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a frame in a packet type that is not permitted.",
+                        ref effects);
+                }
+
                 return false;
             }
 
@@ -843,6 +900,28 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged || processedCryptoFrame;
+    }
+
+    private static bool IsHandshakePacketForbiddenFrameType(ulong frameType)
+    {
+        return (frameType >= QuicStreamFrameBits.StreamFrameTypeMinimum
+                && frameType <= QuicStreamFrameBits.StreamFrameTypeMaximum)
+            || frameType is HandshakePacketResetStreamFrameType
+            || frameType is HandshakePacketStopSendingFrameType
+            || frameType is HandshakePacketNewTokenFrameType
+            || frameType is HandshakePacketMaxDataFrameType
+            || frameType is HandshakePacketMaxStreamDataFrameType
+            || frameType is HandshakePacketMaxStreamsBidirectionalFrameType
+            || frameType is HandshakePacketMaxStreamsUnidirectionalFrameType
+            || frameType is HandshakePacketDataBlockedFrameType
+            || frameType is HandshakePacketStreamDataBlockedFrameType
+            || frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
+            || frameType is HandshakePacketStreamsBlockedUnidirectionalFrameType
+            || frameType is HandshakePacketNewConnectionIdFrameType
+            || frameType is HandshakePacketRetireConnectionIdFrameType
+            || frameType is HandshakePacketPathChallengeFrameType
+            || frameType is HandshakePacketPathResponseFrameType
+            || frameType is HandshakePacketHandshakeDoneFrameType;
     }
 
     private bool IsDuplicateServerInitialCryptoFrame(

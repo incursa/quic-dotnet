@@ -18666,6 +18666,10 @@
         "upstream_refs": [
           "RFC 9000 §12.4 RFC9000-S12.4-B39-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0012.cs::TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0012.cs::TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket"
         ]
       }
     },
