@@ -2238,9 +2238,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Constructor_UsesTheDefaultInitialRttWhenNoPreviousRttIsAvailable",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary",
-          "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary"
         ]
       }
     },
@@ -2269,8 +2269,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0003.cs::TryMeasurePathChallengeRoundTripMicros_RejectsResponsesThatArriveBeforeTheirChallenge",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0003.cs::TryMeasurePathChallengeRoundTripMicros_HandlesBoundaryIntervals"
         ]
       }
     },
@@ -2299,7 +2299,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_MeasuresDelayWithoutUpdatingTheRttEstimator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
         ]
       }
     },
@@ -2329,6 +2330,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenHandshakeKeysAreDiscarded",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
         ]
       }

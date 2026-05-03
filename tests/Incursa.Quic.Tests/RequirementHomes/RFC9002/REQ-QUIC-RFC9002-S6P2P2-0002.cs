@@ -7,6 +7,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S6P2P2_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void Constructor_UsesTheDefaultInitialRttWhenNoPreviousRttIsAvailable()
+    {
+        QuicRttEstimator estimator = new();
+
+        Assert.Equal(333_000UL, QuicRttEstimator.DefaultInitialRttMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros, estimator.InitialRttMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros, estimator.SmoothedRttMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros / 2, estimator.RttVarMicros);
+        Assert.False(estimator.HasRttSample);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured()
     {

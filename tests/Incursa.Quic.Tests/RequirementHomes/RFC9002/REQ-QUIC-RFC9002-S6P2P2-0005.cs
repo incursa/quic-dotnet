@@ -90,6 +90,47 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2_0005
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryDiscardPacketNumberSpace_ResetsPtoStateWhenHandshakeKeysAreDiscarded()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Handshake,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Handshake),
+            PacketBytes: new byte[] { 0x21 }));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            AckEliciting: true,
+            PacketBytes: new byte[] { 0x22 }));
+
+        Assert.True(runtime.TryArmProbeTimeout(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros: 300,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 250,
+            maxAckDelayMicros: 25_000,
+            handshakeConfirmed: false));
+
+        Assert.Equal(1, runtime.ProbeTimeoutCount);
+        Assert.NotNull(runtime.LossDetectionDeadlineMicros);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake));
+
+        Assert.Equal(0, runtime.ProbeTimeoutCount);
+        Assert.Null(runtime.LossDetectionDeadlineMicros);
+        Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.Handshake);
+        Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded()

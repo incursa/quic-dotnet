@@ -45,6 +45,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState()
     {
         Assert.True(QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(

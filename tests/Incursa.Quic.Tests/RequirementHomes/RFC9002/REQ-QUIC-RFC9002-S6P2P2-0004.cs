@@ -7,6 +7,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S6P2P2_0004
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryMeasurePathChallengeRoundTripMicros_MeasuresDelayWithoutUpdatingTheRttEstimator()
+    {
+        QuicRttEstimator estimator = new();
+
+        Assert.True(QuicPathValidation.TryMeasurePathChallengeRoundTripMicros(
+            pathChallengeSentAtMicros: 1_000,
+            pathResponseReceivedAtMicros: 2_750,
+            out ulong roundTripMicros));
+
+        Assert.Equal(1_750UL, roundTripMicros);
+        Assert.False(estimator.HasRttSample);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample()
     {
