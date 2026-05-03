@@ -7,6 +7,29 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S2_0003
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay()
+    {
+        QuicAckGenerationState tracker = new();
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            2,
+            ackEliciting: true,
+            receivedAtMicros: 1_100);
+
+        Assert.True(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 1_100,
+            maxAckDelayMicros: 1_000));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     // Verifies the receiver waits for the maximum ACK delay before scheduling an ACK.
     public void ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay()

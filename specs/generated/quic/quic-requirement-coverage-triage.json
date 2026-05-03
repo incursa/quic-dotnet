@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T12:12:30.3912090-06:00",
+  "generated_at": "2026-05-03T12:18:26.2469777-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T12:12:30.3871322-06:00",
+    "generated_at": "2026-05-03T12:18:26.2440004-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 75,
-      "covered_but_proof_too_broad": 146,
-      "partially_covered": 296,
-      "trace_clean": 856,
+      "covered_but_missing_xrefs": 73,
+      "covered_but_proof_too_broad": 145,
+      "partially_covered": 292,
+      "trace_clean": 863,
       "uncovered_blocked": 81,
       "uncovered_unblocked": 317
     },
     "by_work_queue_tag": {
       "blocked": 81,
-      "clean": 856,
-      "metadata_only": 75,
-      "new_tests_needed": 830,
-      "restructure_needed": 228
+      "clean": 863,
+      "metadata_only": 73,
+      "new_tests_needed": 825,
+      "restructure_needed": 226
     },
     "by_rfc": [
       {
@@ -68,10 +68,9 @@
         "rfc": "RFC9002",
         "total": 224,
         "by_state": {
-          "covered_but_missing_xrefs": 5,
-          "covered_but_proof_too_broad": 1,
-          "partially_covered": 5,
-          "trace_clean": 211,
+          "covered_but_missing_xrefs": 3,
+          "partially_covered": 1,
+          "trace_clean": 218,
           "uncovered_blocked": 2
         }
       }
@@ -200367,26 +200366,21 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
-        }
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -200401,6 +200395,30 @@
           "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S2_0002",
+          "member": "REQ_QUIC_RFC9002_S2_0002.IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
+          "method": "IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
+          "line": 27,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P1P1-0001",
+            "REQ-QUIC-RFC9002-S2-0002",
+            "REQ-QUIC-RFC9002-S3-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0002.cs",
           "class": "REQ_QUIC_RFC9002_S2_0002",
           "member": "REQ_QUIC_RFC9002_S2_0002.IsAckElicitingFrameType_ClassifiesKnownFrameTypes",
@@ -200436,33 +200454,32 @@
         "edge": "required",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs::ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs::ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs::ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -200472,9 +200489,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs",
           "class": "REQ_QUIC_RFC9002_S2_0003",
+          "member": "REQ_QUIC_RFC9002_S2_0003.ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
+          "method": "ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S2-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs::ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S2_0003",
+          "member": "REQ_QUIC_RFC9002_S2_0003.ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
+          "method": "ShouldIncludeAckFrameForAckElicitingPacketsWithinTheMaximumAckDelay",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S2-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S2_0003",
           "member": "REQ_QUIC_RFC9002_S2_0003.ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses",
           "method": "ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses",
-          "line": 31,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -200496,7 +200557,7 @@
           "class": "REQ_QUIC_RFC9002_S2_0003",
           "member": "REQ_QUIC_RFC9002_S2_0003.ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses",
           "method": "ShouldIncludeAckFrameWhenTheMaximumAckDelayElapses",
-          "line": 31,
+          "line": 54,
           "kinds": [
             "edge"
           ],
@@ -200518,7 +200579,7 @@
           "class": "REQ_QUIC_RFC9002_S2_0003",
           "member": "REQ_QUIC_RFC9002_S2_0003.ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay",
           "method": "ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay",
-          "line": 12,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -200540,7 +200601,7 @@
           "class": "REQ_QUIC_RFC9002_S2_0003",
           "member": "REQ_QUIC_RFC9002_S2_0003.ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay",
           "method": "ShouldNotIncludeAckFrameBeforeTheMaximumAckDelay",
-          "line": 12,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -200877,36 +200938,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces",
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryGetPacketNumberSpace_MapsSupportedHeaderFormsToSpaces"
-        }
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0002.cs::TryParseLongHeader_ExposesTheEncryptionLevelBits",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 3,
+        "focused": 2,
         "broad": 1,
         "by_kind": {
-          "positive": 1,
+          "positive": 3,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -200957,6 +201010,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0002",
+          "member": "REQ_QUIC_RFC9002_S3_0002.TryParseLongHeader_ExposesTheEncryptionLevelBits",
+          "method": "TryParseLongHeader_ExposesTheEncryptionLevelBits",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0002.cs::TryParseLongHeader_ExposesTheEncryptionLevelBits",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0002",
+          "member": "REQ_QUIC_RFC9002_S3_0002.TryParseLongHeader_ExposesTheEncryptionLevelBits",
+          "method": "TryParseLongHeader_ExposesTheEncryptionLevelBits",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -200973,32 +201070,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesASinglePacketNumberByte"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
           "positive": 4,
-          "negative": 0,
-          "edge": 0,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -201099,6 +201196,50 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs",
           "class": "REQ_QUIC_RFC9002_S3_0003",
+          "member": "REQ_QUIC_RFC9002_S3_0003.TryParseShortHeader_PreservesASinglePacketNumberByte",
+          "method": "TryParseShortHeader_PreservesASinglePacketNumberByte",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesASinglePacketNumberByte",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0003",
+          "member": "REQ_QUIC_RFC9002_S3_0003.TryParseShortHeader_PreservesASinglePacketNumberByte",
+          "method": "TryParseShortHeader_PreservesASinglePacketNumberByte",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0003",
           "member": "REQ_QUIC_RFC9002_S3_0003.TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
           "method": "TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
           "line": 12,
@@ -201136,6 +201277,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0003",
+          "member": "REQ_QUIC_RFC9002_S3_0003.TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "method": "TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0003",
+          "member": "REQ_QUIC_RFC9002_S3_0003.TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "method": "TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -201152,30 +201337,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -201217,7 +201404,7 @@
           "class": "REQ_QUIC_RFC9002_S3_0004",
           "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader",
           "method": "TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader",
-          "line": 16,
+          "line": 55,
           "kinds": [
             "edge"
           ],
@@ -201239,7 +201426,7 @@
           "class": "REQ_QUIC_RFC9002_S3_0004",
           "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader",
           "method": "TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader",
-          "line": 16,
+          "line": 55,
           "kinds": [
             "edge"
           ],
@@ -201252,6 +201439,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0004",
+          "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "method": "TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0004",
+          "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "method": "TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0004",
+          "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "method": "TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0004",
+          "member": "REQ_QUIC_RFC9002_S3_0004.TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "method": "TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -201994,26 +202269,21 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed",
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
-        }
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0011.cs::TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
+          "positive": 3,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -202054,6 +202324,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0011.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0011",
+          "member": "REQ_QUIC_RFC9002_S3_0011.TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+          "method": "TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0011.cs::TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0011.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0011",
+          "member": "REQ_QUIC_RFC9002_S3_0011.TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+          "method": "TryBuildAckFrame_AcknowledgesProcessedNonAckElicitingPackets",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -202070,31 +202384,32 @@
         "edge": "required",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -202109,9 +202424,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs",
           "class": "REQ_QUIC_RFC9002_S3_0012",
+          "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself",
+          "method": "RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself",
+          "line": 60,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0012",
+          "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself",
+          "method": "RecordProcessedNonAckElicitingPacket_DoesNotRequestAckAtTheDelayBoundaryByItself",
+          "line": 60,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0012",
           "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
           "method": "RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
-          "line": 12,
+          "line": 41,
           "kinds": [
             "negative"
           ],
@@ -202133,12 +202492,56 @@
           "class": "REQ_QUIC_RFC9002_S3_0012",
           "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
           "method": "RecordProcessedNonAckElicitingPacket_DoesNotRequestAnImmediateAck",
-          "line": 12,
+          "line": 41,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0012",
+          "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+          "method": "RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs::RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S3_0012",
+          "member": "REQ_QUIC_RFC9002_S3_0012.RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+          "method": "RecordProcessedNonAckElicitingPacket_IsAcknowledgedWithALaterAckElicitingPacket",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

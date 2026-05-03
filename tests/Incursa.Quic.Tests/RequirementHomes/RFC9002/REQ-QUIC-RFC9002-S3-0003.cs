@@ -18,4 +18,22 @@ public sealed class REQ_QUIC_RFC9002_S3_0003
         Assert.True(packet.AsSpan(1).SequenceEqual(header.Remainder));
         Assert.Equal(remainder.Length, header.Remainder.Length);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseShortHeader_RejectsPacketsWithoutHeaderBytes()
+    {
+        Assert.False(QuicPacketParser.TryParseShortHeader([], out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseShortHeader_PreservesASinglePacketNumberByte()
+    {
+        byte[] packet = QuicHeaderTestData.BuildShortHeader(0x00, [0xA1]);
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
+        Assert.True(packet.AsSpan(1).SequenceEqual(header.Remainder));
+        Assert.Equal(1, header.Remainder.Length);
+    }
 }
