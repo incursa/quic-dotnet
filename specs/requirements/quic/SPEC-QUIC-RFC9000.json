@@ -14556,6 +14556,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0002.cs::LocalCloseRequested_ClearsIdleTimeoutStateAndRetainsTheSelectedConnectionIdentity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0002.cs::LocalCloseRequested_WhileClosingDoesNotReplaceTheRetainedSelectedConnectionIdentity"
         ]
       }
     },
@@ -14634,6 +14638,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B6-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0005.cs::ClosingRuntimeRepliesToAttributedPacketsAndStaysWithinTheThreeToOneBudget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0005.cs::ClosingRuntimeSuppressesRepliesWhenTheClosePacketWouldExceedTheReplyBudget"
         ]
       }
     },
@@ -14660,6 +14668,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B6-P5-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0006.cs::ClosingRuntimeReusesTheSamePlaintextConnectionCloseDatagramForRepeatedReplies",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0006.cs::ProtectedClosingRuntimeDoesNotPromiseByteForByteReuse"
         ]
       }
     },
