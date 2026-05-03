@@ -278,7 +278,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0005.cs::TryBuildProtectedApplicationDataPacket_DoesNotReusePacketNumbersWithinOneSpace"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0005.cs::TryBuildProtectedApplicationDataPacket_DoesNotReusePacketNumbersWithinOneSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0005.cs::TryBuildProtectedApplicationDataPacketForRetransmission_DoesNotReuseAnIssuedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0005.cs::TryBuildProtectedApplicationDataPacketForRetransmission_RejectsExhaustedPacketNumberSpaceWithoutReuse"
         ]
       }
     },
@@ -307,7 +309,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0006.cs::TryBuildProtectedApplicationDataPacket_SendsPacketNumbersMonotonicallyWithinOneSpace"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0006.cs::TryBuildProtectedApplicationDataPacket_SendsPacketNumbersMonotonicallyWithinOneSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0006.cs::TryBuildProtectedApplicationDataPacketForRetransmission_DoesNotMoveBackwardForLowerFloors",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0006.cs::TryBuildProtectedApplicationDataPacketForRetransmission_SendsTheLastLegalPacketNumberBeforeStopping"
         ]
       }
     },
