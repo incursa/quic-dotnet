@@ -49,6 +49,30 @@ public sealed class REQ_QUIC_RFC9002_S5P1_0001
     }
 
     [Theory]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals(
+        bool largestAcknowledgedPacketNewlyAcknowledged,
+        bool newlyAcknowledgedAckElicitingPacket)
+    {
+        QuicRttEstimator estimator = new();
+
+        Assert.False(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 1_000,
+            ackReceivedAtMicros: 2_500,
+            largestAcknowledgedPacketNewlyAcknowledged: largestAcknowledgedPacketNewlyAcknowledged,
+            newlyAcknowledgedAckElicitingPacket: newlyAcknowledgedAckElicitingPacket));
+
+        Assert.False(estimator.HasRttSample);
+        Assert.Equal(0UL, estimator.LatestRttMicros);
+        Assert.Equal(0UL, estimator.MinRttMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros, estimator.SmoothedRttMicros);
+        Assert.Equal(QuicRttEstimator.DefaultInitialRttMicros / 2, estimator.RttVarMicros);
+    }
+
+    [Theory]
     [MemberData(nameof(TryUpdateFromAckGateCases))]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]

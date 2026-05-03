@@ -13,6 +13,33 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0009
         new(600, 300, 1_025, 425),
     };
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay()
+    {
+        QuicRttEstimator estimator = new();
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 0,
+            ackReceivedAtMicros: 1_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true));
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 500,
+            ackReceivedAtMicros: 3_000,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true,
+            ackDelayMicros: 1_000,
+            handshakeConfirmed: true,
+            peerMaxAckDelayMicros: 250));
+
+        Assert.Equal(2_500UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.MinRttMicros);
+        Assert.Equal(1_156UL, estimator.SmoothedRttMicros);
+        Assert.Equal(687UL, estimator.RttVarMicros);
+    }
+
     [Theory]
     [MemberData(nameof(ClampCases))]
     [CoverageType(RequirementCoverageType.Edge)]

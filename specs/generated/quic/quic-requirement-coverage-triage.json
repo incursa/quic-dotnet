@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T11:44:58.7839096-06:00",
+  "generated_at": "2026-05-03T12:03:57.2612675-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T11:44:58.7802795-06:00",
+    "generated_at": "2026-05-03T12:03:57.2575261-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 77,
+      "covered_but_missing_xrefs": 76,
       "covered_but_proof_too_broad": 146,
-      "partially_covered": 313,
-      "trace_clean": 837,
+      "partially_covered": 307,
+      "trace_clean": 844,
       "uncovered_blocked": 81,
       "uncovered_unblocked": 317
     },
     "by_work_queue_tag": {
       "blocked": 81,
-      "clean": 837,
-      "metadata_only": 77,
-      "new_tests_needed": 847,
+      "clean": 844,
+      "metadata_only": 76,
+      "new_tests_needed": 841,
       "restructure_needed": 228
     },
     "by_rfc": [
@@ -68,10 +68,10 @@
         "rfc": "RFC9002",
         "total": 224,
         "by_state": {
-          "covered_but_missing_xrefs": 7,
+          "covered_but_missing_xrefs": 6,
           "covered_but_proof_too_broad": 1,
-          "partially_covered": 22,
-          "trace_clean": 192,
+          "partially_covered": 16,
+          "trace_clean": 199,
           "uncovered_blocked": 2
         }
       }
@@ -202878,33 +202878,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
-          "negative": 0,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -202914,9 +202913,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
           "class": "REQ_QUIC_RFC9002_S5P1_0001",
+          "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
+          "method": "TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
+          "line": 56,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0001",
+          "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
+          "method": "TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
+          "line": 56,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0001",
           "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
           "method": "TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
-          "line": 55,
+          "line": 79,
           "kinds": [
             "edge"
           ],
@@ -202939,7 +202982,7 @@
           "class": "REQ_QUIC_RFC9002_S5P1_0001",
           "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
           "method": "TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
-          "line": 55,
+          "line": 79,
           "kinds": [
             "edge"
           ],
@@ -203545,68 +203588,88 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
         {
           "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
-          "class": "REQ_QUIC_RFC9002_S5P1_0001",
-          "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
-          "method": "TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
-          "line": 55,
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+          "method": "TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+          "line": 30,
           "kinds": [
-            "edge"
+            "negative"
           ],
           "categories": [
-            "Edge",
-            "Property"
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9002-S5P1-0001"
+            "REQ-QUIC-RFC9002-S5P1-0005"
           ],
-          "requirement_tagged": false,
+          "requirement_tagged": true,
           "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
-          "class": "REQ_QUIC_RFC9002_S5P1_0001",
-          "member": "REQ_QUIC_RFC9002_S5P1_0001.TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
-          "method": "TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
-          "line": 19,
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+          "method": "TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
+          "line": 30,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+          "method": "TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+          "line": 11,
           "kinds": [
             "positive"
           ],
@@ -203615,9 +203678,75 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9002-S5P1-0001"
+            "REQ-QUIC-RFC9002-S5P1-0005"
           ],
-          "requirement_tagged": false,
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+          "method": "TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "method": "TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "line": 49,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S5P1_0005",
+          "member": "REQ_QUIC_RFC9002_S5P1_0005.TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "method": "TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "line": 49,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P1-0005"
+          ],
+          "requirement_tagged": true,
           "class_level_only": true
         }
       ]
@@ -203987,25 +204116,19 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 4,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_SeedsMinRttFromTheLocalObservationEvenWhenPeerDelayFieldsArePresent",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_DoesNotUsePeerAckDelayWhenUpdatingMinRttOnLaterSamples",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack",
-        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesOnlyLocalTimesWhenUpdatingMinRttAndSubtractsLocalDelayBeforeHandshakeConfirmation"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 6,
         "focused": 6,
@@ -204785,33 +204908,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -204823,7 +204945,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0001",
           "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
           "method": "TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
-          "line": 11,
+          "line": 33,
           "kinds": [
             "negative"
           ],
@@ -204845,7 +204967,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0001",
           "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
           "method": "TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack",
-          "line": 11,
+          "line": 33,
           "kinds": [
             "negative"
           ],
@@ -204865,9 +204987,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs",
           "class": "REQ_QUIC_RFC9002_S5P3_0001",
+          "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
+          "method": "TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs::TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0001",
+          "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
+          "method": "TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0001",
           "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary",
           "method": "TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary",
-          "line": 31,
+          "line": 53,
           "kinds": [
             "edge"
           ],
@@ -204889,7 +205055,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0001",
           "member": "REQ_QUIC_RFC9002_S5P3_0001.TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary",
           "method": "TryUpdateFromAck_UsesTheAdjustedSampleAtTheAckDelayBoundary",
-          "line": 31,
+          "line": 53,
           "kinds": [
             "edge"
           ],
@@ -205943,30 +206109,32 @@
         "edge": "required",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -205978,7 +206146,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0009",
           "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation",
           "method": "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation",
-          "line": 20,
+          "line": 47,
           "kinds": [
             "edge"
           ],
@@ -206001,7 +206169,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0009",
           "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation",
           "method": "TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmation",
-          "line": 20,
+          "line": 47,
           "kinds": [
             "edge"
           ],
@@ -206024,12 +206192,78 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0009",
           "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
           "method": "TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
-          "line": 47,
+          "line": 74,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0009",
+          "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
+          "method": "TryUpdateFromAck_LeavesAckDelayUnclampedBeforeHandshakeConfirmation",
+          "line": 74,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0009",
+          "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+          "method": "TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs::TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0009.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0009",
+          "member": "REQ_QUIC_RFC9002_S5P3_0009.TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+          "method": "TryUpdateFromAck_UsesPeerMaxAckDelayWhenItIsLessThanTheReportedAckDelay",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -206053,33 +206287,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -206091,7 +206324,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0010",
           "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold",
           "method": "TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold",
-          "line": 38,
+          "line": 65,
           "kinds": [
             "edge"
           ],
@@ -206113,7 +206346,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0010",
           "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold",
           "method": "TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold",
-          "line": 38,
+          "line": 65,
           "kinds": [
             "edge"
           ],
@@ -206133,9 +206366,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs",
           "class": "REQ_QUIC_RFC9002_S5P3_0010",
+          "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "method": "TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0010",
+          "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "method": "TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0010",
           "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
           "method": "TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
-          "line": 11,
+          "line": 38,
           "kinds": [
             "negative"
           ],
@@ -206157,7 +206434,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0010",
           "member": "REQ_QUIC_RFC9002_S5P3_0010.TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
           "method": "TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
-          "line": 11,
+          "line": 38,
           "kinds": [
             "negative"
           ],
@@ -206317,33 +206594,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -206355,7 +206631,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0012",
           "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot",
           "method": "TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot",
-          "line": 47,
+          "line": 74,
           "kinds": [
             "negative"
           ],
@@ -206377,7 +206653,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0012",
           "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot",
           "method": "TryUpdateFromAck_KeepsAdjustedRttAtOrAboveObservedMinRttWhenAckDelayWouldOvershoot",
-          "line": 47,
+          "line": 74,
           "kinds": [
             "negative"
           ],
@@ -206399,7 +206675,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0012",
           "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
           "method": "TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
-          "line": 19,
+          "line": 46,
           "kinds": [
             "edge",
             "fuzz"
@@ -206423,7 +206699,7 @@
           "class": "REQ_QUIC_RFC9002_S5P3_0012",
           "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
           "method": "TryUpdateFromAck_KeepsAdjustedRttBoundedByTheObservedMinRtt",
-          "line": 19,
+          "line": 46,
           "kinds": [
             "edge",
             "fuzz"
@@ -206431,6 +206707,50 @@
           "categories": [
             "Fuzz",
             "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0012",
+          "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
+          "method": "TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs::TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0012.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0012",
+          "member": "REQ_QUIC_RFC9002_S5P3_0012.TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
+          "method": "TryUpdateFromAck_UsesLatestRttWhenSubtractingAckDelayWouldFallBelowMinRtt",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

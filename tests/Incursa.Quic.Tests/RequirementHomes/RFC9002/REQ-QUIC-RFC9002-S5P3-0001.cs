@@ -7,6 +7,28 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S5P3_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryUpdateFromAck_UsesAdjustedRttWhenUpdatingSmoothedRtt()
+    {
+        QuicRttEstimator estimator = CreatePrimedEstimator();
+
+        Assert.True(estimator.TryUpdateFromAck(
+            largestAcknowledgedPacketSentAtMicros: 500,
+            ackReceivedAtMicros: 2_100,
+            largestAcknowledgedPacketNewlyAcknowledged: true,
+            newlyAcknowledgedAckElicitingPacket: true,
+            ackDelayMicros: 400,
+            handshakeConfirmed: true,
+            peerMaxAckDelayMicros: 400));
+
+        Assert.True(estimator.HasRttSample);
+        Assert.Equal(1_600UL, estimator.LatestRttMicros);
+        Assert.Equal(1_000UL, estimator.MinRttMicros);
+        Assert.Equal(1_025UL, estimator.SmoothedRttMicros);
+        Assert.Equal(425UL, estimator.RttVarMicros);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryUpdateFromAck_DoesNotSubtractAckDelayWhenItExceedsTheAvailableSlack()
     {
