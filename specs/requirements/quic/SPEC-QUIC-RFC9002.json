@@ -3185,6 +3185,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs::RegisterPacketSent_DoesNotCountAckOnlyPacketsTowardBytesInFlight",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs::RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0002.cs::RegisterPacketSent_DoesNotIncreaseBytesInFlightForAckOnlyPacketsAtTheCongestionWindowLimit"
         ]
@@ -3215,6 +3216,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs::CanSend_AllowsAckOnlyPacketsWithoutApplyingCongestionControl",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0003.cs::CanSend_AllowsAckOnlyPacketsEvenWhenBytesInFlightMatchesTheCongestionWindow"
         ]
@@ -3303,6 +3305,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_AllowsCongestionControlledPacketsThatFitWithinTheWindow",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
         ]
       }
@@ -3392,6 +3395,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0002.cs::ComputeInitialCongestionWindowBytes_UsesTenMaximumDatagramsAtTheDefaultFloor",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0002.cs::ComputeInitialCongestionWindowBytes_HonorsTheTransitionPoints",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0002.cs::ComputeInitialCongestionWindowBytes_RejectsZeroDatagramSizes"
         ]
@@ -3549,6 +3553,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.1"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P1-0002.cs::IsInSlowStart_TreatsEqualityWithTheThresholdAsCongestionAvoidance",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P1-0002.cs::IsInSlowStartFollowsTheCongestionWindowThresholdRelationship"
         ]
       }
@@ -3960,7 +3965,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0002.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight"
         ]
       }
     },
@@ -4109,6 +4114,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_DetectsCongestionAtTheDurationBoundary",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs::TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow"
         ]
       }

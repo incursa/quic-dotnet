@@ -7,6 +7,17 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void RegisterPacketSent_DoesNotCountAckOnlyPacketsTowardBytesInFlight()
+    {
+        QuicCongestionControlState state = new();
+
+        state.RegisterPacketSent(1_200, isAckOnlyPacket: true);
+
+        Assert.Equal(0UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void RegisterPacketSent_CountsNonAckOnlyPacketsTowardBytesInFlight()
     {

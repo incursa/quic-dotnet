@@ -4,6 +4,31 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7P6P2_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryDetectPersistentCongestion_DetectsCongestionAtTheDurationBoundary()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+        QuicPersistentCongestionPacket[] packets =
+        [
+            new(QuicPacketNumberSpace.Initial, 2_000, 1_200, true, true, acknowledged: false, lost: true),
+            new(QuicPacketNumberSpace.ApplicationData, 8_000, 1_200, true, true, acknowledged: false, lost: true),
+        ];
+
+        Assert.True(state.TryDetectPersistentCongestion(
+            packets,
+            firstRttSampleMicros: 1_000,
+            smoothedRttMicros: 1_000,
+            rttVarMicros: 0,
+            maxAckDelayMicros: 0,
+            out bool persistentCongestionDetected));
+
+        Assert.True(persistentCongestionDetected);
+        Assert.Equal(state.MinimumCongestionWindowBytes, state.CongestionWindowBytes);
+        Assert.Equal(9_600UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0001")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0002")]
     [Requirement("REQ-QUIC-RFC9002-S7P6P1-0003")]

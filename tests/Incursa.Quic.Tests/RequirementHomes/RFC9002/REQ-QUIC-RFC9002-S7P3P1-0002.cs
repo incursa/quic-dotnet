@@ -4,6 +4,23 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7P3P1_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void IsInSlowStart_TreatsEqualityWithTheThresholdAsCongestionAvoidance()
+    {
+        QuicCongestionControlState state = new();
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            packetInFlight: true));
+
+        Assert.Equal(state.SlowStartThresholdBytes, state.CongestionWindowBytes);
+        Assert.False(state.IsInSlowStart);
+        Assert.True(state.IsInCongestionAvoidance);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Positive")]

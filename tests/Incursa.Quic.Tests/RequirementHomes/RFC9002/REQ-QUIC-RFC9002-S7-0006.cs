@@ -7,6 +7,15 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S7_0006
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void CanSend_AllowsCongestionControlledPacketsThatFitWithinTheWindow()
+    {
+        QuicCongestionControlState state = new();
+
+        Assert.True(state.CanSend(state.CongestionWindowBytes, isAckOnlyPacket: false, isProbePacket: false));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow()
     {

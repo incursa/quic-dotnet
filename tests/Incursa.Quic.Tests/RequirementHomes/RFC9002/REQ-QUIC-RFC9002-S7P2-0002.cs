@@ -12,6 +12,14 @@ public sealed class REQ_QUIC_RFC9002_S7P2_0002
         new(7_361, 14_722, 14_722),
     };
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ComputeInitialCongestionWindowBytes_UsesTenMaximumDatagramsAtTheDefaultFloor()
+    {
+        Assert.Equal(12_000UL, QuicCongestionControlState.ComputeInitialCongestionWindowBytes(1_200));
+        Assert.Equal(2_400UL, QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(1_200));
+    }
+
     [Theory]
     [MemberData(nameof(InitialCongestionWindowCases))]
     [CoverageType(RequirementCoverageType.Edge)]
