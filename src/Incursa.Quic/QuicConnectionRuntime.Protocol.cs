@@ -2127,8 +2127,11 @@ internal sealed partial class QuicConnectionRuntime
         if (!peerConnectionIdState.TryAcceptNewConnectionId(
             newConnectionIdFrame,
             PeerRequestedZeroLengthConnectionId(),
+            GetLocalActiveConnectionIdLimit(),
+            handshakeFlowCoordinator.DestinationConnectionId.Span,
             out QuicTransportErrorCode errorCode,
-            out bool destinationConnectionIdChanged))
+            out bool destinationConnectionIdChanged,
+            out ulong[] retiredSequenceNumbers))
         {
             _ = HandleFatalTlsSignal(
                 nowTicks,
@@ -2150,6 +2153,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         stateChanged = destinationConnectionIdChanged;
+        foreach (ulong retiredSequenceNumber in retiredSequenceNumbers)
+        {
+            stateChanged |= TrySendRetireConnectionIdFrame(retiredSequenceNumber, ref effects);
+        }
+
         return true;
     }
 
@@ -2178,6 +2186,18 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return true;
+    }
+
+    private ulong GetLocalActiveConnectionIdLimit()
+    {
+        return tlsState.LocalTransportParameters?.ActiveConnectionIdLimit
+            ?? QuicConnectionPeerConnectionIdState.DefaultActiveConnectionIdLimit;
+    }
+
+    private ulong GetPeerActiveConnectionIdLimit()
+    {
+        return tlsState.PeerTransportParameters?.ActiveConnectionIdLimit
+            ?? QuicConnectionPeerConnectionIdState.DefaultActiveConnectionIdLimit;
     }
 
     private bool TryFlushInitialPackets(

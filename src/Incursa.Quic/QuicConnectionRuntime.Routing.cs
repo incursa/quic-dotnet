@@ -502,6 +502,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
+        if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit())
+        {
+            return false;
+        }
+
         byte[] token = connectionIdIssuedEvent.StatelessResetToken.ToArray();
         statelessResetTokensByConnectionId.Add(connectionIdIssuedEvent.ConnectionId, token);
         if (connectionIdIssuedEvent.ConnectionId > highestConnectionIdIssuedToPeer)
