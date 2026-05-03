@@ -1,8 +1,13 @@
+using System.Security.Cryptography;
+
 namespace Incursa.Quic;
 
 // Packet dispatch, timer dispatch, connection-id events, and close/idle transitions.
 internal sealed partial class QuicConnectionRuntime
 {
+    private const int LocallyIssuedConnectionIdLength = 8;
+    private const int MaximumConnectionIdGenerationAttempts = 8;
+
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
@@ -553,17 +558,10 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!statelessResetTokensByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out _))
+        if (!TryRetireIssuedConnectionId(connectionIdRetiredEvent.ConnectionId, ref effects))
         {
             return false;
         }
-
-        if (issuedConnectionIdBytesByConnectionId.Remove(connectionIdRetiredEvent.ConnectionId, out byte[]? connectionIdBytes))
-        {
-            AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionIdRetiredEvent.ConnectionId, connectionIdBytes));
-        }
-
-        AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionIdRetiredEvent.ConnectionId));
 
         // Token retirement is locally actionable even when no path is available to emit RETIRE_CONNECTION_ID yet.
         bool stateChanged = true;
@@ -574,6 +572,107 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleConnectionIdAcknowledged(QuicConnectionConnectionIdAcknowledgedEvent connectionIdAcknowledgedEvent)
     {
         _ = connectionIdAcknowledgedEvent;
+        return false;
+    }
+
+    private bool TryRetireIssuedConnectionId(ulong connectionId, ref List<QuicConnectionEffect>? effects)
+    {
+        if (!statelessResetTokensByConnectionId.Remove(connectionId, out _))
+        {
+            return false;
+        }
+
+        if (issuedConnectionIdBytesByConnectionId.Remove(connectionId, out byte[]? connectionIdBytes))
+        {
+            AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));
+        }
+
+        AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+        return true;
+    }
+
+    private bool TryReplenishIssuedConnectionId(ref List<QuicConnectionEffect>? effects)
+    {
+        ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
+        if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit()
+            || highestConnectionIdIssuedToPeer == ulong.MaxValue
+            || !TryValidateStreamSendBoundary(out _)
+            || !TryGenerateUniqueIssuedConnectionIdBytes(out byte[] connectionIdBytes))
+        {
+            return false;
+        }
+
+        byte[] statelessResetToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+        RandomNumberGenerator.Fill(statelessResetToken);
+
+        ulong replacementConnectionId = highestConnectionIdIssuedToPeer + 1;
+        if (!TryBuildOutboundNewConnectionIdPayload(
+                new QuicNewConnectionIdFrame(
+                    replacementConnectionId,
+                    retirePriorTo: 0,
+                    connectionIdBytes,
+                    statelessResetToken),
+                out byte[] payload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+                payload,
+                "The connection runtime could not protect the replacement connection ID packet.",
+                "The connection cannot send the replacement connection ID packet.",
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out byte[] protectedPacket,
+                out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        statelessResetTokensByConnectionId.Add(replacementConnectionId, statelessResetToken);
+        issuedConnectionIdBytesByConnectionId.Add(replacementConnectionId, connectionIdBytes);
+        highestConnectionIdIssuedToPeer = replacementConnectionId;
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionRegisterConnectionIdRouteEffect(replacementConnectionId, connectionIdBytes));
+        AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(replacementConnectionId, statelessResetToken));
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(currentPath.Identity, protectedPacket));
+        return true;
+    }
+
+    private bool TryGenerateUniqueIssuedConnectionIdBytes(out byte[] connectionIdBytes)
+    {
+        connectionIdBytes = [];
+
+        for (int attempt = 0; attempt < MaximumConnectionIdGenerationAttempts; attempt++)
+        {
+            byte[] candidate = new byte[LocallyIssuedConnectionIdLength];
+            RandomNumberGenerator.Fill(candidate);
+            if (!IsActiveIssuedConnectionId(candidate))
+            {
+                connectionIdBytes = candidate;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsActiveIssuedConnectionId(ReadOnlySpan<byte> connectionIdBytes)
+    {
+        foreach (byte[] activeConnectionIdBytes in issuedConnectionIdBytesByConnectionId.Values)
+        {
+            if (activeConnectionIdBytes.AsSpan().SequenceEqual(connectionIdBytes))
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 

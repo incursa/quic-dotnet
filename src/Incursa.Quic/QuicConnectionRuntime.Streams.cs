@@ -3109,6 +3109,30 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool TryBuildOutboundNewConnectionIdPayload(QuicNewConnectionIdFrame frame, out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
+        if (!QuicFrameCodec.TryFormatNewConnectionIdFrame(frame, buffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten > buffer.Length)
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
     private void TrackApplicationPacket(
         ulong packetNumber,
         byte[] protectedPacket,

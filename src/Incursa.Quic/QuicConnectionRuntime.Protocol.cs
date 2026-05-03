@@ -744,6 +744,7 @@ internal sealed partial class QuicConnectionRuntime
             packetReceivedEvent.PathIdentity,
             sourceConnectionId.ToArray(),
             packetReceivedEvent.Datagram.ToArray()));
+
         return true;
     }
 
@@ -2257,6 +2258,11 @@ internal sealed partial class QuicConnectionRuntime
                 QuicTransportErrorCode.ProtocolViolation,
                 "The peer retired the packet destination connection ID.",
                 ref effects);
+        }
+
+        if (TryRetireIssuedConnectionId(retireConnectionIdFrame.SequenceNumber, ref effects))
+        {
+            _ = TryReplenishIssuedConnectionId(ref effects);
         }
 
         return true;
