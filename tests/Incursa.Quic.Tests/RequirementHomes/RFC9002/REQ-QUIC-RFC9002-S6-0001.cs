@@ -120,6 +120,43 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryDiscardPacketNumberSpace_RemovesBothApplicationDataProtectionLevelsTogether()
+    {
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.Handshake,
+            PacketNumber: 1,
+            PayloadBytes: 1_200,
+            SentAtMicros: 100,
+            AckEliciting: true,
+            CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Handshake),
+            PacketBytes: new byte[] { 0x01 }));
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 1_200,
+            SentAtMicros: 200,
+            AckEliciting: true,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt,
+            PacketBytes: new byte[] { 0x02 }));
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 1_200,
+            SentAtMicros: 300,
+            AckEliciting: true,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: new byte[] { 0x03 }));
+
+        Assert.True(sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData));
+
+        Assert.Single(sendRuntime.SentPackets);
+        Assert.Contains(sendRuntime.SentPackets, entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.Handshake);
+        Assert.DoesNotContain(sendRuntime.SentPackets, entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryDiscardPacketNumberSpace_IsNoOpForASpaceThatWasNeverTracked()
