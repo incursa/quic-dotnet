@@ -33,6 +33,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         ArgumentNullException.ThrowIfNull(socket);
+        QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
 
         if (receiveBufferBytes <= 0)
         {

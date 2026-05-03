@@ -307,6 +307,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private static Socket CreateSocket(QuicClientConnectionSettings settings)
     {
         Socket socket = new(settings.RemoteEndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+        QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
 
         try
         {

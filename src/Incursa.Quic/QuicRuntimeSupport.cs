@@ -36,6 +36,7 @@ internal static class QuicRuntimeSupport
             using Socket socket = Socket.OSSupportsIPv4
                 ? new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
                 : new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+            QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
 
             using ECDiffieHellman ecdh = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
             using ECDsa ecdsa = ECDsa.Create(ECCurve.NamedCurves.nistP256);
