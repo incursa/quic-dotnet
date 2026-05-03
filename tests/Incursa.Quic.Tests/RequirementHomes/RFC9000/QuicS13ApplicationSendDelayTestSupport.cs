@@ -26,7 +26,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         ulong peerBidirectionalReceiveLimit = 8,
         int maximumCandidatePaths = 8,
         int maximumRecentlyValidatedPaths = 8,
-        ulong? localMaxAckDelayMicros = null)
+        ulong? localMaxAckDelayMicros = null,
+        ulong? peerActiveConnectionIdLimit = null)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
@@ -40,6 +41,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             InitialMaxStreamDataBidiLocal = Math.Max(localBidirectionalSendLimit, 64UL),
             InitialMaxStreamDataBidiRemote = Math.Max(localBidirectionalSendLimit, 64UL),
             InitialMaxStreamDataUni = Math.Max(localBidirectionalSendLimit, 64UL),
+            ActiveConnectionIdLimit = peerActiveConnectionIdLimit,
         };
 
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);

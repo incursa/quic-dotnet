@@ -582,12 +582,30 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        usedIssuedConnectionIds.Remove(connectionId);
+
         if (issuedConnectionIdBytesByConnectionId.Remove(connectionId, out byte[]? connectionIdBytes))
         {
             AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));
         }
 
         AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+        return true;
+    }
+
+    private bool TryHandlePreviouslyUnusedIssuedConnectionId(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (packetReceivedEvent.RoutedLocallyIssuedConnectionId is not ulong connectionId
+            || !statelessResetTokensByConnectionId.ContainsKey(connectionId)
+            || !issuedConnectionIdBytesByConnectionId.ContainsKey(connectionId)
+            || !usedIssuedConnectionIds.Add(connectionId))
+        {
+            return false;
+        }
+
+        _ = TryReplenishIssuedConnectionId(ref effects);
         return true;
     }
 
@@ -1506,6 +1524,8 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (statelessResetTokensByConnectionId.Remove(connectionId))
             {
+                usedIssuedConnectionIds.Remove(connectionId);
+
                 if (issuedConnectionIdBytesByConnectionId.Remove(connectionId, out byte[]? connectionIdBytes))
                 {
                     AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));

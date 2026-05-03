@@ -56,7 +56,8 @@ internal abstract record QuicConnectionEvent(QuicConnectionEventKind Kind, long 
 internal sealed record QuicConnectionPacketReceivedEvent(
     long ObservedAtTicks,
     QuicConnectionPathIdentity PathIdentity,
-    ReadOnlyMemory<byte> Datagram)
+    ReadOnlyMemory<byte> Datagram,
+    ulong? RoutedLocallyIssuedConnectionId = null)
     : QuicConnectionEvent(QuicConnectionEventKind.PacketReceived, ObservedAtTicks);
 
 internal sealed record QuicConnectionTimerExpiredEvent(

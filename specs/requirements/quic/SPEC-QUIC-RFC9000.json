@@ -5724,6 +5724,10 @@
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0016.cs::ShortHeaderPacketOnPreviouslyUnusedIssuedConnectionId_ReplenishesThroughEndpointRoute",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0016.cs::PreviouslyUsedIssuedConnectionId_DoesNotReplenishAgain"
         ]
       }
     },

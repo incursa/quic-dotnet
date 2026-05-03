@@ -495,9 +495,12 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (TryLookupExactRoute(longHeader.DestinationConnectionId, out QuicConnectionHandle routedHandle))
+        if (TryLookupExactRoute(
+            longHeader.DestinationConnectionId,
+            out QuicConnectionHandle routedHandle,
+            out ulong? routedLocallyIssuedConnectionId))
         {
-            if (TryPostPacketReceived(routedHandle, datagram, pathIdentity))
+            if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId))
             {
                 return new QuicConnectionIngressResult(
                     QuicConnectionIngressDisposition.RoutedToConnection,
@@ -607,9 +610,12 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         if ((packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
             && (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0)
         {
-            if (TryLookupRouteByPrefix(packet[1..], out QuicConnectionHandle routedHandle))
+            if (TryLookupRouteByPrefix(
+                packet[1..],
+                out QuicConnectionHandle routedHandle,
+                out ulong? routedLocallyIssuedConnectionId))
             {
-                if (TryPostPacketReceived(routedHandle, datagram, pathIdentity))
+                if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId))
                 {
                     return new QuicConnectionIngressResult(
                         QuicConnectionIngressDisposition.RoutedToConnection,
@@ -645,21 +651,29 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             null);
     }
 
-    private bool TryLookupExactRoute(ReadOnlySpan<byte> connectionId, out QuicConnectionHandle handle)
+    private bool TryLookupExactRoute(
+        ReadOnlySpan<byte> connectionId,
+        out QuicConnectionHandle handle,
+        out ulong? routedLocallyIssuedConnectionId)
     {
         handle = default;
+        routedLocallyIssuedConnectionId = null;
 
         if (!QuicConnectionIdKey.TryCreate(connectionId, out QuicConnectionIdKey routeId))
         {
             return false;
         }
 
-        return TryLookupRoute(routeId, out handle);
+        return TryLookupRoute(routeId, out handle, out routedLocallyIssuedConnectionId);
     }
 
-    private bool TryLookupRouteByPrefix(ReadOnlySpan<byte> connectionIdRemainder, out QuicConnectionHandle handle)
+    private bool TryLookupRouteByPrefix(
+        ReadOnlySpan<byte> connectionIdRemainder,
+        out QuicConnectionHandle handle,
+        out ulong? routedLocallyIssuedConnectionId)
     {
         handle = default;
+        routedLocallyIssuedConnectionId = null;
 
         int maximumCandidateLength = Math.Min(connectionIdRemainder.Length, QuicConnectionIdKey.MaximumLength);
         for (int candidateLength = maximumCandidateLength; candidateLength >= 0; candidateLength--)
@@ -676,6 +690,9 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
             if (bucket.TryGetValue(routeId, out handle))
             {
+                routedLocallyIssuedConnectionId = TryGetRoutedLocallyIssuedConnectionId(handle, routeId, out ulong connectionId)
+                    ? connectionId
+                    : null;
                 return true;
             }
         }
@@ -683,15 +700,39 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         return false;
     }
 
-    private bool TryLookupRoute(QuicConnectionIdKey routeId, out QuicConnectionHandle handle)
+    private bool TryLookupRoute(
+        QuicConnectionIdKey routeId,
+        out QuicConnectionHandle handle,
+        out ulong? routedLocallyIssuedConnectionId)
     {
+        routedLocallyIssuedConnectionId = null;
         if (!routesByLength.TryGetValue(routeId.Length, out ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionHandle>? bucket))
         {
             handle = default;
             return false;
         }
 
-        return bucket.TryGetValue(routeId, out handle);
+        if (!bucket.TryGetValue(routeId, out handle))
+        {
+            return false;
+        }
+
+        routedLocallyIssuedConnectionId = TryGetRoutedLocallyIssuedConnectionId(handle, routeId, out ulong connectionId)
+            ? connectionId
+            : null;
+        return true;
+    }
+
+    private bool TryGetRoutedLocallyIssuedConnectionId(
+        QuicConnectionHandle handle,
+        QuicConnectionIdKey routeId,
+        out ulong connectionId)
+    {
+        connectionId = default;
+        return statelessResetConnectionIdsByRouteIdByHandle.TryGetValue(
+            handle,
+            out ConcurrentDictionary<QuicConnectionIdKey, ulong>? connectionIdsByRoute)
+            && connectionIdsByRoute.TryGetValue(routeId, out connectionId);
     }
 
     private bool TryLookupRetainedStatelessResetBinding(
@@ -782,9 +823,17 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         return true;
     }
 
-    private bool TryPostPacketReceived(QuicConnectionHandle handle, ReadOnlyMemory<byte> datagram, QuicConnectionPathIdentity pathIdentity)
+    private bool TryPostPacketReceived(
+        QuicConnectionHandle handle,
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        ulong? routedLocallyIssuedConnectionId)
     {
-        return host.TryPostEvent(handle, new QuicConnectionPacketReceivedEvent(clock.Ticks, pathIdentity, datagram));
+        return host.TryPostEvent(handle, new QuicConnectionPacketReceivedEvent(
+            clock.Ticks,
+            pathIdentity,
+            datagram,
+            routedLocallyIssuedConnectionId));
     }
 
     private bool TryDispatchStatelessReset(

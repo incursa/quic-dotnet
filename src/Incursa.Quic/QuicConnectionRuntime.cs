@@ -55,6 +55,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly Dictionary<ulong, byte[]> issuedConnectionIdBytesByConnectionId = [];
+    private readonly HashSet<ulong> usedIssuedConnectionIds = [];
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
@@ -1007,6 +1008,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         peerConnectionIdState.Clear();
         issuedConnectionIdBytesByConnectionId.Clear();
+        usedIssuedConnectionIds.Clear();
         highestConnectionIdIssuedToPeer = 0;
     }
 

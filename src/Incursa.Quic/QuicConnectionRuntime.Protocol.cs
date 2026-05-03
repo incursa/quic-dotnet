@@ -1705,6 +1705,8 @@ internal sealed partial class QuicConnectionRuntime
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         }
 
+        stateChanged |= TryHandlePreviouslyUnusedIssuedConnectionId(packetReceivedEvent, ref effects);
+
         return processedStreamFrame || processedCryptoFrame || stateChanged;
         }
         finally
