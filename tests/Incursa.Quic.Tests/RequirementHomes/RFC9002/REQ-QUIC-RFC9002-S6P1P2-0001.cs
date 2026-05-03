@@ -14,6 +14,20 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0001
         new(5_000, 6_000, 1, 1, 0),
     };
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed()
+    {
+        Assert.True(QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+            packetSentAtMicros: 1_000,
+            nowMicros: 2_300,
+            latestRttMicros: 800,
+            smoothedRttMicros: 1_000,
+            out ulong remainingLossDelayMicros));
+
+        Assert.Equal(0UL, remainingLossDelayMicros);
+    }
+
     [Theory]
     [MemberData(nameof(RemainingLossDelayCases))]
     [CoverageType(RequirementCoverageType.Edge)]

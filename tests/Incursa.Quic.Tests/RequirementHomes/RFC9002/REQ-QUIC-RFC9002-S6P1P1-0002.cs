@@ -7,6 +7,28 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S6P1P1_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold()
+    {
+        Assert.True(QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
+            packetNumber: 10,
+            largestAcknowledgedPacketNumber: 13));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree()
+    {
+        ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
+                packetNumber: 10,
+                largestAcknowledgedPacketNumber: 12,
+                packetThreshold: QuicRecoveryTiming.RecommendedPacketThreshold - 1));
+
+        Assert.Equal("packetThreshold", exception.ParamName);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
     public void ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold()

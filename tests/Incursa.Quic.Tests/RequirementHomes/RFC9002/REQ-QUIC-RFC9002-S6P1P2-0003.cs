@@ -13,6 +13,15 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0003
         new(1_200, 1_000, 1_350),
     };
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor()
+    {
+        Assert.Equal(1_350UL, QuicRecoveryTiming.ComputeLossDelayMicros(
+            latestRttMicros: 800,
+            smoothedRttMicros: 1_200));
+    }
+
     [Theory]
     [MemberData(nameof(LossDelayFormulaCases))]
     [CoverageType(RequirementCoverageType.Edge)]

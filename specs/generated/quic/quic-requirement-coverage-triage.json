@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T12:03:57.2612675-06:00",
+  "generated_at": "2026-05-03T12:08:16.4072287-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T12:03:57.2575261-06:00",
+    "generated_at": "2026-05-03T12:08:16.4017662-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 76,
       "covered_but_proof_too_broad": 146,
-      "partially_covered": 307,
-      "trace_clean": 844,
+      "partially_covered": 302,
+      "trace_clean": 849,
       "uncovered_blocked": 81,
       "uncovered_unblocked": 317
     },
     "by_work_queue_tag": {
       "blocked": 81,
-      "clean": 844,
+      "clean": 849,
       "metadata_only": 76,
-      "new_tests_needed": 841,
+      "new_tests_needed": 836,
       "restructure_needed": 228
     },
     "by_rfc": [
@@ -70,8 +70,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 6,
           "covered_but_proof_too_broad": 1,
-          "partially_covered": 16,
-          "trace_clean": 199,
+          "partially_covered": 11,
+          "trace_clean": 204,
           "uncovered_blocked": 2
         }
       }
@@ -207372,31 +207372,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -207406,9 +207407,97 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
           "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+          "method": "ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+          "method": "ShouldDeclarePacketLostByPacketThreshold_AllowsTheRecommendedThreshold",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "method": "ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs::ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "method": "ShouldDeclarePacketLostByPacketThreshold_RejectsThresholdsBelowThree",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold",
           "method": "ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold",
-          "line": 12,
+          "line": 34,
           "kinds": [
             "edge"
           ],
@@ -207431,7 +207520,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P1_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P1_0002.ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold",
           "method": "ShouldDeclarePacketLostByPacketThreshold_UsesTheMinimumRecommendedThreshold",
-          "line": 12,
+          "line": 34,
           "kinds": [
             "edge"
           ],
@@ -207461,30 +207550,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -207496,7 +207587,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline",
           "method": "TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline",
-          "line": 21,
+          "line": 35,
           "kinds": [
             "edge"
           ],
@@ -207519,7 +207610,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline",
           "method": "TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline",
-          "line": 21,
+          "line": 35,
           "kinds": [
             "edge"
           ],
@@ -207542,12 +207633,78 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
           "method": "TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
-          "line": 35,
+          "line": 49,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
+          "method": "TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity",
+          "line": 49,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+          "method": "TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs::TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0001",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0001.TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+          "method": "TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -207571,33 +207728,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -207609,7 +207765,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
           "method": "ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
-          "line": 20,
+          "line": 30,
           "kinds": [
             "edge"
           ],
@@ -207632,7 +207788,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
           "method": "ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
-          "line": 20,
+          "line": 30,
           "kinds": [
             "edge"
           ],
@@ -207655,7 +207811,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_RejectsAZeroTimerGranularity",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimerGranularity",
-          "line": 29,
+          "line": 39,
           "kinds": [
             "negative"
           ],
@@ -207677,12 +207833,56 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_RejectsAZeroTimerGranularity",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimerGranularity",
-          "line": 29,
+          "line": 39,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "method": "ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0002",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0002.ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "method": "ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -207706,33 +207906,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -207744,7 +207943,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
           "method": "ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
-          "line": 20,
+          "line": 29,
           "kinds": [
             "edge"
           ],
@@ -207767,7 +207966,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
           "method": "ComputeLossDelayMicros_ComputesTheTimeThresholdFromRttAndGranularity",
-          "line": 20,
+          "line": 29,
           "kinds": [
             "edge"
           ],
@@ -207790,7 +207989,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
-          "line": 29,
+          "line": 38,
           "kinds": [
             "negative"
           ],
@@ -207812,12 +208011,56 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimeThresholdDenominator",
-          "line": 29,
+          "line": 38,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
+          "method": "ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs::ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0003.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0003",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0003.ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
+          "method": "ComputeLossDelayMicros_UsesTheLargerRttSampleBeforeApplyingTheGranularityFloor",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -207995,33 +208238,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -208033,7 +208275,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
-          "line": 29,
+          "line": 39,
           "kinds": [
             "negative"
           ],
@@ -208055,7 +208297,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
           "method": "ComputeLossDelayMicros_RejectsAZeroTimeThresholdNumerator",
-          "line": 29,
+          "line": 39,
           "kinds": [
             "negative"
           ],
@@ -208077,7 +208319,7 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
           "method": "ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
-          "line": 19,
+          "line": 29,
           "kinds": [
             "edge"
           ],
@@ -208100,13 +208342,57 @@
           "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
           "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
           "method": "ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplier",
-          "line": 19,
+          "line": 29,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge",
             "Property"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
+          "method": "ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P1P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs::ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0005.cs",
+          "class": "REQ_QUIC_RFC9002_S6P1P2_0005",
+          "member": "REQ_QUIC_RFC9002_S6P1P2_0005.ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
+          "method": "ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

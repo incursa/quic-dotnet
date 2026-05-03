@@ -12,6 +12,16 @@ public sealed class REQ_QUIC_RFC9002_S6P1P2_0005
         new(9, 9, 10),
     };
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void ComputeLossDelayMicros_UsesTheRecommendedNineEighthsMultiplierByDefault()
+    {
+        Assert.Equal(900UL, QuicRecoveryTiming.ComputeLossDelayMicros(
+            latestRttMicros: 800,
+            smoothedRttMicros: 800,
+            timerGranularityMicros: 1));
+    }
+
     [Theory]
     [MemberData(nameof(RecommendedMultiplierCases))]
     [CoverageType(RequirementCoverageType.Edge)]
