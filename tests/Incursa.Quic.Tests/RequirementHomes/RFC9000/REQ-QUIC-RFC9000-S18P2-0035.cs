@@ -7,6 +7,21 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S18P2_0035
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseTransportParameters_AcceptsMinimumActiveConnectionIdLimit()
+    {
+        byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterTuple(
+            0x0E,
+            QuicVarintTestData.EncodeMinimal(2));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out QuicTransportParameters parsed));
+        Assert.Equal(2UL, parsed.ActiveConnectionIdLimit);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo()
     {

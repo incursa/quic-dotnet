@@ -3,6 +3,60 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S18P2-0037")]
 public sealed class REQ_QUIC_RFC9000_S18P2_0037
 {
+    [Theory]
+    [MemberData(nameof(ServerOnlyClientFormatCases))]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryFormatTransportParameters_ClientRejectsEachServerOnlyTransportParameter(object parametersObject)
+    {
+        QuicTransportParameters parameters = Assert.IsType<QuicTransportParameters>(parametersObject);
+
+        Assert.False(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            stackalloc byte[128],
+            out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryFormatTransportParameters_ClientAllowsNonServerOnlyTransportParameters()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            MaxIdleTimeout = 25,
+            InitialMaxData = 1_200,
+            ActiveConnectionIdLimit = 2,
+            InitialSourceConnectionId = [0xAA],
+        };
+
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            stackalloc byte[64],
+            out int bytesWritten));
+        Assert.True(bytesWritten > 0);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryFormatTransportParameters_ClientRejectsServerOnlyTransportParameterMixedWithAllowedParameters()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            MaxIdleTimeout = 25,
+            InitialSourceConnectionId = [0xAA],
+            RetrySourceConnectionId = [0xBB],
+        };
+
+        Assert.False(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            stackalloc byte[64],
+            out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+    }
+
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0001">This transport parameter MUST only be sent by a server.</workbench-requirement>
@@ -38,5 +92,53 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0037
             QuicTransportParameterRole.Client,
             stackalloc byte[128],
             out _));
+    }
+
+    public static IEnumerable<object[]> ServerOnlyClientFormatCases()
+    {
+        yield return new object[]
+        {
+            new QuicTransportParameters
+            {
+                OriginalDestinationConnectionId = [0x01, 0x02],
+            },
+        };
+
+        yield return new object[]
+        {
+            new QuicTransportParameters
+            {
+                StatelessResetToken = Enumerable.Range(0, 16).Select(value => (byte)(0x30 + value)).ToArray(),
+            },
+        };
+
+        yield return new object[]
+        {
+            new QuicTransportParameters
+            {
+                PreferredAddress = CreatePreferredAddress(),
+            },
+        };
+
+        yield return new object[]
+        {
+            new QuicTransportParameters
+            {
+                RetrySourceConnectionId = [0x10, 0x11],
+            },
+        };
+    }
+
+    private static QuicPreferredAddress CreatePreferredAddress()
+    {
+        return new QuicPreferredAddress
+        {
+            IPv4Address = [192, 0, 2, 1],
+            IPv4Port = 443,
+            IPv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x06],
+            IPv6Port = 8443,
+            ConnectionId = [0xAA],
+            StatelessResetToken = Enumerable.Range(0, 16).Select(value => (byte)(0x40 + value)).ToArray(),
+        };
     }
 }
