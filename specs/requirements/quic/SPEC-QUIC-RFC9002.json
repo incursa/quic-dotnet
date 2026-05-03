@@ -3256,7 +3256,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0004.cs::TryRegisterLoss_AllowsAckOnlyLossSignalsToEnterRecovery",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0004.cs::TryRegisterLoss_IgnoresNonInflightPacketsWhenAckOnlyLossSignalsAreDisabled",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0004.cs::TryRegisterLoss_AckOnlyLossSignalsDoNotRemoveBytesFromFlight"
         ]
       }
     },
@@ -3285,7 +3287,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs::Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0005.cs::CandidatePathValidationProbeDoesNotAlterTheActivePathCongestionController",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0005.cs::ValidatedPeerAddressMigrationStartsTheNewPathWithFreshCongestionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0005.cs::ActivePathLossStillUpdatesTheCurrentPathCongestionController"
         ]
       }
     },
