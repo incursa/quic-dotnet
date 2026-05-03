@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T11:26:49.2344533-06:00",
+  "generated_at": "2026-05-03T11:32:32.8940884-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T11:26:49.2305230-06:00",
+    "generated_at": "2026-05-03T11:32:32.8909140-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 79,
+      "covered_but_missing_xrefs": 78,
       "covered_but_proof_too_broad": 146,
       "partially_covered": 321,
-      "trace_clean": 827,
+      "trace_clean": 828,
       "uncovered_blocked": 81,
       "uncovered_unblocked": 317
     },
     "by_work_queue_tag": {
       "blocked": 81,
-      "clean": 827,
-      "metadata_only": 79,
+      "clean": 828,
+      "metadata_only": 78,
       "new_tests_needed": 855,
       "restructure_needed": 228
     },
@@ -68,10 +68,10 @@
         "rfc": "RFC9002",
         "total": 224,
         "by_state": {
-          "covered_but_missing_xrefs": 9,
+          "covered_but_missing_xrefs": 8,
           "covered_but_proof_too_broad": 1,
           "partially_covered": 30,
-          "trace_clean": 182,
+          "trace_clean": 183,
           "uncovered_blocked": 2
         }
       }
@@ -209270,41 +209270,29 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 4,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 10,
+        "focused": 10,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 6,
           "negative": 2,
-          "edge": 1,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -209321,7 +209309,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets",
           "method": "TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets",
-          "line": 132,
+          "line": 189,
           "kinds": [
             "negative"
           ],
@@ -209343,7 +209331,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets",
           "method": "TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets",
-          "line": 132,
+          "line": 189,
           "kinds": [
             "negative"
           ],
@@ -209363,9 +209351,75 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
           "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "method": "TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "line": 73,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "method": "TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "line": 73,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
           "method": "TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
-          "line": 174,
+          "line": 231,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
+          "method": "TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
+          "line": 231,
           "kinds": [
             "edge"
           ],
@@ -209403,13 +209457,57 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend",
+          "method": "TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
           "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
           "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
           "method": "TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
-          "line": 73,
+          "line": 130,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P1_0006",
+          "member": "REQ_QUIC_RFC9002_S6P2P1_0006.TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
+          "method": "TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
+          "line": 130,
           "kinds": [
             "positive"
           ],

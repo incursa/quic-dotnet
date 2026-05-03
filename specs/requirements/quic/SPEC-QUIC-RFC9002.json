@@ -2047,9 +2047,10 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_RestartsThePtoAfterAnAckElicitingSend",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryAcknowledgePacket_RestartsThePtoAfterAnAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryDiscardPacketNumberSpace_RestartsThePtoAfterInitialKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TryArmProbeTimeout_PreservesAZeroBackoffWhenRestarted",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets"
         ]
       }

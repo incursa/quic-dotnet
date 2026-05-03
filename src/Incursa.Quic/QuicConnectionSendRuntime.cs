@@ -199,13 +199,16 @@ internal sealed class QuicConnectionSendRuntime
             _ = TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(acknowledgedPacket.PlaintextPayload.Span);
         }
 
+        bool acknowledgmentRestartsProbeTimeout =
+            packetNumberSpace != QuicPacketNumberSpace.Initial || handshakeConfirmed;
+
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
             ProbeTimeoutCount,
             acknowledgmentReceived: true,
             acknowledgmentPacketNumberSpace: packetNumberSpace,
             handshakeConfirmed: handshakeConfirmed);
 
-        if (sentPackets.Count == 0)
+        if (acknowledgmentRestartsProbeTimeout || sentPackets.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
