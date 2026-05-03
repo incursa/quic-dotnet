@@ -17977,6 +17977,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0002.cs::TryParseLongHeader_AllowsAPacketWithALengthFieldToBeFollowedByAnotherPacketInTheSameDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0002.cs::TryParseLongHeader_RejectsACoalescedDatagramWhenTheFirstPacketIsTruncatedBeforeItsLengthDelimitedPayloadCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0002.cs::TryParseLongHeader_AllowsTheShortestValidCoalescedDatagram",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0012.cs::TryParseLongHeader_IndividuallyExposesEveryPacketInACoalescedDatagram"
         ]
       }
