@@ -2147,7 +2147,8 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseThreeRetentionTimerAfterPhaseFourLocalKeyUpdate",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseThreeRetentionTimerAfterAnotherPhaseFourPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases"
         ]
       }
     },

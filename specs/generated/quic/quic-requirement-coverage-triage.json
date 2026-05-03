@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T13:16:28.9107484-06:00",
+  "generated_at": "2026-05-03T13:21:33.3863740-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T13:16:28.8979336-06:00",
+    "generated_at": "2026-05-03T13:21:33.3823399-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 70,
       "covered_but_proof_too_broad": 145,
-      "partially_covered": 286,
-      "trace_clean": 875,
+      "partially_covered": 285,
+      "trace_clean": 876,
       "uncovered_blocked": 79,
       "uncovered_unblocked": 316
     },
     "by_work_queue_tag": {
       "blocked": 79,
-      "clean": 875,
+      "clean": 876,
       "metadata_only": 70,
-      "new_tests_needed": 816,
+      "new_tests_needed": 815,
       "restructure_needed": 223
     },
     "by_rfc": [
@@ -59,8 +59,7 @@
         "rfc": "RFC9001",
         "total": 96,
         "by_state": {
-          "partially_covered": 1,
-          "trace_clean": 80,
+          "trace_clean": 81,
           "uncovered_blocked": 15
         }
       },
@@ -193534,13 +193533,13 @@
         "edge": "optional",
         "fuzz": "required"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 12,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 13,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveServerRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
@@ -193553,24 +193552,23 @@
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseThreeRetentionTimerAfterPhaseFourLocalKeyUpdate",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseThreeRetentionTimerAfterAnotherPhaseFourPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 24,
-        "focused": 24,
+        "total": 26,
+        "focused": 26,
         "broad": 0,
         "by_kind": {
           "positive": 14,
           "negative": 10,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "fuzz"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -194094,6 +194092,50 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9001-S6P5-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9001-S6P5-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs",
+          "class": "REQ_QUIC_RFC9001_S6P5_0004",
+          "member": "REQ_QUIC_RFC9001_S6P5_0004.FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases",
+          "method": "FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases",
+          "line": 280,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9001-S6P5-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9001-S6P5-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs",
+          "class": "REQ_QUIC_RFC9001_S6P5_0004",
+          "member": "REQ_QUIC_RFC9001_S6P5_0004.FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases",
+          "method": "FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases",
+          "line": 280,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
