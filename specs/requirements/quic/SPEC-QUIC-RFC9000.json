@@ -14383,6 +14383,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2 RFC9000-S10.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0008.cs::ConnectionClose_EmitsConnectionTerminatedNotificationsForOpenStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2-0008.cs::OpenStreamsRemainUnterminatedBeforeConnectionClose"
         ]
       },
       "notes": [
