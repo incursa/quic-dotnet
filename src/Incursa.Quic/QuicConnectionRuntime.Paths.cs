@@ -20,11 +20,6 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = trustedReuse
             ? recentlyValidatedPath.MaximumDatagramSizeState
             : QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
-        if (payloadBytes > 0
-            && (ulong)payloadBytes > maximumDatagramSizeState.MaximumDatagramSizeBytes)
-        {
-            maximumDatagramSizeState = maximumDatagramSizeState.WithMaximumDatagramSize((ulong)payloadBytes);
-        }
 
         if (trustedReuse)
         {
@@ -74,14 +69,6 @@ internal sealed partial class QuicConnectionRuntime
             LastActivityTicks = nowTicks,
             AmplificationState = updatedAmplificationState,
         };
-        if (payloadBytes > 0
-            && (ulong)payloadBytes > updatedPath.MaximumDatagramSizeState.MaximumDatagramSizeBytes)
-        {
-            updatedPath = updatedPath with
-            {
-                MaximumDatagramSizeState = updatedPath.MaximumDatagramSizeState.WithMaximumDatagramSize((ulong)payloadBytes),
-            };
-        }
 
         if (updatedPath == path)
         {
