@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T11:32:32.8940884-06:00",
+  "generated_at": "2026-05-03T11:36:37.4660469-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,7 +18,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T11:32:32.8909140-06:00",
+    "generated_at": "2026-05-03T11:36:37.4619604-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 78,
@@ -212456,19 +212456,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 7,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 21,
-        "focused": 21,
+        "total": 25,
+        "focused": 25,
         "broad": 0,
         "by_kind": {
-          "positive": 16,
+          "positive": 20,
           "negative": 3,
           "edge": 2,
           "fuzz": 0,
@@ -212509,7 +212513,29 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData",
           "method": "HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData",
-          "line": 1102,
+          "line": 1105,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData",
+          "method": "HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData",
+          "line": 1105,
           "kinds": [
             "positive"
           ],
@@ -212531,7 +212557,29 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
           "method": "HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
-          "line": 800,
+          "line": 801,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
+          "method": "HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
+          "line": 801,
           "kinds": [
             "positive"
           ],
@@ -212569,13 +212617,35 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
+          "method": "HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
+          "line": 690,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_PrefersTheOutstandingApplicationPacketThatCarriesMissingStreamBytesBeforeAFinOnlyClose",
           "method": "HandleRecoveryTimerExpired_PrefersTheOutstandingApplicationPacketThatCarriesMissingStreamBytesBeforeAFinOnlyClose",
-          "line": 1248,
+          "line": 1252,
           "kinds": [
             "positive"
           ],
@@ -212597,7 +212667,29 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
           "method": "HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
-          "line": 954,
+          "line": 956,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S6P2P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs",
+          "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
+          "member": "REQ_QUIC_RFC9002_S6P2P4_0004.HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
+          "method": "HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
+          "line": 956,
           "kinds": [
             "positive"
           ],
@@ -212707,7 +212799,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.TryDequeuePreferredProbeRetransmission_PrefersAnUnprobedFinOnlyCloseOverARequestPacketThatAlreadyServedAsAProbe",
           "method": "TryDequeuePreferredProbeRetransmission_PrefersAnUnprobedFinOnlyCloseOverARequestPacketThatAlreadyServedAsAProbe",
-          "line": 1670,
+          "line": 1674,
           "kinds": [
             "positive"
           ],
@@ -212729,7 +212821,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.TryDequeuePreferredProbeRetransmission_PrefersLaterInitialCryptoRangeWhenPtoMustRepairCrypto",
           "method": "TryDequeuePreferredProbeRetransmission_PrefersLaterInitialCryptoRangeWhenPtoMustRepairCrypto",
-          "line": 1566,
+          "line": 1570,
           "kinds": [
             "positive"
           ],
@@ -212751,7 +212843,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.TryDequeuePreferredProbeRetransmission_PreservesInitialFifoWhenCryptoPriorityCannotBeRead",
           "method": "TryDequeuePreferredProbeRetransmission_PreservesInitialFifoWhenCryptoPriorityCannotBeRead",
-          "line": 1633,
+          "line": 1637,
           "kinds": [
             "negative"
           ],
@@ -212905,7 +212997,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.TrySendRecoveryProbeDatagram_PromotesLaterInitialCryptoRangeWhenPeerOnlyHasTheFirstRange",
           "method": "TrySendRecoveryProbeDatagram_PromotesLaterInitialCryptoRangeWhenPeerOnlyHasTheFirstRange",
-          "line": 1400,
+          "line": 1404,
           "kinds": [
             "positive"
           ],
@@ -212927,7 +213019,7 @@
           "class": "REQ_QUIC_RFC9002_S6P2P4_0004",
           "member": "REQ_QUIC_RFC9002_S6P2P4_0004.TrySendRecoveryProbeDatagram_SendsUnsentInitialCryptoBeforeQueuedEarlyRetransmission",
           "method": "TrySendRecoveryProbeDatagram_SendsUnsentInitialCryptoBeforeQueuedEarlyRetransmission",
-          "line": 1483,
+          "line": 1487,
           "kinds": [
             "positive"
           ],

@@ -713,6 +713,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 pathIdentity,
                 new byte[1280]),
             nowTicks: 2).StateChanged);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1280));
         Assert.Equal(1280UL, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
         byte[] handshakeDestinationConnectionId = [0xAD, 0x9D, 0xCC, 0x5E];
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(handshakeDestinationConnectionId));
@@ -868,6 +869,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 runtime.ActivePath.Value.Identity,
                 new byte[1400]),
             nowTicks: 9).StateChanged);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
         outboundEffects.Clear();
 
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
@@ -1021,6 +1023,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 runtime.ActivePath.Value.Identity,
                 new byte[1400]),
             nowTicks: 9).StateChanged);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
         outboundEffects.Clear();
 
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
@@ -1169,6 +1172,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 runtime.ActivePath.Value.Identity,
                 new byte[1280]),
             nowTicks: 10).StateChanged);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1280));
         outboundEffects.Clear();
 
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
