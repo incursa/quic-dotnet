@@ -51,6 +51,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0029.json`](VER-QUIC-RFC9000-0029.json): canonical RFC 9000 path validation datagram floor runtime verification source
 - [`VER-QUIC-RFC9000-0030.json`](VER-QUIC-RFC9000-0030.json): canonical RFC 9000 NEW_CONNECTION_ID runtime lifecycle topoff verification source
 - [`VER-QUIC-RFC9000-0031.json`](VER-QUIC-RFC9000-0031.json): canonical RFC 9000 preferred address connection-ID constraint verification source
+- [`VER-QUIC-RFC9000-0032.json`](VER-QUIC-RFC9000-0032.json): canonical RFC 9000 client address validation token lifecycle verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0032",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Client Address Validation Token Lifecycle Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0032",
+    "WI-QUIC-RFC9000-0032"
+  ],
+  "verification_method": "Focused requirement-home execution for client retained-token consumption, Initial token-field encoding, Retry-token separation, endpoint/version gating, Release build, generated coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S8P1P3-0003",
+    "REQ-QUIC-RFC9000-S8P1P3-0009",
+    "REQ-QUIC-RFC9000-S8P1P3-0010",
+    "REQ-QUIC-RFC9000-S8P1P3-0012",
+    "REQ-QUIC-RFC9000-S8P1P3-0013",
+    "REQ-QUIC-RFC9000-S8P1P3-0017"
+  ],
+  "scope": "This verification covers client-side retained-token selection, one-attempt consumption, endpoint/version gating, Initial Token field encoding, and Retry token immediate-use separation for the selected RFC 9000 S8P1P3 requirements.",
+  "expected_result": "Applicable unused NEW_TOKEN-derived tokens are consumed and encoded in Initial packets for one matching attempt, tokens for other endpoints are not included, consumed tokens cannot be reused, Retry tokens are used only for immediate replay Initial packets, and Retry token bytes cannot be retained as future-connection tokens.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S8P1P3 token lifecycle requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "The client connection attempt is scoped to QUIC version 1.",
+    "The retained-token source is NEW_TOKEN-derived; Retry-derived byte strings are rejected before future-attempt consumption.",
+    "Server-side token validation behavior is outside this verification slice."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicClientAddressValidationToken.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3TokenLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0017.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_0017\"",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim closure for token expiration, server-side validation/discard behavior, or a public client token cache API."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The Release build passed with zero warnings, the focused S8P1P3 token lifecycle filter passed 13/13, the full no-build solution test suite passed 3715/3715, regenerated triage reached trace_clean for the selected requirements, and SpecTrace core validation passed for 340 JSON artifacts."
+}

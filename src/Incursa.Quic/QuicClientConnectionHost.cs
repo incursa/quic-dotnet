@@ -105,7 +105,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             handle,
             new QuicConnectionHandshakeBootstrapRequestedEvent(
                 runtime.Clock.Ticks,
-                CreateLocalTransportParameters(settings.Options, routeConnectionId))))
+                CreateLocalTransportParameters(settings.Options, routeConnectionId),
+                settings.InitialAddressValidationToken)))
         {
             throw new InvalidOperationException("The client runtime could not bootstrap the handshake.");
         }

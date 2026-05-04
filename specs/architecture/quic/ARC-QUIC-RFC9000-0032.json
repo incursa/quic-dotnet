@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0032",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Client Address Validation Token Attempt Lifecycle",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded client-side address-validation token lifecycle used to carry a NEW_TOKEN-derived token in Initial packets without reusing Retry tokens or cross-server tokens.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0032",
+    "VER-QUIC-RFC9000-0032"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P1P3-0003",
+    "REQ-QUIC-RFC9000-S8P1P3-0009",
+    "REQ-QUIC-RFC9000-S8P1P3-0010",
+    "REQ-QUIC-RFC9000-S8P1P3-0012",
+    "REQ-QUIC-RFC9000-S8P1P3-0013",
+    "REQ-QUIC-RFC9000-S8P1P3-0017"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicClientAddressValidationToken.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3TokenLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0017.cs"
+  ],
+  "design_summary": "The client token model accepts only non-empty NEW_TOKEN-derived values, binds them to a remote IPEndPoint and QUIC version, and allows exactly one matching consume operation for a connection attempt. Internal client option capture consumes an applicable retained token and stores the copied bytes in connection settings. Client bootstrap forwards that token into the handshake bootstrap event, and the runtime encodes it in the Token field of outgoing Initial packets for the attempt. Retry processing clears any retained Initial token and uses the Retry token only for the immediate replay Initial packets.",
+  "data_and_state_considerations": "The retained-token object copies input bytes at creation and returns copied token bytes on successful consumption. Consumption is guarded by Interlocked.CompareExchange so concurrent attempts cannot reuse the same token object. Endpoint matching currently uses address and port equality, and version matching is scoped to QUIC version 1.",
+  "edge_cases_and_constraints": [
+    "Retry tokens are rejected as future-connection token sources.",
+    "Empty NEW_TOKEN values are not retained.",
+    "A token for a different server endpoint is not consumed and therefore leaves the Initial Token field empty.",
+    "A consumed token object cannot be consumed again for another connection attempt.",
+    "A Retry received during an attempt replaces any retained Initial token for the immediate replay.",
+    "The slice is internal plumbing and does not add a new public token-store API."
+  ],
+  "alternatives_considered": [
+    "Expose a public token cache on QuicClientConnectionOptions immediately; rejected because the public API shape needs broader product and compatibility review.",
+    "Treat Retry tokens and NEW_TOKEN tokens as a shared byte-store; rejected because Retry tokens have immediate-use semantics and cannot be carried into future attempts.",
+    "Key retained tokens only by host string; rejected for this bounded slice because the current client settings are IPEndPoint-based."
+  ],
+  "risks": [
+    "This slice does not close server-side token validation requirements in S8P1P3.",
+    "This slice does not implement token expiration policy or encrypted token contents.",
+    "This slice does not persist tokens across process boundaries or expose a public token cache.",
+    "Benchmark coverage is not added because the change is a bounded selection and packet-field plumbing path rather than a new parser or serializer hot path."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers client-side selection, one-attempt consumption, endpoint/version gating, Initial token encoding, and Retry token separation. Server issuance, validation, expiration, and public cache surfaces remain separate work."
+    }
+  ]
+}

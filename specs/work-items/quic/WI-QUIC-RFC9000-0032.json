@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0032",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Client Address Validation Token Lifecycle Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0032",
+    "VER-QUIC-RFC9000-0032"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S8P1P3-0003",
+    "REQ-QUIC-RFC9000-S8P1P3-0009",
+    "REQ-QUIC-RFC9000-S8P1P3-0010",
+    "REQ-QUIC-RFC9000-S8P1P3-0012",
+    "REQ-QUIC-RFC9000-S8P1P3-0013",
+    "REQ-QUIC-RFC9000-S8P1P3-0017"
+  ],
+  "summary": "Add internal client-side retained-token plumbing for NEW_TOKEN-derived Initial tokens while keeping Retry tokens immediate-use only.",
+  "planned_changes": "- Add an internal retained address-validation token model with source, endpoint, version, and one-attempt consumption rules.\n- Consume an applicable retained token during client settings capture.\n- Forward the consumed token through client host bootstrap into the runtime handshake bootstrap event.\n- Encode the consumed token in client Initial packets for the attempt.\n- Clear retained Initial tokens when Retry is received so Retry tokens are used only for immediate replay.\n- Add direct requirement-home tests and canonical trace links for the selected S8P1P3 requirements.",
+  "verification_plan": "Run a Release build, run the focused S8P1P3 token lifecycle requirement-home filter, regenerate the QUIC requirement coverage triage, and validate canonical SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0032"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0032"
+  ],
+  "out_of_scope": [
+    "Server-side validation or discard behavior for Initial packets with address-validation tokens.",
+    "Token expiration metadata and encrypted token contents.",
+    "A public address-validation token cache API.",
+    "Process-persistent token storage.",
+    "Benchmark-suite changes for existing Initial packet formatting paths."
+  ],
+  "completion_notes": "Completed as an internal client-side token selection and Initial-token encoding slice. Remaining S8P1P3 server validation and token policy requirements stay open for follow-up work."
+}

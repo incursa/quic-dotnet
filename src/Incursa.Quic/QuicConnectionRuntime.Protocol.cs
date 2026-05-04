@@ -102,6 +102,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (tlsState.Role == QuicTlsRole.Client
+            && !handshakeBootstrapRequestedEvent.InitialAddressValidationToken.IsEmpty)
+        {
+            initialAddressValidationToken = handshakeBootstrapRequestedEvent.InitialAddressValidationToken.ToArray();
+        }
+
         IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.StartHandshake(
             localTransportParameters,
             dormantDetachedResumptionTicketSnapshot,
@@ -163,6 +169,7 @@ internal sealed partial class QuicConnectionRuntime
         ResetRecoveryStateForRetry();
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
+        initialAddressValidationToken = null;
         observedPeerInitialSourceConnectionId = null;
         observedPeerInitialCryptoFrameData = null;
         bufferedEstablishmentHandshakePackets.Clear();
@@ -2344,29 +2351,38 @@ internal sealed partial class QuicConnectionRuntime
 
         if (tlsState.InitialEgressCryptoBuffer.BufferedBytes <= 0)
         {
-            return probePacket
-                && tlsState.Role == QuicTlsRole.Client
-                && initialBootstrapClientHelloBytes is not null
-                && initialBootstrapClientHelloBytes.Length > 0
-                && (
-                    retrySourceConnectionId is not null
-                    && retryToken is not null
-                    ? TryFlushRetriedInitialPackets(
-                        pathIdentity,
-                        initialBootstrapClientHelloBytes,
-                        retrySourceConnectionId,
-                        retryToken,
-                        initialPacketProtection,
-                        probePacket,
-                        maximumDatagrams,
-                        ref effects)
-                    : TryReplayBootstrapInitialPackets(
-                        pathIdentity,
-                        initialBootstrapClientHelloBytes,
-                        initialPacketProtection,
-                        probePacket,
-                        maximumDatagrams,
-                        ref effects));
+            if (!probePacket
+                || tlsState.Role != QuicTlsRole.Client
+                || initialBootstrapClientHelloBytes is null
+                || initialBootstrapClientHelloBytes.Length == 0)
+            {
+                return false;
+            }
+
+            if (retrySourceConnectionId is not null && retryToken is not null)
+            {
+                return TryFlushRetriedInitialPackets(
+                    pathIdentity,
+                    initialBootstrapClientHelloBytes,
+                    retrySourceConnectionId,
+                    retryToken,
+                    initialPacketProtection,
+                    probePacket,
+                    maximumDatagrams,
+                    ref effects);
+            }
+
+            ReadOnlySpan<byte> replayInitialToken = initialAddressValidationToken is null
+                ? ReadOnlySpan<byte>.Empty
+                : initialAddressValidationToken;
+            return TryReplayBootstrapInitialPackets(
+                pathIdentity,
+                initialBootstrapClientHelloBytes,
+                replayInitialToken,
+                initialPacketProtection,
+                probePacket,
+                maximumDatagrams,
+                ref effects);
         }
 
         bool stateChanged = false;
@@ -2403,9 +2419,14 @@ internal sealed partial class QuicConnectionRuntime
             bool builtProtectedPacket;
             if (tlsState.Role == QuicTlsRole.Client)
             {
+                ReadOnlySpan<byte> outboundInitialToken = initialAddressValidationToken is null
+                    ? ReadOnlySpan<byte>.Empty
+                    : initialAddressValidationToken;
                 builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                     cryptoChunk[..cryptoBytesWritten],
                     cryptoOffset,
+                    handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                    outboundInitialToken,
                     ackFramePayload,
                     initialPacketProtection,
                     out packetNumber,
@@ -2486,6 +2507,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryReplayBootstrapInitialPackets(
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> initialClientHelloBytes,
+        ReadOnlySpan<byte> initialToken,
         QuicInitialPacketProtection protection,
         bool probePacket,
         int maximumDatagrams,
@@ -2519,6 +2541,8 @@ internal sealed partial class QuicConnectionRuntime
             if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                     cryptoChunk,
                     (ulong)replayOffset,
+                    handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                    initialToken,
                     ackFramePayload,
                     protection,
                     out ulong packetNumber,

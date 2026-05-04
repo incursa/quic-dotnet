@@ -71,7 +71,8 @@ internal sealed record QuicConnectionPeerHandshakeTranscriptCompletedEvent(long 
 
 internal sealed record QuicConnectionHandshakeBootstrapRequestedEvent(
     long ObservedAtTicks,
-    QuicTransportParameters? LocalTransportParameters)
+    QuicTransportParameters? LocalTransportParameters,
+    ReadOnlyMemory<byte> InitialAddressValidationToken = default)
     : QuicConnectionEvent(QuicConnectionEventKind.HandshakeBootstrapRequested, ObservedAtTicks);
 
 internal sealed record QuicConnectionRetryReceivedEvent(

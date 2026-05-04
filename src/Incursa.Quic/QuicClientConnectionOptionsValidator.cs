@@ -12,7 +12,8 @@ internal static class QuicClientConnectionOptionsValidator
         string parameterName,
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
-        ReadOnlyMemory<byte> localHandshakePrivateKey = default)
+        ReadOnlyMemory<byte> localHandshakePrivateKey = default,
+        QuicClientAddressValidationToken? addressValidationToken = null)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -110,13 +111,23 @@ internal static class QuicClientConnectionOptionsValidator
             throw new NotSupportedException("RSA padding overrides are not supported by this slice.");
         }
 
+        ReadOnlyMemory<byte> initialAddressValidationToken = default;
+        if (addressValidationToken is not null)
+        {
+            _ = addressValidationToken.TryConsume(
+                remoteEndPoint,
+                QuicVersionNegotiation.Version1,
+                out initialAddressValidationToken);
+        }
+
         return new QuicClientConnectionSettings(
             CaptureOptions(options, authenticationOptions),
             CloneEndPoint(remoteEndPoint),
             options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
             capturedCertificatePolicySnapshot,
             detachedResumptionTicketSnapshot,
-            localHandshakePrivateKey);
+            localHandshakePrivateKey,
+            initialAddressValidationToken);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -196,4 +207,5 @@ internal sealed record QuicClientConnectionSettings(
     IPEndPoint? LocalEndPoint,
     QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot = null,
     QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
-    ReadOnlyMemory<byte> LocalHandshakePrivateKey = default);
+    ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
+    ReadOnlyMemory<byte> InitialAddressValidationToken = default);

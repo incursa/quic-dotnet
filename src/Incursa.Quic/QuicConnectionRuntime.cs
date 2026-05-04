@@ -78,6 +78,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private uint? ownedResumptionTicketMaxEarlyDataSize;
     private QuicTransportParameters? ownedResumptionTicketPeerTransportParameters;
     private long? ownedResumptionTicketCapturedAtTicks;
+    private byte[]? initialAddressValidationToken;
     private byte[]? resumptionMasterSecret;
     private byte[]? retrySourceConnectionId;
     private byte[]? retryToken;
