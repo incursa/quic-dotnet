@@ -37,4 +37,37 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0001
         Assert.Equal((byte)0x01, header.PacketNumberLengthBits);
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_DoesNotClassifyInitialPacketsAsZeroRtt()
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 1,
+            destinationConnectionId: [0x10],
+            sourceConnectionId: [0x20],
+            versionSpecificData: QuicHeaderTestData.BuildInitialVersionSpecificData([], [0x01], [0xAA]));
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicLongPacketTypeBits.Initial, header.LongPacketTypeBits);
+        Assert.False(QuicS17P2P3TestSupport.IsZeroRttPacket(packet));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseLongHeader_AcceptsTheShortestStructurallyValidZeroRttPacket()
+    {
+        byte[] packet = QuicS17P2P3TestSupport.BuildZeroRttPacket(
+            packetNumberLength: 1,
+            protectedPayload: []);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicLongPacketTypeBits.ZeroRtt, header.LongPacketTypeBits);
+        Assert.Equal((byte)0x00, header.PacketNumberLengthBits);
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
+    }
 }

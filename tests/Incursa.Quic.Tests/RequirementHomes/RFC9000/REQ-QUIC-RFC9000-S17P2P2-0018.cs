@@ -85,6 +85,35 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0018
             out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryOpenInitialPacket_ForClientReceipt_RejectsLargestOneByteTokenLength()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection senderProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection receiverProtection));
+
+        byte[] token = Enumerable.Repeat((byte)0xAA, 63).ToArray();
+        var (_, protectedPacket) = BuildProtectedInitialPacket(
+            token,
+            senderProtection);
+
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.False(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            receiverProtection,
+            requireZeroTokenLength: true,
+            out _,
+            out _,
+            out _));
+    }
+
     private static (byte[] PlaintextPacket, byte[] ProtectedPacket) BuildProtectedInitialPacket(
         ReadOnlySpan<byte> token,
         QuicInitialPacketProtection senderProtection)

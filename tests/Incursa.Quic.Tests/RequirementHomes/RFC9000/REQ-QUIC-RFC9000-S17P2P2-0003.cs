@@ -4,6 +4,18 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S17P2P2_0003
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_ExposesTheSetFixedBitOnInitialPackets()
+    {
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket();
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.True(header.FixedBit);
+        Assert.True((header.HeaderControlBits & QuicPacketHeaderBits.FixedBitMask) != 0);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0003">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
     /// </workbench-requirements>

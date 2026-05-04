@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0036",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Connection Close Packet-Level Emission Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0036",
+    "VER-QUIC-RFC9000-0036"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S10P2P3-0001",
+    "REQ-QUIC-RFC9000-S10P2P3-0003",
+    "REQ-QUIC-RFC9000-S10P2P3-0004",
+    "REQ-QUIC-RFC9000-S10P2P3-0005",
+    "REQ-QUIC-RFC9000-S10P2P3-0006",
+    "REQ-QUIC-RFC9000-S10P2P3-0008",
+    "REQ-QUIC-RFC9000-S10P2P3-0010",
+    "REQ-QUIC-RFC9000-S10P2P3-0011",
+    "REQ-QUIC-RFC9000-S10P2P3-0012",
+    "REQ-QUIC-RFC9000-S10P2P3-0013"
+  ],
+  "summary": "Implement and prove local CONNECTION_CLOSE emission across the packet protection levels required before and after handshake confirmation.",
+  "planned_changes": "- Add close-only Initial and Handshake protected packet builders.\n- Teach the runtime to emit post-confirmation close in 1-RTT when 1-RTT protection is available.\n- Teach the runtime to emit server Initial, Handshake, and 1-RTT close packets before confirmation when the corresponding protection material is available.\n- Downgrade application close frames in Initial and Handshake packets to transport APPLICATION_ERROR with an empty reason phrase.\n- Add focused requirement-home proof for the packet-level close matrix and update canonical trace artifacts.",
+  "verification_plan": "Run a Release build, the focused S10P2P3 requirement-home filter, adjacent close/packet-space regression filters, regenerate QUIC coverage triage, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0036"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0036"
+  ],
+  "out_of_scope": [
+    "Coalescing close packets into one UDP datagram.",
+    "Retransmitting CONNECTION_CLOSE packets.",
+    "Changing peer close-frame parsing or close/drain timer behavior.",
+    "Removing the legacy bare close fallback for states without protected close material."
+  ],
+  "completion_notes": "Completed as packet-level close emission and downgrade behavior. Coalescing and broader lifecycle cleanup remain separate follow-ons."
+}

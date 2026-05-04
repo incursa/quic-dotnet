@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0037",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 0-RTT Packet Format Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 0-RTT long-header packet-format requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0037",
+    "VER-QUIC-RFC9000-0037"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S17P2P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P3-0005",
+    "REQ-QUIC-RFC9000-S17P2P3-0006",
+    "REQ-QUIC-RFC9000-S17P2P3-0007",
+    "REQ-QUIC-RFC9000-S17P2P3-0008",
+    "REQ-QUIC-RFC9000-S17P2P3-0009",
+    "REQ-QUIC-RFC9000-S17P2P3-0010",
+    "REQ-QUIC-RFC9000-S17P2P3-0011",
+    "REQ-QUIC-RFC9000-S17P2P3-0012",
+    "REQ-QUIC-RFC9000-S17P2P3-0013",
+    "REQ-QUIC-RFC9000-S17P2P3-0014",
+    "REQ-QUIC-RFC9000-S17P2P3-0015",
+    "REQ-QUIC-RFC9000-S17P2P3-0016",
+    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-S17P2P3-0021",
+    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-S17P2P3-0023"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicPacketParsing.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P3TestSupport.cs"
+  ],
+  "design_summary": "The 0-RTT packet-format proof is decomposed into requirement-home tests that exercise the existing long-header parser and 0-RTT packet builder directly. The parser validates version 1 long-header shape, connection-ID length limits, varint Length fields, and packet-number length consistency. The builder proof covers client first-flight 0-RTT emission, packet-number progression, 0-RTT suppression after 1-RTT processing, ACK exclusion, and remembered-limit error classification.",
+  "data_and_state_considerations": "The slice does not introduce new packet-format runtime behavior. It makes the existing parser and builder responsibilities explicit through focused positive, negative, and edge proofs so generated triage no longer depends on broad header fuzz/property tests for S17P2P3 closure.",
+  "edge_cases_and_constraints": [
+    "Shortest structurally valid 0-RTT packets are accepted when the Length field covers the encoded packet number.",
+    "Length fields shorter than the encoded packet number are rejected.",
+    "Destination and source connection IDs are proven at zero-byte, twenty-byte, and over-limit boundaries.",
+    "0-RTT first-flight emission remains after the Initial packet and is suppressed when early-data readiness is absent or 1-RTT processing has begun.",
+    "ACK payloads remain outside the repository-owned bootstrap 0-RTT emission path."
+  ],
+  "alternatives_considered": [
+    "Keep broad header parser fuzz/property tests as the only evidence; rejected because the current triage rules require narrow requirement-home proof.",
+    "Add new parser behavior for 0-RTT-only wrappers; rejected because the existing long-header parser already owns the wire-format checks needed for this slice.",
+    "Claim full remembered-limit enforcement for all early-data surfaces; rejected because this slice proves the existing stream remembered-limit floor only."
+  ],
+  "risks": [
+    "0-RTT packet decryption/opening is still outside this structural parser proof.",
+    "The slice does not claim interop readiness for arbitrary early-data application payloads.",
+    "The remembered-limit proof remains stream-state scoped rather than a complete server early-data policy matrix."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused 0-RTT packet-format and current repository-owned emission proof for S17P2P3. It does not broaden TLS 0-RTT acceptance policy, transport-parameter remembered-limit policy, or packet-protection cryptographic validation."
+    }
+  ]
+}

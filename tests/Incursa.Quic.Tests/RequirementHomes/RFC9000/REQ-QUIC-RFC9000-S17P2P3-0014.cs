@@ -40,4 +40,22 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0014
 
         Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P3-0014")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseLongHeader_AllowsZeroRttSourceConnectionIdsAtZeroBytes()
+    {
+        byte[] packet = QuicS17P2P3TestSupport.BuildZeroRttPacket(
+            destinationConnectionId: [0xDA],
+            sourceConnectionId: []);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(0, header.SourceConnectionIdLength);
+        Assert.True(header.SourceConnectionId.IsEmpty);
+    }
 }

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0035",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 NEW_TOKEN Replay Enforcement Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0035",
+    "VER-QUIC-RFC9000-0035"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S8P1P4-0006",
+    "REQ-QUIC-RFC9000-S8P1P4-0008",
+    "REQ-QUIC-RFC9000-S8P1P4-0009",
+    "REQ-QUIC-RFC9000-S8P1P4-0012"
+  ],
+  "summary": "Implement and prove listener-local NEW_TOKEN one-time acceptance by recording consumed valid tokens and rejecting later attempts that reuse the same token value.",
+  "planned_changes": "- Add a listener-scoped consumed-token replay cache keyed by token fingerprint.\n- Expose token expiration parsing from the NEW_TOKEN envelope helper for replay-cache eviction.\n- Route valid listener NEW_TOKEN admission through the replay cache before marking the peer address as validated.\n- Add focused requirement-home proof that the first valid token use is admitted and a second connection attempt using the same token is rejected as replayed.\n- Update canonical trace artifacts for the S8P1P4 replay requirements.",
+  "verification_plan": "Run a Release build, the focused S8P1P4 replay requirement-home filter, SpecTrace JSON validation, and the smallest relevant no-build test scope.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0035"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0035"
+  ],
+  "out_of_scope": [
+    "Persistent token replay state across listener or process restarts.",
+    "Distributed or cluster-wide replay enforcement.",
+    "Public token-cache or callback APIs.",
+    "Retry token source-address and source-port binding."
+  ],
+  "completion_notes": "Completed as listener-local NEW_TOKEN one-time acceptance and replay rejection. Broader persistence and public policy remain separate follow-ons."
+}

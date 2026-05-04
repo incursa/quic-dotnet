@@ -45,6 +45,10 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0032.json`](WI-QUIC-RFC9000-0032.json): canonical RFC 9000 client address validation token lifecycle work-item source
 - [`WI-QUIC-RFC9000-0033.json`](WI-QUIC-RFC9000-0033.json): canonical RFC 9000 server Retry token validation work-item source
 - [`WI-QUIC-RFC9000-0034.json`](WI-QUIC-RFC9000-0034.json): canonical RFC 9000 verifiable NEW_TOKEN envelope work-item source
+- [`WI-QUIC-RFC9000-0035.json`](WI-QUIC-RFC9000-0035.json): canonical RFC 9000 NEW_TOKEN replay enforcement work-item source
+- [`WI-QUIC-RFC9000-0036.json`](WI-QUIC-RFC9000-0036.json): canonical RFC 9000 connection close packet-level emission work-item source
+- [`WI-QUIC-RFC9000-0037.json`](WI-QUIC-RFC9000-0037.json): canonical RFC 9000 0-RTT packet format focused proof work-item source
+- [`WI-QUIC-RFC9000-0038.json`](WI-QUIC-RFC9000-0038.json): canonical RFC 9000 Initial packet format focused proof work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

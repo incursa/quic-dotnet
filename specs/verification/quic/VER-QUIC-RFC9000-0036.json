@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0036",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Connection Close Packet-Level Emission Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0036",
+    "WI-QUIC-RFC9000-0036"
+  ],
+  "verification_method": "Focused requirement-home tests for S10P2P3 close packet-level emission, adjacent close/packet-space regression tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S10P2P3-0001",
+    "REQ-QUIC-RFC9000-S10P2P3-0003",
+    "REQ-QUIC-RFC9000-S10P2P3-0004",
+    "REQ-QUIC-RFC9000-S10P2P3-0005",
+    "REQ-QUIC-RFC9000-S10P2P3-0006",
+    "REQ-QUIC-RFC9000-S10P2P3-0008",
+    "REQ-QUIC-RFC9000-S10P2P3-0010",
+    "REQ-QUIC-RFC9000-S10P2P3-0011",
+    "REQ-QUIC-RFC9000-S10P2P3-0012",
+    "REQ-QUIC-RFC9000-S10P2P3-0013"
+  ],
+  "scope": "This verification covers locally generated CONNECTION_CLOSE packet selection and lower-protection downgrade behavior before and after handshake confirmation.",
+  "expected_result": "A confirmed connection emits application close in a protected 1-RTT packet. Before confirmation, a server with Initial, Handshake, and 1-RTT protect material emits one close packet in each packet number space. Initial and Handshake closes carry transport APPLICATION_ERROR with no reason phrase when the original close request was application-specific.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S10P2P3 requirement-home filter.",
+    "Run adjacent close-frame and packet-space regression filters.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "The runtime has an active path with enough anti-amplification budget for the emitted close datagrams.",
+    "The test runtime seeds Initial, Handshake, and 1-RTT protect material without marking the QUIC handshake confirmed.",
+    "Post-confirmation proof uses an existing finished server runtime with 1-RTT protect material."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P3_0011\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P3_|FullyQualifiedName~REQ_QUIC_RFC9000_S19P19_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S19P19_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S12P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S12P4_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim packet coalescing, CONNECTION_CLOSE retransmission, or peer close-frame parsing changes."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The Release build passed with zero warnings, the focused S10P2P3 no-build filter passed 8/8, the adjacent close/packet-space no-build filter passed 19/19, regenerated QUIC coverage triage marked the ten targeted S10P2P3 requirements trace_clean, and SpecTrace JSON validation passed for 352 artifacts."
+}

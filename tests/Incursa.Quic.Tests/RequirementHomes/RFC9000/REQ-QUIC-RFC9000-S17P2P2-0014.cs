@@ -30,4 +30,39 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0014
         Assert.Equal((byte)0x03, header.PacketNumberLengthBits);
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_RejectsInitialPacketsWhoseLengthCannotCoverThePacketNumber()
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            QuicS17P2P2TestSupport.BuildInitialHeaderControlBits(packetNumberLength: 4),
+            version: 1,
+            destinationConnectionId: [0x10],
+            sourceConnectionId: [0x20],
+            versionSpecificData:
+            [
+                0x00,
+                0x03,
+                0x01, 0x02, 0x03,
+            ]);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
+
+    [Theory]
+    [InlineData(1, (byte)0x00)]
+    [InlineData(4, (byte)0x03)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseLongHeader_AcceptsInitialPacketNumberLengthBoundaries(
+        int packetNumberLength,
+        byte expectedPacketNumberLengthBits)
+    {
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket(packetNumberLength);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(expectedPacketNumberLengthBits, header.PacketNumberLengthBits);
+    }
 }

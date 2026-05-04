@@ -91,4 +91,71 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0022
         Assert.Equal((ulong)retryToken.Length, tokenLength);
         Assert.True(retryToken.AsSpan().SequenceEqual(versionSpecificData.Slice(tokenLengthBytesConsumed, retryToken.Length)));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseRetryBootstrapMetadata_RejectsTamperedRetryPacketsBeforeBuildingTheFollowUpInitial()
+    {
+        byte[] retrySourceConnectionId = [0x31, 0x32, 0x33, 0x34];
+        byte[] retryToken = [0xA1, 0xA2, 0xA3, 0xA4];
+        Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            QuicS17P2P2TestSupport.InitialSourceConnectionId,
+            retrySourceConnectionId,
+            retryToken,
+            out byte[] retryPacket));
+
+        retryPacket[^1] ^= 0x01;
+
+        Assert.False(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            retryPacket,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedInitialPacket_AfterRetry_PreservesLargestOneByteRetryTokenLength()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        byte[] retrySourceConnectionId = [0x31, 0x32, 0x33, 0x34];
+        byte[] retryToken = Enumerable.Repeat((byte)0xA5, 63).ToArray();
+        Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            QuicS17P2P2TestSupport.InitialSourceConnectionId,
+            retrySourceConnectionId,
+            retryToken,
+            out byte[] retryPacket));
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            retryPacket,
+            out QuicRetryBootstrapMetadata retryMetadata));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            [0x60, 0x61],
+            cryptoPayloadOffset: 0,
+            retryMetadata.RetrySourceConnectionId,
+            retryMetadata.RetryToken,
+            clientProtection,
+            out byte[] protectedPacket));
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            serverProtection,
+            out byte[] openedPacket,
+            out _,
+            out _));
+
+        QuicS17P2P2TestSupport.AssertInitialTokenLength(openedPacket, (ulong)retryToken.Length);
+    }
 }

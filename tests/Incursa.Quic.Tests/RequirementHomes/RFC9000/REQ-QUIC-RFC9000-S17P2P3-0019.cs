@@ -5,7 +5,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0019
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
+    [Trait("Category", "Edge")]
     public void AfterProcessingOneRttPacketsTheRuntimeDoesNotEmitZeroRttPackets()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();

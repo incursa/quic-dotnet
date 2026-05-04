@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0035",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 NEW_TOKEN Replay Enforcement",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the listener-owned replay cache that prevents a valid NEW_TOKEN value from being accepted as address validation more than once during the token lifetime.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0034",
+    "WI-QUIC-RFC9000-0035",
+    "VER-QUIC-RFC9000-0035"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P1P4-0006",
+    "REQ-QUIC-RFC9000-S8P1P4-0008",
+    "REQ-QUIC-RFC9000-S8P1P4-0009",
+    "REQ-QUIC-RFC9000-S8P1P4-0012"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAddressValidationTokenReplayCache.cs",
+    "src/Incursa.Quic/QuicAddressValidationTokenProtector.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs"
+  ],
+  "design_summary": "The listener keeps a memory-only cache of consumed NEW_TOKEN fingerprints. After the envelope protector validates a token's provenance, integrity tag, expiration, and client-IP binding, the listener reads the token expiration and atomically records a SHA-256 fingerprint of the exact token bytes. The first valid consume succeeds and allows address-validated admission. A later Initial carrying the same still-valid token is classified as replayed, does not mark the peer address as validated, and follows the invalid-token admission path; with Retry bootstrap enabled, the listener issues Retry rather than invoking the connection-options callback again.",
+  "data_and_state_considerations": "The replay cache is listener scoped and intentionally memory-only. It stores token fingerprints rather than token bytes, associates each fingerprint with the token expiration timestamp, and prunes expired entries on consume attempts. Replay observations reuse the listener's internal validation flags and failure-code surface.",
+  "edge_cases_and_constraints": [
+    "Only tokens that first pass envelope validation can enter the consumed-token cache.",
+    "A replayed token is not treated as address validation even if the token envelope is otherwise valid and unexpired.",
+    "Expired consumed-token fingerprints are removed opportunistically so a long-lived listener does not retain replay state after the token can no longer validate.",
+    "The cache is scoped to one listener lifetime and does not claim cross-process replay persistence."
+  ],
+  "alternatives_considered": [
+    "Persist consumed-token state across process restarts; rejected because the existing token secret is listener scoped and persistent token policy remains outside the supported public surface.",
+    "Store full token bytes in the replay cache; rejected because a fingerprint is enough to distinguish exact replay without retaining token material.",
+    "Move replay tracking into the token protector; rejected because the protector remains the stateless envelope primitive while listener admission owns server-side acceptance state."
+  ],
+  "risks": [
+    "A listener restart clears consumed-token state and changes the token secret, so old tokens fail validation rather than being recognized as replays.",
+    "This slice does not add public token-cache callbacks or cluster-wide anti-replay coordination.",
+    "Retry token source-address and source-port binding remain a separate S8P1P4 follow-on."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes listener-local NEW_TOKEN one-time acceptance. It does not claim persistent, distributed, or public API replay policy."
+    }
+  ]
+}

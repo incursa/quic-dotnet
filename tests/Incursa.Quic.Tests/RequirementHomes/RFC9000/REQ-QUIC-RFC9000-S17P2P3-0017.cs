@@ -74,6 +74,38 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0017
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void BootstrapWithMinimalEarlyDataReadinessStillEmitsInitialBeforeZeroRtt()
+    {
+        QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
+            QuicResumptionClientHelloTestSupport.CreateDetachedResumptionTicketSnapshot(ticketMaxEarlyDataSize: 1);
+        QuicTransportParameters localTransportParameters = QuicS17P2P3TestSupport.CreateBootstrapLocalTransportParameters();
+        long nowTicks = detachedResumptionTicketSnapshot.CapturedAtTicks + 1;
+
+        using QuicConnectionRuntime clientRuntime = QuicS17P2P3TestSupport.CreateClientRuntime(detachedResumptionTicketSnapshot);
+
+        QuicConnectionTransitionResult result = clientRuntime.Transition(
+            new QuicConnectionHandshakeBootstrapRequestedEvent(
+                ObservedAtTicks: nowTicks,
+                LocalTransportParameters: localTransportParameters),
+            nowTicks);
+
+        int initialIndex = Array.FindIndex(
+            result.Effects,
+            effect => effect is QuicConnectionSendDatagramEffect sendEffect
+                && QuicS17P2P3TestSupport.IsInitialPacket(sendEffect.Datagram.Span));
+        int zeroRttIndex = Array.FindIndex(
+            result.Effects,
+            effect => effect is QuicConnectionSendDatagramEffect sendEffect
+                && QuicS17P2P3TestSupport.IsZeroRttPacket(sendEffect.Datagram.Span));
+
+        Assert.True(initialIndex >= 0);
+        Assert.True(zeroRttIndex >= 0);
+        Assert.True(initialIndex < zeroRttIndex);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void FuzzBootstrapZeroRttOrdering_BoundarySamplingKeepsInitialBeforeZeroRtt()
     {

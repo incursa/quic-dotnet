@@ -63,4 +63,27 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0003
             out _,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ZeroRttPacketsCanCarryMinimalEarlyDataPayloadBeforeHandshakeCompletion()
+    {
+        QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.ZeroRtt);
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreateBootstrapPacketCoordinator();
+
+        Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+            QuicFrameTestData.BuildPingFrame(),
+            zeroRttMaterial,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal(0UL, packetNumber);
+        Assert.True(QuicS17P2P3TestSupport.IsZeroRttPacket(protectedPacket));
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(
+            protectedPacket,
+            out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
+    }
 }

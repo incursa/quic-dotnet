@@ -33,6 +33,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
     private readonly bool retryBootstrapEnabled;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
+    private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
 
     private CancellationTokenSource? listenerCancellationSource;
     private Task? runningTask;
@@ -972,8 +973,21 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         Interlocked.Exchange(ref newTokenValidationAttempted, 1);
         newTokenValidationTokenHex = Convert.ToHexString(initialToken);
 
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         QuicAddressValidationTokenValidationResult result =
-            addressValidationTokenProtector.ValidateNewToken(initialToken, pathIdentity.RemoteAddress);
+            addressValidationTokenProtector.ValidateNewToken(initialToken, pathIdentity.RemoteAddress, now);
+        if (result == QuicAddressValidationTokenValidationResult.Valid)
+        {
+            if (!QuicAddressValidationTokenProtector.TryGetNewTokenExpiration(initialToken, out DateTimeOffset expiresAt))
+            {
+                result = QuicAddressValidationTokenValidationResult.Malformed;
+            }
+            else if (!addressValidationTokenReplayCache.TryConsume(initialToken, expiresAt, now))
+            {
+                result = QuicAddressValidationTokenValidationResult.Replayed;
+            }
+        }
+
         if (result == QuicAddressValidationTokenValidationResult.Valid)
         {
             Interlocked.Exchange(ref newTokenValidationSucceeded, 1);

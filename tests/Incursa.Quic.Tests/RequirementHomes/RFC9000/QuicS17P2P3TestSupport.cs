@@ -60,6 +60,39 @@ internal static class QuicS17P2P3TestSupport
         return new QuicHandshakeFlowCoordinator(PacketConnectionId, PacketSourceConnectionId);
     }
 
+    internal static byte BuildZeroRttHeaderControlBits(int packetNumberLength = 2, byte reservedBits = 0x00)
+    {
+        Assert.InRange(packetNumberLength, 1, 4);
+        Assert.InRange((int)reservedBits, 0, 3);
+
+        return (byte)(0x50 | ((reservedBits & 0x03) << 2) | ((packetNumberLength - 1) & 0x03));
+    }
+
+    internal static byte[] BuildZeroRttPacket(
+        int packetNumberLength = 2,
+        byte reservedBits = 0x00,
+        uint version = 1,
+        byte[]? destinationConnectionId = null,
+        byte[]? sourceConnectionId = null,
+        byte[]? protectedPayload = null)
+    {
+        return QuicHeaderTestData.BuildLongHeader(
+            BuildZeroRttHeaderControlBits(packetNumberLength, reservedBits),
+            version,
+            destinationConnectionId ?? [0x10, 0x11],
+            sourceConnectionId ?? [0x20],
+            BuildZeroRttVersionSpecificData(packetNumberLength, protectedPayload));
+    }
+
+    internal static byte[] BuildZeroRttVersionSpecificData(
+        int packetNumberLength,
+        byte[]? protectedPayload = null)
+    {
+        return QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+            CreatePacketNumber(packetNumberLength),
+            protectedPayload ?? [0xAA]);
+    }
+
     internal static QuicTlsPacketProtectionMaterial CreatePacketProtectionMaterial(QuicTlsEncryptionLevel encryptionLevel)
     {
         Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
@@ -93,6 +126,14 @@ internal static class QuicS17P2P3TestSupport
         }
 
         return bytes;
+    }
+
+    internal static byte[] CreatePacketNumber(int packetNumberLength)
+    {
+        Assert.InRange(packetNumberLength, 1, 4);
+        return Enumerable.Range(0, packetNumberLength)
+            .Select(index => (byte)(index + 1))
+            .ToArray();
     }
 
     internal static byte[] BuildExpectedZeroRttPacket(

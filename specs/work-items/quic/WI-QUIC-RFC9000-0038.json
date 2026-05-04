@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0038",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Initial Packet Format Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0038",
+    "VER-QUIC-RFC9000-0038"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S17P2P2-0001",
+    "REQ-QUIC-RFC9000-S17P2P2-0002",
+    "REQ-QUIC-RFC9000-S17P2P2-0003",
+    "REQ-QUIC-RFC9000-S17P2P2-0004",
+    "REQ-QUIC-RFC9000-S17P2P2-0005",
+    "REQ-QUIC-RFC9000-S17P2P2-0006",
+    "REQ-QUIC-RFC9000-S17P2P2-0007",
+    "REQ-QUIC-RFC9000-S17P2P2-0008",
+    "REQ-QUIC-RFC9000-S17P2P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P2-0010",
+    "REQ-QUIC-RFC9000-S17P2P2-0011",
+    "REQ-QUIC-RFC9000-S17P2P2-0012",
+    "REQ-QUIC-RFC9000-S17P2P2-0013",
+    "REQ-QUIC-RFC9000-S17P2P2-0014",
+    "REQ-QUIC-RFC9000-S17P2P2-0015",
+    "REQ-QUIC-RFC9000-S17P2P2-0016",
+    "REQ-QUIC-RFC9000-S17P2P2-0017",
+    "REQ-QUIC-RFC9000-S17P2P2-0018",
+    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-S17P2P2-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0021",
+    "REQ-QUIC-RFC9000-S17P2P2-0022",
+    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-S17P2P2-0024",
+    "REQ-QUIC-RFC9000-S17P2P2-0025",
+    "REQ-QUIC-RFC9000-S17P2P2-0026"
+  ],
+  "summary": "Decompose RFC 9000 S17P2P2 Initial packet-format proof into focused requirement-home tests and canonical trace evidence.",
+  "planned_changes": "- Add Initial packet test helpers for header-control bits, version-specific data, packet-number boundaries, protected Initial datagrams, and token-length assertions.\n- Add focused positive, negative, and edge requirement-home tests for Initial long-header shape, first-byte bit fields, connection-ID length limits, Token Length and Length varint boundaries, packet-number length validation, token policy, Initial protection, Retry follow-up Initials, Initial CRYPTO/ACK payloads, disallowed frame handling, and first client Initial CRYPTO framing.\n- Update canonical S17P2P2 trace links and generated coverage triage.",
+  "verification_plan": "Run a Release build, the focused S17P2P2 requirement-home filter, regenerate QUIC requirement coverage triage, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0038"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0038"
+  ],
+  "out_of_scope": [
+    "Changing TLS handshake progression policy.",
+    "Changing public QUIC API behavior.",
+    "Claiming a single close-vs-discard strategy for every disallowed Initial payload frame.",
+    "Completing broader S17 packet-format closure outside S17P2P2."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over the existing parser, Initial packet builder/open path, and Initial payload handling behavior."
+}

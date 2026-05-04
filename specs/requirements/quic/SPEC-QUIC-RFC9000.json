@@ -10425,13 +10425,19 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0035"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0035"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0035"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs::NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse"
         ],
         "upstream_refs": [
           "RFC 9000 §8.1.4 RFC9000-S8.1.4-B6-P5-S2",
@@ -10477,13 +10483,19 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0035"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0035"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0035"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs::NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse"
         ],
         "upstream_refs": [
           "RFC 9000 §8.1.4 RFC9000-S8.1.4-B6-P5-S4",
@@ -10503,13 +10515,19 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0035"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0035"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0035"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs::NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse"
         ],
         "upstream_refs": [
           "RFC 9000 §8.1.4 RFC9000-S8.1.4-B6-P5-S5",
@@ -10589,13 +10607,19 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0035"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0035"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0035"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs::NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse"
         ],
         "upstream_refs": [
           "RFC 9000 §8.1.4 RFC9000-S8.1.4-B6-P5-S2",
@@ -15254,17 +15278,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType"
         ]
       }
     },
@@ -15306,17 +15336,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B3-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_ServerSendsInitialAndHandshakeCloses"
         ]
       }
     },
@@ -15332,17 +15368,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_SendsHandshakeAndOneRttCloses"
         ]
       }
     },
@@ -15358,17 +15400,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_ServerSendsInitialAndHandshakeCloses"
         ]
       }
     },
@@ -15384,13 +15432,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S2",
@@ -15398,8 +15449,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedWithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_DowngradesApplicationCloseInInitialAndHandshake",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType"
         ]
       }
     },
@@ -15441,17 +15492,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType"
         ]
       }
     },
@@ -15493,17 +15550,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_SendsHandshakeAndOneRttCloses"
         ]
       }
     },
@@ -15519,13 +15582,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S2",
@@ -15533,8 +15599,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedWithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_DowngradesApplicationCloseInInitialAndHandshake",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedAfterOneRttKeepsTheApplicationCloseFrameType"
         ]
       }
     },
@@ -15550,17 +15616,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_ClearsReasonPhraseWhenDowngrading"
         ]
       },
       "notes": [
@@ -15579,17 +15651,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0036"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0036"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0036"
         ],
         "upstream_refs": [
           "RFC 9000 §10.2.3 RFC9000-S10.2.3-B6-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs::LocalCloseRequestedBeforeHandshakeConfirmation_UsesApplicationErrorWhenDowngrading"
         ]
       },
       "notes": [
@@ -26753,8 +26831,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket"
         ]
       }
     },
@@ -26783,12 +26862,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsShortHeaderForm",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs::TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm"
         ]
       }
     },
@@ -26817,12 +26891,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0003.cs::TryParseLongHeader_ExposesTheSetFixedBitOnInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0003.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit"
         ]
       }
     },
@@ -26851,11 +26921,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0004.cs::TryParseLongHeader_ExposesTheInitialLongPacketTypeValue"
         ]
       }
     },
@@ -26884,12 +26950,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0005.cs::TryParseLongHeader_ExposesTheInitialReservedBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0005.cs::TryParseLongHeader_DoesNotIncludePacketNumberLengthBitsInTheReservedBits"
         ]
       }
     },
@@ -26918,12 +26980,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0006.cs::TryParseLongHeader_ExposesTheInitialPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0006.cs::TryParseLongHeader_RejectsInitialPacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0006.cs::TryParseLongHeader_AcceptsInitialPacketNumberLengthBitBoundaries"
         ]
       }
     },
@@ -26952,10 +27011,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0007.cs::TryParseLongHeader_PreservesTheInitialPacketVersionField"
         ]
       }
     },
@@ -26984,11 +27040,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0008.cs::TryParseLongHeader_PreservesTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0008.cs::TryParseLongHeader_RejectsPacketsMissingTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0008.cs::TryParseLongHeader_AcceptsDestinationConnectionIdLengthByteBoundaries"
         ]
       }
     },
@@ -27017,15 +27071,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0009.cs::TryParseLongHeader_PreservesANonBoundaryDestinationConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0009.cs::TryParseLongHeader_PreservesDestinationConnectionIdRange",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0009.cs::TryParseLongHeader_RejectsInitialDestinationConnectionIdsLongerThan20Bytes"
         ]
       }
     },
@@ -27054,12 +27102,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0010.cs::TryParseLongHeader_PreservesTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0010.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0010.cs::TryParseLongHeader_AcceptsSourceConnectionIdLengthByteBoundaries"
         ]
       }
     },
@@ -27088,16 +27133,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0011.cs::TryParseLongHeader_PreservesANonBoundarySourceConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0011.cs::TryParseLongHeader_PreservesSourceConnectionIdRange",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0011.cs::TryParseLongHeader_RejectsInitialSourceConnectionIdsLongerThan20Bytes"
         ]
       }
     },
@@ -27126,9 +27164,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0012.cs::TryParseLongHeader_AcceptsATokenLengthEncodedAsAMultiByteVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0012.cs::TryParseLongHeader_RejectsTruncatedTokenLengthVarints",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0012.cs::TryParseLongHeader_AllowsATokenLengthAtTheLargestOneByteVarintValue"
         ]
       }
     },
@@ -27157,9 +27195,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0013.cs::TryParseLongHeader_AcceptsALengthEncodedAsAMultiByteVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0013.cs::TryParseLongHeader_RejectsTruncatedInitialLengthVarints",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0013.cs::TryParseLongHeader_AllowsALengthAtTheLargestOneByteVarintValue"
         ]
       }
     },
@@ -27188,9 +27226,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0014.cs::TryParseLongHeader_AllowsInitialPacketNumberLengthsWithinTheRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0014.cs::TryParseLongHeader_RejectsInitialPacketsWhoseLengthCannotCoverThePacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0014.cs::TryParseLongHeader_AcceptsInitialPacketNumberLengthBoundaries"
         ]
       }
     },
@@ -27219,9 +27257,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0015.cs::TryGetPacketLength_AccountsForTheInitialLengthAndPacketNumberFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0015.cs::TryParseLongHeader_RejectsInitialPacketsMissingLengthAndPacketNumberFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0015.cs::TryGetPacketLength_AcceptsTheMinimalInitialLengthAndPacketNumberFields"
         ]
       }
     },
@@ -27250,11 +27288,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0016.cs::TryParseLongHeader_ExposesReservedAndPacketNumberLengthBitsFromTheFirstByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0016.cs::TryParseLongHeader_DoesNotMixReservedBitsAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0016.cs::TryParseLongHeader_ExposesAllInitialTypeSpecificBitsWhenTheyAreSet"
         ]
       }
     },
@@ -27283,9 +27319,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1InitialPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1InitialPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0017.cs::TryParseLongHeader_ParsesInitialTokenLengthAsTheTokenFieldLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0017.cs::TryParseLongHeader_RejectsInitialPacketsWhoseTokenLengthExceedsTheAvailableTokenBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0017.cs::TryParseLongHeader_TreatsZeroTokenLengthAsAnEmptyTokenField"
         ]
       }
     },
@@ -27315,7 +27351,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_AllowsZeroTokenLength",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_RejectsNonZeroTokenLength"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_RejectsNonZeroTokenLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0018.cs::TryOpenInitialPacket_ForClientReceipt_RejectsLargestOneByteTokenLength"
         ]
       }
     },
@@ -27344,7 +27381,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLength"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_DoesNotUseTheClientRetryTokenPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0019.cs::TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLengthForTheSmallestCryptoPayload"
         ]
       }
     },
@@ -27373,6 +27412,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0020.cs::TryOpenInitialPacket_OpensPacketsProtectedWithTheObservedInitialDcid",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0020.cs::TryOpenInitialPacket_RejectsPacketsProtectedWithTheWrongInitialDcid"
         ]
       }
@@ -27402,7 +27442,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPackets_UseTheInitialPacketTypeForClientAndServerInitialCryptoMessages"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPackets_UseTheInitialPacketTypeForClientAndServerInitialCryptoMessages",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPacket_RejectsPacketsWithoutAnInitialCryptoPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0021.cs::TryBuildProtectedInitialPacket_UsesInitialPacketTypeForOffsetNonZeroCryptoFrames"
         ]
       }
     },
@@ -27431,7 +27473,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryBuildProtectedInitialPacket_AfterRetry_UsesTheInitialPacketTypeAndRetryToken"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryBuildProtectedInitialPacket_AfterRetry_UsesTheInitialPacketTypeAndRetryToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryParseRetryBootstrapMetadata_RejectsTamperedRetryPacketsBeforeBuildingTheFollowUpInitial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0022.cs::TryBuildProtectedInitialPacket_AfterRetry_PreservesLargestOneByteRetryTokenLength"
         ]
       }
     },
@@ -27487,6 +27531,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B11-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0024.cs::TryBuildProtectedInitialPacket_EmitsACryptoFrameInTheInitialPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0024.cs::InitialPingPayloadDoesNotSatisfyTheCryptoOrAckPayloadShape",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0024.cs::TryBuildProtectedInitialPacket_CanCarryAckBeforeCryptoInTheInitialPayload"
         ]
       }
     },
@@ -27513,6 +27562,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B11-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0025.cs::TryHandleInitialPacketReceived_DiscardsInitialPacketsContainingResetStreamFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0025.cs::TryHandleInitialPacketReceived_DiscardsOtherFramesBeforeProcessingLaterCrypto"
         ]
       }
     },
@@ -27539,6 +27592,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.2 RFC9000-S17.2.2-B12-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0026.cs::TryBuildProtectedInitialPacket_FirstClientPacketCarriesOffsetZeroCryptoFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0026.cs::TryBuildProtectedInitialPacket_DoesNotCreateTheFirstClientPacketWithoutCryptoData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0026.cs::TryBuildProtectedInitialPacket_AllowsAOneByteInitialCryptoStart"
         ]
       }
     },
@@ -27567,12 +27625,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_DoesNotClassifyInitialPacketsAsZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0001.cs::TryParseLongHeader_AcceptsTheShortestStructurallyValidZeroRttPacket"
         ]
       }
     },
@@ -27601,10 +27656,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0002.cs::TryParseLongHeader_ExposesTheReservedAndPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0002.cs::TryParseLongHeader_RejectsZeroRttPacketsWhoseLengthFieldIsShorterThanTheEncodedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0002.cs::TryParseLongHeader_AcceptsZeroRttPacketsWhenBothBitFieldsUseTheirLargestEncodings"
         ]
       }
     },
@@ -27631,6 +27685,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0003.cs::ZeroRttPacketsCanCarryEarlyDataPayloadInTheFirstFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0003.cs::ZeroRttPacketBuilderRejectsEmptyPayloadsAndWrongEncryptionLevel",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0003.cs::ZeroRttPacketsCanCarryMinimalEarlyDataPayloadBeforeHandshakeCompletion"
         ]
       }
     },
@@ -27689,11 +27748,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsShortHeaderForm",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryClassifyHeaderForm_UsesTheFirstByteHighBit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0005.cs::TryParseLongHeader_ReportsLongHeaderFormForZeroRttPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0005.cs::TryParseLongHeader_RejectsShortHeaderForm"
         ]
       }
     },
@@ -27722,10 +27778,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsNonVersionNegotiationPacketsWithZeroFixedBit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0006.cs::TryParseLongHeader_ExposesTheFixedBit"
         ]
       }
     },
@@ -27754,9 +27807,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0007.cs::TryParseLongHeader_ExposesTheLongPacketTypeBits"
         ]
       }
     },
@@ -27785,10 +27836,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0008.cs::TryParseLongHeader_ExposesTheReservedBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0008.cs::TryParseLongHeader_DoesNotIncludePacketNumberLengthBitsInTheReservedBits"
         ]
       }
     },
@@ -27817,10 +27866,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesLongPacketTypeAndPacketNumberLengthBits",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0009.cs::TryParseLongHeader_ExposesThePacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0009.cs::TryParseLongHeader_RejectsZeroRttPacketsWithPacketNumberLengthMismatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0009.cs::TryParseLongHeader_AcceptsZeroRttPacketNumberLengthBoundaries"
         ]
       }
     },
@@ -27849,8 +27897,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0010.cs::TryParseLongHeader_ExposesTheVersionField"
         ]
       }
     },
@@ -27879,11 +27926,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0011.cs::TryParseLongHeader_ExposesTheDestinationConnectionIdLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0011.cs::TryParseLongHeader_RejectsZeroRttPacketsMissingTheDestinationConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0011.cs::TryParseLongHeader_ExposesZeroRttDestinationConnectionIdLengthBoundaries"
         ]
       }
     },
@@ -27912,12 +27957,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0012.cs::TryParseLongHeader_AllowsZeroRttDestinationConnectionIdsAt20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0012.cs::TryParseLongHeader_RejectsZeroRttDestinationConnectionIdsLongerThan20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0012.cs::TryParseLongHeader_AllowsZeroRttDestinationConnectionIdsAtZeroBytes"
         ]
       }
     },
@@ -27946,8 +27988,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0013.cs::TryParseLongHeader_ExposesTheSourceConnectionIdLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0013.cs::TryParseLongHeader_RejectsZeroRttPacketsMissingTheSourceConnectionIdLengthByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0013.cs::TryParseLongHeader_ExposesZeroRttSourceConnectionIdLengthBoundaries"
         ]
       }
     },
@@ -27976,13 +28019,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsInitialAndZeroRttConnectionIdsUpTo20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttDestinationConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsInitialAndZeroRttSourceConnectionIdsLongerThan20Bytes",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsPacketsMissingTheSourceConnectionIdLengthByte",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0014.cs::TryParseLongHeader_AllowsZeroRttSourceConnectionIdsAt20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0014.cs::TryParseLongHeader_RejectsZeroRttSourceConnectionIdsLongerThan20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0014.cs::TryParseLongHeader_AllowsZeroRttSourceConnectionIdsAtZeroBytes"
         ]
       }
     },
@@ -28011,9 +28050,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0015.cs::TryParseLongHeader_AcceptsZeroRttPacketsWithAVarintLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0015.cs::TryParseLongHeader_RejectsZeroRttPacketsWithTruncatedLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0015.cs::TryParseLongHeader_AcceptsZeroRttPacketsWithATwoByteVarintLengthField"
         ]
       }
     },
@@ -28042,9 +28081,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_Version1InitialAndZeroRttParsing_RoundTripsValidInputsAndRejectsTailTruncation",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AcceptsVersion1ZeroRttPacketsWithValidStructuralFields",
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RejectsVersion1ZeroRttPacketsWithInvalidStructuralFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0016.cs::TryParseLongHeader_AllowsZeroRttPacketNumberLengthsWithinTheRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0016.cs::TryParseLongHeader_RejectsZeroRttPacketsWhenLengthCannotContainTheEncodedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0016.cs::TryParseLongHeader_AllowsZeroRttPacketNumberLengthBoundaries"
         ]
       }
     },
@@ -28071,6 +28110,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B7-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0017.cs::BootstrapEmitsTheInitialPacketBeforeTheZeroRttPacketWhenEarlyDataIsReady",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0017.cs::BootstrapWithoutEarlyDataReadinessEmitsOnlyTheInitialPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0017.cs::BootstrapWithMinimalEarlyDataReadinessStillEmitsInitialBeforeZeroRtt"
         ]
       }
     },
@@ -28127,6 +28171,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B9-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0019.cs::AfterProcessingOneRttPacketsTheRuntimeDoesNotEmitZeroRttPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0019.cs::BeforeOneRttProcessingTheBootstrapPathStillEmitsZeroRttPackets"
         ]
       }
     },
@@ -28183,6 +28231,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B9-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0021.cs::ZeroRttPingPayloadDoesNotParseAsAnAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0021.cs::AckResponsePayloadParsesAsTheForbiddenZeroRttAckShape",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0021.cs::BootstrapZeroRttPacketDoesNotCarryAnAckFrameAtTheEarlyDataBoundary"
         ]
       }
     },
@@ -28209,6 +28262,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B9-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0022.cs::AckResponsePayloadIsBuiltAsAOneRttPacket"
         ]
       }
     },
@@ -28235,6 +28291,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.3 RFC9000-S17.2.3-B10-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0023.cs::TryReceiveStreamFrame_ReportsAConnectionErrorForRememberedLimitViolations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0023.cs::TryReceiveStreamFrame_AllowsDataWithinRememberedLimits"
         ]
       }
     },

@@ -117,4 +117,48 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0001
         Assert.True(sourceConnectionId.AsSpan().SequenceEqual(header.SourceConnectionId));
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType()
+    {
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket(packetNumberLength: 2);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicHeaderForm.Long, header.HeaderForm);
+        Assert.Equal(QuicLongPacketTypeBits.Initial, header.LongPacketTypeBits);
+        Assert.True(QuicS17P2P2TestSupport.IsInitialPacket(packet));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets()
+    {
+        byte[] packet = QuicS17P2P3TestSupport.BuildZeroRttPacket(packetNumberLength: 2);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicLongPacketTypeBits.ZeroRtt, header.LongPacketTypeBits);
+        Assert.False(QuicS17P2P2TestSupport.IsInitialPacket(packet));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket()
+    {
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket(
+            packetNumberLength: 1,
+            destinationConnectionId: [],
+            sourceConnectionId: [],
+            token: [],
+            protectedPayload: []);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicLongPacketTypeBits.Initial, header.LongPacketTypeBits);
+        Assert.Equal((byte)0x00, header.PacketNumberLengthBits);
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.Initial, packetNumberSpace);
+    }
 }

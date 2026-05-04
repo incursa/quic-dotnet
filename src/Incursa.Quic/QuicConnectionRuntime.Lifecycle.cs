@@ -61,47 +61,90 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        if (!TryFormatConnectionCloseDatagram(closeMetadata, ref effects, out ReadOnlyMemory<byte> closeDatagram))
+        List<ReadOnlyMemory<byte>> closeDatagrams = [];
+        if (!TryFormatConnectionCloseDatagrams(closeMetadata, ref effects, closeDatagrams))
         {
             return;
         }
 
-        QuicConnectionActivePathRecord currentPath = activePath.Value;
-        if (!currentPath.AmplificationState.TryConsumeSendBudget(
-            closeDatagram.Length,
-            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        foreach (ReadOnlyMemory<byte> closeDatagram in closeDatagrams)
         {
-            return;
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                closeDatagram.Length,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                closeDatagram));
         }
-
-        activePath = currentPath with
-        {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            closeDatagram));
     }
 
-    private bool TryFormatConnectionCloseDatagram(
+    private bool TryFormatConnectionCloseDatagrams(
+        QuicConnectionCloseMetadata closeMetadata,
+        ref List<QuicConnectionEffect>? effects,
+        List<ReadOnlyMemory<byte>> closeDatagrams)
+    {
+        if (HandshakeConfirmed)
+        {
+            if (TryFormatOneRttConnectionCloseDatagram(closeMetadata, ref effects, out ReadOnlyMemory<byte> oneRttCloseDatagram))
+            {
+                closeDatagrams.Add(oneRttCloseDatagram);
+                return true;
+            }
+
+            closeDatagrams.Add(FormatConnectionClosePayload(closeMetadata));
+            return true;
+        }
+
+        if (TryFormatInitialConnectionCloseDatagram(closeMetadata, out ReadOnlyMemory<byte> initialCloseDatagram))
+        {
+            closeDatagrams.Add(initialCloseDatagram);
+        }
+
+        if (TryFormatHandshakeConnectionCloseDatagram(closeMetadata, out ReadOnlyMemory<byte> handshakeCloseDatagram))
+        {
+            closeDatagrams.Add(handshakeCloseDatagram);
+        }
+
+        if (TryFormatOneRttConnectionCloseDatagram(closeMetadata, ref effects, out ReadOnlyMemory<byte> applicationCloseDatagram))
+        {
+            closeDatagrams.Add(applicationCloseDatagram);
+        }
+
+        if (closeDatagrams.Count == 0)
+        {
+            closeDatagrams.Add(FormatConnectionClosePayload(closeMetadata, lowerProtectionPacket: true));
+        }
+
+        return true;
+    }
+
+    private bool TryFormatOneRttConnectionCloseDatagram(
         QuicConnectionCloseMetadata closeMetadata,
         ref List<QuicConnectionEffect>? effects,
         out ReadOnlyMemory<byte> closeDatagram)
     {
-        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
+        closeDatagram = default;
         if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
-            closeDatagram = closePayload;
-            return true;
+            return false;
         }
 
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata);
         if (!TryPrepareOneRttProtectionForAeadLimit(
                 "The connection runtime could not protect the CONNECTION_CLOSE packet.",
                 ref effects,
                 out _))
         {
-            closeDatagram = default;
             return false;
         }
 
@@ -118,6 +161,54 @@ internal sealed partial class QuicConnectionRuntime
 
         closeDatagram = default;
         return false;
+    }
+
+    private bool TryFormatInitialConnectionCloseDatagram(
+        QuicConnectionCloseMetadata closeMetadata,
+        out ReadOnlyMemory<byte> closeDatagram)
+    {
+        closeDatagram = default;
+        if (tlsState.Role != QuicTlsRole.Server || initialPacketProtection is null)
+        {
+            return false;
+        }
+
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata, lowerProtectionPacket: true);
+        if (!handshakeFlowCoordinator.TryBuildProtectedInitialControlPacketForHandshakeDestination(
+            closePayload.Span,
+            initialPacketProtection,
+            out _,
+            out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        closeDatagram = protectedPacket;
+        return true;
+    }
+
+    private bool TryFormatHandshakeConnectionCloseDatagram(
+        QuicConnectionCloseMetadata closeMetadata,
+        out ReadOnlyMemory<byte> closeDatagram)
+    {
+        closeDatagram = default;
+        if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
+        {
+            return false;
+        }
+
+        ReadOnlyMemory<byte> closePayload = FormatConnectionClosePayload(closeMetadata, lowerProtectionPacket: true);
+        if (!handshakeFlowCoordinator.TryBuildProtectedHandshakeControlPacket(
+            closePayload.Span,
+            handshakeMaterial,
+            out _,
+            out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        closeDatagram = protectedPacket;
+        return true;
     }
 
     private bool TryPrepareOneRttProtectionForAeadLimit(
@@ -469,16 +560,23 @@ internal sealed partial class QuicConnectionRuntime
         return SaturatingAdd(timeOriginTicks, ConvertMicrosToTicks(absoluteMicros));
     }
 
-    private static ReadOnlyMemory<byte> FormatConnectionClosePayload(QuicConnectionCloseMetadata closeMetadata)
+    private static ReadOnlyMemory<byte> FormatConnectionClosePayload(
+        QuicConnectionCloseMetadata closeMetadata,
+        bool lowerProtectionPacket = false)
     {
-        byte[] reasonBytes = closeMetadata.ReasonPhrase is null
+        bool convertApplicationClose = lowerProtectionPacket && closeMetadata.ApplicationErrorCode.HasValue;
+        byte[] reasonBytes = closeMetadata.ReasonPhrase is null || convertApplicationClose
             ? []
             : Encoding.UTF8.GetBytes(closeMetadata.ReasonPhrase);
 
-        QuicConnectionCloseFrame frame = closeMetadata.ApplicationErrorCode.HasValue
+        QuicTransportErrorCode transportErrorCode = convertApplicationClose
+            ? QuicTransportErrorCode.ApplicationError
+            : closeMetadata.TransportErrorCode ?? QuicTransportErrorCode.NoError;
+
+        QuicConnectionCloseFrame frame = closeMetadata.ApplicationErrorCode.HasValue && !convertApplicationClose
             ? new QuicConnectionCloseFrame(closeMetadata.ApplicationErrorCode.Value, reasonBytes)
             : new QuicConnectionCloseFrame(
-                closeMetadata.TransportErrorCode ?? QuicTransportErrorCode.NoError,
+                transportErrorCode,
                 closeMetadata.TriggeringFrameType ?? 0,
                 reasonBytes);
 

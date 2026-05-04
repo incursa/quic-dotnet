@@ -1,0 +1,78 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0038",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Initial Packet Format Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 Initial long-header packet-format requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0038",
+    "VER-QUIC-RFC9000-0038"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S17P2P2-0001",
+    "REQ-QUIC-RFC9000-S17P2P2-0002",
+    "REQ-QUIC-RFC9000-S17P2P2-0003",
+    "REQ-QUIC-RFC9000-S17P2P2-0004",
+    "REQ-QUIC-RFC9000-S17P2P2-0005",
+    "REQ-QUIC-RFC9000-S17P2P2-0006",
+    "REQ-QUIC-RFC9000-S17P2P2-0007",
+    "REQ-QUIC-RFC9000-S17P2P2-0008",
+    "REQ-QUIC-RFC9000-S17P2P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P2-0010",
+    "REQ-QUIC-RFC9000-S17P2P2-0011",
+    "REQ-QUIC-RFC9000-S17P2P2-0012",
+    "REQ-QUIC-RFC9000-S17P2P2-0013",
+    "REQ-QUIC-RFC9000-S17P2P2-0014",
+    "REQ-QUIC-RFC9000-S17P2P2-0015",
+    "REQ-QUIC-RFC9000-S17P2P2-0016",
+    "REQ-QUIC-RFC9000-S17P2P2-0017",
+    "REQ-QUIC-RFC9000-S17P2P2-0018",
+    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-S17P2P2-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0021",
+    "REQ-QUIC-RFC9000-S17P2P2-0022",
+    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-S17P2P2-0024",
+    "REQ-QUIC-RFC9000-S17P2P2-0025",
+    "REQ-QUIC-RFC9000-S17P2P2-0026"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicPacketParsing.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P2TestSupport.cs"
+  ],
+  "design_summary": "The Initial packet-format proof is decomposed into requirement-home tests that exercise the existing long-header parser, Initial packet-protection open/build helpers, Retry follow-up Initial builder, and Initial payload filtering path directly. The parser proof covers long-header type, header-form and fixed bits, reserved and packet-number-length bit extraction, version and connection-ID fields, token and length varint validation, packet-number boundaries, and length-delimited packet splitting. The builder/runtime proof covers zero server token length, client Retry token preservation, observed-DCID Initial protection, client/server Initial CRYPTO packet creation, server multiple Initial packets, allowed CRYPTO/ACK payload shapes, and discard/error handling for disallowed Initial frames.",
+  "data_and_state_considerations": "The slice is mostly proof decomposition over existing behavior. The only shared test support added for this slice constructs structurally valid Initial packets and protected Initial datagrams so requirement homes can prove boundaries without relying on broad parser tests.",
+  "edge_cases_and_constraints": [
+    "Shortest structurally valid Initial packets are accepted when Length covers the encoded packet number.",
+    "Token Length and Length varints reject truncation and length values that cannot cover the named token or packet-number bytes.",
+    "Destination and source connection IDs are proven at non-boundary, zero-byte, twenty-byte, and over-limit boundaries.",
+    "Client receipt rejects non-zero server-token Initial packets through the zero-token open policy, while Retry follow-up client Initials preserve the Retry token.",
+    "Initial payload behavior is proven for CRYPTO, ACK-before-CRYPTO, PING-only non-CRYPTO/non-ACK shape, and disallowed reset-stream frame discard/error handling."
+  ],
+  "alternatives_considered": [
+    "Keep broad long-header parser/property tests as the only evidence; rejected because generated triage requires narrow requirement-home proof.",
+    "Add a new Initial-only parser wrapper; rejected because the existing version 1 long-header parser already owns the structural checks needed for this slice.",
+    "Broaden Initial payload policy beyond the current runtime discard/error floor; rejected because frame-permission policy outside S17P2P2 must stay in its owning frame-behavior requirements."
+  ],
+  "risks": [
+    "The payload-frame proof uses the current repository-owned discard/error behavior and does not claim a single mandated close strategy for every forbidden Initial frame.",
+    "The slice does not claim broader handshake success or interop readiness.",
+    "The Initial packet-protection proof remains scoped to the Initial DCID-derived protection boundary."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused Initial packet-format and current repository-owned Initial payload proof for S17P2P2. It does not broaden TLS handshake policy, frame-permission policy outside Initial packets, or public interop claims."
+    }
+  ]
+}

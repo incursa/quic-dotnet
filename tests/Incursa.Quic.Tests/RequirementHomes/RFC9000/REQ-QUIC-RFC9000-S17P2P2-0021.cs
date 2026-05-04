@@ -67,4 +67,59 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0021
             serverCryptoPayload,
             expectedCryptoOffset: 0);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildProtectedInitialPacket_RejectsPacketsWithoutAnInitialCryptoPayload()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+
+        Assert.False(coordinator.TryBuildProtectedInitialPacket(
+            ReadOnlySpan<byte>.Empty,
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedInitialPacket_UsesInitialPacketTypeForOffsetNonZeroCryptoFrames()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        byte[] cryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x30, 8);
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 8,
+            clientProtection,
+            out byte[] protectedPacket));
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            serverProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+            openedPacket,
+            payloadOffset,
+            payloadLength,
+            cryptoPayload,
+            expectedCryptoOffset: 8);
+    }
 }

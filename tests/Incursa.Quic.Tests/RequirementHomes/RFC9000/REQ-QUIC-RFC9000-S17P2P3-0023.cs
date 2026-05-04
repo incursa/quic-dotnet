@@ -29,4 +29,24 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0023
         Assert.False(state.TryReceiveStreamFrame(violationFrame, out errorCode));
         Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamFrame_AllowsDataWithinRememberedLimits()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            peerBidirectionalReceiveLimit: 4,
+            connectionReceiveLimit: 4);
+
+        byte[] frameBytes = QuicStreamTestData.BuildStreamFrame(
+            0x0E,
+            streamId: 1,
+            streamData: [0x10, 0x11, 0x12, 0x13],
+            offset: 0);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(frameBytes, out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+    }
 }

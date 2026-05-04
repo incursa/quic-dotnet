@@ -68,4 +68,89 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0019
         Assert.Equal(1, tokenLengthBytesConsumed);
         Assert.Equal(openedPacket.Length, payloadOffset + payloadLength);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildProtectedInitialPacketForHandshakeDestination_DoesNotUseTheClientRetryTokenPath()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientSenderProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverReceiverProtection));
+
+        QuicHandshakeFlowCoordinator clientCoordinator = new(InitialDestinationConnectionId, InitialSourceConnectionId);
+        byte[] retryToken = [0xAA, 0xBB];
+        Assert.True(clientCoordinator.TryBuildProtectedInitialPacket(
+            [0xA1, 0xA2],
+            cryptoPayloadOffset: 0,
+            destinationConnectionId: [0x31, 0x32],
+            retryToken,
+            clientSenderProtection,
+            out byte[] clientProtectedPacket));
+        Assert.True(clientCoordinator.TryOpenInitialPacket(
+            clientProtectedPacket,
+            serverReceiverProtection,
+            out byte[] clientOpenedPacket,
+            out _,
+            out _));
+        QuicS17P2P2TestSupport.AssertInitialTokenLength(clientOpenedPacket, (ulong)retryToken.Length);
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverSenderProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientReceiverProtection));
+
+        QuicHandshakeFlowCoordinator serverCoordinator = new(InitialDestinationConnectionId, InitialSourceConnectionId);
+        Assert.True(serverCoordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+            [0xB1, 0xB2],
+            cryptoPayloadOffset: 0,
+            serverSenderProtection,
+            out byte[] serverProtectedPacket));
+        Assert.True(serverCoordinator.TryOpenInitialPacket(
+            serverProtectedPacket,
+            clientReceiverProtection,
+            out byte[] serverOpenedPacket,
+            out _,
+            out _));
+        QuicS17P2P2TestSupport.AssertInitialTokenLength(serverOpenedPacket, 0UL);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedInitialPacketForHandshakeDestination_EncodesZeroTokenLengthForTheSmallestCryptoPayload()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection senderProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            InitialDestinationConnectionId,
+            out QuicInitialPacketProtection receiverProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(InitialDestinationConnectionId, InitialSourceConnectionId);
+        Assert.True(coordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+            [0xA1],
+            cryptoPayloadOffset: 0,
+            senderProtection,
+            out byte[] protectedPacket));
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            receiverProtection,
+            out byte[] openedPacket,
+            out _,
+            out _));
+
+        QuicS17P2P2TestSupport.AssertInitialTokenLength(openedPacket, 0UL);
+    }
 }

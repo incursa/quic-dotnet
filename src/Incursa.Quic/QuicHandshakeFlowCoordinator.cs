@@ -219,6 +219,55 @@ internal sealed class QuicHandshakeFlowCoordinator
         return true;
     }
 
+    /// <summary>
+    /// Formats and protects a Handshake packet that carries control frames without a CRYPTO frame.
+    /// </summary>
+    internal bool TryBuildProtectedHandshakeControlPacket(
+        ReadOnlySpan<byte> framePayload,
+        QuicTlsPacketProtectionMaterial material,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        protectedPacket = [];
+        packetNumber = default;
+
+        if (framePayload.IsEmpty
+            || !QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection protection))
+        {
+            return false;
+        }
+
+        if (!TryBuildLongHeaderControlPlaintextPacket(
+            QuicLongPacketTypeBits.Handshake,
+            framePayload,
+            destinationConnectionId,
+            token: ReadOnlySpan<byte>.Empty,
+            includeTokenLengthField: false,
+            minimumProtectedPacketLength: 0,
+            out packetNumber,
+            out byte[] plaintextPacket))
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        byte[] protectedPacketBuffer = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
+        if (!protection.TryProtect(plaintextPacket, protectedPacketBuffer, out int protectedBytesWritten))
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        if (protectedBytesWritten != protectedPacketBuffer.Length)
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        protectedPacket = protectedPacketBuffer;
+        return true;
+    }
+
     internal bool TryBuildProtectedHandshakePacketForRetransmission(
         ReadOnlySpan<byte> cryptoPayload,
         ulong cryptoPayloadOffset,
@@ -927,6 +976,71 @@ internal sealed class QuicHandshakeFlowCoordinator
             out protectedPacket);
     }
 
+    /// <summary>
+    /// Formats and protects an Initial packet to the handshake destination carrying control frames only.
+    /// </summary>
+    internal bool TryBuildProtectedInitialControlPacketForHandshakeDestination(
+        ReadOnlySpan<byte> framePayload,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        return TryBuildProtectedInitialControlPacket(
+            framePayload,
+            destinationConnectionId,
+            token: ReadOnlySpan<byte>.Empty,
+            protection,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private bool TryBuildProtectedInitialControlPacket(
+        ReadOnlySpan<byte> framePayload,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> token,
+        QuicInitialPacketProtection protection,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        protectedPacket = [];
+        packetNumber = default;
+
+        if (framePayload.IsEmpty)
+        {
+            return false;
+        }
+
+        if (!TryBuildLongHeaderControlPlaintextPacket(
+            QuicLongPacketTypeBits.Initial,
+            framePayload,
+            destinationConnectionId,
+            token,
+            includeTokenLengthField: true,
+            minimumProtectedPacketLength: QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            out packetNumber,
+            out byte[] plaintextPacket))
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        byte[] protectedPacketBuffer = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
+        if (!protection.TryProtect(plaintextPacket, protectedPacketBuffer, out int protectedBytesWritten))
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        if (protectedBytesWritten != protectedPacketBuffer.Length)
+        {
+            packetNumber = default;
+            return false;
+        }
+
+        protectedPacket = protectedPacketBuffer;
+        return true;
+    }
+
     internal bool TryBuildProtectedInitialPacket(
         ReadOnlySpan<byte> cryptoPayload,
         ulong cryptoPayloadOffset,
@@ -1207,6 +1321,120 @@ internal sealed class QuicHandshakeFlowCoordinator
         finally
         {
             QuicBufferPool.ReturnBytes(cryptoFramePayload);
+        }
+    }
+
+    private bool TryBuildLongHeaderControlPlaintextPacket(
+        byte longPacketTypeBits,
+        ReadOnlySpan<byte> framePayload,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> token,
+        bool includeTokenLengthField,
+        int minimumProtectedPacketLength,
+        out ulong packetNumber,
+        out byte[] plaintextPacket)
+    {
+        plaintextPacket = [];
+        packetNumber = default;
+
+        if (framePayload.IsEmpty
+            || sourceConnectionId.Length == 0
+            || nextPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
+        int packetNumberLength = HandshakePacketNumberLength;
+        int paddedPayloadLength = Math.Max(framePayload.Length, HandshakeMinimumProtectedPayloadLength);
+        int lengthFieldBytesWritten;
+        Span<byte> lengthFieldProbe = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
+        Span<byte> tokenLengthProbe = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
+
+        while (true)
+        {
+            ulong lengthFieldValue = (ulong)(packetNumberLength + paddedPayloadLength + QuicInitialPacketProtection.AuthenticationTagLength);
+            if (!QuicVariableLengthInteger.TryFormat(lengthFieldValue, lengthFieldProbe, out lengthFieldBytesWritten))
+            {
+                return false;
+            }
+
+            int tokenLengthBytesWritten = 0;
+            if (includeTokenLengthField)
+            {
+                if (!QuicVariableLengthInteger.TryFormat((ulong)token.Length, tokenLengthProbe, out tokenLengthBytesWritten))
+                {
+                    return false;
+                }
+            }
+
+            int protectedPacketLength = LongHeaderFixedPrefixLength
+                + LongHeaderConnectionIdLengthFieldsLength
+                + destinationConnectionId.Length
+                + sourceConnectionId.Length
+                + (includeTokenLengthField ? tokenLengthBytesWritten + token.Length : 0)
+                + lengthFieldBytesWritten
+                + packetNumberLength
+                + paddedPayloadLength
+                + QuicInitialPacketProtection.AuthenticationTagLength;
+
+            if (protectedPacketLength >= minimumProtectedPacketLength)
+            {
+                break;
+            }
+
+            paddedPayloadLength += minimumProtectedPacketLength - protectedPacketLength;
+        }
+
+        ulong currentPacketNumber = nextPacketNumber;
+        ulong finalLengthFieldValue = (ulong)(packetNumberLength + paddedPayloadLength + QuicInitialPacketProtection.AuthenticationTagLength);
+        Span<byte> lengthFieldBuffer = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
+        if (!QuicVariableLengthInteger.TryFormat(finalLengthFieldValue, lengthFieldBuffer, out lengthFieldBytesWritten))
+        {
+            return false;
+        }
+
+        byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength);
+        try
+        {
+            int versionSpecificDataIndex = 0;
+
+            lengthFieldBuffer[..lengthFieldBytesWritten].CopyTo(versionSpecificData);
+            versionSpecificDataIndex += lengthFieldBytesWritten;
+
+            BinaryPrimitives.WriteUInt32BigEndian(
+                versionSpecificData.AsSpan(versionSpecificDataIndex, packetNumberLength),
+                unchecked((uint)currentPacketNumber));
+            versionSpecificDataIndex += packetNumberLength;
+
+            framePayload.CopyTo(versionSpecificData.AsSpan(versionSpecificDataIndex));
+            versionSpecificDataIndex += framePayload.Length;
+
+            if (paddedPayloadLength > framePayload.Length)
+            {
+                versionSpecificData.AsSpan(versionSpecificDataIndex, paddedPayloadLength - framePayload.Length).Fill(0);
+            }
+
+            packetNumber = currentPacketNumber;
+            byte headerControlBits = (byte)(
+                QuicPacketHeaderBits.FixedBitMask
+                | (longPacketTypeBits << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+                | (packetNumberLength - 1));
+
+            plaintextPacket = BuildLongHeaderPacket(
+                headerControlBits,
+                QuicVersionNegotiation.Version1,
+                destinationConnectionId,
+                sourceConnectionId,
+                token,
+                versionSpecificData.AsSpan(0, lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength),
+                includeTokenLengthField);
+
+            nextPacketNumber = currentPacketNumber + 1;
+            return true;
+        }
+        finally
+        {
+            QuicBufferPool.ReturnBytes(versionSpecificData);
         }
     }
 

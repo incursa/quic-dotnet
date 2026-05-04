@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0037",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 0-RTT Packet Format Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0037",
+    "VER-QUIC-RFC9000-0037"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S17P2P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P3-0005",
+    "REQ-QUIC-RFC9000-S17P2P3-0006",
+    "REQ-QUIC-RFC9000-S17P2P3-0007",
+    "REQ-QUIC-RFC9000-S17P2P3-0008",
+    "REQ-QUIC-RFC9000-S17P2P3-0009",
+    "REQ-QUIC-RFC9000-S17P2P3-0010",
+    "REQ-QUIC-RFC9000-S17P2P3-0011",
+    "REQ-QUIC-RFC9000-S17P2P3-0012",
+    "REQ-QUIC-RFC9000-S17P2P3-0013",
+    "REQ-QUIC-RFC9000-S17P2P3-0014",
+    "REQ-QUIC-RFC9000-S17P2P3-0015",
+    "REQ-QUIC-RFC9000-S17P2P3-0016",
+    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-S17P2P3-0021",
+    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-S17P2P3-0023"
+  ],
+  "summary": "Decompose RFC 9000 S17P2P3 0-RTT packet-format proof into focused requirement-home tests and canonical trace evidence.",
+  "planned_changes": "- Add 0-RTT packet test helpers for header-control bits, version-specific data, packet-number boundaries, and structurally valid packets.\n- Add focused positive, negative, and edge requirement-home tests for 0-RTT long-header shape, first-byte bit fields, connection-ID length limits, Length varint boundaries, packet-number length validation, early-data emission ordering, ACK exclusion, and remembered-limit behavior.\n- Update canonical S17P2P3 trace links and generated coverage triage.",
+  "verification_plan": "Run a Release build, the focused S17P2P3 requirement-home filter, regenerate QUIC requirement coverage triage, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0037"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0037"
+  ],
+  "out_of_scope": [
+    "Changing TLS 0-RTT acceptance policy.",
+    "Adding 0-RTT packet decryption/opening support beyond existing packet builders.",
+    "Completing all remembered transport-parameter violation policies.",
+    "Claiming broader S17P2P2 or S17P3 packet format closure."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over the existing parser and 0-RTT builder behavior."
+}

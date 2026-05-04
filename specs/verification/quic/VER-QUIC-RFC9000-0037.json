@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0037",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 0-RTT Packet Format Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0037",
+    "WI-QUIC-RFC9000-0037"
+  ],
+  "verification_method": "Focused S17P2P3 requirement-home tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S17P2P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P3-0005",
+    "REQ-QUIC-RFC9000-S17P2P3-0006",
+    "REQ-QUIC-RFC9000-S17P2P3-0007",
+    "REQ-QUIC-RFC9000-S17P2P3-0008",
+    "REQ-QUIC-RFC9000-S17P2P3-0009",
+    "REQ-QUIC-RFC9000-S17P2P3-0010",
+    "REQ-QUIC-RFC9000-S17P2P3-0011",
+    "REQ-QUIC-RFC9000-S17P2P3-0012",
+    "REQ-QUIC-RFC9000-S17P2P3-0013",
+    "REQ-QUIC-RFC9000-S17P2P3-0014",
+    "REQ-QUIC-RFC9000-S17P2P3-0015",
+    "REQ-QUIC-RFC9000-S17P2P3-0016",
+    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-S17P2P3-0021",
+    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-S17P2P3-0023"
+  ],
+  "scope": "This verification covers focused 0-RTT packet-format parser and builder proof for the listed S17P2P3 requirements.",
+  "expected_result": "S17P2P3 requirement-home tests prove the long-header 0-RTT type, first-byte bit fields, connection-ID length boundaries, Length and Packet Number field validation, first-flight 0-RTT ordering, suppression after 1-RTT processing, ACK exclusion, and remembered-limit error behavior.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S17P2P3 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Existing long-header parser behavior remains the canonical wire-format parser for version 1 0-RTT packets.",
+    "Existing 0-RTT packet builder behavior remains the canonical repository-owned client first-flight emission floor.",
+    "Remembered-limit proof is scoped to stream-state flow-control behavior."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P3TestSupport.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P3_\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim 0-RTT decryption/opening, complete remembered transport-parameter policy, or broader S17 packet-format closure outside the listed S17P2P3 requirements."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The Release build passed with zero warnings, the focused S17P2P3 no-build filter passed 60/60, regenerated QUIC coverage triage marked all 23 S17P2P3 requirements trace_clean, and SpecTrace JSON validation passed for 355 artifacts."
+}

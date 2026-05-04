@@ -24,4 +24,18 @@ public sealed class REQ_QUIC_RFC9000_S17P2P3_0008
         Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
         Assert.Equal((byte)0x02, header.ReservedBits);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_DoesNotIncludePacketNumberLengthBitsInTheReservedBits()
+    {
+        byte[] packet = QuicS17P2P3TestSupport.BuildZeroRttPacket(
+            packetNumberLength: 4,
+            reservedBits: 0x00);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal((byte)0x00, header.ReservedBits);
+        Assert.Equal((byte)0x03, header.PacketNumberLengthBits);
+    }
 }

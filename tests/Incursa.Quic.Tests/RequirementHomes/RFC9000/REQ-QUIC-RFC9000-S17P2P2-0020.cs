@@ -7,6 +7,44 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S17P2P2_0020
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryOpenInitialPacket_OpensPacketsProtectedWithTheObservedInitialDcid()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+        byte[] cryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x20, 20);
+
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out byte[] protectedPacket));
+
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            serverProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+            openedPacket,
+            payloadOffset,
+            payloadLength,
+            cryptoPayload,
+            expectedCryptoOffset: 0);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">

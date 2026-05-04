@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0036",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Connection Close Packet-Level Emission",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the runtime chooses packet protection levels for locally generated CONNECTION_CLOSE frames before and after handshake confirmation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0036",
+    "VER-QUIC-RFC9000-0036"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S10P2P3-0001",
+    "REQ-QUIC-RFC9000-S10P2P3-0003",
+    "REQ-QUIC-RFC9000-S10P2P3-0004",
+    "REQ-QUIC-RFC9000-S10P2P3-0005",
+    "REQ-QUIC-RFC9000-S10P2P3-0006",
+    "REQ-QUIC-RFC9000-S10P2P3-0008",
+    "REQ-QUIC-RFC9000-S10P2P3-0010",
+    "REQ-QUIC-RFC9000-S10P2P3-0011",
+    "REQ-QUIC-RFC9000-S10P2P3-0012",
+    "REQ-QUIC-RFC9000-S10P2P3-0013"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
+  ],
+  "design_summary": "The runtime now formats CONNECTION_CLOSE payloads according to the packet number space that will carry them. After handshake confirmation, a close is emitted as a protected 1-RTT packet when 1-RTT protect material is available. Before confirmation, the runtime emits every available close level that can be constructed: server Initial, Handshake, and 1-RTT. Initial and Handshake close packets use new close-only long-header builders in the handshake coordinator, while 1-RTT close continues to use the short-header application-data builder.",
+  "data_and_state_considerations": "Close emission remains active-path scoped and consumes anti-amplification budget per datagram. The runtime does not track CONNECTION_CLOSE packets for retransmission. Packet protection availability gates each emitted level; if no protected close packet can be built, the runtime preserves the existing bare close-payload fallback used by legacy establishment tests.",
+  "edge_cases_and_constraints": [
+    "Application CONNECTION_CLOSE frames are downgraded to transport CONNECTION_CLOSE frames only for Initial and Handshake packets.",
+    "When downgrading an application close below 1-RTT, the runtime clears the reason phrase and uses APPLICATION_ERROR.",
+    "Server pre-confirmation close attempts include both Initial and Handshake packets when their protection material is available.",
+    "Pre-confirmation 1-RTT close is emitted only when 1-RTT protect material has already been installed.",
+    "Post-confirmation close keeps the application close frame type in 1-RTT packets."
+  ],
+  "alternatives_considered": [
+    "Coalesce Initial, Handshake, and 1-RTT close packets into a single UDP datagram; deferred because separate send effects prove packet-level behavior without changing the existing send-effect contract.",
+    "Use the CRYPTO packet builders with empty CRYPTO payloads; rejected because existing builders intentionally require CRYPTO data and close-only packets need a control-frame builder.",
+    "Downgrade all close payloads before 1-RTT regardless of packet space; rejected because 1-RTT packets are permitted to carry application close frames."
+  ],
+  "risks": [
+    "The slice does not implement close-packet coalescing.",
+    "Legacy bare close fallback remains for states where no protected close packet can be constructed.",
+    "The slice does not broaden CONNECTION_CLOSE retransmission behavior; close packets remain outside recovery repair."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers local CONNECTION_CLOSE packet-level emission and downgrade behavior. It does not claim new peer close parsing, close retransmission, or post-close timer behavior beyond the existing lifecycle slice."
+    }
+  ]
+}

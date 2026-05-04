@@ -3,6 +3,19 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S17P2P3-0005")]
 public sealed class REQ_QUIC_RFC9000_S17P2P3_0005
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_ReportsLongHeaderFormForZeroRttPackets()
+    {
+        byte[] packet = QuicS17P2P3TestSupport.BuildZeroRttPacket();
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicHeaderForm.Long, header.HeaderForm);
+        Assert.True(QuicPacketParser.TryClassifyHeaderForm(packet, out QuicHeaderForm headerForm));
+        Assert.Equal(QuicHeaderForm.Long, headerForm);
+    }
+
     [Theory]
     [InlineData(0x00)]
     [InlineData(0x3F)]

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0038",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Initial Packet Format Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0038",
+    "WI-QUIC-RFC9000-0038"
+  ],
+  "verification_method": "Focused S17P2P2 requirement-home tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S17P2P2-0001",
+    "REQ-QUIC-RFC9000-S17P2P2-0002",
+    "REQ-QUIC-RFC9000-S17P2P2-0003",
+    "REQ-QUIC-RFC9000-S17P2P2-0004",
+    "REQ-QUIC-RFC9000-S17P2P2-0005",
+    "REQ-QUIC-RFC9000-S17P2P2-0006",
+    "REQ-QUIC-RFC9000-S17P2P2-0007",
+    "REQ-QUIC-RFC9000-S17P2P2-0008",
+    "REQ-QUIC-RFC9000-S17P2P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P2-0010",
+    "REQ-QUIC-RFC9000-S17P2P2-0011",
+    "REQ-QUIC-RFC9000-S17P2P2-0012",
+    "REQ-QUIC-RFC9000-S17P2P2-0013",
+    "REQ-QUIC-RFC9000-S17P2P2-0014",
+    "REQ-QUIC-RFC9000-S17P2P2-0015",
+    "REQ-QUIC-RFC9000-S17P2P2-0016",
+    "REQ-QUIC-RFC9000-S17P2P2-0017",
+    "REQ-QUIC-RFC9000-S17P2P2-0018",
+    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-S17P2P2-0020",
+    "REQ-QUIC-RFC9000-S17P2P2-0021",
+    "REQ-QUIC-RFC9000-S17P2P2-0022",
+    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-S17P2P2-0024",
+    "REQ-QUIC-RFC9000-S17P2P2-0025",
+    "REQ-QUIC-RFC9000-S17P2P2-0026"
+  ],
+  "scope": "This verification covers focused Initial packet-format parser, Initial packet-protection builder/open, and repository-owned Initial payload handling proof for the listed S17P2P2 requirements.",
+  "expected_result": "S17P2P2 requirement-home tests prove the Initial long-header type, header-form/fixed/reserved/packet-number-length bits, version field, connection-ID length boundaries, Token Length and Length varint validation, packet-number length validation, zero server token length, client Retry token preservation, Initial protection DCID dependency, Initial CRYPTO/ACK payload shape, disallowed frame handling, and first-client-Initial CRYPTO framing.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S17P2P2 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Existing long-header parser behavior remains the canonical wire-format parser for version 1 Initial packets.",
+    "Existing Initial packet-protection behavior remains the canonical DCID-derived protection floor.",
+    "Existing Initial payload handling remains discard/error scoped for disallowed frames."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P2TestSupport.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P2_\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim broader handshake success, interop readiness, or frame-policy closure outside the listed S17P2P2 requirements."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S17P2P2 filter passed 79/79, regenerated QUIC coverage triage marked all 26 S17P2P2 requirements trace_clean, and final Release build plus SpecTrace JSON validation are recorded by this verification run."
+}

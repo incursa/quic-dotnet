@@ -233,4 +233,16 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0002
             Assert.False(QuicPacketParser.TryParseLongHeader(truncatedPacket, out _));
         }
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm()
+    {
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket();
+
+        Assert.True(QuicPacketParser.TryClassifyHeaderForm(packet, out QuicHeaderForm headerForm));
+        Assert.Equal(QuicHeaderForm.Long, headerForm);
+        Assert.True((packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) != 0);
+    }
 }

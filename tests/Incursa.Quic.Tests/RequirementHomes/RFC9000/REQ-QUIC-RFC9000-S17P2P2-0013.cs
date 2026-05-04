@@ -43,6 +43,21 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0013
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_RejectsTruncatedInitialLengthVarints()
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            QuicS17P2P2TestSupport.BuildInitialHeaderControlBits(),
+            version: 1,
+            destinationConnectionId: [0x10],
+            sourceConnectionId: [0x20],
+            versionSpecificData: [0x00, 0x40]);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Property")]
     /// <workbench-requirements generated="true" source="workbench quality sync">

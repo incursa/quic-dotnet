@@ -6,6 +6,19 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
 public sealed class REQ_QUIC_RFC9000_S17P2P2_0011
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_PreservesANonBoundarySourceConnectionId()
+    {
+        byte[] sourceConnectionId = [0x20, 0x21, 0x22, 0x23];
+        byte[] packet = QuicS17P2P2TestSupport.BuildInitialPacket(sourceConnectionId: sourceConnectionId);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(sourceConnectionId.Length, header.SourceConnectionIdLength);
+        Assert.True(sourceConnectionId.AsSpan().SequenceEqual(header.SourceConnectionId));
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(20)]

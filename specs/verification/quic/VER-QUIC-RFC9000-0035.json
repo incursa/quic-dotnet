@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0035",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 NEW_TOKEN Replay Enforcement Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0035",
+    "WI-QUIC-RFC9000-0035"
+  ],
+  "verification_method": "Focused requirement-home execution for listener-local NEW_TOKEN one-time acceptance, wider S8P1P3/S8P1P4 regression coverage, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and targeted no-build test execution.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S8P1P4-0006",
+    "REQ-QUIC-RFC9000-S8P1P4-0008",
+    "REQ-QUIC-RFC9000-S8P1P4-0009",
+    "REQ-QUIC-RFC9000-S8P1P4-0012"
+  ],
+  "scope": "This verification covers listener-local replay prevention for valid NEW_TOKEN values used on future Initial connection attempts.",
+  "expected_result": "The listener accepts the first valid NEW_TOKEN use as address validation, records the token as consumed, rejects a later Initial carrying the same token as replayed, and does not invoke the connection-options callback for the replay attempt when Retry bootstrap is enabled.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S8P1P4 replay requirement-home filter.",
+    "Run the wider S8P1P3/S8P1P4 requirement-home regression filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "The listener uses the verifiable NEW_TOKEN envelope from ARC-QUIC-RFC9000-0034.",
+    "Retry bootstrap is enabled for the replay rejection proof.",
+    "Persistent or distributed replay state remains outside this verification scope."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicAddressValidationTokenReplayCache.cs",
+    "src/Incursa.Quic/QuicAddressValidationTokenProtector.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0012\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P3_|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim replay protection across listener restarts, cluster-wide replay coordination, public token policy, or Retry token source-address and source-port binding."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The Release build passed with zero warnings, the focused S8P1P4 replay filter passed 1/1, the wider S8P1P3/S8P1P4 no-build filter passed 42/42, regenerated QUIC coverage triage marked the four replay requirements trace_clean, and SpecTrace core validation passed for 349 JSON artifacts."
+}

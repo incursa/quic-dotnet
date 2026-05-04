@@ -10,6 +10,7 @@ internal enum QuicAddressValidationTokenValidationResult
     Malformed = 1,
     IntegrityFailure = 2,
     Expired = 3,
+    Replayed = 4,
 }
 
 internal sealed class QuicAddressValidationTokenProtector
@@ -143,6 +144,36 @@ internal sealed class QuicAddressValidationTokenProtector
 
         source = QuicAddressValidationTokenSource.NewToken;
         return true;
+    }
+
+    internal static bool TryGetNewTokenExpiration(ReadOnlySpan<byte> token, out DateTimeOffset expiresAt)
+    {
+        expiresAt = default;
+
+        if (token.Length != TokenLength
+            || !token[..Magic.Length].SequenceEqual(Magic)
+            || token[VersionOffset] != FormatVersion
+            || token[SourceOffset] != NewTokenSource)
+        {
+            return false;
+        }
+
+        long issuedAtSeconds = BinaryPrimitives.ReadInt64BigEndian(token.Slice(IssuedAtOffset, sizeof(long)));
+        long expiresAtSeconds = BinaryPrimitives.ReadInt64BigEndian(token.Slice(ExpiresAtOffset, sizeof(long)));
+        if (expiresAtSeconds <= issuedAtSeconds)
+        {
+            return false;
+        }
+
+        try
+        {
+            expiresAt = DateTimeOffset.FromUnixTimeSeconds(expiresAtSeconds);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
     }
 
     private byte[] ComputeTag(ReadOnlySpan<byte> tokenPrefix, ReadOnlySpan<byte> remoteAddressBytes)
