@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0031",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Preferred Address Connection ID Constraint Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0031",
+    "WI-QUIC-RFC9000-0031"
+  ],
+  "verification_method": "Focused requirement-home execution for preferred_address connection-ID validation, runtime peer connection-ID state inspection, Release build, generated coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0024",
+    "REQ-QUIC-RFC9000-S18P2-0025",
+    "REQ-QUIC-RFC9000-S18P2-0026",
+    "REQ-QUIC-RFC9000-S18P2-0027",
+    "REQ-QUIC-RFC9000-S18P2-0032",
+    "REQ-QUIC-RFC9000-S18P2-0034"
+  ],
+  "scope": "This verification covers preferred_address connection-ID constraints and active_connection_id_limit accounting for the selected RFC 9000 S18P2 requirements.",
+  "expected_result": "The codec rejects invalid preferred_address connection-ID combinations, runtime commit maps invalid preferred_address connection-ID constraints to TRANSPORT_PARAMETER_ERROR, the peer connection-ID state records preferred_address as sequence 1, and active_connection_id_limit enforcement counts handshake, preferred_address, and later NEW_CONNECTION_ID values together.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S18P2 preferred-address requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Existing preferred-address migration path selection remains unchanged.",
+    "Existing broad transport-parameter format/parse behavior remains available as supporting evidence but is not the focused proof source for this slice."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPreferredAddressRequirementTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0027|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0034\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0027|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0034|FullyQualifiedName~REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation\"",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim closure for S8P1P3 address-validation token lifecycle work or for the rest of the S18P2 transport-parameter proof backlog."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-03. The Release build passed with zero warnings, the focused S18P2 preferred-address filter passed 15/15, the focused-plus-fuzz regression filter passed 16/16, selected requirements reached trace_clean in regenerated triage, SpecTrace core validation passed 337 artifacts, and the full no-build solution test suite passed 3702/3702."
+}

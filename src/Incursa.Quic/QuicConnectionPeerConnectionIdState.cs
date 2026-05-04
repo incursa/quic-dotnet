@@ -21,6 +21,8 @@ internal sealed class QuicConnectionPeerConnectionIdState
     private ulong? currentDestinationConnectionIdSequence;
     private ulong retirePriorTo;
 
+    private const ulong PreferredAddressConnectionIdSequence = 1;
+
     /// <summary>
     /// Gets the current destination connection ID chosen from the highest accepted sequence number.
     /// </summary>
@@ -178,6 +180,78 @@ internal sealed class QuicConnectionPeerConnectionIdState
 
         RecomputeCurrentDestinationConnectionId();
         retiredSequenceNumbers = sequencesToRetire.ToArray();
+        destinationConnectionIdChanged =
+            previousDestinationSequence != currentDestinationConnectionIdSequence
+            || !previousDestinationConnectionId.AsSpan().SequenceEqual(currentDestinationConnectionId);
+
+        return true;
+    }
+
+    internal bool TryAcceptPreferredAddressConnectionId(
+        QuicPreferredAddress preferredAddress,
+        ulong activeConnectionIdLimit,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        out QuicTransportErrorCode errorCode,
+        out bool destinationConnectionIdChanged)
+    {
+        errorCode = QuicTransportErrorCode.NoError;
+        destinationConnectionIdChanged = false;
+
+        if (!TryEnsureInitialDestinationConnectionId(initialDestinationConnectionId, out errorCode))
+        {
+            return false;
+        }
+
+        if (preferredAddress.ConnectionId.Length is 0 or > QuicConnectionIdKey.MaximumLength
+            || preferredAddress.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
+            || !QuicConnectionIdKey.TryCreate(preferredAddress.ConnectionId, out QuicConnectionIdKey connectionIdKey))
+        {
+            errorCode = QuicTransportErrorCode.TransportParameterError;
+            return false;
+        }
+
+        QuicConnectionPeerConnectionIdRecord record = new(
+            connectionIdKey,
+            preferredAddress.ConnectionId.ToArray(),
+            RetirePriorTo: 0,
+            preferredAddress.StatelessResetToken.ToArray());
+
+        if (connectionIdHistoryBySequence.TryGetValue(PreferredAddressConnectionIdSequence, out QuicConnectionPeerConnectionIdRecord existingRecord))
+        {
+            if (existingRecord.ConnectionId != connectionIdKey
+                || existingRecord.RetirePriorTo != 0
+                || !existingRecord.StatelessResetToken.AsSpan().SequenceEqual(preferredAddress.StatelessResetToken))
+            {
+                errorCode = QuicTransportErrorCode.TransportParameterError;
+                return false;
+            }
+
+            return true;
+        }
+
+        if (sequenceByConnectionId.TryGetValue(connectionIdKey, out ulong existingSequence)
+            && existingSequence != PreferredAddressConnectionIdSequence)
+        {
+            errorCode = QuicTransportErrorCode.TransportParameterError;
+            return false;
+        }
+
+        ulong activeCountAfterProcessing = (ulong)connectionIdsBySequence.Count + 1;
+        if (activeCountAfterProcessing > activeConnectionIdLimit)
+        {
+            errorCode = QuicTransportErrorCode.ConnectionIdLimitError;
+            return false;
+        }
+
+        ulong? previousDestinationSequence = currentDestinationConnectionIdSequence;
+        byte[] previousDestinationConnectionId = currentDestinationConnectionId;
+
+        connectionIdsBySequence.Add(PreferredAddressConnectionIdSequence, record);
+        connectionIdHistoryBySequence.Add(PreferredAddressConnectionIdSequence, record);
+        sequenceByConnectionId.Add(connectionIdKey, PreferredAddressConnectionIdSequence);
+
+        // Preferred-address migration selects this CID through the path transition gate; recording it
+        // here counts it against active_connection_id_limit without preempting the current path.
         destinationConnectionIdChanged =
             previousDestinationSequence != currentDestinationConnectionIdSequence
             || !previousDestinationConnectionId.AsSpan().SequenceEqual(currentDestinationConnectionId);

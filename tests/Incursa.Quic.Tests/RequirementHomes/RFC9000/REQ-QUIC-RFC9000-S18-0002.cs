@@ -450,6 +450,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
 
     private static QuicTransportParameters BuildRandomParameters(Random random)
     {
+        byte[] initialSourceConnectionId = RandomBytes(random, random.Next(1, 5));
+        byte[] preferredAddressConnectionId = RandomDistinctConnectionId(random, initialSourceConnectionId);
+
         QuicTransportParameters parameters = new()
         {
             OriginalDestinationConnectionId = RandomBytes(random, random.Next(0, 5)),
@@ -470,15 +473,26 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
                 IPv4Port = (ushort)random.Next(0, ushort.MaxValue + 1),
                 IPv6Address = RandomBytes(random, 16),
                 IPv6Port = (ushort)random.Next(0, ushort.MaxValue + 1),
-                ConnectionId = RandomBytes(random, random.Next(1, 6)),
+                ConnectionId = preferredAddressConnectionId,
                 StatelessResetToken = RandomBytes(random, 16),
             },
             ActiveConnectionIdLimit = (ulong)random.Next(2, 64),
-            InitialSourceConnectionId = RandomBytes(random, random.Next(0, 5)),
+            InitialSourceConnectionId = initialSourceConnectionId,
             RetrySourceConnectionId = RandomBytes(random, random.Next(0, 5)),
         };
 
         return parameters;
+    }
+
+    private static byte[] RandomDistinctConnectionId(Random random, ReadOnlySpan<byte> disallowedConnectionId)
+    {
+        byte[] connectionId = RandomBytes(random, random.Next(1, 6));
+        if (connectionId.AsSpan().SequenceEqual(disallowedConnectionId))
+        {
+            connectionId[0] ^= 0xFF;
+        }
+
+        return connectionId;
     }
 
     private static byte[] RandomBytes(Random random, int length)

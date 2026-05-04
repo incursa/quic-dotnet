@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0031",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Preferred Address Connection ID Constraints",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded transport-parameter and runtime enforcement for preferred_address connection-ID constraints, including zero-length mode rejection, sequence-1 accounting, and active_connection_id_limit counting.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0027",
+    "WI-QUIC-RFC9000-0031",
+    "VER-QUIC-RFC9000-0031"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0024",
+    "REQ-QUIC-RFC9000-S18P2-0025",
+    "REQ-QUIC-RFC9000-S18P2-0026",
+    "REQ-QUIC-RFC9000-S18P2-0027",
+    "REQ-QUIC-RFC9000-S18P2-0032",
+    "REQ-QUIC-RFC9000-S18P2-0034"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPreferredAddressRequirementTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs"
+  ],
+  "design_summary": "The transport-parameter codec validates preferred_address as a server-originated parameter with a non-zero, at-most-20-byte connection ID and rejects a server preference when the server selected zero-length connection IDs or reuses the handshake connection ID. Runtime peer transport-parameter commit repeats the preferred_address connection-ID constraint so direct TLS-state updates close with TRANSPORT_PARAMETER_ERROR. The peer connection-ID state records the preferred_address connection ID as sequence 1, counts it with the handshake connection ID against active_connection_id_limit, and leaves current path destination selection gated by the existing preferred-address migration path logic.",
+  "data_and_state_considerations": "The preferred_address connection ID is tracked in the peer connection-ID history and active set as sequence 1 with its stateless reset token. It does not preempt the current destination connection ID on commit; the existing CurrentPeerDestinationConnectionId path transition gate selects it after the connection acts on the preferred address.",
+  "edge_cases_and_constraints": [
+    "A server-selected zero-length initial_source_connection_id cannot be combined with preferred_address.",
+    "A zero-length preferred_address connection ID is rejected when parsing or formatting transport parameters.",
+    "The preferred_address connection ID cannot equal the server handshake connection ID.",
+    "The preferred_address connection ID length is encoded as one byte and capped at 20 bytes.",
+    "The handshake connection ID, preferred_address connection ID, and later NEW_CONNECTION_ID values are counted together when enforcing active_connection_id_limit.",
+    "Invalid preferred_address connection-ID constraints raised during peer transport-parameter commit close locally with TRANSPORT_PARAMETER_ERROR."
+  ],
+  "alternatives_considered": [
+    "Rely only on broad transport-parameter round-trip tests; rejected because the selected requirements need focused proof and include runtime active-limit accounting.",
+    "Switch CurrentPeerDestinationConnectionId immediately to the preferred_address connection ID at transport-parameter commit; rejected because existing migration behavior intentionally waits until the preferred-address path transition is acted on.",
+    "Treat preferred_address connection-ID validation as only a parser concern; rejected because tests and TLS bridge seams can deliver structured transport parameters directly to runtime commit."
+  ],
+  "risks": [
+    "The slice does not close the rest of S18P2 transport-parameter proof debt.",
+    "The preferred-address path transition remains owned by existing S9.6 migration behavior and is not broadened here.",
+    "This slice does not add benchmark coverage because it changes validation/accounting logic rather than a new parser hot path."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers preferred_address connection-ID constraints and accounting for S18P2. It does not claim complete preferred-address migration lifecycle closure or broad transport-parameter coverage cleanup."
+    }
+  ]
+}

@@ -3179,6 +3179,16 @@ internal sealed partial class QuicConnectionRuntime
             ? QuicTransportParameterRole.Client
             : QuicTransportParameterRole.Server;
 
+        if (receiverRole == QuicTransportParameterRole.Client
+            && !QuicTransportParametersCodec.TryValidateServerPreferredAddressConnectionIdConstraints(peerTransportParameters))
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.TransportParameterError,
+                "The peer transport parameters carried an invalid preferred_address connection ID.",
+                ref effects);
+        }
+
         ReadOnlySpan<byte> retrySourceConnectionIdSpan = this.retrySourceConnectionId is null
             ? ReadOnlySpan<byte>.Empty
             : this.retrySourceConnectionId;
@@ -3205,6 +3215,35 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 QuicTransportErrorCode.TransportParameterError,
                 $"The peer transport parameters failed connection ID binding validation: {validationError}.",
+                ref effects);
+        }
+
+        bool preferredAddressConnectionIdChanged = false;
+        if (receiverRole == QuicTransportParameterRole.Client
+            && peerTransportParameters.PreferredAddress is QuicPreferredAddress preferredAddress
+            && !peerConnectionIdState.TryAcceptPreferredAddressConnectionId(
+                preferredAddress,
+                GetLocalActiveConnectionIdLimit(),
+                handshakeFlowCoordinator.DestinationConnectionId.Span,
+                out QuicTransportErrorCode preferredAddressErrorCode,
+                out preferredAddressConnectionIdChanged))
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                preferredAddressErrorCode,
+                "The peer transport parameters carried an unusable preferred_address connection ID.",
+                ref effects);
+        }
+
+        if (receiverRole == QuicTransportParameterRole.Client
+            && peerTransportParameters.PreferredAddress is not null
+            && preferredAddressConnectionIdChanged
+            && !TrySetHandshakeDestinationConnectionId(peerConnectionIdState.CurrentDestinationConnectionId.Span))
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.TransportParameterError,
+                "The peer preferred_address connection ID could not be installed.",
                 ref effects);
         }
 

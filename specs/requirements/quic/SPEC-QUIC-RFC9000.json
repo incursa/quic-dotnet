@@ -31905,22 +31905,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B22-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs::EndpointRoutesThePreferredAddressConnectionIdAcrossPathMigration",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs::TryValidateServerPreferredAddressConnectionIdConstraints_RejectsHandshakeConnectionIdReuse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs::TryAcceptPreferredAddressConnectionId_RecordsThePreferredAddressConnectionIdAsSequenceOne"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs::EndpointRoutesThePreferredAddressConnectionIdAcrossPathMigration"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0025",
@@ -31934,22 +31939,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B23-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs::TryFormatTransportParameters_AllowsPreferredAddressWhenServerSelectedNonZeroConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs::TryParseTransportParameters_RejectsPreferredAddressWhenServerSelectedZeroLengthConnectionId"
         ]
       }
     },
@@ -31965,22 +31973,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B23-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs::TryParseTransportParameters_AcceptsNonZeroPreferredAddressConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs::TryParseTransportParameters_RejectsZeroLengthPreferredAddressConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs::TryFormatTransportParameters_RejectsZeroLengthPreferredAddressConnectionId"
         ]
       }
     },
@@ -31996,22 +32007,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B23-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs::PeerTransportParametersCommitted_WithInvalidPreferredAddressClosesWithTransportParameterError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs::TryParseTransportParameters_RejectsInvalidPreferredAddressWhenParsingAsClient"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs::TryParseTransportParameters_RejectsInvalidPreferredAddressWhenParsingAsClient"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0028",
@@ -32157,24 +32172,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B24-P0-S6",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedPreferredAddressValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs::TryFormatTransportParameters_WritesPreferredAddressConnectionIdLengthAsOneByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs::TryParseTransportParameters_RejectsPreferredAddressConnectionIdLengthAboveTwenty",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs::TryParseTransportParameters_AcceptsMaximumPreferredAddressConnectionIdLength"
         ]
       }
     },
@@ -32223,17 +32239,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0031"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0031"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0031"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B26-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs::TryAcceptNewConnectionId_CountsHandshakeAndPreferredAddressConnectionIdsAgainstTheActiveLimit"
         ]
       }
     },

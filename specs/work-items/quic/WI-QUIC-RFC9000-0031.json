@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0031",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Preferred Address Connection ID Constraint Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0031",
+    "VER-QUIC-RFC9000-0031"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0024",
+    "REQ-QUIC-RFC9000-S18P2-0025",
+    "REQ-QUIC-RFC9000-S18P2-0026",
+    "REQ-QUIC-RFC9000-S18P2-0027",
+    "REQ-QUIC-RFC9000-S18P2-0032",
+    "REQ-QUIC-RFC9000-S18P2-0034"
+  ],
+  "summary": "Add focused preferred_address connection-ID validation and active-limit accounting for RFC 9000 S18P2.",
+  "planned_changes": "- Validate preferred_address connection-ID constraints in the transport-parameter codec.\n- Reject server preferred_address when the server selected zero-length connection IDs or reused the handshake connection ID.\n- Revalidate preferred_address constraints at peer transport-parameter commit and close with TRANSPORT_PARAMETER_ERROR on violation.\n- Record the preferred_address connection ID as sequence 1 in peer connection-ID state without prematurely switching current destination selection.\n- Count handshake, preferred_address, and NEW_CONNECTION_ID values together for active_connection_id_limit enforcement.\n- Add focused requirement-home tests and canonical trace xrefs for the selected S18P2 requirements.",
+  "verification_plan": "Run a Release build, run the focused S18P2 preferred-address requirement-home filter, regenerate the QUIC requirement coverage triage, and validate canonical SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0031"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0031"
+  ],
+  "out_of_scope": [
+    "Address-validation token lifecycle work in S8P1P3.",
+    "Full preferred-address path migration lifecycle changes.",
+    "Broad S18P2 transport-parameter proof cleanup outside the selected connection-ID constraints.",
+    "Benchmark-suite changes for existing transport-parameter parser hot paths."
+  ],
+  "completion_notes": "Completed as a focused validation/accounting slice. Preferred-address path selection remains gated by the existing migration transition behavior."
+}

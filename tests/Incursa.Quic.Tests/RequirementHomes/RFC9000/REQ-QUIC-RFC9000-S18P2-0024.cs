@@ -71,4 +71,55 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0024
         Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, migratedPathResult.Disposition);
         Assert.Equal(handle, migratedPathResult.Handle);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryValidateServerPreferredAddressConnectionIdConstraints_RejectsHandshakeConnectionIdReuse()
+    {
+        QuicTransportParameters parameters = QuicPreferredAddressRequirementTestSupport.CreateServerTransportParameters(
+            preferredConnectionId: QuicPreferredAddressRequirementTestSupport.InitialSourceConnectionId);
+
+        Assert.False(QuicTransportParametersCodec.TryValidateServerPreferredAddressConnectionIdConstraints(parameters));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryAcceptPreferredAddressConnectionId_RecordsThePreferredAddressConnectionIdAsSequenceOne()
+    {
+        byte[] initialSourceConnectionId = QuicPreferredAddressRequirementTestSupport.InitialSourceConnectionId;
+        QuicPreferredAddress preferredAddress = QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress();
+        QuicConnectionPeerConnectionIdState state = new();
+
+        Assert.True(state.TryAcceptPreferredAddressConnectionId(
+            preferredAddress,
+            activeConnectionIdLimit: 2UL,
+            initialDestinationConnectionId: initialSourceConnectionId,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged));
+
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+        Assert.Equal(2, state.ActiveConnectionIdCount);
+        Assert.Equal(0UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.True(initialSourceConnectionId.AsSpan().SequenceEqual(state.CurrentDestinationConnectionId.Span));
+
+        Assert.True(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(
+                sequenceNumber: 1,
+                retirePriorTo: 0,
+                preferredAddress.ConnectionId,
+                preferredAddress.StatelessResetToken),
+            requiresZeroLengthDestinationConnectionId: false,
+            activeConnectionIdLimit: 2UL,
+            initialDestinationConnectionId: initialSourceConnectionId,
+            out errorCode,
+            out destinationConnectionIdChanged,
+            out ulong[] retiredSequenceNumbers));
+
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+        Assert.Empty(retiredSequenceNumbers);
+    }
 }

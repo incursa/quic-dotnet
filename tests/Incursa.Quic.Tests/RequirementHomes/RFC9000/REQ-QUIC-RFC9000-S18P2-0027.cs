@@ -4,6 +4,33 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S18P2_0027
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PeerTransportParametersCommitted_WithInvalidPreferredAddressClosesWithTransportParameterError()
+    {
+        QuicTransportParameters invalidPeerParameters =
+            QuicPreferredAddressRequirementTestSupport.CreateServerTransportParameters(
+                preferredConnectionId: QuicPreferredAddressRequirementTestSupport.InitialSourceConnectionId);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(
+            QuicPreferredAddressRequirementTestSupport.InitialSourceConnectionId));
+        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, invalidPeerParameters);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
+                    TransportParameters: invalidPeerParameters)),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.NotNull(runtime.TerminalState);
+        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState.Value.Origin);
+        Assert.Equal(QuicTransportErrorCode.TransportParameterError, runtime.TerminalState.Value.Close.TransportErrorCode);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0027")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

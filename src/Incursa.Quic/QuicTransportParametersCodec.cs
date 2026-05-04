@@ -143,7 +143,8 @@ internal static class QuicTransportParametersCodec
             }
         }
 
-        return true;
+        return receiverRole != QuicTransportParameterRole.Client
+            || TryValidateServerPreferredAddressConnectionIdConstraints(parameters);
     }
 
     /// <summary>
@@ -234,10 +235,18 @@ internal static class QuicTransportParametersCodec
             return false;
         }
 
-        if (parameters.PreferredAddress is not null
-            && !TryWritePreferredAddressParameter(parameters.PreferredAddress, senderRole, destination, ref index))
+        if (parameters.PreferredAddress is not null)
         {
-            return false;
+            if (senderRole == QuicTransportParameterRole.Server
+                && !TryValidateServerPreferredAddressConnectionIdConstraints(parameters))
+            {
+                return false;
+            }
+
+            if (!TryWritePreferredAddressParameter(parameters.PreferredAddress, senderRole, destination, ref index))
+            {
+                return false;
+            }
         }
 
         if (parameters.ActiveConnectionIdLimit is ulong activeConnectionIdLimit
@@ -345,6 +354,27 @@ internal static class QuicTransportParametersCodec
         }
 
         return true;
+    }
+
+    internal static bool TryValidateServerPreferredAddressConnectionIdConstraints(QuicTransportParameters parameters)
+    {
+        if (parameters.PreferredAddress is not QuicPreferredAddress preferredAddress)
+        {
+            return true;
+        }
+
+        if (preferredAddress.ConnectionId is null)
+        {
+            return false;
+        }
+
+        if (parameters.InitialSourceConnectionId is { Length: 0 })
+        {
+            return false;
+        }
+
+        return parameters.InitialSourceConnectionId is not { } initialSourceConnectionId
+            || !preferredAddress.ConnectionId.AsSpan().SequenceEqual(initialSourceConnectionId);
     }
 
     private static bool TryApplyTransportParameter(
@@ -493,10 +523,10 @@ internal static class QuicTransportParametersCodec
                     return false;
                 }
 
-        if (activeConnectionIdLimit < MinimumActiveConnectionIdLimit)
-        {
-            return false;
-        }
+                if (activeConnectionIdLimit < MinimumActiveConnectionIdLimit)
+                {
+                    return false;
+                }
 
                 parameters.ActiveConnectionIdLimit = activeConnectionIdLimit;
                 return true;

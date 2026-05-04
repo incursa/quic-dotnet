@@ -7,6 +7,24 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S18P2_0025
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryFormatTransportParameters_AllowsPreferredAddressWhenServerSelectedNonZeroConnectionId()
+    {
+        QuicTransportParameters parameters = QuicPreferredAddressRequirementTestSupport.CreateServerTransportParameters();
+
+        byte[] encoded = QuicPreferredAddressRequirementTestSupport.FormatAsServer(parameters);
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out QuicTransportParameters parsed));
+        Assert.NotNull(parsed.PreferredAddress);
+        Assert.Equal(QuicPreferredAddressRequirementTestSupport.InitialSourceConnectionId, parsed.InitialSourceConnectionId);
+        Assert.Equal(QuicPreferredAddressRequirementTestSupport.PreferredConnectionId, parsed.PreferredAddress!.ConnectionId);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId()
     {
@@ -38,6 +56,28 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0025
                     StatelessResetToken = Enumerable.Range(0, 16).Select(value => (byte)(0xA0 + value)).ToArray(),
                 },
             },
+            QuicTransportParameterRole.Server,
+            stackalloc byte[128],
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseTransportParameters_RejectsPreferredAddressWhenServerSelectedZeroLengthConnectionId()
+    {
+        QuicPreferredAddress preferredAddress = QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress();
+        byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x0F, []),
+            QuicPreferredAddressRequirementTestSupport.BuildPreferredAddressTuple(preferredAddress));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out _));
+
+        Assert.False(QuicTransportParametersCodec.TryFormatTransportParameters(
+            QuicPreferredAddressRequirementTestSupport.CreateServerTransportParameters(initialSourceConnectionId: []),
             QuicTransportParameterRole.Server,
             stackalloc byte[128],
             out _));
