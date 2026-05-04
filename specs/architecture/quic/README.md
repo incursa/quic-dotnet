@@ -52,6 +52,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0030.json`](ARC-QUIC-RFC9000-0030.json): canonical RFC 9000 NEW_CONNECTION_ID runtime lifecycle topoff design source
 - [`ARC-QUIC-RFC9000-0031.json`](ARC-QUIC-RFC9000-0031.json): canonical RFC 9000 preferred address connection-ID constraint design source
 - [`ARC-QUIC-RFC9000-0032.json`](ARC-QUIC-RFC9000-0032.json): canonical RFC 9000 client address validation token lifecycle design source
+- [`ARC-QUIC-RFC9000-0033.json`](ARC-QUIC-RFC9000-0033.json): canonical RFC 9000 server Retry token validation design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

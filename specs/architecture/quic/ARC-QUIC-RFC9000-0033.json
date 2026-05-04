@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0033",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Server Retry Token Validation Floor",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded server-side Retry token validation floor used to reject replay Initial packets that omit or alter the expected address-validation token and admit handshakes only after validation succeeds.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0032",
+    "WI-QUIC-RFC9000-0033",
+    "VER-QUIC-RFC9000-0033"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P1P3-0004",
+    "REQ-QUIC-RFC9000-S8P1P3-0014",
+    "REQ-QUIC-RFC9000-S8P1P3-0015",
+    "REQ-QUIC-RFC9000-S8P1P3-0016"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0016.cs"
+  ],
+  "design_summary": "The listener Retry bootstrap path treats an Initial packet whose destination connection ID matches the Retry source connection ID as a replay candidate. Before admitting that candidate, it opens the Initial packet with Retry-selected Initial protection, validates that the payload contains CRYPTO data, parses the Initial Token field, and compares the parsed token to the stored Retry token. A wrong or missing token is rejected without invoking the connection-options callback or admitting the connection. A valid token clears the validation failure code, records the observed replay token, posts the handshake bootstrap event, and marks the replay as admitted after the server connection shell accepts the attempt.",
+  "data_and_state_considerations": "The Retry bootstrap state stores the original destination connection ID, Retry source connection ID, and random Retry token for the listener instance. Validation observations are kept as internal test-visible flags and failure codes, not as public API. Token bytes are compared exactly and are represented in diagnostics-facing test observations as hex strings.",
+  "edge_cases_and_constraints": [
+    "A replay candidate with the wrong token is discarded before callback admission.",
+    "A replay candidate with an empty token is parsed, treated as mismatched, and discarded.",
+    "Valid Retry tokens admit only the immediate replay path selected by the Retry source connection ID.",
+    "The slice proves the existing Retry-token address-validation floor and does not implement persistent NEW_TOKEN validation or token expiration policy."
+  ],
+  "alternatives_considered": [
+    "Implement a general server token store for NEW_TOKEN values in this slice; rejected because the selected requirements can be closed honestly on the existing Retry-token validation floor and persistent token policy is a separate design problem.",
+    "Treat wrong Retry tokens as ordinary fresh Initial packets and issue another Retry; rejected because the current listener can safely discard replay candidates that fail exact token validation.",
+    "Expose public validation callbacks; rejected because the current supported boundary is internal listener admission and public token policy remains out of scope."
+  ],
+  "risks": [
+    "This slice does not close S8P1P3 requirements for NEW_TOKEN uniqueness, expiration, or observer-linkability.",
+    "This slice does not persist server-issued tokens across listener lifetimes.",
+    "This slice does not add fuzz or benchmark coverage because it proves an existing listener admission branch rather than a new parser or serializer hot path."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design is limited to Retry-token validation on listener bootstrap replay candidates. Broader server NEW_TOKEN validation and storage remain follow-up work."
+    }
+  ]
+}
