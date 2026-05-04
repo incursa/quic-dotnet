@@ -32735,22 +32735,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0042"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0042"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0042"
         ],
         "upstream_refs": [
           "RFC 9000 §19.1 RFC9000-S19.1-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs::TryFormatPaddingFrame_EncodesTypeAsVarintValue00",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs::TryParsePaddingFrame_RejectsNonPaddingTypeValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs::TryParsePaddingFrame_RejectsNonMinimalVarintEncodingOfType00"
         ]
       }
     },
@@ -32766,17 +32769,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0042"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0042"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0042"
         ],
         "upstream_refs": [
           "RFC 9000 §19.2 RFC9000-S19.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0001.cs::TryFormatPingFrame_ProducesAckElicitingReachabilityProbe"
         ]
       }
     },
@@ -32823,22 +32832,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0042"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0042"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0042"
         ],
         "upstream_refs": [
           "RFC 9000 §19.2 RFC9000-S19.2-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePaddingAndPingFrame_RejectsEmptyAndMismatchedTypes",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParsePingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs::TryFormatPingFrame_EncodesTypeAsVarintValue01",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs::TryParsePingFrame_RejectsNonPingTypeValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs::TryParsePingFrame_RejectsNonMinimalVarintEncodingOfType01"
         ]
       }
     },
@@ -32854,17 +32866,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0042"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0042"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0042"
         ],
         "upstream_refs": [
           "RFC 9000 §19.2 RFC9000-S19.2-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0004.cs::TryFormatPingFrame_ProducesAckElicitingKeepAliveProbe"
         ]
       }
     },

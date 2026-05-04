@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0042",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 PADDING and PING Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0042",
+    "WI-QUIC-RFC9000-0042"
+  ],
+  "verification_method": "Focused S19P1/S19P2 requirement-home tests, regenerated QUIC coverage triage, Release build, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P1-0006",
+    "REQ-QUIC-RFC9000-S19P2-0001",
+    "REQ-QUIC-RFC9000-S19P2-0003",
+    "REQ-QUIC-RFC9000-S19P2-0004"
+  ],
+  "scope": "This verification covers focused PADDING and PING frame type encoding plus PING reachability and keep-alive probe availability for the listed S19P1/S19P2 requirements.",
+  "expected_result": "S19P1/S19P2 requirement-home tests prove PADDING type 0x00 and PING type 0x01 exact one-byte varint encoding, mismatched-type rejection, non-minimal varint rejection, and PING ack-eliciting probe availability.",
+  "procedure": [
+    "Run the focused S19P1/S19P2 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run a Release build.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Existing PADDING and PING parser/formatter behavior remains in QuicFrameCodec.",
+    "Existing ack-eliciting frame classification remains the canonical PING probe classification seam."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0004.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S19P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S19P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P2_0004\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim a proactive PING keep-alive scheduler, unrelated S19 frame families, or packet-level close policy changes."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P1/S19P2 tail filter passed 8/8, and generated triage resolves the four targeted requirements as trace-clean."
+}

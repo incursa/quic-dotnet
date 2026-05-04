@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0042",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 PADDING and PING Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 PADDING and PING type encoding plus PING reachability and keep-alive probe semantics.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0042",
+    "VER-QUIC-RFC9000-0042"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P1-0006",
+    "REQ-QUIC-RFC9000-S19P2-0001",
+    "REQ-QUIC-RFC9000-S19P2-0003",
+    "REQ-QUIC-RFC9000-S19P2-0004"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0004.cs"
+  ],
+  "design_summary": "The proof stays on the existing QuicFrameCodec fixed-type frame seam. PADDING is formatted and parsed as the single-byte variable-length integer value 0x00. PING is formatted and parsed as the single-byte variable-length integer value 0x01, and the existing ack-eliciting classifier remains the proof seam that a formatted PING can act as a reachability or keep-alive probe.",
+  "data_and_state_considerations": "PADDING and PING carry no payload at this frame-codec boundary. The focused tests assert exact one-byte encoding, mismatched-type rejection, and rejection of longer varint encodings for the fixed frame type values. PING policy proof intentionally does not create timers; it proves the frame that policy code can use is well-formed and ack-eliciting.",
+  "edge_cases_and_constraints": [
+    "Non-minimal two-byte varint encodings of 0x00 and 0x01 are rejected by the fixed-type parser because PADDING and PING are type-only frames encoded as one byte.",
+    "The reachability and keep-alive clauses are MAY-level policy permissions; this proof records the available ack-eliciting probe primitive rather than requiring proactive timer behavior.",
+    "PADDING semantic no-op behavior and packet-size padding remain owned by adjacent S19P1 requirements."
+  ],
+  "alternatives_considered": [
+    "Keep broad QuicFrameCodec tests as the only proof; rejected because live triage requires requirement-owned focused evidence.",
+    "Add runtime timer behavior for optional PING keep-alive policy; rejected because the RFC clauses permit use of PING but do not require a new timer in this slice.",
+    "Fold remaining frame-family cleanup into this slice; rejected to keep the S19P1/S19P2 proof tail bounded."
+  ],
+  "risks": [
+    "This proof does not claim a complete application-level keep-alive scheduler.",
+    "This proof does not broaden packet-processing close behavior for malformed fixed-type frames.",
+    "Other RFC 9000 tail families remain outside this slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused S19P1/S19P2 PADDING and PING proof only: exact type encoding, mismatched-type rejection, non-minimal varint rejection, and ack-eliciting PING probe availability."
+    }
+  ]
+}

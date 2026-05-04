@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0042",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 PADDING and PING Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0042",
+    "VER-QUIC-RFC9000-0042"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P1-0006",
+    "REQ-QUIC-RFC9000-S19P2-0001",
+    "REQ-QUIC-RFC9000-S19P2-0003",
+    "REQ-QUIC-RFC9000-S19P2-0004"
+  ],
+  "summary": "Close the RFC 9000 S19P1/S19P2 PADDING/PING proof tail with focused requirement-home evidence and canonical trace links.",
+  "planned_changes": "- Add focused positive, negative, and edge tests for PADDING and PING fixed-type varint encoding.\n- Add focused positive tests proving formatted PING frames are available as ack-eliciting reachability and keep-alive probes.\n- Update canonical xrefs and regenerate QUIC coverage triage.",
+  "verification_plan": "Run the focused S19P1/S19P2 requirement-home filter, regenerate QUIC requirement coverage triage, run a Release build, validate SpecTrace JSON, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0042"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0042"
+  ],
+  "out_of_scope": [
+    "Changing PADDING or PING production behavior.",
+    "Adding proactive keep-alive timer policy.",
+    "Changing packet-level malformed-frame close behavior.",
+    "Completing unrelated RFC 9000 tail families."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over existing PADDING/PING parser, formatter, and ack-eliciting classifier behavior."
+}
