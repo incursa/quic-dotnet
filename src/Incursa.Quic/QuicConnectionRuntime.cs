@@ -260,6 +260,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         get
         {
+            if (PeerRequestedZeroLengthConnectionId())
+            {
+                return ReadOnlyMemory<byte>.Empty;
+            }
+
             if (!peerConnectionIdState.CurrentDestinationConnectionId.IsEmpty)
             {
                 return peerConnectionIdState.CurrentDestinationConnectionId;
@@ -273,6 +278,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             return handshakeFlowCoordinator.DestinationConnectionId;
         }
+    }
+
+    private bool LocallySelectedZeroLengthConnectionId()
+    {
+        return tlsState.LocalTransportParameters?.InitialSourceConnectionId is { Length: 0 };
     }
 
     internal ReadOnlyMemory<byte> CurrentHandshakeSourceConnectionId

@@ -3168,6 +3168,12 @@ internal sealed partial class QuicConnectionRuntime
             ? ReadOnlySpan<byte>.Empty
             : this.retrySourceConnectionId;
 
+        bool stateChanged = false;
+        if (peerTransportParameters.InitialSourceConnectionId is { Length: 0 })
+        {
+            stateChanged |= TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty);
+        }
+
         ReadOnlySpan<byte> handshakeDestinationConnectionId = handshakeFlowCoordinator.DestinationConnectionId.Span;
         if (!handshakeFlowCoordinator.InitialDestinationConnectionId.IsEmpty
             && !handshakeDestinationConnectionId.IsEmpty
@@ -3187,7 +3193,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
-        bool stateChanged = streamRegistry.Bookkeeping.TryApplyPeerTransportParameterSendLimits(
+        stateChanged |= streamRegistry.Bookkeeping.TryApplyPeerTransportParameterSendLimits(
             localBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiRemote ?? 0,
             peerBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiLocal ?? 0,
             localUnidirectionalLimit: peerTransportParameters.InitialMaxStreamDataUni ?? 0);

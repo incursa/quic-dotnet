@@ -503,6 +503,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         if (connectionIdIssuedEvent.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
             || statelessResetTokensByConnectionId.ContainsKey(connectionIdIssuedEvent.ConnectionId)
+            || LocallySelectedZeroLengthConnectionId()
             || !CanIssueAnotherConnectionId())
         {
             return false;
@@ -617,6 +618,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
         if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit()
             || highestConnectionIdIssuedToPeer == ulong.MaxValue
+            || LocallySelectedZeroLengthConnectionId()
             || !CanIssueAnotherConnectionId()
             || !TryValidateStreamSendBoundary(out _)
             || !TryGenerateUniqueIssuedConnectionIdBytes(out byte[] connectionIdBytes))

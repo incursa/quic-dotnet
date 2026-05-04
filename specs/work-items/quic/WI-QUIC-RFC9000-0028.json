@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0028",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Zero-Length Connection-ID Mode Runtime Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0028",
+    "VER-QUIC-RFC9000-0028"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P1P1-0020",
+    "REQ-QUIC-RFC9000-S5P1P1-0021"
+  ],
+  "summary": "Implement and prove bounded zero-length connection-ID mode behavior for local CID issuance suppression and outbound empty Destination Connection ID selection toward peers that selected zero-length mode.",
+  "planned_changes": "- Add a runtime helper that identifies local zero-length connection-ID selection from committed local transport parameters.\n- Reject explicit local connection-ID issuance after local zero-length selection.\n- Reject automatic local connection-ID replenishment after local zero-length selection.\n- Install an empty handshake destination connection ID when committed peer transport parameters select zero-length mode.\n- Make CurrentPeerDestinationConnectionId prefer empty output for peer zero-length mode before peer-issued CID, preferred-address, or handshake fallback state.\n- Add positive, negative, and edge requirement-home tests for REQ-QUIC-RFC9000-S5P1P1-0020 and REQ-QUIC-RFC9000-S5P1P1-0021.",
+  "verification_plan": "Run the focused zero-length connection-ID requirement homes and nearby connection-ID/migration regression homes, build the solution, validate canonical SpecTrace JSON, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0028"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0028"
+  ],
+  "out_of_scope": [
+    "Public API selection of local zero-length mode.",
+    "Multipath behavior.",
+    "Broad active migration support for zero-length connection-ID deployments.",
+    "HTTP/3 or application-layer routing behavior.",
+    "Changing NEW_CONNECTION_ID frame-codec semantics."
+  ],
+  "completion_notes": "Completed as a bounded runtime slice. Local zero-length mode now suppresses explicit and replenishment issuance, and peer zero-length mode installs an empty outbound Destination Connection ID through the runtime peer transport-parameter commit path."
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0028",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Zero-Length Connection-ID Mode Runtime Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0028",
+    "WI-QUIC-RFC9000-0028"
+  ],
+  "verification_method": "Focused requirement-home execution, protected 1-RTT packet opening for outbound DCID selection, nearby connection-ID lifecycle regression tests, solution build, SpecTrace validation, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S5P1P1-0020",
+    "REQ-QUIC-RFC9000-S5P1P1-0021"
+  ],
+  "scope": "This verification covers local connection-ID issuance suppression after local zero-length selection and empty outbound Destination Connection ID selection for packets sent toward peers that selected zero-length mode. It does not cover public configuration APIs, multipath, broad migration success, or application-layer behavior.",
+  "expected_result": "Requirement-home tests prove that local zero-length mode suppresses explicit and replenishment CID issuance, non-zero local mode still allows issuance, peer zero-length mode emits protected application-data packets that open only with an empty Destination Connection ID, and non-zero peer mode continues to use the non-zero destination ID. Nearby connection-ID lifecycle and zero-length migration guard regressions remain green.",
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx -c Release`.",
+    "Run focused requirement-home and regression tests for S5P1P1-0020, S5P1P1-0021, S5P1P1-0012, S5P1P1-0014, S5P1P2-0011, S9P5-0005, and S9P5-0010.",
+    "Open protected outbound application-data packets with empty and non-empty Destination Connection ID expectations.",
+    "Run canonical SpecTrace JSON validation.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "Local zero-length mode is represented by committed local transport parameters whose Initial Source Connection ID is present with length zero.",
+    "Peer zero-length mode is represented by peer transport parameters committed through runtime TLS state update events.",
+    "The runtime has 1-RTT packet protection material before outbound packet inspection."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0021|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P2_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S9P5_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P5_0010\""
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Packet Inspection Boundary",
+      "content": "The outbound zero-length proof opens protected 1-RTT datagrams with an empty Destination Connection ID and verifies the same datagrams do not open with the old non-zero handshake destination ID."
+    }
+  ],
+  "status_summary": "Passed for the bounded zero-length connection-ID mode runtime slice. Focused tests passed 19/19 after the runtime began installing empty outbound DCIDs through peer transport-parameter commit and suppressing local CID issuance from committed local zero-length transport parameters."
+}

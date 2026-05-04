@@ -5828,17 +5828,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0028"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0028"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0028"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B9-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0020.cs::ConnectionIdIssuedEvent_WhenLocalTransportParametersSelectZeroLengthConnectionId_DoesNotIssueNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0020.cs::ConnectionIdIssuedEvent_WhenLocalTransportParametersSelectNonZeroConnectionId_IssuesNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0020.cs::PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish"
         ]
       }
     },
@@ -5854,17 +5862,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0028"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0028"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0028"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B9-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs::OpenOutboundStream_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs::OpenOutboundStream_WhenPeerSelectsNonZeroConnectionId_UsesNonZeroDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs::CurrentPeerDestinationConnectionId_WhenPeerZeroLengthModeHasPreferredAddress_StillUsesZeroLengthDestinationConnectionId"
         ]
       }
     },
