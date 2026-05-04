@@ -7,6 +7,7 @@ namespace Incursa.Quic;
 internal sealed class QuicConnectionPeerConnectionIdState
 {
     internal const ulong DefaultActiveConnectionIdLimit = 2;
+    private const ulong PendingRetiredConnectionIdLimitMultiplier = 2;
 
     // Sequence-indexed peer records, keyed by the peer's NEW_CONNECTION_ID frame sequence number.
     private readonly Dictionary<ulong, QuicConnectionPeerConnectionIdRecord> connectionIdsBySequence = [];
@@ -37,6 +38,18 @@ internal sealed class QuicConnectionPeerConnectionIdState
     /// Gets the number of active peer-issued connection IDs tracked for outbound packet selection.
     /// </summary>
     internal int ActiveConnectionIdCount => connectionIdsBySequence.Count;
+
+    /// <summary>
+    /// Gets the number of locally retired peer-issued connection IDs still tracked for retirement reporting.
+    /// </summary>
+    internal int PendingRetiredConnectionIdCount => retiredSequenceNumbersReportedToRuntime.Count;
+
+    internal static ulong GetPendingRetiredConnectionIdLimit(ulong activeConnectionIdLimit)
+    {
+        return activeConnectionIdLimit > ulong.MaxValue / PendingRetiredConnectionIdLimitMultiplier
+            ? ulong.MaxValue
+            : activeConnectionIdLimit * PendingRetiredConnectionIdLimitMultiplier;
+    }
 
     /// <summary>
     /// Accepts a peer-issued NEW_CONNECTION_ID frame when it is consistent with previously seen state.
@@ -137,6 +150,14 @@ internal sealed class QuicConnectionPeerConnectionIdState
 
         if (frame.SequenceNumber < retirePriorTo)
         {
+            if (!CanReportRetiredSequenceNumbers(
+                    [frame.SequenceNumber],
+                    activeConnectionIdLimit,
+                    out errorCode))
+            {
+                return false;
+            }
+
             connectionIdHistoryBySequence.Add(frame.SequenceNumber, record);
             sequenceByConnectionId.Add(connectionIdKey, frame.SequenceNumber);
             if (retiredSequenceNumbersReportedToRuntime.Add(frame.SequenceNumber))
@@ -161,6 +182,14 @@ internal sealed class QuicConnectionPeerConnectionIdState
         if (activeCountAfterProcessing > activeConnectionIdLimit)
         {
             errorCode = QuicTransportErrorCode.ConnectionIdLimitError;
+            return false;
+        }
+
+        if (!CanReportRetiredSequenceNumbers(
+                sequencesToRetire,
+                activeConnectionIdLimit,
+                out errorCode))
+        {
             return false;
         }
 
@@ -335,6 +364,33 @@ internal sealed class QuicConnectionPeerConnectionIdState
 
         currentDestinationConnectionIdSequence = selectedSequence;
         currentDestinationConnectionId = selectedRecord.ConnectionIdBytes.ToArray();
+    }
+
+    private bool CanReportRetiredSequenceNumbers(
+        IEnumerable<ulong> sequenceNumbers,
+        ulong activeConnectionIdLimit,
+        out QuicTransportErrorCode errorCode)
+    {
+        errorCode = QuicTransportErrorCode.NoError;
+        ulong pendingCount = (ulong)retiredSequenceNumbersReportedToRuntime.Count;
+        ulong pendingLimit = GetPendingRetiredConnectionIdLimit(activeConnectionIdLimit);
+
+        foreach (ulong sequenceNumber in sequenceNumbers)
+        {
+            if (retiredSequenceNumbersReportedToRuntime.Contains(sequenceNumber))
+            {
+                continue;
+            }
+
+            pendingCount++;
+            if (pendingCount > pendingLimit)
+            {
+                errorCode = QuicTransportErrorCode.ConnectionIdLimitError;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>

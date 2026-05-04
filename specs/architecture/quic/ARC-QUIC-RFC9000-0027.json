@@ -6,7 +6,7 @@
   "title": "QUIC RFC 9000 Peer Connection-ID Lifecycle Runtime Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the bounded runtime path that tracks peer-issued connection IDs, applies Retire Prior To cleanup, emits required RETIRE_CONNECTION_ID frames, and enforces active connection-ID limits without claiming broad migration routing support.",
+  "purpose": "Describe the bounded runtime path that tracks peer-issued connection IDs, applies Retire Prior To cleanup, caps pending retirements, emits required RETIRE_CONNECTION_ID frames, and enforces active connection-ID limits without claiming broad migration routing support.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9000",
     "ARC-QUIC-RFC9000-0001",
@@ -17,7 +17,15 @@
     "REQ-QUIC-RFC9000-S5P1P1-0012",
     "REQ-QUIC-RFC9000-S5P1P1-0014",
     "REQ-QUIC-RFC9000-S5P1P2-0003",
-    "REQ-QUIC-RFC9000-S5P1P2-0011"
+    "REQ-QUIC-RFC9000-S5P1P2-0008",
+    "REQ-QUIC-RFC9000-S5P1P2-0009",
+    "REQ-QUIC-RFC9000-S5P1P2-0010",
+    "REQ-QUIC-RFC9000-S5P1P2-0011",
+    "REQ-QUIC-RFC9000-S5P1P2-0012",
+    "REQ-QUIC-RFC9000-S5P1P2-0013",
+    "REQ-QUIC-RFC9000-S5P1P2-0014",
+    "REQ-QUIC-RFC9000-S5P1P2-0015",
+    "REQ-QUIC-RFC9000-S5P1P2-0016"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
@@ -26,15 +34,25 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0014.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0011.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0016.cs"
   ],
-  "design_summary": "The peer connection-ID state keeps a sequence-indexed active set plus a historical reverse lookup so retired or duplicate values cannot be reintroduced under a different sequence. The runtime treats the handshake destination connection ID as implicit peer sequence 0 when processing NEW_CONNECTION_ID frames, removes all active entries below an increased Retire Prior To value before adding the new entry, and emits RETIRE_CONNECTION_ID frames for the removed sequences. After retire/add processing, the runtime closes with CONNECTION_ID_LIMIT_ERROR if the peer-provided active set would exceed the local active_connection_id_limit. Local connection-ID issuance also observes the peer's active_connection_id_limit by rejecting an additional issued ID when the implicit initial ID plus already-issued active IDs would exceed the peer's limit.",
-  "data_and_state_considerations": "The active set is runtime-local connection state. Connection ID bytes are copied before storage, stateless reset tokens remain copied for later comparison, and retired values remain reserved in the historical reverse lookup to preserve no-reuse validation. Retire Prior To cleanup updates outbound destination selection to the highest remaining sequence and queues retirement frames on the existing protected application-data send path.",
+  "design_summary": "The peer connection-ID state keeps a sequence-indexed active set plus a historical reverse lookup so retired or duplicate values cannot be reintroduced under a different sequence. The runtime treats the handshake destination connection ID as implicit peer sequence 0 when processing NEW_CONNECTION_ID frames, removes all active entries below an increased Retire Prior To value before adding the new entry, and emits RETIRE_CONNECTION_ID frames for the removed sequences. Pending locally retired sequence numbers are capped at twice the local active_connection_id_limit; attempts that would exceed that cap fail with CONNECTION_ID_LIMIT_ERROR before the active set is mutated. After retire/add processing, the runtime closes with CONNECTION_ID_LIMIT_ERROR if the peer-provided active set would exceed the local active_connection_id_limit. Local connection-ID issuance also observes the peer's active_connection_id_limit by rejecting an additional issued ID when the implicit initial ID plus already-issued active IDs would exceed the peer's limit, and replacement NEW_CONNECTION_ID frames keep Retire Prior To at zero until the peer retires earlier local IDs.",
+  "data_and_state_considerations": "The active set is runtime-local connection state. Connection ID bytes are copied before storage, stateless reset tokens remain copied for later comparison, and retired values remain reserved in the historical reverse lookup to preserve no-reuse validation. Retire Prior To cleanup updates outbound destination selection to the highest remaining sequence and queues retirement frames on the existing protected application-data send path. The pending-retirement set is also retained in runtime-local state so duplicate retirement requests do not consume additional capacity and so failed over-limit frames leave the active destination connection ID intact.",
   "edge_cases_and_constraints": [
     "A peer that requires zero-length destination connection IDs cannot later supply NEW_CONNECTION_ID frames.",
     "Retire Prior To values greater than the frame sequence number remain protocol violations.",
     "An exact duplicate NEW_CONNECTION_ID frame is accepted without increasing the active set.",
     "Retire Prior To is applied before active-limit enforcement so temporary excess is only allowed when the frame also retires enough lower sequences.",
+    "Pending locally retired sequence numbers are allowed up to exactly twice the active_connection_id_limit and rejected before mutation once that cap would be exceeded.",
+    "Replacement locally issued NEW_CONNECTION_ID frames keep Retire Prior To at zero until peer RETIRE_CONNECTION_ID frames actually retire earlier local IDs.",
     "The slice does not change route registration, public migration APIs, preferred-address transition behavior, or interop-runner migration success classification."
   ],
   "alternatives_considered": [
@@ -45,12 +63,13 @@
   "risks": [
     "The current selection policy still uses the highest active peer-issued sequence for outbound destination connection IDs.",
     "RETIRE_CONNECTION_ID emission is best-effort on the existing protected application-data send path and depends on ordinary send boundary checks.",
+    "The pending retirement cap is intentionally conservative at twice the active_connection_id_limit and does not model ACK-driven retransmission accounting beyond the existing runtime state.",
     "This proof can be overstated as full migration support if kept out of its bounded peer-CID lifecycle context."
   ],
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design covers only peer-issued connection-ID set maintenance, Retire Prior To cleanup, local and peer active connection-ID limit enforcement, and protected RETIRE_CONNECTION_ID emission for retired peer-issued sequences. It does not claim S9P5 migration discipline, S9P6 preferred-address transition, endpoint route registration for newly issued local connection IDs, public migration controls, multipath behavior, or interop migration success."
+      "content": "This design covers only peer-issued connection-ID set maintenance, Retire Prior To cleanup, local and peer active connection-ID limit enforcement, bounded pending RETIRE_CONNECTION_ID tracking, protected RETIRE_CONNECTION_ID emission for retired peer-issued sequences, continued acceptance of locally issued connection IDs until the peer retires them, and zero Retire Prior To on replacement local NEW_CONNECTION_ID frames. It does not claim S5P1P2-0001, S5P1P2-0002, S5P1P2-0006, or S5P1P2-0007 packet-association and address-pair discipline; S9P5 migration discipline; S9P6 preferred-address transition; endpoint route registration beyond already issued local CIDs; public migration controls; multipath behavior; or interop migration success."
     }
   ]
 }

@@ -29,6 +29,14 @@ Blocked / deferred: **42**
 Partial: **0**
 Needs review: **0**
 
+## 2026-05-04 Live Triage Addendum
+
+- Regenerated `specs/generated/quic/quic-requirement-coverage-triage.json` supersedes the older S5P1P2 parser-only requirement list below.
+- `REQ-QUIC-RFC9000-S5P1P2-0008` through `REQ-QUIC-RFC9000-S5P1P2-0016` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0027`.
+- The live S5P1P2 state is now 12 trace-clean requirements and 4 uncovered requirements.
+- Remaining S5P1P2 open requirements: `REQ-QUIC-RFC9000-S5P1P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0002`, `REQ-QUIC-RFC9000-S5P1P2-0006`, and `REQ-QUIC-RFC9000-S5P1P2-0007`.
+- The remaining S5P1P2 open work is packet-association/address-pair CID policy, not the bounded peer-CID retirement-pressure seam closed by this addendum.
+
 ## Requirements Completed
 
 - `REQ-QUIC-RFC9000-S5P1P2-0004`: The on-wire RETIRE_CONNECTION_ID signal is now directly traced.
@@ -67,7 +75,7 @@ Needs review: **0**
 
 ## Remaining Open Requirements
 
-- `S5P1P2`: `0001-0003`, `0006-0007`, `0009-0016`
+- `S5P1P2`: `0001-0002`, `0006-0007`
 - `S5P2`: `0002-0013`
 - `S5P2P1`: `0001-0005`
 - `S5P2P2`: `0002-0003`, `0005-0010`

@@ -83,6 +83,119 @@ internal static class QuicConnectionIdLifecycleTestSupport
         return retiredSequenceNumbers.ToArray();
     }
 
+    internal static QuicNewConnectionIdFrameProofSnapshot[] GetNewConnectionIdFrames(
+        QuicConnectionRuntime runtime,
+        QuicConnectionTransitionResult result)
+    {
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+        QuicTlsPacketProtectionMaterial material = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+        List<QuicNewConnectionIdFrameProofSnapshot> frames = [];
+
+        foreach (QuicConnectionSendDatagramEffect effect in result.Effects.OfType<QuicConnectionSendDatagramEffect>())
+        {
+            QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
+            if (!coordinator.TryOpenProtectedApplicationDataPacket(
+                    effect.Datagram.Span,
+                    material,
+                    out byte[] openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength,
+                    out _))
+            {
+                continue;
+            }
+
+            ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+            int frameOffset = 0;
+            while (frameOffset < payload.Length)
+            {
+                ReadOnlySpan<byte> remaining = payload[frameOffset..];
+                if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed)
+                    && paddingBytesConsumed > 0)
+                {
+                    frameOffset += paddingBytesConsumed;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
+                    && ackBytesConsumed > 0)
+                {
+                    frameOffset += ackBytesConsumed;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParseNewConnectionIdFrame(
+                        remaining,
+                        out QuicNewConnectionIdFrame frame,
+                        out int newConnectionIdBytesConsumed)
+                    && newConnectionIdBytesConsumed > 0)
+                {
+                    frames.Add(new QuicNewConnectionIdFrameProofSnapshot(
+                        frame.SequenceNumber,
+                        frame.RetirePriorTo,
+                        frame.ConnectionId.ToArray(),
+                        frame.StatelessResetToken.ToArray()));
+                    frameOffset += newConnectionIdBytesConsumed;
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        return frames.ToArray();
+    }
+
+    internal static byte[] BuildOneRttPacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> payload)
+    {
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        QuicHandshakeFlowCoordinator coordinator = new(
+            destinationConnectionId.ToArray(),
+            QuicS17P2P3TestSupport.PacketSourceConnectionId);
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhase == 1,
+            out byte[] protectedPacket));
+        return protectedPacket;
+    }
+
+    internal static bool TryAcceptNewConnectionId(
+        QuicConnectionPeerConnectionIdState state,
+        ulong sequenceNumber,
+        ulong retirePriorTo,
+        byte connectionIdStart,
+        ulong activeConnectionIdLimit,
+        out QuicTransportErrorCode errorCode,
+        out bool destinationConnectionIdChanged,
+        out ulong[] retiredSequenceNumbers)
+    {
+        byte[] connectionId =
+        [
+            connectionIdStart,
+            unchecked((byte)(connectionIdStart + 1)),
+            unchecked((byte)(connectionIdStart + 2)),
+        ];
+        byte[] statelessResetToken = CreateStatelessResetToken(connectionIdStart);
+
+        return state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(
+                sequenceNumber,
+                retirePriorTo,
+                connectionId,
+                statelessResetToken),
+            requiresZeroLengthDestinationConnectionId: false,
+            activeConnectionIdLimit,
+            initialDestinationConnectionId: [0x01, 0x02, 0x03],
+            out errorCode,
+            out destinationConnectionIdChanged,
+            out retiredSequenceNumbers);
+    }
+
     internal static byte[] CreateStatelessResetToken(byte startValue)
     {
         byte[] token = new byte[QuicStatelessReset.StatelessResetTokenLength];
@@ -94,3 +207,9 @@ internal static class QuicConnectionIdLifecycleTestSupport
         return token;
     }
 }
+
+internal readonly record struct QuicNewConnectionIdFrameProofSnapshot(
+    ulong SequenceNumber,
+    ulong RetirePriorTo,
+    byte[] ConnectionId,
+    byte[] StatelessResetToken);
