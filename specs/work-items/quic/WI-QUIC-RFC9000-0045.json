@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0045",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Preferred Address Validation and Cutover Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0045",
+    "VER-QUIC-RFC9000-0045"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P6P2-0008",
+    "REQ-QUIC-RFC9000-S9P6P2-0009",
+    "REQ-QUIC-RFC9000-S9P6P2-0010"
+  ],
+  "summary": "Add focused requirement-home proof and trace ownership for preferred-address candidate validation, PATH_CHALLENGE response, and validated preferred-address non-probing cutover.",
+  "planned_changes": "- Add direct positive proof that the chosen preferred address remains a candidate path until validation succeeds.\n- Add direct positive proof that a protected PATH_CHALLENGE on the preferred-address candidate path receives a matching PATH_RESPONSE on that path.\n- Add edge proof that validated IPv6 preferred-address selection also becomes the exclusive non-probing send path.\n- Link the S9P6P2-0008 through S9P6P2-0010 requirements to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",
+  "verification_plan": "Run the focused S9P6P2-0008/0009/0010 requirement-home filter, run a Release build, run the full Release no-build solution test suite, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0045"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0045"
+  ],
+  "out_of_scope": [
+    "Complete S9P6P2 closure for requirements outside 0008 through 0010.",
+    "Multipath scheduling or multiple active outbound paths.",
+    "Public migration control APIs.",
+    "Hosted interop success claims.",
+    "A new largest-packet-number policy seam beyond the current runtime path-validation promotion event."
+  ],
+  "completion_notes": "Completed as a focused proof and trace slice over the existing preferred-address candidate-path and path-validation runtime behavior."
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0045",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Preferred Address Validation and Cutover",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime path that validates a chosen preferred address before migration, answers PATH_CHALLENGE on that preferred-address candidate path, and sends later non-probing packets only from the validated preferred address.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0029",
+    "ARC-QUIC-RFC9000-0044",
+    "WI-QUIC-RFC9000-0045",
+    "VER-QUIC-RFC9000-0045"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P6P2-0008",
+    "REQ-QUIC-RFC9000-S9P6P2-0009",
+    "REQ-QUIC-RFC9000-S9P6P2-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs"
+  ],
+  "design_summary": "Preferred-address traffic is modeled as an address-change candidate path whose remote address and port match either advertised preferred IPv4 or IPv6 endpoint. The existing path-change handler creates a candidate path and sends a PATH_CHALLENGE rather than promoting the address immediately. PATH_CHALLENGE frames carried in protected 1-RTT packets on that candidate path are parsed by the application-data frame loop and answered with a matching PATH_RESPONSE on the same path. Once path validation succeeds, the single-active-path runtime promotes the validated preferred-address path, records the previous path as the preferred-address migration source, and subsequent non-probing sends such as close frames use only the promoted preferred-address path.",
+  "data_and_state_considerations": "Candidate-path validation state, anti-amplification budget, and recently validated path records remain in the runtime path tables. Preferred-address matching compares parsed IP bytes and ports against the committed peer transport-parameter snapshot. The preferred-address connection ID remains under peer connection-ID state or the existing preferred-address fallback and is not expanded into a public migration API in this slice.",
+  "edge_cases_and_constraints": [
+    "A preferred-address candidate remains unpromoted until path validation succeeds.",
+    "A PATH_CHALLENGE received on the preferred-address candidate path receives a matching PATH_RESPONSE on that same path without promoting the path.",
+    "Both advertised IPv4 and IPv6 preferred addresses are eligible chosen preferred-address paths when their address bytes and port match the committed transport parameter.",
+    "After validation, non-probing sends are emitted only on the chosen preferred-address path and not on the original path.",
+    "The proof uses the current single-active-path runtime and does not claim simultaneous multipath operation."
+  ],
+  "alternatives_considered": [
+    "Promote the preferred address as soon as any datagram is observed; rejected because the requirement requires validation before migration.",
+    "Treat the PATH_CHALLENGE response proof as covered only by generic Section 8.2 tests; rejected because S9P6P2 needs direct preferred-address candidate-path evidence.",
+    "Broaden the slice into complete preferred-address transition closure; rejected because S9P6P2 has additional address-source and abandonment tails that should stay independently traceable."
+  ],
+  "risks": [
+    "The proof stays at the runtime transition seam and does not claim hosted endpoint interop success.",
+    "The current runtime promotes on the path-validation success event; future work that models the explicit largest-packet-number gate must preserve these preferred-address non-probing send guarantees.",
+    "The slice does not close the remaining S9P6P2 preferred-address requirements outside 0008 through 0010."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers preferred-address validation, PATH_CHALLENGE response, and validated IPv4/IPv6 non-probing cutover for the current single-active-path runtime only."
+    }
+  ]
+}

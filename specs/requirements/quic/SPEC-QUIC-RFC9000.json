@@ -13670,17 +13670,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0045"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0045"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0045"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.2 RFC9000-S9.6.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs::ClientValidatesTheChosenPreferredAddressBeforeMigration"
         ]
       }
     },
@@ -13696,17 +13702,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0045"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0045"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0045"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.2 RFC9000-S9.6.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs::PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath"
         ]
       }
     },
@@ -13722,17 +13734,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0045"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0045"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0045"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.2 RFC9000-S9.6.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
         ]
       }
     },

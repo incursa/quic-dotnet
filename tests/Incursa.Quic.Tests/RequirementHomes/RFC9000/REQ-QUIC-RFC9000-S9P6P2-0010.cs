@@ -12,6 +12,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
     private static readonly byte[] PreferredIpv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x3C];
     private static readonly byte[] PreferredStatelessResetToken = [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F];
     private static readonly QuicConnectionPathIdentity PreferredPath = new(new IPAddress(PreferredIpv4Address).ToString(), RemotePort: 9443);
+    private static readonly QuicConnectionPathIdentity PreferredIpv6Path = new(new IPAddress(PreferredIpv6Address).ToString(), RemotePort: 9553);
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
@@ -104,6 +105,63 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
         Assert.DoesNotContain(closeResult.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect sendDatagramEffect
             && sendDatagramEffect.PathIdentity == OriginalPath);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult probeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                PreferredIpv6Path,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 20);
+
+        Assert.True(probeResult.StateChanged);
+        Assert.Contains(probeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == PreferredIpv6Path);
+        Assert.True(runtime.CandidatePaths.TryGetValue(PreferredIpv6Path, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            PreferredIpv6Path,
+            observedAtTicks: 30);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(PreferredIpv6Path, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.ActivePath!.Value.IsValidated);
+        Assert.Equal(PreferredIpv6Path.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.False(runtime.CandidatePaths.ContainsKey(PreferredIpv6Path));
+        Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(PreferredIpv6Path));
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promoteActivePathEffect
+            && promoteActivePathEffect.PathIdentity == PreferredIpv6Path
+            && !promoteActivePathEffect.RestoreSavedState);
+
+        QuicConnectionTransitionResult closeResult = runtime.Transition(
+            new QuicConnectionConnectionCloseFrameReceivedEvent(
+                ObservedAtTicks: 40,
+                QuicPathMigrationRecoveryTestSupport.CreateConnectionCloseMetadata()),
+            nowTicks: 40);
+
+        Assert.True(closeResult.StateChanged);
+        Assert.Contains(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == PreferredIpv6Path);
+        Assert.DoesNotContain(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == OriginalPath);
+        Assert.DoesNotContain(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == PreferredPath);
     }
 
     private static QuicConnectionRuntime CreateRuntime()

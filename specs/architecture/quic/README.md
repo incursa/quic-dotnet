@@ -64,6 +64,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0042.json`](ARC-QUIC-RFC9000-0042.json): canonical RFC 9000 PADDING and PING focused proof design source
 - [`ARC-QUIC-RFC9000-0043.json`](ARC-QUIC-RFC9000-0043.json): canonical RFC 9000 CONNECTION_CLOSE frame focused proof design source
 - [`ARC-QUIC-RFC9000-0044.json`](ARC-QUIC-RFC9000-0044.json): canonical RFC 9000 address-pair peer connection-ID policy design source
+- [`ARC-QUIC-RFC9000-0045.json`](ARC-QUIC-RFC9000-0045.json): canonical RFC 9000 preferred address validation and cutover design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

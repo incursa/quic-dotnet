@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T16:19:08.7995396-06:00",
+  "generated_at": "2026-05-04T16:48:01.1502031-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-04T16:19:08.7965096-06:00",
+    "generated_at": "2026-05-04T16:48:01.1467579-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 65,
       "covered_but_proof_too_broad": 89,
-      "partially_covered": 216,
-      "trace_clean": 1097,
+      "partially_covered": 215,
+      "trace_clean": 1100,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 233
+      "uncovered_unblocked": 231
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1097,
+      "clean": 1100,
       "metadata_only": 65,
-      "new_tests_needed": 601,
+      "new_tests_needed": 598,
       "restructure_needed": 136
     },
     "by_rfc": [
@@ -49,10 +49,10 @@
         "by_state": {
           "covered_but_missing_xrefs": 65,
           "covered_but_proof_too_broad": 89,
-          "partially_covered": 216,
-          "trace_clean": 784,
+          "partially_covered": 215,
+          "trace_clean": 787,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 233
+          "uncovered_unblocked": 231
         }
       },
       {
@@ -196859,33 +196859,76 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs::ClientValidatesTheChosenPreferredAddressBeforeMigration",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0008",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0008.ClientValidatesTheChosenPreferredAddressBeforeMigration",
+          "method": "ClientValidatesTheChosenPreferredAddressBeforeMigration",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs::ClientValidatesTheChosenPreferredAddressBeforeMigration",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0008",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0008.ClientValidatesTheChosenPreferredAddressBeforeMigration",
+          "method": "ClientValidatesTheChosenPreferredAddressBeforeMigration",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0009",
@@ -196900,33 +196943,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs::PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0009",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0009.PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
+          "method": "PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
+          "line": 35,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs::PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0009",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0009.PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
+          "method": "PreferredAddressPathChallengeReceivesMatchingPathResponseOnThatPath",
+          "line": 35,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
@@ -196941,30 +197027,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -196976,7 +197064,29 @@
           "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
           "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
           "method": "ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
-          "line": 20,
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "method": "ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "line": 21,
           "kinds": [
             "negative"
           ],
@@ -196996,9 +197106,75 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
           "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "method": "ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "line": 114,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "method": "ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "line": 114,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
           "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
           "method": "ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
-          "line": 59,
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P2_0010",
+          "member": "REQ_QUIC_RFC9000_S9P6P2_0010.ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
+          "method": "ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
+          "line": 60,
           "kinds": [
             "positive"
           ],
