@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T15:05:23.6863012-06:00",
+  "generated_at": "2026-05-04T15:27:16.5195785-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-04T15:05:23.6820735-06:00",
+    "generated_at": "2026-05-04T15:27:16.5165726-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 65,
       "covered_but_proof_too_broad": 89,
       "partially_covered": 216,
-      "trace_clean": 1093,
+      "trace_clean": 1095,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 237
+      "uncovered_unblocked": 235
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1093,
+      "clean": 1095,
       "metadata_only": 65,
-      "new_tests_needed": 605,
+      "new_tests_needed": 603,
       "restructure_needed": 136
     },
     "by_rfc": [
@@ -50,9 +50,9 @@
           "covered_but_missing_xrefs": 65,
           "covered_but_proof_too_broad": 89,
           "partially_covered": 216,
-          "trace_clean": 780,
+          "trace_clean": 782,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 237
+          "uncovered_unblocked": 235
         }
       },
       {
@@ -6151,7 +6151,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0007",
           "member": "REQ_QUIC_RFC9000_S10P2_0007.ConnectionClose_ClosesBothEndsOfAnOpenStream",
           "method": "ConnectionClose_ClosesBothEndsOfAnOpenStream",
-          "line": 16,
+          "line": 19,
           "kinds": [
             "positive"
           ],
@@ -6173,7 +6173,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0007",
           "member": "REQ_QUIC_RFC9000_S10P2_0007.ConnectionClose_ClosesBothEndsOfAnOpenStream",
           "method": "ConnectionClose_ClosesBothEndsOfAnOpenStream",
-          "line": 16,
+          "line": 19,
           "kinds": [
             "positive"
           ],
@@ -6195,7 +6195,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0007",
           "member": "REQ_QUIC_RFC9000_S10P2_0007.OpenStreamSidesRemainPendingBeforeConnectionClose",
           "method": "OpenStreamSidesRemainPendingBeforeConnectionClose",
-          "line": 41,
+          "line": 44,
           "kinds": [
             "negative"
           ],
@@ -6217,7 +6217,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0007",
           "member": "REQ_QUIC_RFC9000_S10P2_0007.OpenStreamSidesRemainPendingBeforeConnectionClose",
           "method": "OpenStreamSidesRemainPendingBeforeConnectionClose",
-          "line": 41,
+          "line": 44,
           "kinds": [
             "negative"
           ],
@@ -170878,21 +170878,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0001.cs::NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -170902,7 +170902,52 @@
         "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1P2_0001",
+          "member": "REQ_QUIC_RFC9000_S5P1P2_0001.NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
+          "method": "NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0001.cs::NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1P2_0001",
+          "member": "REQ_QUIC_RFC9000_S5P1P2_0001.NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
+          "method": "NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0002",
@@ -170917,21 +170962,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0002.cs::ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -170941,7 +170986,52 @@
         "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S5P1P2_0002.ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
+          "method": "ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0002.cs::ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S5P1P2_0002.ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
+          "method": "ValidatedMigratedPath_UsesTheConsumedPeerConnectionIdForOutboundPackets",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0003",
@@ -182999,7 +183089,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0004",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0004.RetryReplayCandidateWithoutExpectedToken_IsDiscardedWithoutAdmission",
           "method": "RetryReplayCandidateWithoutExpectedToken_IsDiscardedWithoutAdmission",
-          "line": 35,
+          "line": 36,
           "kinds": [
             "edge"
           ],
@@ -183021,7 +183111,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0004",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0004.RetryReplayCandidateWithoutExpectedToken_IsDiscardedWithoutAdmission",
           "method": "RetryReplayCandidateWithoutExpectedToken_IsDiscardedWithoutAdmission",
-          "line": 35,
+          "line": 36,
           "kinds": [
             "edge"
           ],
@@ -183043,7 +183133,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0004",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0004.RetryReplayCandidateWithWrongExpectedToken_IsDiscardedWithoutAdmission",
           "method": "RetryReplayCandidateWithWrongExpectedToken_IsDiscardedWithoutAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "negative"
           ],
@@ -183065,7 +183155,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0004",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0004.RetryReplayCandidateWithWrongExpectedToken_IsDiscardedWithoutAdmission",
           "method": "RetryReplayCandidateWithWrongExpectedToken_IsDiscardedWithoutAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "negative"
           ],
@@ -184038,7 +184128,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.NewTokenInitialWithValidToken_IsValidatedBeforeAdmission",
           "method": "NewTokenInitialWithValidToken_IsValidatedBeforeAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184060,7 +184150,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.NewTokenInitialWithValidToken_IsValidatedBeforeAdmission",
           "method": "NewTokenInitialWithValidToken_IsValidatedBeforeAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184082,7 +184172,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected",
           "method": "NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected",
-          "line": 34,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -184104,7 +184194,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected",
           "method": "NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected",
-          "line": 34,
+          "line": 35,
           "kinds": [
             "negative"
           ],
@@ -184126,7 +184216,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithEmptyToken_IsValidatedAndRejected",
           "method": "RetryReplayCandidateWithEmptyToken_IsValidatedAndRejected",
-          "line": 96,
+          "line": 97,
           "kinds": [
             "edge"
           ],
@@ -184148,7 +184238,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithEmptyToken_IsValidatedAndRejected",
           "method": "RetryReplayCandidateWithEmptyToken_IsValidatedAndRejected",
-          "line": 96,
+          "line": 97,
           "kinds": [
             "edge"
           ],
@@ -184170,7 +184260,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission",
           "method": "RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission",
-          "line": 56,
+          "line": 57,
           "kinds": [
             "positive"
           ],
@@ -184192,7 +184282,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission",
           "method": "RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission",
-          "line": 56,
+          "line": 57,
           "kinds": [
             "positive"
           ],
@@ -184214,7 +184304,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithWrongToken_IsValidatedAndRejected",
           "method": "RetryReplayCandidateWithWrongToken_IsValidatedAndRejected",
-          "line": 74,
+          "line": 75,
           "kinds": [
             "negative"
           ],
@@ -184236,7 +184326,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0014",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0014.RetryReplayCandidateWithWrongToken_IsValidatedAndRejected",
           "method": "RetryReplayCandidateWithWrongToken_IsValidatedAndRejected",
-          "line": 74,
+          "line": 75,
           "kinds": [
             "negative"
           ],
@@ -184302,7 +184392,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.InvalidNewToken_TriggersRetryInsteadOfAddressValidatedAdmission",
           "method": "InvalidNewToken_TriggersRetryInsteadOfAddressValidatedAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184324,7 +184414,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.InvalidNewToken_TriggersRetryInsteadOfAddressValidatedAdmission",
           "method": "InvalidNewToken_TriggersRetryInsteadOfAddressValidatedAdmission",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184346,7 +184436,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.InvalidRetryToken_DoesNotAdmitTheClientAsAddressValidated",
           "method": "InvalidRetryToken_DoesNotAdmitTheClientAsAddressValidated",
-          "line": 34,
+          "line": 35,
           "kinds": [
             "positive"
           ],
@@ -184368,7 +184458,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.InvalidRetryToken_DoesNotAdmitTheClientAsAddressValidated",
           "method": "InvalidRetryToken_DoesNotAdmitTheClientAsAddressValidated",
-          "line": 34,
+          "line": 35,
           "kinds": [
             "positive"
           ],
@@ -184390,7 +184480,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.ValidRetryToken_DoesNotUseTheInvalidTokenDisposition",
           "method": "ValidRetryToken_DoesNotUseTheInvalidTokenDisposition",
-          "line": 56,
+          "line": 57,
           "kinds": [
             "negative"
           ],
@@ -184412,7 +184502,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0015",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0015.ValidRetryToken_DoesNotUseTheInvalidTokenDisposition",
           "method": "ValidRetryToken_DoesNotUseTheInvalidTokenDisposition",
-          "line": 56,
+          "line": 57,
           "kinds": [
             "negative"
           ],
@@ -184477,7 +184567,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0016",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0016.ValidNewToken_AllowsTheServerHandshakeToProceedWithoutRetry",
           "method": "ValidNewToken_AllowsTheServerHandshakeToProceedWithoutRetry",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184499,7 +184589,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0016",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0016.ValidNewToken_AllowsTheServerHandshakeToProceedWithoutRetry",
           "method": "ValidNewToken_AllowsTheServerHandshakeToProceedWithoutRetry",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "positive"
           ],
@@ -184521,7 +184611,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0016",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0016.ValidRetryToken_AllowsTheServerHandshakeToProceed",
           "method": "ValidRetryToken_AllowsTheServerHandshakeToProceed",
-          "line": 32,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -184543,7 +184633,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P3_0016",
           "member": "REQ_QUIC_RFC9000_S8P1P3_0016.ValidRetryToken_AllowsTheServerHandshakeToProceed",
           "method": "ValidRetryToken_AllowsTheServerHandshakeToProceed",
-          "line": 32,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -185275,7 +185365,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185302,7 +185392,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185410,7 +185500,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185437,7 +185527,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185504,7 +185594,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185531,7 +185621,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185793,7 +185883,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
@@ -185820,7 +185910,7 @@
           "class": "REQ_QUIC_RFC9000_S8P1P4_0012",
           "member": "REQ_QUIC_RFC9000_S8P1P4_0012.NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
           "method": "NewTokenReplay_IsRejectedAfterTheFirstSuccessfulUse",
-          "line": 24,
+          "line": 25,
           "kinds": [
             "negative",
             "positive"
