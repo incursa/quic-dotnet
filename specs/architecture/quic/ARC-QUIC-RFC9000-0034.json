@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0034",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Verifiable NEW_TOKEN Envelope",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the server-owned NEW_TOKEN envelope used to issue hard-to-guess, integrity-protected, IP-bound, expiring address-validation tokens and validate them before admitting future Initial packets.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0032",
+    "ARC-QUIC-RFC9000-0033",
+    "WI-QUIC-RFC9000-0034",
+    "VER-QUIC-RFC9000-0034"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P1P1-0001",
+    "REQ-QUIC-RFC9000-S8P1P3-0005",
+    "REQ-QUIC-RFC9000-S8P1P3-0014",
+    "REQ-QUIC-RFC9000-S8P1P3-0015",
+    "REQ-QUIC-RFC9000-S8P1P3-0016",
+    "REQ-QUIC-RFC9000-S8P1P4-0001",
+    "REQ-QUIC-RFC9000-S8P1P4-0002",
+    "REQ-QUIC-RFC9000-S8P1P4-0004",
+    "REQ-QUIC-RFC9000-S8P1P4-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAddressValidationTokenProtector.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "benchmarks/QuicAddressValidationTokenBenchmarks.cs"
+  ],
+  "design_summary": "The listener owns an ephemeral address-validation token protector and passes the same protector to server runtimes it creates. Server NEW_TOKEN emission now asks the protector to issue a token for the validated remote IP address. The token carries an internal magic/version/source marker, a random nonce, issued and expiration timestamps, and an HMAC-SHA256 tag over those token fields plus the normalized client IP address. Future Initial packets with a non-Retry token are parsed before admission and validated with the listener-owned protector. A valid token pre-marks the runtime peer address as validated before the Initial datagram is routed to the connection; an invalid token is handled as unvalidated and, when Retry bootstrap is enabled, receives a Retry rather than address-validated admission.",
+  "data_and_state_considerations": "The token secret is listener scoped and intentionally not persisted across listener lifetimes. The token does not store the client IP address in clear text; the IP address is bound through the integrity tag. Expiration uses wall-clock UTC timestamps because tokens can be consumed by a future connection rather than the issuing runtime's monotonic clock. Validation observations remain internal test-visible listener state and are not public API.",
+  "edge_cases_and_constraints": [
+    "Tokens issued for the same address and timestamp remain distinct because each token includes a fresh random nonce.",
+    "Truncated, guessed, tampered, expired, and changed-IP tokens fail validation.",
+    "A valid NEW_TOKEN Initial bypasses Retry bootstrap and allows the server connection-options callback to run.",
+    "An invalid NEW_TOKEN Initial with Retry bootstrap enabled receives Retry and is not admitted as address validated."
+  ],
+  "alternatives_considered": [
+    "Store every issued token server-side and compare opaque random bytes; rejected because it would not prove expiry or IP binding and would force stateful replay decisions into this prerequisite slice.",
+    "Embed the client IP address directly in the token; rejected because it exposes stable token contents unnecessarily and worsens observer-linkability risk.",
+    "Implement replay or one-time-use enforcement in the same slice; rejected because token reuse policy is owned by later S8P1P4 requirements and needs separate stateful design."
+  ],
+  "risks": [
+    "Tokens are not valid across listener restarts because the secret is listener scoped.",
+    "This slice does not implement one-time token acceptance or replay limiting.",
+    "This slice does not claim observer-linkability closure beyond avoiding a clear-text IP address in the token envelope."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the verifiable NEW_TOKEN prerequisite and first future-connection validation floor. Replay-limiting, one-time acceptance, token persistence across process lifetimes, and broader public token cache behavior remain out of scope."
+    }
+  ]
+}

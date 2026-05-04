@@ -13,14 +13,16 @@ internal static class QuicS9P3TokenEmissionTestSupport
     internal static readonly QuicConnectionPathIdentity ValidatedPath =
         new("203.0.113.11", RemotePort: 443);
 
-    internal static QuicConnectionRuntime CreateServerRuntimeReadyForTokenEmission()
+    internal static QuicConnectionRuntime CreateServerRuntimeReadyForTokenEmission(
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(),
             new FakeMonotonicClock(0),
             tlsRole: QuicTlsRole.Server,
-            localHandshakePrivateKey: localHandshakePrivateKey);
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            addressValidationTokenProtector: addressValidationTokenProtector);
 
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(InitialDestinationConnectionId));
         PrepareHandshakeDoneSendState(runtime);

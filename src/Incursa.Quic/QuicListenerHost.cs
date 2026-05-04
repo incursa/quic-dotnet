@@ -32,6 +32,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
     private readonly bool retryBootstrapEnabled;
+    private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
 
     private CancellationTokenSource? listenerCancellationSource;
     private Task? runningTask;
@@ -41,11 +42,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private int retryBootstrapReplayValidated;
     private int retryBootstrapReplayAdmitted;
     private int retryBootstrapReplayValidationFailureCode;
+    private int newTokenValidationAttempted;
+    private int newTokenValidationSucceeded;
+    private int newTokenValidationFailureCode;
     private byte[]? retryBootstrapOriginalDestinationConnectionId;
     private byte[]? retryBootstrapSourceConnectionId;
     private byte[]? retryBootstrapToken;
     private string? retryBootstrapTokenHex;
     private string? retryBootstrapReplayTokenHex;
+    private string? newTokenValidationTokenHex;
 
     public QuicListenerHost(
         IPEndPoint listenEndPoint,
@@ -53,7 +58,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback,
         int listenBacklog,
         bool retryBootstrapEnabled = false,
-        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null)
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null,
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -68,6 +74,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
+        this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         endpoint = new QuicConnectionRuntimeEndpoint(1);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
@@ -96,9 +103,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     internal int RetryBootstrapReplayValidationFailureCode => Volatile.Read(ref retryBootstrapReplayValidationFailureCode);
 
+    internal bool NewTokenValidationAttempted => Volatile.Read(ref newTokenValidationAttempted) != 0;
+
+    internal bool NewTokenValidationSucceeded => Volatile.Read(ref newTokenValidationSucceeded) != 0;
+
+    internal int NewTokenValidationFailureCode => Volatile.Read(ref newTokenValidationFailureCode);
+
     internal string? RetryBootstrapTokenHex => retryBootstrapTokenHex;
 
     internal string? RetryBootstrapReplayTokenHex => retryBootstrapReplayTokenHex;
+
+    internal string? NewTokenValidationTokenHex => newTokenValidationTokenHex;
 
     public Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -311,11 +326,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 {
                     try
                     {
+                        if (!TryParseInitialToken(initialHeader.VersionSpecificData, out byte[] initialToken))
+                        {
+                            continue;
+                        }
+
                         if (await TryAdmitIncomingInitialConnectionAsync(
                             datagram,
                             pathIdentity,
                             initialHeader.DestinationConnectionId.ToArray(),
                             initialHeader.SourceConnectionId.ToArray(),
+                            initialToken,
                             cancellationToken).ConfigureAwait(false))
                         {
                             _ = endpoint.ReceiveDatagram(datagram, pathIdentity);
@@ -528,12 +549,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         QuicConnectionPathIdentity pathIdentity,
         byte[] initialDestinationConnectionId,
         byte[] clientSourceConnectionId,
+        byte[] initialToken,
         CancellationToken cancellationToken)
     {
         bool isRetryBootstrapReplayCandidate =
             retryBootstrapEnabled
             && retryBootstrapSourceConnectionId is not null
             && initialDestinationConnectionId.AsSpan().SequenceEqual(retryBootstrapSourceConnectionId);
+        bool newTokenValidated = false;
 
         QuicServerConnectionOptions selectedOptions = new();
         QuicConnectionRuntime? runtime = null;
@@ -588,6 +611,27 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
                     Interlocked.Exchange(ref retryBootstrapReplayValidated, 1);
                 }
+                else if (initialToken.Length > 0)
+                {
+                    QuicAddressValidationTokenValidationResult validationResult =
+                        ValidateNewTokenForIncomingInitial(initialToken, pathIdentity);
+                    if (validationResult == QuicAddressValidationTokenValidationResult.Valid)
+                    {
+                        newTokenValidated = true;
+                    }
+                    else
+                    {
+                        if (!TryIssueRetryBootstrapResponse(
+                            pathIdentity,
+                            initialDestinationConnectionId,
+                            clientSourceConnectionId))
+                        {
+                            return false;
+                        }
+
+                        return false;
+                    }
+                }
                 else
                 {
                     if (!TryIssueRetryBootstrapResponse(
@@ -601,9 +645,22 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     return false;
                 }
             }
+            else if (initialToken.Length > 0)
+            {
+                QuicAddressValidationTokenValidationResult validationResult =
+                    ValidateNewTokenForIncomingInitial(initialToken, pathIdentity);
+                if (validationResult == QuicAddressValidationTokenValidationResult.Valid)
+                {
+                    newTokenValidated = true;
+                }
+            }
 
             byte[] serverSourceConnectionId = GenerateServerSourceConnectionId();
             runtime = CreateRuntime(selectedOptions);
+            if (newTokenValidated)
+            {
+                _ = runtime.TryMarkPeerAddressValidatedByAddressValidationToken(runtime.Clock.Ticks);
+            }
             handle = endpoint.AllocateConnectionHandle();
             QuicServerConnectionLifetime lifetimeOwner = new(endpoint, handle, runtime);
             connection = new QuicConnection(runtime, selectedOptions, lifetimeOwner);
@@ -890,7 +947,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        if (!TryParseInitialRetryToken(retryHeader.VersionSpecificData, out byte[] retryToken))
+        if (!TryParseInitialToken(retryHeader.VersionSpecificData, out byte[] retryToken))
         {
             Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureTokenParse);
             return false;
@@ -908,7 +965,30 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private static bool TryParseInitialRetryToken(ReadOnlySpan<byte> versionSpecificData, out byte[] retryToken)
+    private QuicAddressValidationTokenValidationResult ValidateNewTokenForIncomingInitial(
+        ReadOnlySpan<byte> initialToken,
+        QuicConnectionPathIdentity pathIdentity)
+    {
+        Interlocked.Exchange(ref newTokenValidationAttempted, 1);
+        newTokenValidationTokenHex = Convert.ToHexString(initialToken);
+
+        QuicAddressValidationTokenValidationResult result =
+            addressValidationTokenProtector.ValidateNewToken(initialToken, pathIdentity.RemoteAddress);
+        if (result == QuicAddressValidationTokenValidationResult.Valid)
+        {
+            Interlocked.Exchange(ref newTokenValidationSucceeded, 1);
+            Interlocked.Exchange(ref newTokenValidationFailureCode, 0);
+        }
+        else
+        {
+            Interlocked.Exchange(ref newTokenValidationSucceeded, 0);
+            Interlocked.Exchange(ref newTokenValidationFailureCode, (int)result);
+        }
+
+        return result;
+    }
+
+    private static bool TryParseInitialToken(ReadOnlySpan<byte> versionSpecificData, out byte[] retryToken)
     {
         retryToken = [];
 

@@ -10,6 +10,27 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0015
     [Requirement("REQ-QUIC-RFC9000-S8P1P3-0015")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task InvalidNewToken_TriggersRetryInsteadOfAddressValidatedAdmission()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+            await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync(protector);
+        byte[] token = scenario.IssueNewTokenForAddress("203.0.113.201");
+
+        QuicRetryBootstrapMetadata retry = await scenario.SendInitialWithTokenAndReceiveRetryAsync(token);
+
+        await scenario.WaitForNoCallbackAsync();
+        Assert.NotEmpty(retry.RetryToken);
+        Assert.True(scenario.ListenerHost.NewTokenValidationAttempted);
+        Assert.False(scenario.ListenerHost.NewTokenValidationSucceeded);
+        Assert.False(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
+        Assert.True(scenario.ListenerHost.RetryBootstrapIssued);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0015")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task InvalidRetryToken_DoesNotAdmitTheClientAsAddressValidated()
     {
         await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
@@ -45,5 +66,21 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0015
         Assert.True(scenario.ListenerHost.RetryBootstrapReplayValidated);
         Assert.True(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
         Assert.Equal(0, scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
+    }
+
+    private static QuicAddressValidationTokenProtector CreateProtector()
+    {
+        return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
+    }
+
+    private static byte[] CreateSecret()
+    {
+        byte[] secret = new byte[QuicAddressValidationTokenProtector.SecretLength];
+        for (int index = 0; index < secret.Length; index++)
+        {
+            secret[index] = unchecked((byte)(0x90 + index));
+        }
+
+        return secret;
     }
 }

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0034",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Verifiable NEW_TOKEN Envelope Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0034",
+    "VER-QUIC-RFC9000-0034"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S8P1P1-0001",
+    "REQ-QUIC-RFC9000-S8P1P3-0005",
+    "REQ-QUIC-RFC9000-S8P1P3-0014",
+    "REQ-QUIC-RFC9000-S8P1P3-0015",
+    "REQ-QUIC-RFC9000-S8P1P3-0016",
+    "REQ-QUIC-RFC9000-S8P1P4-0001",
+    "REQ-QUIC-RFC9000-S8P1P4-0002",
+    "REQ-QUIC-RFC9000-S8P1P4-0004",
+    "REQ-QUIC-RFC9000-S8P1P4-0010"
+  ],
+  "summary": "Implement and prove a listener-scoped NEW_TOKEN envelope with provenance, nonce-backed unpredictability, integrity protection, client-IP binding, expiration, runtime emission, and pre-admission listener validation.",
+  "planned_changes": "- Add an internal address-validation token protector.\n- Replace opaque random NEW_TOKEN emission with protector-issued token envelopes bound to the validated remote address.\n- Validate non-Retry Initial token fields in the listener before admission and mark the initial runtime path prevalidated only after success.\n- Add requirement-home positive, negative, edge, and fuzz/property coverage.\n- Add a permanent BenchmarkDotNet suite for token issue and validation paths.\n- Update canonical trace and regenerated coverage triage.",
+  "verification_plan": "Run a Release build, the focused S8P1P1/S8P1P3/S8P1P4 requirement-home filter, the address-validation token benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and the full no-build solution test suite.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0034"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0034"
+  ],
+  "out_of_scope": [
+    "One-time token acceptance or replay-cache enforcement.",
+    "Persistent token secrets across listener/process restarts.",
+    "Observer-linkability closure for all NEW_TOKEN metadata.",
+    "Public token cache or callback API design.",
+    "Broad interop claims beyond the focused listener/runtime validation floor."
+  ],
+  "completion_notes": "Completed as the verifiable NEW_TOKEN prerequisite and first listener admission floor. Replay and public policy remain follow-on slices."
+}

@@ -10,6 +10,49 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
     [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task NewTokenInitialWithValidToken_IsValidatedBeforeAdmission()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+            await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync(protector);
+        byte[] token = scenario.IssueNewTokenForClient();
+
+        scenario.SendInitialWithToken(token);
+
+        await scenario.WaitForCallbackAsync();
+        Assert.True(scenario.ListenerHost.NewTokenValidationAttempted);
+        Assert.True(scenario.ListenerHost.NewTokenValidationSucceeded);
+        Assert.Equal(Convert.ToHexString(token), scenario.ListenerHost.NewTokenValidationTokenHex);
+        Assert.Equal(0, scenario.ListenerHost.NewTokenValidationFailureCode);
+        Assert.False(scenario.ListenerHost.RetryBootstrapIssued);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+            await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync(protector);
+        byte[] token = scenario.IssueNewTokenForAddress("203.0.113.200");
+
+        _ = await scenario.SendInitialWithTokenAndReceiveRetryAsync(token);
+
+        await scenario.WaitForNoCallbackAsync();
+        Assert.True(scenario.ListenerHost.NewTokenValidationAttempted);
+        Assert.False(scenario.ListenerHost.NewTokenValidationSucceeded);
+        Assert.Equal(
+            (int)QuicAddressValidationTokenValidationResult.IntegrityFailure,
+            scenario.ListenerHost.NewTokenValidationFailureCode);
+        Assert.True(scenario.ListenerHost.RetryBootstrapIssued);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission()
     {
         await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
@@ -64,5 +107,21 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
         Assert.Equal(
             QuicS8P1P3ServerTokenValidationTestSupport.TokenMismatchFailureCode,
             scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
+    }
+
+    private static QuicAddressValidationTokenProtector CreateProtector()
+    {
+        return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
+    }
+
+    private static byte[] CreateSecret()
+    {
+        byte[] secret = new byte[QuicAddressValidationTokenProtector.SecretLength];
+        for (int index = 0; index < secret.Length; index++)
+        {
+            secret[index] = unchecked((byte)(0x80 + index));
+        }
+
+        return secret;
     }
 }

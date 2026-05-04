@@ -605,10 +605,22 @@ internal sealed partial class QuicConnectionRuntime
         effects.AddRange(additionalEffects);
     }
 
-    private static byte[] CreateAddressValidationToken()
+    internal bool TryMarkPeerAddressValidatedByAddressValidationToken(long nowTicks)
     {
-        byte[] token = new byte[NewTokenBytesLength];
-        RandomNumberGenerator.Fill(token);
-        return token;
+        bool wasValidated = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+        transportFlags |= QuicConnectionTransportState.PeerAddressValidated;
+
+        bool stateChanged = !wasValidated;
+        if (activePath is not null)
+        {
+            stateChanged |= TryMarkActivePathValidated(nowTicks);
+        }
+
+        return stateChanged;
+    }
+
+    private byte[] CreateAddressValidationToken(QuicConnectionPathIdentity pathIdentity)
+    {
+        return addressValidationTokenProtector.IssueNewToken(pathIdentity.RemoteAddress);
     }
 }

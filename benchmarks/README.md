@@ -72,6 +72,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicInitialPacketProtectionBenchmarks`
 - `QuicHandshakePacketProtectionBenchmarks`
 - `QuicRetryIntegrityBenchmarks`
+- `QuicAddressValidationTokenBenchmarks`
 - `QuicTlsServerHelloRetryRequestBenchmarks`
 - `QuicTlsServerFinishedPublicationBenchmarks`
 - `QuicTlsClientFinishedPublicationBenchmarks`
@@ -90,6 +91,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
 ```
 
 BenchmarkDotNet writes reports under `BenchmarkDotNet.Artifacts/results`

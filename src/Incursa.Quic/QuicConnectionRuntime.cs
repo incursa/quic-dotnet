@@ -26,7 +26,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const ulong TerminalLifetimePtoMultiplier = 3;
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
     private const int DefaultCloseFrameOverheadBytes = 32;
-    private const int NewTokenBytesLength = 16;
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
@@ -68,6 +67,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly QuicConnectionVersionProfile versionProfile;
+    private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
@@ -147,7 +147,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         IQuicDiagnosticsSink? diagnosticsSink = null,
         bool enableRandomizedSpinBitSelection = false,
         uint[]? supportedVersions = null,
-        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue)
+        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -211,6 +212,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         MaximumRecentlyValidatedPaths = maximumRecentlyValidatedPaths;
         MaximumLocallyIssuedConnectionIds = maximumLocallyIssuedConnectionIds;
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
+        this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
     }
 
     public QuicConnectionPhase Phase => phase;

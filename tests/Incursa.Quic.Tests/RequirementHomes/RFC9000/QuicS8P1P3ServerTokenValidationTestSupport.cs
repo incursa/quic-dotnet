@@ -10,9 +10,10 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
 {
     internal const int TokenMismatchFailureCode = 6;
 
-    internal static async ValueTask<RetryValidationScenario> StartRetryValidationScenarioAsync()
+    internal static async ValueTask<RetryValidationScenario> StartRetryValidationScenarioAsync(
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
     {
-        RetryValidationScenario scenario = new();
+        RetryValidationScenario scenario = new(addressValidationTokenProtector);
         scenario.Start();
         await Task.Yield();
         return scenario;
@@ -23,11 +24,14 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         private readonly X509Certificate2 serverCertificate;
         private readonly Socket clientSocket;
         private readonly byte[] cryptoPayload;
+        private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
         private readonly TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private QuicRetryBootstrapMetadata? retryMetadata;
 
-        internal RetryValidationScenario()
+        internal RetryValidationScenario(QuicAddressValidationTokenProtector? addressValidationTokenProtector)
         {
+            this.addressValidationTokenProtector =
+                addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
             serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
             ListenerHost = new QuicListenerHost(
@@ -39,7 +43,8 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
                     return ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate));
                 },
                 listenBacklog: 1,
-                retryBootstrapEnabled: true);
+                retryBootstrapEnabled: true,
+                addressValidationTokenProtector: this.addressValidationTokenProtector);
 
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
@@ -66,6 +71,48 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
             int bytesSent = clientSocket.Send(initialPacket);
             Assert.Equal(initialPacket.Length, bytesSent);
 
+            QuicRetryBootstrapMetadata parsedRetryMetadata = await ReceiveRetryAsync();
+            Assert.Equal(Convert.ToHexString(parsedRetryMetadata.RetryToken), ListenerHost.RetryBootstrapTokenHex);
+
+            retryMetadata = parsedRetryMetadata;
+            return parsedRetryMetadata;
+        }
+
+        internal byte[] IssueNewTokenForClient(DateTimeOffset? issuedAt = null)
+        {
+            IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+            return addressValidationTokenProtector.IssueNewToken(
+                clientEndPoint.Address.ToString(),
+                issuedAt ?? DateTimeOffset.UtcNow);
+        }
+
+        internal byte[] IssueNewTokenForAddress(string remoteAddress, DateTimeOffset? issuedAt = null)
+        {
+            return addressValidationTokenProtector.IssueNewToken(
+                remoteAddress,
+                issuedAt ?? DateTimeOffset.UtcNow);
+        }
+
+        internal void SendInitialWithToken(ReadOnlySpan<byte> token)
+        {
+            byte[] initialPacket = BuildInitialPacket(
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                token);
+
+            int bytesSent = clientSocket.Send(initialPacket);
+            Assert.Equal(initialPacket.Length, bytesSent);
+        }
+
+        internal async ValueTask<QuicRetryBootstrapMetadata> SendInitialWithTokenAndReceiveRetryAsync(byte[] token)
+        {
+            SendInitialWithToken(token);
+            QuicRetryBootstrapMetadata parsedRetryMetadata = await ReceiveRetryAsync();
+            retryMetadata = parsedRetryMetadata;
+            return parsedRetryMetadata;
+        }
+
+        private async ValueTask<QuicRetryBootstrapMetadata> ReceiveRetryAsync()
+        {
             byte[] retryResponse = new byte[256];
             using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
             int retryBytes = await clientSocket.ReceiveAsync(
@@ -77,9 +124,6 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
                 QuicS17P2P2TestSupport.InitialDestinationConnectionId,
                 retryResponse.AsSpan(0, retryBytes),
                 out QuicRetryBootstrapMetadata parsedRetryMetadata));
-            Assert.Equal(Convert.ToHexString(parsedRetryMetadata.RetryToken), ListenerHost.RetryBootstrapTokenHex);
-
-            retryMetadata = parsedRetryMetadata;
             return parsedRetryMetadata;
         }
 

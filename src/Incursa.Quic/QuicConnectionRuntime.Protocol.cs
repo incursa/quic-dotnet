@@ -2946,7 +2946,7 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
-            emissionRecord = new QuicConnectionNewTokenEmissionRecord(pathIdentity, CreateAddressValidationToken());
+            emissionRecord = new QuicConnectionNewTokenEmissionRecord(pathIdentity, CreateAddressValidationToken(pathIdentity));
             newTokenEmissionsByRemoteAddress.Add(remoteAddress, emissionRecord);
         }
 
