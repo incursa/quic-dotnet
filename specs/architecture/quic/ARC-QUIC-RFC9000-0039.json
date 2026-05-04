@@ -1,0 +1,71 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0039",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 STREAM Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 STREAM frame encoding, parsing, and receive-state policy requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0039",
+    "VER-QUIC-RFC9000-0039"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P8-0001",
+    "REQ-QUIC-RFC9000-S19P8-0002",
+    "REQ-QUIC-RFC9000-S19P8-0003",
+    "REQ-QUIC-RFC9000-S19P8-0004",
+    "REQ-QUIC-RFC9000-S19P8-0005",
+    "REQ-QUIC-RFC9000-S19P8-0006",
+    "REQ-QUIC-RFC9000-S19P8-0007",
+    "REQ-QUIC-RFC9000-S19P8-0008",
+    "REQ-QUIC-RFC9000-S19P8-0009",
+    "REQ-QUIC-RFC9000-S19P8-0010",
+    "REQ-QUIC-RFC9000-S19P8-0011",
+    "REQ-QUIC-RFC9000-S19P8-0012",
+    "REQ-QUIC-RFC9000-S19P8-0013",
+    "REQ-QUIC-RFC9000-S19P8-0014",
+    "REQ-QUIC-RFC9000-S19P8-0015",
+    "REQ-QUIC-RFC9000-S19P8-0016",
+    "REQ-QUIC-RFC9000-S19P8-0017",
+    "REQ-QUIC-RFC9000-S19P8-0018",
+    "REQ-QUIC-RFC9000-S19P8-0019",
+    "REQ-QUIC-RFC9000-S19P8-0020"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicStreamParser.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicStreamFrameBits.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P8StreamFrameTestSupport.cs"
+  ],
+  "design_summary": "The STREAM frame proof is decomposed into requirement-home tests over the existing STREAM parser, formatter, frame-bit constants, and receive-side stream-state policy. Parser proof covers OFF, LEN, and FIN bits, type values 0x08 through 0x0f, Stream ID, Offset, Length, Stream Data consumption, varint truncation, zero-length boundaries, and the maximum stream offset ceiling. Runtime proof covers the current connection-stream-state policy that rejects uncreated local streams and local send-only streams with STREAM_STATE_ERROR while accepting a peer-created bidirectional receive stream, plus receive-credit excess classification as FLOW_CONTROL_ERROR.",
+  "data_and_state_considerations": "The slice primarily adds focused proof over existing parser and stream-state behavior. The helper constructs exact STREAM frame byte sequences, including deliberately mismatched declared lengths, so individual requirement homes do not depend on broad parser tests.",
+  "edge_cases_and_constraints": [
+    "Explicit zero offsets remain distinguishable from absent offsets when the OFF bit is set.",
+    "Zero-length STREAM frames are accepted when LEN is set and consume no stream data.",
+    "LEN-clear STREAM frames consume every remaining byte in the packet payload slice.",
+    "The largest legal stream offset is accepted only when no delivered data would exceed the varint maximum.",
+    "Malformed, truncated, non-STREAM, and over-ceiling frame encodings are rejected by the parser before receive-state mutation."
+  ],
+  "alternatives_considered": [
+    "Keep broad stream parser tests as the only evidence; rejected because generated triage requires direct requirement-home proof.",
+    "Introduce a separate STREAM parser facade; rejected because the existing parser and formatter already own the wire encoding behavior.",
+    "Broaden the slice into every S19 frame type; rejected because S19 still contains several independent frame families that need separate bounded proof."
+  ],
+  "risks": [
+    "The parser reports malformed STREAM encodings as parse failure, while exact close-datagram emission remains owned by packet-processing requirements.",
+    "The slice does not claim public API stream behavior or application protocol semantics beyond the receive-state policy tested here.",
+    "Other S19 frame families remain non-clean and are not closed by this proof."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused S19P8 STREAM frame proof only: parser/formatter encoding behavior, maximum-offset guard, and current receive-state error policy for invalid STREAM frame targets."
+    }
+  ]
+}

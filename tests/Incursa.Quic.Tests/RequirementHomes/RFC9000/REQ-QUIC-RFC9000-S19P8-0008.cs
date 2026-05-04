@@ -3,6 +3,42 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S19P8-0008")]
 public sealed class REQ_QUIC_RFC9000_S19P8_0008
 {
+    [Theory]
+    [InlineData((byte)0x08)]
+    [InlineData((byte)0x09)]
+    [InlineData((byte)0x0A)]
+    [InlineData((byte)0x0B)]
+    [InlineData((byte)0x0C)]
+    [InlineData((byte)0x0D)]
+    [InlineData((byte)0x0E)]
+    [InlineData((byte)0x0F)]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseStreamFrame_AcceptsRegisteredStreamFrameTypes(byte frameType)
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType,
+            streamId: 0x04,
+            streamData: [0xAA],
+            offset: (frameType & QuicStreamFrameBits.OffsetBitMask) != 0 ? 1UL : 0UL);
+
+        Assert.Equal(frameType, frame.FrameType);
+    }
+
+    [Theory]
+    [InlineData((byte)0x08)]
+    [InlineData((byte)0x0F)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_AcceptsStreamFrameTypeBoundaries(byte frameType)
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType,
+            streamId: 0x04,
+            streamData: [0xAA],
+            offset: (frameType & QuicStreamFrameBits.OffsetBitMask) != 0 ? 1UL : 0UL);
+
+        Assert.Equal(frameType, frame.FrameType);
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsFramesWithNonStreamTypes()

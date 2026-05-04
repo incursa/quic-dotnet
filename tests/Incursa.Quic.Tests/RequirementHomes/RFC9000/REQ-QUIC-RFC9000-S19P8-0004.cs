@@ -47,4 +47,31 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0004
         Assert.Equal(streamData.Length, frame.StreamDataLength);
         Assert.Equal(packet.Length, frame.ConsumedLength);
     }
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseStreamFrame_TreatsAppendedBytesAsDataWhenLenBitIsClear()
+    {
+        byte[] packet = [0x08, 0x00, 0x02, 0xAA, 0xBB];
+
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.ParsePacket(packet);
+
+        Assert.False(frame.HasLength);
+        Assert.Equal(0UL, frame.Length);
+        Assert.True(packet.AsSpan(2).SequenceEqual(frame.StreamData));
+        Assert.Equal(packet.Length, frame.ConsumedLength);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_ConsumesNoDataAtEndWhenLenBitIsClear()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x08,
+            streamId: 0x00,
+            streamData: []);
+
+        Assert.False(frame.HasLength);
+        Assert.Equal(0, frame.StreamDataLength);
+        Assert.Equal(2, frame.ConsumedLength);
+    }
 }

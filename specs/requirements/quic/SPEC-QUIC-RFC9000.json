@@ -35326,10 +35326,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs::TryParseStreamFrame_SetsTheOffsetBitWhenOffsetIsPresent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs::TryFormatStreamFrame_RejectsNonZeroOffsetWhenOffBitIsAbsent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0001.cs::TryParseStreamFrame_PreservesExplicitZeroOffsetWhenOffBitIsPresent"
         ]
       }
     },
@@ -35358,8 +35358,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs::TryFormatStreamFrame_RejectsOffsetFieldWhenOffBitIsClear",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0002.cs::TryParseStreamFrame_AbsentOffsetStartsEmptyStreamAtZero"
         ]
       }
     },
@@ -35388,10 +35389,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0003.cs::TryParseStreamFrame_LenBitIndicatesLengthFieldIsPresent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0003.cs::TryParseStreamFrame_RejectsMissingLengthWhenLenBitIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0003.cs::TryParseStreamFrame_AcceptsZeroLengthWhenLenBitIsSet"
         ]
       }
     },
@@ -35420,12 +35420,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs::TryParseStreamFrame_TreatsAppendedBytesAsDataWhenLenBitIsClear",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0004.cs::TryParseStreamFrame_ConsumesNoDataAtEndWhenLenBitIsClear"
         ]
       }
     },
@@ -35454,10 +35452,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs::TryParseStreamFrame_RejectsTruncatedLengthWhenLenBitIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0005.cs::TryParseStreamFrame_PreservesZeroLengthWhenLenBitIsSet"
         ]
       }
     },
@@ -35486,10 +35483,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0006.cs::TryParseStreamFrame_FinBitMarksEndOfStream"
         ]
       }
     },
@@ -35516,6 +35510,11 @@
         "upstream_refs": [
           "RFC 9000 §19.8 RFC9000-S19.8-B6-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0007.cs::TryReceiveStreamFrame_RejectsUncreatedLocalBidirectionalStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0007.cs::TryReceiveStreamFrame_AcceptsCreatedPeerBidirectionalStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0007.cs::TryReceiveStreamFrame_RejectsCreatedLocalSendOnlyStream"
         ]
       }
     },
@@ -35544,14 +35543,11 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsEmptyInput",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsFramesWithNonStreamTypes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_AcceptsRegisteredStreamFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_AcceptsStreamFrameTypeBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_RejectsFramesWithNonStreamTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_RejectsEmptyInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0008.cs::TryParseStreamFrame_RejectsNonShortestFrameTypeEncoding"
         ]
       }
     },
@@ -35580,12 +35576,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsTruncatedFixedFields",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0009.cs::TryParseStreamFrame_ParsesVariableLengthStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0009.cs::TryParseStreamFrame_ParsesLargestVariableLengthStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0009.cs::TryParseStreamFrame_RejectsTruncatedFixedFields"
         ]
       }
     },
@@ -35614,12 +35607,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsTruncatedFixedFields",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsTruncatedOffsetField",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0010.cs::TryParseStreamFrame_ParsesVariableLengthOffset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0010.cs::TryParseStreamFrame_ParsesLargestOffsetWhenNoDataIsDelivered",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0010.cs::TryParseStreamFrame_RejectsTruncatedOffsetField"
         ]
       }
     },
@@ -35648,11 +35638,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsTruncatedFixedFields",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0011.cs::TryParseStreamFrame_ParsesVariableLengthLengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0011.cs::TryParseStreamFrame_RejectsTruncatedLengthVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0011.cs::TryParseStreamFrame_ParsesZeroLengthField"
         ]
       }
     },
@@ -35681,11 +35669,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0012.cs::TryParseStreamFrame_ExposesAllStreamFrameFields"
         ]
       }
     },
@@ -35714,11 +35698,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_UsesTheRemainderWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0013.cs::TryParseStreamFrame_ReportsTheNamedStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0013.cs::TryParseStreamFrame_RejectsMissingStreamIdField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0013.cs::TryParseStreamFrame_ReportsLargestStreamId"
         ]
       }
     },
@@ -35747,10 +35729,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0014.cs::TryParseStreamFrame_ReportsTheByteOffsetForFrameData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0014.cs::TryParseStreamFrame_RejectsMissingOffsetFieldWhenOffBitIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0014.cs::TryParseStreamFrame_ReportsExplicitZeroOffset"
         ]
       }
     },
@@ -35779,10 +35760,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0015.cs::TryParseStreamFrame_OffsetFieldIsPresentWhenOffBitIsSet"
         ]
       }
     },
@@ -35811,10 +35789,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0016.cs::TryParseStreamFrame_LengthFieldLimitsStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0016.cs::TryParseStreamFrame_RejectsLengthThatExceedsAvailableStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0016.cs::TryParseStreamFrame_ZeroLengthFieldConsumesNoStreamData"
         ]
       }
     },
@@ -35843,10 +35820,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_ParsesOffsetsLengthsAndPayloadBytes",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_PreservesZeroLengthPayloadOffsets",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RoundTripsRepresentableStreamShapes",
-          "tests/Incursa.Quic.Tests/QuicStreamFuzzTests.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0017.cs::TryParseStreamFrame_LengthFieldIsPresentWhenLenBitIsSet"
         ]
       }
     },
@@ -35875,7 +35849,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0018.cs::TryParseStreamFrame_ConsumesAllRemainingPacketBytesWhenLenBitIsClear",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0018.cs::Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation"
         ]
       }
     },
@@ -35904,12 +35879,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeiling",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsOffsetsThatExactlyReachTheStreamCeilingWithoutALengthField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsPresent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsOffsetsAtTheStreamCeilingWhenLengthIsAbsent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_RejectsLargestOffsetPlusData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0019.cs::TryParseStreamFrame_AcceptsLargestOffsetWithNoData"
         ]
       }
     },
@@ -35938,8 +35913,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling",
-          "tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs::TryReceiveStreamFrame_TreatsReceiveCreditExcessAsFlowControlError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs::TryParseStreamFrame_AcceptsLargestOffsetThatDoesNotExceedStreamCeiling",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-0020.cs::TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeilingWithoutALengthField"
         ]
       }
     },

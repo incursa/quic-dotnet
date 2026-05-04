@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0039",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAM Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0039",
+    "WI-QUIC-RFC9000-0039"
+  ],
+  "verification_method": "Focused S19P8 requirement-home tests, supporting stream parser/fuzz tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P8-0001",
+    "REQ-QUIC-RFC9000-S19P8-0002",
+    "REQ-QUIC-RFC9000-S19P8-0003",
+    "REQ-QUIC-RFC9000-S19P8-0004",
+    "REQ-QUIC-RFC9000-S19P8-0005",
+    "REQ-QUIC-RFC9000-S19P8-0006",
+    "REQ-QUIC-RFC9000-S19P8-0007",
+    "REQ-QUIC-RFC9000-S19P8-0008",
+    "REQ-QUIC-RFC9000-S19P8-0009",
+    "REQ-QUIC-RFC9000-S19P8-0010",
+    "REQ-QUIC-RFC9000-S19P8-0011",
+    "REQ-QUIC-RFC9000-S19P8-0012",
+    "REQ-QUIC-RFC9000-S19P8-0013",
+    "REQ-QUIC-RFC9000-S19P8-0014",
+    "REQ-QUIC-RFC9000-S19P8-0015",
+    "REQ-QUIC-RFC9000-S19P8-0016",
+    "REQ-QUIC-RFC9000-S19P8-0017",
+    "REQ-QUIC-RFC9000-S19P8-0018",
+    "REQ-QUIC-RFC9000-S19P8-0019",
+    "REQ-QUIC-RFC9000-S19P8-0020"
+  ],
+  "scope": "This verification covers focused STREAM frame parser, formatter, maximum-offset, and receive-state error-policy proof for the listed S19P8 requirements.",
+  "expected_result": "S19P8 requirement-home tests prove OFF/LEN/FIN bit handling, type value bounds, varint fields, declared-length behavior, packet-remainder consumption when LEN is clear, maximum stream offset handling, invalid local/send-only stream receipt rejection, and receive credit excess classification.",
+  "procedure": [
+    "Run the focused S19P8 requirement-home filter.",
+    "Run the supporting stream parser/fuzz filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run a Release build.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Existing STREAM parser and formatter remain the canonical stream-frame wire-format seam.",
+    "Existing connection stream state remains the canonical receive-state policy seam."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P8StreamFrameTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P8_\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~QuicStreamParserUnitTests|FullyQualifiedName~REQ_QUIC_RFC9000_S19P8_0018\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim closure of other S19 frame families, public stream APIs, or packet-level close emission behavior for every parser failure."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P8 filter passed 79/79 before canonical xref cleanup; final generated triage, Release build, and SpecTrace JSON validation are recorded by this verification run."
+}

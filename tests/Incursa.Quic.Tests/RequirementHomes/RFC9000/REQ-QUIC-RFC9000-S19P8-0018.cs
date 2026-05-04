@@ -7,6 +7,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P8_0018
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseStreamFrame_ConsumesAllRemainingPacketBytesWhenLenBitIsClear()
+    {
+        byte[] packet = [0x08, 0x00, 0xAA, 0xBB, 0xCC];
+
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.ParsePacket(packet);
+
+        Assert.False(frame.HasLength);
+        Assert.Equal(0UL, frame.Length);
+        Assert.True(packet.AsSpan(2).SequenceEqual(frame.StreamData));
+        Assert.Equal(packet.Length, frame.ConsumedLength);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_StreamParsing_RoundTripsRepresentativeFramesAndRejectsTruncation()
     {

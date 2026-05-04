@@ -4,6 +4,35 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P8_0010
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseStreamFrame_ParsesVariableLengthOffset()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x0E,
+            streamId: 0x04,
+            streamData: [0xAA],
+            offset: 0x1234);
+
+        Assert.True(frame.HasOffset);
+        Assert.Equal(0x1234UL, frame.Offset);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_ParsesLargestOffsetWhenNoDataIsDelivered()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x0E,
+            streamId: 0x04,
+            streamData: [],
+            offset: QuicVariableLengthInteger.MaxValue);
+
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, frame.Offset);
+        Assert.Equal(0UL, frame.Length);
+        Assert.Equal(0, frame.StreamDataLength);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsTruncatedOffsetField()
     {

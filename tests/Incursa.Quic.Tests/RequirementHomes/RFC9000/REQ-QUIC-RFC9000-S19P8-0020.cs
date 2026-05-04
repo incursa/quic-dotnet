@@ -4,6 +4,31 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P8_0020
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryReceiveStreamFrame_TreatsReceiveCreditExcessAsFlowControlError()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(connectionReceiveLimit: 1);
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(0x0A, streamId: 0x01, streamData: [0xAA, 0xBB]);
+
+        Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_AcceptsLargestOffsetThatDoesNotExceedStreamCeiling()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x0C,
+            streamId: 0x00,
+            streamData: [],
+            offset: QuicVariableLengthInteger.MaxValue);
+
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, frame.Offset);
+        Assert.Equal(0, frame.StreamDataLength);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseStreamFrame_RejectsOffsetsThatExceedTheStreamCeiling()
     {

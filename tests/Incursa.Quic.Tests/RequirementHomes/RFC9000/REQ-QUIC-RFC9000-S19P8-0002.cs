@@ -35,4 +35,33 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0002
         Assert.Equal(packet.Length, bytesWritten);
         Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryFormatStreamFrame_RejectsOffsetFieldWhenOffBitIsClear()
+    {
+        Span<byte> destination = stackalloc byte[16];
+
+        Assert.False(QuicFrameCodec.TryFormatStreamFrame(
+            frameType: 0x08,
+            streamId: 0x04,
+            offset: 7,
+            streamData: [0xAA],
+            destination,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_AbsentOffsetStartsEmptyStreamAtZero()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x08,
+            streamId: 0x04,
+            streamData: []);
+
+        Assert.False(frame.HasOffset);
+        Assert.Equal(0UL, frame.Offset);
+        Assert.Equal(0, frame.StreamDataLength);
+        Assert.True(frame.StreamData.IsEmpty);
+    }
 }

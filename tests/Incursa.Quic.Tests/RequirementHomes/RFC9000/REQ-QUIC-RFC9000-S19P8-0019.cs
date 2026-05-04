@@ -91,4 +91,30 @@ public sealed class REQ_QUIC_RFC9000_S19P8_0019
         Assert.Equal(streamData.Length, frame.StreamDataLength);
         Assert.Equal(packet.Length, frame.ConsumedLength);
     }
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseStreamFrame_RejectsLargestOffsetPlusData()
+    {
+        byte[] packet = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0C,
+            streamId: 0x00,
+            streamData: [0xEF],
+            offset: QuicVariableLengthInteger.MaxValue);
+
+        QuicS19P8StreamFrameTestSupport.AssertRejects(packet);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseStreamFrame_AcceptsLargestOffsetWithNoData()
+    {
+        QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+            frameType: 0x0C,
+            streamId: 0x00,
+            streamData: [],
+            offset: QuicVariableLengthInteger.MaxValue);
+
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, frame.Offset + (ulong)frame.StreamDataLength);
+        Assert.Equal(0, frame.StreamDataLength);
+    }
 }

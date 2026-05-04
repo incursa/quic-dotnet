@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0039",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAM Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0039",
+    "VER-QUIC-RFC9000-0039"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P8-0001",
+    "REQ-QUIC-RFC9000-S19P8-0002",
+    "REQ-QUIC-RFC9000-S19P8-0003",
+    "REQ-QUIC-RFC9000-S19P8-0004",
+    "REQ-QUIC-RFC9000-S19P8-0005",
+    "REQ-QUIC-RFC9000-S19P8-0006",
+    "REQ-QUIC-RFC9000-S19P8-0007",
+    "REQ-QUIC-RFC9000-S19P8-0008",
+    "REQ-QUIC-RFC9000-S19P8-0009",
+    "REQ-QUIC-RFC9000-S19P8-0010",
+    "REQ-QUIC-RFC9000-S19P8-0011",
+    "REQ-QUIC-RFC9000-S19P8-0012",
+    "REQ-QUIC-RFC9000-S19P8-0013",
+    "REQ-QUIC-RFC9000-S19P8-0014",
+    "REQ-QUIC-RFC9000-S19P8-0015",
+    "REQ-QUIC-RFC9000-S19P8-0016",
+    "REQ-QUIC-RFC9000-S19P8-0017",
+    "REQ-QUIC-RFC9000-S19P8-0018",
+    "REQ-QUIC-RFC9000-S19P8-0019",
+    "REQ-QUIC-RFC9000-S19P8-0020"
+  ],
+  "summary": "Decompose RFC 9000 S19P8 STREAM frame proof into focused requirement-home tests and canonical trace evidence.",
+  "planned_changes": "- Add S19P8 stream-frame test support for exact byte construction, declared-length mismatch cases, parse rejection assertions, and formatter round-trip checks.\n- Add focused positive, negative, and edge requirement-home tests for STREAM frame type bits, Stream ID, Offset, Length, FIN, Stream Data consumption, max-offset boundaries, and invalid stream target receive-state errors.\n- Update canonical S19P8 xrefs and generated coverage triage.",
+  "verification_plan": "Run the focused S19P8 requirement-home filter, run the supporting stream parser/fuzz filter, regenerate QUIC requirement coverage triage, run a Release build, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0039"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0039"
+  ],
+  "out_of_scope": [
+    "Completing other RFC 9000 S19 frame families.",
+    "Changing public QUIC stream APIs.",
+    "Changing packet-level close emission policy for parser failures.",
+    "Claiming interop readiness beyond the focused STREAM frame proof."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over existing STREAM parser, formatter, and receive-side stream-state behavior."
+}
