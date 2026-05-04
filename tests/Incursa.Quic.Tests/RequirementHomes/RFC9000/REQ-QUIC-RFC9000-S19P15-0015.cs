@@ -5,6 +5,23 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0015
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P15-0015")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryAcceptNewConnectionId_WhenZeroLengthDestinationConnectionIdIsRequired_ReturnsProtocolViolation()
+    {
+        QuicConnectionPeerConnectionIdState state = new();
+        byte[] connectionId = [0x10, 0x11, 0x12];
+
+        Assert.False(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(0x02, 0x00, connectionId, CreateStatelessResetToken(0x20)),
+            requiresZeroLengthDestinationConnectionId: true,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0015")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryAcceptNewConnectionId_RejectsWhenZeroLengthDestinationConnectionIdIsRequired()
     {
@@ -25,6 +42,34 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0015
         Assert.False(destinationConnectionIdChanged);
         Assert.True(state.CurrentDestinationConnectionId.IsEmpty);
         Assert.Null(state.CurrentDestinationConnectionIdSequence);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0015")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryAcceptNewConnectionId_WhenZeroLengthModeRejectsFrame_PreservesExistingPeerDestination()
+    {
+        QuicConnectionPeerConnectionIdState state = new();
+        byte[] firstConnectionId = [0x10, 0x11, 0x12, 0x13];
+        byte[] secondConnectionId = [0x30, 0x31, 0x32];
+
+        Assert.True(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(0x01, 0x00, firstConnectionId, CreateStatelessResetToken(0x20)),
+            requiresZeroLengthDestinationConnectionId: false,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.True(destinationConnectionIdChanged);
+
+        Assert.False(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(0x02, 0x00, secondConnectionId, CreateStatelessResetToken(0x40)),
+            requiresZeroLengthDestinationConnectionId: true,
+            out errorCode,
+            out destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+        Assert.Equal(0x01UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.True(firstConnectionId.AsSpan().SequenceEqual(state.CurrentDestinationConnectionId.Span));
     }
 
     private static byte[] CreateStatelessResetToken(byte startValue)

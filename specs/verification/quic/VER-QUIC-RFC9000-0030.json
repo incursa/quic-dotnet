@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0030",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Runtime Lifecycle Topoff Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0030",
+    "WI-QUIC-RFC9000-0030"
+  ],
+  "verification_method": "Focused requirement-home execution, state-machine inspection through public internal seams, protected packet inspection for existing retirement emission helpers, SpecTrace validation, and coverage-triage regeneration.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P15-0014",
+    "REQ-QUIC-RFC9000-S19P15-0015",
+    "REQ-QUIC-RFC9000-S19P15-0016",
+    "REQ-QUIC-RFC9000-S19P15-0017",
+    "REQ-QUIC-RFC9000-S19P15-0018",
+    "REQ-QUIC-RFC9000-S19P15-0021",
+    "REQ-QUIC-RFC9000-S19P15-0022",
+    "REQ-QUIC-RFC9000-S19P15-0023"
+  ],
+  "scope": "This verification covers S19P15 runtime lifecycle behavior for local zero-length-mode send suppression, peer zero-length-mode receive rejection, duplicate and conflict handling, sequence-number-based active destination selection, monotonic Retire Prior To state, and one-time retirement reporting for stale below-threshold sequence numbers.",
+  "expected_result": "Focused tests provide positive, negative, and edge proof for the selected S19P15 requirements. The peer connection-ID state keeps stale below-threshold NEW_CONNECTION_ID frames out of the active set, reports the sequence for retirement once, and does not close the connection for that RFC-required stale sequence case.",
+  "procedure": [
+    "Run the focused S19P15 runtime lifecycle requirement-home filter.",
+    "Confirm local zero-length connection-ID mode suppresses NEW_CONNECTION_ID route, token, and send effects.",
+    "Confirm peer zero-length destination mode rejects received NEW_CONNECTION_ID frames with PROTOCOL_VIOLATION without mutating existing peer destination state.",
+    "Confirm exact duplicates are accepted, non-identical sequence or connection-ID reuse is rejected, and out-of-order lower sequences do not replace the highest active destination.",
+    "Confirm smaller later Retire Prior To values do not lower the largest received threshold.",
+    "Confirm a newly received sequence below that threshold is reported once for retirement and repeated stale frames are not reported again.",
+    "Regenerate coverage triage and validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Frame-codec field parsing and Retire Prior To greater-than-sequence rejection remain owned by ARC/WI/VER-QUIC-RFC9000-0013.",
+    "Protected RETIRE_CONNECTION_ID packet emission remains owned by the existing peer connection-ID lifecycle runtime path.",
+    "The local active_connection_id_limit defaults to the RFC minimum unless a test explicitly supplies a higher limit."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0022.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0021|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0023\"",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification intentionally does not close S19P15 requirements 0002 through 0013, broad migration unlinkability, preferred-address transition behavior, or any new send-boundary behavior for protected RETIRE_CONNECTION_ID packets."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-03. SpecTrace core validation passed 334 artifacts, the focused S19P15 runtime lifecycle filter passed 20/20, and the full solution test suite passed 3690/3690 after one isolated S10P2 timeout passed on rerun."
+}

@@ -10,9 +10,12 @@ internal sealed class QuicConnectionPeerConnectionIdState
 
     // Sequence-indexed peer records, keyed by the peer's NEW_CONNECTION_ID frame sequence number.
     private readonly Dictionary<ulong, QuicConnectionPeerConnectionIdRecord> connectionIdsBySequence = [];
+    // Historical sequence records keep duplicate/conflict checks intact after an ID leaves the active set.
+    private readonly Dictionary<ulong, QuicConnectionPeerConnectionIdRecord> connectionIdHistoryBySequence = [];
     // Reverse lookup used to reject the same connection ID being reused under a different sequence number,
     // including values that were later retired from the active set.
     private readonly Dictionary<QuicConnectionIdKey, ulong> sequenceByConnectionId = [];
+    private readonly HashSet<ulong> retiredSequenceNumbersReportedToRuntime = [];
     // The active destination connection ID is copied so the runtime can hand out a stable span.
     private byte[] currentDestinationConnectionId = [];
     private ulong? currentDestinationConnectionIdSequence;
@@ -87,8 +90,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
             return false;
         }
 
-        if (frame.RetirePriorTo > frame.SequenceNumber
-            || frame.SequenceNumber < retirePriorTo)
+        if (frame.RetirePriorTo > frame.SequenceNumber)
         {
             errorCode = QuicTransportErrorCode.ProtocolViolation;
             return false;
@@ -105,7 +107,13 @@ internal sealed class QuicConnectionPeerConnectionIdState
             return false;
         }
 
-        if (connectionIdsBySequence.TryGetValue(frame.SequenceNumber, out QuicConnectionPeerConnectionIdRecord existingRecord))
+        QuicConnectionPeerConnectionIdRecord record = new(
+            connectionIdKey,
+            frame.ConnectionId.ToArray(),
+            frame.RetirePriorTo,
+            frame.StatelessResetToken.ToArray());
+
+        if (connectionIdHistoryBySequence.TryGetValue(frame.SequenceNumber, out QuicConnectionPeerConnectionIdRecord existingRecord))
         {
             if (existingRecord.ConnectionId != connectionIdKey
                 || existingRecord.RetirePriorTo != frame.RetirePriorTo
@@ -123,6 +131,18 @@ internal sealed class QuicConnectionPeerConnectionIdState
         {
             errorCode = QuicTransportErrorCode.ProtocolViolation;
             return false;
+        }
+
+        if (frame.SequenceNumber < retirePriorTo)
+        {
+            connectionIdHistoryBySequence.Add(frame.SequenceNumber, record);
+            sequenceByConnectionId.Add(connectionIdKey, frame.SequenceNumber);
+            if (retiredSequenceNumbersReportedToRuntime.Add(frame.SequenceNumber))
+            {
+                retiredSequenceNumbers = [frame.SequenceNumber];
+            }
+
+            return true;
         }
 
         ulong effectiveRetirePriorTo = Math.Max(retirePriorTo, frame.RetirePriorTo);
@@ -148,16 +168,12 @@ internal sealed class QuicConnectionPeerConnectionIdState
         foreach (ulong sequenceNumber in sequencesToRetire)
         {
             connectionIdsBySequence.Remove(sequenceNumber);
+            retiredSequenceNumbersReportedToRuntime.Add(sequenceNumber);
         }
 
         retirePriorTo = effectiveRetirePriorTo;
-        byte[] statelessResetToken = frame.StatelessResetToken.ToArray();
-        QuicConnectionPeerConnectionIdRecord record = new(
-            connectionIdKey,
-            frame.ConnectionId.ToArray(),
-            frame.RetirePriorTo,
-            statelessResetToken);
         connectionIdsBySequence.Add(frame.SequenceNumber, record);
+        connectionIdHistoryBySequence.Add(frame.SequenceNumber, record);
         sequenceByConnectionId.Add(connectionIdKey, frame.SequenceNumber);
 
         RecomputeCurrentDestinationConnectionId();
@@ -175,7 +191,9 @@ internal sealed class QuicConnectionPeerConnectionIdState
     internal void Clear()
     {
         connectionIdsBySequence.Clear();
+        connectionIdHistoryBySequence.Clear();
         sequenceByConnectionId.Clear();
+        retiredSequenceNumbersReportedToRuntime.Clear();
         currentDestinationConnectionId = [];
         currentDestinationConnectionIdSequence = null;
         retirePriorTo = 0;
@@ -213,6 +231,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
             RetirePriorTo: 0,
             StatelessResetToken: []);
         connectionIdsBySequence.Add(0, record);
+        connectionIdHistoryBySequence.Add(0, record);
         sequenceByConnectionId[connectionIdKey] = 0;
         RecomputeCurrentDestinationConnectionId();
         return true;

@@ -55,6 +55,31 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0018
         Assert.False(destinationConnectionIdChanged);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P15-0018")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryAcceptNewConnectionId_RejectsTheSameSequenceAndConnectionIdWithADifferentToken()
+    {
+        QuicConnectionPeerConnectionIdState state = new();
+        byte[] connectionId = [0x60, 0x61, 0x62, 0x63];
+
+        Assert.True(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(0x04, 0x00, connectionId, CreateStatelessResetToken(0x70)),
+            requiresZeroLengthDestinationConnectionId: false,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.True(destinationConnectionIdChanged);
+
+        Assert.False(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(0x04, 0x00, connectionId, CreateStatelessResetToken(0x80)),
+            requiresZeroLengthDestinationConnectionId: false,
+            out errorCode,
+            out destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+    }
+
     private static byte[] CreateStatelessResetToken(byte startValue)
     {
         byte[] token = new byte[QuicStatelessReset.StatelessResetTokenLength];

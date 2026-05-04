@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0030",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Runtime Lifecycle Topoff Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0030",
+    "VER-QUIC-RFC9000-0030"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P15-0014",
+    "REQ-QUIC-RFC9000-S19P15-0015",
+    "REQ-QUIC-RFC9000-S19P15-0016",
+    "REQ-QUIC-RFC9000-S19P15-0017",
+    "REQ-QUIC-RFC9000-S19P15-0018",
+    "REQ-QUIC-RFC9000-S19P15-0021",
+    "REQ-QUIC-RFC9000-S19P15-0022",
+    "REQ-QUIC-RFC9000-S19P15-0023"
+  ],
+  "summary": "Complete the bounded S19P15 NEW_CONNECTION_ID runtime lifecycle proof by adding direct requirement-home coverage and correcting stale sequence handling to report RETIRE_CONNECTION_ID work instead of closing.",
+  "planned_changes": "- Keep local NEW_CONNECTION_ID issuance suppressed in zero-length local connection-ID mode.\n- Add direct S19P15 requirement-home proof for zero-length-mode receive rejection, exact duplicate acceptance, sequence-based duplicate handling, and conflict rejection.\n- Preserve historical peer connection-ID sequence records after active retirement.\n- Treat later NEW_CONNECTION_ID frames with smaller Retire Prior To values as no-ops for the largest received threshold.\n- Report a newly received sequence below the largest Retire Prior To value for one RETIRE_CONNECTION_ID emission and suppress duplicate stale retirement reports.\n- Update canonical requirement trace, architecture, work-item, and verification artifacts.",
+  "verification_plan": "Run the focused S19P15 runtime lifecycle requirement-home filter, regenerate the QUIC requirement coverage triage, validate canonical SpecTrace JSON, run a Release build, run the focused tests again after trace updates, and then run the full solution tests.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0030"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0030"
+  ],
+  "out_of_scope": [
+    "S19P15 frame-codec field-level metadata/restructure cleanup for requirements 0002 through 0013.",
+    "Broad path migration unlinkability or preferred-address transition behavior.",
+    "New public migration APIs or route portfolio controls.",
+    "Changing congestion, PTO, or send-boundary behavior for protected RETIRE_CONNECTION_ID packet emission."
+  ],
+  "completion_notes": "Completed as a focused runtime/state topoff. The S19P15-0023 fix changes below-threshold sequence receipt from a protocol violation to one-time retirement reporting; packet emission continues through the existing runtime RETIRE_CONNECTION_ID send path."
+}

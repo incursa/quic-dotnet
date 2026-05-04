@@ -11,21 +11,21 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 900 |
+| trace_clean | 908 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 71 |
 | covered_but_proof_too_broad | 144 |
-| partially_covered | 281 |
+| partially_covered | 277 |
 | uncovered_blocked | 79 |
-| uncovered_unblocked | 296 |
+| uncovered_unblocked | 292 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 900 |
+| clean | 908 |
 | coverage_contract_needed | 0 |
 | metadata_only | 71 |
 | restructure_needed | 222 |
-| new_tests_needed | 790 |
+| new_tests_needed | 782 |
 | blocked | 79 |
 
 ## Queue
@@ -33,7 +33,7 @@
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes: 71 requirements. Examples: REQ-QUIC-RFC9000-S10P2P1-0004, REQ-QUIC-RFC9000-S11P1-0003, REQ-QUIC-RFC9000-S12P1-0001, REQ-QUIC-RFC9000-S12P1-0002, REQ-QUIC-RFC9000-S12P1-0003, REQ-QUIC-RFC9000-S12P1-0004, REQ-QUIC-RFC9000-S12P1-0005, REQ-QUIC-RFC9000-S12P1-0006, REQ-QUIC-RFC9000-S12P1-0007, REQ-QUIC-RFC9000-S12P2-0008, REQ-QUIC-RFC9000-S12P3-0009, REQ-QUIC-RFC9000-S12P3-0010.
 - Restructure-needed proof: 222 requirements. Examples: REQ-QUIC-RFC9000-S10P2P3-0006, REQ-QUIC-RFC9000-S10P2P3-0011, REQ-QUIC-RFC9000-S11-0003, REQ-QUIC-RFC9000-S11-0004, REQ-QUIC-RFC9000-S13P2P3-0002, REQ-QUIC-RFC9000-S13P2P3-0003, REQ-QUIC-RFC9000-S13P2P3-0004, REQ-QUIC-RFC9000-S13P2P3-0007, REQ-QUIC-RFC9000-S13P2P3-0008, REQ-QUIC-RFC9000-S13P2P3-0009, REQ-QUIC-RFC9000-S13P2P3-0010, REQ-QUIC-RFC9000-S13P2P3-0011.
-- New proof or implementation work: 790 requirements. Examples: REQ-QUIC-RFC9000-S10P1P2-0001, REQ-QUIC-RFC9000-S10P2P1-0006, REQ-QUIC-RFC9000-S10P2P1-0009, REQ-QUIC-RFC9000-S10P2P3-0006, REQ-QUIC-RFC9000-S10P2P3-0011, REQ-QUIC-RFC9000-S10P3P2-0010, REQ-QUIC-RFC9000-S10P3P2-0012, REQ-QUIC-RFC9000-S11-0003, REQ-QUIC-RFC9000-S11-0004, REQ-QUIC-RFC9000-S11P1-0007, REQ-QUIC-RFC9000-S11P1-0008, REQ-QUIC-RFC9000-S12P2-0009.
+- New proof or implementation work: 782 requirements. Examples: REQ-QUIC-RFC9000-S10P1P2-0001, REQ-QUIC-RFC9000-S10P2P1-0006, REQ-QUIC-RFC9000-S10P2P1-0009, REQ-QUIC-RFC9000-S10P2P3-0006, REQ-QUIC-RFC9000-S10P2P3-0011, REQ-QUIC-RFC9000-S10P3P2-0010, REQ-QUIC-RFC9000-S10P3P2-0012, REQ-QUIC-RFC9000-S11-0003, REQ-QUIC-RFC9000-S11-0004, REQ-QUIC-RFC9000-S11P1-0007, REQ-QUIC-RFC9000-S11P1-0008, REQ-QUIC-RFC9000-S12P2-0009.
 - Blocked by recorded gap families: 79 requirements. Examples: REQ-QUIC-RFC9000-S10P2-0002, REQ-QUIC-RFC9000-S10P2-0003, REQ-QUIC-RFC9000-S10P2-0005, REQ-QUIC-RFC9000-S10P2-0011, REQ-QUIC-RFC9000-S10P2-0012, REQ-QUIC-RFC9000-S10P2P3-0001, REQ-QUIC-RFC9000-S10P2P3-0002, REQ-QUIC-RFC9000-S10P2P3-0003, REQ-QUIC-RFC9000-S10P2P3-0004, REQ-QUIC-RFC9000-S10P2P3-0005, REQ-QUIC-RFC9000-S10P2P3-0007, REQ-QUIC-RFC9000-S10P2P3-0008.
 
 ## RFC Breakdown
@@ -41,6 +41,6 @@
 | RFC | Total | trace_clean | missing_coverage_contract | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9000 | 1443 | 587 | 0 | 71 | 144 | 281 | 64 | 296 |
+| RFC9000 | 1443 | 595 | 0 | 71 | 144 | 277 | 64 | 292 |
 | RFC9001 | 96 | 81 | 0 | 0 | 0 | 0 | 15 | 0 |
 | RFC9002 | 224 | 224 | 0 | 0 | 0 | 0 | 0 | 0 |

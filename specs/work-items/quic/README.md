@@ -40,6 +40,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0027.json`](WI-QUIC-RFC9000-0027.json): canonical RFC 9000 peer connection-ID lifecycle runtime work-item source
 - [`WI-QUIC-RFC9000-0028.json`](WI-QUIC-RFC9000-0028.json): canonical RFC 9000 zero-length connection-ID mode runtime work-item source
 - [`WI-QUIC-RFC9000-0029.json`](WI-QUIC-RFC9000-0029.json): canonical RFC 9000 path validation datagram floor runtime work-item source
+- [`WI-QUIC-RFC9000-0030.json`](WI-QUIC-RFC9000-0030.json): canonical RFC 9000 NEW_CONNECTION_ID runtime lifecycle topoff work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

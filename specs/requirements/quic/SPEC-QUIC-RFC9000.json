@@ -37922,17 +37922,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B12-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs::ConnectionIdIssuedEvent_WhenLocalZeroLengthModeIsCommitted_DoesNotSendNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs::ConnectionIdIssuedEvent_WhenLocalNonZeroModeIsCommitted_CanSendNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs::PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish"
         ]
       }
     },
@@ -37948,20 +37956,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B12-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_RejectsWhenZeroLengthDestinationConnectionIdIsRequired"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_WhenZeroLengthDestinationConnectionIdIsRequired_ReturnsProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_RejectsWhenZeroLengthDestinationConnectionIdIsRequired",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs::TryAcceptNewConnectionId_WhenZeroLengthModeRejectsFrame_PreservesExistingPeerDestination"
         ]
       }
     },
@@ -37977,20 +37990,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_AllowsAnExactDuplicateFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_AllowsAnExactDuplicateFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_RejectsSameSequenceWhenTheFrameIsNotAnExactDuplicate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs::TryAcceptNewConnectionId_AllowsAnExactDuplicateWhenActiveSetIsAtTheLocalLimit"
         ]
       }
     },
@@ -38006,20 +38024,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B13-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryHandleApplicationPacketReceived_UsesSequenceNumbersToKeepTheLatestNewConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryAcceptNewConnectionId_UsesSequenceNumberToRejectChangedDuplicate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryHandleApplicationPacketReceived_UsesSequenceNumbersToKeepTheLatestNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs::TryAcceptNewConnectionId_OutOfOrderLowerSequenceDoesNotReplaceHigherDestination"
         ]
       }
     },
@@ -38035,13 +38058,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B14-P6-S1",
@@ -38049,7 +38075,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameSequenceNumberForDifferentConnectionIds",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameConnectionIdWithADifferentSequenceNumberOrToken"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameConnectionIdWithADifferentSequenceNumberOrToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs::TryAcceptNewConnectionId_RejectsTheSameSequenceAndConnectionIdWithADifferentToken"
         ]
       }
     },
@@ -38136,17 +38163,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B16-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs::TryAcceptNewConnectionId_SmallerSubsequentRetirePriorToDoesNotRetireAdditionalConnectionIds"
         ]
       }
     },
@@ -38162,17 +38195,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B16-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0022.cs::TryAcceptNewConnectionId_IgnoresRetirePriorToThatDoesNotIncreaseTheLargestReceivedValue"
         ]
       }
     },
@@ -38188,17 +38227,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0030"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0030"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0030"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B17-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs::TryAcceptNewConnectionId_WithSequenceBelowPriorRetirePriorToReportsRetirement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs::TryAcceptNewConnectionId_WithSequenceBelowPriorRetirePriorToDoesNotCloseConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs::TryAcceptNewConnectionId_RepeatedStaleSequenceDoesNotReportDuplicateRetirement"
         ]
       }
     },

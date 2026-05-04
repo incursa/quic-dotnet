@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0030",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Runtime Lifecycle Topoff",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime and state-machine behavior for NEW_CONNECTION_ID zero-length-mode suppression, duplicate handling, Retire Prior To monotonicity, and stale-sequence retirement reporting.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0013",
+    "ARC-QUIC-RFC9000-0027",
+    "ARC-QUIC-RFC9000-0028",
+    "WI-QUIC-RFC9000-0030",
+    "VER-QUIC-RFC9000-0030"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P15-0014",
+    "REQ-QUIC-RFC9000-S19P15-0015",
+    "REQ-QUIC-RFC9000-S19P15-0016",
+    "REQ-QUIC-RFC9000-S19P15-0017",
+    "REQ-QUIC-RFC9000-S19P15-0018",
+    "REQ-QUIC-RFC9000-S19P15-0021",
+    "REQ-QUIC-RFC9000-S19P15-0022",
+    "REQ-QUIC-RFC9000-S19P15-0023"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0022.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs"
+  ],
+  "design_summary": "Local connection-ID issuance exits before registering routes, tokens, or NEW_CONNECTION_ID packets when local transport parameters select a zero-length source connection ID. Peer NEW_CONNECTION_ID processing rejects receipt while the endpoint is sending zero-length destination connection IDs, accepts exact duplicates without growing the active set, rejects sequence or connection-ID conflicts, and preserves a historical sequence map after retirement. Retire Prior To state is monotonic: smaller later values do not lower the largest received threshold, and a newly received sequence below that threshold is recorded as retired and reported once for RETIRE_CONNECTION_ID emission instead of closing the connection.",
+  "data_and_state_considerations": "The active peer connection-ID set remains separate from historical sequence records. Historical sequence and reverse connection-ID lookups preserve duplicate/conflict detection after an ID has left the active set, while a dedicated retired-sequence set prevents duplicate RETIRE_CONNECTION_ID emission requests for repeated stale NEW_CONNECTION_ID frames.",
+  "edge_cases_and_constraints": [
+    "Zero-length local connection-ID mode suppresses both explicit local issue events and replenishment after use of a previously issued local ID.",
+    "Zero-length peer destination mode rejects received NEW_CONNECTION_ID frames without mutating existing peer destination state.",
+    "Exact duplicate NEW_CONNECTION_ID frames remain accepted even when the active set is at the advertised local limit.",
+    "Out-of-order lower sequence numbers do not replace a higher active destination connection ID.",
+    "Smaller Retire Prior To values are ignored after a larger value has been received.",
+    "A stale sequence below the largest Retire Prior To value reports a retirement once and remains outside the active set."
+  ],
+  "alternatives_considered": [
+    "Treat the existing frame-codec artifact as sufficient; rejected because these requirements are runtime lifecycle rules rather than wire-format-only rules.",
+    "Fold this into the earlier S5 peer connection-ID lifecycle artifact; rejected to keep the S19P15 topoff and its direct requirement-home evidence independently auditable.",
+    "Treat below-threshold sequence receipt as a protocol violation; rejected because RFC 9000 requires retiring the newly received connection ID unless that sequence was already retired."
+  ],
+  "risks": [
+    "The state-machine proof reports stale sequences for retirement; actual protected RETIRE_CONNECTION_ID packet emission still depends on the existing runtime send boundary.",
+    "This slice does not close the broader S19P15 frame-codec metadata/restructure backlog for field-level requirements 0002 through 0013.",
+    "This slice does not claim full migration unlinkability or preferred-address migration success."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers S19P15 runtime lifecycle handling for zero-length-mode suppression, duplicate/conflict behavior, monotonic Retire Prior To state, and stale sequence retirement reporting. It does not claim broad path migration, local route portfolio management beyond the existing issuance guard, or the S19P15 frame-codec field proof cluster."
+    }
+  ]
+}
