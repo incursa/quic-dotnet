@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-03T20:00:35.5211657-06:00",
-  "repo_root": ".",
+  "generated_at": "2026-05-03T21:29:06.1386534-06:00",
+  "repo_root": "C:\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
       "specs/requirements/quic/SPEC-QUIC-RFC8999.json",
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-03T20:00:35.5179532-06:00",
+    "generated_at": "2026-05-03T21:29:06.1354788-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 71,
       "covered_but_proof_too_broad": 144,
-      "partially_covered": 284,
-      "trace_clean": 889,
+      "partially_covered": 281,
+      "trace_clean": 900,
       "uncovered_blocked": 79,
-      "uncovered_unblocked": 304
+      "uncovered_unblocked": 296
     },
     "by_work_queue_tag": {
       "blocked": 79,
-      "clean": 889,
+      "clean": 900,
       "metadata_only": 71,
-      "new_tests_needed": 801,
+      "new_tests_needed": 790,
       "restructure_needed": 222
     },
     "by_rfc": [
@@ -49,10 +49,10 @@
         "by_state": {
           "covered_but_missing_xrefs": 71,
           "covered_but_proof_too_broad": 144,
-          "partially_covered": 284,
-          "trace_clean": 576,
+          "partially_covered": 281,
+          "trace_clean": 587,
           "uncovered_blocked": 64,
-          "uncovered_unblocked": 304
+          "uncovered_unblocked": 296
         }
       },
       {
@@ -40803,7 +40803,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0028",
           "member": "REQ_QUIC_RFC9000_S13P3_0028.TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
           "method": "TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
-          "line": 92,
+          "line": 94,
           "kinds": [
             "edge",
             "negative"
@@ -40828,7 +40828,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0028",
           "member": "REQ_QUIC_RFC9000_S13P3_0028.TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
           "method": "TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
-          "line": 92,
+          "line": 94,
           "kinds": [
             "edge",
             "negative"
@@ -107182,7 +107182,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0028",
           "member": "REQ_QUIC_RFC9000_S13P3_0028.TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
           "method": "TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
-          "line": 92,
+          "line": 94,
           "kinds": [
             "edge",
             "negative"
@@ -107207,7 +107207,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0028",
           "member": "REQ_QUIC_RFC9000_S13P3_0028.TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
           "method": "TruncatedProtectedPathChallengePacketDoesNotEmitAPathResponse",
-          "line": 92,
+          "line": 94,
           "kinds": [
             "edge",
             "negative"
@@ -172033,21 +172033,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs::PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -172057,7 +172057,52 @@
         "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2_0001.PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "method": "PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs::PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2_0001.PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "method": "PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0001",
@@ -172072,21 +172117,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs::PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -172096,7 +172141,52 @@
         "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0001.PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
+          "method": "PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs::PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0001.PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
+          "method": "PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
@@ -172111,34 +172201,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs::InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs::RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0002.InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+          "method": "InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs::InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0002.InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+          "method": "InitialPathValidationDatagramContainsExactlyOnePathChallenge",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0002.RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges",
+          "method": "RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs::RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0002.RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges",
+          "method": "RetryPathValidationDatagramDoesNotBundleMultiplePathChallenges",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
@@ -172153,35 +172332,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+          "method": "PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+          "method": "PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+          "method": "RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+          "method": "RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater",
+          "method": "TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater",
+          "line": 73,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs::TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0003.TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater",
+          "method": "TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater",
+          "line": 73,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0004",
@@ -172285,30 +172597,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
-          "negative": 1,
-          "edge": 0,
+          "positive": 3,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -172316,6 +172630,75 @@
           "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "method": "RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "line": 44,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "method": "RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "line": 44,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "method": "TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
           "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
           "member": "REQ_QUIC_RFC9000_S8P2P1_0005.TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
@@ -172366,6 +172749,31 @@
           "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0006.TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "method": "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "line": 18,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
           "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
           "member": "REQ_QUIC_RFC9000_S8P2P2_0006.TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
@@ -172578,34 +172986,123 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs::TooSmallPacketContainingPathChallengeIsProcessed",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs::TooSmallPacketContainingPathResponseIsNotDiscarded"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0007",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0007.TooSmallPacketContainingPathChallengeIsProcessed",
+          "method": "TooSmallPacketContainingPathChallengeIsProcessed",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs::TooSmallPacketContainingPathChallengeIsProcessed",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0007",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0007.TooSmallPacketContainingPathChallengeIsProcessed",
+          "method": "TooSmallPacketContainingPathChallengeIsProcessed",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0007",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0007.TooSmallPacketContainingPathResponseIsNotDiscarded",
+          "method": "TooSmallPacketContainingPathResponseIsNotDiscarded",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs::TooSmallPacketContainingPathResponseIsNotDiscarded",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0007",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0007.TooSmallPacketContainingPathResponseIsNotDiscarded",
+          "method": "TooSmallPacketContainingPathResponseIsNotDiscarded",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0008",
@@ -172754,34 +173251,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs::PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs::PathResponseDoesNotArmApplicationSendDelayForLaterEmission"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0002.PathResponseDoesNotArmApplicationSendDelayForLaterEmission",
+          "method": "PathResponseDoesNotArmApplicationSendDelayForLaterEmission",
+          "line": 38,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs::PathResponseDoesNotArmApplicationSendDelayForLaterEmission",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0002.PathResponseDoesNotArmApplicationSendDelayForLaterEmission",
+          "method": "PathResponseDoesNotArmApplicationSendDelayForLaterEmission",
+          "line": 38,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0002.PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+          "method": "PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs::PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0002",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0002.PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+          "method": "PathResponseIsEmittedInTheSameTransitionAsThePathChallenge",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
@@ -172796,33 +173382,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs::PathResponseIsSentOnThePathWhereThePathChallengeArrived",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0003.PathResponseIsSentOnThePathWhereThePathChallengeArrived",
+          "method": "PathResponseIsSentOnThePathWhereThePathChallengeArrived",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs::PathResponseIsSentOnThePathWhereThePathChallengeArrived",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0003",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0003.PathResponseIsSentOnThePathWhereThePathChallengeArrived",
+          "method": "PathResponseIsSentOnThePathWhereThePathChallengeArrived",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
@@ -172837,34 +173466,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs::InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs::InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0004",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0004.InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+          "method": "InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs::InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0004",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0004.InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+          "method": "InitiatorAcceptsMatchingPathResponseOnTheCandidatePath",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0004",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0004.InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation",
+          "method": "InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs::InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0004",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0004.InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation",
+          "method": "InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
@@ -172879,30 +173597,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
-          "negative": 1,
-          "edge": 0,
+          "positive": 3,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -172935,6 +173655,75 @@
           "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0005.RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "method": "RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "line": 44,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0005.RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "method": "RuntimePathResponseDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
+          "line": 44,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0005.TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "method": "TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
           "class": "REQ_QUIC_RFC9000_S8P2P2_0005",
           "member": "REQ_QUIC_RFC9000_S8P2P2_0005.TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
@@ -172980,6 +173769,31 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0006.TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "method": "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "line": 18,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -172996,30 +173810,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
-          "negative": 1,
-          "edge": 0,
+          "positive": 3,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -173075,8 +173891,102 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs::TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0005.TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "method": "TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0006.AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget",
+          "method": "AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget",
+          "line": 33,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0006.AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget",
+          "method": "AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget",
+          "line": 33,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
+          "member": "REQ_QUIC_RFC9000_S8P2P2_0006.TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "method": "TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
+          "line": 18,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0005",
+            "REQ-QUIC-RFC9000-S8P2P2-0006",
+            "REQ-QUIC-RFC9000-S9P3P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs::TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
           "class": "REQ_QUIC_RFC9000_S8P2P2_0006",
           "member": "REQ_QUIC_RFC9000_S8P2P2_0006.TryFormatPathValidationDatagramPadding_RejectsWhenAmplificationBudgetWouldBeExceeded",

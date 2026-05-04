@@ -399,41 +399,15 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        int totalPayloadLength = challengeFrameBytesWritten;
-        byte[] datagram = challengeFrameBuffer[..challengeFrameBytesWritten].ToArray();
-
-        int paddingLength = 0;
-        if (QuicPathValidation.TryGetPathValidationDatagramPaddingLength(totalPayloadLength, out int computedPaddingLength)
-            && computedPaddingLength > 0)
+        if (!TryBuildPathValidationDatagram(
+            challengeFrameBuffer[..challengeFrameBytesWritten],
+            candidatePath.AmplificationState,
+            out byte[] datagram))
         {
-            paddingLength = computedPaddingLength;
+            return false;
         }
 
-        if (paddingLength > 0
-            && candidatePath.AmplificationState.CanSend(totalPayloadLength + paddingLength))
-        {
-            QuicAntiAmplificationBudget paddingBudget = new();
-            if (!paddingBudget.TryRegisterReceivedDatagramPayloadBytes(paddingLength, uniquelyAttributedToSingleConnection: true))
-            {
-                return false;
-            }
-
-            byte[] paddedDatagram = new byte[totalPayloadLength + paddingLength];
-            datagram.CopyTo(paddedDatagram, 0);
-            if (!QuicPathValidation.TryFormatPathValidationDatagramPadding(
-                totalPayloadLength,
-                paddingBudget,
-                paddedDatagram.AsSpan(totalPayloadLength),
-                out int paddingBytesWritten))
-            {
-                return false;
-            }
-
-            totalPayloadLength += paddingBytesWritten;
-            datagram = paddedDatagram;
-        }
-
-        if (!candidatePath.AmplificationState.TryConsumeSendBudget(totalPayloadLength, out QuicConnectionPathAmplificationState updatedAmplificationState))
+        if (!candidatePath.AmplificationState.TryConsumeSendBudget(datagram.Length, out QuicConnectionPathAmplificationState updatedAmplificationState))
         {
             return false;
         }
@@ -453,6 +427,48 @@ internal sealed partial class QuicConnectionRuntime
 
         candidatePaths[pathIdentity] = candidatePath;
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, datagram));
+        return true;
+    }
+
+    private static bool TryBuildPathValidationDatagram(
+        ReadOnlySpan<byte> pathValidationFrame,
+        QuicConnectionPathAmplificationState amplificationState,
+        out byte[] datagram)
+    {
+        datagram = [];
+
+        if (pathValidationFrame.IsEmpty
+            || !QuicPathValidation.TryGetPathValidationDatagramPaddingLength(pathValidationFrame.Length, out int paddingLength))
+        {
+            return false;
+        }
+
+        int expandedLength = pathValidationFrame.Length + paddingLength;
+        int datagramLength = paddingLength > 0 && amplificationState.CanSend(expandedLength)
+            ? expandedLength
+            : pathValidationFrame.Length;
+
+        if (!amplificationState.CanSend(datagramLength))
+        {
+            return false;
+        }
+
+        datagram = new byte[datagramLength];
+        pathValidationFrame.CopyTo(datagram);
+
+        if (datagramLength == expandedLength && paddingLength > 0)
+        {
+            if (!QuicPathValidation.TryFormatPathValidationDatagramPadding(
+                pathValidationFrame.Length,
+                datagram.AsSpan(pathValidationFrame.Length),
+                out int paddingBytesWritten)
+                || paddingBytesWritten != paddingLength)
+            {
+                datagram = [];
+                return false;
+            }
+        }
+
         return true;
     }
 

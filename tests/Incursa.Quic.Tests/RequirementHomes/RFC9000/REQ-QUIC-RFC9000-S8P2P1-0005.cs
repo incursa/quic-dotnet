@@ -36,4 +36,23 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0005
             Assert.Equal(1, bytesConsumed);
         }
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P1-0005")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        QuicConnectionPathIdentity candidatePath = new("203.0.113.127", RemotePort: 443);
+
+        QuicConnectionTransitionResult result =
+            QuicS8P2PathValidationTestSupport.StartCandidatePath(runtime, candidatePath, observedAtTicks: 20);
+
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            candidatePath,
+            expectMinimumSize: true);
+    }
 }

@@ -2149,14 +2149,20 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        ReadOnlyMemory<byte> responseDatagram = responseFrameBuffer[..responseFrameBytesWritten].ToArray();
-
         if (activePath is not null
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
         {
             QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!TryBuildPathValidationDatagram(
+                responseFrameBuffer[..responseFrameBytesWritten],
+                currentPath.AmplificationState,
+                out byte[] responseDatagram))
+            {
+                return false;
+            }
+
             if (!currentPath.AmplificationState.TryConsumeSendBudget(
-                responseFrameBytesWritten,
+                responseDatagram.Length,
                 out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
                 return false;
@@ -2167,11 +2173,21 @@ internal sealed partial class QuicConnectionRuntime
                 LastActivityTicks = nowTicks,
                 AmplificationState = updatedAmplificationState,
             };
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+            return true;
         }
         else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
+            if (!TryBuildPathValidationDatagram(
+                responseFrameBuffer[..responseFrameBytesWritten],
+                candidatePath.AmplificationState,
+                out byte[] responseDatagram))
+            {
+                return false;
+            }
+
             if (!candidatePath.AmplificationState.TryConsumeSendBudget(
-                responseFrameBytesWritten,
+                responseDatagram.Length,
                 out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
                 return false;
@@ -2183,14 +2199,13 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
             candidatePaths[pathIdentity] = candidatePath;
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+            return true;
         }
         else
         {
             return false;
         }
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
-        return true;
     }
 
     private bool TryHandleNewConnectionIdFrame(

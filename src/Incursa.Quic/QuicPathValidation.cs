@@ -94,5 +94,30 @@ internal static class QuicPathValidation
             destination,
             out bytesWritten);
     }
-}
 
+    /// <summary>
+    /// Formats PADDING frames needed to expand a path-validation datagram after the caller has checked send budget.
+    /// </summary>
+    internal static bool TryFormatPathValidationDatagramPadding(
+        int currentPayloadLength,
+        Span<byte> destination,
+        out int bytesWritten)
+    {
+        bytesWritten = default;
+
+        if (!TryGetPathValidationDatagramPaddingLength(currentPayloadLength, out int paddingLength))
+        {
+            return false;
+        }
+
+        if (paddingLength == 0)
+        {
+            return true;
+        }
+
+        return QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(
+            currentPayloadLength,
+            destination,
+            out bytesWritten);
+    }
+}

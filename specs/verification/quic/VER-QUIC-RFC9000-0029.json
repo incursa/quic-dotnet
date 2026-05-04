@@ -1,0 +1,72 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0029",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Path Validation Datagram Floor Runtime Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0029",
+    "WI-QUIC-RFC9000-0029"
+  ],
+  "verification_method": "Focused requirement-home execution over RFC 9000 Section 8.2 path-validation behavior, Release build compilation, canonical SpecTrace JSON validation, generated coverage triage, and full-suite regression testing.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S8P2-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0002",
+    "REQ-QUIC-RFC9000-S8P2P1-0003",
+    "REQ-QUIC-RFC9000-S8P2P1-0005",
+    "REQ-QUIC-RFC9000-S8P2P1-0007",
+    "REQ-QUIC-RFC9000-S8P2P2-0002",
+    "REQ-QUIC-RFC9000-S8P2P2-0003",
+    "REQ-QUIC-RFC9000-S8P2P2-0004",
+    "REQ-QUIC-RFC9000-S8P2P2-0005",
+    "REQ-QUIC-RFC9000-S8P2P2-0006"
+  ],
+  "scope": "This verification covers the bounded runtime Section 8.2 behavior: optional co-packeted frames with path-validation frames, timer-driven PATH_CHALLENGE retries, one PATH_CHALLENGE per datagram, retry cadence discipline, small path-validation packet non-discard, immediate same-path PATH_RESPONSE emission, initiator non-enforcement of the same-path response rule, and 1200-byte path-validation datagram expansion with anti-amplification fallback.",
+  "expected_result": "Focused tests prove that S8P2 path-validation frames can coexist with other frames, candidate-path retry sends additional challenges over time without bundling multiple challenges in one datagram, repeated pre-deadline traffic does not probe too frequently, too-small protected path-validation packets are processed rather than discarded, PATH_RESPONSE is emitted immediately on the same path, the initiator ignores rather than closes on a matching response received on the old path, and challenge/response datagrams are padded to 1200 bytes when path budget permits.",
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx -c Release`.",
+    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P2\"`.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run canonical SpecTrace JSON validation.",
+    "Run full solution tests as an outer regression gate.",
+    "Run `git diff --check`."
+  ],
+  "preconditions": [
+    "The runtime has completed enough handshake state to process protected 1-RTT PATH_CHALLENGE and PATH_RESPONSE frames.",
+    "Candidate paths can be created by attributed traffic and retain path-validation challenge payload state.",
+    "Path-local amplification state is the authority for whether a 1200-byte path-validation datagram can be sent."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P2\"",
+    "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P2|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028\"",
+    "pwsh -File scripts\\Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Focused Result",
+      "content": "The focused S8P2 requirement-home filter passed 28/28 after the shared path-validation datagram builder was introduced. The adjacent S13P3 PATH_RESPONSE one-shot proof was updated to accept one response frame followed by padding, and the focused S8P2 plus S13P3 response filter passed 30/30."
+    }
+  ],
+  "status_summary": "Passed for the bounded S8P2 runtime slice. The Release build passed, the focused S8P2 requirement-home run passed 28/28, the adjacent S13P3 response regression plus S8P2 filter passed 30/30, canonical SpecTrace JSON validation passed for 331 artifacts, and the full solution test suite passed 3675/3675."
+}

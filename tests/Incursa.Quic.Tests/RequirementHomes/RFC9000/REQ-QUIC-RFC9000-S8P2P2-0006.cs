@@ -25,4 +25,20 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0006
             stackalloc byte[1],
             out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0006")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void AlreadyExpandedPathResponseDoesNotNeedAdditionalAntiAmplificationBudget()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(QuicPathValidation.TryFormatPathValidationDatagramPadding(
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            budget,
+            Span<byte>.Empty,
+            out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+    }
 }

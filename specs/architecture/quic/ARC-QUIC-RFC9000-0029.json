@@ -1,0 +1,72 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0029",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Path Validation Datagram Floor Runtime Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime path that keeps RFC 9000 Section 8.2 path-validation datagram construction, retry cadence, PATH_RESPONSE immediacy, same-path response emission, and anti-amplification exceptions owned by one path-local transport seam.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0010",
+    "WI-QUIC-RFC9000-0029",
+    "VER-QUIC-RFC9000-0029"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P2-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0002",
+    "REQ-QUIC-RFC9000-S8P2P1-0003",
+    "REQ-QUIC-RFC9000-S8P2P1-0005",
+    "REQ-QUIC-RFC9000-S8P2P1-0007",
+    "REQ-QUIC-RFC9000-S8P2P2-0002",
+    "REQ-QUIC-RFC9000-S8P2P2-0003",
+    "REQ-QUIC-RFC9000-S8P2P2-0004",
+    "REQ-QUIC-RFC9000-S8P2P2-0005",
+    "REQ-QUIC-RFC9000-S8P2P2-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicPathValidation.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P2-0006.cs"
+  ],
+  "design_summary": "PATH_CHALLENGE and PATH_RESPONSE datagrams share a single runtime construction seam. The seam formats the path-validation frame first, computes the RFC 9000 1200-byte padding target, asks the actual path-local anti-amplification state whether the expanded datagram can be sent, and falls back to the unexpanded frame only when the path budget forbids the 1200-byte datagram. Candidate-path PATH_CHALLENGE emission stores exactly one outstanding challenge payload per send, uses the path-validation timer to retry at the existing probe cadence, and does not bundle multiple PATH_CHALLENGE frames into one datagram. PATH_RESPONSE emission remains immediate in the packet-processing transition that received PATH_CHALLENGE, uses the same path identity as the received challenge, and consumes active-path or candidate-path amplification budget according to the path being answered.",
+  "data_and_state_considerations": "Candidate-path validation state remains the owner of challenge payloads, send counts, and validation deadlines. Datagram padding is derived from frame length and path-local amplification state, not from a separate synthetic budget. The initiator-side PATH_RESPONSE handler validates only responses that arrive on the matching candidate path; responses on other paths are ignored without turning the same-path response rule into an initiator-enforced peer violation.",
+  "edge_cases_and_constraints": [
+    "PATH_CHALLENGE retries can produce multiple challenge frames over time, but each emitted datagram contains exactly one PATH_CHALLENGE frame.",
+    "Repeated candidate-path traffic before the validation deadline must not send probes more frequently than the armed path-validation cadence.",
+    "Datagrams containing PATH_CHALLENGE or PATH_RESPONSE are not discarded solely because the protected packet is smaller than 1200 bytes.",
+    "PATH_RESPONSE emission must be same-transition and same-path unless path-local congestion or anti-amplification state prevents sending.",
+    "A PATH_RESPONSE datagram is expanded to 1200 bytes when budget permits and left unexpanded when expansion would exceed the path anti-amplification limit.",
+    "The slice does not widen preferred-address migration, multipath scheduling, public migration APIs, or congestion-control pacing policy."
+  ],
+  "alternatives_considered": [
+    "Keep PATH_CHALLENGE and PATH_RESPONSE padding in separate branches; rejected because the response branch had already drifted from the challenge branch's 1200-byte floor.",
+    "Use QuicAntiAmplificationBudget as a synthetic padding-only budget in the runtime; rejected because the runtime already owns a path-local amplification state and must account for the full datagram it actually sends.",
+    "Treat a PATH_RESPONSE arriving on a different path as a protocol violation at the initiator; rejected because RFC 9000 explicitly forbids enforcing that rule at the initiating endpoint."
+  ],
+  "risks": [
+    "The current runtime still emits these path-validation effects as internal datagram payloads rather than a full public API migration surface.",
+    "The same-path PATH_RESPONSE proof is path-identity based and does not claim multipath path-set validation.",
+    "Benchmark coverage for the shared datagram builder remains the existing helper-level path-validation benchmark family rather than a new stable performance baseline."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design covers RFC 9000 Section 8.2 path-validation datagram composition and focused runtime behavior for PATH_CHALLENGE/PATH_RESPONSE handling. It deliberately does not claim broader migration policy, endpoint host routing, multipath, public API migration controls, or HTTP/3 behavior."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0029",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Path Validation Datagram Floor Runtime Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0029",
+    "VER-QUIC-RFC9000-0029"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S8P2-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0001",
+    "REQ-QUIC-RFC9000-S8P2P1-0002",
+    "REQ-QUIC-RFC9000-S8P2P1-0003",
+    "REQ-QUIC-RFC9000-S8P2P1-0005",
+    "REQ-QUIC-RFC9000-S8P2P1-0007",
+    "REQ-QUIC-RFC9000-S8P2P2-0002",
+    "REQ-QUIC-RFC9000-S8P2P2-0003",
+    "REQ-QUIC-RFC9000-S8P2P2-0004",
+    "REQ-QUIC-RFC9000-S8P2P2-0005",
+    "REQ-QUIC-RFC9000-S8P2P2-0006"
+  ],
+  "summary": "Implement and prove the bounded RFC 9000 Section 8.2 runtime path-validation datagram floor for challenge retries, response immediacy, same-path response emission, small-packet non-discard, and anti-amplification-aware padding.",
+  "planned_changes": "- Add a shared runtime path-validation datagram builder for PATH_CHALLENGE and PATH_RESPONSE frames.\n- Keep datagrams padded to the 1200-byte RFC minimum when the path-local anti-amplification state permits it.\n- Fall back to the bare path-validation frame only when the path budget does not permit the expanded datagram.\n- Preserve one PATH_CHALLENGE per datagram while allowing timer-driven retries over time.\n- Keep PATH_RESPONSE emission same-transition and same-path without enforcing the same-path rule as an initiator-side peer violation.\n- Fill the focused RFC 9000 S8P2 requirement homes with positive, negative, and edge coverage.",
+  "verification_plan": "Run the Release build, the focused S8P2 requirement-home tests, canonical SpecTrace JSON validation, generated coverage triage, diff hygiene, and the full solution test suite when the focused gates pass.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0029"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0029"
+  ],
+  "out_of_scope": [
+    "Public migration API controls.",
+    "Multipath validation or scheduling.",
+    "Preferred-address migration completion beyond existing runtime behavior.",
+    "Endpoint host routing policy.",
+    "HTTP/3 behavior.",
+    "New stable performance baselines."
+  ],
+  "completion_notes": "Completed as a bounded runtime and requirement-home coverage slice. PATH_CHALLENGE and PATH_RESPONSE datagram construction now shares the same 1200-byte floor and path-local anti-amplification fallback, while focused S8P2 tests prove the direct Section 8.2 behavior."
+}

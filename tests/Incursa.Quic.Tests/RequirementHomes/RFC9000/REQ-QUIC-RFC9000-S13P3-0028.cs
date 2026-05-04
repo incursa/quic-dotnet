@@ -79,8 +79,10 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
             sendEffect.Datagram.Span,
             out QuicPathResponseFrame parsedResponse,
             out int bytesConsumed));
-        Assert.Equal(sendEffect.Datagram.Length, bytesConsumed);
+        Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
         Assert.True(challengeData.AsSpan().SequenceEqual(parsedResponse.Data));
+        Assert.Equal(1, QuicS8P2PathValidationTestSupport.CountPathResponseFrames(sendEffect.Datagram.Span));
+        QuicS8P2PathValidationTestSupport.AssertPaddingOnly(sendEffect.Datagram.Span[bytesConsumed..]);
     }
 
     [Fact]
