@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0015">If an address-validation token is invalid, the server SHOULD proceed as if the client address is not validated.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S8P1P3-0015")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0015
 {
     [Fact]

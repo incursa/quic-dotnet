@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0014">A server that receives an Initial packet with an address validation token MUST attempt to validate the token unless address validation is already complete.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
 {
     [Fact]

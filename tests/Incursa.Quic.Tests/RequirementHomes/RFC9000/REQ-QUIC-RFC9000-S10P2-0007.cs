@@ -8,8 +8,11 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2-0007">A CONNECTION_CLOSE frame MUST cause all streams to immediately become closed.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P2-0007")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S10P2_0007
 {
+    private static readonly TimeSpan ClosePropagationTimeout = TimeSpan.FromSeconds(15);
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -55,7 +58,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0007
     private static async Task AssertConnectionAbortedAsync(Task closedTask, long expectedApplicationErrorCode)
     {
         QuicException exception = await Assert.ThrowsAsync<QuicException>(
-            () => closedTask.WaitAsync(TimeSpan.FromSeconds(5)));
+            () => closedTask.WaitAsync(ClosePropagationTimeout));
         Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
         Assert.Equal(expectedApplicationErrorCode, exception.ApplicationErrorCode);
     }

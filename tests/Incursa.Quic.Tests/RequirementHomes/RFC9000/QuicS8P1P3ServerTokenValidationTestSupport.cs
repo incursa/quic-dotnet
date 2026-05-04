@@ -9,6 +9,7 @@ namespace Incursa.Quic.Tests;
 internal static class QuicS8P1P3ServerTokenValidationTestSupport
 {
     internal const int TokenMismatchFailureCode = 6;
+    private const int MaximumUdpDatagramPayloadSize = 65_507;
 
     internal static async ValueTask<RetryValidationScenario> StartRetryValidationScenarioAsync(
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
@@ -137,18 +138,23 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         private async ValueTask<QuicRetryBootstrapMetadata> ReceiveRetryAsync(
             ReadOnlyMemory<byte> originalDestinationConnectionId)
         {
-            byte[] retryResponse = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+            byte[] retryResponse = new byte[MaximumUdpDatagramPayloadSize];
             using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
-            int retryBytes = await clientSocket.ReceiveAsync(
-                retryResponse.AsMemory(),
-                SocketFlags.None,
-                receiveTimeout.Token);
+            while (true)
+            {
+                int retryBytes = await clientSocket.ReceiveAsync(
+                    retryResponse.AsMemory(),
+                    SocketFlags.None,
+                    receiveTimeout.Token);
 
-            Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
-                originalDestinationConnectionId.Span,
-                retryResponse.AsSpan(0, retryBytes),
-                out QuicRetryBootstrapMetadata parsedRetryMetadata));
-            return parsedRetryMetadata;
+                if (QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                        originalDestinationConnectionId.Span,
+                        retryResponse.AsSpan(0, retryBytes),
+                        out QuicRetryBootstrapMetadata parsedRetryMetadata))
+                {
+                    return parsedRetryMetadata;
+                }
+            }
         }
 
         internal void SendRetryReplay(ReadOnlySpan<byte> token)

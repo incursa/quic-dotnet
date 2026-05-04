@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0004">Servers MAY discard Initial packets that do not carry the expected address-validation token.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S8P1P3-0004")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0004
 {
     [Fact]
