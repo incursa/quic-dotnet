@@ -23,6 +23,24 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0018
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData()
+    {
+        QuicConnectionCloseFrame applicationFrame = new(0, reasonPhrase: []);
+        byte[] payload = QuicFrameTestData.BuildConnectionCloseFrame(applicationFrame);
+        byte[] applicationPacket = QuicHeaderTestData.BuildShortHeader(0x00, payload);
+
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(applicationPacket, out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(payload, out QuicConnectionCloseFrame parsedFrame, out int bytesConsumed));
+        Assert.True(parsedFrame.IsApplicationError);
+        Assert.Equal(0UL, parsedFrame.ErrorCode);
+        Assert.Empty(parsedFrame.ReasonPhrase.ToArray());
+        Assert.Equal(payload.Length, bytesConsumed);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload()

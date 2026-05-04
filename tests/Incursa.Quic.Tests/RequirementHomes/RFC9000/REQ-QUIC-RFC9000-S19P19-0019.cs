@@ -10,7 +10,9 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0019
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
+    [Trait("Category", "Edge")]
     public void LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose()
     {
         QuicConnectionRuntime runtime = CreateRuntime();
@@ -52,6 +54,22 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0019
         Assert.True(send.Datagram.Span.SequenceEqual(QuicFrameTestData.BuildConnectionCloseFrame(expectedClose)));
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
         Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm()
+    {
+        byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(
+            errorCode: (ulong)QuicTransportErrorCode.ApplicationError,
+            reasonPhrase: []);
+
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(encoded, out QuicConnectionCloseFrame parsedFrame, out int bytesConsumed));
+        Assert.True(parsedFrame.IsApplicationError);
+        Assert.Equal((byte)0x1D, parsedFrame.FrameType);
+        Assert.NotEqual((byte)0x1C, parsedFrame.FrameType);
+        Assert.Equal(encoded.Length, bytesConsumed);
     }
 
     private static QuicConnectionRuntime CreateRuntime()

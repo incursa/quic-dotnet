@@ -39095,17 +39095,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason"
         ]
       }
     },
@@ -39121,17 +39129,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose"
         ]
       }
     },
@@ -39147,17 +39162,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes"
         ]
       }
     },
@@ -39173,17 +39196,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode"
         ]
       }
     },
@@ -39199,17 +39230,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType"
         ]
       }
     },
@@ -39225,17 +39264,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B5-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength"
         ]
       }
     },
@@ -39251,17 +39298,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs::TryParseConnectionCloseFrame_ParsesTheRequiredFields"
         ]
       }
     },
@@ -39277,17 +39330,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason"
         ]
       }
     },
@@ -39303,17 +39364,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs::TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames"
         ]
       }
     },
@@ -39329,17 +39396,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B8-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs::TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames"
         ]
       }
     },
@@ -39355,17 +39428,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType"
         ]
       }
     },
@@ -39381,17 +39462,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B9-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs::TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown"
         ]
       }
     },
@@ -39407,17 +39494,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B9-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType"
         ]
       }
     },
@@ -39433,17 +39527,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength"
         ]
       }
     },
@@ -39459,17 +39561,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B10-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase"
         ]
       }
     },
@@ -39485,17 +39595,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B11-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength"
         ]
       }
     },
@@ -39511,17 +39628,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B11-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_PreservesUtf8ReasonPhrases",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes"
         ]
       }
     },
@@ -39537,17 +39661,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B12-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData"
         ]
       }
     },
@@ -39563,17 +39695,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0043"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0043"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0043"
         ],
         "upstream_refs": [
           "RFC 9000 §19.19 RFC9000-S19.19-B12-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.19"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm"
         ]
       }
     },

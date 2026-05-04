@@ -33,7 +33,10 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0009
                 closeMetadata),
             nowTicks: 1);
 
-        QuicConnectionCloseFrame expectedClose = new(42UL, []);
+        QuicConnectionCloseFrame expectedClose = new(
+            QuicTransportErrorCode.ApplicationError,
+            triggeringFrameType: 0,
+            []);
         byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(expectedClose);
         QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
             Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));

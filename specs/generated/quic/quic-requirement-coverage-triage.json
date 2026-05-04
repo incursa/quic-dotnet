@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T13:56:29.4415476-06:00",
+  "generated_at": "2026-05-04T14:30:51.0516307-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-04T13:56:29.4379373-06:00",
+    "generated_at": "2026-05-04T14:30:51.0479739-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 67,
-      "covered_but_proof_too_broad": 102,
-      "partially_covered": 221,
-      "trace_clean": 1066,
+      "covered_but_missing_xrefs": 65,
+      "covered_but_proof_too_broad": 90,
+      "partially_covered": 216,
+      "trace_clean": 1085,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 244
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1066,
-      "metadata_only": 67,
-      "new_tests_needed": 629,
-      "restructure_needed": 150
+      "clean": 1085,
+      "metadata_only": 65,
+      "new_tests_needed": 612,
+      "restructure_needed": 137
     },
     "by_rfc": [
       {
@@ -47,10 +47,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 67,
-          "covered_but_proof_too_broad": 102,
-          "partially_covered": 221,
-          "trace_clean": 753,
+          "covered_but_missing_xrefs": 65,
+          "covered_but_proof_too_broad": 90,
+          "partially_covered": 216,
+          "trace_clean": 772,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 244
         }
@@ -6468,7 +6468,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0009",
           "member": "REQ_QUIC_RFC9000_S10P2_0009.LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain",
           "method": "LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain",
-          "line": 57,
+          "line": 60,
           "kinds": [
             "negative"
           ],
@@ -6490,7 +6490,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0009",
           "member": "REQ_QUIC_RFC9000_S10P2_0009.LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain",
           "method": "LocalCloseRequested_WhileAlreadyClosingDoesNotChangeStateAgain",
-          "line": 57,
+          "line": 60,
           "kinds": [
             "negative"
           ],
@@ -6512,7 +6512,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0009",
           "member": "REQ_QUIC_RFC9000_S10P2_0009.LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram",
           "method": "LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram",
-          "line": 104,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -6534,7 +6534,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2_0009",
           "member": "REQ_QUIC_RFC9000_S10P2_0009.LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram",
           "method": "LocalCloseRequested_WithoutAnActivePathStillTransitionsToClosingWithoutSendingDatagram",
-          "line": 104,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -7304,7 +7304,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2P1_0003",
           "member": "REQ_QUIC_RFC9000_S10P2P1_0003.ClosingRuntimeStillRepliesToProtectedPacketsThatDoNotCarryConnectionClose",
           "method": "ClosingRuntimeStillRepliesToProtectedPacketsThatDoNotCarryConnectionClose",
-          "line": 67,
+          "line": 70,
           "kinds": [
             "negative"
           ],
@@ -7326,7 +7326,7 @@
           "class": "REQ_QUIC_RFC9000_S10P2P1_0003",
           "member": "REQ_QUIC_RFC9000_S10P2P1_0003.ClosingRuntimeStillRepliesToProtectedPacketsThatDoNotCarryConnectionClose",
           "method": "ClosingRuntimeStillRepliesToProtectedPacketsThatDoNotCarryConnectionClose",
-          "line": 67,
+          "line": 70,
           "kinds": [
             "negative"
           ],
@@ -17140,7 +17140,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -17269,7 +17269,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -17354,7 +17354,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -17439,7 +17439,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -17696,7 +17696,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -17857,7 +17857,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -18001,7 +18001,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -24193,7 +24193,7 @@
         "by_kind": {
           "positive": 2,
           "negative": 3,
-          "edge": 4,
+          "edge": 5,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -24347,11 +24347,13 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0019",
           "member": "REQ_QUIC_RFC9000_S19P19_0019.LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
           "method": "LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
-          "line": 14,
+          "line": 16,
           "kinds": [
+            "edge",
             "positive"
           ],
           "categories": [
+            "Edge",
             "Positive"
           ],
           "strength": "focused",
@@ -24510,7 +24512,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0018",
           "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
           "method": "TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
-          "line": 28,
+          "line": 46,
           "kinds": [
             "negative"
           ],
@@ -50778,7 +50780,7 @@
           "class": "REQ_QUIC_RFC9000_S14P2_0007",
           "member": "REQ_QUIC_RFC9000_S14P2_0007.TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum",
           "method": "TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum",
-          "line": 171,
+          "line": 184,
           "kinds": [
             "edge"
           ],
@@ -50800,7 +50802,7 @@
           "class": "REQ_QUIC_RFC9000_S14P2_0007",
           "member": "REQ_QUIC_RFC9000_S14P2_0007.TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum",
           "method": "TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum",
-          "line": 171,
+          "line": 184,
           "kinds": [
             "edge"
           ],
@@ -112506,32 +112508,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
+        "total": 10,
+        "focused": 9,
         "broad": 1,
         "by_kind": {
-          "positive": 4,
-          "negative": 0,
-          "edge": 0,
+          "positive": 5,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -112543,7 +112545,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -112627,9 +112629,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
+          "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "method": "TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "line": 71,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0001",
+          "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "method": "TryParseConnectionCloseFrame_DoesNotClassifyApplicationCloseAsTransportClose",
+          "line": 71,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants",
           "method": "TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants",
-          "line": 72,
+          "line": 105,
           "kinds": [
             "positive"
           ],
@@ -112647,6 +112693,72 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0001",
+          "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason",
+          "method": "TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason",
+          "line": 85,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0001",
+          "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason",
+          "method": "TryParseConnectionCloseFrame_PreservesNoErrorTransportCloseWithoutReason",
+          "line": 85,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0001",
+          "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
+          "method": "TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.TryParseConnectionCloseFrame_UsesTheTransportCloseFrameType",
@@ -112680,32 +112792,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 5,
+        "focused": 4,
         "broad": 1,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -112717,7 +112828,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -112750,6 +112861,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0002",
+          "member": "REQ_QUIC_RFC9000_S19P19_0002.TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose",
+          "method": "TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose",
+          "line": 27,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0002",
+          "member": "REQ_QUIC_RFC9000_S19P19_0002.TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose",
+          "method": "TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose",
+          "line": 27,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0002",
+          "member": "REQ_QUIC_RFC9000_S19P19_0002.TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "method": "TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0002",
+          "member": "REQ_QUIC_RFC9000_S19P19_0002.TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "method": "TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -112766,33 +112965,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -112804,7 +113002,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -112837,6 +113035,138 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "method": "TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "method": "TryParseConnectionCloseFrame_AcceptsOnlyTheConnectionCloseTypeRange",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes",
+          "method": "TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes",
+          "line": 38,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes",
+          "method": "TryParseConnectionCloseFrame_RejectsNonMinimalVarintEncodingsOfTheConnectionCloseTypes",
+          "line": 38,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "method": "TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs::TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0003_Focused",
+          "member": "REQ_QUIC_RFC9000_S19P19_0003_Focused.TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "method": "TryParseConnectionCloseFrame_RejectsTypesOutsideTheConnectionCloseTypeRange",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P19-0003",
@@ -112888,33 +113218,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -112926,7 +113255,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -112991,6 +113320,138 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode",
+          "line": 29,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesMaximumVariableLengthErrorCode",
+          "line": 29,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthErrorCode",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs::TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0004",
+          "member": "REQ_QUIC_RFC9000_S19P19_0004.TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingErrorCode",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0004"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113010,33 +113471,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113048,7 +113508,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113113,6 +113573,138 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesMaximumVariableLengthTriggeringFrameType",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs::TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0005",
+          "member": "REQ_QUIC_RFC9000_S19P19_0005.TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_RejectsTransportCloseMissingTriggeringFrameType",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0005"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113132,33 +113724,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113170,7 +113761,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113235,6 +113826,138 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesTwoByteVariableLengthReasonPhraseLength",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesVariableLengthReasonPhraseLength",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "method": "TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0006",
+          "member": "REQ_QUIC_RFC9000_S19P19_0006.TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "method": "TryParseConnectionCloseFrame_RejectsReasonPhraseLengthBeyondThePayload",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0006"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113254,31 +113977,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs::TryParseConnectionCloseFrame_ParsesTheRequiredFields",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 4,
+        "focused": 2,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 1,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113290,7 +114010,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113355,6 +114075,50 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0007",
+          "member": "REQ_QUIC_RFC9000_S19P19_0007.TryParseConnectionCloseFrame_ParsesTheRequiredFields",
+          "method": "TryParseConnectionCloseFrame_ParsesTheRequiredFields",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs::TryParseConnectionCloseFrame_ParsesTheRequiredFields",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0007",
+          "member": "REQ_QUIC_RFC9000_S19P19_0007.TryParseConnectionCloseFrame_ParsesTheRequiredFields",
+          "method": "TryParseConnectionCloseFrame_ParsesTheRequiredFields",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0007"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113374,33 +114138,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113412,7 +114175,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113477,6 +114240,138 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason",
+          "method": "TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason",
+          "method": "TryParseConnectionCloseFrame_PreservesNoErrorAsAValidCloseReason",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "method": "TryParseConnectionCloseFrame_PreservesTheCloseReasonErrorCode",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs::TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0008",
+          "member": "REQ_QUIC_RFC9000_S19P19_0008.TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingCloseReasonErrorCode",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0008"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113496,31 +114391,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs::TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 4,
+        "focused": 2,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 1,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113532,7 +114424,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113597,6 +114489,50 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0009",
+          "member": "REQ_QUIC_RFC9000_S19P19_0009.TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
+          "method": "TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs::TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0009",
+          "member": "REQ_QUIC_RFC9000_S19P19_0009.TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
+          "method": "TryParseConnectionCloseFrame_PreservesTransportErrorCodesOnTransportCloseFrames",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0009"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113616,31 +114552,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs::TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 4,
+        "focused": 2,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 1,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113652,7 +114585,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113717,6 +114650,50 @@
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
             "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0010",
+          "member": "REQ_QUIC_RFC9000_S19P19_0010.TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
+          "method": "TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs::TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0010",
+          "member": "REQ_QUIC_RFC9000_S19P19_0010.TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
+          "method": "TryParseConnectionCloseFrame_PreservesApplicationProtocolErrorCodesOnApplicationCloseFrames",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0010"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -113736,33 +114713,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113774,7 +114750,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -113842,6 +114818,138 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesPaddingAsTheUnknownTriggeringFrameType",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_PreservesTheTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs::TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0011",
+          "member": "REQ_QUIC_RFC9000_S19P19_0011.TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_RejectsMissingTriggeringFrameType",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -113858,21 +114966,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs::TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -113887,6 +114995,28 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P19-0012",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0012",
+          "member": "REQ_QUIC_RFC9000_S19P19_0012.TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown",
+          "method": "TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs::TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0012",
           "member": "REQ_QUIC_RFC9000_S19P19_0012.TryFormatConnectionCloseFrame_UsesZeroWhenTheTriggeringFrameTypeIsUnknown",
@@ -113920,32 +115050,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
+          "positive": 2,
+          "negative": 3,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -113957,7 +115086,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -114025,6 +115154,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0013",
+          "member": "REQ_QUIC_RFC9000_S19P19_0013.TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType",
+          "method": "TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0013",
+          "member": "REQ_QUIC_RFC9000_S19P19_0013.TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType",
+          "method": "TryFormatConnectionCloseFrame_ApplicationCloseIsShorterThanTransportCloseWithATriggeringFrameType",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0013",
+          "member": "REQ_QUIC_RFC9000_S19P19_0013.TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs::TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0013",
+          "member": "REQ_QUIC_RFC9000_S19P19_0013.TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "method": "TryParseConnectionCloseFrame_ApplicationCloseOmitsTheTriggeringFrameType",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -114041,33 +115258,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 0,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -114079,7 +115295,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],
@@ -114143,6 +115359,138 @@
             "REQ-QUIC-RFC9000-S19P19-0010",
             "REQ-QUIC-RFC9000-S19P19-0011",
             "REQ-QUIC-RFC9000-S19P19-0013",
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength",
+          "method": "TryParseConnectionCloseFrame_PreservesTwoByteApplicationReasonPhraseLength",
+          "line": 31,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "method": "TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "method": "TryParseConnectionCloseFrame_RejectsReasonPhraseLengthThatExceedsRemainingBytes",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "method": "TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs::TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0014",
+          "member": "REQ_QUIC_RFC9000_S19P19_0014.TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "method": "TryParseConnectionCloseFrame_UsesReasonPhraseLengthToBoundReasonBytes",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S19P19-0014"
           ],
           "requirement_tagged": true,
@@ -114163,31 +115511,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -114197,9 +115546,119 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0015",
+          "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "method": "TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0015",
+          "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "method": "TryFormatConnectionCloseFrame_FitsWhenReasonPhraseFitsThePacketBuffer",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0015",
+          "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase",
+          "method": "TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase",
+          "line": 36,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0015",
+          "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase",
+          "method": "TryFormatConnectionCloseFrame_RejectsBufferOneByteShortOfTheReasonPhrase",
+          "line": 36,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0015",
           "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
           "method": "TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
-          "line": 11,
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0015",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs::TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0015",
+          "member": "REQ_QUIC_RFC9000_S19P19_0015.TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
+          "method": "TryFormatConnectionCloseFrame_RejectsTooSmallDestinationBuffers",
+          "line": 26,
           "kinds": [
             "negative"
           ],
@@ -114228,31 +115687,31 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -114264,12 +115723,82 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0016",
           "member": "REQ_QUIC_RFC9000_S19P19_0016.TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
           "method": "TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
-          "line": 13,
+          "line": 16,
           "kinds": [
+            "edge",
             "positive"
           ],
           "categories": [
+            "Edge",
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0016",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0016",
+          "member": "REQ_QUIC_RFC9000_S19P19_0016.TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
+          "method": "TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases",
+          "line": 16,
+          "kinds": [
+            "edge",
+            "positive"
+          ],
+          "categories": [
+            "Edge",
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0016",
+          "member": "REQ_QUIC_RFC9000_S19P19_0016.TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength",
+          "method": "TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0016",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs::TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0016",
+          "member": "REQ_QUIC_RFC9000_S19P19_0016.TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength",
+          "method": "TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -114293,22 +115822,25 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_PreservesUtf8ReasonPhrases",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -114322,6 +115854,28 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P19-0017",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0017",
+          "member": "REQ_QUIC_RFC9000_S19P19_0017.TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes",
+          "method": "TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes",
+          "line": 38,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0017",
           "member": "REQ_QUIC_RFC9000_S19P19_0017.TryParseConnectionCloseFrame_AllowsMalformedUtf8ReasonPhraseBytes",
@@ -114361,6 +115915,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs::TryParseConnectionCloseFrame_PreservesUtf8ReasonPhrases",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0017",
+          "member": "REQ_QUIC_RFC9000_S19P19_0017.TryParseConnectionCloseFrame_PreservesUtf8ReasonPhrases",
+          "method": "TryParseConnectionCloseFrame_PreservesUtf8ReasonPhrases",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -114377,30 +115953,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
+          "positive": 3,
+          "negative": 3,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -114412,7 +115990,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0018",
           "member": "REQ_QUIC_RFC9000_S19P19_0018.LocalCloseAfterOneRttKeysDoesNotEmitBareApplicationClosePayload",
           "method": "LocalCloseAfterOneRttKeysDoesNotEmitBareApplicationClosePayload",
-          "line": 68,
+          "line": 86,
           "kinds": [
             "negative"
           ],
@@ -114434,7 +116012,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0018",
           "member": "REQ_QUIC_RFC9000_S19P19_0018.LocalCloseAfterOneRttKeysProtectsApplicationConnectionClosePacket",
           "method": "LocalCloseAfterOneRttKeysProtectsApplicationConnectionClosePacket",
-          "line": 41,
+          "line": 59,
           "kinds": [
             "positive"
           ],
@@ -114456,7 +116034,29 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0018",
           "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
           "method": "TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
-          "line": 28,
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0018",
+          "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
+          "method": "TryGetPacketNumberSpace_DoesNotReclassifyHandshakePacketsAsApplicationDataWhenTheyCarryApplicationClosePayload",
+          "line": 46,
           "kinds": [
             "negative"
           ],
@@ -114491,6 +116091,72 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0018",
+          "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
+          "method": "TryGetPacketNumberSpace_MapsApplicationConnectionCloseFramesToApplicationData",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0018",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0018",
+          "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData",
+          "method": "TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData",
+          "line": 28,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs::TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0018",
+          "member": "REQ_QUIC_RFC9000_S19P19_0018.TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData",
+          "method": "TryGetPacketNumberSpace_MapsZeroLengthApplicationCloseToApplicationData",
+          "line": 28,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -114507,31 +116173,31 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -114541,13 +116207,83 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs",
           "class": "REQ_QUIC_RFC9000_S19P19_0019",
+          "member": "REQ_QUIC_RFC9000_S19P19_0019.ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm",
+          "method": "ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm",
+          "line": 62,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0019",
+          "member": "REQ_QUIC_RFC9000_S19P19_0019.ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm",
+          "method": "ApplicationSpecificConnectionClosePayloadIsNotTheHandshakeAbandonForm",
+          "line": 62,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0019",
           "member": "REQ_QUIC_RFC9000_S19P19_0019.LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
           "method": "LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
-          "line": 14,
+          "line": 16,
           "kinds": [
+            "edge",
             "positive"
           ],
           "categories": [
+            "Edge",
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P19-0019"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs::LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs",
+          "class": "REQ_QUIC_RFC9000_S19P19_0019",
+          "member": "REQ_QUIC_RFC9000_S19P19_0019.LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "method": "LocalCloseRequestedDuringEstablishment_UsesTransportApplicationErrorClose",
+          "line": 16,
+          "kinds": [
+            "edge",
+            "positive"
+          ],
+          "categories": [
+            "Edge",
             "Positive"
           ],
           "strength": "focused",
@@ -142817,7 +144553,7 @@
           "class": "REQ_QUIC_RFC9000_S19P19_0001",
           "member": "REQ_QUIC_RFC9000_S19P19_0001.Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
           "method": "Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "line": 147,
+          "line": 180,
           "kinds": [
             "fuzz"
           ],

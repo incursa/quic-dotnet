@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0043",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 CONNECTION_CLOSE Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 CONNECTION_CLOSE frame parsing, formatting, reason-phrase bounds, application-close packet-space constraints, and handshake-abandon transport-close behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0043",
+    "VER-QUIC-RFC9000-0043"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P19-0001",
+    "REQ-QUIC-RFC9000-S19P19-0002",
+    "REQ-QUIC-RFC9000-S19P19-0003",
+    "REQ-QUIC-RFC9000-S19P19-0004",
+    "REQ-QUIC-RFC9000-S19P19-0005",
+    "REQ-QUIC-RFC9000-S19P19-0006",
+    "REQ-QUIC-RFC9000-S19P19-0007",
+    "REQ-QUIC-RFC9000-S19P19-0008",
+    "REQ-QUIC-RFC9000-S19P19-0009",
+    "REQ-QUIC-RFC9000-S19P19-0010",
+    "REQ-QUIC-RFC9000-S19P19-0011",
+    "REQ-QUIC-RFC9000-S19P19-0012",
+    "REQ-QUIC-RFC9000-S19P19-0013",
+    "REQ-QUIC-RFC9000-S19P19-0014",
+    "REQ-QUIC-RFC9000-S19P19-0015",
+    "REQ-QUIC-RFC9000-S19P19-0016",
+    "REQ-QUIC-RFC9000-S19P19-0017",
+    "REQ-QUIC-RFC9000-S19P19-0018",
+    "REQ-QUIC-RFC9000-S19P19-0019"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionCloseFrameProofSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-*.cs"
+  ],
+  "design_summary": "The proof stays on the existing immutable frame model, frame codec, packet classifier, and local-close runtime seams. Transport CONNECTION_CLOSE frames carry type 0x1c, error code, triggering frame type, reason length, and reason bytes. Application CONNECTION_CLOSE frames carry type 0x1d, error code, reason length, and reason bytes while omitting the triggering frame type. Packet-space tests prove application-specific close payloads are only classified in application-data packets, and runtime tests prove handshake-abandon close uses the transport close variant with APPLICATION_ERROR.",
+  "data_and_state_considerations": "The frame codec preserves variable-length integer encodings for error code, triggering frame type, and reason length while rejecting truncated fields and overlong reason declarations. Reason bytes remain opaque at the codec boundary, allowing UTF-8 reason phrases without rejecting malformed bytes. Packet-size limits are represented by formatter destination-buffer checks because the frame is serialized atomically into a single buffer.",
+  "edge_cases_and_constraints": [
+    "Type values outside 0x1c and 0x1d, including non-minimal varint encodings of those values, are rejected by the focused parser proof.",
+    "Application-specific close frames omit the triggering frame type and are shorter than equivalent transport close frames.",
+    "Unknown triggering frame type is represented as 0, matching the PADDING-frame sentinel.",
+    "Zero-length reason phrases and malformed UTF-8 reason bytes are preserved rather than treated as parser errors.",
+    "The handshake-abandon proof covers the permitted Initial or Handshake transport-close form, not an application-close payload in those spaces."
+  ],
+  "alternatives_considered": [
+    "Keep broad QuicFrameCodec and runtime close tests as the only proof; rejected because live triage requires direct requirement-home evidence for S19P19.",
+    "Fold HANDSHAKE_DONE and registry/security error-code cleanup into this slice; rejected because S19P20 and S21 have separate remaining blockers.",
+    "Add new production error-code validation for all application protocols; rejected because S19P19 only distinguishes the QUIC transport code space from application-defined codes at the frame boundary."
+  ],
+  "risks": [
+    "This proof does not claim complete close retransmission, drain timing, or packet coalescing behavior.",
+    "This proof does not close the remaining S19P20 or S21 registry/security requirements in the same generated chunk.",
+    "Fuzz coverage for this frame family remains deferred in the requirement metadata where the authored coverage expectation says so."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused S19P19 CONNECTION_CLOSE parser, formatter, packet-space, and handshake-abandon proof only."
+    }
+  ]
+}

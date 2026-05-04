@@ -1,0 +1,85 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0043",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 CONNECTION_CLOSE Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0043",
+    "WI-QUIC-RFC9000-0043"
+  ],
+  "verification_method": "Focused S19P19 requirement-home tests, regenerated QUIC coverage triage, Release build, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P19-0001",
+    "REQ-QUIC-RFC9000-S19P19-0002",
+    "REQ-QUIC-RFC9000-S19P19-0003",
+    "REQ-QUIC-RFC9000-S19P19-0004",
+    "REQ-QUIC-RFC9000-S19P19-0005",
+    "REQ-QUIC-RFC9000-S19P19-0006",
+    "REQ-QUIC-RFC9000-S19P19-0007",
+    "REQ-QUIC-RFC9000-S19P19-0008",
+    "REQ-QUIC-RFC9000-S19P19-0009",
+    "REQ-QUIC-RFC9000-S19P19-0010",
+    "REQ-QUIC-RFC9000-S19P19-0011",
+    "REQ-QUIC-RFC9000-S19P19-0012",
+    "REQ-QUIC-RFC9000-S19P19-0013",
+    "REQ-QUIC-RFC9000-S19P19-0014",
+    "REQ-QUIC-RFC9000-S19P19-0015",
+    "REQ-QUIC-RFC9000-S19P19-0016",
+    "REQ-QUIC-RFC9000-S19P19-0017",
+    "REQ-QUIC-RFC9000-S19P19-0018",
+    "REQ-QUIC-RFC9000-S19P19-0019"
+  ],
+  "scope": "This verification covers focused CONNECTION_CLOSE frame parsing, formatting, reason phrase, packet-space, and handshake-abandon behavior for the listed S19P19 requirements.",
+  "expected_result": "S19P19 requirement-home tests prove transport versus application close frame type handling, required fields, variable-length field preservation, malformed and truncated payload rejection, reason phrase bounds, zero-length and malformed reason payload handling, application-close packet-space classification, and handshake-abandon transport-close emission.",
+  "procedure": [
+    "Run the focused S19P19 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run a Release build.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Existing CONNECTION_CLOSE parser and formatter behavior remains in QuicFrameCodec.",
+    "Existing packet-number-space classification remains in QuicPacketParser.",
+    "Existing local close behavior remains in QuicConnectionRuntime.Lifecycle."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionCloseFrameProofSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003-Focused.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0019.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P19\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim S19P20 HANDSHAKE_DONE closure, S20/S21 registry and security closure, close retransmission policy, or packet-level close emission behavior beyond the focused S19P19 runtime assertions."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P19 tail filter passed 59/59, the full no-build solution test pass completed 4059/4059, and generated triage resolves the nineteen targeted requirements as trace-clean."
+}

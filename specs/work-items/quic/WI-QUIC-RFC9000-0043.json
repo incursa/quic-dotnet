@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0043",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 CONNECTION_CLOSE Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0043",
+    "VER-QUIC-RFC9000-0043"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P19-0001",
+    "REQ-QUIC-RFC9000-S19P19-0002",
+    "REQ-QUIC-RFC9000-S19P19-0003",
+    "REQ-QUIC-RFC9000-S19P19-0004",
+    "REQ-QUIC-RFC9000-S19P19-0005",
+    "REQ-QUIC-RFC9000-S19P19-0006",
+    "REQ-QUIC-RFC9000-S19P19-0007",
+    "REQ-QUIC-RFC9000-S19P19-0008",
+    "REQ-QUIC-RFC9000-S19P19-0009",
+    "REQ-QUIC-RFC9000-S19P19-0010",
+    "REQ-QUIC-RFC9000-S19P19-0011",
+    "REQ-QUIC-RFC9000-S19P19-0012",
+    "REQ-QUIC-RFC9000-S19P19-0013",
+    "REQ-QUIC-RFC9000-S19P19-0014",
+    "REQ-QUIC-RFC9000-S19P19-0015",
+    "REQ-QUIC-RFC9000-S19P19-0016",
+    "REQ-QUIC-RFC9000-S19P19-0017",
+    "REQ-QUIC-RFC9000-S19P19-0018",
+    "REQ-QUIC-RFC9000-S19P19-0019"
+  ],
+  "summary": "Close the RFC 9000 S19P19 CONNECTION_CLOSE proof tail with focused requirement-home evidence and canonical trace links.",
+  "planned_changes": "- Add focused positive, negative, and edge tests for CONNECTION_CLOSE frame type handling, field varints, reason phrase bounds, and zero-length or malformed reason payloads.\n- Add focused tests for application-close packet-space classification and handshake-abandon transport-close behavior.\n- Add a compact test helper for CONNECTION_CLOSE payload construction.\n- Update canonical xrefs, generated chunk closeout notes, and regenerated QUIC coverage triage.",
+  "verification_plan": "Run the focused S19P19 requirement-home filter, regenerate QUIC requirement coverage triage, run a Release build, validate SpecTrace JSON, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0043"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0043"
+  ],
+  "out_of_scope": [
+    "Changing production CONNECTION_CLOSE wire behavior beyond existing parser, formatter, classifier, and runtime seams.",
+    "Completing HANDSHAKE_DONE frame requirements.",
+    "Completing registry, security, or attack-analysis requirements in S20/S21.",
+    "Changing close retransmission, draining, or packet coalescing policy."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over existing CONNECTION_CLOSE parser, formatter, packet-classification, and runtime close behavior."
+}

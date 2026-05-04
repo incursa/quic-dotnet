@@ -150,8 +150,21 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
             triggeringFrameType: 0x1c,
             []);
         byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(expectedClose);
-        QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
-            Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+        QuicConnectionSendDatagramEffect[] sends = result.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.NotEmpty(sends);
+        Assert.All(sends, effect => Assert.Equal(path, effect.PathIdentity));
+        List<QuicConnectionSendDatagramEffect> matchingProtectedCloses = [];
+        foreach (QuicConnectionSendDatagramEffect candidate in sends)
+        {
+            if (IsProtectedConnectionClose(runtime, candidate.Datagram, expectedClose))
+            {
+                matchingProtectedCloses.Add(candidate);
+            }
+        }
+
+        QuicConnectionSendDatagramEffect send = Assert.Single(matchingProtectedCloses);
 
         Assert.Equal(path, send.PathIdentity);
         Assert.NotEqual(expectedDatagram.Length, send.Datagram.Length);
@@ -186,23 +199,38 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
         ReadOnlyMemory<byte> datagram,
         QuicConnectionCloseFrame expectedClose)
     {
+        Assert.True(IsProtectedConnectionClose(runtime, datagram, expectedClose));
+    }
+
+    private static bool IsProtectedConnectionClose(
+        QuicConnectionRuntime runtime,
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionCloseFrame expectedClose)
+    {
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
 
         QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
-        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+        if (!coordinator.TryOpenProtectedApplicationDataPacket(
             datagram.Span,
             runtime.TlsState.OneRttProtectPacketProtectionMaterial.Value,
             out byte[] openedPacket,
             out int payloadOffset,
             out int payloadLength,
-            out bool keyPhase));
-        Assert.False(keyPhase);
+            out bool keyPhase))
+        {
+            return false;
+        }
+
+        if (keyPhase)
+        {
+            return false;
+        }
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(payload, out QuicConnectionCloseFrame parsedClose, out int bytesConsumed));
-        Assert.Equal(expectedClose.IsApplicationError, parsedClose.IsApplicationError);
-        Assert.Equal(expectedClose.ErrorCode, parsedClose.ErrorCode);
-        Assert.Equal(expectedClose.TriggeringFrameType, parsedClose.TriggeringFrameType);
-        Assert.True(payload[bytesConsumed..].SequenceEqual(new byte[payloadLength - bytesConsumed]));
+        return QuicFrameCodec.TryParseConnectionCloseFrame(payload, out QuicConnectionCloseFrame parsedClose, out int bytesConsumed)
+            && parsedClose.IsApplicationError == expectedClose.IsApplicationError
+            && parsedClose.ErrorCode == expectedClose.ErrorCode
+            && parsedClose.TriggeringFrameType == expectedClose.TriggeringFrameType
+            && payload[bytesConsumed..].SequenceEqual(new byte[payloadLength - bytesConsumed]);
     }
 }

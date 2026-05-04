@@ -137,7 +137,7 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         private async ValueTask<QuicRetryBootstrapMetadata> ReceiveRetryAsync(
             ReadOnlyMemory<byte> originalDestinationConnectionId)
         {
-            byte[] retryResponse = new byte[256];
+            byte[] retryResponse = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
             using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
             int retryBytes = await clientSocket.ReceiveAsync(
                 retryResponse.AsMemory(),

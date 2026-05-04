@@ -29,8 +29,11 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0003
                 closeMetadata),
             nowTicks: 10);
 
-        Assert.IsType<QuicConnectionSendDatagramEffect>(
-            Assert.Single(closeResult.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+        QuicConnectionSendDatagramEffect[] closeSends = closeResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.NotEmpty(closeSends);
+        Assert.All(closeSends, effect => Assert.Equal(path, effect.PathIdentity));
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
@@ -98,9 +101,11 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0003
                 protectedPingPacket),
             nowTicks: 20);
 
-        QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
-            Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
-        Assert.Equal(path, send.PathIdentity);
+        QuicConnectionSendDatagramEffect[] sends = result.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.NotEmpty(sends);
+        Assert.All(sends, effect => Assert.Equal(path, effect.PathIdentity));
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
     }

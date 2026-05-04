@@ -10,6 +10,9 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0016
     [InlineData(false)]
     [InlineData(true)]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Positive")]
+    [Trait("Category", "Edge")]
     public void TryParseConnectionCloseFrame_AllowsEmptyReasonPhrases(bool isApplicationError)
     {
         QuicConnectionCloseFrame frame = isApplicationError
@@ -26,5 +29,25 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0016
         Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseConnectionCloseFrame_DoesNotTreatNonEmptyReasonPhrasesAsZeroLength(bool isApplicationError)
+    {
+        byte[] reasonPhrase = [0x6F, 0x6B];
+        QuicConnectionCloseFrame frame = isApplicationError
+            ? new QuicConnectionCloseFrame(0x1234, reasonPhrase)
+            : new QuicConnectionCloseFrame(0x1234, 0x02, reasonPhrase);
+
+        byte[] encoded = QuicFrameTestData.BuildConnectionCloseFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(encoded, out QuicConnectionCloseFrame parsed, out int bytesConsumed));
+        Assert.NotEmpty(parsed.ReasonPhrase.ToArray());
+        Assert.Equal(reasonPhrase.Length, parsed.ReasonPhrase.Length);
+        Assert.Equal(encoded.Length, bytesConsumed);
     }
 }
