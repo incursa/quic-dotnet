@@ -19,7 +19,7 @@ internal static class QuicConnectionIdLifecycleTestSupport
         return QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
             runtime,
             runtime.ActivePath!.Value.Identity,
-            QuicS17P2P3TestSupport.PacketConnectionId,
+            runtime.CurrentPeerDestinationConnectionId.Span,
             payload,
             observedAtTicks);
     }

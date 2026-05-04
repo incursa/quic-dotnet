@@ -5,6 +5,13 @@ internal static class QuicPeerConnectionIdSelectionTestSupport
     internal static async Task<QuicConnectionSendDatagramEffect> OpenOutboundStreamAndCaptureSingleSendAsync(
         QuicConnectionRuntime runtime)
     {
+        QuicConnectionEffect[] outboundEffects = await OpenOutboundStreamAndCaptureEffectsAsync(runtime);
+        return Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+    }
+
+    internal static async Task<QuicConnectionEffect[]> OpenOutboundStreamAndCaptureEffectsAsync(
+        QuicConnectionRuntime runtime)
+    {
         List<QuicConnectionEffect> outboundEffects = [];
         runtime.SetLocalApiEventDispatcher(connectionEvent =>
         {
@@ -15,7 +22,7 @@ internal static class QuicPeerConnectionIdSelectionTestSupport
 
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
         Assert.NotNull(stream);
-        return Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        return outboundEffects.ToArray();
     }
 
     internal static void AssertApplicationDataDatagramOpensWithDestination(
@@ -23,6 +30,7 @@ internal static class QuicPeerConnectionIdSelectionTestSupport
         ReadOnlyMemory<byte> datagram,
         ReadOnlyMemory<byte> destinationConnectionId)
     {
+        AssertApplicationDataDatagramUsesDestinationConnectionId(datagram, destinationConnectionId);
         Assert.True(TryOpenApplicationDataDatagram(
             runtime,
             datagram,
@@ -30,6 +38,20 @@ internal static class QuicPeerConnectionIdSelectionTestSupport
             out _,
             out _,
             out _));
+    }
+
+    internal static void AssertApplicationDataDatagramUsesDestinationConnectionId(
+        ReadOnlyMemory<byte> datagram,
+        ReadOnlyMemory<byte> destinationConnectionId)
+    {
+        Assert.True(ApplicationDataDatagramUsesDestinationConnectionId(datagram, destinationConnectionId));
+    }
+
+    internal static void AssertApplicationDataDatagramDoesNotUseDestinationConnectionId(
+        ReadOnlyMemory<byte> datagram,
+        ReadOnlyMemory<byte> destinationConnectionId)
+    {
+        Assert.False(ApplicationDataDatagramUsesDestinationConnectionId(datagram, destinationConnectionId));
     }
 
     internal static void AssertApplicationDataDatagramDoesNotOpenWithDestination(
@@ -44,6 +66,16 @@ internal static class QuicPeerConnectionIdSelectionTestSupport
             out _,
             out _,
             out _));
+    }
+
+    internal static bool ApplicationDataDatagramUsesDestinationConnectionId(
+        ReadOnlyMemory<byte> datagram,
+        ReadOnlyMemory<byte> destinationConnectionId)
+    {
+        int destinationConnectionIdOffset = 1;
+        return datagram.Length >= destinationConnectionIdOffset + destinationConnectionId.Length
+            && datagram.Span.Slice(destinationConnectionIdOffset, destinationConnectionId.Length)
+                .SequenceEqual(destinationConnectionId.Span);
     }
 
     private static bool TryOpenApplicationDataDatagram(

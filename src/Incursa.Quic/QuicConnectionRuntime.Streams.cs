@@ -1217,6 +1217,15 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (!TryUsePeerDestinationConnectionIdOnPath(
+                currentPath.Identity,
+                retireInactivePathConnectionIds: false,
+                ref effects,
+                out exception))
+        {
+            return false;
+        }
+
         if (!TryPrepareOneRttProtectionForAeadLimit(protectFailureMessage, ref effects, out exception))
         {
             return false;
@@ -1358,6 +1367,15 @@ internal sealed partial class QuicConnectionRuntime
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
+        if (!TryUsePeerDestinationConnectionIdOnPath(
+                pathIdentity,
+                retireInactivePathConnectionIds: false,
+                ref effects,
+                out exception))
+        {
+            return false;
+        }
+
         if (!TryPrepareOneRttProtectionForAeadLimit(protectFailureMessage, ref effects, out exception))
         {
             return false;
@@ -1465,6 +1483,52 @@ internal sealed partial class QuicConnectionRuntime
 
         sendPathIdentity = pathIdentity;
         exception = null;
+        return true;
+    }
+
+    private bool TryUsePeerDestinationConnectionIdOnPath(
+        QuicConnectionPathIdentity pathIdentity,
+        bool retireInactivePathConnectionIds,
+        ref List<QuicConnectionEffect>? effects,
+        out Exception? exception)
+    {
+        exception = null;
+
+        if (PeerRequestedZeroLengthConnectionId())
+        {
+            return true;
+        }
+
+        if (!peerConnectionIdState.TryUseDestinationConnectionIdOnPath(
+                pathIdentity,
+                GetLocalActiveConnectionIdLimit(),
+                retireInactivePathConnectionIds,
+                out QuicTransportErrorCode errorCode,
+                out bool destinationConnectionIdChanged,
+                out ulong[] retiredSequenceNumbers))
+        {
+            exception = errorCode == QuicTransportErrorCode.NoError
+                ? new InvalidOperationException("No unused peer connection ID is available for the selected address pair.")
+                : new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)errorCode,
+                    "The peer connection ID address-pair policy could not be applied.");
+            return false;
+        }
+
+        if (destinationConnectionIdChanged
+            && !TrySetHandshakeDestinationConnectionId(peerConnectionIdState.CurrentDestinationConnectionId.Span))
+        {
+            exception = new InvalidOperationException("The peer connection ID could not be installed for the selected address pair.");
+            return false;
+        }
+
+        foreach (ulong retiredSequenceNumber in retiredSequenceNumbers)
+        {
+            _ = TrySendRetireConnectionIdFrame(retiredSequenceNumber, ref effects);
+        }
+
         return true;
     }
 
@@ -2201,6 +2265,15 @@ internal sealed partial class QuicConnectionRuntime
         bool queueApplicationForRetry = true;
         try
         {
+            if (!TryUsePeerDestinationConnectionIdOnPath(
+                    activePath.Value.Identity,
+                    retireInactivePathConnectionIds: false,
+                    ref effects,
+                    out _))
+            {
+                return false;
+            }
+
             ReadOnlySpan<byte> handshakeDestinationConnectionIdOverride =
                 CurrentPeerDestinationConnectionId.IsEmpty
                     ? ReadOnlySpan<byte>.Empty

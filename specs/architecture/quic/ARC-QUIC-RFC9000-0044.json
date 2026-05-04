@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0044",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Address-Pair Peer Connection-ID Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime policy that binds consumed peer-issued connection IDs to one local/destination address pair, avoids reusing that connection ID after validated migration, and retires peer-issued connection IDs for address pairs that are no longer active.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0027",
+    "ARC-QUIC-CRT-0005",
+    "WI-QUIC-RFC9000-0044",
+    "VER-QUIC-RFC9000-0044"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P1P2-0006",
+    "REQ-QUIC-RFC9000-S5P1P2-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPeerConnectionIdSelectionTestSupport.cs"
+  ],
+  "design_summary": "The peer connection-ID state records the path identity on which each peer-issued connection-ID sequence is actually used for outbound packets. Application-data send paths and validated migration promotion pass the selected path through the peer-CID selector before packet protection runs. The selector reuses a CID already bound to the same address pair, preserves an unused advertised CID as spare capacity, and refuses to promote a new address pair when no unbound or same-pair CID is available. When a validated migration becomes the active path, the selector emits RETIRE_CONNECTION_ID requests for peer-issued CIDs bound to other address pairs that are no longer active. NEW_CONNECTION_ID processing preserves a currently bound destination CID instead of preemptively consuming a spare CID on the old path before migration.",
+  "data_and_state_considerations": "Address-pair binding is stored alongside the active peer-issued connection-ID sequence map and is removed when the corresponding sequence is retired. The binding key uses QuicConnectionPathIdentity, including remote address, local address, and ports, matching the runtime's existing path-state identity model. The current peer destination CID remains the packet-builder seam; selection updates it only at outbound use or path-promotion boundaries.",
+  "edge_cases_and_constraints": [
+    "A spare NEW_CONNECTION_ID advertised after a CID is already bound to the active path is not used for active-path ACKs or later same-path sends unless selected for that path.",
+    "Validated migration with a spare peer-issued CID switches outbound packets on the migrated address pair to that CID.",
+    "Validated migration without a spare peer-issued CID leaves the original active path in place rather than reusing a CID bound to the original address pair.",
+    "Maximum-length peer-issued CIDs remain eligible for new address-pair selection.",
+    "Same-address-pair additional CIDs do not cause retirement of the earlier CID merely because the address pair remains active."
+  ],
+  "alternatives_considered": [
+    "Treat CID receipt as CID use; rejected because RFC 9000's address-pair limit applies to packets sent with a connection ID, and preemptive receipt-time switching could consume a spare on the wrong path.",
+    "Keep only a single current CID without path metadata; rejected because migration needs to distinguish same-pair reuse from cross-address-pair reuse.",
+    "Broaden the slice into multipath scheduling or public migration APIs; rejected because the current runtime owns one active outbound path and this proof only closes the address-pair CID discipline tail."
+  ],
+  "risks": [
+    "The binding model follows QuicConnectionPathIdentity and therefore does not claim broader address-only equivalence beyond the runtime's current path identity semantics.",
+    "The slice does not claim multipath support, public migration controls, or hosted interop success.",
+    "If future path identity normalization changes local/remote address treatment, these CID bindings must be reviewed with that path-state change."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers peer-issued connection-ID selection and retirement for the single-active-path runtime. It does not alter locally issued route registration, stateless reset token handling, preferred-address migration, multipath, or public API migration support."
+    }
+  ]
+}

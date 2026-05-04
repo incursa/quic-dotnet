@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0044",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Address-Pair Peer Connection-ID Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0044",
+    "VER-QUIC-RFC9000-0044"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P1P2-0006",
+    "REQ-QUIC-RFC9000-S5P1P2-0007"
+  ],
+  "summary": "Add bounded runtime selection and proof for peer-issued connection IDs that are limited to one local/destination address pair and retired when their address pair is no longer active.",
+  "planned_changes": "- Track the address pair on which each active peer-issued CID sequence is used.\n- Apply peer-CID selection before application-data sends and validated path promotion.\n- Preserve bound active-path CIDs when new spare CIDs are advertised.\n- Require a spare peer-issued CID before promoting a new address pair.\n- Retire CIDs bound to inactive address pairs after successful migration.\n- Add focused requirement-home proof for S5P1P2-0006 and S5P1P2-0007.",
+  "verification_plan": "Run the focused S5P1P2-0006/0007 requirement-home filter, run the full S5P1P2 requirement-home family, run related path-migration regressions, run a Release build, regenerate QUIC coverage triage, validate SpecTrace JSON, and run the full no-build solution test pass when practical.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0044"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0044"
+  ],
+  "out_of_scope": [
+    "Multipath scheduling or multiple active outbound paths.",
+    "Public migration control APIs.",
+    "Preferred-address migration proof beyond existing path transition behavior.",
+    "Hosted interop success claims.",
+    "Changing local connection-ID route registration or stateless reset endpoint behavior."
+  ],
+  "completion_notes": "Completed as a bounded peer-CID address-pair policy slice over the existing single-active-path runtime."
+}

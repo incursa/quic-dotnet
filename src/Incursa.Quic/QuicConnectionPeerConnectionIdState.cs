@@ -16,6 +16,8 @@ internal sealed class QuicConnectionPeerConnectionIdState
     // Reverse lookup used to reject the same connection ID being reused under a different sequence number,
     // including values that were later retired from the active set.
     private readonly Dictionary<QuicConnectionIdKey, ulong> sequenceByConnectionId = [];
+    // Records the local/destination address pair on which each peer-issued CID has been used.
+    private readonly Dictionary<ulong, QuicConnectionPathIdentity> pathBySequence = [];
     private readonly HashSet<ulong> retiredSequenceNumbersReportedToRuntime = [];
     // The active destination connection ID is copied so the runtime can hand out a stable span.
     private byte[] currentDestinationConnectionId = [];
@@ -199,6 +201,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
         foreach (ulong sequenceNumber in sequencesToRetire)
         {
             connectionIdsBySequence.Remove(sequenceNumber);
+            pathBySequence.Remove(sequenceNumber);
             retiredSequenceNumbersReportedToRuntime.Add(sequenceNumber);
         }
 
@@ -288,6 +291,82 @@ internal sealed class QuicConnectionPeerConnectionIdState
         return true;
     }
 
+    internal bool TryUseDestinationConnectionIdOnPath(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong activeConnectionIdLimit,
+        bool retireInactivePathConnectionIds,
+        out QuicTransportErrorCode errorCode,
+        out bool destinationConnectionIdChanged,
+        out ulong[] retiredSequenceNumbers)
+    {
+        errorCode = QuicTransportErrorCode.NoError;
+        destinationConnectionIdChanged = false;
+        retiredSequenceNumbers = [];
+
+        if (!currentDestinationConnectionIdSequence.HasValue || connectionIdsBySequence.Count == 0)
+        {
+            return true;
+        }
+
+        ulong previousDestinationSequence = currentDestinationConnectionIdSequence.Value;
+        byte[] previousDestinationConnectionId = currentDestinationConnectionId;
+        ulong selectedSequence = previousDestinationSequence;
+
+        if (TryFindBoundConnectionIdForPath(pathIdentity, out ulong boundSequence))
+        {
+            selectedSequence = boundSequence;
+        }
+        else if (pathBySequence.TryGetValue(selectedSequence, out QuicConnectionPathIdentity boundPath)
+            && !PathIdentityEquals(boundPath, pathIdentity))
+        {
+            if (!TryFindAvailableConnectionIdForPath(pathIdentity, out selectedSequence))
+            {
+                return false;
+            }
+        }
+
+        List<ulong> sequencesToRetire = [];
+        if (retireInactivePathConnectionIds)
+        {
+            foreach (KeyValuePair<ulong, QuicConnectionPathIdentity> entry in pathBySequence)
+            {
+                if (entry.Key == selectedSequence
+                    || !connectionIdsBySequence.ContainsKey(entry.Key)
+                    || PathIdentityEquals(entry.Value, pathIdentity))
+                {
+                    continue;
+                }
+
+                sequencesToRetire.Add(entry.Key);
+            }
+        }
+
+        if (!CanReportRetiredSequenceNumbers(sequencesToRetire, activeConnectionIdLimit, out errorCode))
+        {
+            return false;
+        }
+
+        SetCurrentDestinationConnectionId(selectedSequence);
+        pathBySequence[selectedSequence] = pathIdentity;
+
+        List<ulong> newlyRetiredSequenceNumbers = [];
+        foreach (ulong sequenceNumber in sequencesToRetire)
+        {
+            connectionIdsBySequence.Remove(sequenceNumber);
+            pathBySequence.Remove(sequenceNumber);
+            if (retiredSequenceNumbersReportedToRuntime.Add(sequenceNumber))
+            {
+                newlyRetiredSequenceNumbers.Add(sequenceNumber);
+            }
+        }
+
+        retiredSequenceNumbers = newlyRetiredSequenceNumbers.ToArray();
+        destinationConnectionIdChanged =
+            previousDestinationSequence != currentDestinationConnectionIdSequence
+            || !previousDestinationConnectionId.AsSpan().SequenceEqual(currentDestinationConnectionId);
+        return true;
+    }
+
     /// <summary>
     /// Clears all peer connection ID state.
     /// </summary>
@@ -296,6 +375,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
         connectionIdsBySequence.Clear();
         connectionIdHistoryBySequence.Clear();
         sequenceByConnectionId.Clear();
+        pathBySequence.Clear();
         retiredSequenceNumbersReportedToRuntime.Clear();
         currentDestinationConnectionId = [];
         currentDestinationConnectionIdSequence = null;
@@ -349,6 +429,16 @@ internal sealed class QuicConnectionPeerConnectionIdState
             return;
         }
 
+        if (currentDestinationConnectionIdSequence.HasValue
+            && pathBySequence.ContainsKey(currentDestinationConnectionIdSequence.Value)
+            && connectionIdsBySequence.TryGetValue(
+                currentDestinationConnectionIdSequence.Value,
+                out QuicConnectionPeerConnectionIdRecord currentBoundRecord))
+        {
+            currentDestinationConnectionId = currentBoundRecord.ConnectionIdBytes.ToArray();
+            return;
+        }
+
         ulong selectedSequence = 0;
         QuicConnectionPeerConnectionIdRecord selectedRecord = default;
         bool selected = false;
@@ -364,6 +454,78 @@ internal sealed class QuicConnectionPeerConnectionIdState
 
         currentDestinationConnectionIdSequence = selectedSequence;
         currentDestinationConnectionId = selectedRecord.ConnectionIdBytes.ToArray();
+    }
+
+    private bool TryFindAvailableConnectionIdForPath(
+        QuicConnectionPathIdentity pathIdentity,
+        out ulong selectedSequence)
+    {
+        selectedSequence = 0;
+        bool selected = false;
+
+        foreach (ulong sequenceNumber in connectionIdsBySequence.Keys)
+        {
+            if (pathBySequence.TryGetValue(sequenceNumber, out QuicConnectionPathIdentity boundPath)
+                && !PathIdentityEquals(boundPath, pathIdentity))
+            {
+                continue;
+            }
+
+            if (!selected || sequenceNumber > selectedSequence)
+            {
+                selectedSequence = sequenceNumber;
+                selected = true;
+            }
+        }
+
+        return selected;
+    }
+
+    private bool TryFindBoundConnectionIdForPath(
+        QuicConnectionPathIdentity pathIdentity,
+        out ulong selectedSequence)
+    {
+        selectedSequence = 0;
+        bool selected = false;
+
+        foreach (KeyValuePair<ulong, QuicConnectionPathIdentity> entry in pathBySequence)
+        {
+            if (!connectionIdsBySequence.ContainsKey(entry.Key)
+                || !PathIdentityEquals(entry.Value, pathIdentity))
+            {
+                continue;
+            }
+
+            if (!selected || entry.Key > selectedSequence)
+            {
+                selectedSequence = entry.Key;
+                selected = true;
+            }
+        }
+
+        return selected;
+    }
+
+    private void SetCurrentDestinationConnectionId(ulong sequenceNumber)
+    {
+        if (!connectionIdsBySequence.TryGetValue(sequenceNumber, out QuicConnectionPeerConnectionIdRecord record))
+        {
+            RecomputeCurrentDestinationConnectionId();
+            return;
+        }
+
+        currentDestinationConnectionIdSequence = sequenceNumber;
+        currentDestinationConnectionId = record.ConnectionIdBytes.ToArray();
+    }
+
+    private static bool PathIdentityEquals(
+        QuicConnectionPathIdentity left,
+        QuicConnectionPathIdentity right)
+    {
+        return string.Equals(left.RemoteAddress, right.RemoteAddress, StringComparison.Ordinal)
+            && string.Equals(left.LocalAddress, right.LocalAddress, StringComparison.Ordinal)
+            && left.RemotePort == right.RemotePort
+            && left.LocalPort == right.LocalPort;
     }
 
     private bool CanReportRetiredSequenceNumbers(

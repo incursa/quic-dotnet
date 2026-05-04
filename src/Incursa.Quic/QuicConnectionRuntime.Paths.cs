@@ -666,6 +666,16 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (activePathChanged
+            && !TryUsePeerDestinationConnectionIdOnPath(
+                pathIdentity,
+                retireInactivePathConnectionIds: false,
+                ref effects,
+                out _))
+        {
+            return false;
+        }
+
         if (activePath is not null && activePathChanged && !preserveCurrentRecoveryState)
         {
             ResetRecoveryStateForNewPath(candidatePath.MaximumDatagramSizeState);
@@ -711,6 +721,12 @@ internal sealed partial class QuicConnectionRuntime
 
         if (activePathChanged)
         {
+            _ = TryUsePeerDestinationConnectionIdOnPath(
+                pathIdentity,
+                retireInactivePathConnectionIds: true,
+                ref effects,
+                out _);
+
             AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
                 pathIdentity,
                 RestoreSavedState: preserveCurrentRecoveryState));
@@ -758,6 +774,16 @@ internal sealed partial class QuicConnectionRuntime
 
         bool preserveCurrentRecoveryState = activePath is not null
             && IsPortOnlyPeerAddressChange(activePath.Value.Identity, bestPathIdentity.Value);
+
+        if (!TryUsePeerDestinationConnectionIdOnPath(
+                bestPathIdentity.Value,
+                retireInactivePathConnectionIds: false,
+                ref effects,
+                out _))
+        {
+            return false;
+        }
+
         if (activePath is not null && !preserveCurrentRecoveryState)
         {
             ResetRecoveryStateForNewPath(bestCandidate.Value.MaximumDatagramSizeState);
@@ -787,6 +813,11 @@ internal sealed partial class QuicConnectionRuntime
         lastValidatedRemoteAddress = bestPathIdentity.Value.RemoteAddress;
         SyncActivePathMaximumDatagramSize(promotedPath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
+        _ = TryUsePeerDestinationConnectionIdOnPath(
+            bestPathIdentity.Value,
+            retireInactivePathConnectionIds: true,
+            ref effects,
+            out _);
         AppendEffect(ref effects, new QuicConnectionPromoteActivePathEffect(
             bestPathIdentity.Value,
             RestoreSavedState: preserveCurrentRecoveryState));
