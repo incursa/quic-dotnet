@@ -31,6 +31,24 @@
     "stale_ids_found": 0,
     "silent_gaps_found": 0
   },
+  "live_triage_addendum": {
+    "date": "2026-05-04",
+    "source": "specs/generated/quic/quic-requirement-coverage-triage.json",
+    "summary": "The older requirement lists in this closeout are superseded for S19P3, S19P4, and S19P5. ACK frame proof is closed under ARC/WI/VER-QUIC-RFC9000-0040. RESET_STREAM and STOP_SENDING proof is closed under ARC/WI/VER-QUIC-RFC9000-0041.",
+    "trace_clean_sections": [
+      "S19P3",
+      "S19P3P1",
+      "S19P3P2",
+      "S19P4",
+      "S19P5"
+    ],
+    "remaining_non_clean": [
+      "REQ-QUIC-RFC9000-S19P1-0006",
+      "REQ-QUIC-RFC9000-S19P2-0001",
+      "REQ-QUIC-RFC9000-S19P2-0003",
+      "REQ-QUIC-RFC9000-S19P2-0004"
+    ]
+  },
   "requirements_by_section": [
     {
       "section": "S19P1",

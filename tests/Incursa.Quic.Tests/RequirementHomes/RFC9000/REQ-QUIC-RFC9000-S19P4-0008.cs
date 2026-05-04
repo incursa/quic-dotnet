@@ -91,4 +91,23 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
     {
         QuicFrameCodecFuzzSupport.FuzzResetStreamFrame();
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P4-0008")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseResetStreamFrame_ParsesRequiredFieldSequence()
+    {
+        QuicResetStreamFrame frame = new(
+            streamId: 0x40,
+            applicationProtocolErrorCode: 0x41,
+            finalSize: 0x42);
+        byte[] encoded = QuicFrameTestData.BuildResetStreamFrame(frame);
+
+        Assert.True(QuicFrameCodec.TryParseResetStreamFrame(encoded, out QuicResetStreamFrame parsed, out int bytesConsumed));
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.Equal(frame.StreamId, parsed.StreamId);
+        Assert.Equal(frame.ApplicationProtocolErrorCode, parsed.ApplicationProtocolErrorCode);
+        Assert.Equal(frame.FinalSize, parsed.FinalSize);
+    }
 }

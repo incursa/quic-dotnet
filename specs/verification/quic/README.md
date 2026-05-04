@@ -60,6 +60,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0038.json`](VER-QUIC-RFC9000-0038.json): canonical RFC 9000 Initial packet format focused proof verification source
 - [`VER-QUIC-RFC9000-0039.json`](VER-QUIC-RFC9000-0039.json): canonical RFC 9000 STREAM frame focused proof verification source
 - [`VER-QUIC-RFC9000-0040.json`](VER-QUIC-RFC9000-0040.json): canonical RFC 9000 ACK frame focused proof verification source
+- [`VER-QUIC-RFC9000-0041.json`](VER-QUIC-RFC9000-0041.json): canonical RFC 9000 RESET_STREAM and STOP_SENDING focused proof verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

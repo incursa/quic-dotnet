@@ -1,0 +1,74 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0041",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Stream-Control Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 RESET_STREAM and STOP_SENDING frame behavior, field encoding, parser rejection, and stream-state error handling.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0041",
+    "VER-QUIC-RFC9000-0041"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P4-0001",
+    "REQ-QUIC-RFC9000-S19P4-0002",
+    "REQ-QUIC-RFC9000-S19P4-0003",
+    "REQ-QUIC-RFC9000-S19P4-0004",
+    "REQ-QUIC-RFC9000-S19P4-0005",
+    "REQ-QUIC-RFC9000-S19P4-0006",
+    "REQ-QUIC-RFC9000-S19P4-0007",
+    "REQ-QUIC-RFC9000-S19P4-0008",
+    "REQ-QUIC-RFC9000-S19P4-0009",
+    "REQ-QUIC-RFC9000-S19P4-0010",
+    "REQ-QUIC-RFC9000-S19P4-0011",
+    "REQ-QUIC-RFC9000-S19P5-0001",
+    "REQ-QUIC-RFC9000-S19P5-0002",
+    "REQ-QUIC-RFC9000-S19P5-0003",
+    "REQ-QUIC-RFC9000-S19P5-0004",
+    "REQ-QUIC-RFC9000-S19P5-0005",
+    "REQ-QUIC-RFC9000-S19P5-0006",
+    "REQ-QUIC-RFC9000-S19P5-0007",
+    "REQ-QUIC-RFC9000-S19P5-0008",
+    "REQ-QUIC-RFC9000-S19P5-0009",
+    "REQ-QUIC-RFC9000-S19P5-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicResetStreamFrame.cs",
+    "src/Incursa.Quic/QuicStopSendingFrame.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStreamControlFrameTestSupport.cs"
+  ],
+  "design_summary": "The stream-control frame proof stays on existing production seams. QuicFrameCodec remains the canonical RESET_STREAM and STOP_SENDING wire-format parser/formatter. QuicConnectionStreamState remains the canonical receive/send state-machine seam for RESET_STREAM discard, final-size accounting, STOP_SENDING receipt, and STREAM_STATE_ERROR classification. QuicConnectionRuntime.Streams remains the canonical application action seam for protected RESET_STREAM and STOP_SENDING packet emission.",
+  "data_and_state_considerations": "RESET_STREAM proof covers type 0x04, Stream ID, Application Protocol Error Code, Final Size, required field sequence, buffered-data discard, receive abort reason storage, final-size rejection, and send-only stream errors. STOP_SENDING proof covers type 0x05, Stream ID, Application Protocol Error Code, required field sequence, Recv and Size Known send eligibility, locally initiated uncreated stream errors, receive-only stream errors, target stream identity, and application reason forwarding.",
+  "edge_cases_and_constraints": [
+    "Malformed varint fields are rejected at the frame-codec seam; packet-level close emission remains owned by packet-processing requirements.",
+    "RESET_STREAM releases buffered receive data and can therefore produce MAX_DATA credit evidence as a side effect.",
+    "STOP_SENDING is not emitted after a peer RESET_STREAM has already reset the receive side.",
+    "Maximum QUIC varint values are preserved by the field-level parser/formatter tests without broadening stream-ID runtime validity claims.",
+    "The proof records current runtime behavior for Recv and Size Known STOP_SENDING emission only; other stream-state policy remains owned by S3/S4 stream-state requirements."
+  ],
+  "alternatives_considered": [
+    "Keep the broad frame-codec tests as the only S19P4/S19P5 proof; rejected because live triage requires focused requirement-home evidence.",
+    "Change production frame parsing while decomposing proof; rejected because the existing parser already satisfies the targeted wire behavior.",
+    "Fold the remaining S19 frame families into this slice; rejected to keep RESET_STREAM and STOP_SENDING closure bounded."
+  ],
+  "risks": [
+    "The proof does not claim packet-level connection-close emission for every malformed stream-control frame.",
+    "S19P1 and S19P2 frame-family requirements remain outside this slice.",
+    "Public API behavior beyond the tested application abort seams remains outside this slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused S19P4 and S19P5 RESET_STREAM and STOP_SENDING frame proof only: wire fields, runtime emission, receive-state discard, stream-state errors, and application reason propagation."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0041",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Stream-Control Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0041",
+    "WI-QUIC-RFC9000-0041"
+  ],
+  "verification_method": "Focused S19P4/S19P5 requirement-home tests, regenerated QUIC coverage triage, Release build, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P4-0001",
+    "REQ-QUIC-RFC9000-S19P4-0002",
+    "REQ-QUIC-RFC9000-S19P4-0003",
+    "REQ-QUIC-RFC9000-S19P4-0004",
+    "REQ-QUIC-RFC9000-S19P4-0005",
+    "REQ-QUIC-RFC9000-S19P4-0006",
+    "REQ-QUIC-RFC9000-S19P4-0007",
+    "REQ-QUIC-RFC9000-S19P4-0008",
+    "REQ-QUIC-RFC9000-S19P4-0009",
+    "REQ-QUIC-RFC9000-S19P4-0010",
+    "REQ-QUIC-RFC9000-S19P4-0011",
+    "REQ-QUIC-RFC9000-S19P5-0001",
+    "REQ-QUIC-RFC9000-S19P5-0002",
+    "REQ-QUIC-RFC9000-S19P5-0003",
+    "REQ-QUIC-RFC9000-S19P5-0004",
+    "REQ-QUIC-RFC9000-S19P5-0005",
+    "REQ-QUIC-RFC9000-S19P5-0006",
+    "REQ-QUIC-RFC9000-S19P5-0007",
+    "REQ-QUIC-RFC9000-S19P5-0008",
+    "REQ-QUIC-RFC9000-S19P5-0009",
+    "REQ-QUIC-RFC9000-S19P5-0010"
+  ],
+  "scope": "This verification covers focused RESET_STREAM and STOP_SENDING frame parser, formatter, runtime emission, stream-state discard, application reason, and STREAM_STATE_ERROR proof for the listed S19P4/S19P5 requirements.",
+  "expected_result": "S19P4/S19P5 requirement-home tests prove RESET_STREAM and STOP_SENDING type handling, varint field preservation and truncation rejection, maximum-value boundaries, runtime emission from application abort paths, RESET_STREAM buffered-data discard, STOP_SENDING Recv and Size Known emission, and invalid stream-state STREAM_STATE_ERROR classification.",
+  "procedure": [
+    "Run the focused S19P4/S19P5 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run a Release build.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Existing RESET_STREAM and STOP_SENDING parser/formatter behavior remains in QuicFrameCodec.",
+    "Existing stream-state bookkeeping remains the canonical stream-control state seam.",
+    "Existing active runtime abort paths remain the canonical protected packet emission seam."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStreamControlFrameTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P4_|FullyQualifiedName~REQ_QUIC_RFC9000_S19P5_\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim other S19 frame families, public QUIC API completeness, or packet-level close emission behavior for every malformed RESET_STREAM or STOP_SENDING frame."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P4/S19P5 filter passed 58/58, and generated triage resolves all 21 S19P4/S19P5 requirements as trace-clean."
+}

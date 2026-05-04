@@ -34054,6 +34054,9 @@
         "upstream_refs": [
           "RFC 9000 §19.4 RFC9000-S19.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0001.cs::AbortWrite_EmitsResetStreamType04ForAbruptSendTermination"
         ]
       }
     },
@@ -34080,6 +34083,9 @@
         "upstream_refs": [
           "RFC 9000 §19.4 RFC9000-S19.4-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0002.cs::TryReceiveResetStreamFrame_DiscardsBufferedDataAfterReset"
         ]
       }
     },
@@ -34106,6 +34112,11 @@
         "upstream_refs": [
           "RFC 9000 §19.4 RFC9000-S19.4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0003.cs::TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0003.cs::TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0003.cs::TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream"
         ]
       }
     },
@@ -34134,9 +34145,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0004.cs::TryFormatResetStreamFrame_EncodesTypeAs04",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0004.cs::TryParseResetStreamFrame_RejectsNonResetStreamType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0004.cs::TryParseResetStreamFrame_AcceptsType04WithZeroFields"
         ]
       }
     },
@@ -34165,9 +34176,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0005.cs::TryParseResetStreamFrame_DecodesVariableLengthStreamIdField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0005.cs::TryParseResetStreamFrame_RejectsTruncatedStreamIdField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0005.cs::TryParseResetStreamFrame_RoundTripsMaximumStreamIdField"
         ]
       }
     },
@@ -34196,9 +34207,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0006.cs::TryParseResetStreamFrame_DecodesVariableLengthApplicationErrorField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0006.cs::TryParseResetStreamFrame_RejectsTruncatedApplicationErrorField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0006.cs::TryParseResetStreamFrame_RoundTripsMaximumApplicationErrorField"
         ]
       }
     },
@@ -34227,9 +34238,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0007.cs::TryParseResetStreamFrame_DecodesVariableLengthFinalSizeField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0007.cs::TryParseResetStreamFrame_RejectsTruncatedFinalSizeField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0007.cs::TryParseResetStreamFrame_RoundTripsMaximumFinalSizeField"
         ]
       }
     },
@@ -34258,9 +34269,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0008.cs::TryParseResetStreamFrame_ParsesRequiredFieldSequence"
         ]
       }
     },
@@ -34289,9 +34298,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0009.cs::TryParseResetStreamFrame_PreservesTerminatedStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0009.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheNamedStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0009.cs::TryParseResetStreamFrame_PreservesMaximumEncodedStreamId"
         ]
       }
     },
@@ -34320,9 +34329,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_StoresApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_DoesNotStoreRejectedApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_StoresMaximumApplicationErrorReason"
         ]
       }
     },
@@ -34351,9 +34360,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseResetStreamFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0011.cs::TryReceiveResetStreamFrame_RecordsFinalSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0011.cs::TryReceiveResetStreamFrame_RejectsFinalSizeBelowReceivedOffset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0011.cs::TryReceiveResetStreamFrame_AllowsFinalSizeThatMatchesKnownFin"
         ]
       }
     },
@@ -34380,6 +34389,9 @@
         "upstream_refs": [
           "RFC 9000 §19.5 RFC9000-S19.5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0001.cs::AbortRead_EmitsStopSendingType05ForDiscardedIncomingData"
         ]
       }
     },
@@ -34406,6 +34418,11 @@
         "upstream_refs": [
           "RFC 9000 §19.5 RFC9000-S19.5-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0002.cs::AbortRead_EmitsStopSendingForRecvState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0002.cs::AbortRead_DoesNotEmitStopSendingAfterReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0002.cs::AbortRead_EmitsStopSendingForSizeKnownState"
         ]
       }
     },
@@ -34432,6 +34449,10 @@
         "upstream_refs": [
           "RFC 9000 §19.5 RFC9000-S19.5-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0003.cs::TryReceiveStopSendingFrame_RejectsUncreatedLocalStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0003.cs::TryReceiveStopSendingFrame_AcceptsCreatedLocalStream"
         ]
       }
     },
@@ -34458,6 +34479,11 @@
         "upstream_refs": [
           "RFC 9000 §19.5 RFC9000-S19.5-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0004.cs::TryReceiveStopSendingFrame_RejectsReceiveOnlyStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0004.cs::TryReceiveStopSendingFrame_AcceptsSendCapableUnidirectionalStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0004.cs::TryReceiveStopSendingFrame_RejectsServerRolePeerUnidirectionalStream"
         ]
       }
     },
@@ -34486,9 +34512,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0005.cs::TryFormatStopSendingFrame_EncodesTypeAs05",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0005.cs::TryParseStopSendingFrame_RejectsNonStopSendingType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0005.cs::TryParseStopSendingFrame_AcceptsType05WithZeroFields"
         ]
       }
     },
@@ -34517,9 +34543,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0006.cs::TryParseStopSendingFrame_DecodesVariableLengthStreamIdField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0006.cs::TryParseStopSendingFrame_RejectsTruncatedStreamIdField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0006.cs::TryParseStopSendingFrame_RoundTripsMaximumStreamIdField"
         ]
       }
     },
@@ -34548,9 +34574,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0007.cs::TryParseStopSendingFrame_DecodesVariableLengthApplicationErrorField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0007.cs::TryParseStopSendingFrame_RejectsTruncatedApplicationErrorField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0007.cs::TryParseStopSendingFrame_RoundTripsMaximumApplicationErrorField"
         ]
       }
     },
@@ -34579,9 +34605,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0008.cs::TryParseStopSendingFrame_ParsesRequiredFieldSequence"
         ]
       }
     },
@@ -34610,9 +34634,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0009.cs::TryParseStopSendingFrame_PreservesIgnoredStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0009.cs::AbortRead_StopsOnlyTheNamedStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0009.cs::TryParseStopSendingFrame_PreservesMaximumEncodedStreamId"
         ]
       }
     },
@@ -34641,9 +34665,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseStopSendingFrame_RejectsTruncatedInputs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::AbortRead_EncodesApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::TryReceiveStopSendingFrame_DoesNotForwardRejectedApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::TryReceiveStopSendingFrame_ForwardsMaximumApplicationErrorReason"
         ]
       }
     },

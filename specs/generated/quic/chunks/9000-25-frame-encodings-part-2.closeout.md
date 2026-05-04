@@ -17,6 +17,13 @@
 - Stale IDs found in scope: 0
 - Silent gaps found in scope: 0
 
+## 2026-05-04 Live Triage Addendum
+
+- Regenerated `specs/generated/quic/quic-requirement-coverage-triage.json` supersedes the older requirement lists below for S19P3, S19P4, and S19P5.
+- `REQ-QUIC-RFC9000-S19P3-0001` through `REQ-QUIC-RFC9000-S19P3-0020`, `REQ-QUIC-RFC9000-S19P3P1-0001` through `REQ-QUIC-RFC9000-S19P3P1-0010`, and `REQ-QUIC-RFC9000-S19P3P2-0001` through `REQ-QUIC-RFC9000-S19P3P2-0007` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0040`.
+- `REQ-QUIC-RFC9000-S19P4-0001` through `REQ-QUIC-RFC9000-S19P4-0011` and `REQ-QUIC-RFC9000-S19P5-0001` through `REQ-QUIC-RFC9000-S19P5-0010` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0041`.
+- Remaining non-clean requirements in this chunk are `REQ-QUIC-RFC9000-S19P1-0006`, `REQ-QUIC-RFC9000-S19P2-0001`, `REQ-QUIC-RFC9000-S19P2-0003`, and `REQ-QUIC-RFC9000-S19P2-0004`.
+
 ## Requirements Completed
 
 ### S19P1

@@ -2,6 +2,25 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicStreamControlFrameTestSupport
 {
+    private static readonly byte[] PacketConnectionId = [0x0A, 0x0B, 0x0C];
+
+    internal static byte[] BuildResetStreamPayload(
+        byte[] typeEncoding,
+        byte[] streamIdEncoding,
+        byte[] applicationProtocolErrorCodeEncoding,
+        byte[] finalSizeEncoding)
+    {
+        return [.. typeEncoding, .. streamIdEncoding, .. applicationProtocolErrorCodeEncoding, .. finalSizeEncoding];
+    }
+
+    internal static byte[] BuildStopSendingPayload(
+        byte[] typeEncoding,
+        byte[] streamIdEncoding,
+        byte[] applicationProtocolErrorCodeEncoding)
+    {
+        return [.. typeEncoding, .. streamIdEncoding, .. applicationProtocolErrorCodeEncoding];
+    }
+
     internal static bool TryFindResetStreamFrame(
         ReadOnlySpan<byte> payload,
         out QuicResetStreamFrame frame,
@@ -19,6 +38,37 @@ internal static class QuicStreamControlFrameTestSupport
             out frame,
             out frameOffset,
             out bytesConsumed);
+    }
+
+    internal static bool TryFindProtectedResetStreamFrame(
+        QuicConnectionRuntime runtime,
+        IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,
+        out QuicResetStreamFrame frame)
+    {
+        foreach (QuicConnectionSendDatagramEffect effect in sendEffects)
+        {
+            if (!TryOpenProtectedApplicationPayload(
+                runtime,
+                effect.Datagram.Span,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+            {
+                continue;
+            }
+
+            if (TryFindResetStreamFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out frame,
+                out _,
+                out _))
+            {
+                return true;
+            }
+        }
+
+        frame = default;
+        return false;
     }
 
     internal static bool TryFindStopSendingFrame(
@@ -40,10 +90,77 @@ internal static class QuicStreamControlFrameTestSupport
             out bytesConsumed);
     }
 
+    internal static bool TryFindProtectedStopSendingFrame(
+        QuicConnectionRuntime runtime,
+        IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,
+        out QuicStopSendingFrame frame)
+    {
+        foreach (QuicConnectionSendDatagramEffect effect in sendEffects)
+        {
+            if (!TryOpenProtectedApplicationPayload(
+                runtime,
+                effect.Datagram.Span,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength))
+            {
+                continue;
+            }
+
+            if (TryFindStopSendingFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out frame,
+                out _,
+                out _))
+            {
+                return true;
+            }
+        }
+
+        frame = default;
+        return false;
+    }
+
+    internal static QuicConnectionTransitionResult ReceiveProtectedApplicationPayload(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> payload,
+        long nowTicks = 1)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            out byte[] protectedPacket));
+
+        Assert.NotNull(runtime.ActivePath);
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                nowTicks,
+                runtime.ActivePath.Value.Identity,
+                protectedPacket),
+            nowTicks);
+    }
+
     private delegate bool TryParseControlFrame<TFrame>(
         ReadOnlySpan<byte> payload,
         out TFrame frame,
         out int bytesConsumed);
+
+    private static bool TryOpenProtectedApplicationPayload(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> protectedPacket,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        return coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
 
     private static bool TryFindControlFrame<TFrame>(
         ReadOnlySpan<byte> payload,

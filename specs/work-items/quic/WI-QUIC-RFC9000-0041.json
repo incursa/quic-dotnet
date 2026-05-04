@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0041",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Stream-Control Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0041",
+    "VER-QUIC-RFC9000-0041"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P4-0001",
+    "REQ-QUIC-RFC9000-S19P4-0002",
+    "REQ-QUIC-RFC9000-S19P4-0003",
+    "REQ-QUIC-RFC9000-S19P4-0004",
+    "REQ-QUIC-RFC9000-S19P4-0005",
+    "REQ-QUIC-RFC9000-S19P4-0006",
+    "REQ-QUIC-RFC9000-S19P4-0007",
+    "REQ-QUIC-RFC9000-S19P4-0008",
+    "REQ-QUIC-RFC9000-S19P4-0009",
+    "REQ-QUIC-RFC9000-S19P4-0010",
+    "REQ-QUIC-RFC9000-S19P4-0011",
+    "REQ-QUIC-RFC9000-S19P5-0001",
+    "REQ-QUIC-RFC9000-S19P5-0002",
+    "REQ-QUIC-RFC9000-S19P5-0003",
+    "REQ-QUIC-RFC9000-S19P5-0004",
+    "REQ-QUIC-RFC9000-S19P5-0005",
+    "REQ-QUIC-RFC9000-S19P5-0006",
+    "REQ-QUIC-RFC9000-S19P5-0007",
+    "REQ-QUIC-RFC9000-S19P5-0008",
+    "REQ-QUIC-RFC9000-S19P5-0009",
+    "REQ-QUIC-RFC9000-S19P5-0010"
+  ],
+  "summary": "Decompose RFC 9000 S19P4/S19P5 RESET_STREAM and STOP_SENDING frame proof into focused requirement-home tests and canonical trace evidence.",
+  "planned_changes": "- Add stream-control test support for protected RESET_STREAM/STOP_SENDING extraction and exact malformed payload construction.\n- Add focused positive, negative, and edge requirement-home tests for RESET_STREAM and STOP_SENDING runtime emission, stream-state errors, field parsing, field formatting, truncation rejection, and maximum varint boundaries.\n- Update canonical S19P4/S19P5 xrefs and regenerate coverage triage.",
+  "verification_plan": "Run the focused S19P4/S19P5 requirement-home filter, regenerate QUIC requirement coverage triage, run a Release build, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0041"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0041"
+  ],
+  "out_of_scope": [
+    "Completing other RFC 9000 S19 frame families.",
+    "Changing packet-level connection-close emission policy for every malformed stream-control frame.",
+    "Changing public QUIC API behavior beyond the tested abort paths.",
+    "Claiming broader S3/S4 stream-state closure outside the linked behavior."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over existing RESET_STREAM and STOP_SENDING parser, formatter, stream-state, and runtime application-action behavior."
+}
