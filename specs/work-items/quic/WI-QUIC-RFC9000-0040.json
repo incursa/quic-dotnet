@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0040",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 ACK Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0040",
+    "VER-QUIC-RFC9000-0040"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P3-0001",
+    "REQ-QUIC-RFC9000-S19P3-0002",
+    "REQ-QUIC-RFC9000-S19P3-0003",
+    "REQ-QUIC-RFC9000-S19P3-0004",
+    "REQ-QUIC-RFC9000-S19P3-0005",
+    "REQ-QUIC-RFC9000-S19P3-0006",
+    "REQ-QUIC-RFC9000-S19P3-0007",
+    "REQ-QUIC-RFC9000-S19P3-0008",
+    "REQ-QUIC-RFC9000-S19P3-0009",
+    "REQ-QUIC-RFC9000-S19P3-0010",
+    "REQ-QUIC-RFC9000-S19P3-0011",
+    "REQ-QUIC-RFC9000-S19P3-0012",
+    "REQ-QUIC-RFC9000-S19P3-0013",
+    "REQ-QUIC-RFC9000-S19P3-0014",
+    "REQ-QUIC-RFC9000-S19P3-0015",
+    "REQ-QUIC-RFC9000-S19P3-0016",
+    "REQ-QUIC-RFC9000-S19P3-0017",
+    "REQ-QUIC-RFC9000-S19P3-0018",
+    "REQ-QUIC-RFC9000-S19P3-0019",
+    "REQ-QUIC-RFC9000-S19P3-0020",
+    "REQ-QUIC-RFC9000-S19P3P1-0001",
+    "REQ-QUIC-RFC9000-S19P3P1-0002",
+    "REQ-QUIC-RFC9000-S19P3P1-0003",
+    "REQ-QUIC-RFC9000-S19P3P1-0004",
+    "REQ-QUIC-RFC9000-S19P3P1-0005",
+    "REQ-QUIC-RFC9000-S19P3P1-0006",
+    "REQ-QUIC-RFC9000-S19P3P1-0007",
+    "REQ-QUIC-RFC9000-S19P3P1-0008",
+    "REQ-QUIC-RFC9000-S19P3P1-0009",
+    "REQ-QUIC-RFC9000-S19P3P1-0010",
+    "REQ-QUIC-RFC9000-S19P3P2-0001",
+    "REQ-QUIC-RFC9000-S19P3P2-0002",
+    "REQ-QUIC-RFC9000-S19P3P2-0003",
+    "REQ-QUIC-RFC9000-S19P3P2-0004",
+    "REQ-QUIC-RFC9000-S19P3P2-0005",
+    "REQ-QUIC-RFC9000-S19P3P2-0006",
+    "REQ-QUIC-RFC9000-S19P3P2-0007"
+  ],
+  "summary": "Decompose RFC 9000 S19P3 ACK frame proof into focused requirement-home tests and canonical trace evidence.",
+  "planned_changes": "- Add S19P3 ACK-frame test support for exact ACK byte construction, varint boundary cases, sender acknowledgment state, and ACK range math.\n- Add focused positive, negative, and edge requirement-home tests for ACK field parsing, ACK range count and layout, packet-number-space-qualified ACK processing, acknowledged-packet persistence, Version Negotiation and Retry exclusion, and ECN counter feedback.\n- Update canonical S19P3 xrefs and generated coverage triage.",
+  "verification_plan": "Run the focused S19P3 requirement-home filter, run supporting ACK frame codec/fuzz tests, regenerate QUIC requirement coverage triage, run a Release build, and validate SpecTrace JSON.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0040"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0040"
+  ],
+  "out_of_scope": [
+    "Completing other RFC 9000 S19 frame families.",
+    "Changing packet-level close emission policy for every malformed ACK frame.",
+    "Claiming full ECN validation policy beyond the validated CE feedback congestion seam.",
+    "Changing public QUIC APIs or interop support boundaries."
+  ],
+  "completion_notes": "Completed as focused proof decomposition over existing ACK parser, formatter, ACK-generation state, sender flow controller, packet-number-space classifier, and ECN congestion feedback behavior."
+}

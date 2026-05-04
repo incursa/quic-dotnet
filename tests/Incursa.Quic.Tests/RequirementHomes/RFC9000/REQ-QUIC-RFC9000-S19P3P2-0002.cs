@@ -20,4 +20,35 @@ public sealed class REQ_QUIC_RFC9000_S19P3P2_0002
         Assert.Equal(0x40UL, value);
         Assert.Equal(2, bytesConsumed);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseAckFrame_RejectsMissingEct0CountField()
+    {
+        QuicS19P3AckFrameTestSupport.AssertRejects(
+            QuicS19P3AckFrameTestSupport.BuildPayload(
+                [0x03],
+                QuicS19P3AckFrameTestSupport.Varint(4),
+                QuicS19P3AckFrameTestSupport.Varint(1),
+                QuicS19P3AckFrameTestSupport.Varint(0),
+                QuicS19P3AckFrameTestSupport.Varint(0)));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P3P2-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseAckFrame_PreservesZeroEct0CountField()
+    {
+        QuicAckFrame parsed = QuicAckEcnFrameCodecTestSupport.ParseAckFrame(
+            QuicAckEcnFrameCodecTestSupport.FormatAckFrame(
+                QuicAckEcnFrameCodecTestSupport.CreateAckEcnFrame(
+                    ect0Count: 0,
+                    ect1Count: 1,
+                    ecnCeCount: 2)));
+
+        Assert.Equal(0UL, parsed.EcnCounts!.Value.Ect0Count);
+    }
 }

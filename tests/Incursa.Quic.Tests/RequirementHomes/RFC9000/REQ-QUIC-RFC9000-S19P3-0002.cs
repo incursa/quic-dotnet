@@ -4,6 +4,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P3_0002
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseAckFrame_MinimalFrameContainsTheFirstAckRange()
+    {
+        QuicAckFrame parsed = QuicS19P3AckFrameTestSupport.ParseAckFrame(
+            QuicS19P3AckFrameTestSupport.MinimalAckFramePayload(largestAcknowledged: 9, firstAckRange: 2));
+
+        Assert.Equal(9UL, parsed.LargestAcknowledged);
+        Assert.Equal(2UL, parsed.FirstAckRange);
+        Assert.Empty(parsed.AdditionalRanges);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0001">QUIC implementations MUST properly handle ACK frame types 0x02 and 0x03.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0002">The ACK frame MUST contain one or more ACK Ranges.</workbench-requirement>

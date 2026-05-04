@@ -35,4 +35,22 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0009
             out _,
             out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0009")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseAckFrame_AcceptsUpperTypeBoundaryAndRejectsNextValue()
+    {
+        Assert.True(QuicFrameCodec.TryParseAckFrame(
+            [0x03, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00],
+            out QuicAckFrame ackEcnFrame,
+            out _));
+        Assert.Equal(0x03, ackEcnFrame.FrameType);
+
+        Assert.False(QuicFrameCodec.TryParseAckFrame(
+            [0x04, 0x04, 0x01, 0x00, 0x00],
+            out _,
+            out _));
+    }
 }

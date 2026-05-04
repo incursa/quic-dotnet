@@ -1,0 +1,85 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0040",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 ACK Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0040",
+    "WI-QUIC-RFC9000-0040"
+  ],
+  "verification_method": "Focused S19P3 requirement-home tests, supporting ACK frame codec and fuzz tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P3-0001",
+    "REQ-QUIC-RFC9000-S19P3-0002",
+    "REQ-QUIC-RFC9000-S19P3-0003",
+    "REQ-QUIC-RFC9000-S19P3-0004",
+    "REQ-QUIC-RFC9000-S19P3-0005",
+    "REQ-QUIC-RFC9000-S19P3-0006",
+    "REQ-QUIC-RFC9000-S19P3-0007",
+    "REQ-QUIC-RFC9000-S19P3-0008",
+    "REQ-QUIC-RFC9000-S19P3-0009",
+    "REQ-QUIC-RFC9000-S19P3-0010",
+    "REQ-QUIC-RFC9000-S19P3-0011",
+    "REQ-QUIC-RFC9000-S19P3-0012",
+    "REQ-QUIC-RFC9000-S19P3-0013",
+    "REQ-QUIC-RFC9000-S19P3-0014",
+    "REQ-QUIC-RFC9000-S19P3-0015",
+    "REQ-QUIC-RFC9000-S19P3-0016",
+    "REQ-QUIC-RFC9000-S19P3-0017",
+    "REQ-QUIC-RFC9000-S19P3-0018",
+    "REQ-QUIC-RFC9000-S19P3-0019",
+    "REQ-QUIC-RFC9000-S19P3-0020",
+    "REQ-QUIC-RFC9000-S19P3P1-0001",
+    "REQ-QUIC-RFC9000-S19P3P1-0002",
+    "REQ-QUIC-RFC9000-S19P3P1-0003",
+    "REQ-QUIC-RFC9000-S19P3P1-0004",
+    "REQ-QUIC-RFC9000-S19P3P1-0005",
+    "REQ-QUIC-RFC9000-S19P3P1-0006",
+    "REQ-QUIC-RFC9000-S19P3P1-0007",
+    "REQ-QUIC-RFC9000-S19P3P1-0008",
+    "REQ-QUIC-RFC9000-S19P3P1-0009",
+    "REQ-QUIC-RFC9000-S19P3P1-0010",
+    "REQ-QUIC-RFC9000-S19P3P2-0001",
+    "REQ-QUIC-RFC9000-S19P3P2-0002",
+    "REQ-QUIC-RFC9000-S19P3P2-0003",
+    "REQ-QUIC-RFC9000-S19P3P2-0004",
+    "REQ-QUIC-RFC9000-S19P3P2-0005",
+    "REQ-QUIC-RFC9000-S19P3P2-0006",
+    "REQ-QUIC-RFC9000-S19P3P2-0007"
+  ],
+  "scope": "This verification covers focused ACK frame parser, formatter, ACK range math, packet-number-space, acknowledged-packet persistence, Version Negotiation and Retry exclusion, and ECN feedback proof for the listed S19P3 requirements.",
+  "expected_result": "S19P3 requirement-home tests prove ACK and ACK_ECN type handling, varint field preservation and truncation rejection, ACK range count and descending range math, zero and maximum-value boundaries, ECN counter presence, validated ECN-CE congestion response, packet-number-space-qualified ACK processing, persistent acknowledgment state, and Version Negotiation/Retry exclusion.",
+  "procedure": [
+    "Run the focused S19P3 requirement-home filter.",
+    "Run supporting ACK frame codec and frame-codec fuzz tests.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Run a Release build.",
+    "Validate canonical SpecTrace JSON."
+  ],
+  "preconditions": [
+    "Existing ACK parser and formatter remain the canonical ACK wire-format seam.",
+    "Existing ACK-generation state and sender flow controller remain the canonical ACK state and sender-ledger seams.",
+    "Existing packet parser remains the canonical packet-number-space classifier."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P3AckFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicAckEcnFrameCodecTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P3\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P3|FullyQualifiedName~QuicAckFrameCodecUnitTests\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim closure of other S19 frame families, full ECN validation policy, public QUIC APIs, or packet-level close emission behavior for every malformed ACK frame."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P3 filter passed 92/92, the combined S19P3 and ACK codec filter passed 98/98, and generated triage resolves all 37 S19P3/S19P3P1/S19P3P2 requirements as trace-clean."
+}

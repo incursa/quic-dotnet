@@ -32931,9 +32931,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0002.cs::TryParseAckFrame_MinimalFrameContainsTheFirstAckRange"
         ]
       }
     },
@@ -32994,6 +32992,9 @@
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B2-P1-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0004.cs::TryProcessAckFrame_ValidatedEcnCeFeedbackReducesCongestionWindow"
         ]
       }
     },
@@ -33020,6 +33021,11 @@
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0005.cs::TryProcessAckFrame_DoesNotRequirePreviouslyAcknowledgedPacketInLaterAckFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0005.cs::TryProcessAckFrame_DoesNotTreatOmittedUnacknowledgedPacketAsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0005.cs::TryProcessAckFrame_DuplicateAcknowledgmentDoesNotReprocessAlreadyAcknowledgedPacket"
         ]
       }
     },
@@ -33046,6 +33052,11 @@
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0006.cs::AckGeneration_AllowsSameNumericPacketNumberInDifferentSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0006.cs::AckGeneration_DiscardingOneSpaceLeavesSameNumberInAnotherSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0006.cs::TryProcessAckFrame_DoesNotAcknowledgeSamePacketNumberInOtherSpaces"
         ]
       }
     },
@@ -33072,6 +33083,11 @@
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0007.cs::TryProcessAckFrame_SameAckNumberCanBeAppliedIndependentlyPerSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0007.cs::TryProcessAckFrame_UsesPacketNumberAndPacketNumberSpaceTogether",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0007.cs::TryProcessAckFrame_WrongPacketNumberSpaceDoesNotAcknowledgeSameNumber"
         ]
       }
     },
@@ -33098,6 +33114,9 @@
         "upstream_refs": [
           "RFC 9000 §19.3 RFC9000-S19.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0008.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationAndRetryBeforeAckProcessing"
         ]
       }
     },
@@ -33160,9 +33179,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0010.cs::TryFormatAckFrame_PreservesMaximumLargestAcknowledgedVarintValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0010.cs::TryParseAckFrame_DecodesLargestAcknowledgedAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0010.cs::TryParseAckFrame_RejectsTruncatedLargestAcknowledgedVarint"
         ]
       }
     },
@@ -33191,9 +33210,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0011.cs::TryParseAckFrame_DecodesAckDelayAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0011.cs::TryParseAckFrame_PreservesMaximumAckDelayVarintValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0011.cs::TryParseAckFrame_RejectsTruncatedAckDelayVarint"
         ]
       }
     },
@@ -33222,9 +33241,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0012.cs::TryParseAckFrame_AcceptsTwoByteAckRangeCountVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0012.cs::TryParseAckFrame_DecodesAckRangeCountAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0012.cs::TryParseAckFrame_RejectsTruncatedAckRangeCountVarint"
         ]
       }
     },
@@ -33253,9 +33272,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0013.cs::TryParseAckFrame_AcceptsTwoByteFirstAckRangeAtLargestAcknowledgedBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0013.cs::TryParseAckFrame_DecodesFirstAckRangeAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0013.cs::TryParseAckFrame_RejectsTruncatedFirstAckRangeVarint"
         ]
       }
     },
@@ -33284,9 +33303,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0014.cs::TryParseAckFrame_ExposesAllRequiredAckFields"
         ]
       }
     },
@@ -33315,9 +33332,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0015.cs::TryParseAckFrame_AcceptsLargestAcknowledgedPacketZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0015.cs::TryParseAckFrame_RejectsFirstAckRangeGreaterThanLargestAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0015.cs::TryParseAckFrame_ReportsLargestAcknowledgedPacketNumber"
         ]
       }
     },
@@ -33346,9 +33363,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0016.cs::TryFormatAckFrame_EmitsFullLargestAcknowledgedVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0016.cs::TryParseAckFrame_RejectsTruncatedLargestAcknowledgedInsteadOfGuessingPacketNumber"
         ]
       }
     },
@@ -33377,9 +33393,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0017.cs::TryBuildAckFrame_EncodesAckDelayInMicroseconds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0017.cs::TryBuildAckFrame_UsesZeroAckDelayWhenBuiltAtReceiveTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0017.cs::TryParseAckFrame_RejectsTruncatedMicrosecondAckDelay"
         ]
       }
     },
@@ -33408,9 +33424,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_AckRangeCountSpecifiesAdditionalRangeFieldCount",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_AckRangeCountZeroCarriesNoAdditionalRanges",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_RejectsWhenDeclaredAckRangeCountIsNotPresent"
         ]
       }
     },
@@ -33439,9 +33455,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0019.cs::TryParseAckFrame_RejectsFirstAckRangeThatPrecedesPacketNumberZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0019.cs::TryProcessAckFrame_FirstAckRangeAcknowledgesContiguousPacketsBeforeLargest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0019.cs::TryProcessAckFrame_FirstAckRangeZeroAcknowledgesOnlyLargestPacket"
         ]
       }
     },
@@ -33470,9 +33486,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0020.cs::TryParseAckFrame_AdditionalRangeCanRepresentOnePacketAfterOnePacketGap",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0020.cs::TryParseAckFrame_RejectsAdditionalRangeThatComputesBelowZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0020.cs::TryProcessAckFrame_AdditionalRangeAcknowledgesPacketsAfterGap"
         ]
       }
     },
@@ -33501,9 +33517,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0001.cs::TryFormatAckFrame_RejectsAdditionalRangeThatDoesNotMatchDescendingComputation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0001.cs::TryParseAckFrame_AdditionalRangesDescendByAlternatingGapAndLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0001.cs::TryParseAckFrame_ZeroGapAndZeroLengthStillDescendByOneSkippedPacket"
         ]
       }
     },
@@ -33532,8 +33548,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0002.cs::AckGeneration_RepeatsAckRangesUntilCarrierPacketIsAcknowledged"
         ]
       }
     },
@@ -33562,9 +33577,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0003.cs::TryParseAckFrame_AcceptsTwoByteGapVarintAtBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0003.cs::TryParseAckFrame_DecodesGapAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0003.cs::TryParseAckFrame_RejectsTruncatedGapVarint"
         ]
       }
     },
@@ -33593,9 +33608,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0004.cs::TryParseAckFrame_AcceptsTwoByteAckRangeLengthVarintAtBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0004.cs::TryParseAckFrame_DecodesAckRangeLengthAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0004.cs::TryParseAckFrame_RejectsTruncatedAckRangeLengthVarint"
         ]
       }
     },
@@ -33624,9 +33639,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0005.cs::TryParseAckFrame_RejectsGapThatWouldMoveBeforePacketNumberZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0005.cs::TryProcessAckFrame_GapLeavesContiguousPacketsBeforePreviousRangeUnacknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0005.cs::TryProcessAckFrame_ZeroGapLeavesExactlyOnePacketUnacknowledged"
         ]
       }
     },
@@ -33655,9 +33670,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0006.cs::TryParseAckFrame_RejectsAckRangeLengthThatWouldExtendBeforePacketNumberZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0006.cs::TryParseAckFrame_ZeroAckRangeLengthAcknowledgesOnlyComputedLargest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0006.cs::TryProcessAckFrame_AckRangeLengthAcknowledgesContiguousPacketsBeforeComputedLargest"
         ]
       }
     },
@@ -33686,9 +33701,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0007.cs::TryFormatAckFrame_RejectsZeroLengthRangeWhenSmallestDiffersFromLargest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0007.cs::TryParseAckFrame_AckRangeLengthZeroMeansOnlyLargestInAdditionalRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0007.cs::TryProcessAckFrame_FirstAckRangeZeroAcknowledgesOnlyLargestInFirstRange"
         ]
       }
     },
@@ -33717,9 +33732,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0008.cs::BuildAckRange_LargerAckRangeLengthProducesLowerSmallestPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0008.cs::BuildAckRange_SmallerAckRangeLengthDoesNotReachAsLow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0008.cs::BuildAckRange_ZeroLengthRangeKeepsSmallestEqualToLargest"
         ]
       }
     },
@@ -33748,9 +33763,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0009.cs::TryProcessAckFrame_DoesNotTreatGapPacketAsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0009.cs::TryProcessAckFrame_GapIdentifiesPacketsThatAreNotAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0009.cs::TryProcessAckFrame_LargerGapIdentifiesLargerUnacknowledgedRun"
         ]
       }
     },
@@ -33779,9 +33794,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RejectsTruncatedAndInvalidRangeLayouts",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::TryParseAckFrame_RoundTripsRangesAndEcnCounts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0010.cs::TryParseAckFrame_AcceptsSameRangeLayoutWhenComputedNumbersStayNonNegative",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3P1-0010.cs::TryParseAckFrame_RejectsRangeWhenComputedPacketNumberWouldBeNegative"
         ]
       }
     },

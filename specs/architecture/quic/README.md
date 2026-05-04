@@ -59,6 +59,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0037.json`](ARC-QUIC-RFC9000-0037.json): canonical RFC 9000 0-RTT packet format focused proof design source
 - [`ARC-QUIC-RFC9000-0038.json`](ARC-QUIC-RFC9000-0038.json): canonical RFC 9000 Initial packet format focused proof design source
 - [`ARC-QUIC-RFC9000-0039.json`](ARC-QUIC-RFC9000-0039.json): canonical RFC 9000 STREAM frame focused proof design source
+- [`ARC-QUIC-RFC9000-0040.json`](ARC-QUIC-RFC9000-0040.json): canonical RFC 9000 ACK frame focused proof design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

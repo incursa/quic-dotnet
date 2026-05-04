@@ -1,0 +1,91 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0040",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 ACK Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused proof boundary for RFC 9000 ACK frame encoding, parsing, packet-number-space, acknowledgment persistence, and ECN feedback requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0012",
+    "WI-QUIC-RFC9000-0040",
+    "VER-QUIC-RFC9000-0040"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P3-0001",
+    "REQ-QUIC-RFC9000-S19P3-0002",
+    "REQ-QUIC-RFC9000-S19P3-0003",
+    "REQ-QUIC-RFC9000-S19P3-0004",
+    "REQ-QUIC-RFC9000-S19P3-0005",
+    "REQ-QUIC-RFC9000-S19P3-0006",
+    "REQ-QUIC-RFC9000-S19P3-0007",
+    "REQ-QUIC-RFC9000-S19P3-0008",
+    "REQ-QUIC-RFC9000-S19P3-0009",
+    "REQ-QUIC-RFC9000-S19P3-0010",
+    "REQ-QUIC-RFC9000-S19P3-0011",
+    "REQ-QUIC-RFC9000-S19P3-0012",
+    "REQ-QUIC-RFC9000-S19P3-0013",
+    "REQ-QUIC-RFC9000-S19P3-0014",
+    "REQ-QUIC-RFC9000-S19P3-0015",
+    "REQ-QUIC-RFC9000-S19P3-0016",
+    "REQ-QUIC-RFC9000-S19P3-0017",
+    "REQ-QUIC-RFC9000-S19P3-0018",
+    "REQ-QUIC-RFC9000-S19P3-0019",
+    "REQ-QUIC-RFC9000-S19P3-0020",
+    "REQ-QUIC-RFC9000-S19P3P1-0001",
+    "REQ-QUIC-RFC9000-S19P3P1-0002",
+    "REQ-QUIC-RFC9000-S19P3P1-0003",
+    "REQ-QUIC-RFC9000-S19P3P1-0004",
+    "REQ-QUIC-RFC9000-S19P3P1-0005",
+    "REQ-QUIC-RFC9000-S19P3P1-0006",
+    "REQ-QUIC-RFC9000-S19P3P1-0007",
+    "REQ-QUIC-RFC9000-S19P3P1-0008",
+    "REQ-QUIC-RFC9000-S19P3P1-0009",
+    "REQ-QUIC-RFC9000-S19P3P1-0010",
+    "REQ-QUIC-RFC9000-S19P3P2-0001",
+    "REQ-QUIC-RFC9000-S19P3P2-0002",
+    "REQ-QUIC-RFC9000-S19P3P2-0003",
+    "REQ-QUIC-RFC9000-S19P3P2-0004",
+    "REQ-QUIC-RFC9000-S19P3P2-0005",
+    "REQ-QUIC-RFC9000-S19P3P2-0006",
+    "REQ-QUIC-RFC9000-S19P3P2-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicAckFrame.cs",
+    "src/Incursa.Quic/QuicAckRange.cs",
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3*.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P3AckFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicAckEcnFrameCodecTestSupport.cs"
+  ],
+  "design_summary": "The ACK frame proof is decomposed into requirement-home tests over the existing ACK frame parser/formatter, ACK-generation state, sender flow controller, packet-number-space classifier, and congestion-control ECN feedback seam. Parser proof covers ACK and ACK_ECN frame types, Largest Acknowledged, ACK Delay, ACK Range Count, First ACK Range, additional Gap/ACK Range Length fields, ECN counters, truncated varints, impossible negative range computations, and boundary values. Runtime proof covers persistent acknowledgment state after future ACK frames omit an already acknowledged packet, packet-number-space-qualified acknowledgment processing, Version Negotiation and Retry exclusion from ACK processing, repeated ACK-range emission before carrier acknowledgment, and validated ECN-CE feedback reducing congestion state.",
+  "data_and_state_considerations": "The slice primarily adds focused proof over existing transport state rather than widening protocol behavior. The helper builds exact ACK byte sequences and sender/receiver state fixtures so each requirement home can prove one clause without depending on the broad frame-codec tests.",
+  "edge_cases_and_constraints": [
+    "The parser treats malformed ACK encodings as parse failure at the frame-codec seam; packet-level close emission remains owned by packet-processing requirements.",
+    "Packet numbers are only considered acknowledged when paired with the packet number space supplied to ACK processing.",
+    "A previously acknowledged sent packet is removed from the outstanding sender ledger and cannot be reclassified as loss when later ACK frames omit it.",
+    "Type 0x03 ACK frames require ECN counters even when the counter values are zero.",
+    "Gap and ACK Range Length values reject computed packet numbers below zero."
+  ],
+  "alternatives_considered": [
+    "Keep broad ACK frame parser tests as the only proof; rejected because generated triage requires direct requirement-home proof.",
+    "Introduce a new ACK parser facade; rejected because QuicFrameCodec already owns the wire-format seam.",
+    "Broaden the slice into every S19 frame family; rejected because remaining S19 frames should continue closing as bounded families."
+  ],
+  "risks": [
+    "The current frame-codec seam reports ACK range underflow as parse failure, not a standalone transport-close object.",
+    "The ECN congestion proof is bounded to the validated-path CE feedback seam and does not claim full ECN validation policy.",
+    "Other RFC 9000 frame families remain outside this proof slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers focused S19P3, S19P3P1, and S19P3P2 ACK frame proof only: ACK wire fields, ACK range math, ECN counters, packet-number-space qualification, acknowledged-packet persistence, and current ECN congestion feedback handling."
+    }
+  ]
+}
