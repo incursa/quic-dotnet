@@ -32281,21 +32281,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0062"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0062"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0062"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B19-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs::TryFormatTransportParameters_EmitsDisableActiveMigrationAsAnEmptyParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs::PeerTransportParameterCommitSetsTheDisableActiveMigrationTransportFlag",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs::TryParseTransportParameters_RejectsNonEmptyDisableActiveMigrationValue"
         ]
       }
     },
@@ -32311,22 +32315,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0062"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0062"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0062"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B19-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ValidatedNonPreferredMigrationCandidateDoesNotPromoteWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::PreferredAddressCandidateDoesNotPromoteBeforeValidationCompletesWhenDisableActiveMigrationIsSet"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ServerKeepsTheOriginalAddressBeforePreferredAddressValidationCompletes"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0018",
@@ -32340,22 +32348,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0062"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0062"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0062"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B19-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PortOnlyPreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::ServerMigratesToThePreferredAddressAfterValidationEvenWhenDisableActiveMigrationIsSet"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0019",

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0062",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Disable Active Migration Preferred Address Exception",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the RFC 9000 Section 18.2 disable_active_migration transport-parameter floor and the preferred_address exception to that migration restriction.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0031",
+    "ARC-QUIC-RFC9000-0045",
+    "ARC-QUIC-RFC9000-0046",
+    "WI-QUIC-RFC9000-0062",
+    "VER-QUIC-RFC9000-0062"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0016",
+    "REQ-QUIC-RFC9000-S18P2-0017",
+    "REQ-QUIC-RFC9000-S18P2-0018"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS18P2DisableActiveMigrationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs"
+  ],
+  "design_summary": "The transport-parameter codec represents disable_active_migration as the empty QUIC transport parameter with ID 0x0c and rejects non-empty values. Runtime peer transport-parameter commit maps a received disable_active_migration parameter into QuicConnectionTransportState.DisableActiveMigration. Active-path promotion then treats that flag as a policy gate for ordinary migration candidates while permitting a validated candidate path that matches the peer preferred_address transport parameter, preserving RFC 9000's explicit preferred-address exception.",
+  "data_and_state_considerations": "The runtime keeps the disable-active-migration policy in transportFlags after peer transport parameters are committed. Candidate paths are still created and validated so address-validation state is not lost, but non-preferred candidates remain candidates while the active path stays on the handshake address. Preferred-address matching continues to use the parsed preferred_address IPv4 or IPv6 address and port.",
+  "edge_cases_and_constraints": [
+    "disable_active_migration is encoded with an empty value and rejected if the value is non-empty.",
+    "Committing peer transport parameters with disable_active_migration sets both PeerTransportParametersCommitted and DisableActiveMigration runtime flags.",
+    "A validated non-preferred migration candidate does not promote while disable_active_migration is set.",
+    "A preferred_address candidate still waits for path validation before promotion.",
+    "A validated preferred_address candidate promotes even when disable_active_migration is set.",
+    "A port-only preferred_address transition remains eligible for the preferred-address exception."
+  ],
+  "risks": [
+    "This slice is internal runtime proof and does not claim public migration APIs or hosted interop behavior.",
+    "The implementation remains single-active-path; multipath scheduling is out of scope.",
+    "The proof does not claim complete preferred_address field-shape closure for the broader S18P2 preferred-address tuple."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the bounded disable_active_migration and preferred_address exception requirements for S18P2. It does not claim max_ack_delay policy, initial data-limit parameters, the preferred_address field-shape family, public migration APIs, multipath, or hosted interop readiness."
+    }
+  ]
+}

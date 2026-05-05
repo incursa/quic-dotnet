@@ -267,7 +267,7 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks);
         }
 
-        if (CanPromoteActivePathMigration()
+        if (CanPromoteActivePathMigration(pathValidationSucceededEvent.PathIdentity)
             && TryPromoteValidatedCandidatePath(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects))
         {
             stateChanged = true;

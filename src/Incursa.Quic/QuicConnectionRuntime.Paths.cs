@@ -191,7 +191,7 @@ internal sealed partial class QuicConnectionRuntime
 
             candidatePaths[pathIdentity] = candidatePath;
 
-            if (CanPromoteActivePathMigration())
+            if (CanPromoteActivePathMigration(pathIdentity))
             {
                 return TryPromoteValidatedCandidatePath(pathIdentity, nowTicks, ref effects);
             }
@@ -285,7 +285,7 @@ internal sealed partial class QuicConnectionRuntime
             candidatePath.MaximumDatagramSizeState);
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
 
-        if (CanPromoteActivePathMigration())
+        if (CanPromoteActivePathMigration(pathIdentity))
         {
             return TryPromoteValidatedCandidatePath(pathIdentity, nowTicks, ref effects);
         }
@@ -661,7 +661,7 @@ internal sealed partial class QuicConnectionRuntime
         bool preserveCurrentRecoveryState = activePath is not null
             && IsPortOnlyPeerAddressChange(activePath.Value.Identity, pathIdentity);
 
-        if (activePathChanged && !CanPromoteActivePathMigration())
+        if (activePathChanged && !CanPromoteActivePathMigration(pathIdentity))
         {
             return false;
         }
@@ -737,11 +737,6 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryPromoteFallbackValidatedPath(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
-        if (!CanPromoteActivePathMigration())
-        {
-            return false;
-        }
-
         if (recentlyValidatedPaths.Count == 0)
         {
             return false;
@@ -755,6 +750,11 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (activePath is not null
                 && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, entry.Key))
+            {
+                continue;
+            }
+
+            if (!CanPromoteActivePathMigration(entry.Key))
             {
                 continue;
             }
@@ -959,7 +959,7 @@ internal sealed partial class QuicConnectionRuntime
             StringComparison.Ordinal);
     }
 
-    private bool CanPromoteActivePathMigration()
+    private bool CanPromoteActivePathMigration(QuicConnectionPathIdentity pathIdentity)
     {
         if (!peerHandshakeTranscriptCompleted)
         {
@@ -971,8 +971,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (PeerRequestedZeroLengthConnectionId())
+        {
+            return false;
+        }
+
         return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration)
-            && !PeerRequestedZeroLengthConnectionId();
+            || IsPreferredAddressPath(pathIdentity);
     }
 
     private bool PeerRequestedZeroLengthConnectionId()

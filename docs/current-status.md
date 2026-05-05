@@ -1,10 +1,10 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S18P2 initial stream-count transport
-parameter closeout, the S17P2P5P2/P3 Retry client processing closeout, and
-the adjacent S7P3 transport-parameter connection-ID authentication closeout;
-broader executive-read evidence remains pinned to its stated 2026-04-30
-refresh unless otherwise noted.
+Last verified: 2026-05-05 for the S18P2 disable-active-migration and initial
+stream-count transport parameter closeouts, the S17P2P5P2/P3 Retry client
+processing closeout, and the adjacent S7P3 transport-parameter connection-ID
+authentication closeout; broader executive-read evidence remains pinned to its
+stated 2026-04-30 refresh unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -63,8 +63,24 @@ leaving 541 non-clean. This closure does not claim initial data-limit
 parameters, `max_ack_delay` policy, `disable_active_migration`,
 `preferred_address` fields, public stream APIs, or hosted interop readiness.
 
+Follow-on S18P2 disable-active-migration closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S18P2-0016` through
+`REQ-QUIC-RFC9000-S18P2-0018` under
+`ARC-QUIC-RFC9000-0062`, `WI-QUIC-RFC9000-0062`, and
+`VER-QUIC-RFC9000-0062`. The proof covers `disable_active_migration`
+empty-value encoding, non-empty-value rejection, runtime commit of the
+disable-active-migration transport flag, ordinary validated migration
+candidates staying unpromoted, preferred-address candidates waiting for
+validation, and validated dedicated or port-only preferred-address candidates
+promoting despite `disable_active_migration`. Regenerated coverage triage marks
+these three requirements as `trace_clean` and reports 1,233 of 1,771 QUIC
+requirements trace-clean overall, leaving 538 non-clean. This closure does not
+claim `max_ack_delay` policy, initial data-limit parameters, the broader
+preferred-address field-shape family, public migration APIs, multipath, or
+hosted interop readiness.
+
 Pick up next from generated triage rather than the now-closed S7/S17 lane. The
-largest remaining non-clean RFC 9000 generated group is `S18P2` with 17
+largest remaining non-clean RFC 9000 generated group is `S18P2` with 14
 requirements, followed by `S22P1P1` with 14, `S7P4P1` with 13, and `S4P6` and
 `S5P2` with 12 each.
 

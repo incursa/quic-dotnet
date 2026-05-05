@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0062",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Disable Active Migration Preferred Address Exception Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0062",
+    "VER-QUIC-RFC9000-0062"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0016",
+    "REQ-QUIC-RFC9000-S18P2-0017",
+    "REQ-QUIC-RFC9000-S18P2-0018"
+  ],
+  "summary": "Close the RFC 9000 S18P2 disable_active_migration proof gap and preserve the preferred_address migration exception.",
+  "planned_changes": "- Add focused codec tests for disable_active_migration empty-value encoding and non-empty-value rejection.\n- Add focused runtime commit proof that peer disable_active_migration transport parameters set the runtime migration-policy flag.\n- Add focused path tests proving ordinary validated migration candidates do not promote while disable_active_migration is set.\n- Update active-path promotion policy so validated preferred_address candidates remain promotable despite disable_active_migration.\n- Add focused preferred_address exception proof, including the port-only edge.",
+  "verification_plan": "Run the focused S18P2 0016-0018 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run a Release build, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0062"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0062"
+  ],
+  "out_of_scope": [
+    "max_ack_delay policy.",
+    "initial data-limit transport-parameter proof.",
+    "Preferred-address field-shape closure outside the disable_active_migration exception.",
+    "Public migration APIs.",
+    "Multipath behavior.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused transport-parameter and runtime active-path promotion proof for disable_active_migration and the preferred_address exception."
+}

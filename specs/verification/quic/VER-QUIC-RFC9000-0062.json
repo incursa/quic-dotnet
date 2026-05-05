@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0062",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Disable Active Migration Preferred Address Exception Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0062",
+    "WI-QUIC-RFC9000-0062"
+  ],
+  "verification_method": "Focused S18P2 0016-0018 requirement-home tests, regenerated QUIC coverage triage, SpecTrace JSON validation, Release build, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0016",
+    "REQ-QUIC-RFC9000-S18P2-0017",
+    "REQ-QUIC-RFC9000-S18P2-0018"
+  ],
+  "scope": "This verification covers disable_active_migration transport-parameter encoding, parser rejection for non-empty values, runtime transport-flag commit, ordinary migration blocking, and preferred_address promotion after validation despite disable_active_migration.",
+  "expected_result": "The focused tests show that disable_active_migration is encoded as an empty transport parameter, non-empty values are rejected, committed peer transport parameters set the runtime disable-active-migration flag, validated non-preferred migration candidates do not promote, preferred_address candidates do not promote before validation, and validated dedicated or port-only preferred_address candidates promote even when disable_active_migration is set.",
+  "procedure": [
+    "Run the focused S18P2 0016-0018 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run a Release build.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The transport-parameter codec accepts RFC 9000 Section 18.2 transport-parameter tuples.",
+    "The runtime has an active path representing the handshake address.",
+    "Peer transport parameters can be committed through the runtime TLS-state update path.",
+    "Preferred-address candidate paths can be path-validated through the existing path-validation event seam."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS18P2DisableActiveMigrationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0018\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim max_ack_delay policy, initial data-limit parameters, preferred_address field-shape closure beyond the disable_active_migration exception, public migration APIs, multipath behavior, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S18P2 0016-0018 requirement-home filter passed 8/8, regenerated coverage triage marks REQ-QUIC-RFC9000-S18P2-0016 through REQ-QUIC-RFC9000-S18P2-0018 trace_clean, core SpecTrace JSON validation passed for 430 artifacts, Release build passed with 0 warnings and 0 errors, and the full Release test suite passed 4428/4428."
+}
