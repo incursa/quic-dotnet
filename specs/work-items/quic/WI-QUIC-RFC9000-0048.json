@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0048",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0048",
+    "VER-QUIC-RFC9000-0048"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P15-0001",
+    "REQ-QUIC-RFC9000-S19P15-0002",
+    "REQ-QUIC-RFC9000-S19P15-0003",
+    "REQ-QUIC-RFC9000-S19P15-0004",
+    "REQ-QUIC-RFC9000-S19P15-0005",
+    "REQ-QUIC-RFC9000-S19P15-0006",
+    "REQ-QUIC-RFC9000-S19P15-0007",
+    "REQ-QUIC-RFC9000-S19P15-0008",
+    "REQ-QUIC-RFC9000-S19P15-0009",
+    "REQ-QUIC-RFC9000-S19P15-0010",
+    "REQ-QUIC-RFC9000-S19P15-0011",
+    "REQ-QUIC-RFC9000-S19P15-0012",
+    "REQ-QUIC-RFC9000-S19P15-0013"
+  ],
+  "summary": "Fix and prove the RFC 9000 Section 19.15 NEW_CONNECTION_ID frame-field parser and formatter tail.",
+  "planned_changes": "- Update the NEW_CONNECTION_ID parser to read the Length field as a single 8-bit unsigned integer rather than as a QUIC variable-length integer.\n- Add a focused NEW_CONNECTION_ID requirement-home helper for exact field encodings, truncated fields, and parser assertions.\n- Add focused positive, negative, edge, and fuzz proof where required for S19P15 0001 through 0013.\n- Link the focused proof to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",
+  "verification_plan": "Run the focused S19P15 requirement-home filter, run a Release build, run the full Release no-build solution test suite, run the QuicFrameCodec benchmark Dry job, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0048"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0048"
+  ],
+  "out_of_scope": [
+    "Changing peer connection-ID lifecycle policy for S19P15 0014 through 0023.",
+    "Adding hosted endpoint close-packet assertions for every malformed NEW_CONNECTION_ID frame.",
+    "Changing migration path selection or unlinkability policy beyond the frame parser/formatter seam.",
+    "Changing stateless reset token generation policy.",
+    "Replacing the span-backed NEW_CONNECTION_ID frame view or frame-codec hot path."
+  ],
+  "completion_notes": "Completed as a focused parser/formatter correction and proof over the existing NEW_CONNECTION_ID frame codec, existing peer-CID lifecycle boundaries, and existing frame-codec benchmark floor."
+}

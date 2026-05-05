@@ -892,18 +892,22 @@ internal static class QuicFrameCodec
 
         if (!TryParseFixedType(packetPayload, NewConnectionIdFrameType, out int index)
             || !TryParseVarint(packetPayload, ref index, out ulong sequenceNumber)
-            || !TryParseVarint(packetPayload, ref index, out ulong retirePriorTo)
-            || !TryParseVarint(packetPayload, ref index, out ulong connectionIdLengthValue))
+            || !TryParseVarint(packetPayload, ref index, out ulong retirePriorTo))
         {
             return false;
         }
 
-        if (connectionIdLengthValue is 0 or > MaximumConnectionIdLength)
+        if (index >= packetPayload.Length)
         {
             return false;
         }
 
-        int connectionIdLength = (int)connectionIdLengthValue;
+        int connectionIdLength = packetPayload[index++];
+        if (connectionIdLength is 0 or > MaximumConnectionIdLength)
+        {
+            return false;
+        }
+
         int remainingLength = packetPayload.Length - index;
         if (remainingLength < connectionIdLength + StatelessResetTokenLength)
         {
@@ -1228,4 +1232,3 @@ internal static class QuicFrameCodec
         return true;
     }
 }
-

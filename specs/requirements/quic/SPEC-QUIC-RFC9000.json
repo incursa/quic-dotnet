@@ -37893,17 +37893,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0001.cs::TryFormatNewConnectionIdFrame_ProvidesAnAlternativeConnectionIdWithType18"
         ]
       }
     },
@@ -37920,24 +37926,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs::TryFormatNewConnectionIdFrame_EncodesType18AsASingleByteVarint",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs::TryParseNewConnectionIdFrame_RejectsDifferentFrameType",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs::TryParseNewConnectionIdFrame_RejectsNonMinimalEncodedType18"
         ]
       }
     },
@@ -37954,24 +37963,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0003.cs::TryParseNewConnectionIdFrame_ParsesTheSequenceNumberVarintField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0003.cs::TryParseNewConnectionIdFrame_RejectsTruncatedSequenceNumberVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0003.cs::TryParseNewConnectionIdFrame_AcceptsMaximumSequenceNumberVarint"
         ]
       }
     },
@@ -37988,24 +38000,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0004.cs::TryParseNewConnectionIdFrame_ParsesTheRetirePriorToVarintField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0004.cs::TryParseNewConnectionIdFrame_RejectsTruncatedRetirePriorToVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0004.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber"
         ]
       }
     },
@@ -38022,25 +38037,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0005.cs::TryFormatNewConnectionIdFrame_WritesLengthAsASingleOctet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0005.cs::TryParseNewConnectionIdFrame_RejectsFramesMissingTheLengthOctet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0005.cs::TryParseNewConnectionIdFrame_RejectsVarintEncodedLengthField"
         ]
       }
     },
@@ -38057,25 +38074,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S6",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0006.cs::TryParseNewConnectionIdFrame_AcceptsConnectionIdLengthsFromOneToTwentyOctets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0006.cs::TryParseNewConnectionIdFrame_RejectsConnectionIdLengthsOutsideOneToTwentyOctets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0006.cs::TryParseNewConnectionIdFrame_RejectsDeclaredMaximumConnectionIdLengthWhenBytesAreMissing"
         ]
       }
     },
@@ -38092,24 +38111,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B4-P0-S7",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0007.cs::TryParseNewConnectionIdFrame_PreservesSixteenByteStatelessResetToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0007.cs::TryParseNewConnectionIdFrame_RejectsTruncatedStatelessResetToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0007.cs::TryParseNewConnectionIdFrame_ConsumesExactlyTheSixteenByteStatelessResetToken"
         ]
       }
     },
@@ -38126,15 +38148,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B6-P3-S1",
@@ -38143,6 +38168,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_PreservesSequenceBeforeRetirePriorToFieldOrder",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
@@ -38160,25 +38186,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToLessThanSequenceNumber",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs::TryParseNewConnectionIdFrame_AcceptsRetirePriorToEqualToSequenceNumber",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0009.cs::TryParseNewConnectionIdFrame_ParsesRetirePriorToAsConnectionIdRetirementFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0009.cs::TryParseNewConnectionIdFrame_RejectsTruncatedRetirePriorToRetirementFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0009.cs::TryParseNewConnectionIdFrame_AcceptsZeroRetirePriorTo"
         ]
       }
     },
@@ -38195,25 +38223,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0010.cs::TryParseNewConnectionIdFrame_UsesLengthOctetAsConnectionIdLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0010.cs::TryParseNewConnectionIdFrame_RejectsDeclaredLengthThatOverrunsConnectionIdBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0010.cs::TryFormatNewConnectionIdFrame_RejectsDestinationTooSmallForDeclaredLength"
         ]
       }
     },
@@ -38230,15 +38260,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B9-P0-S2",
@@ -38246,7 +38279,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryFormatNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues"
         ]
       }
     },
@@ -38263,26 +38297,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B10-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0012.cs::TryParseNewConnectionIdFrame_PreservesConnectionIdOfDeclaredLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0012.cs::TryParseNewConnectionIdFrame_RejectsMissingConnectionIdBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0012.cs::TryParseNewConnectionIdFrame_PreservesMaximumLengthConnectionId"
         ]
       }
     },
@@ -38299,26 +38334,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0013"
+          "ARC-QUIC-RFC9000-0013",
+          "ARC-QUIC-RFC9000-0048"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0013"
+          "WI-QUIC-RFC9000-0013",
+          "WI-QUIC-RFC9000-0048"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0013"
+          "VER-QUIC-RFC9000-0013",
+          "VER-QUIC-RFC9000-0048"
         ],
         "upstream_refs": [
           "RFC 9000 §19.15 RFC9000-S19.15-B11-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs::TryParseNewConnectionIdFrame_RejectsInvalidConnectionIdLengthValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::TryParseNewConnectionIdFrame_RejectsTruncatedInput",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs::Fuzz_NewConnectionIdFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0013.cs::TryParseNewConnectionIdFrame_PreservesTheAssociatedStatelessResetToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0013.cs::TryParseNewConnectionIdFrame_RejectsFramesMissingTheStatelessResetToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0013.cs::TryFormatNewConnectionIdFrame_WritesTheStatelessResetTokenAfterTheConnectionId"
         ]
       }
     },

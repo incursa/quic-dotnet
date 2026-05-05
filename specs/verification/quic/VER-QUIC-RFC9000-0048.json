@@ -1,0 +1,78 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0048",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0048",
+    "WI-QUIC-RFC9000-0048"
+  ],
+  "verification_method": "Focused S19P15 requirement-home tests, Release build, full Release no-build solution tests, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P15-0001",
+    "REQ-QUIC-RFC9000-S19P15-0002",
+    "REQ-QUIC-RFC9000-S19P15-0003",
+    "REQ-QUIC-RFC9000-S19P15-0004",
+    "REQ-QUIC-RFC9000-S19P15-0005",
+    "REQ-QUIC-RFC9000-S19P15-0006",
+    "REQ-QUIC-RFC9000-S19P15-0007",
+    "REQ-QUIC-RFC9000-S19P15-0008",
+    "REQ-QUIC-RFC9000-S19P15-0009",
+    "REQ-QUIC-RFC9000-S19P15-0010",
+    "REQ-QUIC-RFC9000-S19P15-0011",
+    "REQ-QUIC-RFC9000-S19P15-0012",
+    "REQ-QUIC-RFC9000-S19P15-0013"
+  ],
+  "scope": "This verification covers NEW_CONNECTION_ID parser and formatter behavior, field order, 8-bit Length handling, Connection ID length boundaries, and the 16-byte Stateless Reset Token field for RFC 9000 Section 19.15 requirements 0001 through 0013.",
+  "expected_result": "Focused S19P15 requirement homes prove that NEW_CONNECTION_ID frames use type 0x18, preserve Sequence Number and Retire Prior To variable-length integer fields, encode Length as one 8-bit unsigned field, preserve Connection ID bytes of the declared length, require a 16-byte Stateless Reset Token, reject malformed/truncated/out-of-range encodings, and keep parser/format hot paths covered by the existing frame-codec benchmark suite.",
+  "procedure": [
+    "Run the focused S19P15 requirement-home filter.",
+    "Run a Release build.",
+    "Run the full Release no-build solution test suite.",
+    "Run the QuicFrameCodec benchmark suite with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec NEW_CONNECTION_ID parser and formatter are the runtime seam under test.",
+    "Existing peer connection-ID lifecycle artifacts remain the owner for S19P15 requirements 0014 through 0023.",
+    "The existing QuicFrameCodecBenchmarks suite remains the hot-path benchmark evidence for NEW_CONNECTION_ID parse and format operations."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P15NewConnectionIdFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P15\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim broader peer connection-ID lifecycle closure, migration success, stateless reset token generation policy, or endpoint-host close-packet behavior beyond the parser and formatter seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P15 filter passed 65/65, generated triage reports 23/23 S19P15 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 388 artifacts, the full Release no-build solution suite passed 4148/4148, and the QuicFrameCodec BenchmarkDotNet Dry run completed 12/12 benchmarks including ParseNewConnectionIdFrame at 1.028 ms and FormatNewConnectionIdFrame at 357.8 us with no allocations."
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0048",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 NEW_CONNECTION_ID Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 19.15 NEW_CONNECTION_ID frame parser, formatter, and focused proof slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0013",
+    "ARC-QUIC-RFC9000-0030",
+    "WI-QUIC-RFC9000-0048",
+    "VER-QUIC-RFC9000-0048"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P15-0001",
+    "REQ-QUIC-RFC9000-S19P15-0002",
+    "REQ-QUIC-RFC9000-S19P15-0003",
+    "REQ-QUIC-RFC9000-S19P15-0004",
+    "REQ-QUIC-RFC9000-S19P15-0005",
+    "REQ-QUIC-RFC9000-S19P15-0006",
+    "REQ-QUIC-RFC9000-S19P15-0007",
+    "REQ-QUIC-RFC9000-S19P15-0008",
+    "REQ-QUIC-RFC9000-S19P15-0009",
+    "REQ-QUIC-RFC9000-S19P15-0010",
+    "REQ-QUIC-RFC9000-S19P15-0011",
+    "REQ-QUIC-RFC9000-S19P15-0012",
+    "REQ-QUIC-RFC9000-S19P15-0013"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P15NewConnectionIdFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0013.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The NEW_CONNECTION_ID frame remains centered on the existing frame codec and span-backed frame view. The parser accepts only the fixed one-byte frame type 0x18, parses Sequence Number and Retire Prior To as QUIC variable-length integers, then reads the Length field as the required single 8-bit unsigned field before slicing the declared Connection ID and following 16-byte Stateless Reset Token. The formatter emits the same field order and rejects invalid connection ID lengths, stateless reset token lengths, Retire Prior To values greater than Sequence Number, and insufficient output buffers.",
+  "data_and_state_considerations": "This slice is limited to Section 19.15 frame encoding and parser/formatter boundaries for requirements 0001 through 0013. Existing peer connection-ID lifecycle handling remains owned by the earlier runtime lifecycle artifacts, including zero-length destination-connection-ID and duplicate/replacement semantics for later S19P15 requirements.",
+  "edge_cases_and_constraints": [
+    "Non-0x18 and non-minimal 0x18 frame-type encodings are rejected by the fixed-type parser.",
+    "Truncated Sequence Number and Retire Prior To variable-length integers are rejected before a frame view is produced.",
+    "The Length field is a single octet, not a QUIC variable-length integer.",
+    "Connection ID lengths below 1 octet or above 20 octets are rejected by parser and formatter seams.",
+    "Exactly 16 bytes of Stateless Reset Token are required and preserved immediately after the declared Connection ID bytes.",
+    "Retire Prior To values above Sequence Number remain rejected as frame-encoding failures at the parser/formatter seam."
+  ],
+  "alternatives_considered": [
+    "Leave S19P15 under broad frame-codec tests; rejected because generated triage still showed missing focused proof for the frame-field requirements.",
+    "Treat the Length field as a generic QUIC variable-length integer; rejected because RFC 9000 Section 19.15 defines the field as an 8-bit unsigned integer.",
+    "Merge later peer-CID lifecycle policy into this slice; rejected because requirements 0014 through 0023 already have separate lifecycle ownership and trace-clean evidence."
+  ],
+  "risks": [
+    "Parser rejection proves malformed frame handling at the codec seam, not a new hosted endpoint close-packet assertion for every malformed input.",
+    "This slice does not claim broader migration unlinkability policy beyond providing and parsing alternative connection IDs.",
+    "Lifecycle state changes for duplicate frames, zero-length mode, and Retire Prior To monotonicity remain covered by existing runtime artifacts rather than this frame-codec slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers RFC 9000 Section 19.15 NEW_CONNECTION_ID frame encoding, parsing, field order, length boundaries, and stateless reset token field proof for requirements 0001 through 0013 only. It does not claim broader peer connection-ID lifecycle closure, migration success, or packet-level close emission behavior outside the parser/formatter seams."
+    }
+  ]
+}

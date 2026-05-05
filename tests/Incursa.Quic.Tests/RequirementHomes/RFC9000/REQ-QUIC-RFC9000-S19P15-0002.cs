@@ -4,21 +4,51 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P15_0002
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S19P15-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryFormatNewConnectionIdFrame_EncodesType18AsASingleByteVarint()
+    {
+        byte[] connectionId = QuicS19P15NewConnectionIdFrameTestSupport.CreateConnectionId(4);
+        byte[] statelessResetToken = QuicS19P15NewConnectionIdFrameTestSupport.CreateStatelessResetToken();
+        QuicNewConnectionIdFrame frame = new(0x06, 0x04, connectionId, statelessResetToken);
+        Span<byte> destination = stackalloc byte[64];
+
+        Assert.True(QuicFrameCodec.TryFormatNewConnectionIdFrame(frame, destination, out int bytesWritten));
+        Assert.True(bytesWritten > 0);
+        Assert.Equal([QuicS19P15NewConnectionIdFrameTestSupport.NewConnectionIdFrameType], destination[..1].ToArray());
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TryParseNewConnectionIdFrame_RejectsDifferentFrameType()
     {
-        byte[] connectionId = [0x10, 0x11, 0x12, 0x13];
-        byte[] statelessResetToken = [
-            0x20, 0x21, 0x22, 0x23,
-            0x24, 0x25, 0x26, 0x27,
-            0x28, 0x29, 0x2A, 0x2B,
-            0x2C, 0x2D, 0x2E, 0x2F];
-
-        byte[] encoded = QuicFrameTestData.BuildNewConnectionIdFrame(
-            new QuicNewConnectionIdFrame(0x06, 0x04, connectionId, statelessResetToken));
+        byte[] connectionId = QuicS19P15NewConnectionIdFrameTestSupport.CreateConnectionId(4);
+        byte[] statelessResetToken = QuicS19P15NewConnectionIdFrameTestSupport.CreateStatelessResetToken();
+        byte[] encoded = QuicS19P15NewConnectionIdFrameTestSupport.BuildNewConnectionIdFrame(
+            0x06,
+            0x04,
+            connectionId,
+            statelessResetToken);
         encoded[0] = 0x19;
 
-        Assert.False(QuicFrameCodec.TryParseNewConnectionIdFrame(encoded, out _, out _));
+        QuicS19P15NewConnectionIdFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseNewConnectionIdFrame_RejectsNonMinimalEncodedType18()
+    {
+        byte[] connectionId = QuicS19P15NewConnectionIdFrameTestSupport.CreateConnectionId(4);
+        byte[] statelessResetToken = QuicS19P15NewConnectionIdFrameTestSupport.CreateStatelessResetToken();
+        byte[] encoded = QuicS19P15NewConnectionIdFrameTestSupport.BuildNewConnectionIdFrameWithEncodedType(
+            encodedTypeLength: 2,
+            sequenceNumber: 0x06,
+            retirePriorTo: 0x04,
+            connectionId,
+            statelessResetToken);
+
+        QuicS19P15NewConnectionIdFrameTestSupport.AssertRejects(encoded);
     }
 }
