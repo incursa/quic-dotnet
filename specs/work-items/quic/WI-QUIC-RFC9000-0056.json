@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0056",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Server Refusal And 0-RTT Pre-Initial Buffering Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0056",
+    "VER-QUIC-RFC9000-0056"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P2P2-0007",
+    "REQ-QUIC-RFC9000-S5P2P2-0008"
+  ],
+  "summary": "Close the remaining RFC 9000 Section 5.2.2 server pre-acceptance tail for deliberate connection refusal and limited 0-RTT buffering before a matching Initial arrives.",
+  "planned_changes": "- Emit a protected Initial CONNECTION_CLOSE with CONNECTION_REFUSED when the listener application deliberately refuses an otherwise valid new connection.\n- Unregister provisional endpoint routes when admission fails before the connection is accepted.\n- Add a bounded listener-local 0-RTT pre-Initial buffer keyed by Initial Destination Connection ID.\n- Drain buffered 0-RTT datagrams into endpoint routing after the matching Initial is admitted.\n- Add focused requirement-home tests and canonical trace links for S5P2P2 0007 and 0008.",
+  "verification_plan": "Run a Release build, run the focused S5P2P2 0007/0008 requirement-home filter, run the full S5P2P2 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0056"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0056"
+  ],
+  "out_of_scope": [
+    "0-RTT decryption, early-data acceptance, anti-replay policy, or application delivery.",
+    "Public listener API changes.",
+    "Client-side Version Negotiation handling or Initial/Retry connection-ID continuity.",
+    "Preferred-address behavior.",
+    "Broader hosted interop readiness."
+  ],
+  "completion_notes": "Completed as a focused listener pre-acceptance tail over QuicListenerHost, QuicListenerPreAcceptanceIngressPolicy, QuicListenerZeroRttPreInitialBuffer, and S5P2P2 requirement-home tests."
+}

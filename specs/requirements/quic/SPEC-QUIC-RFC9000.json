@@ -7096,17 +7096,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0056"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0056"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0056"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0007.cs::ListenerHostSendsConnectionRefusedInitialCloseWhenApplicationRefusesConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0007.cs::ListenerHostDoesNotSendConnectionRefusedCloseWhenApplicationAcceptsConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0007.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId"
         ]
       }
     },
@@ -7122,17 +7130,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0056"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0056"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0056"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0008.cs::ClassifyUnroutedDatagram_BuffersZeroRttWhenThePreInitialBufferHasCapacity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0008.cs::ClassifyUnroutedDatagram_DropsZeroRttWhenThePreInitialBufferIsDisabled",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0008.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial"
         ]
       }
     },

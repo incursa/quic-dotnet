@@ -22,6 +22,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailureTokenMismatch = 6;
     private const int RetryBootstrapReplayValidationFailureOpen = 7;
     private const int RetryBootstrapReplayValidationFailurePayload = 8;
+    private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
 
     private readonly Socket socket;
     private readonly CancellationTokenSource shutdown = new();
@@ -30,6 +31,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
+    private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
     private readonly ConcurrentDictionary<string, int> versionNegotiationResponseCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumVersionNegotiationResponsesPerRemoteAddress;
@@ -325,7 +327,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
                         datagram,
                         ListenerSupportedVersions,
-                        retryBootstrapEnabled);
+                        retryBootstrapEnabled,
+                        maximumBufferedZeroRttDatagramsPerConnection: MaximumBufferedZeroRttDatagramsPerConnection);
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation)
                 {
@@ -339,6 +342,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                if (action == QuicListenerPreAcceptanceDatagramAction.BufferZeroRtt
+                    && QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket zeroRttHeader))
+                {
+                    _ = zeroRttPreInitialBuffer.TryBuffer(
+                        zeroRttHeader.DestinationConnectionId,
+                        datagram,
+                        pathIdentity);
+                    continue;
+                }
+
                 if (action == QuicListenerPreAcceptanceDatagramAction.AdmitInitial
                     && TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
                 {
@@ -349,15 +362,18 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             continue;
                         }
 
+                        byte[] initialDestinationConnectionId = initialHeader.DestinationConnectionId.ToArray();
+                        byte[] clientSourceConnectionId = initialHeader.SourceConnectionId.ToArray();
                         if (await TryAdmitIncomingInitialConnectionAsync(
                             datagram,
                             pathIdentity,
-                            initialHeader.DestinationConnectionId.ToArray(),
-                            initialHeader.SourceConnectionId.ToArray(),
+                            initialDestinationConnectionId,
+                            clientSourceConnectionId,
                             initialToken,
                             cancellationToken).ConfigureAwait(false))
                         {
                             _ = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                            FlushBufferedZeroRttDatagrams(initialDestinationConnectionId);
                         }
                     }
                     catch
@@ -376,6 +392,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         finally
         {
             QuicBufferPool.ReturnBytes(buffer);
+        }
+    }
+
+    private void FlushBufferedZeroRttDatagrams(ReadOnlySpan<byte> initialDestinationConnectionId)
+    {
+        foreach (QuicListenerBufferedZeroRttDatagram bufferedDatagram in zeroRttPreInitialBuffer.Drain(initialDestinationConnectionId))
+        {
+            _ = endpoint.ReceiveDatagram(bufferedDatagram.Datagram, bufferedDatagram.PathIdentity);
         }
     }
 
@@ -599,6 +623,53 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
     }
 
+    private bool TrySendConnectionRefusedCloseResponse(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        ReadOnlySpan<byte> clientSourceConnectionId,
+        ReadOnlySpan<byte> serverSourceConnectionId)
+    {
+        if (!QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            initialDestinationConnectionId,
+            out QuicInitialPacketProtection initialProtection))
+        {
+            return false;
+        }
+
+        QuicHandshakeFlowCoordinator closePacketCoordinator = new(
+            initialDestinationConnectionId.ToArray(),
+            serverSourceConnectionId.ToArray());
+        if (!closePacketCoordinator.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId))
+        {
+            return false;
+        }
+
+        Span<byte> closePayload = stackalloc byte[32];
+        if (!QuicFrameCodec.TryFormatConnectionCloseFrame(
+            new QuicConnectionCloseFrame(
+                QuicTransportErrorCode.ConnectionRefused,
+                triggeringFrameType: 0,
+                []),
+            closePayload,
+            out int closePayloadLength))
+        {
+            return false;
+        }
+
+        if (!closePacketCoordinator.TryBuildProtectedInitialControlPacketForHandshakeDestination(
+            closePayload[..closePayloadLength],
+            initialProtection,
+            out _,
+            out byte[] closeDatagram))
+        {
+            return false;
+        }
+
+        SendDatagram(new QuicConnectionSendDatagramEffect(pathIdentity, closeDatagram));
+        return true;
+    }
+
     private async ValueTask<bool> TryAdmitIncomingInitialConnectionAsync(
         ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
@@ -743,6 +814,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             if (returnedOptions is null)
             {
+                _ = TrySendConnectionRefusedCloseResponse(
+                    pathIdentity,
+                    initialDestinationConnectionId,
+                    clientSourceConnectionId,
+                    serverSourceConnectionId);
                 return false;
             }
 
@@ -802,6 +878,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 if (!EqualityComparer<QuicConnectionHandle>.Default.Equals(handle, default))
                 {
                     connections.TryRemove(handle, out _);
+                    endpoint.TryUnregisterConnection(handle);
                 }
 
                 try

@@ -63,6 +63,17 @@ internal static class QuicS5P2P2ServerPreAcceptanceTestSupport
         byte[] clientInitialPacket,
         byte[] expectedClientSourceConnectionId)
     {
+        return await SendInitialAndReceiveServerResponseAsync(
+            clientInitialPacket,
+            expectedClientSourceConnectionId,
+            serverCertificate => QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate));
+    }
+
+    internal static async Task<byte[]> SendInitialAndReceiveServerResponseAsync(
+        byte[] clientInitialPacket,
+        byte[] expectedClientSourceConnectionId,
+        Func<X509Certificate2, QuicServerConnectionOptions?> serverOptionsFactory)
+    {
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
         using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
@@ -73,7 +84,11 @@ internal static class QuicS5P2P2ServerPreAcceptanceTestSupport
         await using QuicListenerHost listenerHost = new(
             listenEndPoint,
             [SslApplicationProtocol.Http3],
-            (_, _, _) => ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            (_, _, _) =>
+            {
+                QuicServerConnectionOptions? returnedOptions = serverOptionsFactory(serverCertificate);
+                return ValueTask.FromResult(returnedOptions!);
+            },
             listenBacklog: 1);
 
         _ = listenerHost.RunAsync();
@@ -96,6 +111,48 @@ internal static class QuicS5P2P2ServerPreAcceptanceTestSupport
         Assert.Equal(8, responseHeader.SourceConnectionId.Length);
 
         return responseBuffer.AsSpan(0, bytesReceived).ToArray();
+    }
+
+    internal static bool TryOpenInitialConnectionCloseFrame(
+        ReadOnlySpan<byte> protectedInitialPacket,
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        out ulong errorCode,
+        out ulong triggeringFrameType)
+    {
+        errorCode = default;
+        triggeringFrameType = default;
+
+        if (!QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            originalDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection))
+        {
+            return false;
+        }
+
+        QuicHandshakeFlowCoordinator coordinator = new(originalDestinationConnectionId.ToArray());
+        if (!coordinator.TryOpenInitialPacket(
+            protectedInitialPacket,
+            clientProtection,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength))
+        {
+            return false;
+        }
+
+        if (!QuicFrameCodec.TryParseConnectionCloseFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicConnectionCloseFrame connectionCloseFrame,
+            out int bytesConsumed)
+            || bytesConsumed <= 0)
+        {
+            return false;
+        }
+
+        errorCode = connectionCloseFrame.ErrorCode;
+        triggeringFrameType = connectionCloseFrame.TriggeringFrameType;
+        return true;
     }
 
     private static byte[] BuildLongHeaderDatagram(

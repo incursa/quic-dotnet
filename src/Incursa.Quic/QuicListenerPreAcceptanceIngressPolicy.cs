@@ -7,6 +7,7 @@ internal enum QuicListenerPreAcceptanceDatagramAction
     SendProtocolViolationClose = 2,
     AdmitInitial = 3,
     IssueRetryBootstrap = 4,
+    BufferZeroRtt = 5,
 }
 
 internal static class QuicListenerPreAcceptanceIngressPolicy
@@ -15,7 +16,8 @@ internal static class QuicListenerPreAcceptanceIngressPolicy
         ReadOnlySpan<byte> datagram,
         ReadOnlySpan<uint> supportedVersions,
         bool retryBootstrapEnabled,
-        bool hasAlreadySentVersionNegotiation = false)
+        bool hasAlreadySentVersionNegotiation = false,
+        int maximumBufferedZeroRttDatagramsPerConnection = 0)
     {
         if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket longHeader))
         {
@@ -43,9 +45,16 @@ internal static class QuicListenerPreAcceptanceIngressPolicy
                 : QuicListenerPreAcceptanceDatagramAction.AdmitInitial;
         }
 
-        if (retryBootstrapEnabled && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt)
+        if (longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt)
         {
-            return QuicListenerPreAcceptanceDatagramAction.IssueRetryBootstrap;
+            if (retryBootstrapEnabled)
+            {
+                return QuicListenerPreAcceptanceDatagramAction.IssueRetryBootstrap;
+            }
+
+            return maximumBufferedZeroRttDatagramsPerConnection > 0
+                ? QuicListenerPreAcceptanceDatagramAction.BufferZeroRtt
+                : QuicListenerPreAcceptanceDatagramAction.Drop;
         }
 
         return QuicListenerPreAcceptanceDatagramAction.Drop;

@@ -75,6 +75,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0053.json`](VER-QUIC-RFC9000-0053.json): canonical RFC 9000 STREAM_DATA_BLOCKED send-only receive-policy verification source
 - [`VER-QUIC-RFC9000-0054.json`](VER-QUIC-RFC9000-0054.json): canonical RFC 9000 STREAMS_BLOCKED frame focused proof verification source
 - [`VER-QUIC-RFC9000-0055.json`](VER-QUIC-RFC9000-0055.json): canonical RFC 9000 server pre-acceptance ingress policy verification source
+- [`VER-QUIC-RFC9000-0056.json`](VER-QUIC-RFC9000-0056.json): canonical RFC 9000 server refusal and 0-RTT pre-Initial buffering verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

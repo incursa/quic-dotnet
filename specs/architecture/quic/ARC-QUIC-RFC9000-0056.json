@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0056",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Server Refusal And 0-RTT Pre-Initial Buffering",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the listener tail policy for deliberately refused new connections and bounded 0-RTT buffering before a matching Initial arrives.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0055",
+    "WI-QUIC-RFC9000-0056",
+    "VER-QUIC-RFC9000-0056"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P2P2-0007",
+    "REQ-QUIC-RFC9000-S5P2P2-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicListenerPreAcceptanceIngressPolicy.cs",
+    "src/Incursa.Quic/QuicListenerZeroRttPreInitialBuffer.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0008.cs"
+  ],
+  "design_summary": "The listener continues to route every datagram through the endpoint before applying pre-acceptance policy. If an otherwise valid Initial reaches the application connection-options callback and the application deliberately refuses by returning null, the listener sends a server-protected Initial control packet to the client Source Connection ID containing a transport CONNECTION_CLOSE frame with CONNECTION_REFUSED. Failed admission unregisters any provisional endpoint route. For unmatched 0-RTT packets when Retry bootstrap is disabled, the pre-acceptance classifier selects bounded buffering rather than an unconditional drop, and the listener stores at most a small per-initial-destination-connection-ID set of copied datagrams. When the matching Initial is admitted, the listener drains the buffered datagrams back into endpoint routing on their original paths.",
+  "data_and_state_considerations": "The 0-RTT pre-Initial buffer is listener-local, keyed by the Initial Destination Connection ID, and bounded by a fixed per-connection datagram count. Buffered datagrams are copied so receive-buffer reuse cannot mutate queued state. Retry bootstrap remains higher priority than buffering. The refusal close packet uses Initial packet protection derived from the original Destination Connection ID and is padded by the Initial control-packet builder to the Version 1 minimum datagram size.",
+  "edge_cases_and_constraints": [
+    "Accepted connections do not receive a CONNECTION_REFUSED close.",
+    "A short client Source Connection ID is preserved as the Destination Connection ID of the refusal Initial.",
+    "The refusal packet remains an Initial packet and is padded to the supported-version minimum size.",
+    "A zero 0-RTT buffer limit keeps 0-RTT packets on the drop path.",
+    "The 0-RTT buffer enforces the per-connection limit and drains only for the matching late Initial Destination Connection ID."
+  ],
+  "risks": [
+    "This slice buffers 0-RTT datagrams but does not claim 0-RTT decryption, early-data acceptance, anti-replay policy, or application delivery.",
+    "This slice treats a null server-options callback result as deliberate application refusal; callback exceptions remain local admission failures.",
+    "This slice does not broaden public listener APIs, client-side Version Negotiation handling, Initial/Retry CID continuity, preferred-address behavior, or interop readiness."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes only RFC 9000 Section 5.2.2 requirements 0007 and 0008 as the tail of the server pre-acceptance ingress family. The earlier 0055 artifacts remain the owner for requirements 0001 through 0006 and 0009 through 0010."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S19P14 STREAMS_BLOCKED sender-tail proof
-closeout; broader executive-read evidence remains pinned to its stated
+Last verified: 2026-05-05 for the S5P2P2 server refusal and 0-RTT
+pre-Initial buffering tail closeout; broader executive-read evidence remains pinned to its stated
 2026-04-30 refresh unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
@@ -9,6 +9,20 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-05 Restart Note
+
+Follow-on S5P2P2 closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S5P2P2-0007` and
+`REQ-QUIC-RFC9000-S5P2P2-0008` under
+`ARC-QUIC-RFC9000-0056`, `WI-QUIC-RFC9000-0056`, and
+`VER-QUIC-RFC9000-0056`. The proof covers protected Initial
+`CONNECTION_REFUSED` emission when the listener application deliberately
+refuses an otherwise valid new connection, no refusal close for accepted
+connections, short client Source Connection ID preservation, bounded 0-RTT
+pre-Initial buffering, disabled-buffer drops, and cap enforcement before
+draining for the matching late Initial. This does not claim 0-RTT decryption,
+early-data acceptance, anti-replay behavior, application delivery, public API
+widening, client-side Version Negotiation, preferred-address behavior, or
+hosted interop readiness.
 
 This note is intentionally narrow for handoff. The just-finished slices close
 the RFC 9000 S19P13 STREAM_DATA_BLOCKED parser/field-shape topoff for
@@ -45,7 +59,7 @@ creation, and keeping the blocked open pending until cancellation or real
 `REQ-QUIC-RFC9000-S19P14-0001` through
 `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
 
-Pick up next after the S19P14 closure:
+Pick up next after the S5P2P2 closure:
 
 1. Start in `docs/requirements-workflow.md`, then check
    `specs/requirements/quic/REQUIREMENT-GAPS.md` and the next non-clean cluster in
@@ -61,6 +75,9 @@ Pick up next after the S19P14 closure:
    `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
 5. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0001` and
    `REQ-QUIC-RFC9000-S19P14-0003` as `trace_clean`; S19P14 no longer needs to
+   be the next local lane.
+6. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S5P2P2-0001` through
+   `REQ-QUIC-RFC9000-S5P2P2-0010` as `trace_clean`; S5P2P2 no longer needs to
    be the next local lane.
 
 Focused triage command:
