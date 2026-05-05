@@ -155,10 +155,18 @@ public sealed class REQ_QUIC_CRT_0138
         sink.Emit(QuicDiagnostics.InitialPacketSent(pathIdentity, new byte[1200]));
 
         using BlockingWriteStream stream = new();
-        Task serializeTask = Task.Run(() => capture.WriteJson(stream, indented: true));
+        Task serializeTask = Task.Factory.StartNew(
+            () => capture.WriteJson(stream, indented: true),
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
         Assert.True(stream.WaitForFirstWrite(TimeSpan.FromSeconds(5)), "Timed out waiting for qlog serialization to begin writing.");
 
-        Task emitTask = Task.Run(() => sink.Emit(QuicDiagnostics.HandshakePacketSent(pathIdentity, [0x01, 0x02, 0x03])));
+        Task emitTask = Task.Factory.StartNew(
+            () => sink.Emit(QuicDiagnostics.HandshakePacketSent(pathIdentity, [0x01, 0x02, 0x03])),
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
 
         try
         {
