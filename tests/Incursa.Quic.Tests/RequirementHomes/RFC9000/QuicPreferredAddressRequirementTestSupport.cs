@@ -2,6 +2,19 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicPreferredAddressRequirementTestSupport
 {
+    internal const byte PreferredAddressTransportParameterId = 0x0D;
+    internal const int PreferredAddressTupleHeaderLength = 2;
+    internal const int IPv4AddressOffset = 0;
+    internal const int IPv4AddressLength = 4;
+    internal const int IPv4PortOffset = IPv4AddressOffset + IPv4AddressLength;
+    internal const int PortLength = 2;
+    internal const int IPv6AddressOffset = IPv4PortOffset + PortLength;
+    internal const int IPv6AddressLength = 16;
+    internal const int IPv6PortOffset = IPv6AddressOffset + IPv6AddressLength;
+    internal const int ConnectionIdLengthOffset = IPv6PortOffset + PortLength;
+    internal const int ConnectionIdOffset = ConnectionIdLengthOffset + 1;
+    internal const int StatelessResetTokenLength = 16;
+
     internal static readonly byte[] InitialSourceConnectionId = [0x10, 0x11, 0x12, 0x13];
     internal static readonly byte[] PreferredConnectionId = [0x20, 0x21, 0x22, 0x23];
     internal static readonly byte[] PreferredIpv4Address = [192, 0, 2, 1];
@@ -71,6 +84,40 @@ internal static class QuicPreferredAddressRequirementTestSupport
             preferredAddress.ConnectionId,
             preferredAddress.StatelessResetToken);
 
-        return QuicTransportParameterTestData.BuildTransportParameterTuple(0x0D, value);
+        return QuicTransportParameterTestData.BuildTransportParameterTuple(PreferredAddressTransportParameterId, value);
+    }
+
+    internal static byte[] FormatPreferredAddressValueAsServer(QuicPreferredAddress preferredAddress)
+    {
+        byte[] encoded = FormatAsServer(new QuicTransportParameters
+        {
+            InitialSourceConnectionId = InitialSourceConnectionId,
+            PreferredAddress = preferredAddress,
+        });
+
+        Assert.True(encoded.Length >= PreferredAddressTupleHeaderLength);
+        Assert.Equal(PreferredAddressTransportParameterId, encoded[0]);
+
+        int valueLength = encoded[1];
+        Assert.True(valueLength <= encoded.Length - PreferredAddressTupleHeaderLength);
+        return encoded.AsSpan(PreferredAddressTupleHeaderLength, valueLength).ToArray();
+    }
+
+    internal static bool TryParsePreferredAddressValueAsClient(
+        byte[] preferredAddressValue,
+        out QuicTransportParameters parsed)
+    {
+        byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(
+                0x0F,
+                InitialSourceConnectionId),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(
+                PreferredAddressTransportParameterId,
+                preferredAddressValue));
+
+        return QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out parsed);
     }
 }

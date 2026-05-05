@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0020
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family()
     {
         byte[] expectedIpv4Address = [0, 0, 0, 0];
@@ -48,5 +49,25 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0020
         Assert.Equal((ushort)8443, preferredAddress.IPv6Port);
         Assert.Equal(expectedConnectionId, preferredAddress.ConnectionId);
         Assert.Equal(expectedResetToken, preferredAddress.StatelessResetToken);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseTransportParameters_RejectsPreferredAddressThatOmitsTheUnusedAddressFamily()
+    {
+        byte[] preferredAddressValue = QuicTransportParameterTestData.BuildPreferredAddressValue(
+            ipv4Address: [0, 0, 0, 0],
+            ipv4Port: 0,
+            ipv6Address: QuicPreferredAddressRequirementTestSupport.PreferredIpv6Address,
+            ipv6Port: 8443,
+            connectionId: QuicPreferredAddressRequirementTestSupport.PreferredConnectionId,
+            statelessResetToken: QuicPreferredAddressRequirementTestSupport.StatelessResetToken);
+        byte[] valueThatOmitsTheZeroedIpv4Family =
+            preferredAddressValue[(QuicPreferredAddressRequirementTestSupport.IPv4PortOffset + QuicPreferredAddressRequirementTestSupport.PortLength)..];
+
+        Assert.False(QuicPreferredAddressRequirementTestSupport.TryParsePreferredAddressValueAsClient(
+            valueThatOmitsTheZeroedIpv4Family,
+            out _));
     }
 }

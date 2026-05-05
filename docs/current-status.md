@@ -1,10 +1,11 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S18P2 disable-active-migration and initial
-stream-count transport parameter closeouts, the S17P2P5P2/P3 Retry client
-processing closeout, and the adjacent S7P3 transport-parameter connection-ID
-authentication closeout; broader executive-read evidence remains pinned to its
-stated 2026-04-30 refresh unless otherwise noted.
+Last verified: 2026-05-05 for the S18P2 preferred-address field-shape,
+disable-active-migration, and initial stream-count transport parameter
+closeouts, the S17P2P5P2/P3 Retry client processing closeout, and the adjacent
+S7P3 transport-parameter connection-ID authentication closeout; broader
+executive-read evidence remains pinned to its stated 2026-04-30 refresh unless
+otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -79,10 +80,31 @@ claim `max_ack_delay` policy, initial data-limit parameters, the broader
 preferred-address field-shape family, public migration APIs, multipath, or
 hosted interop readiness.
 
-Pick up next from generated triage rather than the now-closed S7/S17 lane. The
-largest remaining non-clean RFC 9000 generated group is `S18P2` with 14
-requirements, followed by `S22P1P1` with 14, `S7P4P1` with 13, and `S4P6` and
-`S5P2` with 12 each.
+Follow-on S18P2 preferred-address field-shape closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-S18P2-0020` through
+`REQ-QUIC-RFC9000-S18P2-0023`, `REQ-QUIC-RFC9000-S18P2-0028` through
+`REQ-QUIC-RFC9000-S18P2-0031`, and `REQ-QUIC-RFC9000-S18P2-0033` under
+`ARC-QUIC-RFC9000-0063`, `WI-QUIC-RFC9000-0063`, and
+`VER-QUIC-RFC9000-0063`. The proof covers preferred_address IPv4 and IPv6
+address/port field presence, all-zero unused-family handling, network-byte-order
+IP address bytes, two-byte port fields, the final 16-byte stateless reset token
+field associated with the preferred connection ID, truncated-value rejection,
+original server-address retention before preferred-address validation, and
+preferred server-address promotion after validation succeeds. Regenerated
+coverage triage marks these ten requirements as `trace_clean` and reports
+1,243 of 1,771 QUIC requirements trace-clean overall, leaving 528 non-clean.
+`S18P2` is down to four remaining non-clean requirements:
+`REQ-QUIC-RFC9000-S18P2-0002`, `REQ-QUIC-RFC9000-S18P2-0007`,
+`REQ-QUIC-RFC9000-S18P2-0008`, and `REQ-QUIC-RFC9000-S18P2-0015`. This
+closure does not claim preferred_address connection-ID sequence/accounting
+constraints beyond the existing `0031` lane, disable_active_migration beyond the
+existing `0062` lane, public migration APIs, multipath, or hosted interop
+readiness.
+
+Pick up next from generated triage rather than the now-closed S7/S17 and S18P2
+preferred-address lanes. The largest remaining non-clean RFC 9000 generated
+group is `S22P1P1` with 14 requirements, followed by `S7P4P1` with 13, and
+`S7`, `S4P6`, and `S5P2` with 12 each.
 
 Follow-on S5P2P2 closure on 2026-05-05 closes
 `REQ-QUIC-RFC9000-S5P2P2-0007` and

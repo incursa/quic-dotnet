@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0063",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Preferred Address Field Shape",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 18.2 preferred_address transport-parameter field-shape proof and the adjacent server-address cutover hook.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0031",
+    "ARC-QUIC-RFC9000-0045",
+    "ARC-QUIC-RFC9000-0062",
+    "WI-QUIC-RFC9000-0063",
+    "VER-QUIC-RFC9000-0063"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0019",
+    "REQ-QUIC-RFC9000-S18P2-0020",
+    "REQ-QUIC-RFC9000-S18P2-0021",
+    "REQ-QUIC-RFC9000-S18P2-0022",
+    "REQ-QUIC-RFC9000-S18P2-0023",
+    "REQ-QUIC-RFC9000-S18P2-0028",
+    "REQ-QUIC-RFC9000-S18P2-0029",
+    "REQ-QUIC-RFC9000-S18P2-0030",
+    "REQ-QUIC-RFC9000-S18P2-0031",
+    "REQ-QUIC-RFC9000-S18P2-0033"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPreferredAddressRequirementTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0021.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0028.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0029.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0030.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0031.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0033.cs"
+  ],
+  "design_summary": "The transport-parameter codec encodes preferred_address as a server-only transport parameter whose value always contains the IPv4 address, IPv4 port, IPv6 address, IPv6 port, connection-ID length, connection ID, and stateless reset token fields in RFC 9000 order. IPv4 and IPv6 address bytes are copied in network byte order, ports are two-byte big-endian values, the connection-ID length remains the separate one-byte field owned by ARC-QUIC-RFC9000-0031, and the stateless reset token is preserved as the final 16 bytes associated with the preferred-address connection ID. The runtime cutover proof for S18P2-0019 uses the existing preferred-address path-validation flow: a received preferred-address candidate remains pending until validation succeeds, then the active server address changes to the preferred path and the preferred-address connection ID becomes the current peer destination connection ID.",
+  "data_and_state_considerations": "The preferred_address codec stores IPv4 and IPv6 address fields as byte arrays and ports as UInt16 values. All-zero address-family values remain explicit fields rather than omitted fields. Runtime preferred-address state is still committed through peer transport parameters and is not promoted until path validation completes.",
+  "edge_cases_and_constraints": [
+    "A preferred_address that omits the unused all-zero address family is rejected because both address families and ports remain required fields.",
+    "Truncated preferred_address values are rejected before parser state is committed.",
+    "IPv4 and IPv6 address fields retain exact network-byte-order bytes.",
+    "IPv4 and IPv6 ports are preserved as two-byte big-endian fields.",
+    "The stateless reset token remains exactly 16 bytes at the end of the preferred_address value.",
+    "Preferred-address runtime cutover remains validation-gated and does not broaden the full S9.6 migration lifecycle."
+  ],
+  "risks": [
+    "This slice is focused field-shape and bounded runtime cutover proof; it does not claim the existing preferred-address connection-ID constraint lane.",
+    "This slice does not claim public migration APIs, multipath behavior, or hosted interop readiness.",
+    "This slice relies on the existing transport-parameter benchmark scenarios that already include preferred_address parse and format coverage."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the selected S18P2 preferred_address field-shape family and a bounded S18P2 pointer to preferred-address server-address cutover. It does not reopen connection-ID sequence/accounting constraints under ARC-QUIC-RFC9000-0031 or disable_active_migration behavior under ARC-QUIC-RFC9000-0062."
+    }
+  ]
+}

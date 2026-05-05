@@ -1,0 +1,74 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0063",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Preferred Address Field Shape Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0063",
+    "WI-QUIC-RFC9000-0063"
+  ],
+  "verification_method": "Focused S18P2 preferred_address requirement-home tests, adjacent preferred-address migration and transport-parameter fuzz regression tests, existing transport-parameter benchmark scenarios, regenerated QUIC coverage triage, SpecTrace JSON validation, Release build, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0019",
+    "REQ-QUIC-RFC9000-S18P2-0020",
+    "REQ-QUIC-RFC9000-S18P2-0021",
+    "REQ-QUIC-RFC9000-S18P2-0022",
+    "REQ-QUIC-RFC9000-S18P2-0023",
+    "REQ-QUIC-RFC9000-S18P2-0028",
+    "REQ-QUIC-RFC9000-S18P2-0029",
+    "REQ-QUIC-RFC9000-S18P2-0030",
+    "REQ-QUIC-RFC9000-S18P2-0031",
+    "REQ-QUIC-RFC9000-S18P2-0033"
+  ],
+  "scope": "This verification covers selected preferred_address transport-parameter field-shape requirements and the bounded S18P2 server-address cutover pointer after preferred-address validation succeeds.",
+  "expected_result": "The focused tests show that preferred_address preserves both address families and both ports, accepts an all-zero unused family only when those fields are still present, writes network-byte-order IP address bytes, writes two-byte port fields, preserves the associated stateless reset token as the final 16-byte field, rejects truncated preferred_address values, keeps the original server address before preferred-address validation, and promotes to the preferred server address after validation succeeds.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S18P2 preferred_address requirement-home filter.",
+    "Run the adjacent preferred-address migration and transport-parameter fuzz regression filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The transport-parameter codec accepts and emits RFC 9000 Section 18.2 transport-parameter tuples.",
+    "The existing preferred-address path validation flow remains available.",
+    "The permanent QuicTransportParametersBenchmarks suite includes server preferred_address parse and format scenarios."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPreferredAddressRequirementTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0021.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0022.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0028.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0029.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0030.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0031.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0033.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0021|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0033\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim preferred_address connection-ID sequence/accounting constraints, disable_active_migration exception behavior, full S9.6 migration lifecycle closure, public migration APIs, multipath behavior, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The Release build passed with 0 warnings and 0 errors, the focused S18P2 preferred_address requirement-home filter passed 14/14, the adjacent preferred-address migration and transport-parameter fuzz regression filter passed 5/5, regenerated coverage triage marks the selected ten S18P2 requirements trace_clean and reports 1,243 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 433 artifacts, the full Release no-build suite passed 4,440/4,440, and git diff --check returned exit code 0 with line-ending warnings only."
+}

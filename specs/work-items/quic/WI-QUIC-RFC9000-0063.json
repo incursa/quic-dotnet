@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0063",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Preferred Address Field Shape Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0063",
+    "VER-QUIC-RFC9000-0063"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0019",
+    "REQ-QUIC-RFC9000-S18P2-0020",
+    "REQ-QUIC-RFC9000-S18P2-0021",
+    "REQ-QUIC-RFC9000-S18P2-0022",
+    "REQ-QUIC-RFC9000-S18P2-0023",
+    "REQ-QUIC-RFC9000-S18P2-0028",
+    "REQ-QUIC-RFC9000-S18P2-0029",
+    "REQ-QUIC-RFC9000-S18P2-0030",
+    "REQ-QUIC-RFC9000-S18P2-0031",
+    "REQ-QUIC-RFC9000-S18P2-0033"
+  ],
+  "summary": "Close the RFC 9000 S18P2 preferred_address field-shape proof gap with focused codec tests and a bounded preferred-address cutover proof.",
+  "planned_changes": "- Add focused requirement-home tests for preferred_address IPv4 and IPv6 address and port field sizes, network-byte-order preservation, both-family field presence, all-zero unused-family handling, stateless reset token association and length, and truncated-value rejection.\n- Add focused requirement-home proof that the preferred_address transport parameter can effect the server-address change after preferred-address path validation succeeds and does not promote before validation.\n- Add shared preferred_address requirement-home helpers for extracting and parsing the value shape.\n- Add dedicated architecture and verification trace ownership for the selected S18P2 preferred_address requirements.\n- Record existing transport-parameter benchmark coverage for preferred_address parse and format hot paths.",
+  "verification_plan": "Run a Release build, run the focused S18P2 preferred_address requirement-home filter, run the adjacent preferred-address migration and transport-parameter fuzz regression filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0063"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0063"
+  ],
+  "out_of_scope": [
+    "preferred_address connection-ID sequence and active_connection_id_limit accounting constraints already owned by ARC/WI/VER-QUIC-RFC9000-0031.",
+    "disable_active_migration preferred_address exception behavior already owned by ARC/WI/VER-QUIC-RFC9000-0062.",
+    "Full S9.6 preferred-address migration lifecycle beyond the bounded S18P2 server-address cutover pointer.",
+    "Public migration APIs.",
+    "Multipath behavior.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused transport-parameter field-shape and bounded cutover proof for the selected S18P2 preferred_address family."
+}
