@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0061",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Initial Stream Limit Transport Parameters Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0061",
+    "VER-QUIC-RFC9000-0061"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0010",
+    "REQ-QUIC-RFC9000-S18P2-0011",
+    "REQ-QUIC-RFC9000-S18P2-0012",
+    "REQ-QUIC-RFC9000-S18P2-0013",
+    "REQ-QUIC-RFC9000-S18P2-0014"
+  ],
+  "summary": "Close the RFC 9000 S18P2 initial stream-count transport-parameter proof gap with focused codec and runtime stream-open evidence.",
+  "planned_changes": "- Add focused requirement-home tests for initial_max_streams_bidi and initial_max_streams_uni varint formatting, parsing, 2^60 boundary acceptance, and above-boundary rejection.\n- Add focused runtime tests proving advertised initial bidirectional and unidirectional stream limits gate local stream opens.\n- Add focused runtime tests proving explicit zero values block stream opens until later MAX_STREAMS increases the corresponding limit.\n- Move the existing absent-parameter stream-open tests into canonical trace xrefs.\n- Add dedicated architecture and verification trace ownership for the selected S18P2 stream-count requirements.",
+  "verification_plan": "Run the focused S18P2 0010-0014 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run a Release build, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0061"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0061"
+  ],
+  "out_of_scope": [
+    "initial_max_data and initial_max_stream_data transport-parameter proof.",
+    "max_ack_delay policy.",
+    "disable_active_migration and preferred_address behavior.",
+    "Public stream API changes.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused transport-parameter and stream-state proof for initial bidirectional and unidirectional stream-count limits."
+}

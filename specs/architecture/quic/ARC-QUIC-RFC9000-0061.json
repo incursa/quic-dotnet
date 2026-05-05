@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0061",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Initial Stream Limit Transport Parameters",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the RFC 9000 Section 18.2 floor for initial_max_streams_bidi and initial_max_streams_uni transport-parameter encoding and runtime stream-open gating.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0007",
+    "ARC-QUIC-RFC9000-0054",
+    "WI-QUIC-RFC9000-0061",
+    "VER-QUIC-RFC9000-0061"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0010",
+    "REQ-QUIC-RFC9000-S18P2-0011",
+    "REQ-QUIC-RFC9000-S18P2-0012",
+    "REQ-QUIC-RFC9000-S18P2-0013",
+    "REQ-QUIC-RFC9000-S18P2-0014"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS18P2InitialStreamLimitTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs"
+  ],
+  "design_summary": "The transport-parameter codec represents initial_max_streams_bidi and initial_max_streams_uni as independent QUIC variable-length integer fields with parameter IDs 0x08 and 0x09. Values up to the 2^60 stream-count boundary are accepted, values above that boundary are rejected, and formatting preserves each value in its corresponding parameter. Runtime peer transport-parameter commit applies the parsed values as the initial peer bidirectional and unidirectional stream-open limits. When a parameter is absent or zero, the corresponding local stream type remains blocked and reports a STREAMS_BLOCKED frame until a later MAX_STREAMS frame increases that limit.",
+  "data_and_state_considerations": "Null parsed stream-limit parameters mean absent transport parameters and are mapped to an initial peer stream-open limit of zero. Explicit zero values are preserved as zero. The bidirectional and unidirectional counters are separate: client bidirectional stream IDs advance by 4 from 0, and client unidirectional stream IDs advance by 4 from 2. MAX_STREAMS frames remain the only later mechanism in this slice for raising the corresponding peer stream-open limit.",
+  "edge_cases_and_constraints": [
+    "The codec accepts exactly 2^60 as the stream-count boundary and rejects 2^60 + 1.",
+    "A missing initial_max_streams_bidi parameter blocks local bidirectional stream opens until a bidirectional MAX_STREAMS frame increases the limit.",
+    "An explicit zero initial_max_streams_bidi value blocks local bidirectional stream opens.",
+    "A missing initial_max_streams_uni parameter blocks local unidirectional stream opens until a unidirectional MAX_STREAMS frame increases the limit.",
+    "An explicit zero initial_max_streams_uni value blocks local unidirectional stream opens.",
+    "Bidirectional and unidirectional transport-parameter values do not overwrite each other."
+  ],
+  "risks": [
+    "This slice covers initial stream-count transport parameters and local stream-open gating only; broader flow-control, scheduling, public stream APIs, and STREAMS_BLOCKED emission cadence remain owned by their existing requirements.",
+    "The tests use the managed stream-state seam and do not claim hosted interop behavior.",
+    "The benchmark suite already covers transport-parameter parser and formatter hot paths; this slice does not introduce a new benchmark scenario."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the bounded S18P2 stream-count transport-parameter floor for initial_max_streams_bidi, initial_max_streams_uni, and the absent-or-zero stream-open gate. It does not claim initial data-limit parameters, disable_active_migration, preferred_address fields, max_ack_delay policy, public APIs, or interop readiness."
+    }
+  ]
+}

@@ -1,9 +1,10 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S17P2P5P2/P3 Retry client processing
-closeout and the adjacent S7P3 transport-parameter connection-ID
-authentication closeout; broader executive-read evidence remains pinned to its
-stated 2026-04-30 refresh unless otherwise noted.
+Last verified: 2026-05-05 for the S18P2 initial stream-count transport
+parameter closeout, the S17P2P5P2/P3 Retry client processing closeout, and
+the adjacent S7P3 transport-parameter connection-ID authentication closeout;
+broader executive-read evidence remains pinned to its stated 2026-04-30
+refresh unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -46,8 +47,24 @@ transport-parameter checks, preferred-address migration, public connection-ID
 policy APIs, hosted interop readiness, or broader connection-ID lifecycle parity
 outside Section 7.3.
 
+Follow-on S18P2 stream-count closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S18P2-0010` through
+`REQ-QUIC-RFC9000-S18P2-0014` under
+`ARC-QUIC-RFC9000-0061`, `WI-QUIC-RFC9000-0061`, and
+`VER-QUIC-RFC9000-0061`. The proof covers
+`initial_max_streams_bidi` and `initial_max_streams_uni` transport-parameter
+encoding and parsing as variable-length integer fields, 2^60 boundary
+acceptance, above-boundary rejection, advertised bidirectional and
+unidirectional stream-open limits, and absent or explicit-zero stream-count
+limits blocking local stream opens until a later matching `MAX_STREAMS` frame
+raises the limit. Regenerated coverage triage marks these five requirements as
+`trace_clean` and reports 1,230 of 1,771 QUIC requirements trace-clean overall,
+leaving 541 non-clean. This closure does not claim initial data-limit
+parameters, `max_ack_delay` policy, `disable_active_migration`,
+`preferred_address` fields, public stream APIs, or hosted interop readiness.
+
 Pick up next from generated triage rather than the now-closed S7/S17 lane. The
-largest remaining non-clean RFC 9000 generated group is `S18P2` with 21
+largest remaining non-clean RFC 9000 generated group is `S18P2` with 17
 requirements, followed by `S22P1P1` with 14, `S7P4P1` with 13, and `S4P6` and
 `S5P2` with 12 each.
 

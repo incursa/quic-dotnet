@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0061",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Initial Stream Limit Transport Parameters Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0061",
+    "WI-QUIC-RFC9000-0061"
+  ],
+  "verification_method": "Focused S18P2 0010-0014 requirement-home tests, regenerated QUIC coverage triage, SpecTrace JSON validation, Release build, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0010",
+    "REQ-QUIC-RFC9000-S18P2-0011",
+    "REQ-QUIC-RFC9000-S18P2-0012",
+    "REQ-QUIC-RFC9000-S18P2-0013",
+    "REQ-QUIC-RFC9000-S18P2-0014"
+  ],
+  "scope": "This verification covers initial_max_streams_bidi and initial_max_streams_uni transport-parameter encoding and the managed runtime stream-open behavior for absent, zero, and advertised initial stream-count limits.",
+  "expected_result": "The focused tests show that initial_max_streams_bidi and initial_max_streams_uni are encoded and parsed as their own variable-length integer transport parameters, accept the 2^60 boundary, reject values above that boundary, permit local stream opens up to the advertised initial limit, block stream opens when the corresponding value is absent or zero, and unblock only after a later MAX_STREAMS frame increases the matching stream-count limit.",
+  "procedure": [
+    "Run the focused S18P2 0010-0014 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run a Release build.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The transport-parameter codec accepts and emits RFC 9000 Section 18.2 transport-parameter tuples.",
+    "The stream-state bookkeeping exposes local stream-open decisions and STREAMS_BLOCKED frame details.",
+    "Existing MAX_STREAMS frame handling remains the mechanism for raising stream-count limits after the handshake."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS18P2InitialStreamLimitTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0014\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim closure for initial data-limit parameters, max_ack_delay policy, disable_active_migration, preferred_address fields, public stream APIs, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S18P2 0010-0014 requirement-home filter passed 13/13, regenerated coverage triage marks REQ-QUIC-RFC9000-S18P2-0010 through REQ-QUIC-RFC9000-S18P2-0014 trace_clean, core SpecTrace JSON validation passed for 427 artifacts, Release build passed with 0 warnings and 0 errors, and the full Release test suite passed 4422/4422."
+}

@@ -32082,21 +32082,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0061"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0061"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0061"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B15-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs::TryFormatTransportParameters_EmitsInitialMaxStreamsBidiAsAVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs::TryParseTransportParameters_RejectsInitialMaxStreamsBidiAboveTheSixtyBitLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs::TryParseTransportParameters_AcceptsInitialMaxStreamsBidiAtTheSixtyBitLimit"
         ]
       }
     },
@@ -32112,22 +32116,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0061"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0061"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0061"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B15-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs::TryOpenLocalStream_UsesAdvertisedInitialBidirectionalStreamLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs::TryOpenLocalStream_BlocksBidirectionalStreamsWhenInitialMaxStreamsBidiIsZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs::TryOpenLocalStream_BlocksBidirectionalStreamsUntilPeerMaxStreamsIncreases"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs::TryOpenLocalStream_BlocksBidirectionalStreamsUntilPeerMaxStreamsIncreases"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0012",
@@ -32141,13 +32150,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0061"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0061"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0061"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B15-P0-S3",
@@ -32171,21 +32183,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0061"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0061"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0061"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B16-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs::TryFormatTransportParameters_EmitsInitialMaxStreamsUniAsAVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs::TryParseTransportParameters_RejectsInitialMaxStreamsUniAboveTheSixtyBitLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs::TryParseTransportParameters_AcceptsInitialMaxStreamsUniAtTheSixtyBitLimit"
         ]
       }
     },
@@ -32201,22 +32217,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0061"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0061"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0061"
         ],
         "upstream_refs": [
           "RFC 9000 §18.2 RFC9000-S18.2-B16-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs::TryOpenLocalStream_UsesAdvertisedInitialUnidirectionalStreamLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs::TryOpenLocalStream_BlocksUnidirectionalStreamsWhenInitialMaxStreamsUniIsZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs::TryOpenLocalStream_BlocksUnidirectionalStreamsUntilPeerMaxStreamsIncreases"
         ]
-      },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs::TryOpenLocalStream_BlocksUnidirectionalStreamsUntilPeerMaxStreamsIncreases"
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9000-S18P2-0015",
