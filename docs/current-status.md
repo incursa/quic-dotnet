@@ -11,37 +11,38 @@ architecture, work items, or verification artifacts under `specs/`.
 ## 2026-05-05 Restart Note
 
 This note is intentionally narrow for handoff. The just-finished slices close
-the RFC 9000 S19P13 STREAM_DATA_BLOCKED parser and field-shape topoff for
+the RFC 9000 S19P13 STREAM_DATA_BLOCKED parser/field-shape topoff for
 `REQ-QUIC-RFC9000-S19P13-0003` through
-`REQ-QUIC-RFC9000-S19P13-0008`. The closeout adds focused positive, negative,
-edge, fuzz, and benchmark evidence around type `0x15`, Stream ID and Maximum
-Stream Data varint encoding, truncation/out-of-range rejection, frame-boundary
-consumption, blocked-stream identity preservation, and blocked-offset
-preservation.
+`REQ-QUIC-RFC9000-S19P13-0008`, and the receiver-side send-only closeout for
+`REQ-QUIC-RFC9000-S19P13-0002`. The S19P13 proof now covers type `0x15`,
+Stream ID and Maximum Stream Data varint encoding, truncation/out-of-range
+rejection, frame-boundary consumption, blocked-stream identity preservation,
+blocked-offset preservation, receive-capable stream acceptance, and protected
+runtime close with `STREAM_STATE_ERROR` for opened or uncreated send-only
+stream IDs.
 
-Pick up next after S19P13 frame-shape proof:
+Pick up next after S19P13 closure:
 
 1. Start in `docs/requirements-workflow.md`, then check
-   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P13 requirements in
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P14 requirements in
    `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
-2. The S19P13 `0003-0008` closeout is parser/formatter proof only. Do not
-   describe it as new STREAM_DATA_BLOCKED emission scheduling, flow-control
-   autotuning, asynchronous credit waiting, sender/recovery behavior, public
-   flow-control APIs, send-only stream receive termination, or interop readiness.
-3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0003` through
-   `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`. The remaining S19P13 item
-   is `REQ-QUIC-RFC9000-S19P13-0002`, which still needs receive-policy
-   positive and edge proof for STREAM_DATA_BLOCKED on send-only streams.
-4. Confirm the live generated triage before editing; if S19P13 remains active,
-   keep the next slice on `REQ-QUIC-RFC9000-S19P13-0002` and avoid mixing it
-   with S19P14 STREAMS_BLOCKED parser/field proof.
+2. Do not describe S19P13 closure as new STREAM_DATA_BLOCKED emission
+   scheduling, flow-control autotuning, asynchronous credit waiting,
+   sender/recovery behavior, public flow-control APIs, S19P14 STREAMS_BLOCKED
+   behavior, or interop readiness.
+3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0001` through
+   `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`.
+4. The next local S19-family lane is S19P14 STREAMS_BLOCKED: current triage
+   shows nine non-clean requirements, mixing runtime emission proof tails for
+   `0001`, `0002`, `0003`, `0008`, and `0009` with parser/field proof that is
+   still missing or too broad for `0004` through `0007`.
 
 Focused next-triage command:
 
 ```powershell
 $triage = Get-Content specs\generated\quic\quic-requirement-coverage-triage.json -Raw | ConvertFrom-Json -Depth 100
 @($triage.requirements) |
-  Where-Object { $_.requirement_id -like 'REQ-QUIC-RFC9000-S19P13-*' } |
+  Where-Object { $_.requirement_id -like 'REQ-QUIC-RFC9000-S19P14-*' } |
   Select-Object requirement_id,state,primary_issue,@{Name='missing';Expression={$_.evidence_summary.missing_required_kinds -join ','}}
 ```
 

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0053",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Send-Only Receive Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0053",
+    "WI-QUIC-RFC9000-0053"
+  ],
+  "verification_method": "Focused S19P13-0002 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P13-0002"
+  ],
+  "scope": "This verification covers receiver-side STREAM_DATA_BLOCKED policy for receive-capable streams, opened send-only streams, and uncreated send-only stream IDs on the protected Application Data runtime path.",
+  "expected_result": "The requirement-home tests show receive-capable streams accept STREAM_DATA_BLOCKED without error, opened send-only stream IDs produce STREAM_STATE_ERROR at the bookkeeping seam, and protected STREAM_DATA_BLOCKED packets targeting opened or uncreated send-only stream IDs transition the runtime to Closing with a local STREAM_STATE_ERROR close and triggering frame type 0x15.",
+  "procedure": [
+    "Run the focused S19P13-0002 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing STREAM_DATA_BLOCKED parser and formatter remain the wire-shape seam under test elsewhere.",
+    "The existing QuicConnectionStreamState receive-capability resolver identifies local unidirectional stream IDs as send-only for this endpoint.",
+    "The protected Application Data runtime has 1-RTT open packet-protection material."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0002\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim STREAM_DATA_BLOCKED parser/formatter closure beyond the existing S19P13 0003 through 0008 proof and does not claim S19P14 STREAMS_BLOCKED behavior."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P13-0002 requirement-home filter passed, the Release build passed, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S19P13-0002 trace_clean, SpecTrace core validation passed, and git diff --check passed."
+}

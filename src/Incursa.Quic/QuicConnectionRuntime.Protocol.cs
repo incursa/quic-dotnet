@@ -1413,8 +1413,12 @@ internal sealed partial class QuicConnectionRuntime
                     streamDataBlockedFrame,
                     out QuicTransportErrorCode streamDataBlockedErrorCode))
                 {
-                    _ = streamDataBlockedErrorCode;
-                    return false;
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        HandshakePacketStreamDataBlockedFrameType,
+                        streamDataBlockedErrorCode,
+                        "The peer sent a STREAM_DATA_BLOCKED frame that violated receive-side stream state.",
+                        ref effects);
                 }
 
                 offset += streamDataBlockedBytesConsumed;

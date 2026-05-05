@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T08:42:16.7087370-06:00",
+  "generated_at": "2026-05-05T10:01:25.0088910-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T08:42:16.7054611-06:00",
+    "generated_at": "2026-05-05T10:01:25.0049637-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 65,
       "covered_but_proof_too_broad": 72,
-      "partially_covered": 173,
-      "trace_clean": 1173,
+      "partially_covered": 172,
+      "trace_clean": 1174,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 217
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1173,
+      "clean": 1174,
       "metadata_only": 65,
-      "new_tests_needed": 525,
+      "new_tests_needed": 524,
       "restructure_needed": 99
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 65,
           "covered_but_proof_too_broad": 72,
-          "partially_covered": 173,
-          "trace_clean": 860,
+          "partially_covered": 172,
+          "trace_clean": 861,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 217
         }
@@ -104889,31 +104889,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -104923,9 +104925,163 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
           "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "method": "ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "method": "ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "method": "ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "line": 87,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "method": "ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "line": 87,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "method": "TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "line": 42,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "method": "TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "line": 42,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
           "member": "REQ_QUIC_RFC9000_S19P13_0002.TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
           "method": "TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
-          "line": 12,
+          "line": 63,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P13-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P13_0002",
+          "member": "REQ_QUIC_RFC9000_S19P13_0002.TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+          "method": "TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+          "line": 63,
           "kinds": [
             "negative"
           ],

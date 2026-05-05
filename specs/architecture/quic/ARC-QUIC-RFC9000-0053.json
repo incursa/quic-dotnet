@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0053",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Send-Only Receive Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded receiver-side policy that closes the connection when a protected STREAM_DATA_BLOCKED frame targets a send-only stream.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0052",
+    "WI-QUIC-RFC9000-0053",
+    "VER-QUIC-RFC9000-0053"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P13-0002"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs"
+  ],
+  "design_summary": "The protected Application Data frame loop delegates STREAM_DATA_BLOCKED receive-policy validation to QuicConnectionStreamState.TryReceiveStreamDataBlockedFrame. That seam accepts receive-capable peer streams and returns STREAM_STATE_ERROR for send-only local unidirectional stream IDs. The runtime now preserves that transport error by converting the failed STREAM_DATA_BLOCKED receive-policy check into a local CONNECTION_CLOSE transition with triggering frame type 0x15.",
+  "data_and_state_considerations": "This slice does not change STREAM_DATA_BLOCKED parsing, formatting, sender-side advisory emission, or stream flow-control credit accounting. It only ensures the existing receive-capability check is surfaced as a connection close when the offending frame arrives on a protected runtime packet path.",
+  "edge_cases_and_constraints": [
+    "Receive-capable bidirectional streams remain accepted and do not close the connection.",
+    "Opened locally initiated unidirectional streams are send-only for this endpoint and close with STREAM_STATE_ERROR when targeted by STREAM_DATA_BLOCKED.",
+    "Uncreated locally initiated unidirectional stream IDs are also send-only by stream-ID direction and close with STREAM_STATE_ERROR.",
+    "The local close records STREAM_DATA_BLOCKED frame type 0x15 as the triggering frame type."
+  ],
+  "alternatives_considered": [
+    "Leave the bookkeeping seam proof as sufficient; rejected because the RFC requirement says the endpoint must terminate the connection, which requires protected runtime close behavior.",
+    "Fold this into the S19P13 frame-shape proof; rejected because ARC-QUIC-RFC9000-0052 intentionally covers parser and field-boundary behavior only.",
+    "Add new STREAM_DATA_BLOCKED parser behavior; rejected because the parser and formatter were already closed for requirements 0003 through 0008."
+  ],
+  "risks": [
+    "This proof remains limited to the current protected Application Data runtime path.",
+    "This proof does not claim new STREAM_DATA_BLOCKED emission scheduling, flow-control autotuning, or sender/recovery behavior.",
+    "Malformed STREAM_DATA_BLOCKED field encodings remain parser/formatter proof under ARC-QUIC-RFC9000-0052 rather than this receive-policy slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers only REQ-QUIC-RFC9000-S19P13-0002 receiver-side termination for STREAM_DATA_BLOCKED frames that target send-only streams."
+    }
+  ]
+}

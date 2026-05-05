@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0053",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Send-Only Receive Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0053",
+    "VER-QUIC-RFC9000-0053"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P13-0002"
+  ],
+  "summary": "Close the remaining RFC 9000 Section 19.13 receiver-side send-only STREAM_DATA_BLOCKED policy tail.",
+  "planned_changes": "- Add focused requirement-home proof that receive-capable streams accept STREAM_DATA_BLOCKED without a transport error.\n- Keep direct stream-state proof that opened send-only streams return STREAM_STATE_ERROR.\n- Add protected runtime proof that opened and uncreated send-only stream IDs close the connection with STREAM_STATE_ERROR and triggering frame type 0x15.\n- Propagate the existing stream-state error through the protected Application Data frame loop instead of dropping it as an unclassified receive failure.\n- Link the proof to dedicated architecture, work-item, and verification artifacts.",
+  "verification_plan": "Run the focused S19P13-0002 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0053"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0053"
+  ],
+  "out_of_scope": [
+    "Changing STREAM_DATA_BLOCKED parser or formatter behavior.",
+    "Changing STREAM_DATA_BLOCKED sender-side advisory emission scheduling.",
+    "Changing flow-control autotuning or credit publication.",
+    "Changing public flow-control APIs.",
+    "Claiming broader S19P14 STREAMS_BLOCKED behavior."
+  ],
+  "completion_notes": "Completed as a receive-policy topoff over the existing stream-state receive-capability seam and protected Application Data close path."
+}
