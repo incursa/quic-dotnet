@@ -1,6 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-04-30.
+Last verified: 2026-05-05 for the S19P13 handoff note; broader executive-read
+evidence remains pinned to its stated 2026-04-30 refresh unless otherwise
+noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -9,34 +11,38 @@ architecture, work items, or verification artifacts under `specs/`.
 ## 2026-05-05 Restart Note
 
 This note is intentionally narrow for handoff. The just-finished slices close
-the RFC 9000 S19P11 MAX_STREAMS tail for `REQ-QUIC-RFC9000-S19P11-0001`
-through `REQ-QUIC-RFC9000-S19P11-0013`, with parser/field-shape proof,
-protected Application Data `FRAME_ENCODING_ERROR` close behavior for oversized
-MAX_STREAMS frames, stream-capacity increment saturation for the legal `2^60`
-edge, cumulative stream-limit proof for closed streams, canonical xrefs,
-verification notes, generated triage, and focused tests.
+the RFC 9000 S19P13 STREAM_DATA_BLOCKED parser and field-shape topoff for
+`REQ-QUIC-RFC9000-S19P13-0003` through
+`REQ-QUIC-RFC9000-S19P13-0008`. The closeout adds focused positive, negative,
+edge, fuzz, and benchmark evidence around type `0x15`, Stream ID and Maximum
+Stream Data varint encoding, truncation/out-of-range rejection, frame-boundary
+consumption, blocked-stream identity preservation, and blocked-offset
+preservation.
 
-Pick up next after S19P11:
+Pick up next after S19P13 frame-shape proof:
 
 1. Start in `docs/requirements-workflow.md`, then check
-   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P12 requirements in
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P13 requirements in
    `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
-2. `REQ-QUIC-RFC9000-S19P11-0006` is closed only for MAX_STREAMS frame parsing,
-   protected Application Data close behavior, and stream-capacity increment
-   saturation. Do not describe it as broad stream-management completion,
-   retransmission policy, or interop readiness.
-3. `REQ-QUIC-RFC9000-S19P11-0013` is closed for cumulative stream-limit
-   accounting: closed streams remain counted against the advertised MAX_STREAMS
-   lifetime limit. Do not reinterpret this as concurrent-stream accounting.
-4. Continue with the S19P12 DATA_BLOCKED parser/field-shape edge topoff for
-   `REQ-QUIC-RFC9000-S19P12-0003`, `REQ-QUIC-RFC9000-S19P12-0004`, and
-   `REQ-QUIC-RFC9000-S19P12-0006` if the Section 19 control-frame tail remains
-   the active lane.
+2. The S19P13 `0003-0008` closeout is parser/formatter proof only. Do not
+   describe it as new STREAM_DATA_BLOCKED emission scheduling, flow-control
+   autotuning, asynchronous credit waiting, sender/recovery behavior, public
+   flow-control APIs, send-only stream receive termination, or interop readiness.
+3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0003` through
+   `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`. The remaining S19P13 item
+   is `REQ-QUIC-RFC9000-S19P13-0002`, which still needs receive-policy
+   positive and edge proof for STREAM_DATA_BLOCKED on send-only streams.
+4. Confirm the live generated triage before editing; if S19P13 remains active,
+   keep the next slice on `REQ-QUIC-RFC9000-S19P13-0002` and avoid mixing it
+   with S19P14 STREAMS_BLOCKED parser/field proof.
 
-Focused next-slice command:
+Focused next-triage command:
 
 ```powershell
-dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0006"
+$triage = Get-Content specs\generated\quic\quic-requirement-coverage-triage.json -Raw | ConvertFrom-Json -Depth 100
+@($triage.requirements) |
+  Where-Object { $_.requirement_id -like 'REQ-QUIC-RFC9000-S19P13-*' } |
+  Select-Object requirement_id,state,primary_issue,@{Name='missing';Expression={$_.evidence_summary.missing_required_kinds -join ','}}
 ```
 
 ## Executive Read

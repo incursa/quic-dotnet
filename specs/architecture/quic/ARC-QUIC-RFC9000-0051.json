@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0051",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 DATA_BLOCKED Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 19.12 DATA_BLOCKED parser, formatter, field-boundary, and benchmark proof slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0008",
+    "WI-QUIC-RFC9000-0051",
+    "VER-QUIC-RFC9000-0051"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P12-0003",
+    "REQ-QUIC-RFC9000-S19P12-0004",
+    "REQ-QUIC-RFC9000-S19P12-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P12DataBlockedFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0006.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The DATA_BLOCKED frame remains centered on the existing span-backed frame codec and immutable frame view. The parser accepts the fixed DATA_BLOCKED frame type 0x14, parses the Maximum Data field as a QUIC variable-length integer, reports the parsed connection-level blocking limit, and consumes exactly the DATA_BLOCKED frame bytes so following packet frames remain available to the packet parser. The formatter writes the fixed type and Maximum Data field through the shared QUIC variable-length integer formatter and rejects values outside the 62-bit varint range.",
+  "data_and_state_considerations": "This slice is wire-shape proof over QuicDataBlockedFrame.MaximumData and the frame codec. Runtime flow-control emission remains owned by the existing DATA_BLOCKED runtime artifact family; this proof does not introduce new sender scheduling, credit autotuning, or asynchronous wait-state behavior.",
+  "edge_cases_and_constraints": [
+    "Non-0x14 and non-minimal 0x14 frame-type encodings are rejected by the fixed-type parser.",
+    "The Maximum Data field is accepted at each QUIC variable-length integer width boundary, including the maximum 62-bit varint value.",
+    "Truncated Maximum Data variable-length integers are rejected before a frame view is produced.",
+    "Formatter calls reject Maximum Data values above the QUIC variable-length integer range.",
+    "The parser consumes only the DATA_BLOCKED frame and leaves any trailing frame bytes for the packet parser."
+  ],
+  "alternatives_considered": [
+    "Leave S19P12 under the existing broad frame-codec closeout; rejected because generated triage still reported missing required edge proof for requirements 0003, 0004, and 0006.",
+    "Change the DATA_BLOCKED runtime emission policy; rejected because the reported gap is parser and field-shape proof, while runtime emission remains separately traced under the existing Section 4 and Section 19.12 runtime slice.",
+    "Add a standalone DATA_BLOCKED benchmark suite; rejected because the existing QuicFrameCodec benchmark suite already owns permanent parser and formatter hot-path coverage for neighboring frame families."
+  ],
+  "risks": [
+    "This proof does not claim new DATA_BLOCKED emission scheduling or retry policy.",
+    "This proof does not add public flow-control tuning APIs or receiver autotuning behavior.",
+    "Malformed-frame handling is proven at the codec seam, not as a hosted endpoint close-packet assertion for every malformed DATA_BLOCKED input."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers RFC 9000 Section 19.12 DATA_BLOCKED type encoding, Maximum Data field varint encoding, field-boundary behavior, and parser/formatter benchmark coverage for requirements 0003, 0004, and 0006 only."
+    }
+  ]
+}

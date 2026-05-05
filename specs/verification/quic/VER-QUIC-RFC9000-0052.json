@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0052",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0052",
+    "WI-QUIC-RFC9000-0052"
+  ],
+  "verification_method": "Focused S19P13 requirement-home tests, Release build, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P13-0003",
+    "REQ-QUIC-RFC9000-S19P13-0004",
+    "REQ-QUIC-RFC9000-S19P13-0005",
+    "REQ-QUIC-RFC9000-S19P13-0006",
+    "REQ-QUIC-RFC9000-S19P13-0007",
+    "REQ-QUIC-RFC9000-S19P13-0008"
+  ],
+  "scope": "This verification covers STREAM_DATA_BLOCKED parser and formatter behavior, type 0x15 fixed-frame encoding, Stream ID and Maximum Stream Data variable-length integer handling, frame-boundary consumption, blocked-stream identity preservation, and blocked-offset preservation for RFC 9000 Section 19.13 requirements 0003 through 0008.",
+  "expected_result": "Focused S19P13 requirement homes prove that STREAM_DATA_BLOCKED frames use the fixed type 0x15, reject non-minimal type encodings, preserve and format Stream ID and Maximum Stream Data varint fields across width boundaries, reject truncated or out-of-range field encodings, and consume only the STREAM_DATA_BLOCKED frame bytes.",
+  "procedure": [
+    "Run the focused S19P13 requirement-home filter.",
+    "Run a Release build.",
+    "Run the QuicFrameCodec STREAM_DATA_BLOCKED benchmark methods with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec STREAM_DATA_BLOCKED parser and formatter are the wire-format seam under test.",
+    "The existing QuicStreamDataBlockedFrame immutable view remains the field carrier under test.",
+    "Runtime advisory emission remains owned by the existing STREAM_DATA_BLOCKED runtime artifact family."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicStreamDataBlockedFrame.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P13StreamDataBlockedFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S19P13_0008\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*StreamDataBlockedFrame*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim new STREAM_DATA_BLOCKED emission scheduling, flow-control autotuning, asynchronous credit waiting, sender/recovery behavior, public flow-control APIs, send-only stream receive termination, or hosted endpoint close-packet behavior beyond the parser and formatter seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. Regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S19P13-0003 through REQ-QUIC-RFC9000-S19P13-0008 as trace_clean with fuzz required and no missing required coverage. Release build succeeded with 0 warnings and 0 errors. Focused S19P13 requirement-home tests passed 35/35. SpecTrace core validation passed for 400 JSON artifacts. BenchmarkDotNet Dry smoke executed ParseStreamDataBlockedFrame and FormatStreamDataBlockedFrame. git diff --check passed."
+}

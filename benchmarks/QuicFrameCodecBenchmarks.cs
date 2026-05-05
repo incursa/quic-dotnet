@@ -14,6 +14,8 @@ public class QuicFrameCodecBenchmarks
     private QuicAckFrame ackEcnTemplate = new();
     private byte[] cryptoFrame = [];
     private byte[] cryptoData = [];
+    private byte[] dataBlockedFrame = [];
+    private QuicDataBlockedFrame dataBlockedTemplate;
     private byte[] largeStreamData = [];
     private byte[] maxStreamDataFrame = [];
     private QuicMaxStreamDataFrame maxStreamDataTemplate;
@@ -23,6 +25,8 @@ public class QuicFrameCodecBenchmarks
     private byte[] newTokenFrame = [];
     private byte[] newTokenValue = [];
     private byte[] streamData = [];
+    private byte[] streamDataBlockedFrame = [];
+    private QuicStreamDataBlockedFrame streamDataBlockedTemplate;
     private byte[] streamsBlockedFrame = [];
     private QuicStreamsBlockedFrame streamsBlockedTemplate;
     private byte[] destination = [];
@@ -83,6 +87,24 @@ public class QuicFrameCodecBenchmarks
         }
 
         ackEcnFrame = ackEcnDestination[..ackEcnBytesWritten].ToArray();
+
+        dataBlockedTemplate = new QuicDataBlockedFrame(0x1234_5678);
+        byte[] dataBlockedDestination = new byte[16];
+        if (!QuicFrameCodec.TryFormatDataBlockedFrame(dataBlockedTemplate, dataBlockedDestination, out int dataBlockedBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a DATA_BLOCKED frame benchmark payload.");
+        }
+
+        dataBlockedFrame = dataBlockedDestination[..dataBlockedBytesWritten].ToArray();
+
+        streamDataBlockedTemplate = new QuicStreamDataBlockedFrame(0x1234, 0x5678);
+        byte[] streamDataBlockedDestination = new byte[24];
+        if (!QuicFrameCodec.TryFormatStreamDataBlockedFrame(streamDataBlockedTemplate, streamDataBlockedDestination, out int streamDataBlockedBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a STREAM_DATA_BLOCKED frame benchmark payload.");
+        }
+
+        streamDataBlockedFrame = streamDataBlockedDestination[..streamDataBlockedBytesWritten].ToArray();
 
         maxStreamDataTemplate = new QuicMaxStreamDataFrame(0x1234, 0x5678);
         byte[] maxStreamDataDestination = new byte[16];
@@ -239,6 +261,56 @@ public class QuicFrameCodecBenchmarks
             streamData,
             destination,
             out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures DATA_BLOCKED frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseDataBlockedFrame()
+    {
+        return QuicFrameCodec.TryParseDataBlockedFrame(
+            dataBlockedFrame,
+            out QuicDataBlockedFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed ^ unchecked((int)frame.MaximumData)
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures DATA_BLOCKED frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatDataBlockedFrame()
+    {
+        return QuicFrameCodec.TryFormatDataBlockedFrame(dataBlockedTemplate, destination, out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAM_DATA_BLOCKED frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseStreamDataBlockedFrame()
+    {
+        return QuicFrameCodec.TryParseStreamDataBlockedFrame(
+            streamDataBlockedFrame,
+            out QuicStreamDataBlockedFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed ^ unchecked((int)frame.StreamId) ^ unchecked((int)frame.MaximumStreamData)
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures STREAM_DATA_BLOCKED frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatStreamDataBlockedFrame()
+    {
+        return QuicFrameCodec.TryFormatStreamDataBlockedFrame(streamDataBlockedTemplate, destination, out int bytesWritten)
             ? bytesWritten
             : -1;
     }

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0052",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0052",
+    "VER-QUIC-RFC9000-0052"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P13-0003",
+    "REQ-QUIC-RFC9000-S19P13-0004",
+    "REQ-QUIC-RFC9000-S19P13-0005",
+    "REQ-QUIC-RFC9000-S19P13-0006",
+    "REQ-QUIC-RFC9000-S19P13-0007",
+    "REQ-QUIC-RFC9000-S19P13-0008"
+  ],
+  "summary": "Prove the RFC 9000 Section 19.13 STREAM_DATA_BLOCKED frame type, Stream ID field, and Maximum Stream Data field trace tail.",
+  "planned_changes": "- Add a focused STREAM_DATA_BLOCKED requirement-home helper for exact field encodings, trailing-frame consumption, parser assertions, and formatter assertions.\n- Add focused positive, edge, negative, and fuzz-linked proof for the STREAM_DATA_BLOCKED type and both variable-length integer fields.\n- Add direct focused proof that Stream ID preserves the blocked stream and Maximum Stream Data preserves the blocked stream offset, including maximum 62-bit varint values.\n- Add STREAM_DATA_BLOCKED parse and format coverage to the existing QuicFrameCodec benchmark suite.\n- Link the focused proof to dedicated architecture, work-item, and verification artifacts.",
+  "verification_plan": "Run the focused S19P13 requirement-home filter, run a Release build, run the QuicFrameCodec benchmark Dry job for STREAM_DATA_BLOCKED parse/format methods, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0052"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0052"
+  ],
+  "out_of_scope": [
+    "Changing STREAM_DATA_BLOCKED runtime emission scheduling.",
+    "Changing sender/recovery retransmission policy.",
+    "Closing receiver-side send-only stream termination for REQ-QUIC-RFC9000-S19P13-0002.",
+    "Adding public flow-control tuning or receive-window APIs.",
+    "Replacing the span-backed frame-codec hot path."
+  ],
+  "completion_notes": "Completed as focused parser/formatter, field-boundary, and benchmark proof over the existing STREAM_DATA_BLOCKED frame codec seam."
+}

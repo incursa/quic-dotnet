@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0051",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 DATA_BLOCKED Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0051",
+    "WI-QUIC-RFC9000-0051"
+  ],
+  "verification_method": "Focused S19P12 requirement-home tests, Release build, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P12-0003",
+    "REQ-QUIC-RFC9000-S19P12-0004",
+    "REQ-QUIC-RFC9000-S19P12-0006"
+  ],
+  "scope": "This verification covers DATA_BLOCKED parser and formatter behavior, type 0x14 fixed-frame encoding, Maximum Data variable-length integer handling, frame-boundary consumption, and connection-level blocking-limit field preservation for RFC 9000 Section 19.12 requirements 0003, 0004, and 0006.",
+  "expected_result": "Focused S19P12 requirement homes prove that DATA_BLOCKED frames use the fixed type 0x14, reject non-minimal type encodings, preserve and format the Maximum Data varint field across width boundaries, reject truncated or out-of-range Maximum Data encodings, and consume only the DATA_BLOCKED frame bytes.",
+  "procedure": [
+    "Run the focused S19P12 requirement-home filter.",
+    "Run a Release build.",
+    "Run the QuicFrameCodec benchmark suite with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec DATA_BLOCKED parser and formatter are the wire-format seam under test.",
+    "The existing QuicDataBlockedFrame immutable view remains the field carrier under test.",
+    "Runtime flow-control emission remains owned by the existing Section 4 and Section 19.12 runtime artifact family."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P12DataBlockedFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0006\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*DataBlockedFrame*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim new DATA_BLOCKED emission scheduling, flow-control autotuning, asynchronous credit waiting, sender/recovery retransmission behavior, public flow-control APIs, or hosted endpoint close-packet behavior beyond the parser and formatter seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. Regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S19P12-0003, REQ-QUIC-RFC9000-S19P12-0004, and REQ-QUIC-RFC9000-S19P12-0006 as trace_clean with fuzz required and no missing required coverage. Release build succeeded with 0 warnings and 0 errors. Focused S19P12 requirement-home tests passed 17/17. SpecTrace core validation passed for 397 JSON artifacts. BenchmarkDotNet Dry smoke executed ParseDataBlockedFrame and FormatDataBlockedFrame. git diff --check passed."
+}

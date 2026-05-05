@@ -37395,17 +37395,20 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0051"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0051"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0051"
         ],
         "upstream_refs": [
           "RFC 9000 §19.12 RFC9000-S19.12-B4-P0-S2",
@@ -37413,7 +37416,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::Fuzz_DataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ConsumesOnlyTheDataBlockedFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsNonMinimalTypeEncoding"
         ]
       }
     },
@@ -37425,17 +37430,20 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0051"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0051"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0051"
         ],
         "upstream_refs": [
           "RFC 9000 §19.12 RFC9000-S19.12-B4-P0-S3",
@@ -37444,7 +37452,10 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::Fuzz_DataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0004.cs::TryFormatDataBlockedFrame_RejectsMaximumDataAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0004.cs::TryParseDataBlockedFrame_AcceptsAllMaximumDataVarintLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0004.cs::TryParseDataBlockedFrame_RejectsTruncatedMaximumDataVarints"
         ]
       }
     },
@@ -37491,17 +37502,20 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0051"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0051"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0051"
         ],
         "upstream_refs": [
           "RFC 9000 §19.12 RFC9000-S19.12-B7-P0-S1",
@@ -37510,7 +37524,10 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::Fuzz_DataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_ParsesAndFormatsTheMaximumDataField",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs::TryParseDataBlockedFrame_RejectsTruncatedInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0006.cs::TryFormatDataBlockedFrame_RejectsConnectionLimitsAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0006.cs::TryParseDataBlockedFrame_PreservesTheBlockingConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0006.cs::TryParseDataBlockedFrame_PreservesTheMaximumVarintConnectionLimit"
         ]
       }
     },
@@ -37581,25 +37598,30 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_ParsesTheType15Frame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsNonMinimalTypeEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::TryParseStreamDataBlockedFrame_RejectsOtherFrameTypes"
         ]
       }
     },
@@ -37611,26 +37633,31 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B5-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0004.cs::TryFormatStreamDataBlockedFrame_RejectsStreamIdAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0004.cs::TryParseStreamDataBlockedFrame_AcceptsAllStreamIdVarintLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0004.cs::TryParseStreamDataBlockedFrame_ParsesTheStreamIdVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0004.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedStreamIdVarints"
         ]
       }
     },
@@ -37642,26 +37669,31 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B5-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0005.cs::TryFormatStreamDataBlockedFrame_RejectsMaximumStreamDataAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0005.cs::TryParseStreamDataBlockedFrame_AcceptsAllMaximumStreamDataVarintLengths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0005.cs::TryParseStreamDataBlockedFrame_ParsesTheMaximumStreamDataVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0005.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedMaximumStreamDataVarints"
         ]
       }
     },
@@ -37673,30 +37705,33 @@
         "positive": "required",
         "negative": "optional",
         "edge": "optional",
-        "fuzz": "not_applicable"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0025"
+          "ARC-QUIC-RFC9000-0025",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0025"
+          "WI-QUIC-RFC9000-0025",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0025"
+          "VER-QUIC-RFC9000-0025",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0006.cs::TryParseStreamDataBlockedFrame_ConsumesOnlyTheStreamDataBlockedFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0006.cs::TryParseStreamDataBlockedFrame_ParsesBothRequiredFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0006.cs::TryParseStreamDataBlockedFrame_RejectsMissingMaximumStreamDataField"
         ]
       }
     },
@@ -37708,30 +37743,33 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0025"
+          "ARC-QUIC-RFC9000-0025",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0025"
+          "WI-QUIC-RFC9000-0025",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0025"
+          "VER-QUIC-RFC9000-0025",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0007.cs::TryFormatStreamDataBlockedFrame_RejectsBlockedStreamIdsAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0007.cs::TryParseStreamDataBlockedFrame_PreservesTheBlockedStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0007.cs::TryParseStreamDataBlockedFrame_PreservesTheMaximumVarintBlockedStreamId"
         ]
       }
     },
@@ -37743,30 +37781,33 @@
         "positive": "required",
         "negative": "required",
         "edge": "required",
-        "fuzz": "deferred"
+        "fuzz": "required"
       },
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0025"
+          "ARC-QUIC-RFC9000-0025",
+          "ARC-QUIC-RFC9000-0052"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0025"
+          "WI-QUIC-RFC9000-0025",
+          "WI-QUIC-RFC9000-0052"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0025"
+          "VER-QUIC-RFC9000-0025",
+          "VER-QUIC-RFC9000-0052"
         ],
         "upstream_refs": [
           "RFC 9000 §19.13 RFC9000-S19.13-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParseStreamDataBlockedFrame_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs::Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0008.cs::TryFormatStreamDataBlockedFrame_RejectsBlockedOffsetsAboveTheVarintRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0008.cs::TryParseStreamDataBlockedFrame_PreservesTheBlockedStreamOffset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0008.cs::TryParseStreamDataBlockedFrame_PreservesTheMaximumVarintBlockedStreamOffset"
         ]
       }
     },

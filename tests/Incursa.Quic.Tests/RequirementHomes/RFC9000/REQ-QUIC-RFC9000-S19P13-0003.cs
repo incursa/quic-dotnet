@@ -4,6 +4,46 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P13_0003
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseStreamDataBlockedFrame_ParsesTheType15Frame()
+    {
+        byte[] encoded = QuicS19P13StreamDataBlockedFrameTestSupport.BuildStreamDataBlockedFrame();
+
+        Assert.True(QuicFrameCodec.TryParseStreamDataBlockedFrame(
+            encoded,
+            out QuicStreamDataBlockedFrame frame,
+            out int bytesConsumed));
+
+        Assert.Equal(4UL, frame.StreamId);
+        Assert.Equal(16UL, frame.MaximumStreamData);
+        Assert.Equal(encoded.Length, bytesConsumed);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseStreamDataBlockedFrame_RejectsOtherFrameTypes()
+    {
+        byte[] encoded = QuicS19P13StreamDataBlockedFrameTestSupport.BuildStreamDataBlockedFrameWithEncodedType([0x14]);
+
+        QuicS19P13StreamDataBlockedFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseStreamDataBlockedFrame_RejectsNonMinimalTypeEncoding()
+    {
+        byte[] encoded = QuicS19P13StreamDataBlockedFrameTestSupport.BuildStreamDataBlockedFrameWithEncodedType([0x40, 0x15]);
+
+        QuicS19P13StreamDataBlockedFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0003">The Type field MUST be encoded as a variable-length integer with value 0x15.</workbench-requirement>
@@ -63,6 +103,12 @@ public sealed class REQ_QUIC_RFC9000_S19P13_0003
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_StreamDataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
     {

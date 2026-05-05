@@ -54,6 +54,37 @@ public sealed class REQ_QUIC_RFC9000_S19P12_0003
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseDataBlockedFrame_RejectsNonMinimalTypeEncoding()
+    {
+        byte[] encoded = QuicS19P12DataBlockedFrameTestSupport.BuildDataBlockedFrameWithEncodedType([0x40, 0x14]);
+
+        QuicS19P12DataBlockedFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseDataBlockedFrame_ConsumesOnlyTheDataBlockedFrame()
+    {
+        byte[] encoded = QuicS19P12DataBlockedFrameTestSupport.BuildDataBlockedFrameWithTrailingFrame(maximumData: 0x40);
+
+        Assert.True(QuicFrameCodec.TryParseDataBlockedFrame(
+            encoded,
+            out QuicDataBlockedFrame frame,
+            out int bytesConsumed));
+
+        Assert.Equal(0x40UL, frame.MaximumData);
+        Assert.Equal(encoded.Length - QuicFrameTestData.BuildPingFrame().Length, bytesConsumed);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S19P12-0006")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     public void Fuzz_DataBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
     {
