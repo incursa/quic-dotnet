@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0055",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Server Pre-Acceptance Ingress Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded server-side policy that handles unmatched datagrams before a listener admits a new connection.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-CRT-0003",
+    "WI-QUIC-RFC9000-0055",
+    "VER-QUIC-RFC9000-0055"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P2P2-0001",
+    "REQ-QUIC-RFC9000-S5P2P2-0002",
+    "REQ-QUIC-RFC9000-S5P2P2-0003",
+    "REQ-QUIC-RFC9000-S5P2P2-0004",
+    "REQ-QUIC-RFC9000-S5P2P2-0005",
+    "REQ-QUIC-RFC9000-S5P2P2-0006",
+    "REQ-QUIC-RFC9000-S5P2P2-0009",
+    "REQ-QUIC-RFC9000-S5P2P2-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicListenerPreAcceptanceIngressPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0010.cs"
+  ],
+  "design_summary": "The listener first gives every datagram to the endpoint ingress router so existing connections and endpoint-handled packets remain ahead of server pre-acceptance policy. Unmatched datagrams are screened for retained stateless-reset emission, then classified by a small pre-acceptance policy: large unsupported-version long headers are eligible for Version Negotiation, undersized unsupported-version packets are dropped, supported-version Initial packets at the minimum datagram size are admitted into the server handshake path, premature Handshake packets are ignored, and all remaining unmatched packets are dropped. The endpoint route lookup now treats zero-length connection-ID routes as address-tuple routes by requiring the incoming local address and port to match the registered binding when local tuple data is present.",
+  "data_and_state_considerations": "Version Negotiation response limiting is endpoint-local and optional; the listener exposes an internal per-remote-address cap while retaining unlimited behavior by default. The pre-acceptance classifier is stateless so the receive loop can be tested without a socket for drop and classification policy. Actual Initial admission remains in QuicListenerHost and is proven by a protected loopback Initial that produces a server Initial response.",
+  "edge_cases_and_constraints": [
+    "Unsupported-version datagrams below the supported-version Initial minimum are dropped rather than answered.",
+    "A response-limit state suppresses otherwise eligible Version Negotiation responses.",
+    "Zero-length connection-ID routing requires a local address and port match when a local tuple is registered.",
+    "Premature client Handshake packets remain ignored before the server response path exists.",
+    "Unmatched short-header packets remain drops unless the endpoint already routed them or a retained stateless-reset binding matches."
+  ],
+  "risks": [
+    "This slice does not implement CONNECTION_REFUSED close-packet policy.",
+    "This slice does not implement 0-RTT buffering before Initial arrival.",
+    "This slice does not claim client-side first-flight connection-ID continuity or Version Negotiation processing.",
+    "This slice does not broaden public listener APIs or interop harness behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers only the server pre-acceptance policy for RFC 9000 Section 5.2.2 requirements 0001 through 0006 and 0009 through 0010. Requirements 0007 and 0008 remain deliberately out of scope."
+    }
+  ]
+}

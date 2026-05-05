@@ -118,6 +118,19 @@ internal static class QuicVersionNegotiation
     }
 
     /// <summary>
+    /// Determines whether a server should send a Version Negotiation packet when response limiting is active.
+    /// </summary>
+    internal static bool ShouldSendVersionNegotiation(
+        uint clientSelectedVersion,
+        int datagramPayloadSize,
+        ReadOnlySpan<uint> serverSupportedVersions,
+        bool hasAlreadySentVersionNegotiation)
+    {
+        return !hasAlreadySentVersionNegotiation
+            && ShouldSendVersionNegotiation(clientSelectedVersion, datagramPayloadSize, serverSupportedVersions);
+    }
+
+    /// <summary>
     /// Determines whether a server should send a Version Negotiation packet for the client's selected version
     /// when the server already sent Version Negotiation packets for this attempt.
     /// </summary>

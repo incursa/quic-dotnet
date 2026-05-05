@@ -31,6 +31,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
+    private readonly ConcurrentDictionary<string, int> versionNegotiationResponseCountsByRemoteAddress = new(StringComparer.Ordinal);
+    private readonly int maximumVersionNegotiationResponsesPerRemoteAddress;
     private readonly bool retryBootstrapEnabled;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
@@ -60,7 +62,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         int listenBacklog,
         bool retryBootstrapEnabled = false,
         Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null,
-        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
+        int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -71,11 +74,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             throw new ArgumentOutOfRangeException(nameof(listenBacklog));
         }
 
+        if (maximumVersionNegotiationResponsesPerRemoteAddress < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumVersionNegotiationResponsesPerRemoteAddress));
+        }
+
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
+        this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
         endpoint = new QuicConnectionRuntimeEndpoint(1);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
@@ -233,6 +242,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
         }
 
+        versionNegotiationResponseCountsByRemoteAddress.Clear();
         cancellationSource?.Dispose();
         shutdown.Dispose();
     }
@@ -311,19 +321,26 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
-                if (TrySendVersionNegotiationResponse(datagram, pathIdentity))
+                QuicListenerPreAcceptanceDatagramAction action =
+                    QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
+                        datagram,
+                        ListenerSupportedVersions,
+                        retryBootstrapEnabled);
+
+                if (action == QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation)
                 {
+                    _ = TrySendVersionNegotiationResponse(datagram, pathIdentity);
                     continue;
                 }
 
-                if (TryParseInitialDatagram(datagram, out _)
-                    && datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+                if (action == QuicListenerPreAcceptanceDatagramAction.SendProtocolViolationClose)
                 {
                     TrySendProtocolViolationCloseResponse(pathIdentity);
                     continue;
                 }
 
-                if (TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
+                if (action == QuicListenerPreAcceptanceDatagramAction.AdmitInitial
+                    && TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
                 {
                     try
                     {
@@ -349,7 +366,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     }
                 }
 
-                if (retryBootstrapEnabled
+                if (action == QuicListenerPreAcceptanceDatagramAction.IssueRetryBootstrap
                     && TryIssueRetryBootstrapResponseFromZeroRttDatagram(datagram, pathIdentity))
                 {
                     continue;
@@ -466,7 +483,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             || !QuicVersionNegotiation.ShouldSendVersionNegotiation(
                 longHeader.Version,
                 datagram.Length,
-                ListenerSupportedVersions))
+                ListenerSupportedVersions)
+            || !TryReserveVersionNegotiationResponse(pathIdentity.RemoteAddress))
         {
             return false;
         }
@@ -496,6 +514,42 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         finally
         {
             QuicBufferPool.ReturnBytes(responseDatagram);
+        }
+    }
+
+    private bool TryReserveVersionNegotiationResponse(string remoteAddress)
+    {
+        if (maximumVersionNegotiationResponsesPerRemoteAddress == int.MaxValue)
+        {
+            return true;
+        }
+
+        if (maximumVersionNegotiationResponsesPerRemoteAddress == 0)
+        {
+            return false;
+        }
+
+        while (true)
+        {
+            if (!versionNegotiationResponseCountsByRemoteAddress.TryGetValue(remoteAddress, out int currentCount))
+            {
+                if (versionNegotiationResponseCountsByRemoteAddress.TryAdd(remoteAddress, 1))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (currentCount >= maximumVersionNegotiationResponsesPerRemoteAddress)
+            {
+                return false;
+            }
+
+            if (versionNegotiationResponseCountsByRemoteAddress.TryUpdate(remoteAddress, currentCount + 1, currentCount))
+            {
+                return true;
+            }
         }
     }
 

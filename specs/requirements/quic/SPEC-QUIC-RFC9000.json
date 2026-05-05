@@ -6897,17 +6897,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_DoesNotSendForSupportedOrUndersizedPackets"
         ]
       }
     },
@@ -6923,17 +6930,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0002.cs::ShouldSendVersionNegotiation_AllowsSuppressingRepeatedResponses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0002.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached"
         ]
       }
     },
@@ -6949,17 +6963,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0003.cs::ClassifyUnroutedDatagram_DropsUndersizedUnsupportedVersionPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0003.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation"
         ]
       }
     },
@@ -6975,20 +6996,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B3-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize"
         ]
       }
     },
@@ -7004,17 +7028,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs::EndpointMatchesSupportedVersionPacketsByDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs::EndpointLeavesSupportedVersionPacketsUnmatchedWhenTheConnectionIdIsUnknown",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs::EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort"
         ]
       }
     },
@@ -7030,17 +7062,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs::ListenerHostProceedsWithHandshakeForAConformingInitialPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs::ClassifyUnroutedDatagram_DoesNotAdmitUndersizedInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs::ClassifyUnroutedDatagram_AdmitsInitialPacketsAtTheMinimumDatagramSize"
         ]
       }
     },
@@ -7108,17 +7148,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs::ClassifyUnroutedDatagram_DropsPrematureClientHandshakePackets"
         ]
       }
     },
@@ -7134,17 +7180,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0055"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0055"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0055"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.2 RFC9000-S5.2.2-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0010.cs::ClassifyUnroutedDatagram_DropsShortHeaderPacketsThatDoNotMatchAConnection"
         ]
       }
     },

@@ -497,6 +497,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         if (TryLookupExactRoute(
             longHeader.DestinationConnectionId,
+            pathIdentity,
             out QuicConnectionHandle routedHandle,
             out ulong? routedLocallyIssuedConnectionId))
         {
@@ -612,6 +613,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         {
             if (TryLookupRouteByPrefix(
                 packet[1..],
+                pathIdentity,
                 out QuicConnectionHandle routedHandle,
                 out ulong? routedLocallyIssuedConnectionId))
             {
@@ -653,6 +655,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
     private bool TryLookupExactRoute(
         ReadOnlySpan<byte> connectionId,
+        QuicConnectionPathIdentity pathIdentity,
         out QuicConnectionHandle handle,
         out ulong? routedLocallyIssuedConnectionId)
     {
@@ -664,11 +667,12 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
-        return TryLookupRoute(routeId, out handle, out routedLocallyIssuedConnectionId);
+        return TryLookupRoute(routeId, pathIdentity, out handle, out routedLocallyIssuedConnectionId);
     }
 
     private bool TryLookupRouteByPrefix(
         ReadOnlySpan<byte> connectionIdRemainder,
+        QuicConnectionPathIdentity pathIdentity,
         out QuicConnectionHandle handle,
         out ulong? routedLocallyIssuedConnectionId)
     {
@@ -688,7 +692,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 continue;
             }
 
-            if (bucket.TryGetValue(routeId, out handle))
+            if (bucket.TryGetValue(routeId, out handle)
+                && IsRouteAddressMatch(routeId, handle, pathIdentity))
             {
                 routedLocallyIssuedConnectionId = TryGetRoutedLocallyIssuedConnectionId(handle, routeId, out ulong connectionId)
                     ? connectionId
@@ -702,6 +707,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
     private bool TryLookupRoute(
         QuicConnectionIdKey routeId,
+        QuicConnectionPathIdentity pathIdentity,
         out QuicConnectionHandle handle,
         out ulong? routedLocallyIssuedConnectionId)
     {
@@ -712,8 +718,10 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             return false;
         }
 
-        if (!bucket.TryGetValue(routeId, out handle))
+        if (!bucket.TryGetValue(routeId, out handle)
+            || !IsRouteAddressMatch(routeId, handle, pathIdentity))
         {
+            handle = default;
             return false;
         }
 
@@ -721,6 +729,16 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             ? connectionId
             : null;
         return true;
+    }
+
+    private bool IsRouteAddressMatch(
+        QuicConnectionIdKey routeId,
+        QuicConnectionHandle handle,
+        QuicConnectionPathIdentity pathIdentity)
+    {
+        return routeId.Length != 0
+            || (pathByHandle.TryGetValue(handle, out QuicConnectionPathIdentity registeredPathIdentity)
+                && IsSameLocalEndpoint(registeredPathIdentity, pathIdentity));
     }
 
     private bool TryGetRoutedLocallyIssuedConnectionId(
@@ -993,5 +1011,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     {
         return string.Equals(left.RemoteAddress, right.RemoteAddress, StringComparison.Ordinal)
             && left.RemotePort == right.RemotePort;
+    }
+
+    private static bool IsSameLocalEndpoint(QuicConnectionPathIdentity left, QuicConnectionPathIdentity right)
+    {
+        return string.Equals(left.LocalAddress, right.LocalAddress, StringComparison.Ordinal)
+            && left.LocalPort == right.LocalPort;
     }
 }

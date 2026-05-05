@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0055",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Server Pre-Acceptance Ingress Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0055",
+    "WI-QUIC-RFC9000-0055"
+  ],
+  "verification_method": "Focused S5P2P2 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S5P2P2-0001",
+    "REQ-QUIC-RFC9000-S5P2P2-0002",
+    "REQ-QUIC-RFC9000-S5P2P2-0003",
+    "REQ-QUIC-RFC9000-S5P2P2-0004",
+    "REQ-QUIC-RFC9000-S5P2P2-0005",
+    "REQ-QUIC-RFC9000-S5P2P2-0006",
+    "REQ-QUIC-RFC9000-S5P2P2-0009",
+    "REQ-QUIC-RFC9000-S5P2P2-0010"
+  ],
+  "scope": "This verification covers server-side pre-acceptance classification and admission for unmatched datagrams: Version Negotiation eligibility and limiting, undersized unsupported-version drops, supported-version routing by connection ID or zero-length local tuple, conforming Initial admission, premature Handshake ignores, and generic unmatched-packet drops.",
+  "expected_result": "The focused requirement-home tests show unsupported versions are answered only when large enough and not limited, smaller unsupported-version packets are dropped, supported-version packets route by CID, zero-length-CID packets require local address and port matching, a protected conforming Initial proceeds far enough to emit a server Initial response, premature Handshake packets are ignored, and unmatched short-header packets are dropped.",
+  "procedure": [
+    "Run the focused S5P2P2 requirement-home filter for requirements 0001, 0002, 0003, 0004, 0005, 0006, 0009, and 0010.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Endpoint ingress routing remains the first receive-loop decision before listener pre-acceptance policy.",
+    "The listener remains server-only for this slice.",
+    "The existing protected Initial builder can create a conforming client Initial for loopback listener proof."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicListenerPreAcceptanceIngressPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0010.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0010\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim CONNECTION_REFUSED policy, 0-RTT buffering, client-side Version Negotiation handling, client-side Initial/Retry CID continuity, preferred-address behavior, public API changes, or broader interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S5P2P2 requirement-home filter passed 14/14, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks S5P2P2 0001 through 0006 and 0009 through 0010 trace_clean while leaving 0007 and 0008 out of scope, SpecTrace core validation passed, and git diff --check passed."
+}

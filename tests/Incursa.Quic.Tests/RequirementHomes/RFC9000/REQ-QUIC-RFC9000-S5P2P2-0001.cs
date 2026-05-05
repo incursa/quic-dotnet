@@ -11,6 +11,7 @@ public sealed class REQ_QUIC_RFC9000_S5P2P2_0001
     [Requirement("REQ-QUIC-RFC9000-S5P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize()
     {
         Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
@@ -32,5 +33,21 @@ public sealed class REQ_QUIC_RFC9000_S5P2P2_0001
             0x11223344,
             QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
             []));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ShouldSendVersionNegotiation_DoesNotSendForSupportedOrUndersizedPackets()
+    {
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            QuicVersionNegotiation.Version1,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            [QuicVersionNegotiation.Version1]));
+
+        Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            QuicS5P2P2ServerPreAcceptanceTestSupport.UnsupportedVersion,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1,
+            [QuicVersionNegotiation.Version1]));
     }
 }

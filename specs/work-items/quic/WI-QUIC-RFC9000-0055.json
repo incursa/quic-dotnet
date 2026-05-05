@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0055",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Server Pre-Acceptance Ingress Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0055",
+    "VER-QUIC-RFC9000-0055"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P2P2-0001",
+    "REQ-QUIC-RFC9000-S5P2P2-0002",
+    "REQ-QUIC-RFC9000-S5P2P2-0003",
+    "REQ-QUIC-RFC9000-S5P2P2-0004",
+    "REQ-QUIC-RFC9000-S5P2P2-0005",
+    "REQ-QUIC-RFC9000-S5P2P2-0006",
+    "REQ-QUIC-RFC9000-S5P2P2-0009",
+    "REQ-QUIC-RFC9000-S5P2P2-0010"
+  ],
+  "summary": "Close the bounded RFC 9000 Section 5.2.2 server pre-acceptance ingress policy floor without widening into connection-refusal or 0-RTT buffering behavior.",
+  "planned_changes": "- Add a small listener pre-acceptance classifier for unmatched datagrams.\n- Add Version Negotiation limiting support while preserving unlimited default listener behavior.\n- Require zero-length connection-ID routes to match the registered local address and port when local tuple data is available.\n- Add focused requirement-home tests for unsupported-version drop/response behavior, response limiting, supported-version and zero-length-CID matching, conforming Initial admission, premature Handshake drops, and unmatched short-header drops.\n- Link the focused proof to dedicated architecture and verification artifacts.",
+  "verification_plan": "Run the focused S5P2P2 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0055"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0055"
+  ],
+  "out_of_scope": [
+    "CONNECTION_REFUSED close-packet emission policy.",
+    "0-RTT buffering before a matching Initial arrives.",
+    "Client-side Version Negotiation processing or Initial/Retry connection-ID continuity.",
+    "Preferred-address follow-ons.",
+    "Public API changes.",
+    "Interop harness behavior changes."
+  ],
+  "completion_notes": "Completed as a focused server pre-acceptance ingress slice over QuicListenerHost, QuicListenerPreAcceptanceIngressPolicy, QuicVersionNegotiation, and QuicConnectionRuntimeEndpoint."
+}
