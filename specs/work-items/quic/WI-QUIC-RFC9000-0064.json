@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0064",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 IANA Provisional Registration Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0064",
+    "VER-QUIC-RFC9000-0064"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S22P1P1-0001",
+    "REQ-QUIC-RFC9000-S22P1P1-0002",
+    "REQ-QUIC-RFC9000-S22P1P1-0003",
+    "REQ-QUIC-RFC9000-S22P1P1-0004",
+    "REQ-QUIC-RFC9000-S22P1P1-0005",
+    "REQ-QUIC-RFC9000-S22P1P1-0006",
+    "REQ-QUIC-RFC9000-S22P1P1-0007",
+    "REQ-QUIC-RFC9000-S22P1P1-0008",
+    "REQ-QUIC-RFC9000-S22P1P1-0009",
+    "REQ-QUIC-RFC9000-S22P1P1-0010",
+    "REQ-QUIC-RFC9000-S22P1P1-0011",
+    "REQ-QUIC-RFC9000-S22P1P1-0012",
+    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-S22P1P1-0014"
+  ],
+  "summary": "Close the RFC 9000 Section 22.1.1 provisional-registration policy proof gap with a narrow internal policy model and focused requirement-home tests.",
+  "planned_changes": "- Add an internal immutable IANA registration policy model for common QUIC registry fields, provisional request requirements, provisional entry requirements, provisional field omission, review policy, date-update review policy, and status text.\n- Correct the S22P1P1-0001 canonical requirement wording so it matches the RFC's request-minimum meaning instead of overconstraining stored provisional entries.\n- Replace the empty S22P1P1 requirement-home scaffolds with focused positive tests for all 14 requirements.\n- Add dedicated architecture, work-item, and verification trace ownership for the S22P1P1 provisional-registration policy family.",
+  "verification_plan": "Run a Release build, run the focused S22P1P1 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0064"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0064"
+  ],
+  "out_of_scope": [
+    "Live IANA synchronization.",
+    "External registry publication.",
+    "Automated codepoint allocation workflows.",
+    "Transport runtime behavior.",
+    "Packet, frame, or transport-parameter parser and serializer behavior.",
+    "Public API widening.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused policy-model and requirement-home proof for the S22P1P1 provisional-registration family."
+}

@@ -17,20 +17,6 @@
   "scope": {
     "total_requirements": 52,
     "implemented_and_tested": [
-      "REQ-QUIC-RFC9000-S22P2-0001",
-      "REQ-QUIC-RFC9000-S22P2-0002",
-      "REQ-QUIC-RFC9000-S22P2-0003",
-      "REQ-QUIC-RFC9000-S22P2-0004",
-      "REQ-QUIC-RFC9000-S22P3-0003",
-      "REQ-QUIC-RFC9000-S22P3-0004",
-      "REQ-QUIC-RFC9000-S22P4-0003",
-      "REQ-QUIC-RFC9000-S22P4-0004",
-      "REQ-QUIC-RFC9000-S22P4-0006",
-      "REQ-QUIC-RFC9000-S22P5-0003",
-      "REQ-QUIC-RFC9000-S22P5-0004",
-      "REQ-QUIC-RFC9000-S22P5-0005"
-    ],
-    "intentionally_deferred": [
       "REQ-QUIC-RFC9000-S22P1P1-0001",
       "REQ-QUIC-RFC9000-S22P1P1-0002",
       "REQ-QUIC-RFC9000-S22P1P1-0003",
@@ -45,6 +31,20 @@
       "REQ-QUIC-RFC9000-S22P1P1-0012",
       "REQ-QUIC-RFC9000-S22P1P1-0013",
       "REQ-QUIC-RFC9000-S22P1P1-0014",
+      "REQ-QUIC-RFC9000-S22P2-0001",
+      "REQ-QUIC-RFC9000-S22P2-0002",
+      "REQ-QUIC-RFC9000-S22P2-0003",
+      "REQ-QUIC-RFC9000-S22P2-0004",
+      "REQ-QUIC-RFC9000-S22P3-0003",
+      "REQ-QUIC-RFC9000-S22P3-0004",
+      "REQ-QUIC-RFC9000-S22P4-0003",
+      "REQ-QUIC-RFC9000-S22P4-0004",
+      "REQ-QUIC-RFC9000-S22P4-0006",
+      "REQ-QUIC-RFC9000-S22P5-0003",
+      "REQ-QUIC-RFC9000-S22P5-0004",
+      "REQ-QUIC-RFC9000-S22P5-0005"
+    ],
+    "intentionally_deferred": [
       "REQ-QUIC-RFC9000-S22P1P2-0001",
       "REQ-QUIC-RFC9000-S22P1P2-0002",
       "REQ-QUIC-RFC9000-S22P1P2-0003",
@@ -82,7 +82,21 @@
       "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
-      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
     ],
     "src_requirement_refs_found": false,
     "reconciliation_artifact_present": false
@@ -93,16 +107,31 @@
       "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs",
-      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs"
+      "tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
     ],
     "src": [
-      "src/Incursa.Quic/QuicTransportErrorCode.cs"
+      "src/Incursa.Quic/QuicTransportErrorCode.cs",
+      "src/Incursa.Quic/QuicIanaRegistrationPolicy.cs"
     ]
   },
   "notes": [
     "The requested reconciliation artifact was not present on disk, so the audit was completed from the canonical spec, the implementation summary, and repo search evidence.",
     "No stale requirement IDs remained in the in-scope test refs.",
     "No in-scope requirement was left uncovered without an explicit deferred note.",
-    "The code-bearing subset for S22P2, S22P3, S22P4, and S22P5 is traced through tests and metadata; the S22P1 registry-process clauses remain intentionally deferred because this repository does not model IANA administration workflows."
+    "The code-bearing subset for S22P2, S22P3, S22P4, and S22P5 is traced through tests and metadata; S22P1P1 is traced through a bounded IANA registration policy model. The remaining S22P1 registry-process clauses stay intentionally deferred because broader IANA administration workflows remain outside this repository."
   ]
 }

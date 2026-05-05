@@ -2,14 +2,14 @@
 
 ## Requirements completed
 
-Implemented and tested: 12
+Implemented and tested: 26
+- `S22P1P1`: `0001`-`0014`
 - `S22P2`: `0001`-`0004`
 - `S22P3`: `0003`-`0004`
 - `S22P4`: `0003`, `0004`, `0006`
 - `S22P5`: `0003`-`0005`
 
-Intentionally deferred: 40
-- `S22P1P1`: `0001`-`0014`
+Intentionally deferred: 26
 - `S22P1P2`: `0001`-`0007`
 - `S22P1P3`: `0001`-`0004`
 - `S22P1P4`: `0001`-`0008`
@@ -19,7 +19,22 @@ Intentionally deferred: 40
 
 ## Files Changed
 
+- `src/Incursa.Quic/QuicIanaRegistrationPolicy.cs`
 - `src/Incursa.Quic/QuicTransportErrorCode.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`
 - `tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs`
@@ -28,22 +43,26 @@ Intentionally deferred: 40
 
 ## Tests Added Or Updated
 
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs` through `REQ-QUIC-RFC9000-S22P1P1-0014.cs`
 - `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
 - `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`
 - `tests/Incursa.Quic.Tests/QuicTransportErrorCodeTests.cs`
 - `src/Incursa.Quic/QuicTransportErrorCode.cs` updated with machine-readable description metadata for each transport error code.
+- `src/Incursa.Quic/QuicIanaRegistrationPolicy.cs` added a bounded policy model for S22P1P1 provisional-registration facts.
 
 ## Tests Run And Results
 
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`
 - Result: passed
 - Summary: 362 passed, 0 failed, 0 skipped
+- `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P1"`
+- Result: passed
+- Summary: 14 passed, 0 failed, 0 skipped
 
 ## Remaining Open Requirements In Scope
 
-- `REQ-QUIC-RFC9000-S22P1P1-0001` through `REQ-QUIC-RFC9000-S22P1P1-0014`
 - `REQ-QUIC-RFC9000-S22P1P2-0001` through `REQ-QUIC-RFC9000-S22P1P2-0007`
 - `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004`
 - `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008`
@@ -54,6 +73,6 @@ Intentionally deferred: 40
 
 ## Risks Or Follow-Up Notes
 
-- The completed subset is data/metadata-only and deliberately avoids inventing an IANA registry-administration model that this repository does not have.
-- The deferred S22P1 clauses are process requirements for registration requests, expert review, and permanent-registration policy; they are not a good fit for transport-runtime code in the current architecture.
-- If a future slice introduces explicit registry administration helpers, the deferred S22P1/S22P3/S22P4/S22P5 policy clauses can be revisited with a narrower helper model and matching tests.
+- The completed S22P1P1 subset is policy-model-only and deliberately avoids transport-runtime behavior, live IANA synchronization, external registry publication, and codepoint allocation workflow automation.
+- The remaining deferred S22P1P2/S22P1P3/S22P1P4 clauses are registry-governance and allocation/reclaim/permanent-registration workflow requirements outside the current helper model.
+- If a future slice introduces broader registry administration helpers, the remaining deferred S22P1/S22P3/S22P4/S22P5 policy clauses can be revisited with narrow helper models and matching tests.

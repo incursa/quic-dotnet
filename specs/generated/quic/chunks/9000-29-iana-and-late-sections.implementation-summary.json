@@ -116,12 +116,43 @@
         "REQ-QUIC-RFC9000-S22P1P1-0013",
         "REQ-QUIC-RFC9000-S22P1P1-0014"
       ],
-      "completion_status": "intentionally deferred",
-      "files_changed": [],
-      "tests_covering_requirement": [],
+      "completion_status": "implemented and tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicIanaRegistrationPolicy.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
+      ],
+      "tests_covering_requirement": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
+      ],
       "direct_refs_added_or_updated": [],
-      "remaining_gap": "IANA provisional-registration workflow and field-policy clauses are not modeled in the helper-only repository.",
-      "notes": "These clauses describe registry process rather than transport behavior, so they remain outside the current implementation surface."
+      "remaining_gap": null,
+      "notes": "A bounded internal IANA registration policy model now records the S22P1P1 provisional-registration facts, and focused requirement-home tests prove the model without expanding transport-runtime behavior."
     },
     {
       "requirement_id": [
@@ -211,20 +242,6 @@
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S22P1P1-0001",
-    "REQ-QUIC-RFC9000-S22P1P1-0002",
-    "REQ-QUIC-RFC9000-S22P1P1-0003",
-    "REQ-QUIC-RFC9000-S22P1P1-0004",
-    "REQ-QUIC-RFC9000-S22P1P1-0005",
-    "REQ-QUIC-RFC9000-S22P1P1-0006",
-    "REQ-QUIC-RFC9000-S22P1P1-0007",
-    "REQ-QUIC-RFC9000-S22P1P1-0008",
-    "REQ-QUIC-RFC9000-S22P1P1-0009",
-    "REQ-QUIC-RFC9000-S22P1P1-0010",
-    "REQ-QUIC-RFC9000-S22P1P1-0011",
-    "REQ-QUIC-RFC9000-S22P1P1-0012",
-    "REQ-QUIC-RFC9000-S22P1P1-0013",
-    "REQ-QUIC-RFC9000-S22P1P1-0014",
     "REQ-QUIC-RFC9000-S22P1P2-0001",
     "REQ-QUIC-RFC9000-S22P1P2-0002",
     "REQ-QUIC-RFC9000-S22P1P2-0003",
@@ -252,5 +269,5 @@
     "REQ-QUIC-RFC9000-S22P5-0001",
     "REQ-QUIC-RFC9000-S22P5-0002"
   ],
-  "notes": "The code-bearing subset for S22P2, S22P3, S22P4, and S22P5 is now traced through tests and metadata; the S22P1 registry-process clauses remain intentionally deferred because this repository does not model IANA administration workflows."
+  "notes": "The code-bearing subset for S22P2, S22P3, S22P4, and S22P5 is traced through tests and metadata; S22P1P1 is traced through a bounded IANA registration policy model. The remaining S22P1 registry-process clauses stay intentionally deferred because broader IANA administration workflows remain outside this repository."
 }

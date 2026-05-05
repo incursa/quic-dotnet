@@ -1,0 +1,75 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0064",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 IANA Provisional Registration Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0064",
+    "WI-QUIC-RFC9000-0064"
+  ],
+  "verification_method": "Focused S22P1P1 requirement-home tests over the internal policy model, regenerated QUIC coverage triage, SpecTrace JSON validation, Release build, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S22P1P1-0001",
+    "REQ-QUIC-RFC9000-S22P1P1-0002",
+    "REQ-QUIC-RFC9000-S22P1P1-0003",
+    "REQ-QUIC-RFC9000-S22P1P1-0004",
+    "REQ-QUIC-RFC9000-S22P1P1-0005",
+    "REQ-QUIC-RFC9000-S22P1P1-0006",
+    "REQ-QUIC-RFC9000-S22P1P1-0007",
+    "REQ-QUIC-RFC9000-S22P1P1-0008",
+    "REQ-QUIC-RFC9000-S22P1P1-0009",
+    "REQ-QUIC-RFC9000-S22P1P1-0010",
+    "REQ-QUIC-RFC9000-S22P1P1-0011",
+    "REQ-QUIC-RFC9000-S22P1P1-0012",
+    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-S22P1P1-0014"
+  ],
+  "scope": "This verification covers the RFC 9000 Section 22.1.1 provisional-registration policy facts represented in the repository's internal IANA registration policy model.",
+  "expected_result": "The focused tests show that provisional registration requests require only Value and Contact, provisional registrations use Expert Review, provisional entries include Date as the last-update field, provisional Date updates do not require expert review, all common registry support fields are represented, each field has the expected meaning, Specification and Notes may be omitted from provisional registrations, and Date is not required in the initial registration request.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S22P1P1 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Section 22.1.1 remains scoped to IANA registry-process metadata rather than transport runtime behavior.",
+    "The requirement-home trace scanner recognizes focused method-level coverage and x_test_refs for requirement proof."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicIanaRegistrationPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P1\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim live IANA synchronization, external registry publication, codepoint allocation automation, transport runtime behavior, parser or serializer behavior, public API widening, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The Release build passed with 0 warnings and 0 errors, the focused S22P1P1 requirement-home filter passed 14/14, regenerated coverage triage marks all fourteen S22P1P1 requirements trace_clean and reports 1,257 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 436 artifacts, the full Release no-build suite passed 4,454/4,454, and git diff --check returned exit code 0 with line-ending warnings only."
+}

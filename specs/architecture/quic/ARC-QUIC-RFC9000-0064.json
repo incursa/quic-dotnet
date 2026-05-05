@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0064",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 IANA Provisional Registration Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 22.1.1 IANA provisional-registration policy model used to keep registry-process requirements explicit without mixing them into QUIC packet or runtime behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0064",
+    "VER-QUIC-RFC9000-0064"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S22P1P1-0001",
+    "REQ-QUIC-RFC9000-S22P1P1-0002",
+    "REQ-QUIC-RFC9000-S22P1P1-0003",
+    "REQ-QUIC-RFC9000-S22P1P1-0004",
+    "REQ-QUIC-RFC9000-S22P1P1-0005",
+    "REQ-QUIC-RFC9000-S22P1P1-0006",
+    "REQ-QUIC-RFC9000-S22P1P1-0007",
+    "REQ-QUIC-RFC9000-S22P1P1-0008",
+    "REQ-QUIC-RFC9000-S22P1P1-0009",
+    "REQ-QUIC-RFC9000-S22P1P1-0010",
+    "REQ-QUIC-RFC9000-S22P1P1-0011",
+    "REQ-QUIC-RFC9000-S22P1P1-0012",
+    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-S22P1P1-0014"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicIanaRegistrationPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
+  ],
+  "design_summary": "The Section 22.1.1 requirements describe IANA registry administration rather than QUIC wire, transport-parameter, frame, packet, or connection-runtime behavior. The implementation therefore keeps the proof surface as a narrow internal policy model that records the common QUIC registry fields, the provisional-request required fields, the provisional-entry required fields, the provisional omission rules, the Expert Review policy reference, the date-update review exception, and the allowed status values. Requirement-home tests prove each policy fact directly against that model so these clauses are traceable without expanding runtime protocol responsibilities.",
+  "data_and_state_considerations": "The policy model is immutable process metadata. It does not participate in packet parsing, encoding, connection state, endpoint routing, public APIs, interop harness behavior, or generated IANA registry exports.",
+  "edge_cases_and_constraints": [
+    "The provisional request floor requires only Value and Contact; Date is stored on provisional registry entries but is not required in the request.",
+    "Specification and Notes are marked as permanent-registration fields that provisional registrations may omit.",
+    "Status is constrained to the two RFC 9000 status strings: permanent and provisional.",
+    "The S22P1P1-0001 canonical wording is corrected to avoid overconstraining stored provisional entries to only two fields."
+  ],
+  "risks": [
+    "This slice proves Section 22.1.1 registry-process metadata only; it does not claim live IANA synchronization, external registry publication, or codepoint allocation workflow automation.",
+    "No parser, serializer, encoder, decoder, or runtime hot path is introduced, so fuzz and benchmark evidence are not applicable to this policy-only slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the bounded S22P1P1 provisional-registration policy family while keeping IANA administrative facts separate from transport runtime behavior."
+    }
+  ]
+}
