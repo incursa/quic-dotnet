@@ -5,7 +5,8 @@ internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
     // RFC 9000 section 12.4 allows only the narrow Initial/Handshake control-frame set.
-    private const ulong HandshakePacketResetStreamFrameType = 0x04UL;
+    private const ulong ResetStreamFrameType = 0x04UL;
+    private const ulong HandshakePacketResetStreamFrameType = ResetStreamFrameType;
     private const ulong HandshakePacketStopSendingFrameType = 0x05UL;
     private const ulong HandshakePacketNewTokenFrameType = 0x07UL;
     private const ulong HandshakePacketMaxDataFrameType = 0x10UL;
@@ -1549,7 +1550,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                if (!TryHandleResetStreamFrame(resetStreamFrame, ref effects))
+                if (!TryHandleResetStreamFrame(resetStreamFrame, nowTicks, ref effects))
                 {
                     return false;
                 }
@@ -1643,8 +1644,12 @@ internal sealed partial class QuicConnectionRuntime
             bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
             {
-                _ = errorCode;
-                return false;
+                return TryHandleApplicationDataFrameError(
+                    nowTicks,
+                    streamFrame.FrameType,
+                    errorCode,
+                    "The peer sent a STREAM frame that violated receive-side stream or flow-control state.",
+                    ref effects);
             }
             if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                     streamFrame.StreamId.Value,
@@ -2932,6 +2937,30 @@ internal sealed partial class QuicConnectionRuntime
             TransportErrorCode: errorCode,
             ApplicationErrorCode: null,
             TriggeringFrameType: HandshakePacketNewTokenFrameType,
+            ReasonPhrase: reasonPhrase);
+
+        return HandleLocalCloseRequested(
+            new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
+            nowTicks,
+            ref effects);
+    }
+
+    private bool TryHandleApplicationDataFrameError(
+        long nowTicks,
+        ulong triggeringFrameType,
+        QuicTransportErrorCode errorCode,
+        string reasonPhrase,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (errorCode == default)
+        {
+            return false;
+        }
+
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: errorCode,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: triggeringFrameType,
             ReasonPhrase: reasonPhrase);
 
         return HandleLocalCloseRequested(

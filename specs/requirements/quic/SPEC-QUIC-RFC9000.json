@@ -36228,6 +36228,11 @@
         "upstream_refs": [
           "RFC 9000 §19.9 RFC9000-S19.9-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0001.cs::TryReadStreamData_EmitsMaxDataFrameWhenApplicationReleasesConnectionCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0001.cs::TryReadStreamData_DoesNotEmitMaxDataFrameWhenNoConnectionCreditIsReleased",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0001.cs::TryReadStreamData_SaturatesMaxDataFrameAtTheMaximumRepresentableConnectionLimit"
         ]
       }
     },
@@ -36256,8 +36261,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::TryParseMaxDataFrame_RejectsFramesWithADifferentType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::TryParseMaxDataFrame_RejectsNonMinimalEncodingOfTheFixedType",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -36286,8 +36293,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0003.cs::TryParseMaxDataFrame_PreservesVariableLengthMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0003.cs::TryParseMaxDataFrame_RejectsTruncatedMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0003.cs::TryParseMaxDataFrame_AcceptsMaximumRepresentableMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -36316,8 +36325,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0004.cs::TryParseMaxDataFrame_ParsesTheRequiredMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0004.cs::TryParseMaxDataFrame_RejectsFrameWithoutTheRequiredMaximumDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -36346,8 +36356,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxDataFrame_ParsesAndFormatsTheMaximumDataField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0005.cs::TryParseMaxDataFrame_RejectsTruncatedConnectionByteLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0005.cs::TryParseMaxDataFrame_AcceptsZeroAndMaximumConnectionByteLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs::FuzzMaxDataFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -36374,6 +36385,10 @@
         "upstream_refs": [
           "RFC 9000 §19.9 RFC9000-S19.9-B8-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0006.cs::TryReceiveFinalSizeFrames_AccountsTerminalStreamsAgainstTheConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0006.cs::ProtectedResetStreamFinalSizeViolationClosesWithFlowControlError"
         ]
       }
     },
@@ -36400,6 +36415,10 @@
         "upstream_refs": [
           "RFC 9000 §19.9 RFC9000-S19.9-B8-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0007.cs::TryReceiveStreamFrame_AcceptsBytesAtTheAdvertisedConnectionLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0007.cs::ProtectedStreamDataAboveAdvertisedMaxDataClosesWithFlowControlError"
         ]
       }
     },
@@ -36426,6 +36445,10 @@
         "upstream_refs": [
           "RFC 9000 §19.9 RFC9000-S19.9-B8-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0008.cs::TryReceiveStreamFrame_RejectsEarlyDataAboveRememberedMaxDataLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0008.cs::TryReceiveStreamFrame_AllowsEarlyDataWithinRememberedMaxDataLimit"
         ]
       }
     },

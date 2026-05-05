@@ -3602,7 +3602,10 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryHandleResetStreamFrame(QuicResetStreamFrame resetStreamFrame, ref List<QuicConnectionEffect>? effects)
+    private bool TryHandleResetStreamFrame(
+        QuicResetStreamFrame resetStreamFrame,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
     {
         if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
             resetStreamFrame,
@@ -3610,8 +3613,12 @@ internal sealed partial class QuicConnectionRuntime
             out QuicTransportErrorCode errorCode,
             suppressResetSignalWhenDataRecvd: true))
         {
-            _ = errorCode;
-            return false;
+            return TryHandleApplicationDataFrameError(
+                nowTicks,
+                ResetStreamFrameType,
+                errorCode,
+                "The peer sent a RESET_STREAM frame that violated receive-side stream or flow-control state.",
+                ref effects);
         }
 
         if (maxDataFrame.MaximumData != 0)
