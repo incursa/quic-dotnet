@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Benchmarks the CRYPTO, ACK, and STREAM frame parse and format hot paths.
+/// Benchmarks representative ACK, CRYPTO, STREAM, and flow-control frame parse and format hot paths.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicFrameCodecBenchmarks
@@ -15,6 +15,8 @@ public class QuicFrameCodecBenchmarks
     private byte[] cryptoFrame = [];
     private byte[] cryptoData = [];
     private byte[] largeStreamData = [];
+    private byte[] maxStreamDataFrame = [];
+    private QuicMaxStreamDataFrame maxStreamDataTemplate;
     private byte[] newConnectionIdConnectionId = [];
     private byte[] newConnectionIdFrame = [];
     private byte[] newConnectionIdStatelessResetToken = [];
@@ -24,7 +26,7 @@ public class QuicFrameCodecBenchmarks
     private byte[] destination = [];
 
     /// <summary>
-    /// Prepares representative ACK, CRYPTO, and STREAM payloads plus output buffers.
+    /// Prepares representative ACK, CRYPTO, STREAM, and flow-control payloads plus output buffers.
     /// </summary>
     [GlobalSetup]
     public void GlobalSetup()
@@ -79,6 +81,15 @@ public class QuicFrameCodecBenchmarks
         }
 
         ackEcnFrame = ackEcnDestination[..ackEcnBytesWritten].ToArray();
+
+        maxStreamDataTemplate = new QuicMaxStreamDataFrame(0x1234, 0x5678);
+        byte[] maxStreamDataDestination = new byte[16];
+        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(maxStreamDataTemplate, maxStreamDataDestination, out int maxStreamDataBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a MAX_STREAM_DATA frame benchmark payload.");
+        }
+
+        maxStreamDataFrame = maxStreamDataDestination[..maxStreamDataBytesWritten].ToArray();
 
         newConnectionIdConnectionId = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7];
         newConnectionIdStatelessResetToken = [
@@ -212,6 +223,31 @@ public class QuicFrameCodecBenchmarks
             streamData,
             destination,
             out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures MAX_STREAM_DATA frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseMaxStreamDataFrame()
+    {
+        return QuicFrameCodec.TryParseMaxStreamDataFrame(
+            maxStreamDataFrame,
+            out QuicMaxStreamDataFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed ^ unchecked((int)frame.StreamId) ^ unchecked((int)frame.MaximumStreamData)
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures MAX_STREAM_DATA frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatMaxStreamDataFrame()
+    {
+        return QuicFrameCodec.TryFormatMaxStreamDataFrame(maxStreamDataTemplate, destination, out int bytesWritten)
             ? bytesWritten
             : -1;
     }

@@ -36381,17 +36381,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs::TryReadStreamData_EmitsMaxStreamDataFrameToAdvertiseRecvStateCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs::TryReadStreamData_DoesNotEmitMaxStreamDataFrameWhenNoCreditIsReleased",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs::TryReadStreamData_AdvertisesCumulativeAbsoluteStreamCredit"
         ]
       }
     },
@@ -36407,13 +36415,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S1",
@@ -36436,17 +36447,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs::TryApplyMaxStreamDataFrame_AcceptsCreatedLocallyInitiatedStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs::TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs::TryApplyMaxStreamDataFrame_RejectsSkippedLocallyInitiatedStreamIds"
         ]
       }
     },
@@ -36462,17 +36481,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs::TryApplyMaxStreamDataFrame_AcceptsBidirectionalSendCapableStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreamsAfterTheyWereOpened"
         ]
       }
     },
@@ -36488,21 +36515,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B5-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::TryParseMaxStreamDataFrame_AcceptsType0x11",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::TryParseMaxStreamDataFrame_RejectsOtherFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::TryParseMaxStreamDataFrame_RejectsNonMinimalTypeEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs::Fuzz_MaxStreamDataFrameType_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -36518,21 +36550,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B5-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs::TryParseMaxStreamDataFrame_ParsesStreamIdAsVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs::TryParseMaxStreamDataFrame_RejectsTruncatedStreamIdVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs::TryParseMaxStreamDataFrame_PreservesMaximumVarintStreamId"
         ]
       }
     },
@@ -36548,21 +36584,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B5-P0-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs::TryParseMaxStreamDataFrame_ParsesMaximumStreamDataAsVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs::TryParseMaxStreamDataFrame_RejectsTruncatedMaximumStreamDataVarint",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs::TryParseMaxStreamDataFrame_PreservesMaximumVarintMaximumStreamData"
         ]
       }
     },
@@ -36578,21 +36618,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B7-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0008.cs::TryParseMaxStreamDataFrame_ConsumesTypeStreamIdAndMaximumStreamDataFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0008.cs::TryParseMaxStreamDataFrame_RejectsMissingMaximumStreamDataField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0008.cs::TryParseMaxStreamDataFrame_StopsBeforeTheNextFrameInThePacketPayload"
         ]
       }
     },
@@ -36608,21 +36652,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0009.cs::TryApplyMaxStreamDataFrame_CreditsOnlyTheAffectedStreamId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0009.cs::TryApplyMaxStreamDataFrame_DoesNotCreditUnaffectedStreamIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0009.cs::TryParseMaxStreamDataFrame_PreservesZeroStreamIdAsTheAffectedStream"
         ]
       }
     },
@@ -36638,21 +36686,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseMaxStreamDataFrame_ParsesAndFormatsTheFrameFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0010.cs::TryApplyMaxStreamDataFrame_TreatsMaximumStreamDataAsAnAbsoluteByteOffset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0010.cs::TryApplyMaxStreamDataFrame_IgnoresMaximumStreamDataThatDoesNotIncreaseTheLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0010.cs::TryParseMaxStreamDataFrame_PreservesMaximumStreamDataAtTheVarintLimit"
         ]
       }
     },
@@ -36668,17 +36720,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B10-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs::TryReceiveStreamFrame_AcceptsSparseDataWhenTheLargestReceivedOffsetExceedsUniqueBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs::TryReceiveResetStreamFrame_RejectsFinalSizeBelowTheLargestReceivedOffset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs::TryReceiveStreamFrame_AllowsTheLargestReceivedOffsetToExceedTheUniqueBytesReceived"
         ]
       }
     },
@@ -36694,17 +36754,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B11-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs::TryReserveSendCapacity_RejectsBytesBeyondTheLargestAdvertisedStreamCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs::TryReserveSendCapacity_DoesNotSendBytesBeyondTheLargestAdvertisedStreamCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs::TryReserveSendCapacity_AllowsFinAtTheLargestAdvertisedStreamCredit"
         ]
       }
     },
@@ -36720,17 +36788,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B11-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs::TryReceiveStreamFrame_AcceptsBytesAtTheLargestAdvertisedStreamCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs::TryReceiveStreamFrame_RejectsBytesBeyondTheAdvertisedStreamCredit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs::TryReceiveStreamFrame_RejectsFinalSizeBeyondTheAdvertisedStreamCredit"
         ]
       }
     },
@@ -36746,17 +36822,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0049"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0049"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0049"
         ],
         "upstream_refs": [
           "RFC 9000 §19.10 RFC9000-S19.10-B11-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0014.cs::TryReceiveStreamFrame_RejectsEarlyDataRememberedStreamDataLimitViolations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0014.cs::TryReceiveStreamFrame_AcceptsEarlyDataWithinRememberedStreamDataLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0014.cs::TryReceiveStreamFrame_RejectsEarlyDataFinalSizeBeyondRememberedStreamDataLimit"
         ]
       }
     },

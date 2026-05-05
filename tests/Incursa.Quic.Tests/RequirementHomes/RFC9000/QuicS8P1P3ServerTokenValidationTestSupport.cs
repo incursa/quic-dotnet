@@ -78,7 +78,7 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
 
             QuicRetryBootstrapMetadata parsedRetryMetadata =
                 await ReceiveRetryAsync(QuicS17P2P2TestSupport.InitialDestinationConnectionId);
-            Assert.Equal(Convert.ToHexString(parsedRetryMetadata.RetryToken), ListenerHost.RetryBootstrapTokenHex);
+            await WaitForRetryBootstrapTokenAsync(parsedRetryMetadata.RetryToken);
 
             retryMetadata = parsedRetryMetadata;
             return parsedRetryMetadata;
@@ -155,6 +155,23 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
                     return parsedRetryMetadata;
                 }
             }
+        }
+
+        private async ValueTask WaitForRetryBootstrapTokenAsync(ReadOnlyMemory<byte> retryToken)
+        {
+            string expectedTokenHex = Convert.ToHexString(retryToken.Span);
+            DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
+            while (DateTime.UtcNow < deadline)
+            {
+                if (ListenerHost.RetryBootstrapTokenHex == expectedTokenHex)
+                {
+                    return;
+                }
+
+                await Task.Delay(10);
+            }
+
+            Assert.Equal(expectedTokenHex, ListenerHost.RetryBootstrapTokenHex);
         }
 
         internal void SendRetryReplay(ReadOnlySpan<byte> token)

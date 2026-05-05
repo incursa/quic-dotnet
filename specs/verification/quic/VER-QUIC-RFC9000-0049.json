@@ -1,0 +1,81 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0049",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 MAX_STREAM_DATA Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0049",
+    "WI-QUIC-RFC9000-0049"
+  ],
+  "verification_method": "Focused S19P10 requirement-home tests, Release build, full Release no-build solution tests, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P10-0001",
+    "REQ-QUIC-RFC9000-S19P10-0002",
+    "REQ-QUIC-RFC9000-S19P10-0003",
+    "REQ-QUIC-RFC9000-S19P10-0004",
+    "REQ-QUIC-RFC9000-S19P10-0005",
+    "REQ-QUIC-RFC9000-S19P10-0006",
+    "REQ-QUIC-RFC9000-S19P10-0007",
+    "REQ-QUIC-RFC9000-S19P10-0008",
+    "REQ-QUIC-RFC9000-S19P10-0009",
+    "REQ-QUIC-RFC9000-S19P10-0010",
+    "REQ-QUIC-RFC9000-S19P10-0011",
+    "REQ-QUIC-RFC9000-S19P10-0012",
+    "REQ-QUIC-RFC9000-S19P10-0013",
+    "REQ-QUIC-RFC9000-S19P10-0014"
+  ],
+  "scope": "This verification covers MAX_STREAM_DATA parser and formatter behavior, field order, Stream ID and Maximum Stream Data variable-length integer handling, affected-stream credit application, send-limit enforcement, sparse receive accounting, and remembered stream-limit violations for RFC 9000 Section 19.10 requirements 0001 through 0014.",
+  "expected_result": "Focused S19P10 requirement homes prove that MAX_STREAM_DATA frames use type 0x11, preserve Stream ID and Maximum Stream Data varint fields, reject malformed/truncated encodings, apply the field as an absolute byte offset for the affected send-capable stream, reject invalid stream targets, enforce advertised stream-credit limits, allow sparse receive offsets caused by reordering, and reject remembered-limit violations with FLOW_CONTROL_ERROR.",
+  "procedure": [
+    "Run the focused S19P10 requirement-home filter.",
+    "Run a Release build.",
+    "Run the full Release no-build solution test suite.",
+    "Run the QuicFrameCodec benchmark suite with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec MAX_STREAM_DATA parser and formatter are the runtime seam under test.",
+    "The existing QuicConnectionStreamState flow-control bookkeeping remains the state seam under test.",
+    "Public server-side 0-RTT receive admission remains closed; remembered-limit proof is limited to stream-state limit enforcement."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P10MaxStreamDataFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P10\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim public 0-RTT receive admission, server anti-replay support, public receive-window API changes, or endpoint-host close-packet behavior beyond the parser and stream-state seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P10 filter passed 41/41, regenerated triage reports 14/14 S19P10 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 391 artifacts, the full Release no-build solution suite passed 4180/4180 after the retry-token diagnostic race helper was hardened, and the QuicFrameCodec BenchmarkDotNet Dry run completed 14/14 benchmarks including ParseMaxStreamDataFrame at 758.8 us and FormatMaxStreamDataFrame at 285.7 us with no allocations."
+}

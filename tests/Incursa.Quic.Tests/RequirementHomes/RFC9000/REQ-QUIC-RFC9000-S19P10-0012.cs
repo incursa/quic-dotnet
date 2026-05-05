@@ -50,4 +50,69 @@ public sealed class REQ_QUIC_RFC9000_S19P10_0012
         Assert.Equal(streamId.Value, streamDataBlockedFrame.StreamId);
         Assert.Equal(10UL, streamDataBlockedFrame.MaximumStreamData);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReserveSendCapacity_DoesNotSendBytesBeyondTheLargestAdvertisedStreamCredit()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            connectionSendLimit: 32);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 10), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 10,
+            length: 1,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(streamId.Value, streamDataBlockedFrame.StreamId);
+        Assert.Equal(10UL, streamDataBlockedFrame.MaximumStreamData);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReserveSendCapacity_AllowsFinAtTheLargestAdvertisedStreamCredit()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            connectionSendLimit: 32);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 10), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 10,
+            length: 0,
+            fin: true,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+    }
 }

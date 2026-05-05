@@ -1,0 +1,79 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0049",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 MAX_STREAM_DATA Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 19.10 MAX_STREAM_DATA parser, formatter, stream-credit, and remembered-limit proof slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0049",
+    "VER-QUIC-RFC9000-0049"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P10-0001",
+    "REQ-QUIC-RFC9000-S19P10-0002",
+    "REQ-QUIC-RFC9000-S19P10-0003",
+    "REQ-QUIC-RFC9000-S19P10-0004",
+    "REQ-QUIC-RFC9000-S19P10-0005",
+    "REQ-QUIC-RFC9000-S19P10-0006",
+    "REQ-QUIC-RFC9000-S19P10-0007",
+    "REQ-QUIC-RFC9000-S19P10-0008",
+    "REQ-QUIC-RFC9000-S19P10-0009",
+    "REQ-QUIC-RFC9000-S19P10-0010",
+    "REQ-QUIC-RFC9000-S19P10-0011",
+    "REQ-QUIC-RFC9000-S19P10-0012",
+    "REQ-QUIC-RFC9000-S19P10-0013",
+    "REQ-QUIC-RFC9000-S19P10-0014"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P10MaxStreamDataFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0014.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The MAX_STREAM_DATA frame remains centered on the existing frame codec, immutable frame view, and connection stream-state bookkeeping. The parser accepts only the fixed one-byte frame type 0x11, then parses Stream ID and Maximum Stream Data as QUIC variable-length integers in that order. Runtime stream state applies the field as an absolute send limit for the affected send-capable stream, rejects locally initiated streams that have not been created, rejects receive-only streams with STREAM_STATE_ERROR, blocks outbound bytes above the largest advertised stream credit, and rejects inbound stream bytes above remembered receive limits with FLOW_CONTROL_ERROR.",
+  "data_and_state_considerations": "This slice covers RFC 9000 Section 19.10 frame shape and the stream-credit semantics directly observable through QuicConnectionStreamState. Sparse receive ranges are allowed when reordering makes the largest received offset exceed unique bytes received, but final-size and flow-control checks continue to use the largest known offset and remembered stream limit.",
+  "edge_cases_and_constraints": [
+    "Non-0x11 and non-minimal 0x11 frame-type encodings are rejected by the fixed-type parser.",
+    "Truncated Stream ID and Maximum Stream Data variable-length integers are rejected before a frame view is produced.",
+    "The parser consumes exactly the MAX_STREAM_DATA frame and leaves following frames for the packet parser.",
+    "MAX_STREAM_DATA updates only the affected stream ID and ignores stale values that do not increase the current send limit.",
+    "Receive-only unidirectional streams remain invalid MAX_STREAM_DATA targets even after being opened by inbound STREAM data.",
+    "Remembered early-data stream limits are represented by the same receive-limit bookkeeping used for 0-RTT and normal STREAM frame admission."
+  ],
+  "alternatives_considered": [
+    "Leave S19P10 under broad frame-codec and flow-control tests; rejected because generated triage still showed missing focused proof and broad-proof warnings.",
+    "Change the frame parser to validate stream directionality; rejected because stream-state validity depends on endpoint role and current stream registry state, not the frame-codec wire shape.",
+    "Broaden this slice into full 0-RTT receive admission; rejected because managed server 0-RTT receive remains explicitly closed outside the remembered-limit bookkeeping floor."
+  ],
+  "risks": [
+    "This proof does not claim public 0-RTT receive support or server anti-replay admission.",
+    "Parser rejection proves malformed frame handling at the codec seam, not a hosted endpoint close-packet assertion for every malformed input.",
+    "The slice proves current stream-state bookkeeping semantics and does not add new public flow-control APIs."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers RFC 9000 Section 19.10 MAX_STREAM_DATA parser, formatter, affected-stream credit handling, send-limit enforcement, sparse receive accounting, and remembered stream-limit violations for requirements 0001 through 0014 only."
+    }
+  ]
+}

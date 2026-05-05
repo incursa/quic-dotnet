@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0049",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 MAX_STREAM_DATA Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0049",
+    "VER-QUIC-RFC9000-0049"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P10-0001",
+    "REQ-QUIC-RFC9000-S19P10-0002",
+    "REQ-QUIC-RFC9000-S19P10-0003",
+    "REQ-QUIC-RFC9000-S19P10-0004",
+    "REQ-QUIC-RFC9000-S19P10-0005",
+    "REQ-QUIC-RFC9000-S19P10-0006",
+    "REQ-QUIC-RFC9000-S19P10-0007",
+    "REQ-QUIC-RFC9000-S19P10-0008",
+    "REQ-QUIC-RFC9000-S19P10-0009",
+    "REQ-QUIC-RFC9000-S19P10-0010",
+    "REQ-QUIC-RFC9000-S19P10-0011",
+    "REQ-QUIC-RFC9000-S19P10-0012",
+    "REQ-QUIC-RFC9000-S19P10-0013",
+    "REQ-QUIC-RFC9000-S19P10-0014"
+  ],
+  "summary": "Prove the RFC 9000 Section 19.10 MAX_STREAM_DATA frame-field and stream-credit trace tail.",
+  "planned_changes": "- Add a focused MAX_STREAM_DATA requirement-home helper for exact field encodings, truncated fields, and parser assertions.\n- Add focused positive, negative, edge, and fuzz proof where required for S19P10 0001 through 0014.\n- Add MAX_STREAM_DATA parse and format coverage to the existing QuicFrameCodec benchmark suite.\n- Link the focused proof to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",
+  "verification_plan": "Run the focused S19P10 requirement-home filter, run a Release build, run the full Release no-build solution test suite, run the QuicFrameCodec benchmark Dry job, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0049"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0049"
+  ],
+  "out_of_scope": [
+    "Changing MAX_STREAM_DATA wire encoding semantics.",
+    "Changing public flow-control APIs or receive-window configuration.",
+    "Adding public 0-RTT receive admission or anti-replay support.",
+    "Adding hosted endpoint close-packet assertions for every malformed MAX_STREAM_DATA frame.",
+    "Replacing the span-backed frame-codec hot path."
+  ],
+  "completion_notes": "Completed as focused parser/formatter, stream-state, remembered-limit, and benchmark proof over the existing MAX_STREAM_DATA frame codec and connection stream-state seams."
+}
