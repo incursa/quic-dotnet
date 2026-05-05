@@ -44,4 +44,30 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0008
         Assert.Equal(QuicS17P2P5P2TestSupport.RetrySourceConnectionId, openedDestinationConnectionId.ToArray());
         Assert.Equal(QuicS17P2P5P2TestSupport.InitialSourceConnectionId, openedSourceConnectionId.ToArray());
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0008")]
+    public void ClientDoesNotUseTheRetrySourceConnectionIdAsItsReplaySourceConnectionId()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
+            nowTicks: 1);
+
+        QuicS17P2P5P3TestSupport.RetryReplayInitialPacket replayPacket =
+            QuicS17P2P5P2TestSupport.ReadSingleRetryReplayInitialPacket(retryResult);
+
+        Assert.True(QuicPacketParsing.TryParseLongHeaderFields(
+            replayPacket.OpenedPacket,
+            out _,
+            out _,
+            out _,
+            out ReadOnlySpan<byte> openedSourceConnectionId,
+            out _));
+        Assert.NotEqual(QuicS17P2P5P2TestSupport.RetrySourceConnectionId, openedSourceConnectionId.ToArray());
+        Assert.Equal(QuicS17P2P5P2TestSupport.InitialSourceConnectionId, openedSourceConnectionId.ToArray());
+    }
 }

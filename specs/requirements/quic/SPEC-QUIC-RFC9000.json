@@ -8786,17 +8786,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0001.cs::TryFormatTransportParameters_AuthenticatesHandshakeConnectionIdChoices"
         ]
       }
     },
@@ -8812,17 +8818,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs::TryFormatTransportParameters_EmitsInitialSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs::TryValidateConnectionIdBindings_RejectsMissingInitialSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs::TryFormatTransportParameters_EmitsZeroLengthInitialSourceConnectionId"
         ]
       }
     },
@@ -8838,17 +8852,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_EmitsOriginalDestinationConnectionIdFromServer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_RejectsOriginalDestinationConnectionIdFromClient",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_RoundTripsMaximumLengthOriginalDestinationConnectionId"
         ]
       }
     },
@@ -8864,17 +8886,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0004.cs::TryFormatTransportParameters_EmitsRetrySourceConnectionIdFromServer"
         ]
       }
     },
@@ -8890,17 +8918,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs::TryValidateConnectionIdBindings_RejectsMismatchedOriginalDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs::TryValidateConnectionIdBindings_AcceptsZeroLengthInitialSourceConnectionIdMatch"
         ]
       }
     },
@@ -8916,17 +8952,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0006.cs::TryValidateConnectionIdBindings_AcceptsReceivedTransportParametersThatMatchObservedConnectionIds"
         ]
       }
     },
@@ -8942,17 +8984,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs::TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent"
         ]
       }
     },
@@ -8968,17 +9017,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs::TryValidateConnectionIdBindings_RejectsMismatchedConnectionIdBindings",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs::TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindingsWithoutConnectionError"
         ]
       }
     },
@@ -8994,17 +9050,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0059"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0059"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0059"
         ],
         "upstream_refs": [
           "RFC 9000 §7.3 RFC9000-S7.3-B10-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs::TryFormatTransportParameters_EmitsZeroLengthConnectionIdTransportParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs::TryValidateConnectionIdBindings_RejectsMissingZeroLengthInitialSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs::PeerTransportParameterCommit_AcceptsZeroLengthInitialSourceConnectionIdBinding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs::PeerTransportParameterCommit_RejectsMissingZeroLengthInitialSourceConnectionIdBinding"
         ]
       }
     },
@@ -29876,20 +29941,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientAcceptsAndProcessesTheFirstRetryPacketForAConnectionAttempt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientAcceptsAndProcessesTheFirstRetryPacketForAConnectionAttempt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientRejectsRetryPacketsMissingRequiredSourceConnectionIdOrToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientProcessesRetryWithMaximumSourceConnectionIdAndMinimumToken"
         ]
       }
     },
@@ -29905,20 +29975,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientDiscardsSubsequentRetryPacketsAfterProcessingTheFirstRetryPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientDiscardsSubsequentRetryPacketsAfterProcessingTheFirstRetryPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientKeepsTheFirstRetryOutcomeWhenASecondRetryArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs::ClientDiscardsSubsequentRetryPacketsWithDifferentRetryValues"
         ]
       }
     },
@@ -29934,13 +30009,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S1",
@@ -29964,20 +30042,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserRejectsRetryPacketsWithZeroLengthRetryTokens"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserRejectsRetryPacketsWithZeroLengthRetryTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserAcceptsRetryPacketsWithMinimumNonEmptyTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs::RetryMetadataParserRejectsTheExactZeroLengthRetryTokenBoundary"
         ]
       }
     },
@@ -29993,20 +30076,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientIncludesTheRetryTokenWhenItReplaysInitialPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientIncludesTheRetryTokenWhenItReplaysInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientDoesNotReplayInitialPacketsWhenTheRetryTokenIsEmpty",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs::ClientReplaysInitialPacketsWithAMinimumLengthRetryToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientProcessesRetryWithMaximumSourceConnectionIdAndMinimumToken"
         ]
       }
     },
@@ -30022,20 +30111,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientUsesTheRetrySourceConnectionIdAsTheNextInitialDestinationConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientUsesTheRetrySourceConnectionIdAsTheNextInitialDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientDoesNotReplayInitialPacketsWhenTheRetrySourceConnectionIdIsEmpty",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs::ClientUsesAMaximumLengthRetrySourceConnectionIdAsTheReplayDestination",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs::ClientProcessesRetryWithMaximumSourceConnectionIdAndMinimumToken"
         ]
       }
     },
@@ -30051,17 +30146,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0007.cs::ClientSetsTheRetryTokenWhenReplayingInitialPackets"
         ]
       }
     },
@@ -30077,17 +30178,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0008.cs::ClientPreservesTheSourceConnectionIdWhenReplayingInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0008.cs::ClientDoesNotUseTheRetrySourceConnectionIdAsItsReplaySourceConnectionId"
         ]
       }
     },
@@ -30103,17 +30211,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.2 RFC9000-S17.2.5.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0009.cs::RetryPacketsAreNotExplicitlyAcknowledgedByTheClient",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0009.cs::ClientDoesNotCreateAnAckOnlyResponseForRetryPackets"
         ]
       }
     },
@@ -30130,15 +30245,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0022"
+          "ARC-QUIC-RFC9000-0022",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0022"
+          "WI-QUIC-RFC9000-0022",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0022"
+          "VER-QUIC-RFC9000-0022",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B2-P1-S1",
@@ -30146,7 +30264,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientRetryReplayInitialPacketsCarryTheRetrySourceConnectionIdAndToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientDoesNotEmitRetryReplayInitialPacketsForARejectedSecondRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientRetryReplayInitialPacketsPreserveBoundaryRetryValuesAndHandshakeBytes"
         ]
       }
     },
@@ -30163,15 +30283,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0022"
+          "ARC-QUIC-RFC9000-0022",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0022"
+          "WI-QUIC-RFC9000-0022",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0022"
+          "VER-QUIC-RFC9000-0022",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B2-P1-S2",
@@ -30179,7 +30302,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0002.cs::ClientRetryReplayInitialPacketsKeepTheRetrySourceConnectionIdAsTheirDestinationConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientDoesNotEmitRetryReplayInitialPacketsForARejectedSecondRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientRetryReplayInitialPacketsPreserveBoundaryRetryValuesAndHandshakeBytes"
         ]
       }
     },
@@ -30196,15 +30321,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0022"
+          "ARC-QUIC-RFC9000-0022",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0022"
+          "WI-QUIC-RFC9000-0022",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0022"
+          "VER-QUIC-RFC9000-0022",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B3-P2-S2",
@@ -30212,7 +30340,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0003.cs::ClientRetryReplayInitialPacketsPreserveTheOriginalHandshakeMessageBytes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientDoesNotEmitRetryReplayInitialPacketsForARejectedSecondRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs::ClientRetryReplayInitialPacketsPreserveBoundaryRetryValuesAndHandshakeBytes"
         ]
       }
     },
@@ -30228,13 +30358,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B3-P2-S3",
@@ -30257,17 +30390,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0005.cs::ClientZeroRttPacketsUseTheRetrySourceConnectionIdAfterItIsApplied",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0005.cs::ClientZeroRttPacketsDoNotUseTheRetryConnectionIdBeforeRetryIsApplied",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0005.cs::ClientZeroRttPacketsUseAMaximumLengthRetryConnectionIdAfterRetryIsApplied"
         ]
       }
     },
@@ -30284,15 +30425,18 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0022"
+          "ARC-QUIC-RFC9000-0022",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0022"
+          "WI-QUIC-RFC9000-0022",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0022"
+          "VER-QUIC-RFC9000-0022",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B5-P4-S1",
@@ -30300,7 +30444,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0006.cs::ClientPacketNumbersContinueAcrossRetryForInitialAndZeroRttSpaces",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0006.cs::ClientInitialPacketNumberDoesNotRestartAtZeroAfterRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0006.cs::ClientPacketNumbersContinueAcrossRetryAfterMultipleInitialAndZeroRttPackets"
         ]
       }
     },
@@ -30316,17 +30462,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0060"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0060"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0060"
         ],
         "upstream_refs": [
           "RFC 9000 §17.2.5.3 RFC9000-S17.2.5.3-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0007.cs::PostRetryZeroRttPacketsProtectConfidentialApplicationPayloadBytes"
         ]
       }
     },

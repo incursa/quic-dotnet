@@ -34,4 +34,50 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0005
 
         Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryValidateConnectionIdBindings_RejectsMismatchedOriginalDestinationConnectionId()
+    {
+        QuicTransportParameters peerParameters = new()
+        {
+            OriginalDestinationConnectionId = [0x99],
+            InitialSourceConnectionId = QuicS7P3ConnectionIdBindingTestSupport.ServerInitialSourceConnectionId,
+        };
+
+        Assert.False(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            QuicTransportParameterRole.Client,
+            QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+            QuicS7P3ConnectionIdBindingTestSupport.ServerInitialSourceConnectionId,
+            usedRetry: false,
+            ReadOnlySpan<byte>.Empty,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.OriginalDestinationConnectionIdMismatch, validationError);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryValidateConnectionIdBindings_AcceptsZeroLengthInitialSourceConnectionIdMatch()
+    {
+        QuicTransportParameters peerParameters = new()
+        {
+            OriginalDestinationConnectionId = QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+            InitialSourceConnectionId = [],
+        };
+
+        Assert.True(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            QuicTransportParameterRole.Client,
+            QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+            ReadOnlySpan<byte>.Empty,
+            usedRetry: false,
+            ReadOnlySpan<byte>.Empty,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
+    }
 }

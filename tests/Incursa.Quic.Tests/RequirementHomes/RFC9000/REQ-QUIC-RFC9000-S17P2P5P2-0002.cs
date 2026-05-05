@@ -26,4 +26,53 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0002
         Assert.Empty(duplicateRetryResult.Effects);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0002")]
+    public void ClientKeepsTheFirstRetryOutcomeWhenASecondRetryArrives()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        QuicConnectionTransitionResult firstRetryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
+            nowTicks: 1);
+
+        QuicConnectionTransitionResult secondRetryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                2,
+                QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId,
+                QuicS17P2P5P2TestSupport.SingleByteRetryToken),
+            nowTicks: 2);
+
+        QuicS17P2P5P3TestSupport.RetryReplayInitialPacket firstReplayPacket =
+            QuicS17P2P5P2TestSupport.ReadSingleRetryReplayInitialPacket(firstRetryResult);
+        Assert.Equal(QuicS17P2P5P2TestSupport.RetrySourceConnectionId, firstReplayPacket.DestinationConnectionId);
+        Assert.Equal(QuicS17P2P5P2TestSupport.RetryToken, firstReplayPacket.Token);
+        Assert.False(secondRetryResult.StateChanged);
+        Assert.Empty(secondRetryResult.Effects);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0002")]
+    public void ClientDiscardsSubsequentRetryPacketsWithDifferentRetryValues()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        Assert.True(runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1),
+            nowTicks: 1).StateChanged);
+
+        QuicConnectionTransitionResult changedRetryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                2,
+                QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId,
+                QuicS17P2P5P2TestSupport.SingleByteRetryToken),
+            nowTicks: 2);
+
+        Assert.False(changedRetryResult.StateChanged);
+        Assert.Empty(changedRetryResult.Effects);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+    }
 }

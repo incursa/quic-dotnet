@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0059",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Transport Parameter Connection ID Authentication Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0059",
+    "WI-QUIC-RFC9000-0059"
+  ],
+  "verification_method": "Focused S7P3 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S7P3-0001",
+    "REQ-QUIC-RFC9000-S7P3-0002",
+    "REQ-QUIC-RFC9000-S7P3-0003",
+    "REQ-QUIC-RFC9000-S7P3-0004",
+    "REQ-QUIC-RFC9000-S7P3-0005",
+    "REQ-QUIC-RFC9000-S7P3-0006",
+    "REQ-QUIC-RFC9000-S7P3-0007",
+    "REQ-QUIC-RFC9000-S7P3-0008",
+    "REQ-QUIC-RFC9000-S7P3-0009"
+  ],
+  "scope": "This verification covers RFC 9000 Section 7.3 connection-ID transport-parameter authentication for codec preservation, role-specific server-only parameter boundaries, binding validation, runtime commit-path enforcement, and zero-length connection-ID parameter handling.",
+  "expected_result": "The requirement-home tests show that connection-ID transport parameters carry the endpoint-selected values, missing required connection-ID binding parameters are rejected, mismatched values are rejected, matching values are accepted, server-only parameters cannot be emitted by clients, and zero-length selected connection IDs are encoded and validated as empty values rather than treated as absent. The runtime proof shows peer transport-parameter commit accepts matching zero-length initial_source_connection_id and closes with TRANSPORT_PARAMETER_ERROR when that required empty value is omitted.",
+  "procedure": [
+    "Run the focused S7P3 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The S7P2 first-flight and server-adoption floors establish the handshake connection IDs supplied to the S7P3 validator.",
+    "The managed TLS bridge stages peer transport parameters before runtime commit.",
+    "Null transport-parameter byte arrays mean absent values; empty arrays mean present zero-length values."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P3ConnectionIdBindingTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P3_\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim Section 7.4 invalid-value handling, remembered 0-RTT transport-parameter validation, preferred-address migration, public connection-ID policy APIs, hosted interop readiness, or broader connection-ID lifecycle parity outside Section 7.3 connection-ID binding authentication."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S7P3 requirement-home filter passed 29/29, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S7P3-0001 through REQ-QUIC-RFC9000-S7P3-0009 trace_clean, SpecTrace core validation passed across 424 JSON artifacts, the full Release no-build suite passed 4,412/4,412 after synchronizing Retry token publication assertions in adjacent S17P2P5P1 tests and adding the S17P2P5P2/P3 Retry client-processing proof, and git diff --check passed."
+}

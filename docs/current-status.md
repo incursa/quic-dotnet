@@ -1,14 +1,55 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S5P2P2 server refusal and 0-RTT
-pre-Initial buffering tail closeout; broader executive-read evidence remains pinned to its stated
-2026-04-30 refresh unless otherwise noted.
+Last verified: 2026-05-05 for the S17P2P5P2/P3 Retry client processing
+closeout and the adjacent S7P3 transport-parameter connection-ID
+authentication closeout; broader executive-read evidence remains pinned to its
+stated 2026-04-30 refresh unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-05 Restart Note
+
+Follow-on S17P2P5P2/P3 closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S17P2P5P2-0001` through
+`REQ-QUIC-RFC9000-S17P2P5P2-0009` and
+`REQ-QUIC-RFC9000-S17P2P5P3-0001` through
+`REQ-QUIC-RFC9000-S17P2P5P3-0007` under
+`ARC-QUIC-RFC9000-0060`, `WI-QUIC-RFC9000-0060`, and
+`VER-QUIC-RFC9000-0060`. The proof covers first valid Retry acceptance,
+malformed Retry metadata rejection, duplicate Retry discard, Retry-selected
+Initial replay token and destination connection ID use, original client Source
+Connection ID and ClientHello preservation, no explicit Retry acknowledgment,
+post-Retry 0-RTT destination connection ID selection, packet-number continuity,
+and protected 0-RTT payload confidentiality. Regenerated coverage triage marks
+those claimed S17P2P5P2/P3 requirements as `trace_clean` and reports 1,226 of
+1,771 QUIC requirements trace-clean overall, leaving 545 non-clean.
+`REQ-QUIC-RFC9000-S17P2P5P3-0008` remains optional server abort behavior and
+is deliberately not claimed by this closure.
+
+Follow-on S7P3 closure on 2026-05-05 closes
+`REQ-QUIC-RFC9000-S7P3-0001` through
+`REQ-QUIC-RFC9000-S7P3-0009` under
+`ARC-QUIC-RFC9000-0059`, `WI-QUIC-RFC9000-0059`, and
+`VER-QUIC-RFC9000-0059`. The proof covers codec preservation of
+`original_destination_connection_id`, `initial_source_connection_id`, and
+`retry_source_connection_id`, server-only parameter rejection from client
+emission, missing and mismatched binding rejection, matching binding
+acceptance, and zero-length selected connection IDs as present empty transport
+parameters rather than absent parameters. The runtime commit path now validates
+expected empty peer Initial Source Connection IDs instead of skipping the
+connection-ID binding check. Regenerated coverage triage marks all S7P3
+requirements as `trace_clean`. Keep the boundary narrow: this S7P3 closure
+does not claim Section 7.4 invalid-value policy, remembered 0-RTT
+transport-parameter checks, preferred-address migration, public connection-ID
+policy APIs, hosted interop readiness, or broader connection-ID lifecycle parity
+outside Section 7.3.
+
+Pick up next from generated triage rather than the now-closed S7/S17 lane. The
+largest remaining non-clean RFC 9000 generated group is `S18P2` with 21
+requirements, followed by `S22P1P1` with 14, `S7P4P1` with 13, and `S4P6` and
+`S5P2` with 12 each.
 
 Follow-on S5P2P2 closure on 2026-05-05 closes
 `REQ-QUIC-RFC9000-S5P2P2-0007` and
@@ -59,24 +100,34 @@ creation, and keeping the blocked open pending until cancellation or real
 `REQ-QUIC-RFC9000-S19P14-0001` through
 `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
 
-Pick up next after the S5P2P2 closure:
+Current triage reminders after the S17P2P5P2/P3 closure:
 
 1. Start in `docs/requirements-workflow.md`, then check
-   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the next non-clean cluster in
-   `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
-2. Do not describe S19P13 closure as new STREAM_DATA_BLOCKED emission
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the nearest owning
+   `SPEC-QUIC-RFC9000.json` section before choosing the next non-clean group.
+2. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S7P3-0001` through
+   `REQ-QUIC-RFC9000-S7P3-0009` as `trace_clean`; S7P3 no longer needs to be
+   the next local lane.
+3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S17P2P5P2-0001`
+   through `REQ-QUIC-RFC9000-S17P2P5P2-0009` and
+   `REQ-QUIC-RFC9000-S17P2P5P3-0001` through
+   `REQ-QUIC-RFC9000-S17P2P5P3-0007` as `trace_clean`.
+4. `REQ-QUIC-RFC9000-S17P2P5P3-0008` remains optional, unclaimed server abort
+   behavior and should not be treated as proven by the Retry client-processing
+   closure.
+5. Do not describe S19P13 closure as new STREAM_DATA_BLOCKED emission
    scheduling, flow-control autotuning, asynchronous credit waiting,
    sender/recovery behavior, public flow-control APIs, S19P14 STREAMS_BLOCKED
    behavior, or interop readiness.
-3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0001` through
+6. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0001` through
    `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`.
-4. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0002` and
+7. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0002` and
    `REQ-QUIC-RFC9000-S19P14-0004` through
    `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
-5. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0001` and
+8. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0001` and
    `REQ-QUIC-RFC9000-S19P14-0003` as `trace_clean`; S19P14 no longer needs to
    be the next local lane.
-6. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S5P2P2-0001` through
+9. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S5P2P2-0001` through
    `REQ-QUIC-RFC9000-S5P2P2-0010` as `trace_clean`; S5P2P2 no longer needs to
    be the next local lane.
 

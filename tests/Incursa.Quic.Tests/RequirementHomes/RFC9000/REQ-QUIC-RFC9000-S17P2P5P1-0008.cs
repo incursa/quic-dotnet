@@ -76,6 +76,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0008
             await clientSocket.ReceiveAsync(new byte[256].AsMemory(), SocketFlags.None, secondRetryTimeout.Token));
 
         Assert.False(callbackEntered.Task.IsCompleted);
+        await WaitForRetryBootstrapTokenAsync(listenerHost, retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
     }
 
@@ -137,6 +138,26 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0008
             await clientSocket.ReceiveAsync(new byte[256].AsMemory(), SocketFlags.None, secondRetryTimeout.Token));
 
         Assert.False(callbackEntered.Task.IsCompleted);
+        await WaitForRetryBootstrapTokenAsync(listenerHost, retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
+    }
+
+    private static async Task WaitForRetryBootstrapTokenAsync(
+        QuicListenerHost listenerHost,
+        ReadOnlyMemory<byte> retryToken)
+    {
+        string expectedTokenHex = Convert.ToHexString(retryToken.Span);
+        DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
+        while (DateTime.UtcNow < deadline)
+        {
+            if (listenerHost.RetryBootstrapTokenHex == expectedTokenHex)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(10));
+        }
+
+        Assert.Equal(expectedTokenHex, listenerHost.RetryBootstrapTokenHex);
     }
 }

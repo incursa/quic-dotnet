@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0059",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Transport Parameter Connection ID Authentication Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0059",
+    "VER-QUIC-RFC9000-0059"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S7P3-0001",
+    "REQ-QUIC-RFC9000-S7P3-0002",
+    "REQ-QUIC-RFC9000-S7P3-0003",
+    "REQ-QUIC-RFC9000-S7P3-0004",
+    "REQ-QUIC-RFC9000-S7P3-0005",
+    "REQ-QUIC-RFC9000-S7P3-0006",
+    "REQ-QUIC-RFC9000-S7P3-0007",
+    "REQ-QUIC-RFC9000-S7P3-0008",
+    "REQ-QUIC-RFC9000-S7P3-0009"
+  ],
+  "summary": "Close the RFC 9000 Section 7.3 connection-ID authentication floor by replacing broad placeholder proof with focused codec, validator, and runtime commit-path evidence.",
+  "planned_changes": "- Add focused requirement-home tests for each Section 7.3 connection-ID transport-parameter rule.\n- Prove server-only original_destination_connection_id and retry_source_connection_id emission boundaries.\n- Prove initial_source_connection_id emission, missing-parameter rejection, mismatched-value rejection, and matching-value acceptance.\n- Prove zero-length selected connection IDs remain encoded and validated as empty transport-parameter values rather than omitted values.\n- Remove the runtime shortcut that skipped connection-ID binding validation when the expected peer Initial Source Connection ID was empty.\n- Add dedicated architecture and verification trace ownership and direct canonical x_test_refs.",
+  "verification_plan": "Run the focused S7P3 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0059"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0059"
+  ],
+  "out_of_scope": [
+    "Transport-parameter invalid-value policy outside the Section 7.3 connection-ID binding parameters.",
+    "Remembered 0-RTT transport-parameter validation.",
+    "Preferred-address migration and server-address-change policy.",
+    "Public API changes for user-selected connection ID policy.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused RFC 9000 Section 7.3 proof over transport-parameter codec preservation, connection-ID binding validation, runtime commit-path enforcement, and zero-length connection-ID parameter handling."
+}

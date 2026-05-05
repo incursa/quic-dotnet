@@ -62,4 +62,43 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0005
         Assert.True(QuicS17P2P5P2TestSupport.RetryToken.AsSpan().SequenceEqual(
             versionSpecificData.Slice(tokenLengthBytesConsumed, QuicS17P2P5P2TestSupport.RetryToken.Length)));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    public void ClientDoesNotReplayInitialPacketsWhenTheRetryTokenIsEmpty()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            new QuicConnectionRetryReceivedEvent(
+                ObservedAtTicks: 1,
+                RetrySourceConnectionId: QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+                RetryToken: ReadOnlyMemory<byte>.Empty),
+            nowTicks: 1);
+
+        Assert.False(retryResult.StateChanged);
+        Assert.Empty(retryResult.Effects);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    public void ClientReplaysInitialPacketsWithAMinimumLengthRetryToken()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                1,
+                QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+                QuicS17P2P5P2TestSupport.SingleByteRetryToken),
+            nowTicks: 1);
+
+        QuicS17P2P5P3TestSupport.RetryReplayInitialPacket replayPacket =
+            QuicS17P2P5P2TestSupport.ReadSingleRetryReplayInitialPacket(retryResult);
+        Assert.Equal(QuicS17P2P5P2TestSupport.SingleByteRetryToken, replayPacket.Token);
+    }
 }

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0059",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Transport Parameter Connection ID Authentication",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the RFC 9000 Section 7.3 runtime and codec floor for authenticating handshake connection ID choices through transport parameters.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0057",
+    "ARC-QUIC-RFC9000-0058",
+    "WI-QUIC-RFC9000-0059",
+    "VER-QUIC-RFC9000-0059"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P3-0001",
+    "REQ-QUIC-RFC9000-S7P3-0002",
+    "REQ-QUIC-RFC9000-S7P3-0003",
+    "REQ-QUIC-RFC9000-S7P3-0004",
+    "REQ-QUIC-RFC9000-S7P3-0005",
+    "REQ-QUIC-RFC9000-S7P3-0006",
+    "REQ-QUIC-RFC9000-S7P3-0007",
+    "REQ-QUIC-RFC9000-S7P3-0008",
+    "REQ-QUIC-RFC9000-S7P3-0009"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicConnectionIdBindingValidationError.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P3ConnectionIdBindingTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs"
+  ],
+  "design_summary": "The transport-parameter codec preserves the three handshake connection-ID binding parameters as opaque values: original_destination_connection_id, initial_source_connection_id, and retry_source_connection_id. Server-only parameters remain rejected from client emission and from server-side peer parsing. The binding validator compares the peer's committed transport-parameter values against the connection IDs observed or selected during the handshake, with distinct validation errors for omitted parameters, mismatched original destination IDs, mismatched initial source IDs, missing retry IDs, mismatched retry IDs, and unexpected retry IDs. The runtime commit path invokes that validator before peer transport parameters are accepted and converts binding failures into local TRANSPORT_PARAMETER_ERROR closure. Zero-length connection IDs remain real selected values, so the runtime validates an expected empty Initial Source Connection ID instead of skipping the binding check.",
+  "data_and_state_considerations": "The codec stores connection ID transport-parameter values as byte arrays without synthesizing values that were not present on the wire. The client runtime passes its first Initial Destination Connection ID, the observed or adopted server Initial Source Connection ID, and any Retry Source Connection ID into validation. The server role validates the peer initial_source_connection_id against the client Initial Source Connection ID used to route the handshake. The zero-length peer-selected path is represented by an empty byte array rather than null; null continues to mean the parameter was absent.",
+  "edge_cases_and_constraints": [
+    "A zero-length initial_source_connection_id value is accepted only when the selected connection ID is actually zero-length.",
+    "A missing initial_source_connection_id remains distinguishable from an empty initial_source_connection_id value.",
+    "A client emitting original_destination_connection_id or retry_source_connection_id remains invalid because those parameters are server-only.",
+    "A server that did not send Retry must not include retry_source_connection_id; a server that did send Retry must include the matching Retry Source Connection ID.",
+    "Runtime validation remains bound to the handshake connection IDs already selected by the S7P2 first-flight and server-adoption floors."
+  ],
+  "risks": [
+    "This slice proves Section 7.3 connection-ID authentication and does not claim broader transport-parameter policy, remembered 0-RTT parameter checks, or preferred-address migration behavior.",
+    "The runtime commit-path proof uses the managed TLS bridge state machine and does not claim external peer interop beyond the existing managed host paths.",
+    "Future public API surfaces for user-provided connection ID policy must keep null and zero-length semantics distinct."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the RFC 9000 Section 7.3 connection-ID transport-parameter authentication floor for codec preservation, binding validation, runtime transport-parameter commit enforcement, and zero-length connection-ID parameter handling. It leaves Section 7.4 transport-parameter invalid-value policy, remembered 0-RTT parameter replay, migration, and preferred-address behavior to their owning sections."
+    }
+  ]
+}

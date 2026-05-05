@@ -77,6 +77,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0007
             initialDestinationConnectionId,
             retryResponse1.AsSpan(0, retryBytes1),
             out QuicRetryBootstrapMetadata retryMetadata));
+        await WaitForRetryBootstrapTokenAsync(listenerHost, retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
         Assert.False(callbackEntered.Task.IsCompleted);
 
@@ -197,5 +198,24 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0007
         Assert.Equal(6, listenerHost.RetryBootstrapReplayValidationFailureCode);
         Assert.Equal(Convert.ToHexString(wrongRetryToken), listenerHost.RetryBootstrapReplayTokenHex);
         Assert.False(listenerHost.RetryBootstrapReplayValidated);
+    }
+
+    private static async Task WaitForRetryBootstrapTokenAsync(
+        QuicListenerHost listenerHost,
+        ReadOnlyMemory<byte> retryToken)
+    {
+        string expectedTokenHex = Convert.ToHexString(retryToken.Span);
+        DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
+        while (DateTime.UtcNow < deadline)
+        {
+            if (listenerHost.RetryBootstrapTokenHex == expectedTokenHex)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(10));
+        }
+
+        Assert.Equal(expectedTokenHex, listenerHost.RetryBootstrapTokenHex);
     }
 }

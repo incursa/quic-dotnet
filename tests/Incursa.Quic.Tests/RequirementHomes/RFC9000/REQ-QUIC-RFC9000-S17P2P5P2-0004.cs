@@ -31,4 +31,37 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0004
             retryPacket,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0004")]
+    public void RetryMetadataParserAcceptsRetryPacketsWithMinimumNonEmptyTokens()
+    {
+        byte[] retryPacket = QuicS17P2P5P2TestSupport.CreateRetryPacket(
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            QuicS17P2P5P2TestSupport.SingleByteRetryToken);
+
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            retryPacket,
+            out QuicRetryBootstrapMetadata retryMetadata));
+        Assert.Equal(QuicS17P2P5P2TestSupport.SingleByteRetryToken, retryMetadata.RetryToken);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0004")]
+    public void RetryMetadataParserRejectsTheExactZeroLengthRetryTokenBoundary()
+    {
+        byte[] retryPacket = QuicS17P2P5P2TestSupport.CreateRetryPacket(
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            retryToken: []);
+
+        Assert.False(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            retryPacket,
+            out _));
+    }
 }

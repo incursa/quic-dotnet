@@ -56,4 +56,45 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0006
             out _));
         Assert.True(QuicS17P2P5P2TestSupport.RetrySourceConnectionId.AsSpan().SequenceEqual(openedDestinationConnectionId));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0006")]
+    public void ClientDoesNotReplayInitialPacketsWhenTheRetrySourceConnectionIdIsEmpty()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            new QuicConnectionRetryReceivedEvent(
+                ObservedAtTicks: 1,
+                RetrySourceConnectionId: ReadOnlyMemory<byte>.Empty,
+                RetryToken: QuicS17P2P5P2TestSupport.RetryToken),
+            nowTicks: 1);
+
+        Assert.False(retryResult.StateChanged);
+        Assert.Empty(retryResult.Effects);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0006")]
+    public void ClientUsesAMaximumLengthRetrySourceConnectionIdAsTheReplayDestination()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                1,
+                QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId,
+                QuicS17P2P5P2TestSupport.RetryToken),
+            nowTicks: 1);
+
+        QuicS17P2P5P3TestSupport.RetryReplayInitialPacket replayPacket =
+            QuicS17P2P5P2TestSupport.ReadSingleRetryReplayInitialPacket(
+                retryResult,
+                QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId);
+        Assert.Equal(QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId, replayPacket.DestinationConnectionId);
+    }
 }

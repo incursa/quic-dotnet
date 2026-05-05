@@ -34,4 +34,27 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0007
 
         Assert.Equal(expectedError, validationError);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent()
+    {
+        QuicTransportParameters peerParameters = new()
+        {
+            OriginalDestinationConnectionId = QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+            InitialSourceConnectionId = QuicS7P3ConnectionIdBindingTestSupport.ServerInitialSourceConnectionId,
+        };
+
+        Assert.True(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            QuicTransportParameterRole.Client,
+            QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+            QuicS7P3ConnectionIdBindingTestSupport.ServerInitialSourceConnectionId,
+            usedRetry: false,
+            ReadOnlySpan<byte>.Empty,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
+    }
 }

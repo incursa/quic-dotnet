@@ -47,4 +47,26 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0009
         Assert.True(cryptoFrame.CryptoData.Length > 0);
         Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(cryptoPayload[cryptoBytesConsumed..]).IsEmpty);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0009")]
+    public void ClientDoesNotCreateAnAckOnlyResponseForRetryPackets()
+    {
+        QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+        QuicConnectionRetryReceivedEvent retryReceivedEvent = QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1);
+
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace(retryReceivedEvent.Datagram.Span, out _));
+
+        QuicConnectionTransitionResult retryResult = runtime.Transition(retryReceivedEvent, nowTicks: 1);
+        QuicConnectionSendDatagramEffect[] sendEffects = retryResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+
+        Assert.Single(sendEffects);
+        QuicS17P2P5P3TestSupport.RetryReplayInitialPacket replayPacket =
+            QuicS17P2P5P2TestSupport.ReadSingleRetryReplayInitialPacket(retryResult);
+        Assert.Null(replayPacket.AckFrame);
+    }
 }

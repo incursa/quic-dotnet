@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0060",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Retry Client Processing and Replay Continuity Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0060",
+    "VER-QUIC-RFC9000-0060"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0003",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0005",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0006",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0007",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0008",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0007"
+  ],
+  "summary": "Close the bounded RFC 9000 Retry client processing and replay-continuity gap by replacing broad placeholder proof with focused requirement-home tests and canonical trace links.",
+  "planned_changes": "- Add negative and edge tests for first-Retry acceptance, malformed Retry metadata rejection, duplicate Retry discard, Retry replay token and connection-ID use, source connection-ID preservation, Retry non-acknowledgment, ClientHello preservation, post-Retry 0-RTT destination selection, packet-number continuity, and protected 0-RTT payload confidentiality.\n- Add support helpers for maximum-length Retry Source Connection IDs, minimum non-empty Retry tokens, Retry replay packet decoding, and server protection setup with non-default Retry values.\n- Record focused architecture and verification ownership for S17P2P5P2 and S17P2P5P3 requirements that are proven by the managed client runtime and packet builders.\n- Keep optional server abort behavior for detected packet-number reset out of scope because the repository does not currently prove that MAY behavior.",
+  "verification_plan": "Run the focused S17P2P5P2/P3 requirement-home filter, rerun the S7P3 filter to guard the adjacent connection-ID closure, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0060"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0060"
+  ],
+  "out_of_scope": [
+    "Optional S17P2P5P3-0008 server abort behavior for detected packet-number reset.",
+    "Hosted interop readiness claims.",
+    "Public early-data APIs or application-level 0-RTT acceptance.",
+    "0-RTT anti-replay policy beyond packet protection of confidential payload bytes.",
+    "Retry token cryptographic envelope design outside the existing Retry packet integrity and token propagation floors."
+  ],
+  "completion_notes": "Completed as a focused RFC 9000 Section 17.2.5.2 and 17.2.5.3 proof over client Retry packet acceptance, duplicate Retry discard, Retry-selected Initial replay, post-Retry 0-RTT destination selection, packet-number continuity, and protected 0-RTT payload confidentiality."
+}

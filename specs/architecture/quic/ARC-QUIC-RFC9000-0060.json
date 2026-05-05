@@ -1,0 +1,87 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0060",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Retry Client Processing and Replay Continuity",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the RFC 9000 Section 17.2.5.2 and 17.2.5.3 runtime floor for client Retry packet acceptance, Retry-selected Initial replay, 0-RTT connection-ID continuity, packet-number continuity, and confidential 0-RTT protection.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0022",
+    "ARC-QUIC-RFC9000-0037",
+    "ARC-QUIC-RFC9000-0038",
+    "ARC-QUIC-RFC9000-0057",
+    "ARC-QUIC-RFC9000-0059",
+    "WI-QUIC-RFC9000-0060",
+    "VER-QUIC-RFC9000-0060"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0003",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0005",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0006",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0007",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0008",
+    "REQ-QUIC-RFC9000-S17P2P5P2-0009",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0001",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0002",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-S17P2P5P3-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicRetryPacketMetadata.cs",
+    "src/Incursa.Quic/QuicRetryPacketProtector.cs",
+    "src/Incursa.Quic/QuicInitialPacketBuilder.cs",
+    "src/Incursa.Quic/QuicLongHeaderPacketCodec.cs",
+    "src/Incursa.Quic/QuicZeroRttPacketBuilder.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P2TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0007.cs"
+  ],
+  "design_summary": "Retry processing is represented as a single client-side transition that accepts the first valid Retry packet for a connection attempt, rejects malformed Retry metadata such as empty source connection IDs or empty Retry tokens, and discards later Retry packets without replacing the already-selected Retry values. Once Retry is applied, Initial replay packets use the Retry Source Connection ID as their destination, include the Retry token, preserve the original client Source Connection ID, keep the same ClientHello bytes, and do not generate ACK-only responses for the Retry packet. Post-Retry 0-RTT packet construction uses the Retry-selected connection ID, continues the packet-number space instead of resetting it, and protects confidential application payload bytes with 0-RTT packet protection.",
+  "data_and_state_considerations": "The client stores Retry metadata as an event value that includes the source connection ID, token, and protected Retry packet bytes. Empty source connection IDs and empty Retry tokens are invalid for the client Retry transition. The original ClientHello and client Source Connection ID remain owned by the connection attempt; Retry updates the peer-selected destination connection ID and token only. Packet-number allocators remain connection-attempt scoped and are not reset by Retry. The 0-RTT packet builder receives the Retry-selected destination connection ID after Retry has been processed.",
+  "edge_cases_and_constraints": [
+    "A maximum-length Retry Source Connection ID and a minimum non-empty Retry token are accepted and propagated to replayed Initial packets.",
+    "A Retry packet missing the required Source Connection ID or carrying an empty Retry token is rejected before the client emits Retry replay packets.",
+    "A second Retry packet, including one with different connection ID or token values, does not overwrite the first processed Retry outcome.",
+    "The replayed Initial packet source connection ID remains the original client-selected value rather than the Retry Source Connection ID.",
+    "0-RTT packets built before Retry use the original destination connection ID; 0-RTT packets built after Retry use the Retry-selected destination connection ID.",
+    "Initial and 0-RTT packet numbers continue across Retry and across multiple packet-builder invocations."
+  ],
+  "risks": [
+    "This slice proves the managed client Retry transition and packet-builder floors; it does not claim hosted interop readiness or public early-data APIs.",
+    "The 0-RTT confidentiality proof verifies that protected packet bytes do not expose the plaintext stream frame used by the test; it does not claim full anti-replay semantics or application-level 0-RTT acceptance.",
+    "Optional server abort behavior for detected packet-number reset remains outside this design because the repository does not currently expose a supported server-side proof surface for that MAY behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the bounded RFC 9000 Section 17.2.5.2 and 17.2.5.3 Retry client processing and replay-continuity floor for the managed runtime. It covers first-Retry acceptance, duplicate Retry discard, Retry token and source connection-ID validation, Initial replay value continuity, ClientHello preservation, post-Retry 0-RTT destination selection, packet-number continuity, Retry non-acknowledgment, and protected 0-RTT payload confidentiality. It does not claim optional S17P2P5P3-0008 server abort behavior, full 0-RTT application acceptance, anti-replay policy, public early-data APIs, or hosted interop readiness."
+    }
+  ]
+}

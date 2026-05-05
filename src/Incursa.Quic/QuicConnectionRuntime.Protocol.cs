@@ -3405,7 +3405,6 @@ internal sealed partial class QuicConnectionRuntime
             ? handshakeDestinationConnectionId
             : observedPeerInitialSourceConnectionId;
         if (!handshakeFlowCoordinator.InitialDestinationConnectionId.IsEmpty
-            && !connectionIdBindingInitialSourceConnectionId.IsEmpty
             && !QuicTransportParametersCodec.TryValidateConnectionIdBindings(
                 receiverRole,
                 handshakeFlowCoordinator.InitialDestinationConnectionId.Span,

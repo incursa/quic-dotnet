@@ -4,9 +4,14 @@ internal static class QuicS17P2P5P3TestSupport
 {
     internal static QuicInitialPacketProtection CreateServerProtection()
     {
+        return CreateServerProtection(QuicS17P2P5P2TestSupport.RetrySourceConnectionId);
+    }
+
+    internal static QuicInitialPacketProtection CreateServerProtection(ReadOnlySpan<byte> retrySourceConnectionId)
+    {
         Assert.True(QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
-            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            retrySourceConnectionId,
             out QuicInitialPacketProtection serverProtection));
 
         return serverProtection;

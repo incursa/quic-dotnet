@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S7P3_0002
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatTransportParameters_EmitsInitialSourceConnectionId()
     {
@@ -29,5 +30,41 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0002
 
         Assert.True(parameters.InitialSourceConnectionId!.AsSpan().SequenceEqual(parsed.InitialSourceConnectionId!));
         Assert.Null(parsed.ActiveConnectionIdLimit);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryValidateConnectionIdBindings_RejectsMissingInitialSourceConnectionId()
+    {
+        Assert.False(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            QuicTransportParameterRole.Server,
+            ReadOnlySpan<byte>.Empty,
+            QuicS7P3ConnectionIdBindingTestSupport.ClientInitialSourceConnectionId,
+            usedRetry: false,
+            ReadOnlySpan<byte>.Empty,
+            new QuicTransportParameters(),
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.MissingInitialSourceConnectionId, validationError);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7P3-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryFormatTransportParameters_EmitsZeroLengthInitialSourceConnectionId()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            InitialSourceConnectionId = [],
+        };
+
+        QuicTransportParameters parsed = QuicS7P3ConnectionIdBindingTestSupport.FormatAndParse(
+            parameters,
+            QuicTransportParameterRole.Client,
+            QuicTransportParameterRole.Server);
+
+        Assert.NotNull(parsed.InitialSourceConnectionId);
+        Assert.Empty(parsed.InitialSourceConnectionId!);
     }
 }

@@ -58,4 +58,88 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P3_0006
         Assert.True(secondInitialPacket.Length > 0);
         Assert.True(secondZeroRttPacket.Length > 0);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0006")]
+    public void ClientInitialPacketNumberDoesNotRestartAtZeroAfterRetry()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            QuicS12P3TestSupport.CreateSequentialBytes(0x60, 20),
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out ulong firstInitialPacketNumber,
+            out _));
+        Assert.Equal(0UL, firstInitialPacketNumber);
+
+        Assert.True(coordinator.TrySetHandshakeDestinationConnectionId(QuicS17P2P5P2TestSupport.RetrySourceConnectionId));
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            QuicS12P3TestSupport.CreateSequentialBytes(0x90, 24),
+            cryptoPayloadOffset: 0,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            QuicS17P2P5P2TestSupport.RetryToken,
+            clientProtection,
+            out ulong postRetryInitialPacketNumber,
+            out _));
+
+        Assert.NotEqual(0UL, postRetryInitialPacketNumber);
+        Assert.Equal(1UL, postRetryInitialPacketNumber);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0006")]
+    public void ClientPacketNumbersContinueAcrossRetryAfterMultipleInitialAndZeroRttPackets()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
+        QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.ZeroRtt);
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        for (int packetIndex = 0; packetIndex < 2; packetIndex++)
+        {
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                QuicS12P3TestSupport.CreateSequentialBytes((byte)(0x60 + packetIndex), 20),
+                cryptoPayloadOffset: (ulong)(packetIndex * 20),
+                clientProtection,
+                out ulong initialPacketNumber,
+                out _));
+            Assert.Equal((ulong)packetIndex, initialPacketNumber);
+
+            Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+                QuicS17P2P3TestSupport.CreatePingPayload(),
+                zeroRttMaterial,
+                out ulong zeroRttPacketNumber,
+                out _));
+            Assert.Equal((ulong)packetIndex, zeroRttPacketNumber);
+        }
+
+        Assert.True(coordinator.TrySetHandshakeDestinationConnectionId(QuicS17P2P5P2TestSupport.RetrySourceConnectionId));
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            QuicS12P3TestSupport.CreateSequentialBytes(0x90, 24),
+            cryptoPayloadOffset: 40,
+            QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+            QuicS17P2P5P2TestSupport.RetryToken,
+            clientProtection,
+            out ulong postRetryInitialPacketNumber,
+            out _));
+        Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+            QuicS17P2P3TestSupport.CreatePingPayload(),
+            zeroRttMaterial,
+            out ulong postRetryZeroRttPacketNumber,
+            out _));
+
+        Assert.Equal(2UL, postRetryInitialPacketNumber);
+        Assert.Equal(2UL, postRetryZeroRttPacketNumber);
+    }
 }
