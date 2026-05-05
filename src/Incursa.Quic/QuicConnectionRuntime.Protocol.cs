@@ -1449,9 +1449,31 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
+                if (tlsState.Role == QuicTlsRole.Server)
+                {
+                    return TryHandleInvalidNewTokenFrameReceived(
+                        nowTicks,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The server received a NEW_TOKEN frame.",
+                        ref effects);
+                }
+
                 offset += newTokenBytesConsumed;
                 packetAckEliciting = true;
                 continue;
+            }
+
+            if (TryReadApplicationFrameType(remaining, out ulong frameType) && frameType == HandshakePacketNewTokenFrameType)
+            {
+                QuicTransportErrorCode newTokenErrorCode = tlsState.Role == QuicTlsRole.Server
+                    ? QuicTransportErrorCode.ProtocolViolation
+                    : QuicTransportErrorCode.FrameEncodingError;
+
+                return TryHandleInvalidNewTokenFrameReceived(
+                    nowTicks,
+                    newTokenErrorCode,
+                    "The peer sent an invalid NEW_TOKEN frame.",
+                    ref effects);
             }
 
             if (QuicFrameCodec.TryParseHandshakeDoneFrame(remaining, out QuicHandshakeDoneFrame _, out int handshakeDoneBytesConsumed))
@@ -2898,6 +2920,30 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             ref effects);
         return stateChanged;
+    }
+
+    private bool TryHandleInvalidNewTokenFrameReceived(
+        long nowTicks,
+        QuicTransportErrorCode errorCode,
+        string reasonPhrase,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: errorCode,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: HandshakePacketNewTokenFrameType,
+            ReasonPhrase: reasonPhrase);
+
+        return HandleLocalCloseRequested(
+            new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
+            nowTicks,
+            ref effects);
+    }
+
+    private static bool TryReadApplicationFrameType(ReadOnlySpan<byte> payload, out ulong frameType)
+    {
+        return QuicVariableLengthInteger.TryParse(payload, out frameType, out int bytesConsumed)
+            && bytesConsumed > 0;
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)

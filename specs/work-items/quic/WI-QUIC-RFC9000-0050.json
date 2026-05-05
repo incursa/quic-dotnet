@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0050",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 NEW_TOKEN Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0050",
+    "VER-QUIC-RFC9000-0050"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P7-0001",
+    "REQ-QUIC-RFC9000-S19P7-0002",
+    "REQ-QUIC-RFC9000-S19P7-0003",
+    "REQ-QUIC-RFC9000-S19P7-0004",
+    "REQ-QUIC-RFC9000-S19P7-0005",
+    "REQ-QUIC-RFC9000-S19P7-0006",
+    "REQ-QUIC-RFC9000-S19P7-0007",
+    "REQ-QUIC-RFC9000-S19P7-0008",
+    "REQ-QUIC-RFC9000-S19P7-0009",
+    "REQ-QUIC-RFC9000-S19P7-0010"
+  ],
+  "summary": "Prove the RFC 9000 Section 19.7 NEW_TOKEN frame-field and role-policy trace tail.",
+  "planned_changes": "- Add focused NEW_TOKEN requirement-home helpers for exact field encodings, duplicate-token comparisons, protected application-packet injection, and parser assertions.\n- Add focused positive, negative, edge, and fuzz proof where required for S19P7 0001 through 0010.\n- Enforce managed-runtime role policy for client send prohibition, client empty-token FRAME_ENCODING_ERROR, and server receipt PROTOCOL_VIOLATION.\n- Add NEW_TOKEN parse and format coverage to the existing QuicFrameCodec benchmark suite.\n- Link the focused proof to dedicated architecture, work-item, and verification artifacts.",
+  "verification_plan": "Run the focused S19P7 requirement-home filter, run a Release build, run the full Release no-build solution test suite, run the QuicFrameCodec benchmark Dry job, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0050"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0050"
+  ],
+  "out_of_scope": [
+    "Changing NEW_TOKEN envelope construction or validation semantics.",
+    "Adding persistent or cluster-wide NEW_TOKEN replay state.",
+    "Adding public token-cache APIs.",
+    "Broadening token reuse policy beyond the existing Section 8.1 listener-local slices.",
+    "Replacing the span-backed frame-codec hot path."
+  ],
+  "completion_notes": "Completed as focused parser/formatter, application-packet role-policy, duplicate-token, and benchmark proof over the existing NEW_TOKEN frame codec and connection runtime seams."
+}

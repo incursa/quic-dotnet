@@ -20,6 +20,8 @@ public class QuicFrameCodecBenchmarks
     private byte[] newConnectionIdConnectionId = [];
     private byte[] newConnectionIdFrame = [];
     private byte[] newConnectionIdStatelessResetToken = [];
+    private byte[] newTokenFrame = [];
+    private byte[] newTokenValue = [];
     private byte[] streamData = [];
     private byte[] streamsBlockedFrame = [];
     private QuicStreamsBlockedFrame streamsBlockedTemplate;
@@ -90,6 +92,20 @@ public class QuicFrameCodecBenchmarks
         }
 
         maxStreamDataFrame = maxStreamDataDestination[..maxStreamDataBytesWritten].ToArray();
+
+        newTokenValue = new byte[128];
+        for (int i = 0; i < newTokenValue.Length; i++)
+        {
+            newTokenValue[i] = unchecked((byte)(0x80 + i));
+        }
+
+        byte[] newTokenDestination = new byte[192];
+        if (!QuicFrameCodec.TryFormatNewTokenFrame(new QuicNewTokenFrame(newTokenValue), newTokenDestination, out int newTokenBytesWritten))
+        {
+            throw new InvalidOperationException("Failed to prepare a NEW_TOKEN frame benchmark payload.");
+        }
+
+        newTokenFrame = newTokenDestination[..newTokenBytesWritten].ToArray();
 
         newConnectionIdConnectionId = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7];
         newConnectionIdStatelessResetToken = [
@@ -248,6 +264,31 @@ public class QuicFrameCodecBenchmarks
     public int FormatMaxStreamDataFrame()
     {
         return QuicFrameCodec.TryFormatMaxStreamDataFrame(maxStreamDataTemplate, destination, out int bytesWritten)
+            ? bytesWritten
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures NEW_TOKEN frame parsing.
+    /// </summary>
+    [Benchmark]
+    public int ParseNewTokenFrame()
+    {
+        return QuicFrameCodec.TryParseNewTokenFrame(
+            newTokenFrame,
+            out QuicNewTokenFrame frame,
+            out int bytesConsumed)
+            ? bytesConsumed ^ frame.Token.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures NEW_TOKEN frame formatting.
+    /// </summary>
+    [Benchmark]
+    public int FormatNewTokenFrame()
+    {
+        return QuicFrameCodec.TryFormatNewTokenFrame(new QuicNewTokenFrame(newTokenValue), destination, out int bytesWritten)
             ? bytesWritten
             : -1;
     }

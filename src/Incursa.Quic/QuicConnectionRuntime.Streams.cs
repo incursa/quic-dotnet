@@ -3581,7 +3581,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        if (token.IsEmpty)
+        if (tlsState.Role != QuicTlsRole.Server || token.IsEmpty)
         {
             return false;
         }

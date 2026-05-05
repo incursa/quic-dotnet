@@ -1,0 +1,73 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0050",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 NEW_TOKEN Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 19.7 NEW_TOKEN parser, formatter, duplicate-token, and endpoint-role proof slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0034",
+    "ARC-QUIC-RFC9000-0035",
+    "WI-QUIC-RFC9000-0050",
+    "VER-QUIC-RFC9000-0050"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P7-0001",
+    "REQ-QUIC-RFC9000-S19P7-0002",
+    "REQ-QUIC-RFC9000-S19P7-0003",
+    "REQ-QUIC-RFC9000-S19P7-0004",
+    "REQ-QUIC-RFC9000-S19P7-0005",
+    "REQ-QUIC-RFC9000-S19P7-0006",
+    "REQ-QUIC-RFC9000-S19P7-0007",
+    "REQ-QUIC-RFC9000-S19P7-0008",
+    "REQ-QUIC-RFC9000-S19P7-0009",
+    "REQ-QUIC-RFC9000-S19P7-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicNewTokenFrame.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P7NewTokenFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The NEW_TOKEN frame stays centered on the span-backed frame codec and immutable frame view. The parser accepts only the fixed one-byte frame type 0x07, parses Token Length as a QUIC variable-length integer, rejects empty tokens, rejects declared lengths beyond the remaining payload, and consumes exactly the token bytes. The application packet runtime treats malformed client-side receipt as FRAME_ENCODING_ERROR, treats all server-side NEW_TOKEN receipt as PROTOCOL_VIOLATION, and refuses to construct outbound NEW_TOKEN payloads from client-role runtimes.",
+  "data_and_state_considerations": "This slice does not introduce a new token store. Duplicate repair is proven by direct token-byte comparison at the frame seam. Longer-lived token envelope, client reuse, and listener-local replay protection remain owned by the existing Section 8.1 artifact families.",
+  "edge_cases_and_constraints": [
+    "Non-0x07 and non-minimal 0x07 frame-type encodings are rejected by the fixed-type parser.",
+    "Truncated Token Length variable-length integers and declared lengths beyond the remaining payload are rejected before a frame view is produced.",
+    "A zero-length Token field is invalid at both the codec seam and the client application-packet seam.",
+    "Server-side application-packet receipt of NEW_TOKEN closes with PROTOCOL_VIOLATION even when the frame is otherwise malformed.",
+    "Client-role runtimes cannot build outbound NEW_TOKEN payloads; server-role runtimes retain the existing token-emission path."
+  ],
+  "alternatives_considered": [
+    "Leave S19P7 under broad frame-codec tests; rejected because generated triage required focused requirement-home proof and xrefs.",
+    "Move duplicate-token repair into a token cache; rejected because RFC 9000 Section 13.3 already treats duplicate NEW_TOKEN detection as direct frame-content comparison.",
+    "Broaden this slice into NEW_TOKEN replay persistence; rejected because listener-local one-time acceptance is already closed separately and cluster or restart persistence remains out of scope."
+  ],
+  "risks": [
+    "This proof does not claim persistent replay state across listener restarts or cluster-wide anti-replay coordination.",
+    "This proof does not add public token-cache APIs or change the NEW_TOKEN envelope format.",
+    "The malformed-frame close proof is bounded to the managed application-packet runtime seam."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers RFC 9000 Section 19.7 NEW_TOKEN parser, formatter, duplicate-token comparison, client send prohibition, client empty-token FRAME_ENCODING_ERROR, and server receive PROTOCOL_VIOLATION behavior for requirements 0001 through 0010 only."
+    }
+  ]
+}

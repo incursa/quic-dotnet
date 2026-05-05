@@ -8,11 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S19P7_0004
     [Trait("Category", "Positive")]
     public void TryParseNewTokenFrame_UsesTheTokenLengthFieldToRecoverTheWholeToken()
     {
-        byte[] token = new byte[64];
-        for (int index = 0; index < token.Length; index++)
-        {
-            token[index] = (byte)index;
-        }
+        byte[] token = QuicS19P7NewTokenFrameTestSupport.CreateSequentialToken(64);
 
         QuicNewTokenFrame frame = new(token);
         byte[] encoded = QuicFrameTestData.BuildNewTokenFrame(frame);
@@ -21,6 +17,29 @@ public sealed class REQ_QUIC_RFC9000_S19P7_0004
         Assert.Equal(token.Length, parsed.Token.Length);
         Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
         Assert.Equal(encoded.Length, bytesConsumed);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseNewTokenFrame_RejectsTokenLengthThatExceedsRemainingPayload()
+    {
+        byte[] encoded = QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrameWithTokenLength(
+            4,
+            [0xAA, 0xBB, 0xCC]);
+
+        QuicS19P7NewTokenFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseNewTokenFrame_UsesOneByteTokenLengthAtTheShortestValidBoundary()
+    {
+        byte[] token = [0xA5];
+        byte[] encoded = QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrame(token);
+
+        QuicS19P7NewTokenFrameTestSupport.AssertParses(encoded, token, expectedBytesConsumed: encoded.Length);
     }
 
     [Fact]

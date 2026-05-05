@@ -1,0 +1,74 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0050",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 NEW_TOKEN Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0050",
+    "WI-QUIC-RFC9000-0050"
+  ],
+  "verification_method": "Focused S19P7 requirement-home tests, Release build, full Release no-build solution tests, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P7-0001",
+    "REQ-QUIC-RFC9000-S19P7-0002",
+    "REQ-QUIC-RFC9000-S19P7-0003",
+    "REQ-QUIC-RFC9000-S19P7-0004",
+    "REQ-QUIC-RFC9000-S19P7-0005",
+    "REQ-QUIC-RFC9000-S19P7-0006",
+    "REQ-QUIC-RFC9000-S19P7-0007",
+    "REQ-QUIC-RFC9000-S19P7-0008",
+    "REQ-QUIC-RFC9000-S19P7-0009",
+    "REQ-QUIC-RFC9000-S19P7-0010"
+  ],
+  "scope": "This verification covers NEW_TOKEN parser and formatter behavior, field order, Token Length variable-length integer handling, opaque-token preservation, empty-token rejection, duplicate-token comparison, client send prohibition, and server receipt PROTOCOL_VIOLATION for RFC 9000 Section 19.7 requirements 0001 through 0010.",
+  "expected_result": "Focused S19P7 requirement homes prove that NEW_TOKEN frames use type 0x07, carry Token Length and Token fields, reject malformed or empty token encodings, preserve opaque token bytes, compare duplicate repair by token bytes, prevent client-role NEW_TOKEN emission, and close server-side receipt with PROTOCOL_VIOLATION.",
+  "procedure": [
+    "Run the focused S19P7 requirement-home filter.",
+    "Run a Release build.",
+    "Run the full Release no-build solution test suite.",
+    "Run the QuicFrameCodec benchmark suite with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec NEW_TOKEN parser and formatter are the wire-format seam under test.",
+    "The existing managed application-packet runtime is the role-policy seam under test.",
+    "Listener-local NEW_TOKEN envelope validation and replay enforcement remain owned by existing Section 8.1 artifact families."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P7NewTokenFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P7\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim persistent replay state across listener restarts, cluster-wide anti-replay coordination, public token-cache APIs, or NEW_TOKEN envelope changes beyond the parser and managed runtime role-policy seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P7 requirement-home filter passed 34/34, the combined S19P7 plus S9P3 token-emission regression filter passed 38/38, regenerated triage reports 10/10 S19P7 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 394 artifacts, the full Release no-build solution suite passed 4206/4206, and the QuicFrameCodec BenchmarkDotNet Dry run completed 16/16 benchmarks including ParseNewTokenFrame at 840.6 us and FormatNewTokenFrame at 340.6 us with no allocations."
+}

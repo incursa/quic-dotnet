@@ -8,7 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0005
     [Trait("Category", "Positive")]
     public void TryBuildOutboundNewTokenPayload_WritesANewTokenFrame()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+        QuicConnectionRuntime runtime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
         byte[] token =
         [
             0x10, 0x20, 0x30, 0x40,
@@ -26,7 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0005
     [Trait("Category", "Negative")]
     public void TryBuildOutboundNewTokenPayload_RejectsEmptyTokens()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+        QuicConnectionRuntime runtime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
 
         Assert.False(runtime.TryBuildOutboundNewTokenPayload(Array.Empty<byte>(), out byte[] payload));
         Assert.Empty(payload);

@@ -6,6 +6,30 @@ This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
+## 2026-05-05 Restart Note
+
+This note is intentionally narrow for handoff. The just-finished slice closes
+the RFC 9000 S19P7 NEW_TOKEN frame focused proof with runtime behavior,
+requirement-home tests, trace artifacts, generated triage, and frame-codec Dry
+benchmark coverage.
+
+Pick up next with the S19P9 MAX_DATA hard runtime tail:
+
+1. Start in `docs/requirements-workflow.md`, then check
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P9 requirements in
+   `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
+2. Triage `REQ-QUIC-RFC9000-S19P9-0006`, `REQ-QUIC-RFC9000-S19P9-0007`, and
+   `REQ-QUIC-RFC9000-S19P9-0008` first; these are the connection-wide receive
+   flow-control and final-size accounting edge cases.
+3. Then handle `REQ-QUIC-RFC9000-S19P9-0001` for the outbound MAX_DATA budget
+   proof, followed by `REQ-QUIC-RFC9000-S19P11-0006` if S19P9 is clean.
+
+Focused next-slice command:
+
+```powershell
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S19P9_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S19P9_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S19P9_0008"
+```
+
 ## Executive Read
 
 The repository now has a green local executable and SpecTrace baseline. The

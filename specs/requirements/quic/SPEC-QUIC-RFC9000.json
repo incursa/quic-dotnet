@@ -35250,21 +35250,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs::TryFormatNewTokenFrame_WritesTheFrameTypeField",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs::TryParseNewTokenFrame_RejectsOtherFrameTypes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0001.cs::TryParseNewTokenFrame_RejectsNonMinimalFrameTypeEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -35280,21 +35285,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B4-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs::TryFormatNewTokenFrame_EncodesTheTokenLengthAsAVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs::TryParseNewTokenFrame_RejectsTruncatedTokenLengthVariableInteger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0002.cs::TryParseNewTokenFrame_AcceptsTheTwoByteTokenLengthBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -35310,21 +35320,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs::TryParseNewTokenFrame_ConsumesTheRequiredTypeLengthAndTokenFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs::TryParseNewTokenFrame_RejectsPayloadsThatAreMissingRequiredFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs::TryParseNewTokenFrame_StopsAfterTheTokenBeforeATrailingFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -35340,21 +35355,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::TryParseNewTokenFrame_UsesTheTokenLengthFieldToRecoverTheWholeToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::TryParseNewTokenFrame_RejectsTokenLengthThatExceedsRemainingPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::TryParseNewTokenFrame_UsesOneByteTokenLengthAtTheShortestValidBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -35370,21 +35390,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs::TryFormatNewTokenFrame_PreservesTheOpaqueTokenBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs::ParsedDifferentNewTokenValuesRemainDifferentOpaqueBlobs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs::TryParseNewTokenFrame_PreservesBytesThatCouldAppearInAFutureInitialToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs::FuzzNewTokenFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -35400,22 +35425,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B8-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_ParsesAndFormatsAllFields",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_RejectsEmptyTokens"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs::TryFormatNewTokenFrame_AcceptsNonEmptyTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs::TryFormatNewTokenFrame_RejectsEmptyTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs::TryParseNewTokenFrame_AcceptsTheShortestNonEmptyToken"
         ]
       }
     },
@@ -35431,20 +35459,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B8-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseNewTokenFrame_RejectsEmptyTokens"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs::ClientTreatsEmptyNewTokenFrameAsFrameEncodingError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs::TryParseNewTokenFrame_RejectsEmptyTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs::ClientTreatsZeroLengthNewTokenFrameWithTrailingPayloadAsFrameEncodingError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs::FuzzNewTokenFrame_RoundTripsNonEmptyTokensAndRejectsTruncation"
         ]
       }
     },
@@ -35460,17 +35494,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B9-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs::ParsedDuplicateNewTokenFramesContainTheSameTokenValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs::ParsedNewTokenFramesWithDifferentTokenValuesDoNotSatisfyDuplicateRepair",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs::ParsedDuplicateNewTokenFramesRemainEqualAcrossDifferentPacketInstances",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs::FuzzNewTokenDuplicateRepairKeepsTokenValueStable"
         ]
       }
     },
@@ -35486,17 +35529,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B10-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs::ClientRuntimeRejectsOutboundNewTokenPayloadConstruction",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs::ServerRuntimeCanBuildOutboundNewTokenPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs::ClientAddressValidationDoesNotEmitNewToken"
         ]
       }
     },
@@ -35512,17 +35563,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0050"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0050"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0050"
         ],
         "upstream_refs": [
           "RFC 9000 §19.7 RFC9000-S19.7-B10-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs::ServerTreatsReceivedNewTokenFrameAsProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs::ClientDoesNotTreatReceivedNonEmptyNewTokenFrameAsProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs::ServerTreatsMalformedNewTokenFrameAsProtocolViolationInsteadOfFrameEncodingError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs::FuzzServerReceiptOfNewTokenAlwaysClosesWithProtocolViolation"
         ]
       }
     },

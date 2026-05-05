@@ -60,6 +60,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0047.json`](WI-QUIC-RFC9000-0047.json): canonical RFC 9000 CRYPTO frame focused proof work-item source
 - [`WI-QUIC-RFC9000-0048.json`](WI-QUIC-RFC9000-0048.json): canonical RFC 9000 NEW_CONNECTION_ID frame focused proof work-item source
 - [`WI-QUIC-RFC9000-0049.json`](WI-QUIC-RFC9000-0049.json): canonical RFC 9000 MAX_STREAM_DATA frame focused proof work-item source
+- [`WI-QUIC-RFC9000-0050.json`](WI-QUIC-RFC9000-0050.json): canonical RFC 9000 NEW_TOKEN frame focused proof work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

@@ -16,4 +16,30 @@ public sealed class REQ_QUIC_RFC9000_S19P7_0005
         Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
         Assert.Equal(encoded.Length, bytesConsumed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ParsedDifferentNewTokenValuesRemainDifferentOpaqueBlobs()
+    {
+        byte[] firstEncoded = QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrame(
+            QuicS19P7NewTokenFrameTestSupport.RepresentativeToken);
+        byte[] secondEncoded = QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrame(
+            QuicS19P7NewTokenFrameTestSupport.AlternateToken);
+
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(firstEncoded, out QuicNewTokenFrame firstParsed, out _));
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(secondEncoded, out QuicNewTokenFrame secondParsed, out _));
+        Assert.False(firstParsed.Token.SequenceEqual(secondParsed.Token));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseNewTokenFrame_PreservesBytesThatCouldAppearInAFutureInitialToken()
+    {
+        byte[] token = [0x00, 0x01, 0x3F, 0x40, 0x7F, 0x80, 0xC0, 0xFF];
+        byte[] encoded = QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrame(token);
+
+        QuicS19P7NewTokenFrameTestSupport.AssertParses(encoded, token, expectedBytesConsumed: encoded.Length);
+    }
 }
