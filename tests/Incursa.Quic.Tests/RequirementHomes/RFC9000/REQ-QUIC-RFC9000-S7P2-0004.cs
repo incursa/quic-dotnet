@@ -3,4 +3,75 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S7P2-0004")]
 public sealed class REQ_QUIC_RFC9000_S7P2_0004
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ClientHostGeneratesAnIndependentFirstInitialDestinationConnectionId()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost host = new(settings);
+
+        byte[] initialDestinationConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
+        byte[] routeConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "routeConnectionId");
+
+        Assert.Equal(8, initialDestinationConnectionId.Length);
+        Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(initialDestinationConnectionId));
+        Assert.False(initialDestinationConnectionId.AsSpan().SequenceEqual(routeConnectionId));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientHostDoesNotReuseFirstInitialDestinationConnectionIdsAcrossConnections()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings firstSettings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+        QuicClientConnectionSettings secondSettings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost firstHost = new(firstSettings);
+        await using QuicClientConnectionHost secondHost = new(secondSettings);
+
+        byte[] firstInitialDestinationConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(firstHost, "initialDestinationConnectionId");
+        byte[] secondInitialDestinationConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(secondHost, "initialDestinationConnectionId");
+
+        Assert.Equal(8, firstInitialDestinationConnectionId.Length);
+        Assert.Equal(8, secondInitialDestinationConnectionId.Length);
+        Assert.False(firstInitialDestinationConnectionId.AsSpan().SequenceEqual(secondInitialDestinationConnectionId));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task ClientHostKeepsTheUnpredictableInitialDestinationSeparateFromTheChosenSourceConnectionId()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost host = new(settings);
+
+        byte[] initialDestinationConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
+        byte[] routeConnectionId =
+            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "routeConnectionId");
+
+        Assert.Equal(8, initialDestinationConnectionId.Length);
+        Assert.Equal(8, routeConnectionId.Length);
+        Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(initialDestinationConnectionId));
+        Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(routeConnectionId));
+        Assert.False(initialDestinationConnectionId.AsSpan().SequenceEqual(routeConnectionId));
+    }
 }

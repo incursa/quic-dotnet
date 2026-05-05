@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0057",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Client First-Flight Connection ID Continuity Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0057",
+    "VER-QUIC-RFC9000-0057"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S7P2-0004",
+    "REQ-QUIC-RFC9000-S7P2-0005",
+    "REQ-QUIC-RFC9000-S7P2-0006",
+    "REQ-QUIC-RFC9000-S7P2-0007",
+    "REQ-QUIC-RFC9000-S7P2-0008"
+  ],
+  "summary": "Close the RFC 9000 Section 7.2 client first-flight connection-ID floor before server Initial or Retry processing.",
+  "planned_changes": "- Add focused requirement-home tests for first Initial Destination Connection ID generation, minimum length, pre-server-receipt reuse, and 0-RTT alignment.\n- Add a shared S7P2 first-flight test helper for client host CID inspection, client runtime bootstrap, recovery-timer retransmission, and first-flight packet formatting.\n- Link the focused proof to dedicated architecture and verification artifacts.\n- Keep server-first-receipt adoption, conflicting Source Connection ID discard, Retry adoption, and preferred-address migration out of scope.",
+  "verification_plan": "Run the focused S7P2 0004/0005/0006/0008 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0057"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0057"
+  ],
+  "out_of_scope": [
+    "Client adoption of server Initial or Retry Source Connection IDs.",
+    "Discarding later server packets with conflicting Source Connection IDs.",
+    "Preferred-address migration and server-address-change policy.",
+    "Public API changes.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused client first-flight CID proof over QuicClientConnectionHost, QuicConnectionRuntime initial/recovery egress, QuicHandshakeFlowCoordinator 0-RTT formatting, and S7P2 requirement-home tests."
+}

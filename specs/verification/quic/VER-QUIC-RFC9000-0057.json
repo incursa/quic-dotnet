@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0057",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Client First-Flight Connection ID Continuity Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0057",
+    "WI-QUIC-RFC9000-0057"
+  ],
+  "verification_method": "Focused S7P2 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S7P2-0004",
+    "REQ-QUIC-RFC9000-S7P2-0005",
+    "REQ-QUIC-RFC9000-S7P2-0006",
+    "REQ-QUIC-RFC9000-S7P2-0007",
+    "REQ-QUIC-RFC9000-S7P2-0008"
+  ],
+  "scope": "This verification covers only the client first-flight connection-ID floor before the client processes any server Initial or Retry packet.",
+  "expected_result": "The requirement-home tests show the client host generates an independent, non-zero first Initial Destination Connection ID, keeps it at the implementation's 8-byte minimum, does not reuse it across separate connection hosts, preserves it across Initial bootstrap and recovery retransmission before server receipt, and keeps 0-RTT first-flight Destination and Source Connection IDs aligned with the first Initial packet while rejecting 0-RTT formatting without an Initial Destination Connection ID.",
+  "procedure": [
+    "Run the focused S7P2 0004/0005/0006/0008 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The client host is constructed before ConnectAsync so first-flight CID state can be inspected without network traffic.",
+    "The client runtime has configured Initial packet protection and the bootstrap outbound path.",
+    "The 0-RTT proof uses formatter-level packet headers and does not claim early-data acceptance."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2FirstFlightConnectionIdTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0008.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0008\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim client handling of server Initial or Retry Source Connection IDs, later conflicting Source Connection ID discard behavior, preferred-address migration, server-address-change policy, public API widening, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S7P2 0004/0005/0006/0008 requirement-home filter passed 12/12, the broader S7P2 requirement-home filter passed 19/19 with --no-build, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks S7P2 0004 through 0008 trace_clean, SpecTrace core validation passed across 415 JSON artifacts, and git diff --check passed."
+}

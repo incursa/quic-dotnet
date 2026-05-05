@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0057",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Client First-Flight Connection ID Continuity",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the client-side first-flight connection-ID floor before any server Initial or Retry packet is processed.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0057",
+    "VER-QUIC-RFC9000-0057"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P2-0004",
+    "REQ-QUIC-RFC9000-S7P2-0005",
+    "REQ-QUIC-RFC9000-S7P2-0006",
+    "REQ-QUIC-RFC9000-S7P2-0007",
+    "REQ-QUIC-RFC9000-S7P2-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2FirstFlightConnectionIdTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0008.cs"
+  ],
+  "design_summary": "The client host creates separate cryptographic-random 8-byte values for the first Initial Destination Connection ID and the client-selected Source Connection ID used for routing. The runtime configures Initial packet protection from the first Initial Destination Connection ID and installs the client Source Connection ID into the handshake coordinator. Until a server packet is processed, Initial bootstrap packets and Initial recovery retransmissions continue to use the same first Initial Destination Connection ID. The 0-RTT builder shares the same first-flight connection-ID state and refuses to build a 0-RTT packet when no first Initial Destination Connection ID is available.",
+  "data_and_state_considerations": "The first Initial Destination Connection ID is retained by QuicClientConnectionHost and copied into QuicConnectionRuntime initial packet-protection state. The client Source Connection ID is retained separately as the endpoint route ID and handshake source ID. The 0-RTT path reuses the handshake coordinator's initial Destination Connection ID and Source Connection ID rather than inventing independent first-flight identifiers.",
+  "edge_cases_and_constraints": [
+    "The generated first Initial Destination Connection ID is exactly the RFC 9000 minimum length used by this implementation.",
+    "The generated first Initial Destination Connection ID remains distinct from the client-selected route/source connection ID.",
+    "Initial recovery retransmissions can emit more than one probe datagram and all retain the same first Initial Destination Connection ID before server receipt.",
+    "0-RTT emission requires a non-empty first Initial Destination Connection ID.",
+    "0-RTT first-flight formatting remains aligned when the client Source Connection ID is at the maximum supported length."
+  ],
+  "risks": [
+    "Randomness quality is proven through use of the platform cryptographic RNG and black-box independence checks, not through statistical randomness testing.",
+    "This slice does not claim client adoption of server Initial or Retry Source Connection IDs.",
+    "This slice does not claim discard behavior for later server packets with conflicting Source Connection IDs.",
+    "This slice does not claim preferred-address migration or server-address-change policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes only the client first-flight RFC 9000 Section 7.2 connection-ID floor for requirements 0004 through 0008. Requirements 0009 through 0014 remain separate follow-on work."
+    }
+  ]
+}

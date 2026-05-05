@@ -67,6 +67,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0054.json`](WI-QUIC-RFC9000-0054.json): canonical RFC 9000 STREAMS_BLOCKED frame focused proof work-item source
 - [`WI-QUIC-RFC9000-0055.json`](WI-QUIC-RFC9000-0055.json): canonical RFC 9000 server pre-acceptance ingress policy work-item source
 - [`WI-QUIC-RFC9000-0056.json`](WI-QUIC-RFC9000-0056.json): canonical RFC 9000 server refusal and 0-RTT pre-Initial buffering work-item source
+- [`WI-QUIC-RFC9000-0057.json`](WI-QUIC-RFC9000-0057.json): canonical RFC 9000 client first-flight connection-ID continuity work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

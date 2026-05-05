@@ -76,6 +76,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0054.json`](ARC-QUIC-RFC9000-0054.json): canonical RFC 9000 STREAMS_BLOCKED frame focused proof design source
 - [`ARC-QUIC-RFC9000-0055.json`](ARC-QUIC-RFC9000-0055.json): canonical RFC 9000 server pre-acceptance ingress policy design source
 - [`ARC-QUIC-RFC9000-0056.json`](ARC-QUIC-RFC9000-0056.json): canonical RFC 9000 server refusal and 0-RTT pre-Initial buffering design source
+- [`ARC-QUIC-RFC9000-0057.json`](ARC-QUIC-RFC9000-0057.json): canonical RFC 9000 client first-flight connection-ID continuity design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source
