@@ -1388,6 +1388,17 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            if (TryReadApplicationFrameType(remaining, out ulong malformedMaxStreamsFrameType)
+                && IsMaxStreamsFrameType(malformedMaxStreamsFrameType))
+            {
+                return TryHandleApplicationDataFrameError(
+                    nowTicks,
+                    malformedMaxStreamsFrameType,
+                    QuicTransportErrorCode.FrameEncodingError,
+                    "The peer sent an invalid MAX_STREAMS frame.",
+                    ref effects);
+            }
+
             if (QuicFrameCodec.TryParseStreamDataBlockedFrame(
                 remaining,
                 out QuicStreamDataBlockedFrame streamDataBlockedFrame,
@@ -2975,6 +2986,12 @@ internal sealed partial class QuicConnectionRuntime
             && bytesConsumed > 0;
     }
 
+    private static bool IsMaxStreamsFrameType(ulong frameType)
+    {
+        return frameType is HandshakePacketMaxStreamsBidirectionalFrameType
+            or HandshakePacketMaxStreamsUnidirectionalFrameType;
+    }
+
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
         if (phase != QuicConnectionPhase.Active
@@ -3542,6 +3559,7 @@ internal sealed partial class QuicConnectionRuntime
             return 0;
         }
 
-        return checked((int)(updatedValue - originalValue));
+        ulong increment = updatedValue - originalValue;
+        return increment > int.MaxValue ? int.MaxValue : (int)increment;
     }
 }

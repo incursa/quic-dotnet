@@ -9,30 +9,34 @@ architecture, work items, or verification artifacts under `specs/`.
 ## 2026-05-05 Restart Note
 
 This note is intentionally narrow for handoff. The just-finished slices close
-the RFC 9000 S19P9 MAX_DATA tail for `REQ-QUIC-RFC9000-S19P9-0001` through
-`REQ-QUIC-RFC9000-S19P9-0008`, with parser/field-shape proof, runtime
-FLOW_CONTROL_ERROR close behavior, MAX_DATA credit-advertisement proof,
-remembered-limit requirement-home tests, canonical xrefs, verification notes,
-generated triage, and core SpecTrace validation.
+the RFC 9000 S19P11 MAX_STREAMS tail for `REQ-QUIC-RFC9000-S19P11-0001`
+through `REQ-QUIC-RFC9000-S19P11-0013`, with parser/field-shape proof,
+protected Application Data `FRAME_ENCODING_ERROR` close behavior for oversized
+MAX_STREAMS frames, stream-capacity increment saturation for the legal `2^60`
+edge, cumulative stream-limit proof for closed streams, canonical xrefs,
+verification notes, generated triage, and focused tests.
 
-Pick up next after S19P9:
+Pick up next after S19P11:
 
 1. Start in `docs/requirements-workflow.md`, then check
-   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P9 requirements in
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P12 requirements in
    `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
-2. `REQ-QUIC-RFC9000-S19P9-0008` is now closed only for the stream-state
-   remembered MAX_DATA floor. Do not describe it as full server 0-RTT packet
-   decryption/opening, admission, anti-replay, or public early-data API support.
-3. `REQ-QUIC-RFC9000-S19P9-0001` is now closed for connection receive-credit
-   MAX_DATA publication. Do not describe it as dynamic autotuning or broader
-   sender/recovery policy.
-4. Continue with `REQ-QUIC-RFC9000-S19P11-0006` if S19P9 remains trace-clean
-   after generated trace refresh.
+2. `REQ-QUIC-RFC9000-S19P11-0006` is closed only for MAX_STREAMS frame parsing,
+   protected Application Data close behavior, and stream-capacity increment
+   saturation. Do not describe it as broad stream-management completion,
+   retransmission policy, or interop readiness.
+3. `REQ-QUIC-RFC9000-S19P11-0013` is closed for cumulative stream-limit
+   accounting: closed streams remain counted against the advertised MAX_STREAMS
+   lifetime limit. Do not reinterpret this as concurrent-stream accounting.
+4. Continue with the S19P12 DATA_BLOCKED parser/field-shape edge topoff for
+   `REQ-QUIC-RFC9000-S19P12-0003`, `REQ-QUIC-RFC9000-S19P12-0004`, and
+   `REQ-QUIC-RFC9000-S19P12-0006` if the Section 19 control-frame tail remains
+   the active lane.
 
 Focused next-slice command:
 
 ```powershell
-dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S19P11_0006"
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12_0006"
 ```
 
 ## Executive Read

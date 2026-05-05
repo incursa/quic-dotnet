@@ -25,6 +25,28 @@ public sealed class REQ_QUIC_RFC9000_S19P11_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseMaxStreamsFrame_RejectsFramesOutsideTheMaxStreamsTypeRange()
+    {
+        byte[] encodedDataBlockedFrame = [0x14, 0x01];
+
+        Assert.False(QuicFrameCodec.TryParseMaxStreamsFrame(encodedDataBlockedFrame, out _, out _));
+    }
+
+    [Theory]
+    [InlineData(0x12)]
+    [InlineData(0x13)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseMaxStreamsFrame_RejectsNonFixedTypeEncodings(byte maxStreamsFrameType)
+    {
+        byte[] encodedWithTwoByteType = [0x40, maxStreamsFrameType, 0x00];
+
+        Assert.False(QuicFrameCodec.TryParseMaxStreamsFrame(encodedWithTwoByteType, out _, out _));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0004")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P11-0001")]
