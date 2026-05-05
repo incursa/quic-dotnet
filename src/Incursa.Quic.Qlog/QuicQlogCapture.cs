@@ -57,12 +57,16 @@ public sealed class QuicQlogCapture
     internal ValueTask<QuicConnection> ConnectAsync(
         QuicClientConnectionOptions options,
         ReadOnlyMemory<byte> localHandshakePrivateKey,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        bool allowClientPeerInitialReplacementBeforeTranscript = false)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
-            localHandshakePrivateKey: localHandshakePrivateKey);
+            localHandshakePrivateKey: localHandshakePrivateKey) with
+        {
+            AllowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript,
+        };
         cancellationToken.ThrowIfCancellationRequested();
 
         return new QuicClientConnectionHost(settings, CreateClientSink).ConnectAsync(cancellationToken);

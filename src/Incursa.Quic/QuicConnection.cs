@@ -47,14 +47,18 @@ public sealed class QuicConnection : IAsyncDisposable
         CancellationToken cancellationToken = default,
         IQuicDiagnosticsSink? diagnosticsSink = null,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
-        QuicClientAddressValidationToken? addressValidationToken = null)
+        QuicClientAddressValidationToken? addressValidationToken = null,
+        bool allowClientPeerInitialReplacementBeforeTranscript = false)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
             detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
             localHandshakePrivateKey: localHandshakePrivateKey,
-            addressValidationToken: addressValidationToken);
+            addressValidationToken: addressValidationToken) with
+        {
+            AllowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript,
+        };
         cancellationToken.ThrowIfCancellationRequested();
         return new QuicClientConnectionHost(
             settings,

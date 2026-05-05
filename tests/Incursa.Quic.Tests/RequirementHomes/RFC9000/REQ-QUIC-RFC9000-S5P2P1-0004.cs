@@ -195,7 +195,8 @@ public sealed class REQ_QUIC_RFC9000_S5P2P1_0004
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
                 TargetHost = "server4",
             },
-            tlsRole: QuicTlsRole.Client);
+            tlsRole: QuicTlsRole.Client,
+            allowClientPeerInitialReplacementBeforeTranscript: true);
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId));
         Assert.True(runtime.TrySetBootstrapOutboundPath(new QuicConnectionPathIdentity("203.0.113.1", "198.51.100.1", 443, 12345)));

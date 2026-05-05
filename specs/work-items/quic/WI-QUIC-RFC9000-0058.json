@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0058",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Server Connection ID Adoption And Continuity Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-RFC9000-0058",
+    "VER-QUIC-RFC9000-0058"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S7P2-0009",
+    "REQ-QUIC-RFC9000-S7P2-0010",
+    "REQ-QUIC-RFC9000-S7P2-0011",
+    "REQ-QUIC-RFC9000-S7P2-0012",
+    "REQ-QUIC-RFC9000-S7P2-0013",
+    "REQ-QUIC-RFC9000-S7P2-0014"
+  ],
+  "summary": "Close the RFC 9000 Section 7.2 server Source Connection ID adoption and continuity floor for client and server establishment paths.",
+  "planned_changes": "- Add focused requirement-home tests for first server Initial adoption, Retry-first adoption, post-Retry first-Initial processing without outbound Destination Connection ID replacement, 0-RTT post-adoption formatting, strict conflicting-source discard after the first valid server Initial, server first-client-Initial Destination Connection ID derivation, and NEW_CONNECTION_ID-only later Destination Connection ID changes.\n- Add a shared S7P2 server connection-ID helper for client bootstrap, retry replay, server handshake flight generation, packet receipt, 0-RTT formatting, deferred Handshake buffer inspection, and long-header CID assertions.\n- Make the default client establishment path reject later long-header packets with a different server Source Connection ID after the first valid server Initial has been observed.\n- Keep the replacement peer Initial reset behavior from REQ-QUIC-CRT-0146 as an explicit internal opt-in for its focused proof and the interop harness multiconnect client case.\n- Link the focused proof to dedicated architecture and verification artifacts.",
+  "verification_plan": "Run the focused S7P2 0009 through 0014 requirement-home filter, run the affected CRT/S5P2P1/S12P2 compatibility filter, run the broader S7P2 requirement-home filter after a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0058"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0058"
+  ],
+  "out_of_scope": [
+    "Preferred-address migration and server-address-change policy.",
+    "Public API changes for the replacement-peer-Initial opt-in.",
+    "General multi-attempt handshake orchestration.",
+    "Hosted interop readiness claims.",
+    "Complete connection-ID lifecycle parity beyond the Section 7.2 adoption and conflicting-source floor."
+  ],
+  "completion_notes": "Completed as a focused RFC 9000 Section 7.2 server Source Connection ID adoption and continuity proof over the runtime establishment path, internal host settings, interop-harness opt-in boundary, and S7P2 requirement-home tests."
+}

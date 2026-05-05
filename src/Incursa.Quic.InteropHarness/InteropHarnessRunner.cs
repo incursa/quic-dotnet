@@ -1776,8 +1776,19 @@ internal static class InteropHarnessRunner
                 detachedResumptionTicketSnapshot: null,
                 cancellationToken: cancellationToken,
                 diagnosticsSink: null,
-                localHandshakePrivateKey: settings.LocalHandshakePrivateKey)
-            : qlogScope.Capture.ConnectAsync(options, settings.LocalHandshakePrivateKey, cancellationToken);
+                localHandshakePrivateKey: settings.LocalHandshakePrivateKey,
+                allowClientPeerInitialReplacementBeforeTranscript: AllowClientPeerInitialReplacementBeforeTranscript(settings))
+            : qlogScope.Capture.ConnectAsync(
+                options,
+                settings.LocalHandshakePrivateKey,
+                cancellationToken,
+                AllowClientPeerInitialReplacementBeforeTranscript(settings));
+    }
+
+    private static bool AllowClientPeerInitialReplacementBeforeTranscript(InteropHarnessEnvironment settings)
+    {
+        return settings.Role == InteropHarnessRole.Client
+            && string.Equals(settings.TestCase, "multiconnect", StringComparison.Ordinal);
     }
 
     private static ValueTask<QuicListener> ListenWithQlogCaptureAsync(

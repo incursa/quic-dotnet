@@ -208,4 +208,5 @@ internal sealed record QuicClientConnectionSettings(
     QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot = null,
     QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
     ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
-    ReadOnlyMemory<byte> InitialAddressValidationToken = default);
+    ReadOnlyMemory<byte> InitialAddressValidationToken = default,
+    bool AllowClientPeerInitialReplacementBeforeTranscript = false);

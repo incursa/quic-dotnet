@@ -156,6 +156,7 @@ internal sealed partial class QuicConnectionRuntime
             || tlsState.IsTerminal
             || retryBootstrapPendingReplay
             || retrySourceConnectionId is not null
+            || observedPeerInitialSourceConnectionId is not null
             || retryReceivedEvent.RetrySourceConnectionId.IsEmpty
             || retryReceivedEvent.RetryToken.IsEmpty)
         {
@@ -171,7 +172,6 @@ internal sealed partial class QuicConnectionRuntime
         retrySourceConnectionId = retryReceivedEvent.RetrySourceConnectionId.ToArray();
         retryToken = retryReceivedEvent.RetryToken.ToArray();
         initialAddressValidationToken = null;
-        observedPeerInitialSourceConnectionId = null;
         observedPeerInitialCryptoFrameData = null;
         bufferedEstablishmentHandshakePackets.Clear();
         retryBootstrapPendingReplay = true;
@@ -371,6 +371,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (ShouldDiscardClientLongHeaderPacketWithUnexpectedPeerSourceConnectionId(datagram))
+        {
+            return false;
+        }
+
         if (diagnosticsEnabled)
         {
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity, datagram));
@@ -419,7 +424,10 @@ internal sealed partial class QuicConnectionRuntime
             if (observedPeerInitialSourceConnectionId is null)
             {
                 observedPeerInitialSourceConnectionId = initialSourceConnectionId.ToArray();
-                _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
+                if (retrySourceConnectionId is null)
+                {
+                    _ = TrySetHandshakeDestinationConnectionId(initialSourceConnectionId);
+                }
 
                 if (hasOffsetZeroInitialCrypto)
                 {
@@ -626,6 +634,28 @@ internal sealed partial class QuicConnectionRuntime
                 candidateInitialCryptoFrameData[..sharedPrefixLength]);
     }
 
+    private bool ShouldDiscardClientLongHeaderPacketWithUnexpectedPeerSourceConnectionId(ReadOnlySpan<byte> datagram)
+    {
+        if (allowClientPeerInitialReplacementBeforeTranscript
+            || tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || peerHandshakeTranscriptCompleted
+            || observedPeerInitialSourceConnectionId is null
+            || !QuicPacketParsing.TryParseLongHeaderFields(
+                datagram,
+                out _,
+                out _,
+                out _,
+                out ReadOnlySpan<byte> sourceConnectionId,
+                out _))
+        {
+            return false;
+        }
+
+        return !observedPeerInitialSourceConnectionId.AsSpan().SequenceEqual(sourceConnectionId);
+    }
+
     private bool TryHandleHandshakePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
@@ -647,6 +677,11 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> datagram = packetReceivedEvent.Datagram.Span;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
             || packetNumberSpace != QuicPacketNumberSpace.Handshake)
+        {
+            return false;
+        }
+
+        if (ShouldDiscardClientLongHeaderPacketWithUnexpectedPeerSourceConnectionId(datagram))
         {
             return false;
         }
@@ -728,6 +763,9 @@ internal sealed partial class QuicConnectionRuntime
                 out ReadOnlySpan<byte> sourceConnectionId,
                 out _)
             || sourceConnectionId.IsEmpty
+            || (observedPeerInitialSourceConnectionId is not null
+                && !allowClientPeerInitialReplacementBeforeTranscript
+                && !observedPeerInitialSourceConnectionId.AsSpan().SequenceEqual(sourceConnectionId))
             || (observedPeerInitialSourceConnectionId is not null
                 && observedPeerInitialSourceConnectionId.AsSpan().SequenceEqual(sourceConnectionId)))
         {
@@ -2491,10 +2529,11 @@ internal sealed partial class QuicConnectionRuntime
                 ReadOnlySpan<byte> outboundInitialToken = initialAddressValidationToken is null
                     ? ReadOnlySpan<byte>.Empty
                     : initialAddressValidationToken;
+                ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
                 builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                     cryptoChunk[..cryptoBytesWritten],
                     cryptoOffset,
-                    handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                    destinationConnectionId,
                     outboundInitialToken,
                     ackFramePayload,
                     initialPacketProtection,
@@ -2607,10 +2646,11 @@ internal sealed partial class QuicConnectionRuntime
                 nowMicros,
                 out byte[] ackFramePayload,
                 out QuicAckFrame piggybackedAckFrame);
+            ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
             if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                     cryptoChunk,
                     (ulong)replayOffset,
-                    handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                    destinationConnectionId,
                     initialToken,
                     ackFramePayload,
                     protection,
@@ -3156,6 +3196,14 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
+    private ReadOnlySpan<byte> GetClientInitialPacketDestinationConnectionId()
+    {
+        ReadOnlySpan<byte> handshakeDestinationConnectionId = handshakeFlowCoordinator.DestinationConnectionId.Span;
+        return handshakeDestinationConnectionId.IsEmpty
+            ? handshakeFlowCoordinator.InitialDestinationConnectionId.Span
+            : handshakeDestinationConnectionId;
+    }
+
     private static Exception CreateTerminalException(QuicConnectionTerminalState terminalState)
     {
         if (terminalState.Close.TransportErrorCode.HasValue)
@@ -3353,12 +3401,15 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ReadOnlySpan<byte> handshakeDestinationConnectionId = handshakeFlowCoordinator.DestinationConnectionId.Span;
+        ReadOnlySpan<byte> connectionIdBindingInitialSourceConnectionId = observedPeerInitialSourceConnectionId is null
+            ? handshakeDestinationConnectionId
+            : observedPeerInitialSourceConnectionId;
         if (!handshakeFlowCoordinator.InitialDestinationConnectionId.IsEmpty
-            && !handshakeDestinationConnectionId.IsEmpty
+            && !connectionIdBindingInitialSourceConnectionId.IsEmpty
             && !QuicTransportParametersCodec.TryValidateConnectionIdBindings(
                 receiverRole,
                 handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
-                handshakeDestinationConnectionId,
+                connectionIdBindingInitialSourceConnectionId,
                 retrySourceConnectionIdSpan.Length > 0,
                 retrySourceConnectionIdSpan,
                 peerTransportParameters,

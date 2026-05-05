@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T13:11:07.6875754-06:00",
+  "generated_at": "2026-05-05T14:12:21.4683062-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T13:11:07.6842445-06:00",
+    "generated_at": "2026-05-05T14:12:21.4651870-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 64,
       "covered_but_proof_too_broad": 68,
       "partially_covered": 166,
-      "trace_clean": 1197,
+      "trace_clean": 1203,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 205
+      "uncovered_unblocked": 199
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1197,
+      "clean": 1203,
       "metadata_only": 64,
-      "new_tests_needed": 502,
+      "new_tests_needed": 496,
       "restructure_needed": 91
     },
     "by_rfc": [
@@ -50,9 +50,9 @@
           "covered_but_missing_xrefs": 64,
           "covered_but_proof_too_broad": 68,
           "partially_covered": 166,
-          "trace_clean": 884,
+          "trace_clean": 890,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 205
+          "uncovered_unblocked": 199
         }
       },
       {
@@ -186389,35 +186389,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "method": "ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "method": "ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "method": "ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "method": "ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId",
+          "method": "ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId",
+          "line": 79,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0009",
+          "member": "REQ_QUIC_RFC9000_S7P2_0009.ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId",
+          "method": "ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId",
+          "line": 79,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
@@ -186432,35 +186565,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "method": "ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "method": "ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "method": "ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "method": "ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId",
+          "method": "ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId",
+          "line": 92,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0010",
+          "member": "REQ_QUIC_RFC9000_S7P2_0010.ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId",
+          "method": "ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId",
+          "line": 92,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
@@ -186475,35 +186741,213 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 4,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "method": "ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "method": "ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "line": 88,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "line": 88,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry",
+          "line": 122,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0011",
+          "member": "REQ_QUIC_RFC9000_S7P2_0011.ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry",
+          "method": "ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry",
+          "line": 122,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
@@ -186518,35 +186962,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId",
+          "method": "ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId",
+          "line": 48,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId",
+          "method": "ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId",
+          "line": 48,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "method": "ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "line": 29,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "method": "ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "line": 29,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "method": "ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0012",
+          "member": "REQ_QUIC_RFC9000_S7P2_0012.ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "method": "ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
@@ -186561,34 +187138,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "method": "EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "method": "EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "method": "EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "method": "EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId",
+          "method": "EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId",
+          "line": 84,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0013",
+          "member": "REQ_QUIC_RFC9000_S7P2_0013.EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId",
+          "method": "EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId",
+          "line": 84,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
@@ -186603,35 +187314,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault",
+          "method": "DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault",
+          "line": 86,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault",
+          "method": "DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault",
+          "line": 86,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "method": "SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "line": 44,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "method": "SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "line": 44,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "method": "SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P2-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+          "class": "REQ_QUIC_RFC9000_S7P2_0014",
+          "member": "REQ_QUIC_RFC9000_S7P2_0014.SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "method": "SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P2-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P3-0001",

@@ -68,6 +68,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
+    private readonly bool allowClientPeerInitialReplacementBeforeTranscript;
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
@@ -148,7 +149,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool enableRandomizedSpinBitSelection = false,
         uint[]? supportedVersions = null,
         ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
-        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null)
+        QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
+        bool allowClientPeerInitialReplacementBeforeTranscript = false)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -213,6 +215,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         MaximumLocallyIssuedConnectionIds = maximumLocallyIssuedConnectionIds;
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
+        this.allowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript;
     }
 
     public QuicConnectionPhase Phase => phase;

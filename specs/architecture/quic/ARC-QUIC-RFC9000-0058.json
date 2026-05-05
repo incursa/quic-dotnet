@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0058",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Server Connection ID Adoption And Continuity",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the RFC 9000 Section 7.2 runtime floor after the client first receives a server Initial or Retry packet and after the server first receives a client Initial packet.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0057",
+    "ARC-QUIC-CRT-0042",
+    "WI-QUIC-RFC9000-0058",
+    "VER-QUIC-RFC9000-0058"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P2-0009",
+    "REQ-QUIC-RFC9000-S7P2-0010",
+    "REQ-QUIC-RFC9000-S7P2-0011",
+    "REQ-QUIC-RFC9000-S7P2-0012",
+    "REQ-QUIC-RFC9000-S7P2-0013",
+    "REQ-QUIC-RFC9000-S7P2-0014"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogCapture.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2ServerConnectionIdTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs"
+  ],
+  "design_summary": "The client runtime records the first server Source Connection ID accepted from a server Initial or Retry packet and installs that first value as the handshake Destination Connection ID for subsequent client sends, including 0-RTT packet formatting after server Initial receipt. It separately records the first valid server Initial Source Connection ID for the later conflicting-source discard rule. If Retry is received first, the Retry Source Connection ID remains the outbound Destination Connection ID while the first subsequent valid server Initial establishes the Source Connection ID that later Initial and Handshake packets must match. Once that valid server Initial Source Connection ID is observed, the default RFC path rejects later establishing long-header packets that carry a different Source Connection ID before they can alter handshake state or deferred Handshake buffering. Later Retry attempts are rejected after either a Retry or a valid server Initial has already been processed. The server runtime derives its outbound Destination Connection ID from the Source Connection ID in the first client Initial that bootstraps the server handshake. Further post-adoption Destination Connection ID changes remain owned by NEW_CONNECTION_ID frame processing.",
+  "data_and_state_considerations": "Retry Source Connection ID state and first-valid-server-Initial Source Connection ID state are intentionally separate. The Retry state can select the client's outbound Destination Connection ID without causing the first post-Retry server Initial to be discarded when that Initial carries the server's connection Source Connection ID. Client Initial retransmission and 0-RTT formatting use the current handshake Destination Connection ID once the server identity is adopted. The replacement peer Initial reset path from REQ-QUIC-CRT-0146 is no longer the default RFC path; it is available only through an explicit internal opt-in used by the focused CRT proof and the interop harness multiconnect client case.",
+  "edge_cases_and_constraints": [
+    "A second server Initial with the same Source Connection ID remains admissible for normal same-attempt progress.",
+    "A second server Initial or Handshake packet with a different Source Connection ID is discarded by default and does not replace the adopted Destination Connection ID.",
+    "A first valid server Initial after Retry can carry a different Source Connection ID from the Retry packet; it is processed for handshake progress without replacing the Retry-selected outbound Destination Connection ID.",
+    "A second Retry after either a first Retry or a first server Initial does not replace the adopted Destination Connection ID.",
+    "Server Initial responses use the first client Initial Source Connection ID as the Destination Connection ID, including the maximum supported client Source Connection ID length.",
+    "NEW_CONNECTION_ID processing remains the only proven post-adoption path for later Destination Connection ID changes."
+  ],
+  "risks": [
+    "The default RFC discard boundary intentionally narrows the older replacement-peer-Initial behavior; the interop workaround remains explicit and internal so public/client default behavior is not widened.",
+    "This slice proves long-header Source Connection ID continuity during connection establishment and does not claim preferred-address migration, server-address-change policy, or complete connection-ID lifecycle parity.",
+    "This slice does not introduce a public API to control the internal replacement-peer-Initial opt-in."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes RFC 9000 Section 7.2 requirements 0009 through 0014 for server Source Connection ID adoption, strict default conflicting-source discard, server first-Initial Destination Connection ID derivation, and NEW_CONNECTION_ID-only later changes. It leaves preferred-address migration, server-address-change policy, public API widening, and hosted interop readiness out of scope."
+    }
+  ]
+}

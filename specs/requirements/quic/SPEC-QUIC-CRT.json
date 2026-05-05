@@ -2230,7 +2230,7 @@
     {
       "id": "REQ-QUIC-CRT-0146",
       "title": "Reset the pre-transcript client peer handshake attempt only when a replacement Initial proves a new attempt",
-      "statement": "In the client role, while the connection is still establishing and before `PeerHandshakeTranscriptCompleted` is true, the library MUST remember the first accepted peer Initial source connection ID together with the first offset-zero Initial CRYPTO prefix from that attempt, treat a later peer Initial with a different source connection ID and a different offset-zero Initial CRYPTO prefix as a replacement peer handshake attempt, reset the current peer-handshake attempt state before applying the replacement Initial, clear the buffered Initial ingress CRYPTO and transcript offsets derived from the earlier attempt, rederive later Handshake and 1-RTT state from the replacement attempt, keep the current attempt when the later peer Initial changes only the source connection ID while repeating the same offset-zero Initial CRYPTO prefix, and remain client-role only, managed client/runtime only, and closed to broader multi-attempt handshake orchestration, server-role behavior, public API widening, transfer, retry, or general token-lifecycle claims.",
+      "statement": "When the internal client-side replacement peer Initial reset path is explicitly enabled, while the connection is still establishing and before `PeerHandshakeTranscriptCompleted` is true, the library MUST remember the first accepted peer Initial source connection ID together with the first offset-zero Initial CRYPTO prefix from that attempt, treat a later peer Initial with a different source connection ID and a different offset-zero Initial CRYPTO prefix as a replacement peer handshake attempt, reset the current peer-handshake attempt state before applying the replacement Initial, clear the buffered Initial ingress CRYPTO and transcript offsets derived from the earlier attempt, rederive later Handshake and 1-RTT state from the replacement attempt, keep the current attempt when the later peer Initial changes only the source connection ID while repeating the same offset-zero Initial CRYPTO prefix, and remain client-role only, managed client/runtime only, opt-in only, and closed to broader multi-attempt handshake orchestration, server-role behavior, public API widening, transfer, retry, or general token-lifecycle claims.",
       "trace": {
         "upstream_refs": [
           "RFC 9001 Sections 4.1.2 and 5.2",
@@ -2247,9 +2247,9 @@
         ]
       },
       "notes": [
-        "The reset boundary is narrower than Retry ownership in REQ-QUIC-CRT-0122 and does not widen into a general multi-attempt handshake engine.",
+        "The reset boundary is narrower than Retry ownership in REQ-QUIC-CRT-0122, is explicitly opt-in, and does not widen into a general multi-attempt handshake engine.",
         "The discriminant is the combination of a changed peer Initial source connection ID and a changed offset-zero Initial CRYPTO prefix; source-connection-ID drift alone can still be a same-attempt retransmission.",
-        "The slice only covers the client-side pre-transcript reset and rederive path; server-role behavior, broader interop claims, and public API widening remain out of scope."
+        "The slice only covers the client-side pre-transcript reset and rederive path when enabled by internal test or harness configuration; default RFC 9000 Section 7.2 behavior discards conflicting server Source Connection IDs. Server-role behavior, broader interop claims, and public API widening remain out of scope."
       ]
     }
   ]

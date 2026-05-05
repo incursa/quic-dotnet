@@ -8581,17 +8581,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientAdoptsTheFirstServerInitialSourceConnectionIdForSubsequentDestinations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ClientDoesNotReplaceTheFirstServerInitialSourceConnectionIdWithALaterRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs::ZeroRttPacketAfterServerInitialUsesTheAdoptedServerSourceConnectionId"
         ]
       }
     },
@@ -8607,17 +8615,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B8-P7-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientContinuesTheConnectionForSubsequentInitialPacketsWithTheSameServerSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDiscardsSubsequentInitialPacketsWithADifferentServerSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs::ClientDoesNotBufferSubsequentHandshakePacketsWithADifferentServerSourceConnectionId"
         ]
       }
     },
@@ -8633,17 +8649,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B9-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientChangesTheOutboundDestinationOnlyForTheFirstServerInitial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondServerInitialSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForASecondRetrySourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs::ClientDoesNotChangeTheOutboundDestinationForTheFirstInitialAfterRetry"
         ]
       }
     },
@@ -8659,17 +8684,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B9-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseUsesTheClientInitialSourceConnectionIdAsDestination",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseDoesNotUseTheOriginalDestinationConnectionIdAsDestination",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs::ServerInitialResponseCanUseAMaximumLengthClientInitialSourceConnectionId"
         ]
       }
     },
@@ -8685,17 +8718,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B9-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterInitialSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs::EndpointDoesNotChangeTheDestinationConnectionIdFromALaterRetrySourceConnectionId"
         ]
       }
     },
@@ -8711,17 +8752,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0058"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0058"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0058"
         ],
         "upstream_refs": [
           "RFC 9000 §7.2 RFC9000-S7.2-B9-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithTheSameServerSourceConnectionIdAreNotDiscardedForCidMismatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::SubsequentInitialPacketsWithADifferentServerSourceConnectionIdAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs::DifferentSourceInitialWithDifferentCryptoPrefixIsStillDiscardedByDefault"
         ]
       }
     },
