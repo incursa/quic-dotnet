@@ -37849,6 +37849,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight"
         ]
@@ -37922,7 +37923,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.14"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
         ]
       }

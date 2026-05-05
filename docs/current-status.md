@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S19P14 STREAMS_BLOCKED focused proof
+Last verified: 2026-05-05 for the S19P14 STREAMS_BLOCKED sender-tail proof
 closeout; broader executive-read evidence remains pinned to its stated
 2026-04-30 refresh unless otherwise noted.
 
@@ -21,7 +21,8 @@ blocked-offset preservation, receive-capable stream acceptance, and protected
 runtime close with `STREAM_STATE_ERROR` for opened or uncreated send-only
 stream IDs.
 
-The follow-on S19P14 STREAMS_BLOCKED focused proof slice closes
+The S19P14 STREAMS_BLOCKED focused proof closure now has two bounded parts.
+The frame-focused slice closes
 `REQ-QUIC-RFC9000-S19P14-0002` and `REQ-QUIC-RFC9000-S19P14-0004`
 through `REQ-QUIC-RFC9000-S19P14-0009` under
 `ARC-QUIC-RFC9000-0054`, `WI-QUIC-RFC9000-0054`, and
@@ -34,10 +35,20 @@ STREAMS_BLOCKED parse/format benchmark coverage. It does not claim outbound
 STREAMS_BLOCKED emission scheduling, pending stream-open retry behavior, public
 flow-control APIs, or complete S19P14 sender-side SHOULD/no-open closure.
 
-Pick up next after the current S19P14 focused proof closure:
+The sender-tail slice closes `REQ-QUIC-RFC9000-S19P14-0001` and
+`REQ-QUIC-RFC9000-S19P14-0003` under the existing runtime-emission artifacts
+`ARC-QUIC-RFC9000-0007`, `WI-QUIC-RFC9000-0007`, and
+`VER-QUIC-RFC9000-0007`. The proof covers the zero peer-stream-limit edge,
+protected STREAMS_BLOCKED emission for blocked outbound opens, no stream-state
+creation, and keeping the blocked open pending until cancellation or real
+`MAX_STREAMS` growth. Regenerated coverage triage now marks
+`REQ-QUIC-RFC9000-S19P14-0001` through
+`REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
+
+Pick up next after the S19P14 closure:
 
 1. Start in `docs/requirements-workflow.md`, then check
-   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P14 requirements in
+   `specs/requirements/quic/REQUIREMENT-GAPS.md` and the next non-clean cluster in
    `specs/requirements/quic/SPEC-QUIC-RFC9000.json`.
 2. Do not describe S19P13 closure as new STREAM_DATA_BLOCKED emission
    scheduling, flow-control autotuning, asynchronous credit waiting,
@@ -48,15 +59,22 @@ Pick up next after the current S19P14 focused proof closure:
 4. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0002` and
    `REQ-QUIC-RFC9000-S19P14-0004` through
    `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
-5. The next local S19-family lane remains S19P14 STREAMS_BLOCKED, but it is now
-   narrowed to sender-side tail proof: `REQ-QUIC-RFC9000-S19P14-0001` still
-   lacks focused edge proof, and `REQ-QUIC-RFC9000-S19P14-0003` still lacks
-   focused positive and edge proof.
+5. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0001` and
+   `REQ-QUIC-RFC9000-S19P14-0003` as `trace_clean`; S19P14 no longer needs to
+   be the next local lane.
 
-Focused next-triage command:
+Focused triage command:
 
 ```powershell
 $triage = Get-Content specs\generated\quic\quic-requirement-coverage-triage.json -Raw | ConvertFrom-Json -Depth 100
+@($triage.requirements) |
+  Where-Object { $_.state -ne 'trace_clean' } |
+  Select-Object -First 25 requirement_id,state,primary_issue,@{Name='missing';Expression={$_.evidence_summary.missing_required_kinds -join ','}}
+@($triage.requirements) |
+  Where-Object { $_.state -ne 'trace_clean' } |
+  Group-Object { if ($_.requirement_id -match 'REQ-QUIC-RFC9000-(S[^-]+)-') { $Matches[1] } else { 'other' } } |
+  Sort-Object Count -Descending |
+  Select-Object -First 12 Name,Count
 @($triage.requirements) |
   Where-Object { $_.requirement_id -like 'REQ-QUIC-RFC9000-S19P14-*' } |
   Select-Object requirement_id,state,primary_issue,@{Name='missing';Expression={$_.evidence_summary.missing_required_kinds -join ','}}

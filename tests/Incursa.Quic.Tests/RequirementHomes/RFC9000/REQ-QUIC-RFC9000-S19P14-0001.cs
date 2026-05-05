@@ -41,6 +41,28 @@ public sealed class REQ_QUIC_RFC9000_S19P14_0001
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit(bool bidirectional)
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            peerBidirectionalStreamLimit: bidirectional ? 0UL : 4UL,
+            peerUnidirectionalStreamLimit: bidirectional ? 4UL : 0UL);
+
+        Assert.False(state.TryOpenLocalStream(
+            bidirectional,
+            out QuicStreamId blockedStreamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+
+        Assert.Equal(default, blockedStreamId);
+        Assert.Equal(bidirectional, blockedFrame.IsBidirectional);
+        Assert.Equal(0UL, blockedFrame.MaximumStreams);
+        Assert.False(state.TryGetStreamSnapshot(bidirectional ? 0UL : 2UL, out _));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0012")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0022")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0023")]

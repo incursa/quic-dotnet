@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T10:28:39.7340398-06:00",
+  "generated_at": "2026-05-05T10:44:49.8776861-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T10:28:39.7300049-06:00",
+    "generated_at": "2026-05-05T10:44:49.8640611-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 65,
       "covered_but_proof_too_broad": 68,
-      "partially_covered": 169,
-      "trace_clean": 1181,
+      "partially_covered": 167,
+      "trace_clean": 1183,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 217
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1181,
+      "clean": 1183,
       "metadata_only": 65,
-      "new_tests_needed": 517,
-      "restructure_needed": 93
+      "new_tests_needed": 515,
+      "restructure_needed": 91
     },
     "by_rfc": [
       {
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 65,
           "covered_but_proof_too_broad": 68,
-          "partially_covered": 169,
-          "trace_clean": 868,
+          "partially_covered": 167,
+          "trace_clean": 870,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 217
         }
@@ -39691,7 +39691,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -39719,7 +39719,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -39928,7 +39928,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -39956,7 +39956,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107024,35 +107024,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 3,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -107064,7 +107062,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
           "method": "OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
-          "line": 120,
+          "line": 142,
           "kinds": [
             "negative"
           ],
@@ -107087,7 +107085,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
           "method": "OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
-          "line": 120,
+          "line": 142,
           "kinds": [
             "negative"
           ],
@@ -107110,7 +107108,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107138,7 +107136,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107157,6 +107155,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0001",
+          "member": "REQ_QUIC_RFC9000_S19P14_0001.TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
+          "method": "TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
+          "line": 46,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0001",
+          "member": "REQ_QUIC_RFC9000_S19P14_0001.TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
+          "method": "TryOpenLocalStream_ReturnsStreamsBlockedAtZeroPeerStreamLimit",
+          "line": 46,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P14-0001",
@@ -107257,7 +107299,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107285,7 +107327,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107596,35 +107638,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 2,
+          "positive": 4,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -107636,7 +107676,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107664,7 +107704,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -107690,9 +107730,97 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs",
           "class": "REQ_QUIC_RFC9000_S19P14_0003",
+          "member": "REQ_QUIC_RFC9000_S19P14_0003.OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
+          "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0003",
+          "member": "REQ_QUIC_RFC9000_S19P14_0003.OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
+          "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWithoutOpeningTheBlockedStream",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0003",
+          "member": "REQ_QUIC_RFC9000_S19P14_0003.TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
+          "method": "TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
+          "line": 104,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs::TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0003",
+          "member": "REQ_QUIC_RFC9000_S19P14_0003.TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
+          "method": "TryOpenLocalStream_DoesNotCreateAStreamAtZeroPeerStreamLimit",
+          "line": 104,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P14-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P14_0003",
           "member": "REQ_QUIC_RFC9000_S19P14_0003.TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
           "method": "TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
-          "line": 14,
+          "line": 70,
           "kinds": [
             "negative"
           ],
@@ -107714,7 +107842,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0003",
           "member": "REQ_QUIC_RFC9000_S19P14_0003.TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
           "method": "TryOpenLocalStream_DoesNotOpenAnotherLocalStreamWhenItReturnsStreamsBlocked",
-          "line": 14,
+          "line": 70,
           "kinds": [
             "negative"
           ],
@@ -108292,7 +108420,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -108320,7 +108448,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -172335,7 +172463,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
           "method": "OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
-          "line": 120,
+          "line": 142,
           "kinds": [
             "negative"
           ],
@@ -172358,7 +172486,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
           "method": "OpenOutboundStreamAsync_DoesNotEmitStreamsBlockedWhileAckElicitingPacketIsInFlight",
-          "line": 120,
+          "line": 142,
           "kinds": [
             "negative"
           ],
@@ -172381,7 +172509,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
@@ -172409,7 +172537,7 @@
           "class": "REQ_QUIC_RFC9000_S19P14_0001",
           "member": "REQ_QUIC_RFC9000_S19P14_0001.OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
           "method": "OpenOutboundStreamAsync_EmitsStreamsBlockedWhenStreamLimitIsExhausted",
-          "line": 53,
+          "line": 75,
           "kinds": [
             "positive"
           ],
