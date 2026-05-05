@@ -24,18 +24,37 @@ public sealed class REQ_QUIC_RFC9000_S19P6_0004
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0005")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0007")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0009")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0010")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0011")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0012")]
-    [Requirement("REQ-QUIC-RFC9000-S19P6-0013")]
     [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
     public void FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
     {
         QuicFrameCodecFuzzSupport.FuzzCryptoFrame();
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseCryptoFrame_RejectsFrameTypesOtherThan06()
+    {
+        byte[] frameWithPingType = QuicS19P6CryptoFrameTestSupport.BuildCryptoFrameWithFields(
+            QuicVarintTestData.EncodeMinimal(0x01),
+            QuicVarintTestData.EncodeMinimal(0),
+            QuicVarintTestData.EncodeMinimal(1),
+            [0xAA]);
+
+        QuicS19P6CryptoFrameTestSupport.AssertRejects(frameWithPingType);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType()
+    {
+        byte[] frame = QuicS19P6CryptoFrameTestSupport.BuildCryptoFrameWithEncodedType(
+            encodedTypeLength: 2,
+            offset: 0,
+            cryptoData: [0xAA]);
+
+        QuicS19P6CryptoFrameTestSupport.AssertRejects(frame);
     }
 }

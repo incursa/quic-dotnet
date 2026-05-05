@@ -4,6 +4,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P6_0011
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit()
+    {
+        QuicCryptoBuffer buffer = new();
+
+        Assert.False(buffer.TryAddFrame(
+            new QuicCryptoFrame(QuicVariableLengthInteger.MaxValue, [0xAA]),
+            out QuicCryptoBufferResult result));
+        Assert.Equal(QuicCryptoBufferResult.BufferExceeded, result);
+        Assert.Equal(0x0DUL, (ulong)QuicTransportErrorCode.CryptoBufferExceeded);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling()
@@ -21,5 +35,18 @@ public sealed class REQ_QUIC_RFC9000_S19P6_0011
         QuicCryptoFrame frame = new(QuicVariableLengthInteger.MaxValue, [0xAA]);
 
         Assert.False(QuicFrameCodec.TryFormatCryptoFrame(frame, stackalloc byte[16], out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit()
+    {
+        QuicCryptoBuffer buffer = new();
+
+        Assert.True(buffer.TryAddFrame(
+            new QuicCryptoFrame(QuicVariableLengthInteger.MaxValue - 1, [0xAA]),
+            out QuicCryptoBufferResult result));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, result);
     }
 }

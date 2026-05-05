@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T19:09:20.2844368-06:00",
+  "generated_at": "2026-05-04T19:44:20.8683094-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-04T19:09:20.2812911-06:00",
+    "generated_at": "2026-05-04T19:44:20.8638158-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 65,
-      "covered_but_proof_too_broad": 89,
-      "partially_covered": 213,
-      "trace_clean": 1103,
+      "covered_but_proof_too_broad": 82,
+      "partially_covered": 210,
+      "trace_clean": 1116,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 230
+      "uncovered_unblocked": 227
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1103,
+      "clean": 1116,
       "metadata_only": 65,
-      "new_tests_needed": 595,
-      "restructure_needed": 136
+      "new_tests_needed": 582,
+      "restructure_needed": 126
     },
     "by_rfc": [
       {
@@ -48,11 +48,11 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 65,
-          "covered_but_proof_too_broad": 89,
-          "partially_covered": 213,
-          "trace_clean": 790,
+          "covered_but_proof_too_broad": 82,
+          "partially_covered": 210,
+          "trace_clean": 803,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 230
+          "uncovered_unblocked": 227
         }
       },
       {
@@ -137293,33 +137293,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs::TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0001",
+          "member": "REQ_QUIC_RFC9000_S19P6_0001.TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
+          "method": "TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs::TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0001",
+          "member": "REQ_QUIC_RFC9000_S19P6_0001.TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
+          "method": "TryFormatCryptoFrame_UsesType06ForHandshakeMessages",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S19P6-0002",
@@ -137334,21 +137377,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs::TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -137358,7 +137401,52 @@
         "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0002",
+          "member": "REQ_QUIC_RFC9000_S19P6_0002.TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
+          "method": "TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs::TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0002",
+          "member": "REQ_QUIC_RFC9000_S19P6_0002.TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
+          "method": "TryParseCryptoFrame_CarriesHandshakeMessagesInAllowedPacketContexts",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
@@ -137373,34 +137461,123 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs::TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs::TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0003",
+          "member": "REQ_QUIC_RFC9000_S19P6_0003.TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields",
+          "method": "TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields",
+          "line": 21,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs::TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0003",
+          "member": "REQ_QUIC_RFC9000_S19P6_0003.TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields",
+          "method": "TryFormatCryptoFrame_EmitsOnlyFixedCryptoStreamFields",
+          "line": 21,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0003",
+          "member": "REQ_QUIC_RFC9000_S19P6_0003.TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+          "method": "TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs::TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0003",
+          "member": "REQ_QUIC_RFC9000_S19P6_0003.TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+          "method": "TryParseCryptoFrame_RejectsStreamFramesWithStreamIdentifiers",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
@@ -137415,44 +137592,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 1,
-        "broad": 1,
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137464,28 +137630,41 @@
           "class": "REQ_QUIC_RFC9000_S19P6_0004",
           "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
           "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "line": 29,
           "kinds": [
             "fuzz"
           ],
           "categories": [
             "Fuzz"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0004"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
+          "line": 29,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
@@ -137501,6 +137680,116 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.TryParseCryptoFrame_ParsesAndFormatsAllFields",
+          "method": "TryParseCryptoFrame_ParsesAndFormatsAllFields",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+          "method": "TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+          "method": "TryParseCryptoFrame_RejectsFrameTypesOtherThan06",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType",
+          "method": "TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType",
+          "line": 51,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs::TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0004",
+          "member": "REQ_QUIC_RFC9000_S19P6_0004.TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType",
+          "method": "TryParseCryptoFrame_RejectsNonMinimalEncodedCryptoType",
+          "line": 51,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -137524,45 +137813,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137570,32 +137846,133 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData",
+          "line": 30,
           "kinds": [
-            "fuzz"
+            "edge"
           ],
           "categories": [
-            "Fuzz"
+            "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0005"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsLargestOffsetWithEmptyCryptoData",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+          "method": "TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+          "method": "TryParseCryptoFrame_ConsumesVariableLengthOffsetField",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+          "method": "TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs::TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0005",
+          "member": "REQ_QUIC_RFC9000_S19P6_0005.TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+          "method": "TryParseCryptoFrame_RejectsTruncatedOffsetVarint",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -137612,45 +137989,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_AcceptsZeroLengthCryptoData"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137658,32 +138022,133 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_AcceptsZeroLengthCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsZeroLengthCryptoData",
+          "line": 32,
           "kinds": [
-            "fuzz"
+            "edge"
           ],
           "categories": [
-            "Fuzz"
+            "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0006"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_AcceptsZeroLengthCryptoData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_AcceptsZeroLengthCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsZeroLengthCryptoData",
+          "line": 32,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+          "method": "TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+          "method": "TryParseCryptoFrame_ConsumesVariableLengthLengthField",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+          "method": "TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs::TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0006",
+          "member": "REQ_QUIC_RFC9000_S19P6_0006.TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+          "method": "TryParseCryptoFrame_RejectsTruncatedLengthVarint",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -137700,43 +138165,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-      ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs::TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 1,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137744,32 +138194,45 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0007",
+          "member": "REQ_QUIC_RFC9000_S19P6_0007.TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+          "method": "TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+          "line": 9,
           "kinds": [
-            "fuzz"
+            "positive"
           ],
           "categories": [
-            "Fuzz"
+            "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0007"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs::TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0007",
+          "member": "REQ_QUIC_RFC9000_S19P6_0007.TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+          "method": "TryFormatCryptoFrame_EmitsTypeOffsetLengthAndDataInOrder",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -137786,45 +138249,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137832,32 +138282,133 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData",
+          "line": 29,
           "kinds": [
-            "fuzz"
+            "edge"
           ],
           "categories": [
-            "Fuzz"
+            "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0008"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData",
+          "method": "TryParseCryptoFrame_AcceptsMaximumOffsetWithNoCryptoData",
+          "line": 29,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+          "method": "TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+          "method": "TryParseCryptoFrame_MapsOffsetToCryptoDataPosition",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+          "method": "TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+          "line": 19,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs::TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0008",
+          "member": "REQ_QUIC_RFC9000_S19P6_0008.TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+          "method": "TryParseCryptoFrame_RejectsOffsetAndLengthBeyondCryptoStreamLimit",
+          "line": 19,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -137874,45 +138425,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -137920,32 +138458,133 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes",
+          "method": "TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes",
+          "line": 35,
           "kinds": [
-            "fuzz"
+            "edge"
           ],
           "categories": [
-            "Fuzz"
+            "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0009"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes",
+          "method": "TryParseCryptoFrame_AcceptsZeroDeclaredLengthWithoutConsumingTrailingBytes",
+          "line": 35,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+          "method": "TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+          "method": "TryParseCryptoFrame_LengthFieldControlsConsumedCryptoData",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+          "method": "TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs::TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0009",
+          "member": "REQ_QUIC_RFC9000_S19P6_0009.TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+          "method": "TryParseCryptoFrame_RejectsDeclaredLengthBeyondPayload",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -137962,83 +138601,35 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 1,
-        "broad": 1,
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
           "source": "requirement_attribute",
@@ -138053,6 +138644,116 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0010",
+          "member": "REQ_QUIC_RFC9000_S19P6_0010.TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+          "method": "TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0010",
+          "member": "REQ_QUIC_RFC9000_S19P6_0010.TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero",
+          "method": "TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero",
+          "line": 33,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0010",
+          "member": "REQ_QUIC_RFC9000_S19P6_0010.TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero",
+          "method": "TryParseCryptoFrame_AcceptsMaximumOffsetWhenLengthIsZero",
+          "line": 33,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0010",
+          "member": "REQ_QUIC_RFC9000_S19P6_0010.TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+          "method": "TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs::TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0010",
+          "member": "REQ_QUIC_RFC9000_S19P6_0010.TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+          "method": "TryParseCryptoFrame_RejectsFramesThatPassTheStreamCeiling",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -138076,49 +138777,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 3,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_AcceptsFramesThatExactlyReachTheStreamCeiling"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 2,
-        "broad": 1,
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 1,
+          "positive": 2,
+          "negative": 4,
+          "edge": 2,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -138126,32 +138811,89 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit",
+          "method": "TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit",
+          "line": 43,
           "kinds": [
-            "fuzz"
+            "edge"
           ],
           "categories": [
-            "Fuzz"
+            "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0011"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit",
+          "method": "TryAddFrame_AcceptsFramesThatEndExactlyAtTheStreamLimit",
+          "line": 43,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+          "method": "TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+          "method": "TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
@@ -138161,7 +138903,29 @@
           "class": "REQ_QUIC_RFC9000_S19P6_0011",
           "member": "REQ_QUIC_RFC9000_S19P6_0011.TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
           "method": "TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
-          "line": 19,
+          "line": 33,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "method": "TryFormatCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "line": 33,
           "kinds": [
             "negative"
           ],
@@ -138183,7 +138947,29 @@
           "class": "REQ_QUIC_RFC9000_S19P6_0011",
           "member": "REQ_QUIC_RFC9000_S19P6_0011.TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
           "method": "TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
-          "line": 9,
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0011",
+          "member": "REQ_QUIC_RFC9000_S19P6_0011.TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "method": "TryParseCryptoFrame_RejectsFramesThatExceedTheStreamCeiling",
+          "line": 23,
           "kinds": [
             "negative"
           ],
@@ -138212,43 +138998,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-      ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs::TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 1,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -138256,32 +139027,45 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0012",
+          "member": "REQ_QUIC_RFC9000_S19P6_0012.TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+          "method": "TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+          "line": 9,
           "kinds": [
-            "fuzz"
+            "positive"
           ],
           "categories": [
-            "Fuzz"
+            "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
-            "REQ-QUIC-RFC9000-S19P6-0013"
+            "REQ-QUIC-RFC9000-S19P6-0012"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs::TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0012",
+          "member": "REQ_QUIC_RFC9000_S19P6_0012.TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+          "method": "TryFormatCryptoFrame_CarriesSingleEncryptionLevelStreamDataWithoutStreamId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -138298,44 +139082,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs::TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs::TryParseCryptoFrame_RejectsStreamFrameWithFinBit"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs::Fuzz_FrameCodec_RoundTripsRepresentativeFrameShapesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs::TryParseCryptoFrame_ParsesAndFormatsAllFields"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
-        "broad": 1,
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
-          "fuzz": 1,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -138343,32 +139114,89 @@
           "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
-          "class": "REQ_QUIC_RFC9000_S19P6_0004",
-          "member": "REQ_QUIC_RFC9000_S19P6_0004.FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "method": "FuzzCryptoFrame_RoundTripsRepresentativeShapesAndRejectsTruncation",
-          "line": 37,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0013",
+          "member": "REQ_QUIC_RFC9000_S19P6_0013.TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+          "method": "TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+          "line": 9,
           "kinds": [
-            "fuzz"
+            "positive"
           ],
           "categories": [
-            "Fuzz"
+            "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S19P6-0004",
-            "REQ-QUIC-RFC9000-S19P6-0005",
-            "REQ-QUIC-RFC9000-S19P6-0006",
-            "REQ-QUIC-RFC9000-S19P6-0007",
-            "REQ-QUIC-RFC9000-S19P6-0008",
-            "REQ-QUIC-RFC9000-S19P6-0009",
-            "REQ-QUIC-RFC9000-S19P6-0010",
-            "REQ-QUIC-RFC9000-S19P6-0011",
-            "REQ-QUIC-RFC9000-S19P6-0012",
             "REQ-QUIC-RFC9000-S19P6-0013"
           ],
           "requirement_tagged": true,
-          "class_level_only": false
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs::TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0013",
+          "member": "REQ_QUIC_RFC9000_S19P6_0013.TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+          "method": "TryFormatCryptoFrame_UsesTypeWithoutFinBit",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0013",
+          "member": "REQ_QUIC_RFC9000_S19P6_0013.TryParseCryptoFrame_RejectsStreamFrameWithFinBit",
+          "method": "TryParseCryptoFrame_RejectsStreamFrameWithFinBit",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P6-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs::TryParseCryptoFrame_RejectsStreamFrameWithFinBit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S19P6_0013",
+          "member": "REQ_QUIC_RFC9000_S19P6_0013.TryParseCryptoFrame_RejectsStreamFrameWithFinBit",
+          "method": "TryParseCryptoFrame_RejectsStreamFrameWithFinBit",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P6-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0047",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 CRYPTO Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0047",
+    "WI-QUIC-RFC9000-0047"
+  ],
+  "verification_method": "Focused S19P6 requirement-home tests, Release build, full Release no-build solution tests, QuicFrameCodec benchmark Dry run, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P6-0001",
+    "REQ-QUIC-RFC9000-S19P6-0002",
+    "REQ-QUIC-RFC9000-S19P6-0003",
+    "REQ-QUIC-RFC9000-S19P6-0004",
+    "REQ-QUIC-RFC9000-S19P6-0005",
+    "REQ-QUIC-RFC9000-S19P6-0006",
+    "REQ-QUIC-RFC9000-S19P6-0007",
+    "REQ-QUIC-RFC9000-S19P6-0008",
+    "REQ-QUIC-RFC9000-S19P6-0009",
+    "REQ-QUIC-RFC9000-S19P6-0010",
+    "REQ-QUIC-RFC9000-S19P6-0011",
+    "REQ-QUIC-RFC9000-S19P6-0012",
+    "REQ-QUIC-RFC9000-S19P6-0013"
+  ],
+  "scope": "This verification covers CRYPTO frame parser and formatter behavior, field boundaries, packet-context payload shape, and the CRYPTO buffer over-limit outcome for RFC 9000 Section 19.6.",
+  "expected_result": "Focused S19P6 requirement homes prove that CRYPTO frames use type 0x06, carry handshake bytes in allowed packet contexts, remain distinct from STREAM frames, include required Offset and Length varints, consume exactly declared Crypto Data bytes, enforce stream-limit boundaries, omit stream IDs and FIN bits, and keep parser/format hot paths covered by the existing frame-codec benchmark suite.",
+  "procedure": [
+    "Run the focused S19P6 requirement-home filter.",
+    "Run a Release build.",
+    "Run the full Release no-build solution test suite.",
+    "Run the QuicFrameCodec benchmark suite with BenchmarkDotNet Dry job.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing QuicFrameCodec CRYPTO parser and formatter are the runtime seam under test.",
+    "The existing QuicCryptoBuffer remains the CRYPTO_BUFFER_EXCEEDED outcome seam for over-limit constructed frames.",
+    "The existing QuicFrameCodecBenchmarks suite remains the hot-path benchmark evidence for CRYPTO parse and format operations."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P6CryptoFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P6\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim handshake interop success, packet protection correctness, 0-RTT frame-policy changes, or endpoint-host close-packet behavior beyond the parser and CRYPTO buffer seams."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P6 filter passed 31/31, generated triage reports 13/13 S19P6 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 385 artifacts, the full Release no-build solution suite passed 4117/4117, the QuicFrameCodec BenchmarkDotNet Dry run completed 12/12 benchmarks including ParseCryptoFrame and FormatCryptoFrame, and git diff --check passed with only CRLF normalization warnings on generated/spec JSON outputs."
+}

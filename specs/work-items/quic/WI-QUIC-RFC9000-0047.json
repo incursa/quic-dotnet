@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0047",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 CRYPTO Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0047",
+    "VER-QUIC-RFC9000-0047"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P6-0001",
+    "REQ-QUIC-RFC9000-S19P6-0002",
+    "REQ-QUIC-RFC9000-S19P6-0003",
+    "REQ-QUIC-RFC9000-S19P6-0004",
+    "REQ-QUIC-RFC9000-S19P6-0005",
+    "REQ-QUIC-RFC9000-S19P6-0006",
+    "REQ-QUIC-RFC9000-S19P6-0007",
+    "REQ-QUIC-RFC9000-S19P6-0008",
+    "REQ-QUIC-RFC9000-S19P6-0009",
+    "REQ-QUIC-RFC9000-S19P6-0010",
+    "REQ-QUIC-RFC9000-S19P6-0011",
+    "REQ-QUIC-RFC9000-S19P6-0012",
+    "REQ-QUIC-RFC9000-S19P6-0013"
+  ],
+  "summary": "Add focused requirement-home proof and trace ownership for the RFC 9000 Section 19.6 CRYPTO frame tail.",
+  "planned_changes": "- Add focused S19P6 requirement-home tests for CRYPTO type 0x06, packet contexts, STREAM-frame differences, required varint fields, field order, offset/length limits, lack of stream ID, and lack of FIN bit.\n- Add a CRYPTO-frame requirement-home helper for exact encoded-field cases, truncated field cases, and parser assertions.\n- Retain the existing QuicFrameCodec CRYPTO parser/formatter behavior and the existing frame-codec benchmark suite.\n- Link all S19P6 requirements to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",
+  "verification_plan": "Run the focused S19P6 requirement-home filter, run a Release build, run the full Release no-build solution test suite, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0047"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0047"
+  ],
+  "out_of_scope": [
+    "Changing TLS transcript processing or handshake success semantics.",
+    "Changing 0-RTT frame-admission policy.",
+    "Hosted endpoint interop success claims.",
+    "Replacing the span-backed CRYPTO frame view or frame-codec hot path.",
+    "Broad packet-format closure outside RFC 9000 Section 19.6."
+  ],
+  "completion_notes": "Completed as focused proof over the existing CRYPTO frame codec, CRYPTO buffer overflow outcome, packet parser classification, and existing frame-codec benchmark floor."
+}

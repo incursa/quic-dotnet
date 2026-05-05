@@ -1,0 +1,75 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0047",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 CRYPTO Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded RFC 9000 Section 19.6 CRYPTO frame parser, formatter, packet-context, and stream-limit proof slice.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0047",
+    "VER-QUIC-RFC9000-0047"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P6-0001",
+    "REQ-QUIC-RFC9000-S19P6-0002",
+    "REQ-QUIC-RFC9000-S19P6-0003",
+    "REQ-QUIC-RFC9000-S19P6-0004",
+    "REQ-QUIC-RFC9000-S19P6-0005",
+    "REQ-QUIC-RFC9000-S19P6-0006",
+    "REQ-QUIC-RFC9000-S19P6-0007",
+    "REQ-QUIC-RFC9000-S19P6-0008",
+    "REQ-QUIC-RFC9000-S19P6-0009",
+    "REQ-QUIC-RFC9000-S19P6-0010",
+    "REQ-QUIC-RFC9000-S19P6-0011",
+    "REQ-QUIC-RFC9000-S19P6-0012",
+    "REQ-QUIC-RFC9000-S19P6-0013"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicCryptoBuffer.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P6CryptoFrameTestSupport.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The CRYPTO frame proof remains centered on the existing frame codec. The parser accepts only the one-byte fixed frame type 0x06, then parses required Offset and Length variable-length integer fields before slicing exactly the declared Crypto Data bytes. The formatter emits the same field order and rejects frames whose Offset plus Crypto Data length would exceed the QUIC variable-length integer stream limit. The crypto buffer provides the CRYPTO_BUFFER_EXCEEDED outcome for over-limit constructed frames that reach buffering, while malformed wire encodings fail at the frame parser boundary.",
+  "data_and_state_considerations": "CRYPTO frames are modeled as span-backed views over packet payload bytes and intentionally do not carry a stream identifier, FIN bit, flow-control identity, or optional STREAM-frame field markers. Packet-context proof is limited to the current packet parser and frame payload shape for Initial, Handshake, and short-header Application Data packet number spaces; this slice does not change 0-RTT policy routing or TLS transcript progression.",
+  "edge_cases_and_constraints": [
+    "Non-0x06 and non-minimal 0x06 frame-type encodings are rejected by the fixed-type parser.",
+    "Truncated Offset and Length variable-length integers are rejected before a frame view is produced.",
+    "Declared Length controls bytes consumed and does not absorb trailing frame bytes.",
+    "Offset plus Length must be at or below QuicVariableLengthInteger.MaxValue; exact-boundary frames are accepted and over-boundary frames are rejected.",
+    "STREAM frames with stream identifiers or FIN bits remain distinct from CRYPTO frames and are rejected by the CRYPTO parser."
+  ],
+  "alternatives_considered": [
+    "Leave S19P6 under broad frame-codec tests; rejected because generated triage needed focused requirement-home proof and resolving canonical x_test_refs.",
+    "Add new runtime packet policy for 0-RTT CRYPTO rejection in this slice; rejected because S19P6 focused proof targets CRYPTO frame shape and parser boundaries, while broader packet admissibility belongs to packet-frame policy requirements.",
+    "Replace the existing span-backed ref struct with an owned object model; rejected because the current wire parser hot path and benchmarks already use span-backed views without allocation."
+  ],
+  "risks": [
+    "The receipt-to-connection-error requirement is proven at the parser rejection and CRYPTO buffer outcome seams, not as a new hosted endpoint close packet assertion.",
+    "Packet-context proof uses packet parser classification and payload shape; it does not claim full TLS transcript interop.",
+    "The benchmark evidence is the existing frame-codec benchmark suite rather than a new benchmark introduced by this proof-only slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers RFC 9000 Section 19.6 CRYPTO frame encoding, parsing, field order, stream-limit, and frame-shape proof only. It does not claim complete handshake success, hosted endpoint interop, 0-RTT frame policy changes, or broad packet-format closure outside S19P6."
+    }
+  ]
+}
