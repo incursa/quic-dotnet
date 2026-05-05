@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T17:23:37.7891943-06:00",
+  "generated_at": "2026-05-05T17:39:59.3874820-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T17:23:37.7850233-06:00",
+    "generated_at": "2026-05-05T17:39:59.3834724-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 62,
+      "covered_but_missing_xrefs": 61,
       "covered_but_proof_too_broad": 52,
       "partially_covered": 145,
-      "trace_clean": 1257,
+      "trace_clean": 1258,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 184
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1257,
-      "metadata_only": 62,
+      "clean": 1258,
+      "metadata_only": 61,
       "new_tests_needed": 444,
       "restructure_needed": 73
     },
@@ -47,10 +47,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 62,
+          "covered_but_missing_xrefs": 61,
           "covered_but_proof_too_broad": 52,
           "partially_covered": 145,
-          "trace_clean": 944,
+          "trace_clean": 945,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 184
         }
@@ -89999,31 +89999,20 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 6,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs::IdleTimeoutToMaxIdleTimeoutMilliseconds_EncodesTheWireValueInMilliseconds",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs::IdleTimeoutToMaxIdleTimeoutMilliseconds_RoundsSubMillisecondPositiveValuesUp",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs::MaxIdleTimeoutMillisecondsToRuntimeMicros_ConvertsPeerWireValuesForTheRuntimeClock",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs::MaxIdleTimeoutMillisecondsToRuntimeMicros_PreservesAbsence"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 11,
         "focused": 8,
