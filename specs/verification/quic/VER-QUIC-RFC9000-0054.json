@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0054",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 STREAMS_BLOCKED Frame Focused Proof Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0054",
+    "WI-QUIC-RFC9000-0054"
+  ],
+  "verification_method": "Focused S19P14 requirement-home tests, permanent frame-codec benchmark dry run, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P14-0002",
+    "REQ-QUIC-RFC9000-S19P14-0004",
+    "REQ-QUIC-RFC9000-S19P14-0005",
+    "REQ-QUIC-RFC9000-S19P14-0006",
+    "REQ-QUIC-RFC9000-S19P14-0007",
+    "REQ-QUIC-RFC9000-S19P14-0008",
+    "REQ-QUIC-RFC9000-S19P14-0009"
+  ],
+  "scope": "This verification covers STREAMS_BLOCKED type mapping, Type and Maximum Streams field-shape proof, advertised stream-count preservation, 2^60 limit enforcement, valid protected receive acceptance, and malformed protected receive close behavior.",
+  "expected_result": "The requirement-home tests show type 0x16 and 0x17 parsing and protected receive acceptance, rejection of non-STREAMS_BLOCKED and non-minimal type encodings, Maximum Streams variable-length integer boundary handling, exact frame consumption, preservation of advertised stream counts through parse and format, rejection of values above 2^60, and protected FRAME_ENCODING_ERROR close behavior for larger encoded values.",
+  "procedure": [
+    "Run the focused S19P14 requirement-home filter for requirements 0002 and 0004 through 0009.",
+    "Run the permanent QuicFrameCodecBenchmarks STREAMS_BLOCKED dry job.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The existing shared stream-limit codec remains the parser and formatter seam for MAX_STREAMS and STREAMS_BLOCKED frames.",
+    "The protected Application Data runtime has 1-RTT open packet-protection material.",
+    "The existing outbound STREAMS_BLOCKED runtime-emission lane remains scoped separately under ARC-QUIC-RFC9000-0007."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P14StreamsBlockedFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0009.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0009\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*StreamsBlockedFrame*\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim outbound STREAMS_BLOCKED emission scheduling, pending-open retry behavior, public flow-control APIs, or complete interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P14 requirement-home filter passed 38/38, the STREAMS_BLOCKED frame-codec Dry benchmark ran both parse and format benchmarks, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks S19P14 0002 and 0004 through 0009 trace_clean, SpecTrace core validation passed for 406 artifacts, and git diff --check passed with only CRLF normalization warnings."
+}

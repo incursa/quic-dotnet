@@ -4,6 +4,80 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P14_0002
 {
     [Theory]
+    [InlineData(true, 0x16UL)]
+    [InlineData(false, 0x17UL)]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseStreamsBlockedFrame_MapsType16And17ToStreamDirection(
+        bool isBidirectional,
+        ulong expectedFrameType)
+    {
+        byte[] encoded = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrame(
+            isBidirectional,
+            maximumStreams: 7);
+
+        Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong frameType, out int bytesConsumed));
+        Assert.Equal(expectedFrameType, frameType);
+        Assert.Equal(1, bytesConsumed);
+        QuicS19P14StreamsBlockedFrameTestSupport.AssertParses(encoded, isBidirectional, expectedMaximumStreams: 7);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ProtectedStreamsBlockedFrame_AcceptsType16And17AsAckElicitingAdvisories(bool isBidirectional)
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        byte[] encoded = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrame(
+            isBidirectional,
+            maximumStreams: 7);
+
+        QuicConnectionTransitionResult result = QuicS19P7NewTokenFrameTestSupport.ReceiveProtectedApplicationPacket(
+            runtime,
+            encoded,
+            observedAtTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+    }
+
+    [Theory]
+    [InlineData(0x15)]
+    [InlineData(0x18)]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseStreamsBlockedFrame_RejectsNonStreamsBlockedFrameTypes(byte frameType)
+    {
+        byte[] encoded = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrameWithEncodedType([frameType]);
+
+        QuicS19P14StreamsBlockedFrameTestSupport.AssertRejects(encoded);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseStreamsBlockedFrame_RejectsNonMinimalDirectionTypeEncodings()
+    {
+        byte[][] encodedFrames =
+        [
+            QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrameWithEncodedType([0x40, 0x16]),
+            QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrameWithEncodedType([0x40, 0x17]),
+        ];
+
+        foreach (byte[] encoded in encodedFrames)
+        {
+            QuicS19P14StreamsBlockedFrameTestSupport.AssertRejects(encoded);
+        }
+    }
+
+    [Theory]
     [InlineData(true)]
     [InlineData(false)]
     /// <workbench-requirements generated="true" source="workbench quality sync">

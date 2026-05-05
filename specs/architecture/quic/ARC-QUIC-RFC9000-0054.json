@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0054",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 STREAMS_BLOCKED Frame Focused Proof",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded STREAMS_BLOCKED parser, formatter, and protected receive-advisory proof lane for RFC 9000 Section 19.14.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0007",
+    "WI-QUIC-RFC9000-0054",
+    "VER-QUIC-RFC9000-0054"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S19P14-0002",
+    "REQ-QUIC-RFC9000-S19P14-0004",
+    "REQ-QUIC-RFC9000-S19P14-0005",
+    "REQ-QUIC-RFC9000-S19P14-0006",
+    "REQ-QUIC-RFC9000-S19P14-0007",
+    "REQ-QUIC-RFC9000-S19P14-0008",
+    "REQ-QUIC-RFC9000-S19P14-0009"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P14StreamsBlockedFrameTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0009.cs",
+    "benchmarks/QuicFrameCodecBenchmarks.cs"
+  ],
+  "design_summary": "The shared stream-limit frame codec remains the canonical STREAMS_BLOCKED parser and formatter seam. It accepts only one-byte type values 0x16 and 0x17, maps those values to bidirectional and unidirectional stream-limit advisory frames, parses a required Maximum Streams variable-length integer, preserves the advertised stream count through parse and format, and rejects values above the 2^60 stream-count limit. The protected Application Data frame loop now consumes valid incoming STREAMS_BLOCKED frames as ack-eliciting advisory frames without opening a stream and converts malformed STREAMS_BLOCKED encodings into a local FRAME_ENCODING_ERROR close.",
+  "data_and_state_considerations": "Valid incoming STREAMS_BLOCKED frames are advisory only for this bounded slice: they are parsed, consumed, and acknowledged, but they do not create streams or mutate peer stream limits. Values above the allowed stream-count limit remain invalid at both the parser/formatter seam and the protected receive path.",
+  "edge_cases_and_constraints": [
+    "Type 0x16 maps to bidirectional stream-limit blocking and type 0x17 maps to unidirectional stream-limit blocking.",
+    "Non-STREAMS_BLOCKED frame types and non-minimal encodings of 0x16 or 0x17 are rejected by the parser.",
+    "Truncated Maximum Streams variable-length integer encodings are rejected.",
+    "The parser consumes exactly the STREAMS_BLOCKED frame and leaves trailing frames for the caller.",
+    "Maximum Streams values below and equal to 2^60 are accepted; larger values are rejected and close protected packets with FRAME_ENCODING_ERROR."
+  ],
+  "alternatives_considered": [
+    "Broaden ARC-QUIC-RFC9000-0007; rejected because that artifact is scoped to outbound STREAMS_BLOCKED runtime emission, not parser and receiver field-shape proof.",
+    "Leave the broad multi-requirement S19P14-0002 tests as the only evidence; rejected because generated triage classified that proof as too broad for requirements 0004 through 0007.",
+    "Treat malformed incoming STREAMS_BLOCKED frames as generic parse failure; rejected because RFC 9000 Section 19.14 requires larger encoded values to be connection errors."
+  ],
+  "risks": [
+    "This slice does not change outbound stream-open retry or STREAMS_BLOCKED emission scheduling.",
+    "This slice does not add public flow-control or stream-limit APIs.",
+    "This slice does not claim broader interop readiness beyond the protected Application Data runtime path and frame-codec proof."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers only S19P14 type mapping, frame field shape, stream-count limit handling, and protected receive behavior for malformed STREAMS_BLOCKED frames. Sender-side SHOULD emission and no-open behavior remain owned by the existing runtime-emission lane and follow-up proof."
+    }
+  ]
+}

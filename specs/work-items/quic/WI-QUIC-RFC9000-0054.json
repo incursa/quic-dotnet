@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0054",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 STREAMS_BLOCKED Frame Focused Proof Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0054",
+    "VER-QUIC-RFC9000-0054"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P14-0002",
+    "REQ-QUIC-RFC9000-S19P14-0004",
+    "REQ-QUIC-RFC9000-S19P14-0005",
+    "REQ-QUIC-RFC9000-S19P14-0006",
+    "REQ-QUIC-RFC9000-S19P14-0007",
+    "REQ-QUIC-RFC9000-S19P14-0008",
+    "REQ-QUIC-RFC9000-S19P14-0009"
+  ],
+  "summary": "Close the RFC 9000 Section 19.14 STREAMS_BLOCKED parser, formatter, and malformed protected receive proof tail without widening the outbound runtime-emission lane.",
+  "planned_changes": "- Add a dedicated S19P14 STREAMS_BLOCKED frame test helper.\n- Add focused requirement-home tests for type 0x16/0x17 mapping, type-field bounds, Maximum Streams variable-length integer boundaries, required field presence, value preservation, and 2^60 stream-count limit enforcement.\n- Add protected Application Data receive-path handling for valid STREAMS_BLOCKED advisory frames.\n- Convert malformed protected STREAMS_BLOCKED frames into local FRAME_ENCODING_ERROR close behavior.\n- Link the S19P14 parser and protected receive proof to dedicated architecture and verification artifacts.",
+  "verification_plan": "Run the focused S19P14 requirement-home filter, run the permanent STREAMS_BLOCKED frame-codec benchmark dry job, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0054"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0054"
+  ],
+  "out_of_scope": [
+    "Changing outbound STREAMS_BLOCKED emission scheduling.",
+    "Changing pending stream-open retry behavior.",
+    "Changing public stream-limit or flow-control APIs.",
+    "Claiming complete S19P14 closure for sender-side SHOULD emission or no-open proof tails.",
+    "Claiming broader interop readiness."
+  ],
+  "completion_notes": "Completed as a focused S19P14 parser, formatter, and protected receive topoff over the existing stream-limit frame codec and active Application Data frame loop."
+}

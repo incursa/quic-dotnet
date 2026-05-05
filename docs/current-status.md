@@ -1,8 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-05 for the S19P13 handoff note; broader executive-read
-evidence remains pinned to its stated 2026-04-30 refresh unless otherwise
-noted.
+Last verified: 2026-05-05 for the S19P14 STREAMS_BLOCKED focused proof
+closeout; broader executive-read evidence remains pinned to its stated
+2026-04-30 refresh unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
@@ -21,7 +21,20 @@ blocked-offset preservation, receive-capable stream acceptance, and protected
 runtime close with `STREAM_STATE_ERROR` for opened or uncreated send-only
 stream IDs.
 
-Pick up next after S19P13 closure:
+The follow-on S19P14 STREAMS_BLOCKED focused proof slice closes
+`REQ-QUIC-RFC9000-S19P14-0002` and `REQ-QUIC-RFC9000-S19P14-0004`
+through `REQ-QUIC-RFC9000-S19P14-0009` under
+`ARC-QUIC-RFC9000-0054`, `WI-QUIC-RFC9000-0054`, and
+`VER-QUIC-RFC9000-0054`. The proof covers type `0x16`/`0x17` mapping,
+Type and Maximum Streams varint boundaries, required-field presence, exact
+frame consumption, advertised stream-count preservation, 2^60 limit
+enforcement, valid protected receive acceptance, protected
+`FRAME_ENCODING_ERROR` close behavior for larger encoded values, and permanent
+STREAMS_BLOCKED parse/format benchmark coverage. It does not claim outbound
+STREAMS_BLOCKED emission scheduling, pending stream-open retry behavior, public
+flow-control APIs, or complete S19P14 sender-side SHOULD/no-open closure.
+
+Pick up next after the current S19P14 focused proof closure:
 
 1. Start in `docs/requirements-workflow.md`, then check
    `specs/requirements/quic/REQUIREMENT-GAPS.md` and the S19P14 requirements in
@@ -32,10 +45,13 @@ Pick up next after S19P13 closure:
    behavior, or interop readiness.
 3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0001` through
    `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`.
-4. The next local S19-family lane is S19P14 STREAMS_BLOCKED: current triage
-   shows nine non-clean requirements, mixing runtime emission proof tails for
-   `0001`, `0002`, `0003`, `0008`, and `0009` with parser/field proof that is
-   still missing or too broad for `0004` through `0007`.
+4. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0002` and
+   `REQ-QUIC-RFC9000-S19P14-0004` through
+   `REQ-QUIC-RFC9000-S19P14-0009` as `trace_clean`.
+5. The next local S19-family lane remains S19P14 STREAMS_BLOCKED, but it is now
+   narrowed to sender-side tail proof: `REQ-QUIC-RFC9000-S19P14-0001` still
+   lacks focused edge proof, and `REQ-QUIC-RFC9000-S19P14-0003` still lacks
+   focused positive and edge proof.
 
 Focused next-triage command:
 

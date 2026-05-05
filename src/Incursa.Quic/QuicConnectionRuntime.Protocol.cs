@@ -1426,6 +1426,33 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseStreamsBlockedFrame(
+                remaining,
+                out QuicStreamsBlockedFrame streamsBlockedFrame,
+                out int streamsBlockedBytesConsumed))
+            {
+                if (streamsBlockedBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                _ = streamsBlockedFrame;
+                offset += streamsBlockedBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (TryReadApplicationFrameType(remaining, out ulong malformedStreamsBlockedFrameType)
+                && IsStreamsBlockedFrameType(malformedStreamsBlockedFrameType))
+            {
+                return TryHandleApplicationDataFrameError(
+                    nowTicks,
+                    malformedStreamsBlockedFrameType,
+                    QuicTransportErrorCode.FrameEncodingError,
+                    "The peer sent an invalid STREAMS_BLOCKED frame.",
+                    ref effects);
+            }
+
             if (QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed))
             {
                 if (cryptoBytesConsumed <= 0)
@@ -2994,6 +3021,12 @@ internal sealed partial class QuicConnectionRuntime
     {
         return frameType is HandshakePacketMaxStreamsBidirectionalFrameType
             or HandshakePacketMaxStreamsUnidirectionalFrameType;
+    }
+
+    private static bool IsStreamsBlockedFrameType(ulong frameType)
+    {
+        return frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
+            or HandshakePacketStreamsBlockedUnidirectionalFrameType;
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
