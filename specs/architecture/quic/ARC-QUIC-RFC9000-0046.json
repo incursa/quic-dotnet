@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0046",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Preferred Address Migration Source Protection",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime proof for the remaining RFC 9000 Section 9.6.3 preferred-address migration-source and client-address validation tail.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0029",
+    "ARC-QUIC-RFC9000-0045",
+    "WI-QUIC-RFC9000-0046",
+    "VER-QUIC-RFC9000-0046"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-S9P6P3-0009",
+    "REQ-QUIC-RFC9000-S9P6P3-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs"
+  ],
+  "design_summary": "The preferred-address tail reuses the current single-active-path migration runtime. A path that matches the peer preferred_address transport parameter remains a candidate path until validation succeeds. When the client-side path changes, same-family IPv4 or IPv6 preferred-address candidates are validated and promoted only after path-validation success. Preferred-address traffic from a changed source is protected by the same candidate validation and anti-amplification accounting used for migration candidates, and probe packets from a different address trigger a PATH_CHALLENGE without promoting the path first.",
+  "data_and_state_considerations": "The proof relies on committed peer transport parameters, candidate-path validation state, anti-amplification counters, and active-path promotion effects. The runtime keeps preferred-address matching as address-and-port comparison against the parsed IPv4 and IPv6 preferred_address values and does not add a public migration API in this slice.",
+  "edge_cases_and_constraints": [
+    "IPv4 and IPv6 preferred-address candidates are exercised as distinct same-family migration choices.",
+    "A preferred-address packet from a changed source remains amplification-limited until validation succeeds.",
+    "Probe-triggered PATH_CHALLENGE emission does not imply active-path promotion before validation.",
+    "The proof keeps the existing single-active-path model and does not claim multipath scheduling."
+  ],
+  "alternatives_considered": [
+    "Leave the requirements under the broad RFC 9000 umbrella artifacts; rejected because generated triage needed direct focused proof for the remaining S9P6P3 tail.",
+    "Broaden the slice into all remaining migration-core requirements; rejected because the unblocked preferred-address tail is smaller and adjacent to the already-landed S9P6P2 cutover work.",
+    "Add a new runtime preferred-address selector API; rejected because the current trace gap is direct proof over existing candidate-path behavior, not a public API request."
+  ],
+  "risks": [
+    "The slice proves runtime transition behavior, not hosted endpoint interop across real network interfaces.",
+    "The implementation remains single-active-path and does not claim concurrent multipath use.",
+    "The proof treats parser/opened-datagram path identities as the observable seam for client and server preferred-address behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design covers S9P6P3-0006, S9P6P3-0009, and S9P6P3-0010 only: same-family preferred-address selection proof, changed-source protection, and probe-triggered client-address validation."
+    }
+  ]
+}

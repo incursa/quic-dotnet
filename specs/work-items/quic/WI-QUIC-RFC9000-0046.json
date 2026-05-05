@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0046",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Preferred Address Migration Source Protection Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0046",
+    "VER-QUIC-RFC9000-0046"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-S9P6P3-0009",
+    "REQ-QUIC-RFC9000-S9P6P3-0010"
+  ],
+  "summary": "Add focused requirement-home proof and trace ownership for the remaining S9P6P3 preferred-address migration-source protection tail.",
+  "planned_changes": "- Add direct positive proof that a client-side new-address migration validates and promotes the same address-family preferred server address for IPv4 and IPv6 cases.\n- Add direct positive proof that preferred-address traffic from a changed source remains candidate-path protected and anti-amplification-limited.\n- Add direct positive proof that a probe packet from a different address initiates client-address validation with a PATH_CHALLENGE before promotion.\n- Link the S9P6P3-0006, S9P6P3-0009, and S9P6P3-0010 requirements to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",
+  "verification_plan": "Run the focused S9P6P3-0006/0009/0010 requirement-home filter, run a Release build, run the full Release no-build solution test suite, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0046"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0046"
+  ],
+  "out_of_scope": [
+    "Multipath scheduling or multiple active outbound paths.",
+    "Public migration control APIs.",
+    "Hosted endpoint interop success claims.",
+    "Changing path-validation, anti-amplification, or peer connection-ID runtime behavior outside the focused proof."
+  ],
+  "completion_notes": "Completed as focused proof over the existing preferred-address candidate-path validation, anti-amplification, and promotion behavior."
+}

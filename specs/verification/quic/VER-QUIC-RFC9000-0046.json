@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0046",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Preferred Address Migration Source Protection Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0046",
+    "WI-QUIC-RFC9000-0046"
+  ],
+  "verification_method": "Focused S9P6P3-0006/0009/0010 requirement-home tests, Release build, full Release no-build solution tests, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-S9P6P3-0009",
+    "REQ-QUIC-RFC9000-S9P6P3-0010"
+  ],
+  "scope": "This verification covers the current single-active-path runtime behavior for same-family preferred-address validation, preferred-address changed-source protection, and probe-triggered validation on the S9P6P3 tail.",
+  "expected_result": "The focused requirement-home tests prove that same-family IPv4 and IPv6 preferred-address candidates are validated before promotion, changed-source preferred-address traffic remains candidate-path and anti-amplification protected, and probe packets from a different address trigger a PATH_CHALLENGE without active-path promotion.",
+  "procedure": [
+    "Run the focused S9P6P3-0006/0009/0010 requirement-home filter.",
+    "Run a Release build.",
+    "Run the full Release no-build solution test suite.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The runtime has an active path before preferred-address traffic arrives.",
+    "Peer transport parameters carry a preferred_address with IPv4, IPv6, connection ID, and stateless reset token values.",
+    "The connection has completed enough handshake state for active migration promotion to be policy-eligible."
+  ],
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0010\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim hosted endpoint interop, public migration APIs, or multipath behavior."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-04. The focused S9P6P3-0006/0009/0010 filter passed 5/5, generated triage resolves all S9P6P3 requirements as trace-clean, Release build passed with 0 warnings and 0 errors, the full Release no-build solution suite passed 4091/4091, core SpecTrace JSON validation passed for 382 artifacts, and git diff --check passed with only CRLF normalization warnings on regenerated/spec JSON outputs."
+}
