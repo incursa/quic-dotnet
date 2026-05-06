@@ -5347,17 +5347,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0003.cs::InitialConnectionIdIsRetiredAsSequenceNumberZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0003.cs::InitialConnectionIdCannotBeReissuedUnderANonZeroSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0003.cs::MaximumLengthInitialConnectionIdIsStillRetiredAsSequenceNumberZero"
         ]
       }
     },
@@ -5373,17 +5381,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0004.cs::PreferredAddressConnectionIdIsRetiredAsSequenceNumberOne",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0004.cs::PreferredAddressConnectionIdCannotBeReusedUnderADifferentSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0004.cs::DuplicatePreferredAddressConnectionIdKeepsTheImplicitSequenceNumberStable"
         ]
       }
     },
@@ -5428,17 +5444,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0006.cs::RetiredIssuedConnectionIdIsReplenishedWithTheNextSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0006.cs::DuplicateIssuedConnectionIdSequenceNumberIsRejected",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0006.cs::ReplenishmentDoesNotWrapAfterTheMaximumVariableLengthSequenceNumber"
         ]
       }
     },
@@ -5480,17 +5504,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs::ConnectionIdIssuedEvent_RegistersAnEndpointRouteForTheIssuedConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs::ConnectionIdRetiredEvent_RemovesTheEndpointRouteForTheRetiredConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs::ConnectionIdIssuedEvent_RoutesTheMaximumLengthIssuedConnectionIdUntilRetirement"
         ]
       }
     },
@@ -5506,17 +5538,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs::ActiveIssuedConnectionId_RoutesShortHeaderPacketsAtAnyTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs::ActiveIssuedConnectionId_RoutesLongHeaderPacketsAtAnyTime"
         ]
       }
     },
@@ -5562,23 +5601,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0011.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients"
         ]
       }
     },
@@ -5627,17 +5666,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs::NewConnectionIdMayTemporarilyExceedTheLimitWhenRetirePriorToRemovesTheExcess",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs::NewConnectionIdCannotTemporarilyExceedTheLimitWithoutImmediateRetirement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs::RetirePriorToCanRetireMultipleExcessConnectionIdsAtOnce"
         ]
       }
     },
@@ -5687,17 +5734,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0074"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0074"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0074"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0015.cs::RetireConnectionIdFrameSuppliesAReplacementConnectionId"
         ]
       }
     },

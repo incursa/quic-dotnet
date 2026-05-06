@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0074",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Connection ID Sequence and Active-Set Floor",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded S5P1P1 connection-ID sequence, active-set, and replenishment proof floor.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0027",
+    "ARC-QUIC-RFC9000-0030",
+    "WI-QUIC-RFC9000-0074",
+    "VER-QUIC-RFC9000-0074"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P1P1-0003",
+    "REQ-QUIC-RFC9000-S5P1P1-0004",
+    "REQ-QUIC-RFC9000-S5P1P1-0006",
+    "REQ-QUIC-RFC9000-S5P1P1-0008",
+    "REQ-QUIC-RFC9000-S5P1P1-0009",
+    "REQ-QUIC-RFC9000-S5P1P1-0011",
+    "REQ-QUIC-RFC9000-S5P1P1-0013",
+    "REQ-QUIC-RFC9000-S5P1P1-0015"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0015.cs"
+  ],
+  "design_summary": "The peer connection-ID state treats the initial peer-issued destination connection ID as sequence 0 and the peer preferred-address connection ID as implicit sequence 1. NEW_CONNECTION_ID processing validates duplicate sequence and connection-ID reuse, applies Retire Prior To before enforcing active_connection_id_limit, and reports retired sequence numbers so the runtime can emit RETIRE_CONNECTION_ID. The local issuance path keeps active route and stateless-reset-token state registered until retirement, replenishes retired or newly used issued IDs with the next sequence number when the peer's active limit allows it, and advertises active_connection_id_limit through transport parameters.",
+  "data_and_state_considerations": "Connection-ID byte values are copied into route/token state before being exposed through effects. Peer-issued CIDs are tracked by sequence, by historical sequence, and by reverse connection-ID lookup so duplicate frames are idempotent while conflicting reuse is rejected. Locally issued CIDs are retired through paired route and stateless-reset-token effects, and replacement NEW_CONNECTION_ID frames are built only after packet protection can send the frame on the active path.",
+  "edge_cases_and_constraints": [
+    "Maximum-length initial destination connection IDs still retire as sequence 0.",
+    "Preferred-address CIDs remain sequence 1 across duplicate preferred-address processing and cannot be reused under another sequence number.",
+    "Temporary active-set excess is accepted only when Retire Prior To immediately removes enough older CIDs.",
+    "Local replenishment does not wrap beyond the maximum QUIC variable-length integer sequence number."
+  ],
+  "risks": [
+    "The local-initiated migration pool policy remains separate and is not fully closed by this floor.",
+    "The first client-selected Destination Connection ID and Retry-provided CID sequencing rule remains a separate S5P1P1 tail item."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the bounded S5P1P1 sequence and active-set floor only. It does not claim local-initiated migration pool completeness, Retry integrity validation changes, public API widening, or hosted interop readiness."
+    }
+  ]
+}

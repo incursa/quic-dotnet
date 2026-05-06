@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S5P2 weakly protected packet failure
-policy, S5P2 packet classification and connection association floor, S7P4P1
+Last verified: 2026-05-06 for the S5P1P1 connection-ID sequence and
+active-set floor, S5P2 weakly protected packet failure policy, S5P2 packet
+classification and connection association floor, S7P4P1
 client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
 supersession policy, S7P4P1 server 0-RTT transport-parameter acceptance
 policy, S7P4P1 client 0-RTT remembered transport-parameter policy, S18P2
@@ -19,6 +20,27 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S5P1P1 connection-ID sequence and active-set floor closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0003`,
+`REQ-QUIC-RFC9000-S5P1P1-0004`, `REQ-QUIC-RFC9000-S5P1P1-0006`,
+`REQ-QUIC-RFC9000-S5P1P1-0008`, `REQ-QUIC-RFC9000-S5P1P1-0009`,
+`REQ-QUIC-RFC9000-S5P1P1-0011`, `REQ-QUIC-RFC9000-S5P1P1-0013`,
+and `REQ-QUIC-RFC9000-S5P1P1-0015` under `ARC-QUIC-RFC9000-0074`,
+`WI-QUIC-RFC9000-0074`, and `VER-QUIC-RFC9000-0074`. The proof covers
+initial CID sequence 0 retirement, preferred-address CID sequence 1 retirement,
+local replacement CID sequence increment and max-varint non-wrap behavior,
+temporary active-set excess only with immediate `Retire Prior To` retirement,
+issued-CID route lifetime until retirement, active issued-CID routing for short
+and long headers, `active_connection_id_limit` advertisement, and replacement
+CID supply after peer retirement. Regenerated coverage triage marks those eight
+requirements as `trace_clean` and reports 1,294 of 1,771 QUIC requirements
+trace-clean overall, leaving 477 non-clean. `S5P1P1` now has two remaining
+non-clean requirements: `REQ-QUIC-RFC9000-S5P1P1-0007` and
+`REQ-QUIC-RFC9000-S5P1P1-0019`. This closure does not claim local-initiated
+migration pool completeness, first client-selected Destination Connection ID or
+Retry-provided CID sequencing closure, Retry integrity validation changes,
+public API widening, or hosted interop readiness.
 
 Follow-on S5P2 weakly protected packet failure policy closure on 2026-05-06
 closes `REQ-QUIC-RFC9000-S5P2-0010`,
