@@ -3062,6 +3062,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicTlsEncryptionLevel.Handshake,
             nowTicks,
             ref effects);
+        stateChanged |= TryStartPreferredAddressPathValidation(nowTicks, ref effects);
         return stateChanged;
     }
 

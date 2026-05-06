@@ -90,4 +90,43 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0008
             && promoteActivePathEffect.PathIdentity == preferredPath
             && !promoteActivePathEffect.RestoreSavedState);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation()
+    {
+        using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+        QuicConnectionPathIdentity preferredPath = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath();
+
+        Assert.False(runtime.HandshakeConfirmed);
+        Assert.Equal(QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(preferredPath));
+        Assert.False(runtime.RecentlyValidatedPaths.ContainsKey(preferredPath));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused()
+    {
+        byte[] unusedIpv4Address = [0, 0, 0, 0];
+        using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress(
+                ipv4Address: unusedIpv4Address,
+                ipv4Port: 0));
+        QuicConnectionPathIdentity preferredPath = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(useIpv6: true);
+
+        QuicConnectionTransitionResult result = QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(
+            runtime,
+            observedAtTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.False(runtime.CandidatePaths.ContainsKey(QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath()));
+        QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, preferredPath);
+        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(result, preferredPath);
+    }
 }

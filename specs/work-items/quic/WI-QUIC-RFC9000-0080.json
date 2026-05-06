@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0080",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Handshake-Confirmed Transition Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0080",
+    "VER-QUIC-RFC9000-0080"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P6P1-0002",
+    "REQ-QUIC-RFC9000-S9P6P1-0003",
+    "REQ-QUIC-RFC9000-S9P6P1-0004",
+    "REQ-QUIC-RFC9000-S9P6P1-0008"
+  ],
+  "summary": "Close the S9P6P1 preferred-address handshake-confirmed transition by proving the client starts preferred-address validation after HANDSHAKE_DONE, promotes the preferred path only after validation succeeds, and discontinues the old server address after that validation.",
+  "planned_changes": "- Add focused positive, negative, and edge requirement-home proof for S9P6P1 preferred-address selection and cutover.\n- Start preferred-address validation from client HANDSHAKE_DONE processing when a usable server preferred_address is available.\n- Link the focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S9P6P1 preferred-address requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0080"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0080"
+  ],
+  "out_of_scope": [
+    "Complete S9P6P1 closure outside REQ-QUIC-RFC9000-S9P6P1-0002, REQ-QUIC-RFC9000-S9P6P1-0003, REQ-QUIC-RFC9000-S9P6P1-0004, and REQ-QUIC-RFC9000-S9P6P1-0008.",
+    "Preferred-address validation-failure policy proof.",
+    "Server preferred_address emission proof.",
+    "Public migration APIs.",
+    "Multipath support.",
+    "Hosted interop readiness.",
+    "Deferred fuzz obligations."
+  ],
+  "completion_notes": "Completed as a focused S9P6P1 proof for the preferred-address handshake-confirmed client transition."
+}

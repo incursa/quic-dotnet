@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0080",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Handshake-Confirmed Transition",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S9P6P1 closure for client preferred-address selection, validation, and cutover after handshake confirmation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0045",
+    "ARC-QUIC-RFC9000-0046",
+    "ARC-QUIC-RFC9000-0063",
+    "WI-QUIC-RFC9000-0080",
+    "VER-QUIC-RFC9000-0080"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P6P1-0002",
+    "REQ-QUIC-RFC9000-S9P6P1-0003",
+    "REQ-QUIC-RFC9000-S9P6P1-0004",
+    "REQ-QUIC-RFC9000-S9P6P1-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS9P6P1PreferredAddressTestSupport.cs"
+  ],
+  "design_summary": "Client HANDSHAKE_DONE processing confirms the handshake and starts validation for a usable server preferred_address candidate. The runtime selects the address family matching the active path when possible, falls back to the other usable family when the active family is unused, sends a PATH_CHALLENGE to the selected preferred address, and keeps the original server address active until validation succeeds.",
+  "data_and_state_considerations": "The preferred-address candidate is tracked as an unvalidated candidate path. Because the client originates validation to a server-advertised address, the candidate receives send budget for its validation probe without marking path validation complete. Existing path-validation success handling then records the preferred path as validated, promotes it as the active send path, and prevents continued use of the old server address for the preferred-address migration.",
+  "edge_cases_and_constraints": [
+    "No preferred_address transport parameter means HANDSHAKE_DONE confirmation does not create a preferred-address candidate.",
+    "An all-zero or zero-port address family is skipped, with fallback to the other usable family.",
+    "IPv6 active paths select the IPv6 preferred address when that family is usable.",
+    "The old server address remains active while preferred-address validation is pending."
+  ],
+  "risks": [
+    "This slice does not add public migration controls.",
+    "This slice does not add multipath scheduling.",
+    "This slice does not close deferred fuzz obligations for S9P6P1."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S9P6P1 preferred-address handshake-confirmed transition for REQ-QUIC-RFC9000-S9P6P1-0002, REQ-QUIC-RFC9000-S9P6P1-0003, REQ-QUIC-RFC9000-S9P6P1-0004, and REQ-QUIC-RFC9000-S9P6P1-0008 only. It does not claim complete S9P6P1 closure, preferred-address failure-policy proof, server preferred_address emission proof, public API widening, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ]
+}

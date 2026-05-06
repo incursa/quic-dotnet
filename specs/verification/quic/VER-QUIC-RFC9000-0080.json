@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0080",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Handshake-Confirmed Transition Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0080",
+    "WI-QUIC-RFC9000-0080"
+  ],
+  "verification_method": "Focused S9P6P1 requirement-home tests over preferred-address selection, pending validation, validation success promotion, and old-address discontinuation, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S9P6P1-0002",
+    "REQ-QUIC-RFC9000-S9P6P1-0003",
+    "REQ-QUIC-RFC9000-S9P6P1-0004",
+    "REQ-QUIC-RFC9000-S9P6P1-0008"
+  ],
+  "scope": "This verification covers the generated non-clean S9P6P1 preferred-address handshake-confirmed transition for REQ-QUIC-RFC9000-S9P6P1-0002, REQ-QUIC-RFC9000-S9P6P1-0003, REQ-QUIC-RFC9000-S9P6P1-0004, and REQ-QUIC-RFC9000-S9P6P1-0008.",
+  "expected_result": "The focused tests show the client starts preferred-address path validation when HANDSHAKE_DONE confirms the handshake, does not start it when no preferred_address exists, selects IPv6 when the active path is IPv6 or IPv4 is unused, keeps the original path active while validation is pending, promotes the preferred path only after validation succeeds, and discontinues use of the old server address after preferred-address validation succeeds.",
+  "procedure": [
+    "Run the focused S9P6P1 preferred-address requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The base runtime path-validation model remains owned by ARC-QUIC-RFC9000-0001.",
+    "The S9P6P2 and S9P6P3 preferred-address validation and migration-source tails remain separate under ARC-QUIC-RFC9000-0045 and ARC-QUIC-RFC9000-0046.",
+    "The preferred_address transport-parameter field shape remains owned by ARC-QUIC-RFC9000-0063."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS9P6P1PreferredAddressTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0008\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim complete S9P6P1 closure, preferred-address failure-policy proof, server preferred_address emission proof, public migration APIs, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S9P6P1 preferred-address requirement-home filter 12/12, Release build 0 warnings and 0 errors, regenerated QUIC coverage triage at 1,312 of 1,771 trace-clean with S9P6P1-0002/0003/0004/0008 trace-clean, SpecTrace core validation 484 artifacts, full Release no-build suite 4,575/4,575, and git diff --check."
+}

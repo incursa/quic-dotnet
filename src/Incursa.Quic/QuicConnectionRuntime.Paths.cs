@@ -372,6 +372,78 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool TryStartPreferredAddressPathValidation(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (tlsState.Role != QuicTlsRole.Client
+            || !HandshakeConfirmed
+            || activePath is null
+            || PeerRequestedZeroLengthConnectionId()
+            || MaximumCandidatePaths == 0
+            || tlsState.PeerTransportParameters?.PreferredAddress is not QuicPreferredAddress preferredAddress
+            || !TrySelectPreferredAddressPath(
+                preferredAddress,
+                activePath.Value.Identity,
+                out QuicConnectionPathIdentity preferredPathIdentity)
+            || EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, preferredPathIdentity))
+        {
+            return false;
+        }
+
+        if (TryGetCandidatePath(preferredPathIdentity, out QuicConnectionCandidatePathRecord existingCandidatePath))
+        {
+            if (existingCandidatePath.Validation.IsAbandoned
+                || existingCandidatePath.Validation.IsValidated
+                || (existingCandidatePath.Validation.ValidationDeadlineTicks.HasValue
+                    && existingCandidatePath.Validation.ValidationDeadlineTicks.Value > nowTicks))
+            {
+                return false;
+            }
+
+            return TrySendPathValidationChallenge(preferredPathIdentity, nowTicks, ref existingCandidatePath, ref effects);
+        }
+
+        if (candidatePaths.Count >= MaximumCandidatePaths)
+        {
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.CandidatePathBudgetExhausted(preferredPathIdentity));
+            }
+
+            return false;
+        }
+
+        QuicConnectionCandidatePathRecord candidatePath = new(
+            preferredPathIdentity,
+            DiscoveredAtTicks: nowTicks,
+            LastActivityTicks: nowTicks,
+            Validation: new QuicConnectionPathValidationState(
+                Generation: 0,
+                IsValidated: false,
+                IsAbandoned: false,
+                ChallengeSendCount: 0,
+                ChallengeSentAtTicks: null,
+                ValidationDeadlineTicks: null,
+                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            SavedRecoverySnapshot: null)
+        {
+            // The client is initiating validation to a server-advertised address; keep path
+            // validation separate from server anti-amplification accounting.
+            AmplificationState = default(QuicConnectionPathAmplificationState).MarkAddressValidated(),
+            MaximumDatagramSizeState = QuicConnectionPathMaximumDatagramSizeState.CreateInitial(),
+        };
+
+        bool stateChanged = TrySendPathValidationChallenge(
+            preferredPathIdentity,
+            nowTicks,
+            ref candidatePath,
+            ref effects);
+
+        UpdatePeerAddressValidationFlag();
+        return stateChanged;
+    }
+
     private bool TrySendPathValidationChallenge(
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
@@ -939,6 +1011,87 @@ internal sealed partial class QuicConnectionRuntime
 
         return MatchesPreferredAddress(pathIdentity, preferredAddress.IPv4Address, preferredAddress.IPv4Port)
             || MatchesPreferredAddress(pathIdentity, preferredAddress.IPv6Address, preferredAddress.IPv6Port);
+    }
+
+    private static bool TrySelectPreferredAddressPath(
+        QuicPreferredAddress preferredAddress,
+        QuicConnectionPathIdentity activePathIdentity,
+        out QuicConnectionPathIdentity pathIdentity)
+    {
+        bool activePathUsesIpv6 =
+            IPAddress.TryParse(activePathIdentity.RemoteAddress, out IPAddress? activeAddress)
+            && activeAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6;
+
+        if (activePathUsesIpv6
+            && TryCreatePreferredAddressPathIdentity(
+                preferredAddress.IPv6Address,
+                preferredAddress.IPv6Port,
+                activePathIdentity,
+                out pathIdentity))
+        {
+            return true;
+        }
+
+        if (!activePathUsesIpv6
+            && TryCreatePreferredAddressPathIdentity(
+                preferredAddress.IPv4Address,
+                preferredAddress.IPv4Port,
+                activePathIdentity,
+                out pathIdentity))
+        {
+            return true;
+        }
+
+        if (TryCreatePreferredAddressPathIdentity(
+                preferredAddress.IPv6Address,
+                preferredAddress.IPv6Port,
+                activePathIdentity,
+                out pathIdentity))
+        {
+            return true;
+        }
+
+        return TryCreatePreferredAddressPathIdentity(
+            preferredAddress.IPv4Address,
+            preferredAddress.IPv4Port,
+            activePathIdentity,
+            out pathIdentity);
+    }
+
+    private static bool TryCreatePreferredAddressPathIdentity(
+        byte[] addressBytes,
+        ushort port,
+        QuicConnectionPathIdentity activePathIdentity,
+        out QuicConnectionPathIdentity pathIdentity)
+    {
+        pathIdentity = default;
+
+        if (addressBytes.Length is not (PreferredAddressIPv4BytesLength or PreferredAddressIPv6BytesLength)
+            || port == 0
+            || IsAllZero(addressBytes))
+        {
+            return false;
+        }
+
+        pathIdentity = new QuicConnectionPathIdentity(
+            new IPAddress(addressBytes).ToString(),
+            activePathIdentity.LocalAddress,
+            port,
+            activePathIdentity.LocalPort);
+        return true;
+    }
+
+    private static bool IsAllZero(ReadOnlySpan<byte> value)
+    {
+        foreach (byte item in value)
+        {
+            if (item != 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool MatchesPreferredAddress(

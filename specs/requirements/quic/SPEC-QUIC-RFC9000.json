@@ -13763,17 +13763,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0080"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0080"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0080"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs::ClientInitiatesPreferredAddressPathValidationWhenHandshakeIsConfirmed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs::ClientDoesNotStartPreferredAddressValidationWhenTheServerDidNotProvideOne",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs::ClientSelectsTheIpv6PreferredAddressWhenTheActivePathUsesIpv6"
         ]
       }
     },
@@ -13789,17 +13797,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0080"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0080"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0080"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs::ClientPromotesThePreferredServerAddressAfterValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs::ClientDoesNotSendFuturePacketsToThePreferredAddressBeforeValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs::ClientPromotesTheIpv6PreferredServerAddressAfterValidationSucceeds"
         ]
       }
     },
@@ -13815,17 +13831,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0080"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0080"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0080"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs::ClientDiscontinuesUseOfTheOldServerAddressAfterPreferredAddressValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs::ClientKeepsTheOldServerAddressWhilePreferredAddressValidationIsPending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs::ClientDiscontinuesTheOldIpv6ServerAddressAfterIpv6PreferredAddressValidationSucceeds"
         ]
       }
     },
@@ -13925,20 +13949,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0080"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0080"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0080"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs::ClientChoosesThePreferredAddressAfterHandshakeConfirmationAndPromotesItWhenValidationSucceeds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs::ClientChoosesThePreferredAddressAfterHandshakeConfirmationAndPromotesItWhenValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs::ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs::ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused"
         ]
       }
     },

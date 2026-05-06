@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S4P6 stream-limit metadata xref tail,
+Last verified: 2026-05-06 for the S9P6P1 preferred-address
+handshake-confirmed transition, S4P6 stream-limit metadata xref tail,
 S4P6 cumulative incoming stream-limit tail, S4P6 max_streams oversized
 close-policy tail, S4P6 MAX_STREAMS monotonic limit update tail, S4P6
 stream-limit enforcement and blocked-open tail, S5P1P1 Retry sequencing and
@@ -24,6 +25,28 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S9P6P1 preferred-address handshake-confirmed transition closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0002`,
+`REQ-QUIC-RFC9000-S9P6P1-0003`,
+`REQ-QUIC-RFC9000-S9P6P1-0004`, and
+`REQ-QUIC-RFC9000-S9P6P1-0008` under `ARC-QUIC-RFC9000-0080`,
+`WI-QUIC-RFC9000-0080`, and `VER-QUIC-RFC9000-0080`. The proof covers
+client HANDSHAKE_DONE starting preferred_address validation, no validation
+candidate when no preferred_address exists, same-family IPv4 or IPv6
+selection when usable, IPv6 fallback when IPv4 is unused, original-address use
+while validation is pending, preferred-address promotion only after validation
+succeeds, and discontinuing the old server address after successful preferred
+address validation. Regenerated coverage triage marks all four requirements
+as `trace_clean` and reports 1,312 of 1,771 QUIC requirements trace-clean
+overall, leaving 459 non-clean. `S9P6P1` still has four remaining non-clean
+requirements: `REQ-QUIC-RFC9000-S9P6P1-0001`,
+`REQ-QUIC-RFC9000-S9P6P1-0005`,
+`REQ-QUIC-RFC9000-S9P6P1-0006`, and
+`REQ-QUIC-RFC9000-S9P6P1-0007`. This closure does not claim complete
+S9P6P1 closure, preferred-address validation-failure policy proof, server
+preferred_address emission proof, public migration APIs, multipath support,
+hosted interop readiness, or closure of deferred fuzz obligations.
 
 Follow-on S4P6 stream-limit metadata xref cleanup on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S4P6-0002` through
