@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0077",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 MAX_STREAMS Monotonic Limit Update Tail",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S4P6 closure for monotonic peer stream-limit updates carried by MAX_STREAMS frames.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0076",
+    "WI-QUIC-RFC9000-0077",
+    "VER-QUIC-RFC9000-0077"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S4P6-0010",
+    "REQ-QUIC-RFC9000-S4P6-0011"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs"
+  ],
+  "design_summary": "Peer stream-limit state is monotonic per stream direction. Applying a MAX_STREAMS frame updates only the matching bidirectional or unidirectional peer limit and only when the advertised maximum is strictly larger than the current value. Equal, smaller, or stale reordered frames return without changing either direction's peer limit, leaving local-open admission and blocked-open behavior governed by the highest accepted value.",
+  "data_and_state_considerations": "The stream registry stores bidirectional and unidirectional peer limits independently. Runtime application-data processing records the original limits before parsing a packet and retries pending local opens only for directions whose accepted MAX_STREAMS value increased.",
+  "edge_cases_and_constraints": [
+    "A larger MAX_STREAMS value unblocks the next local stream of the matching type without affecting the other type.",
+    "A smaller value received after a larger value leaves the higher limit in force.",
+    "A stale value received after multiple increases still leaves the highest accepted limit in force.",
+    "An equal value is non-increasing and is ignored for both stream directions."
+  ],
+  "risks": [
+    "This slice does not add automatic stream-limit autotuning.",
+    "This slice does not broaden public stream API support.",
+    "The S4P6-0010 fuzz expectation remains deferred."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S4P6 MAX_STREAMS monotonic update tail only. It does not claim broader stream-credit policy, hosted interop readiness, or public API widening."
+    }
+  ]
+}

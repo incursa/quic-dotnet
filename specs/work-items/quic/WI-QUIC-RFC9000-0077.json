@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0077",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 MAX_STREAMS Monotonic Limit Update Tail Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0077",
+    "VER-QUIC-RFC9000-0077"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P6-0010",
+    "REQ-QUIC-RFC9000-S4P6-0011"
+  ],
+  "summary": "Close the S4P6 MAX_STREAMS monotonic-update tail by proving that larger frames increase only the matching stream-type limit and non-increasing frames leave the highest accepted limit in force.",
+  "planned_changes": "- Add focused requirement-home tests for increasing MAX_STREAMS values unblocking the matching local stream type.\n- Add focused requirement-home tests for stale smaller values after multiple increases.\n- Add focused requirement-home tests for equal non-increasing bidirectional and unidirectional values.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S4P6 MAX_STREAMS requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0077"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0077"
+  ],
+  "out_of_scope": [
+    "Automatic stream-limit autotuning.",
+    "Public stream API widening.",
+    "Broader stream-credit policy.",
+    "Hosted interop readiness.",
+    "Closing the deferred S4P6-0010 fuzz expectation."
+  ],
+  "completion_notes": "Completed as a focused S4P6 proof for REQ-QUIC-RFC9000-S4P6-0010 and REQ-QUIC-RFC9000-S4P6-0011."
+}

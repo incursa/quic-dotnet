@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0077",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 MAX_STREAMS Monotonic Limit Update Tail Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0077",
+    "WI-QUIC-RFC9000-0077"
+  ],
+  "verification_method": "Focused S4P6 requirement-home tests over MAX_STREAMS monotonic peer-limit updates, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S4P6-0010",
+    "REQ-QUIC-RFC9000-S4P6-0011"
+  ],
+  "scope": "This verification covers the generated non-clean S4P6 MAX_STREAMS monotonic update tail.",
+  "expected_result": "The focused tests show that larger MAX_STREAMS frames increase only the matching bidirectional or unidirectional peer limit, smaller frames received after a larger value have no effect, stale smaller frames after multiple increases have no effect, and equal non-increasing frames are ignored for both stream directions.",
+  "procedure": [
+    "Run the focused S4P6 MAX_STREAMS requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The S4P6 stream-limit local-open and inbound STREAM enforcement tail remains closed under ARC-QUIC-RFC9000-0076.",
+    "The base stream-state model remains owned by ARC-QUIC-RFC9000-0001."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0011\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim automatic stream-limit autotuning, public stream API widening, broader stream-credit policy, hosted interop readiness, or closure of the deferred S4P6-0010 fuzz expectation."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The focused S4P6 MAX_STREAMS filter passed 8/8, the Release build passed with 0 warnings and 0 errors, regenerated coverage triage marks REQ-QUIC-RFC9000-S4P6-0010 and REQ-QUIC-RFC9000-S4P6-0011 trace_clean and reports 1,301 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 475 artifacts, the full Release no-build suite passed 4,556/4,556, and git diff --check returned exit code 0 with line-ending warnings only."
+}

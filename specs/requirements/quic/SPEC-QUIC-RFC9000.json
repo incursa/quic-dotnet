@@ -4555,17 +4555,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0077"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0077"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0077"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases"
         ]
       }
     },
@@ -4581,17 +4589,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0077"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0077"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0077"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit"
         ]
       }
     },

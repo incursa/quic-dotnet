@@ -1,8 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S4P6 stream-limit enforcement and
-blocked-open tail, S5P1P1 Retry sequencing and migration pool tail,
-S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
+Last verified: 2026-05-06 for the S4P6 MAX_STREAMS monotonic limit update
+tail, S4P6 stream-limit enforcement and blocked-open tail, S5P1P1 Retry
+sequencing and migration pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
 protected packet failure policy, S5P2 packet classification and connection
 association floor, S7P4P1
 client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
@@ -22,6 +22,25 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S4P6 MAX_STREAMS monotonic limit update tail closure on 2026-05-06
+closes `REQ-QUIC-RFC9000-S4P6-0010` and
+`REQ-QUIC-RFC9000-S4P6-0011` under `ARC-QUIC-RFC9000-0077`,
+`WI-QUIC-RFC9000-0077`, and `VER-QUIC-RFC9000-0077`. The proof covers larger
+`MAX_STREAMS` frames increasing only the matching bidirectional or
+unidirectional peer stream limit, smaller frames after a larger value having no
+effect, stale smaller frames after multiple increases having no effect, and
+equal non-increasing values being ignored for both stream directions.
+Regenerated coverage triage marks both requirements as `trace_clean` and
+reports 1,301 of 1,771 QUIC requirements trace-clean overall, leaving 470
+non-clean. `S4P6` now has seven remaining non-clean requirements:
+metadata-only xref cleanup for `REQ-QUIC-RFC9000-S4P6-0002` through
+`REQ-QUIC-RFC9000-S4P6-0005`, and missing-proof work for
+`REQ-QUIC-RFC9000-S4P6-0001`, `REQ-QUIC-RFC9000-S4P6-0006`, and
+`REQ-QUIC-RFC9000-S4P6-0007`. This closure does not claim automatic
+stream-limit autotuning, public stream API widening, broader stream-credit
+policy, hosted interop readiness, or closure of the deferred S4P6-0010 fuzz
+expectation.
 
 Follow-on S4P6 stream-limit enforcement and blocked-open tail closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S4P6-0008`,
@@ -623,9 +642,9 @@ Current artifact inventory:
 |---|---:|
 | Requirement specs in `specs/requirements/quic` | 7 |
 | Requirement clauses | 1,949 |
-| Architecture artifacts | 103 |
-| Work-item artifacts | 104 |
-| Verification artifacts | 105 |
+| Architecture artifacts | 104 |
+| Work-item artifacts | 105 |
+| Verification artifacts | 106 |
 
 Requirement family counts:
 
@@ -643,9 +662,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 103 implemented | 0 draft |
-| Work items | 104 complete | 0 planned |
-| Verification | 105 passed | 0 planned |
+| Architecture | 104 implemented | 0 draft |
+| Work items | 105 complete | 0 planned |
+| Verification | 106 passed | 0 planned |
 
 ## Implementation State
 
@@ -703,12 +722,9 @@ explicit requirements and gap records, not inferred from the green baseline.
 
 The next useful lanes are:
 
-- Continue S4P6 with the runtime/proof-focused `MAX_STREAMS` monotonic update
-  tail (`REQ-QUIC-RFC9000-S4P6-0010` and
-  `REQ-QUIC-RFC9000-S4P6-0011`), then the broader incoming stream-limit proof
-  set (`REQ-QUIC-RFC9000-S4P6-0001`,
-  `REQ-QUIC-RFC9000-S4P6-0006`, and `REQ-QUIC-RFC9000-S4P6-0007`).
-  `REQ-QUIC-RFC9000-S4P6-0002` through
+- Continue S4P6 with the broader incoming stream-limit proof set
+  (`REQ-QUIC-RFC9000-S4P6-0001`, `REQ-QUIC-RFC9000-S4P6-0006`, and
+  `REQ-QUIC-RFC9000-S4P6-0007`). `REQ-QUIC-RFC9000-S4P6-0002` through
   `REQ-QUIC-RFC9000-S4P6-0005` are metadata-only xref cleanup.
 - Dispatch and inspect the opt-in hosted `supported-subset` interop profile
   when a fresh hosted artifact refresh is needed; current local proof covers

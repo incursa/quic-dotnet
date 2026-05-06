@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T00:54:38.2662375-06:00",
+  "generated_at": "2026-05-06T06:15:44.1087443-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-06T00:54:38.2607843-06:00",
+    "generated_at": "2026-05-06T06:15:44.1057554-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 54,
       "covered_but_proof_too_broad": 48,
-      "partially_covered": 142,
-      "trace_clean": 1299,
+      "partially_covered": 140,
+      "trace_clean": 1301,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 157
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1299,
+      "clean": 1301,
       "metadata_only": 54,
-      "new_tests_needed": 411,
+      "new_tests_needed": 409,
       "restructure_needed": 68
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 54,
           "covered_but_proof_too_broad": 48,
-          "partially_covered": 142,
-          "trace_clean": 986,
+          "partially_covered": 140,
+          "trace_clean": 988,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 157
         }
@@ -175405,31 +175405,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -175446,7 +175447,7 @@
           "class": "REQ_QUIC_RFC9000_S4P6_0010",
           "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
           "method": "TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
-          "line": 12,
+          "line": 48,
           "kinds": [
             "negative"
           ],
@@ -175458,7 +175459,117 @@
             "REQ-QUIC-RFC9000-S4P6-0010"
           ],
           "requirement_tagged": true,
-          "class_level_only": true
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0010",
+          "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
+          "method": "TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit",
+          "line": 48,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0010",
+          "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases",
+          "method": "TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0010",
+          "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases",
+          "method": "TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0010",
+          "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "method": "TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0010",
+          "member": "REQ_QUIC_RFC9000_S4P6_0010.TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "method": "TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -175475,30 +175586,31 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -175513,9 +175625,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
           "class": "REQ_QUIC_RFC9000_S4P6_0011",
+          "member": "REQ_QUIC_RFC9000_S4P6_0011.TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "method": "TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0011",
+          "member": "REQ_QUIC_RFC9000_S4P6_0011.TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "method": "TryApplyMaxStreamsFrame_IgnoresEqualLimits",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0011",
           "member": "REQ_QUIC_RFC9000_S4P6_0011.TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit",
           "method": "TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit",
-          "line": 12,
+          "line": 31,
           "kinds": [
             "negative"
           ],
@@ -175527,7 +175683,29 @@
             "REQ-QUIC-RFC9000-S4P6-0011"
           ],
           "requirement_tagged": true,
-          "class_level_only": true
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P6-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs::TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0011",
+          "member": "REQ_QUIC_RFC9000_S4P6_0011.TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit",
+          "method": "TryApplyMaxStreamsFrame_IgnoresRepeatedUnidirectionalLimit",
+          "line": 31,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P6-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
