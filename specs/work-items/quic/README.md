@@ -78,6 +78,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0065.json`](WI-QUIC-RFC9000-0065.json): canonical RFC 9000 initial maximum data runtime commit work-item source
 - [`WI-QUIC-RFC9000-0066.json`](WI-QUIC-RFC9000-0066.json): canonical RFC 9000 maximum UDP payload size receiver limit work-item source
 - [`WI-QUIC-RFC9000-0067.json`](WI-QUIC-RFC9000-0067.json): canonical RFC 9000 maximum ACK delay alarm slack policy work-item source
+- [`WI-QUIC-RFC9000-0068.json`](WI-QUIC-RFC9000-0068.json): canonical RFC 9000 0-RTT remembered transport-parameter policy work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

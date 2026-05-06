@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0068",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 0-RTT Remembered Transport Parameter Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded client-side policy for remembering only 0-RTT-eligible transport parameters from a detached resumption ticket carrier.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0068",
+    "VER-QUIC-RFC9000-0068"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P4P1-0001",
+    "REQ-QUIC-RFC9000-S7P4P1-0002",
+    "REQ-QUIC-RFC9000-S7P4P1-0004"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0004.cs"
+  ],
+  "design_summary": "The client-side resumption carrier now separates the raw peer transport-parameter snapshot from the subset that can be used to decide whether a dormant 0-RTT attempt has usable remembered transport parameters. QuicZeroRttTransportParameterPolicy defines the known transport-parameter identifiers and classifies each modeled parameter as mandatory, optional, or prohibited for 0-RTT storage. It builds a sanitized QuicTransportParameters snapshot containing only the processable parameters the runtime may remember for client 0-RTT, while leaving prohibited parameters such as max_ack_delay, preferred_address, stateless_reset_token, initial_source_connection_id, retry_source_connection_id, original_destination_connection_id, and ack_delay_exponent out of the 0-RTT subset.",
+  "data_and_state_considerations": "QuicDetachedResumptionTicketSnapshot continues to preserve the raw peer transport-parameter snapshot for resumption metadata and existing diagnostics. The new internal ZeroRttTransportParameters snapshot is derived once at ticket construction time and gates HasEarlyDataPrerequisiteMaterial, so a ticket containing only prohibited remembered values does not make the runtime report 0-RTT readiness.",
+  "edge_cases_and_constraints": [
+    "ack_delay_exponent is classified as prohibited even though the current QuicTransportParameters model does not carry a dedicated field for it.",
+    "disable_active_migration is only treated as present in the remembered subset when it is true because the current model represents absence and false with the same boolean default.",
+    "A raw peer snapshot with only prohibited values is retained as metadata but does not enable dormant 0-RTT readiness.",
+    "No public early-data API, TLS early_data extension, server 0-RTT admission decision, or anti-replay policy is introduced by this slice."
+  ],
+  "risks": [
+    "Future transport parameters must be added to the classification table before they can be safely remembered for 0-RTT.",
+    "The optional disable_active_migration parameter cannot distinguish explicit false from absence with the current runtime model.",
+    "This slice does not yet compare remembered values against server-side 0-RTT acceptance policy or enforce updated-value violations in 0-RTT packets."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the client remembered-transport-parameter policy floor for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and REQ-QUIC-RFC9000-S7P4P1-0004 only. The remaining S7P4P1 server acceptance, restored-value support, and updated-value violation requirements remain separate follow-on work."
+    }
+  ]
+}

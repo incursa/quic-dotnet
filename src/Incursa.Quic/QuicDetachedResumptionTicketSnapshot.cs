@@ -51,6 +51,9 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
         ResumptionMasterSecret = resumptionMasterSecret.ToArray();
         TicketMaxEarlyDataSize = ticketMaxEarlyDataSize;
         PeerTransportParameters = peerTransportParameters;
+        ZeroRttTransportParameters =
+            QuicZeroRttTransportParameterPolicy.CreateRememberedTransportParametersForClientZeroRtt(
+                peerTransportParameters);
     }
 
     /// <summary>
@@ -94,6 +97,11 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
     public QuicTransportParameters? PeerTransportParameters { get; }
 
     /// <summary>
+    /// Gets the subset of peer transport parameters the client may remember for a 0-RTT attempt.
+    /// </summary>
+    internal QuicTransportParameters? ZeroRttTransportParameters { get; }
+
+    /// <summary>
     /// Gets a value that indicates whether ticket bytes are present.
     /// </summary>
     public bool HasTicketBytes => !TicketBytes.IsEmpty;
@@ -113,5 +121,5 @@ internal sealed record QuicDetachedResumptionTicketSnapshot
     /// </summary>
     public bool HasEarlyDataPrerequisiteMaterial =>
         TicketMaxEarlyDataSize is > 0
-        && PeerTransportParameters is not null;
+        && ZeroRttTransportParameters is not null;
 }

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0068",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 0-RTT Remembered Transport Parameter Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0068",
+    "WI-QUIC-RFC9000-0068"
+  ],
+  "verification_method": "Focused S7P4P1 requirement-home tests over transport-parameter 0-RTT storage classification, prohibited-value exclusion, and detached-ticket remembered-subset readiness, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S7P4P1-0001",
+    "REQ-QUIC-RFC9000-S7P4P1-0002",
+    "REQ-QUIC-RFC9000-S7P4P1-0004"
+  ],
+  "scope": "This verification covers the client-side remembered transport-parameter subset used to determine whether a detached resumption ticket carries usable 0-RTT transport-parameter prerequisites.",
+  "expected_result": "The focused tests show every known modeled transport parameter has an explicit 0-RTT storage classification, prohibited parameters are excluded from the client remembered 0-RTT subset, processable parameters are retained, and a ticket carrying only prohibited transport parameters does not enable dormant 0-RTT readiness.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S7P4P1 and CRT resumption/0-RTT guard filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Detached resumption tickets can carry a raw peer transport-parameter snapshot.",
+    "Dormant early-data readiness remains an internal observation and public early-data admission remains closed."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0004.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0004|FullyQualifiedName~REQ_QUIC_CRT_0139|FullyQualifiedName~REQ_QUIC_CRT_0141\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim S7P4P1 server acceptance or rejection policy, restored transport-parameter support checks, updated transport-parameter violation handling, TLS early_data extension support, public early-data APIs, anti-replay behavior, or application-data delivery."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 plus CRT resumption/0-RTT guard filter passed 16/16, regenerated coverage triage marks REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and REQ-QUIC-RFC9000-S7P4P1-0004 trace_clean and reports 1,264 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 448 artifacts, the full Release no-build suite passed 4,469/4,469, and git diff --check returned exit code 0 with line-ending warnings only."
+}

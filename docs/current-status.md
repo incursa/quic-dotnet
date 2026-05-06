@@ -1,8 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S18P2 max_ack_delay alarm-slack policy,
-S18P2 max_udp_payload_size receiver limit,
-S18P2 initial_max_data runtime commit,
+Last verified: 2026-05-06 for the S7P4P1 client 0-RTT remembered
+transport-parameter policy, S18P2 max_ack_delay alarm-slack policy, S18P2
+max_udp_payload_size receiver limit, S18P2 initial_max_data runtime commit,
 S18P2 max_idle_timeout trace cleanup, S22P1P1 provisional-registration policy
 closeout, S18P2 preferred-address field-shape, disable-active-migration, and
 initial stream-count transport parameter closeouts, the S17P2P5P2/P3 Retry
@@ -15,6 +15,25 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S7P4P1 client 0-RTT remembered transport-parameter policy closure
+on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0001`,
+`REQ-QUIC-RFC9000-S7P4P1-0002`, and
+`REQ-QUIC-RFC9000-S7P4P1-0004` under `ARC-QUIC-RFC9000-0068`,
+`WI-QUIC-RFC9000-0068`, and `VER-QUIC-RFC9000-0068`. The proof covers an
+internal 0-RTT transport-parameter storage classification table, exclusion of
+prohibited remembered values, retention of processable peer transport
+parameters in the detached-ticket 0-RTT subset, and failure to enable dormant
+0-RTT readiness when a ticket carries only prohibited remembered values.
+Regenerated coverage triage marks those three requirements as `trace_clean`
+and reports 1,264 of 1,771 QUIC requirements trace-clean overall, leaving 507
+non-clean. `S7P4P1` now has ten remaining non-clean requirements:
+`REQ-QUIC-RFC9000-S7P4P1-0003` and `REQ-QUIC-RFC9000-S7P4P1-0005` through
+`REQ-QUIC-RFC9000-S7P4P1-0013`. This closure does not claim server 0-RTT
+acceptance or rejection policy, restored transport-parameter support checks,
+updated transport-parameter violation handling, TLS `early_data` extension
+support, public early-data APIs, anti-replay behavior, or application-data
+delivery.
 
 Follow-on S18P2 max_ack_delay alarm-slack policy closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S18P2-0015` under

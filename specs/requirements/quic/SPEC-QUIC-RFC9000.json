@@ -9163,17 +9163,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0068"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0068"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0068"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0001.cs::KnownTransportParameterDefinitionsSpecifyZeroRttStoragePolicy"
         ]
       }
     },
@@ -9189,17 +9195,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0068"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0068"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0068"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs::ZeroRttRememberedParametersExcludeProhibitedHandshakeValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs::AckDelayExponentIsClassifiedAsProhibitedEvenThoughTheRuntimeDoesNotModelIt"
         ]
       }
     },
@@ -9241,17 +9254,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0068"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0068"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0068"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0004.cs::DetachedTicketSnapshotRemembersProcessablePeerTransportParametersForZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0004.cs::DetachedTicketSnapshotWithoutProcessablePeerTransportParametersDoesNotEnableZeroRttReadiness"
         ]
       }
     },
