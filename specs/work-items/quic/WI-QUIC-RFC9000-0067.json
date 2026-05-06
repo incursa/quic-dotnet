@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0067",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Maximum ACK Delay Alarm Slack Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0067",
+    "VER-QUIC-RFC9000-0067"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0015"
+  ],
+  "summary": "Close the RFC 9000 Section 18.2 max_ack_delay alarm-delay policy gap by making the runtime default explicitly include expected alarm-firing delay and by adding focused requirement-home proof.",
+  "planned_changes": "- Add a centralized QuicMaxAckDelayPolicy that composes intentional ACK-delay budget with expected alarm-firing delay.\n- Preserve the existing 25,000 microsecond default ACK-delay behavior while making the 1,000 microsecond alarm-firing component explicit.\n- Retarget QuicConnectionRuntime's absent-local-parameter fallback to the policy default.\n- Add focused S18P2-0015 requirement-home tests for default composition, absent-parameter ACK timer scheduling, explicit composed ACK timer scheduling, and saturating composition.\n- Retarget REQ-QUIC-RFC9000-S18P2-0015 trace links away from broad transport-parameter codec tests.",
+  "verification_plan": "Run a Release build, run the focused S18P2-0015 and S13P2P1 ACK-delay requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0067"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0067"
+  ],
+  "out_of_scope": [
+    "Public max_ack_delay configuration APIs.",
+    "Transport-parameter wire serialization changes.",
+    "Broader Section 18.2 closure outside REQ-QUIC-RFC9000-S18P2-0015.",
+    "ACK delay exponent, RTT estimator, or PTO policy changes.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused runtime policy and requirement-home proof for REQ-QUIC-RFC9000-S18P2-0015."
+}

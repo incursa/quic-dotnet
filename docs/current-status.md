@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S18P2 max_udp_payload_size receiver limit,
+Last verified: 2026-05-06 for the S18P2 max_ack_delay alarm-slack policy,
+S18P2 max_udp_payload_size receiver limit,
 S18P2 initial_max_data runtime commit,
 S18P2 max_idle_timeout trace cleanup, S22P1P1 provisional-registration policy
 closeout, S18P2 preferred-address field-shape, disable-active-migration, and
@@ -14,6 +15,22 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S18P2 max_ack_delay alarm-slack policy closure on 2026-05-06 closes
+`REQ-QUIC-RFC9000-S18P2-0015` under
+`ARC-QUIC-RFC9000-0067`, `WI-QUIC-RFC9000-0067`, and
+`VER-QUIC-RFC9000-0067`. The proof covers a centralized runtime
+`max_ack_delay` default composed from intentional ACK-delay budget plus expected
+alarm-firing delay, preservation of the existing 25 millisecond behavior,
+absent-local-parameter ACK timer scheduling at that composed default, explicit
+composed-value ACK timer scheduling, and saturating composition. Regenerated
+coverage triage marks `REQ-QUIC-RFC9000-S18P2-0015` as `trace_clean` and
+reports 1,261 of 1,771 QUIC requirements trace-clean overall, leaving 510
+non-clean. `S18P2` has no remaining non-clean requirements in generated triage.
+This closure does not claim public `max_ack_delay` configuration APIs,
+transport-parameter wire serialization changes, ACK delay exponent or PTO
+policy changes, broader Section 18.2 closure outside the now-clean generated
+requirement set, or hosted interop readiness.
 
 Follow-on S18P2 max_udp_payload_size receiver-limit closure on 2026-05-06
 closes `REQ-QUIC-RFC9000-S18P2-0007` under
@@ -64,10 +81,9 @@ Expert Review, Date handling, common support fields, optional Specification and
 Notes for provisional registrations, and the corrected `0001` request-minimum
 wording. This is registry-process metadata only.
 
-For the current S18P2 tail, pick up next from generated triage. The remaining
-hard lanes are `REQ-QUIC-RFC9000-S18P2-0007` for `max_udp_payload_size`
-receiver processing and `REQ-QUIC-RFC9000-S18P2-0015` for `max_ack_delay`
-alarm-delay policy.
+For the current S18P2 tail, generated triage now has no remaining non-clean
+`S18P2` requirements. Pick the next hard lane from generated triage rather than
+reopening the Section 18.2 tail without new evidence.
 
 ## 2026-05-05 Restart Note
 

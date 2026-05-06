@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0067",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Maximum ACK Delay Alarm Slack Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime policy that makes the local max_ack_delay default explicitly include expected alarm-firing delay.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0067",
+    "VER-QUIC-RFC9000-0067"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0015"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicMaxAckDelayPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs"
+  ],
+  "design_summary": "The runtime now centralizes the default local max_ack_delay in QuicMaxAckDelayPolicy. The default remains 25,000 microseconds for behavioral compatibility, but it is expressed as a 24,000-microsecond intentional ACK delay plus a 1,000-microsecond expected alarm-firing delay. Runtime ACK-delay scheduling continues to consume the composed local max_ack_delay value, either from local transport parameters when present or from the policy default when absent.",
+  "data_and_state_considerations": "The policy is stateless and represented in microseconds because the existing runtime ACK-delay path and tests already operate on elapsed microsecond budgets. The composition helper saturates at ulong.MaxValue so extreme configured components cannot wrap into a smaller advertised delay budget.",
+  "edge_cases_and_constraints": [
+    "The default local max_ack_delay remains 25 milliseconds to avoid changing existing ACK timing behavior.",
+    "The expected alarm-firing delay is explicit and non-zero in the default policy.",
+    "Explicit local max_ack_delay values that already include alarm slack are consumed unchanged by the ACK-delay timer path.",
+    "Composing large intentional-delay and alarm-delay components saturates rather than overflowing."
+  ],
+  "risks": [
+    "This slice does not introduce a public max_ack_delay configuration API.",
+    "This slice does not change transport-parameter wire serialization or resolve broader unit-conversion questions outside the runtime's current microsecond ACK-delay model.",
+    "No parser, serializer, encoder, or decoder is introduced. Existing transport-parameter codec proof remains separate."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes REQ-QUIC-RFC9000-S18P2-0015 by making the runtime's local max_ack_delay default explicitly include expected alarm-firing delay and by proving the ACK-delay timer uses the composed value."
+    }
+  ]
+}
