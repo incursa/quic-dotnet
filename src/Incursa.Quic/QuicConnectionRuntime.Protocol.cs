@@ -28,6 +28,13 @@ internal sealed partial class QuicConnectionRuntime
             "1",
             StringComparison.Ordinal);
 
+    private enum QuicWeaklyProtectedPacketPayloadValidationResult
+    {
+        Process,
+        Discard,
+        ConnectionError,
+    }
+
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
         long nowTicks,
@@ -399,9 +406,20 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-        if (ShouldDiscardInvalidInitialPayload(payload))
+        QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
+            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Initial);
+        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
         {
             return false;
+        }
+
+        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer sent a frame in a weakly protected packet type that is not permitted.",
+                ref effects);
         }
 
         byte[]? acceptedPeerInitialSourceConnectionId = null;
@@ -482,9 +500,12 @@ internal sealed partial class QuicConnectionRuntime
         return processed;
     }
 
-    private static bool ShouldDiscardInvalidInitialPayload(ReadOnlySpan<byte> payload)
+    private static QuicWeaklyProtectedPacketPayloadValidationResult ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(
+        ReadOnlySpan<byte> payload,
+        QuicTlsEncryptionLevel encryptionLevel)
     {
         int payloadOffset = 0;
+        bool observedProcessablePrefix = false;
         while (payloadOffset < payload.Length)
         {
             ReadOnlySpan<byte> remaining = payload[payloadOffset..];
@@ -492,10 +513,11 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (paddingBytesConsumed <= 0)
                 {
-                    return true;
+                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
                 }
 
                 payloadOffset += paddingBytesConsumed;
+                observedProcessablePrefix = true;
                 continue;
             }
 
@@ -503,10 +525,11 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (pingBytesConsumed <= 0)
                 {
-                    return true;
+                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
                 }
 
                 payloadOffset += pingBytesConsumed;
+                observedProcessablePrefix = true;
                 continue;
             }
 
@@ -514,41 +537,54 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (ackBytesConsumed <= 0)
                 {
-                    return true;
+                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
                 }
 
                 payloadOffset += ackBytesConsumed;
+                observedProcessablePrefix = true;
                 continue;
             }
 
             if (QuicFrameCodec.TryParseConnectionCloseFrame(
                     remaining,
-                    out _,
+                    out QuicConnectionCloseFrame connectionCloseFrame,
                     out int connectionCloseBytesConsumed))
             {
                 if (connectionCloseBytesConsumed <= 0)
                 {
-                    return true;
+                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
                 }
 
-                return false;
+                return connectionCloseFrame.IsApplicationError
+                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
+                    : QuicWeaklyProtectedPacketPayloadValidationResult.Process;
             }
 
             if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
             {
                 if (cryptoBytesConsumed <= 0)
                 {
-                    return true;
+                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
                 }
 
                 payloadOffset += cryptoBytesConsumed;
+                observedProcessablePrefix = true;
                 continue;
             }
 
-            return true;
+            if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
+                && frameTypeBytesConsumed > 0
+                && IsHandshakePacketForbiddenFrameType(frameType))
+            {
+                return encryptionLevel == QuicTlsEncryptionLevel.Handshake || observedProcessablePrefix
+                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
+                    : QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
+            }
+
+            return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
         }
 
-        return false;
+        return QuicWeaklyProtectedPacketPayloadValidationResult.Process;
     }
 
     private bool TryResetClientPeerHandshakeAttempt(
@@ -732,8 +768,25 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
+            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Handshake);
+        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
+        {
+            return false;
+        }
+
+        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer sent a frame in a weakly protected packet type that is not permitted.",
+                ref effects);
+        }
+
         bool processed = TryProcessHandshakePacketPayload(
-            openedPacket.AsSpan(payloadOffset, payloadLength),
+            payload,
             QuicTlsEncryptionLevel.Handshake,
             nowTicks,
             ref effects);

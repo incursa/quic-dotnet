@@ -83,6 +83,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0070.json`](WI-QUIC-RFC9000-0070.json): canonical RFC 9000 client 0-RTT handshake value supersession policy work-item source
 - [`WI-QUIC-RFC9000-0071.json`](WI-QUIC-RFC9000-0071.json): canonical RFC 9000 client 0-RTT updated transport-parameter packet-use policy work-item source
 - [`WI-QUIC-RFC9000-0072.json`](WI-QUIC-RFC9000-0072.json): canonical RFC 9000 packet classification and connection association work-item source
+- [`WI-QUIC-RFC9000-0073.json`](WI-QUIC-RFC9000-0073.json): canonical RFC 9000 weakly protected packet failure policy work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

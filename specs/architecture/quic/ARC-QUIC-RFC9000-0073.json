@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0073",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Weakly Protected Packet Failure Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded S5P2 runtime policy for packet-protection open failures and weakly protected Initial and Handshake payload validation before mutable processing.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0072",
+    "WI-QUIC-RFC9000-0073",
+    "VER-QUIC-RFC9000-0073"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P2-0010",
+    "REQ-QUIC-RFC9000-S5P2-0012",
+    "REQ-QUIC-RFC9000-S5P2-0013"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2PacketAssociationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs"
+  ],
+  "design_summary": "The runtime treats packet-protection open failure as a discard once the matching Initial or Handshake keys are available. After a weakly protected packet opens, Initial and Handshake payloads are pre-validated before TLS crypto buffering, transcript advancement, ACK handling, or frame-specific side effects. Permitted control frames and CRYPTO frames can proceed; forbidden frames produce a local PROTOCOL_VIOLATION close. Malformed payloads that cannot be classified before processing remain discardable.",
+  "data_and_state_considerations": "Payload pre-validation is intentionally placed after packet protection opens and before TryProcessHandshakePacketPayload mutates TLS ingress buffers, transcript state, recovery state, or connection-close state. This makes rollback explicit by preventing mutable content processing for weakly protected invalid payloads instead of trying to repair partial side effects later.",
+  "edge_cases_and_constraints": [
+    "Initial packet authentication-tag failure leaves TLS ingress buffers and terminal state unchanged.",
+    "Handshake packet authentication failure with current keys does not commit transport parameters or defer the packet for retry.",
+    "Forbidden frames after otherwise valid weakly protected payload prefixes close with PROTOCOL_VIOLATION before the prefix mutates runtime state."
+  ],
+  "risks": [
+    "Future Initial or Handshake frame allowances must update the shared weakly protected payload pre-validation table and the Section 12.4 requirement homes together.",
+    "Deferred replacement Handshake buffering remains valid only for packets whose expected replacement keys are not available yet."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S5P2 weak-protection failure tail only. It does not claim broader packet-protection cryptographic correctness, Retry integrity validation changes, Version Negotiation behavior changes, public API widening, or hosted interop readiness."
+    }
+  ]
+}

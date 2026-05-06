@@ -6716,17 +6716,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0073"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0073"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0073"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2 RFC9000-S5.2-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred"
         ]
       }
     },
@@ -6774,17 +6782,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0073"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0073"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0073"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2 RFC9000-S5.2-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation"
         ]
       }
     },
@@ -6800,17 +6815,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0073"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0073"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0073"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2 RFC9000-S5.2-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::HandshakePacketPreValidationRevertsPotentialCryptoSideEffects"
         ]
       }
     },

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T23:19:14.3341602-06:00",
+  "generated_at": "2026-05-05T23:40:58.3822593-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T23:19:14.3299517-06:00",
+    "generated_at": "2026-05-05T23:40:58.3789987-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 57,
       "covered_but_proof_too_broad": 48,
       "partially_covered": 145,
-      "trace_clean": 1283,
+      "trace_clean": 1286,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 167
+      "uncovered_unblocked": 164
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1283,
+      "clean": 1286,
       "metadata_only": 57,
-      "new_tests_needed": 424,
+      "new_tests_needed": 421,
       "restructure_needed": 69
     },
     "by_rfc": [
@@ -50,9 +50,9 @@
           "covered_but_missing_xrefs": 57,
           "covered_but_proof_too_broad": 48,
           "partially_covered": 145,
-          "trace_clean": 970,
+          "trace_clean": 973,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 167
+          "uncovered_unblocked": 164
         }
       },
       {
@@ -183513,35 +183513,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenSuccessProcessesPermittedPacketContents",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred",
+          "method": "HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred",
+          "line": 73,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred",
+          "method": "HandshakePacketOpenFailureWithAvailableKeysIsNotDeferred",
+          "line": 73,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "method": "InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "method": "InitialPacketOpenFailureWithAvailableKeysDiscardsPacketContents",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "method": "InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs::InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0010",
+          "member": "REQ_QUIC_RFC9000_S5P2_0010.InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "method": "InitialPacketOpenSuccessProcessesPermittedPacketContents",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2-0011",
@@ -183640,34 +183773,123 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0012",
+          "member": "REQ_QUIC_RFC9000_S5P2_0012.HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "method": "HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0012",
+          "member": "REQ_QUIC_RFC9000_S5P2_0012.HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "method": "HandshakePacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0012",
+          "member": "REQ_QUIC_RFC9000_S5P2_0012.InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "method": "InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs::InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0012",
+          "member": "REQ_QUIC_RFC9000_S5P2_0012.InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "method": "InitialPacketWithValidPrefixBeforeForbiddenFrameGeneratesProtocolViolation",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
@@ -183682,34 +183904,123 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::HandshakePacketPreValidationRevertsPotentialCryptoSideEffects"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0013",
+          "member": "REQ_QUIC_RFC9000_S5P2_0013.HandshakePacketPreValidationRevertsPotentialCryptoSideEffects",
+          "method": "HandshakePacketPreValidationRevertsPotentialCryptoSideEffects",
+          "line": 42,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::HandshakePacketPreValidationRevertsPotentialCryptoSideEffects",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0013",
+          "member": "REQ_QUIC_RFC9000_S5P2_0013.HandshakePacketPreValidationRevertsPotentialCryptoSideEffects",
+          "method": "HandshakePacketPreValidationRevertsPotentialCryptoSideEffects",
+          "line": 42,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0013",
+          "member": "REQ_QUIC_RFC9000_S5P2_0013.InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "method": "InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs::InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2_0013",
+          "member": "REQ_QUIC_RFC9000_S5P2_0013.InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "method": "InitialPacketPreValidationRevertsPotentialCryptoSideEffects",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0001",

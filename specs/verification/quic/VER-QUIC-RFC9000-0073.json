@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0073",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Weakly Protected Packet Failure Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0073",
+    "WI-QUIC-RFC9000-0073"
+  ],
+  "verification_method": "Focused S5P2 requirement-home tests over Initial and Handshake packet-protection open failure, forbidden weakly protected payload connection-error generation, and pre-validation side-effect rollback, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S5P2-0010",
+    "REQ-QUIC-RFC9000-S5P2-0012",
+    "REQ-QUIC-RFC9000-S5P2-0013"
+  ],
+  "scope": "This verification covers the remaining S5P2 weak-protection failure-policy tail after the endpoint packet classification and association floor.",
+  "expected_result": "The focused tests show Initial and Handshake packet-protection open failures are discarded once keys are available, Handshake open failures are not deferred for retry when current keys apply, forbidden weakly protected payload frames generate PROTOCOL_VIOLATION, and pre-validation prevents crypto-buffer or transcript side effects from surviving those invalid packets.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S5P2 tail requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The packet classification and association floor under ARC-QUIC-RFC9000-0072 remains closed.",
+    "Initial and Handshake packet frame allowance remains aligned with RFC 9000 Section 12.4 requirement homes."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2PacketAssociationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0013.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0013\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S11P1_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0021\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim broader packet-protection cryptographic correctness, Retry integrity validation changes, Version Negotiation behavior changes, public API widening, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S5P2 weak-protection tail filter passed 7/7, the focused S5P2 plus S11/S17 regression guard passed 9/9, regenerated coverage triage marks REQ-QUIC-RFC9000-S5P2-0010, REQ-QUIC-RFC9000-S5P2-0012, and REQ-QUIC-RFC9000-S5P2-0013 trace_clean and reports 1,286 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 463 artifacts, the full Release no-build suite passed 4,522/4,522, and git diff --check returned exit code 0 with line-ending warnings only."
+}

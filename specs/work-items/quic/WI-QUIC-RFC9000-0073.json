@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0073",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Weakly Protected Packet Failure Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0073",
+    "VER-QUIC-RFC9000-0073"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P2-0010",
+    "REQ-QUIC-RFC9000-S5P2-0012",
+    "REQ-QUIC-RFC9000-S5P2-0013"
+  ],
+  "summary": "Close the remaining S5P2 weak-protection tail by proving packet-protection open failures are discarded and weakly protected invalid payloads generate PROTOCOL_VIOLATION without retaining partial content-processing side effects.",
+  "planned_changes": "- Add shared S5P2 packet-protection test helpers.\n- Add focused tests for Initial and Handshake packet open failure discard with keys available.\n- Add focused tests for forbidden weakly protected payload frames after valid prefixes generating PROTOCOL_VIOLATION.\n- Pre-validate Initial and Handshake payloads before mutating TLS crypto buffers or transcript state.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run a Release build, run the focused S5P2 tail requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0073"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0073"
+  ],
+  "out_of_scope": [
+    "Broad packet-protection cryptographic correctness beyond runtime failure handling.",
+    "Retry integrity validation changes.",
+    "Version Negotiation behavior changes.",
+    "Public API widening.",
+    "Hosted interop readiness."
+  ],
+  "completion_notes": "Completed as a focused runtime failure-policy proof for REQ-QUIC-RFC9000-S5P2-0010, REQ-QUIC-RFC9000-S5P2-0012, and REQ-QUIC-RFC9000-S5P2-0013."
+}
