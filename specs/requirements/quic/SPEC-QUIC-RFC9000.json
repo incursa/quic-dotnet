@@ -4306,17 +4306,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0079"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0079"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0079"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0001.cs::TryReceiveStreamFrame_AcceptsStreamsWithinTheCumulativeIncomingLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0001.cs::TryReceiveStreamFrame_LimitsTheCumulativeNumberOfIncomingStreams"
         ]
       }
     },
@@ -4436,17 +4443,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0078"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0078"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0078"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs::PeerTransportParameterCommit_AcceptsInitialMaxStreamsAtTheEncodingLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs::PeerTransportParameterCommit_ClosesOnOversizedInitialMaxStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit"
         ]
       }
     },
@@ -4462,17 +4477,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0078"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0078"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0078"
         ],
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
         ]
       }
     },

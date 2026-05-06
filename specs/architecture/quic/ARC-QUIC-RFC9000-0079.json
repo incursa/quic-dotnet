@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0079",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S4P6 Cumulative Incoming Stream Limit Tail",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S4P6 closure for cumulative incoming stream-count admission.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0076",
+    "WI-QUIC-RFC9000-0079",
+    "VER-QUIC-RFC9000-0079"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S4P6-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0001.cs"
+  ],
+  "design_summary": "Incoming stream admission treats the advertised stream count as a cumulative per-direction cap and accepts a peer stream only when its derived stream index remains below the current incoming limit. Lower-numbered incoming streams of the same type are opened as part of the cumulative sequence before the target STREAM frame is admitted.",
+  "data_and_state_considerations": "The stream registry derives the stream index by shifting the stream ID by two bits, selects the matching bidirectional or unidirectional incoming limit, rejects indexes greater than or equal to that limit with STREAM_LIMIT_ERROR, and creates missing lower-index peer streams in order when the target is within the cumulative limit.",
+  "edge_cases_and_constraints": [
+    "The second incoming stream of each peer-initiated direction is accepted when the advertised cumulative limit is two.",
+    "A valid higher-index incoming STREAM frame creates the lower-numbered peer stream before admitting the target stream.",
+    "The existing negative proof continues to reject an incoming stream whose derived index is outside the advertised cumulative limit."
+  ],
+  "risks": [
+    "This slice does not add automatic stream-limit autotuning.",
+    "This slice does not broaden public stream API support.",
+    "This slice does not change MAX_STREAMS close-policy behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S4P6 cumulative incoming-stream admission tail for REQ-QUIC-RFC9000-S4P6-0001 only. It does not claim max_streams oversized close-policy proof, metadata-only S4P6 xref cleanup, automatic stream-limit autotuning, public API widening, or hosted interop readiness."
+    }
+  ]
+}

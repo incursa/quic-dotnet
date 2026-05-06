@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0079",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S4P6 Cumulative Incoming Stream Limit Tail Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0079",
+    "VER-QUIC-RFC9000-0079"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P6-0001"
+  ],
+  "summary": "Close the S4P6 cumulative incoming-stream admission tail by proving incoming STREAM frames within the advertised cumulative stream-count limit are accepted.",
+  "planned_changes": "- Add focused positive requirement-home proof for cumulative incoming stream admission within the advertised limit.\n- Link the focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S4P6 cumulative incoming-stream requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0079"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0079"
+  ],
+  "out_of_scope": [
+    "Max_streams oversized transport-parameter and frame close-policy proof.",
+    "Metadata-only S4P6 xref cleanup for REQ-QUIC-RFC9000-S4P6-0002 through REQ-QUIC-RFC9000-S4P6-0005.",
+    "Automatic stream-limit autotuning.",
+    "Public stream API widening.",
+    "Hosted interop readiness."
+  ],
+  "completion_notes": "Completed as a focused S4P6 proof for REQ-QUIC-RFC9000-S4P6-0001."
+}

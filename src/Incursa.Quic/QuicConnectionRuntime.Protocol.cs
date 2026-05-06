@@ -4,6 +4,7 @@ namespace Incursa.Quic;
 internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
+    private const ulong MaximumStreamLimit = 1UL << 60;
     // RFC 9000 section 12.4 allows only the narrow Initial/Handshake control-frame set.
     private const ulong ResetStreamFrameType = 0x04UL;
     private const ulong HandshakePacketResetStreamFrameType = ResetStreamFrameType;
@@ -3438,6 +3439,16 @@ internal sealed partial class QuicConnectionRuntime
         QuicTransportParameterRole receiverRole = tlsState.Role == QuicTlsRole.Client
             ? QuicTransportParameterRole.Client
             : QuicTransportParameterRole.Server;
+
+        if (peerTransportParameters.InitialMaxStreamsBidi is > MaximumStreamLimit
+            || peerTransportParameters.InitialMaxStreamsUni is > MaximumStreamLimit)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.TransportParameterError,
+                "The peer transport parameters carried an oversized initial max_streams value.",
+                ref effects);
+        }
 
         if (receiverRole == QuicTransportParameterRole.Client
             && !QuicTransportParametersCodec.TryValidateServerPreferredAddressConnectionIdConstraints(peerTransportParameters))

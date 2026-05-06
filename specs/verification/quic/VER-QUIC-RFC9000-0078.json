@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0078",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S4P6 Max Streams Oversized Close Policy Tail Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0078",
+    "WI-QUIC-RFC9000-0078"
+  ],
+  "verification_method": "Focused S4P6 requirement-home tests over initial max_streams transport-parameter boundary handling and MAX_STREAMS oversized-frame close behavior, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S4P6-0006",
+    "REQ-QUIC-RFC9000-S4P6-0007"
+  ],
+  "scope": "This verification covers the generated non-clean S4P6 max_streams oversized close-policy tail for REQ-QUIC-RFC9000-S4P6-0006 and REQ-QUIC-RFC9000-S4P6-0007.",
+  "expected_result": "The focused tests show valid 2^60 initial max_streams transport-parameter values commit without closing, oversized typed initial max_streams values close with TRANSPORT_PARAMETER_ERROR, valid 2^60 MAX_STREAMS frame values parse and format, and protected oversized MAX_STREAMS frames close with FRAME_ENCODING_ERROR.",
+  "procedure": [
+    "Run the focused S4P6 hard-tail requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The S4P6 MAX_STREAMS monotonic update tail remains closed under ARC-QUIC-RFC9000-0077.",
+    "The base stream-state model remains owned by ARC-QUIC-RFC9000-0001."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0007\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim cumulative incoming-stream admission proof, metadata-only S4P6 xref cleanup, automatic stream-limit autotuning, public stream API widening, hosted interop readiness, or closure of deferred S4P6-0006 and S4P6-0007 fuzz expectations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S4P6-0006/0007 requirement-home filter 8/8, combined S4P6 hard-tail filter 11/11, Release build 0 warnings and 0 errors, regenerated QUIC coverage triage at 1,304 of 1,771 trace-clean with S4P6-0006 and S4P6-0007 trace-clean, SpecTrace core validation 481 artifacts, full Release no-build suite 4,564/4,564, and git diff --check."
+}

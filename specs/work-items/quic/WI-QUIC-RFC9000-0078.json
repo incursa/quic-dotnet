@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0078",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S4P6 Max Streams Oversized Close Policy Tail Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0078",
+    "VER-QUIC-RFC9000-0078"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P6-0006",
+    "REQ-QUIC-RFC9000-S4P6-0007"
+  ],
+  "summary": "Close the S4P6 max_streams oversized close-policy tail by proving initial max_streams transport-parameter boundary handling and protected MAX_STREAMS oversized-frame close behavior.",
+  "planned_changes": "- Add focused runtime and codec proof for accepting initial max_streams at the 2^60 boundary and closing typed oversized transport-parameter inputs with TRANSPORT_PARAMETER_ERROR.\n- Add focused parser and protected Application Data proof for accepting valid MAX_STREAMS boundary values and closing oversized MAX_STREAMS frames with FRAME_ENCODING_ERROR.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S4P6 hard-tail requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0078"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0078"
+  ],
+  "out_of_scope": [
+    "Cumulative incoming-stream admission proof for REQ-QUIC-RFC9000-S4P6-0001.",
+    "Metadata-only S4P6 xref cleanup for REQ-QUIC-RFC9000-S4P6-0002 through REQ-QUIC-RFC9000-S4P6-0005.",
+    "Automatic stream-limit autotuning.",
+    "Public stream API widening.",
+    "Hosted interop readiness.",
+    "Closing the deferred S4P6-0006 and S4P6-0007 fuzz expectations."
+  ],
+  "completion_notes": "Completed as a focused S4P6 proof for REQ-QUIC-RFC9000-S4P6-0006 and REQ-QUIC-RFC9000-S4P6-0007."
+}

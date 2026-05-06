@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0078",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S4P6 Max Streams Oversized Close Policy Tail",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S4P6 closure for oversized max_streams transport-parameter and MAX_STREAMS frame close behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0077",
+    "WI-QUIC-RFC9000-0078",
+    "VER-QUIC-RFC9000-0078"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S4P6-0006",
+    "REQ-QUIC-RFC9000-S4P6-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs"
+  ],
+  "design_summary": "Transport-parameter and MAX_STREAMS frame values are bounded at 2^60. Valid boundary values are accepted and committed, while oversized typed transport-parameter values fail closed with TRANSPORT_PARAMETER_ERROR and malformed protected MAX_STREAMS application frames fail closed with FRAME_ENCODING_ERROR.",
+  "data_and_state_considerations": "Peer initial max_streams values are validated before being committed to the stream registry so invalid typed TLS bridge inputs cannot inflate peer stream limits. The protected Application Data parser identifies malformed MAX_STREAMS frame types even when full frame parsing fails and carries the triggering frame type into the close metadata.",
+  "edge_cases_and_constraints": [
+    "The 2^60 initial max_streams transport-parameter boundary commits without closing.",
+    "An initial max_streams value above 2^60 closes through TRANSPORT_PARAMETER_ERROR before stream-limit mutation.",
+    "A protected Application Data MAX_STREAMS frame carrying a value above 2^60 closes through FRAME_ENCODING_ERROR for both bidirectional and unidirectional frame types."
+  ],
+  "risks": [
+    "This slice does not add automatic stream-limit autotuning.",
+    "This slice does not broaden public stream API support.",
+    "The S4P6-0006 and S4P6-0007 fuzz expectations remain deferred."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S4P6 max_streams oversized close-policy tail for REQ-QUIC-RFC9000-S4P6-0006 and REQ-QUIC-RFC9000-S4P6-0007 only. It does not claim cumulative incoming-stream admission proof, metadata-only S4P6 xref cleanup, automatic stream-limit autotuning, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ]
+}

@@ -97,6 +97,8 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0075.json`](ARC-QUIC-RFC9000-0075.json): canonical RFC 9000 connection-ID Retry sequencing and migration pool tail design source
 - [`ARC-QUIC-RFC9000-0076.json`](ARC-QUIC-RFC9000-0076.json): canonical RFC 9000 stream-limit enforcement and blocked open tail design source
 - [`ARC-QUIC-RFC9000-0077.json`](ARC-QUIC-RFC9000-0077.json): canonical RFC 9000 MAX_STREAMS monotonic limit update tail design source
+- [`ARC-QUIC-RFC9000-0078.json`](ARC-QUIC-RFC9000-0078.json): canonical RFC 9000 max_streams oversized close policy tail design source
+- [`ARC-QUIC-RFC9000-0079.json`](ARC-QUIC-RFC9000-0079.json): canonical RFC 9000 cumulative incoming stream limit tail design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source
