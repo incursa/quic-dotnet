@@ -9287,17 +9287,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0069"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0069"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0069"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate"
         ]
       }
     },
@@ -9313,17 +9320,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0069"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0069"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0069"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit"
         ]
       }
     },
@@ -9339,17 +9353,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0069"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0069"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0069"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B15-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt"
         ]
       }
     },
@@ -9365,17 +9387,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0069"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0069"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0069"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B17-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs::ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter"
         ]
       }
     },
@@ -9391,17 +9419,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0069"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0069"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0069"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B18-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable"
         ]
       }
     },

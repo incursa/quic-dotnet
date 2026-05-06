@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0069",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Server 0-RTT Transport Parameter Acceptance Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0069",
+    "VER-QUIC-RFC9000-0069"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "REQ-QUIC-RFC9000-S7P4P1-0006",
+    "REQ-QUIC-RFC9000-S7P4P1-0007",
+    "REQ-QUIC-RFC9000-S7P4P1-0008",
+    "REQ-QUIC-RFC9000-S7P4P1-0009"
+  ],
+  "summary": "Close the bounded server 0-RTT transport-parameter acceptance policy floor by comparing remembered client values to current server values and rejecting unsupported, reduced, or missing restored parameters.",
+  "planned_changes": "- Extend QuicZeroRttTransportParameterPolicy with a server acceptance decision over remembered and current transport parameters.\n- Reject reductions to required 0-RTT Section 18.2 limits and restored optional max_idle_timeout, max_udp_payload_size, and disable_active_migration values.\n- Add a non-zero client application-data allowance helper for 0-RTT-relevant flow-control and stream-count parameters.\n- Add focused S7P4P1 0005 through 0009 requirement-home tests for positive, negative, and edge coverage.\n- Retarget S7P4P1 0005 through 0009 trace links to focused proof.",
+  "verification_plan": "Run a Release build, run the focused S7P4P1 and CRT early-data guard filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0069"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0069"
+  ],
+  "out_of_scope": [
+    "REQ-QUIC-RFC9000-S7P4P1-0003 client new-value and default-value consumption.",
+    "REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013 updated-value-in-0-RTT sender and receiver enforcement.",
+    "Public 0-RTT or early-data APIs.",
+    "TLS early_data extension admission wiring.",
+    "Server anti-replay or application-data delivery."
+  ],
+  "completion_notes": "Completed as a focused internal server 0-RTT transport-parameter acceptance policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-S7P4P1-0009."
+}

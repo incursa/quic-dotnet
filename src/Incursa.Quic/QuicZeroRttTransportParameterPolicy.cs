@@ -12,6 +12,31 @@ internal readonly record struct QuicZeroRttTransportParameterDefinition(
     string Name,
     QuicZeroRttTransportParameterMemoryRequirement MemoryRequirement);
 
+internal enum QuicZeroRttTransportParameterAcceptanceFailure
+{
+    None = 0,
+    MissingRememberedParameters = 1,
+    MissingCurrentParameters = 2,
+    ReducedRequiredLimit = 3,
+    ReducedOptionalValue = 4,
+}
+
+internal readonly record struct QuicZeroRttTransportParameterAcceptanceDecision(
+    bool CanAccept,
+    QuicZeroRttTransportParameterAcceptanceFailure Failure,
+    string? ParameterName)
+{
+    internal static QuicZeroRttTransportParameterAcceptanceDecision Accept { get; } =
+        new(true, QuicZeroRttTransportParameterAcceptanceFailure.None, null);
+
+    internal static QuicZeroRttTransportParameterAcceptanceDecision Reject(
+        QuicZeroRttTransportParameterAcceptanceFailure failure,
+        string parameterName)
+    {
+        return new(false, failure, parameterName);
+    }
+}
+
 internal static class QuicZeroRttTransportParameterPolicy
 {
     internal const ulong OriginalDestinationConnectionIdId = 0x00;
@@ -95,6 +120,136 @@ internal static class QuicZeroRttTransportParameterPolicy
         return HasRememberedValue(remembered) ? remembered : null;
     }
 
+    internal static QuicZeroRttTransportParameterAcceptanceDecision EvaluateServerZeroRttAcceptance(
+        QuicTransportParameters? rememberedTransportParameters,
+        QuicTransportParameters? currentServerTransportParameters)
+    {
+        if (rememberedTransportParameters is null)
+        {
+            return QuicZeroRttTransportParameterAcceptanceDecision.Reject(
+                QuicZeroRttTransportParameterAcceptanceFailure.MissingRememberedParameters,
+                "remembered_transport_parameters");
+        }
+
+        if (currentServerTransportParameters is null)
+        {
+            return QuicZeroRttTransportParameterAcceptanceDecision.Reject(
+                QuicZeroRttTransportParameterAcceptanceFailure.MissingCurrentParameters,
+                "current_server_transport_parameters");
+        }
+
+        QuicZeroRttTransportParameterAcceptanceDecision requiredDecision =
+            RejectIfRequiredLimitReduced(
+                "active_connection_id_limit",
+                EffectiveActiveConnectionIdLimit(rememberedTransportParameters),
+                EffectiveActiveConnectionIdLimit(currentServerTransportParameters));
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_data",
+            rememberedTransportParameters.InitialMaxData ?? 0,
+            currentServerTransportParameters.InitialMaxData ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_stream_data_bidi_local",
+            rememberedTransportParameters.InitialMaxStreamDataBidiLocal ?? 0,
+            currentServerTransportParameters.InitialMaxStreamDataBidiLocal ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_stream_data_bidi_remote",
+            rememberedTransportParameters.InitialMaxStreamDataBidiRemote ?? 0,
+            currentServerTransportParameters.InitialMaxStreamDataBidiRemote ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_stream_data_uni",
+            rememberedTransportParameters.InitialMaxStreamDataUni ?? 0,
+            currentServerTransportParameters.InitialMaxStreamDataUni ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_streams_bidi",
+            rememberedTransportParameters.InitialMaxStreamsBidi ?? 0,
+            currentServerTransportParameters.InitialMaxStreamsBidi ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        requiredDecision = RejectIfRequiredLimitReduced(
+            "initial_max_streams_uni",
+            rememberedTransportParameters.InitialMaxStreamsUni ?? 0,
+            currentServerTransportParameters.InitialMaxStreamsUni ?? 0);
+        if (!requiredDecision.CanAccept)
+        {
+            return requiredDecision;
+        }
+
+        QuicZeroRttTransportParameterAcceptanceDecision optionalDecision =
+            RejectIfRememberedOptionalValueReduced(
+                "max_idle_timeout",
+                rememberedTransportParameters.MaxIdleTimeout,
+                currentServerTransportParameters.MaxIdleTimeout ?? 0);
+        if (!optionalDecision.CanAccept)
+        {
+            return optionalDecision;
+        }
+
+        optionalDecision = RejectIfRememberedOptionalValueReduced(
+            "max_udp_payload_size",
+            rememberedTransportParameters.MaxUdpPayloadSize,
+            currentServerTransportParameters.MaxUdpPayloadSize ?? QuicTransportParameters.DefaultMaxUdpPayloadSize);
+        if (!optionalDecision.CanAccept)
+        {
+            return optionalDecision;
+        }
+
+        if (rememberedTransportParameters.DisableActiveMigration
+            && !currentServerTransportParameters.DisableActiveMigration)
+        {
+            return QuicZeroRttTransportParameterAcceptanceDecision.Reject(
+                QuicZeroRttTransportParameterAcceptanceFailure.ReducedOptionalValue,
+                "disable_active_migration");
+        }
+
+        return QuicZeroRttTransportParameterAcceptanceDecision.Accept;
+    }
+
+    internal static bool HasNonZeroClientApplicationDataAllowance(QuicTransportParameters transportParameters)
+    {
+        ArgumentNullException.ThrowIfNull(transportParameters);
+
+        if ((transportParameters.InitialMaxData ?? 0) == 0)
+        {
+            return false;
+        }
+
+        bool bidirectionalClientDataAllowed =
+            (transportParameters.InitialMaxStreamsBidi ?? 0) > 0
+            && (transportParameters.InitialMaxStreamDataBidiRemote ?? 0) > 0;
+        bool unidirectionalClientDataAllowed =
+            (transportParameters.InitialMaxStreamsUni ?? 0) > 0
+            && (transportParameters.InitialMaxStreamDataUni ?? 0) > 0;
+        return bidirectionalClientDataAllowed || unidirectionalClientDataAllowed;
+    }
+
     private static bool HasRememberedValue(QuicTransportParameters parameters)
     {
         return parameters.MaxIdleTimeout.HasValue
@@ -107,5 +262,34 @@ internal static class QuicZeroRttTransportParameterPolicy
             || parameters.InitialMaxStreamsUni.HasValue
             || parameters.DisableActiveMigration
             || parameters.ActiveConnectionIdLimit.HasValue;
+    }
+
+    private static QuicZeroRttTransportParameterAcceptanceDecision RejectIfRequiredLimitReduced(
+        string parameterName,
+        ulong rememberedValue,
+        ulong currentValue)
+    {
+        return currentValue < rememberedValue
+            ? QuicZeroRttTransportParameterAcceptanceDecision.Reject(
+                QuicZeroRttTransportParameterAcceptanceFailure.ReducedRequiredLimit,
+                parameterName)
+            : QuicZeroRttTransportParameterAcceptanceDecision.Accept;
+    }
+
+    private static QuicZeroRttTransportParameterAcceptanceDecision RejectIfRememberedOptionalValueReduced(
+        string parameterName,
+        ulong? rememberedValue,
+        ulong currentValue)
+    {
+        return rememberedValue.HasValue && currentValue < rememberedValue.Value
+            ? QuicZeroRttTransportParameterAcceptanceDecision.Reject(
+                QuicZeroRttTransportParameterAcceptanceFailure.ReducedOptionalValue,
+                parameterName)
+            : QuicZeroRttTransportParameterAcceptanceDecision.Accept;
+    }
+
+    private static ulong EffectiveActiveConnectionIdLimit(QuicTransportParameters parameters)
+    {
+        return parameters.ActiveConnectionIdLimit ?? QuicConnectionPeerConnectionIdState.DefaultActiveConnectionIdLimit;
     }
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T22:29:17.1369431-06:00",
+  "generated_at": "2026-05-05T22:41:25.3029403-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T22:29:17.1337283-06:00",
+    "generated_at": "2026-05-05T22:41:25.2994109-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 61,
       "covered_but_proof_too_broad": 49,
       "partially_covered": 145,
-      "trace_clean": 1264,
+      "trace_clean": 1269,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 181
+      "uncovered_unblocked": 176
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1264,
+      "clean": 1269,
       "metadata_only": 61,
-      "new_tests_needed": 439,
+      "new_tests_needed": 434,
       "restructure_needed": 70
     },
     "by_rfc": [
@@ -50,9 +50,9 @@
           "covered_but_missing_xrefs": 61,
           "covered_but_proof_too_broad": 49,
           "partially_covered": 145,
-          "trace_clean": 951,
+          "trace_clean": 956,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 181
+          "uncovered_unblocked": 176
         }
       },
       {
@@ -193294,34 +193294,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0005",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0005.ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "method": "ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0005",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0005.ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "method": "ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0005",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0005.ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "method": "ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs::ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0005",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0005.ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "method": "ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
@@ -193336,34 +193425,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0006",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0006.ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "method": "ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0006",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0006.ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "method": "ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0006",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0006.ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "method": "ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "line": 32,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs::ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0006",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0006.ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "method": "ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "line": 32,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
@@ -193378,35 +193556,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "method": "NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "method": "NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "method": "OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "line": 39,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "method": "OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "line": 39,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "method": "ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs::ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0007",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0007.ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "method": "ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0008",
@@ -193421,33 +193732,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs::ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
           "positive": 0,
-          "negative": 0,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0008",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0008.ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
+          "method": "ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs::ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0008",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0008.ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
+          "method": "ServerZeroRttAcceptanceRejectsReducedRememberedOptionalParameter",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
@@ -193462,34 +193816,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0009",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0009.ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "method": "ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0009",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0009.ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "method": "ServerZeroRttAcceptanceAllowsRestoredValuesThatCurrentServerParametersCanSupport",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0009",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0009.ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable",
+          "method": "ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs::ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0009",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0009.ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable",
+          "method": "ServerZeroRttAcceptanceRejectsWhenCurrentServerParametersAreUnavailable",
+          "line": 20,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7P4P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0010",

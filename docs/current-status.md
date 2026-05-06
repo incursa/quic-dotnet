@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S7P4P1 client 0-RTT remembered
+Last verified: 2026-05-06 for the S7P4P1 server 0-RTT
+transport-parameter acceptance policy, S7P4P1 client 0-RTT remembered
 transport-parameter policy, S18P2 max_ack_delay alarm-slack policy, S18P2
 max_udp_payload_size receiver limit, S18P2 initial_max_data runtime commit,
 S18P2 max_idle_timeout trace cleanup, S22P1P1 provisional-registration policy
@@ -15,6 +16,24 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S7P4P1 server 0-RTT transport-parameter acceptance policy closure
+on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0005` through
+`REQ-QUIC-RFC9000-S7P4P1-0009` under `ARC-QUIC-RFC9000-0069`,
+`WI-QUIC-RFC9000-0069`, and `VER-QUIC-RFC9000-0069`. The proof covers an
+internal server acceptance decision over remembered and current transport
+parameters, reductions to required Section 18.2 0-RTT limits, non-zero
+application-data allowance, restored optional `max_idle_timeout`,
+`max_udp_payload_size`, and `disable_active_migration` reductions, and
+missing current server-parameter rejection. Regenerated coverage triage marks
+those five requirements as `trace_clean` and reports 1,269 of 1,771 QUIC
+requirements trace-clean overall, leaving 502 non-clean. `S7P4P1` now has five
+remaining non-clean requirements: `REQ-QUIC-RFC9000-S7P4P1-0003` and
+`REQ-QUIC-RFC9000-S7P4P1-0010` through
+`REQ-QUIC-RFC9000-S7P4P1-0013`. This closure does not claim public early-data
+APIs, TLS `early_data` extension admission wiring, server anti-replay behavior,
+application-data delivery, or updated-value-in-0-RTT protocol-violation
+enforcement.
 
 Follow-on S7P4P1 client 0-RTT remembered transport-parameter policy closure
 on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0001`,
