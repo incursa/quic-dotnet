@@ -1,9 +1,10 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S4P6 cumulative incoming stream-limit
-tail, S4P6 max_streams oversized close-policy tail, S4P6 MAX_STREAMS
-monotonic limit update tail, S4P6 stream-limit enforcement and blocked-open
-tail, S5P1P1 Retry sequencing and migration pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
+Last verified: 2026-05-06 for the S4P6 stream-limit metadata xref tail,
+S4P6 cumulative incoming stream-limit tail, S4P6 max_streams oversized
+close-policy tail, S4P6 MAX_STREAMS monotonic limit update tail, S4P6
+stream-limit enforcement and blocked-open tail, S5P1P1 Retry sequencing and
+migration pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
 protected packet failure policy, S5P2 packet classification and connection
 association floor, S7P4P1
 client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
@@ -23,6 +24,19 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S4P6 stream-limit metadata xref cleanup on 2026-05-06 closes
+`REQ-QUIC-RFC9000-S4P6-0002` through
+`REQ-QUIC-RFC9000-S4P6-0005` without production code changes. The existing
+focused requirement-home proof for advertised stream-ID limits, initial
+transport-parameter stream limits, later `MAX_STREAMS` limit advertisement,
+and separate bidirectional/unidirectional stream limits now has resolving
+canonical `x_test_refs`. Regenerated coverage triage marks all four
+requirements as `trace_clean` and reports 1,308 of 1,771 QUIC requirements
+trace-clean overall, leaving 463 non-clean. `S4P6` has no remaining non-clean
+requirements in generated triage. This cleanup does not claim new stream-limit
+behavior, automatic stream-limit autotuning, public stream API widening,
+broader stream-management parity, or hosted interop readiness.
 
 Follow-on S4P6 max_streams oversized close-policy tail closure on 2026-05-06
 closes `REQ-QUIC-RFC9000-S4P6-0006` and
@@ -49,9 +63,11 @@ streams of the same type being created before admitting the target stream, and
 the existing over-limit negative proof continuing to reject stream IDs outside
 the advertised limit with `STREAM_LIMIT_ERROR`. Regenerated coverage triage
 marks the requirement as `trace_clean` and reports 1,304 of 1,771 QUIC
-requirements trace-clean overall, leaving 467 non-clean. `S4P6` now has four
-remaining non-clean requirements, all metadata-only xref cleanup for
-`REQ-QUIC-RFC9000-S4P6-0002` through `REQ-QUIC-RFC9000-S4P6-0005`. This
+requirements trace-clean overall, leaving 467 non-clean. At that point,
+`S4P6` had four remaining non-clean requirements, all metadata-only xref
+cleanup for `REQ-QUIC-RFC9000-S4P6-0002` through
+`REQ-QUIC-RFC9000-S4P6-0005`; the later stream-limit metadata xref cleanup
+now closes that generated tail. This
 closure does not claim automatic stream-limit autotuning, public stream API
 widening, broader stream-management parity, or hosted interop readiness.
 

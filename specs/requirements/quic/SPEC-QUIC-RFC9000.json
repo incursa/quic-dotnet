@@ -4350,6 +4350,9 @@
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0002.cs::TryReceiveStreamFrame_RestrictsStreamIdsToTheAdvertisedLimit"
         ]
       }
     },
@@ -4376,6 +4379,9 @@
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0003.cs::TryParseAndFormatTransportParameters_PreservesInitialStreamLimits"
         ]
       }
     },
@@ -4402,6 +4408,9 @@
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0004.cs::TryApplyMaxStreamsFrame_AdvertisesLaterLimits"
         ]
       }
     },
@@ -4428,6 +4437,9 @@
         "upstream_refs": [
           "RFC 9000 §4.6 RFC9000-S4.6-B2-P1-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0005.cs::TryOpenLocalStream_UsesSeparateBidirectionalAndUnidirectionalLimits"
         ]
       }
     },
