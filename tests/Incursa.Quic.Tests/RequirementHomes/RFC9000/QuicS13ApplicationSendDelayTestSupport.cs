@@ -28,7 +28,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         int maximumRecentlyValidatedPaths = 8,
         ulong? localMaxAckDelayMicros = null,
         ulong? peerActiveConnectionIdLimit = null,
-        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue)
+        ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
+        ulong? peerInitialMaxData = null)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
@@ -38,7 +39,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             MaxIdleTimeout = 21,
             OriginalDestinationConnectionId = [0x0A, 0x0B, 0x0C],
             InitialSourceConnectionId = [0x0A, 0x0B, 0x0C],
-            InitialMaxData = Math.Max(localBidirectionalSendLimit, 64UL),
+            InitialMaxData = peerInitialMaxData ?? connectionSendLimit,
             InitialMaxStreamDataBidiLocal = Math.Max(localBidirectionalSendLimit, 64UL),
             InitialMaxStreamDataBidiRemote = Math.Max(localBidirectionalSendLimit, 64UL),
             InitialMaxStreamDataUni = Math.Max(localBidirectionalSendLimit, 64UL),

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0065",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Initial Maximum Data Runtime Commit",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime path that treats the peer initial_max_data transport parameter as the initial connection-level send credit.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0065",
+    "VER-QUIC-RFC9000-0065"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs"
+  ],
+  "design_summary": "Peer transport-parameter commit now applies initial_max_data directly to QuicConnectionStreamState.ConnectionSendLimit before stream send limits and stream-count limits are committed. Hosted client and server runtime construction starts with zero connection-level send credit because a local receive window is not peer-granted send credit; stream data becomes sendable only after the peer's transport parameters have supplied initial_max_data. MAX_DATA frames still use the existing monotonic increase path, while the transport-parameter commit path may replace a speculative test seed with the exact peer value.",
+  "data_and_state_considerations": "ConnectionSendLimit remains the single connection-level send-credit source used by TryReserveSendCapacity. The peer initial_max_data path validates the QUIC variable-length integer boundary, writes the exact peer value, and keeps later send-capacity checks safe even if a stale speculative value had already exceeded the committed peer value.",
+  "edge_cases_and_constraints": [
+    "A missing peer initial_max_data parameter commits zero initial connection-level send credit.",
+    "The peer transport-parameter value is applied exactly rather than merged with local receive-window configuration.",
+    "MAX_DATA frame handling remains monotonic and separate from the initial transport-parameter commit path.",
+    "Host runtimes start outbound connection-level send credit at zero until peer transport parameters are committed."
+  ],
+  "risks": [
+    "This slice proves the initial connection-level data limit only; it does not claim max_udp_payload_size receiver processing, max_ack_delay alarm-delay policy, broader Section 18.2 closure, public flow-control APIs, 0-RTT remembered transport-parameter validation, or hosted interop readiness.",
+    "No new parser, serializer, encoder, or decoder is introduced. The existing transport-parameter codec proof remains separate, and this slice adds focused runtime commit proof."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes REQ-QUIC-RFC9000-S18P2-0008 by making the peer initial_max_data transport parameter authoritative for connection-level send credit on the committed runtime path."
+    }
+  ]
+}

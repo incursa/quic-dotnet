@@ -83,6 +83,8 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0061.json`](ARC-QUIC-RFC9000-0061.json): canonical RFC 9000 initial stream limit transport parameters design source
 - [`ARC-QUIC-RFC9000-0062.json`](ARC-QUIC-RFC9000-0062.json): canonical RFC 9000 disable active migration preferred address exception design source
 - [`ARC-QUIC-RFC9000-0063.json`](ARC-QUIC-RFC9000-0063.json): canonical RFC 9000 preferred address field shape design source
+- [`ARC-QUIC-RFC9000-0064.json`](ARC-QUIC-RFC9000-0064.json): canonical RFC 9000 IANA provisional registration policy design source
+- [`ARC-QUIC-RFC9000-0065.json`](ARC-QUIC-RFC9000-0065.json): canonical RFC 9000 initial maximum data runtime commit design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

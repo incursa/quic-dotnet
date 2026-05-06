@@ -3450,6 +3450,9 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
+        stateChanged |= streamRegistry.Bookkeeping.TryApplyPeerInitialMaxData(
+            peerTransportParameters.InitialMaxData ?? 0);
+
         stateChanged |= streamRegistry.Bookkeeping.TryApplyPeerTransportParameterSendLimits(
             localBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiRemote ?? 0,
             peerBidirectionalLimit: peerTransportParameters.InitialMaxStreamDataBidiLocal ?? 0,

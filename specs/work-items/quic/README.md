@@ -74,6 +74,8 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0061.json`](WI-QUIC-RFC9000-0061.json): canonical RFC 9000 initial stream limit transport parameters work-item source
 - [`WI-QUIC-RFC9000-0062.json`](WI-QUIC-RFC9000-0062.json): canonical RFC 9000 disable active migration preferred address exception work-item source
 - [`WI-QUIC-RFC9000-0063.json`](WI-QUIC-RFC9000-0063.json): canonical RFC 9000 preferred address field shape work-item source
+- [`WI-QUIC-RFC9000-0064.json`](WI-QUIC-RFC9000-0064.json): canonical RFC 9000 IANA provisional registration policy work-item source
+- [`WI-QUIC-RFC9000-0065.json`](WI-QUIC-RFC9000-0065.json): canonical RFC 9000 initial maximum data runtime commit work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

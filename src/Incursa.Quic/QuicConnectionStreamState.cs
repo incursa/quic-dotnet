@@ -118,6 +118,21 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    public bool TryApplyPeerInitialMaxData(ulong initialMaxData)
+    {
+        lock (syncRoot)
+        {
+            ValidateFlowControlLimit(initialMaxData);
+            if (ConnectionSendLimit == initialMaxData)
+            {
+                return false;
+            }
+
+            ConnectionSendLimit = initialMaxData;
+            return true;
+        }
+    }
+
     public bool TryApplyMaxStreamsFrame(QuicMaxStreamsFrame frame)
     {
         lock (syncRoot)
@@ -352,7 +367,10 @@ internal sealed class QuicConnectionStreamState
             }
 
             ulong additionalBytes = state.SentRanges.MeasureAdditionalCoverage(offset, endExclusive);
-            if (additionalBytes > 0 && additionalBytes > ConnectionSendLimit - connectionUniqueBytesSent)
+            ulong remainingConnectionSendCapacity = ConnectionSendLimit > connectionUniqueBytesSent
+                ? ConnectionSendLimit - connectionUniqueBytesSent
+                : 0;
+            if (additionalBytes > 0 && additionalBytes > remainingConnectionSendCapacity)
             {
                 dataBlockedFrame = new QuicDataBlockedFrame(ConnectionSendLimit);
                 return false;

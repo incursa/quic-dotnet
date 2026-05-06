@@ -336,7 +336,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         QuicConnectionStreamState bookkeeping = new(new QuicConnectionStreamStateOptions(
             IsServer: false,
             InitialConnectionReceiveLimit: (ulong)Math.Max(0, receiveWindowSizes.Connection),
-            InitialConnectionSendLimit: (ulong)Math.Max(0, receiveWindowSizes.Connection),
+            InitialConnectionSendLimit: 0,
             InitialIncomingBidirectionalStreamLimit: (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams),
             InitialIncomingUnidirectionalStreamLimit: (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             InitialPeerBidirectionalStreamLimit: 0,

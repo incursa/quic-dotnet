@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0065",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Initial Maximum Data Runtime Commit Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0065",
+    "VER-QUIC-RFC9000-0065"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0008"
+  ],
+  "summary": "Close the RFC 9000 Section 18.2 initial_max_data runtime proof gap by applying the peer transport-parameter value as the connection send limit.",
+  "planned_changes": "- Add a connection stream-state path that applies peer initial_max_data exactly during transport-parameter commit.\n- Start hosted client and server runtime connection send credit at zero until peer transport parameters are committed.\n- Keep MAX_DATA frame handling monotonic and separate from the initial transport-parameter path.\n- Add focused requirement-home tests for exact peer initial_max_data commit and stale speculative send-credit replacement.\n- Retarget REQ-QUIC-RFC9000-S18P2-0008 trace links from broad transport-parameter tests to direct runtime proof.",
+  "verification_plan": "Run a Release build, run the focused S18P2-0008 and flow-control regression requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0065"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0065"
+  ],
+  "out_of_scope": [
+    "max_udp_payload_size receiver processing.",
+    "max_ack_delay alarm-delay policy.",
+    "Broader RFC 9000 Section 18.2 closure.",
+    "Public flow-control API widening.",
+    "0-RTT remembered transport-parameter validation.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused runtime commit and requirement-home proof for REQ-QUIC-RFC9000-S18P2-0008."
+}

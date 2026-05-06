@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T17:39:59.3874820-06:00",
+  "generated_at": "2026-05-05T19:49:27.5597355-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T17:39:59.3834724-06:00",
+    "generated_at": "2026-05-05T19:49:27.5562075-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 61,
-      "covered_but_proof_too_broad": 52,
+      "covered_but_proof_too_broad": 51,
       "partially_covered": 145,
-      "trace_clean": 1258,
+      "trace_clean": 1259,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 184
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1258,
+      "clean": 1259,
       "metadata_only": 61,
       "new_tests_needed": 444,
-      "restructure_needed": 73
+      "restructure_needed": 72
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 61,
-          "covered_but_proof_too_broad": 52,
+          "covered_but_proof_too_broad": 51,
           "partially_covered": 145,
-          "trace_clean": 945,
+          "trace_clean": 946,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 184
         }
@@ -91759,35 +91759,26 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs::PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs::PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
+        "total": 7,
+        "focused": 4,
         "broad": 3,
         "by_kind": {
-          "positive": 2,
+          "positive": 4,
           "negative": 0,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
@@ -91997,6 +91988,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0008",
+          "member": "REQ_QUIC_RFC9000_S18P2_0008.PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+          "method": "PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs::PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0008",
+          "member": "REQ_QUIC_RFC9000_S18P2_0008.PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+          "method": "PeerTransportParameterCommitInstallsInitialMaximumDataAsConnectionSendLimit",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0008",
+          "member": "REQ_QUIC_RFC9000_S18P2_0008.PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit",
+          "method": "PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit",
+          "line": 39,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs::PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0008",
+          "member": "REQ_QUIC_RFC9000_S18P2_0008.PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit",
+          "method": "PeerTransportParameterCommitReplacesAnySpeculativeConnectionSendLimit",
+          "line": 39,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },

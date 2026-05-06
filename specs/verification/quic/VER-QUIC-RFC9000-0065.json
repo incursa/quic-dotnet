@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0065",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Initial Maximum Data Runtime Commit Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0065",
+    "WI-QUIC-RFC9000-0065"
+  ],
+  "verification_method": "Focused S18P2-0008 requirement-home tests over runtime transport-parameter commit and connection-level send-capacity enforcement, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0008"
+  ],
+  "scope": "This verification covers the peer initial_max_data transport parameter becoming the runtime connection-level send limit for application data.",
+  "expected_result": "The focused tests show that peer transport-parameter commit installs the initial_max_data value as ConnectionSendLimit and replaces any stale speculative connection send limit before application stream data can consume credit.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S18P2-0008 and flow-control regression requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "Peer transport parameters are committed before application stream data is sent on the supported runtime path.",
+    "MAX_DATA frame handling remains a separate monotonic increase path after the initial transport-parameter value is committed."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0008.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0035\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim max_udp_payload_size receiver processing, max_ack_delay alarm-delay policy, broader Section 18.2 closure, public flow-control APIs, 0-RTT remembered transport-parameter validation, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S18P2-0008 and flow-control regression filter passed 15/15, regenerated coverage triage marks REQ-QUIC-RFC9000-S18P2-0008 trace_clean and reports 1,259 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 439 artifacts, the full Release no-build suite passed 4,456/4,456, and git diff --check returned exit code 0 with line-ending warnings only."
+}
