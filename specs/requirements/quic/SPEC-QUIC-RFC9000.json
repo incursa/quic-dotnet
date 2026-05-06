@@ -9459,17 +9459,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0071"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0071"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0071"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B19-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs::ZeroRttPacketMayUseRememberedTransportParameterValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs::ZeroRttPacketMustNotUseUpdatedTransportParameterValues"
         ]
       }
     },
@@ -9485,17 +9492,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0071"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0071"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0071"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B19-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs::ZeroRttPacketUsesRememberedTransportParametersOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs::ZeroRttPacketRejectsNonRememberedTransportParameterSource",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs::ZeroRttPacketRejectsUnknownTransportParameterSource"
         ]
       }
     },
@@ -9511,17 +9526,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0071"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0071"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0071"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B19-P11-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0012.cs::UpdatedTransportParameterValuesDoNotApplyOutsideOneRttPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0012.cs::UpdatedTransportParameterValuesApplyToOneRttPackets"
         ]
       }
     },
@@ -9537,17 +9559,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0071"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0071"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0071"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B19-P11-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs::ServerMayTreatUpdatedHandshakeTransportParameterUseInZeroRttAsProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs::ServerMayTreatUpdatedOneRttFrameTransportParameterUseInZeroRttAsProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs::ServerDoesNotTreatRememberedTransportParameterUseInZeroRttAsProtocolViolation"
         ]
       }
     },

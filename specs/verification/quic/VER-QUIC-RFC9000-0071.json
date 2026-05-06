@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0071",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Client 0-RTT Updated Transport-Parameter Packet-Use Policy Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0071",
+    "WI-QUIC-RFC9000-0071"
+  ],
+  "verification_method": "Focused S7P4P1 requirement-home tests over client 0-RTT packet-use decisions for remembered versus updated transport-parameter values and server optional PROTOCOL_VIOLATION handling, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S7P4P1-0010",
+    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-S7P4P1-0012",
+    "REQ-QUIC-RFC9000-S7P4P1-0013"
+  ],
+  "scope": "This verification covers the internal policy that constrains 0-RTT packet construction to remembered transport-parameter values, scopes updated values to 1-RTT packet construction, and exposes the server's optional PROTOCOL_VIOLATION result for detected updated-value use in 0-RTT.",
+  "expected_result": "The focused tests show remembered transport-parameter values are accepted for 0-RTT packet use, updated handshake and 1-RTT-frame values are rejected for 0-RTT use with PROTOCOL_VIOLATION semantics, updated values are accepted only for 1-RTT packet use, unknown provenance fails closed, and the server helper returns PROTOCOL_VIOLATION only for updated-value sources.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S7P4P1 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The client remembered transport-parameter subset and prohibited-parameter handshake-value policy are already traced under ARC-QUIC-RFC9000-0068 and ARC-QUIC-RFC9000-0070.",
+    "The runtime's public early-data admission remains closed."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0009\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim public early-data APIs, TLS early_data extension admission wiring, anti-replay behavior, 0-RTT decryption, application-data delivery, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 filter passed 20/20, regenerated coverage triage marks REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013 trace_clean and reports 1,274 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 457 artifacts, the full Release no-build suite passed 4,503/4,503, and git diff --check returned exit code 0 with line-ending warnings only."
+}

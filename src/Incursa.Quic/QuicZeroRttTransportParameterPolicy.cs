@@ -21,6 +21,23 @@ internal enum QuicZeroRttTransportParameterAcceptanceFailure
     ReducedOptionalValue = 4,
 }
 
+internal enum QuicZeroRttTransportParameterValueSource
+{
+    Unknown = 0,
+    Remembered = 1,
+    UpdatedFromHandshake = 2,
+    UpdatedFromOneRttFrame = 3,
+}
+
+internal enum QuicZeroRttTransportParameterUseFailure
+{
+    None = 0,
+    MissingRememberedValue = 1,
+    UpdatedHandshakeValueInZeroRtt = 2,
+    UpdatedOneRttFrameValueInZeroRtt = 3,
+    UpdatedValueOutsideOneRtt = 4,
+}
+
 internal readonly record struct QuicZeroRttTransportParameterAcceptanceDecision(
     bool CanAccept,
     QuicZeroRttTransportParameterAcceptanceFailure Failure,
@@ -34,6 +51,22 @@ internal readonly record struct QuicZeroRttTransportParameterAcceptanceDecision(
         string parameterName)
     {
         return new(false, failure, parameterName);
+    }
+}
+
+internal readonly record struct QuicZeroRttTransportParameterUseDecision(
+    bool CanUse,
+    QuicZeroRttTransportParameterUseFailure Failure,
+    QuicTransportErrorCode? ErrorCode)
+{
+    internal static QuicZeroRttTransportParameterUseDecision Accept { get; } =
+        new(true, QuicZeroRttTransportParameterUseFailure.None, null);
+
+    internal static QuicZeroRttTransportParameterUseDecision Reject(
+        QuicZeroRttTransportParameterUseFailure failure,
+        QuicTransportErrorCode? errorCode = null)
+    {
+        return new(false, failure, errorCode);
     }
 }
 
@@ -267,6 +300,42 @@ internal static class QuicZeroRttTransportParameterPolicy
         return bidirectionalClientDataAllowed || unidirectionalClientDataAllowed;
     }
 
+    internal static QuicZeroRttTransportParameterUseDecision EvaluateClientTransportParameterUseForPacket(
+        QuicTlsEncryptionLevel packetProtectionLevel,
+        QuicZeroRttTransportParameterValueSource valueSource)
+    {
+        if (packetProtectionLevel == QuicTlsEncryptionLevel.ZeroRtt)
+        {
+            return valueSource == QuicZeroRttTransportParameterValueSource.Remembered
+                ? QuicZeroRttTransportParameterUseDecision.Accept
+                : RejectZeroRttUpdatedValue(valueSource);
+        }
+
+        if (valueSource is QuicZeroRttTransportParameterValueSource.UpdatedFromHandshake
+            or QuicZeroRttTransportParameterValueSource.UpdatedFromOneRttFrame)
+        {
+            return packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                ? QuicZeroRttTransportParameterUseDecision.Accept
+                : QuicZeroRttTransportParameterUseDecision.Reject(
+                    QuicZeroRttTransportParameterUseFailure.UpdatedValueOutsideOneRtt,
+                    QuicTransportErrorCode.ProtocolViolation);
+        }
+
+        return valueSource == QuicZeroRttTransportParameterValueSource.Remembered
+            ? QuicZeroRttTransportParameterUseDecision.Accept
+            : QuicZeroRttTransportParameterUseDecision.Reject(
+                QuicZeroRttTransportParameterUseFailure.MissingRememberedValue);
+    }
+
+    internal static QuicTransportErrorCode? GetServerZeroRttTransportParameterUseError(
+        QuicZeroRttTransportParameterValueSource valueSource)
+    {
+        return valueSource is QuicZeroRttTransportParameterValueSource.UpdatedFromHandshake
+            or QuicZeroRttTransportParameterValueSource.UpdatedFromOneRttFrame
+            ? QuicTransportErrorCode.ProtocolViolation
+            : null;
+    }
+
     private static bool HasRememberedValue(QuicTransportParameters parameters)
     {
         return parameters.MaxIdleTimeout.HasValue
@@ -279,6 +348,25 @@ internal static class QuicZeroRttTransportParameterPolicy
             || parameters.InitialMaxStreamsUni.HasValue
             || parameters.DisableActiveMigration
             || parameters.ActiveConnectionIdLimit.HasValue;
+    }
+
+    private static QuicZeroRttTransportParameterUseDecision RejectZeroRttUpdatedValue(
+        QuicZeroRttTransportParameterValueSource valueSource)
+    {
+        QuicZeroRttTransportParameterUseFailure failure = valueSource switch
+        {
+            QuicZeroRttTransportParameterValueSource.UpdatedFromHandshake
+                => QuicZeroRttTransportParameterUseFailure.UpdatedHandshakeValueInZeroRtt,
+            QuicZeroRttTransportParameterValueSource.UpdatedFromOneRttFrame
+                => QuicZeroRttTransportParameterUseFailure.UpdatedOneRttFrameValueInZeroRtt,
+            _ => QuicZeroRttTransportParameterUseFailure.MissingRememberedValue,
+        };
+
+        return QuicZeroRttTransportParameterUseDecision.Reject(
+            failure,
+            valueSource == QuicZeroRttTransportParameterValueSource.Unknown
+                ? null
+                : QuicTransportErrorCode.ProtocolViolation);
     }
 
     private static QuicZeroRttTransportParameterAcceptanceDecision RejectIfRequiredLimitReduced(

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0071",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Client 0-RTT Updated Transport-Parameter Packet-Use Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded internal policy that keeps 0-RTT packet construction on remembered transport-parameter values and treats updated-value use as a protocol violation candidate.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0068",
+    "ARC-QUIC-RFC9000-0069",
+    "ARC-QUIC-RFC9000-0070",
+    "WI-QUIC-RFC9000-0071",
+    "VER-QUIC-RFC9000-0071"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P4P1-0010",
+    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-S7P4P1-0012",
+    "REQ-QUIC-RFC9000-S7P4P1-0013"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs"
+  ],
+  "design_summary": "QuicZeroRttTransportParameterPolicy now has an internal packet-use decision seam that combines the packet protection level with the source of a transport-parameter value. 0-RTT packets are allowed to use remembered transport-parameter values only. Updated values learned from the server handshake or from 1-RTT frames are rejected for 0-RTT use with PROTOCOL_VIOLATION semantics, while updated values are accepted only once the sender is constructing 1-RTT packets. A server-side helper maps detected updated-value use in 0-RTT to the optional PROTOCOL_VIOLATION connection-error policy.",
+  "data_and_state_considerations": "The policy is intentionally source-classification based. It does not admit early data, decrypt 0-RTT, parse frames to infer value provenance, or persist new public state; future sender and receiver integration can feed the same source classification into the policy without widening public early-data support.",
+  "edge_cases_and_constraints": [
+    "Unknown value provenance fails closed for client 0-RTT packet use without asserting a server protocol violation.",
+    "Updated handshake and 1-RTT-frame values are rejected outside 1-RTT packet construction.",
+    "Remembered values remain the only accepted source for 0-RTT packets.",
+    "The server helper assumes the caller has already classified the offending value source."
+  ],
+  "risks": [
+    "Future real 0-RTT sender integration must preserve the same source classification rather than treating updated connection limits as immediately usable by 0-RTT packets.",
+    "Future real 0-RTT receiver integration must classify offending frame behavior before invoking the optional PROTOCOL_VIOLATION policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes only the S7P4P1 updated-value packet-use tail. It does not claim public early-data APIs, TLS early_data extension admission wiring, anti-replay behavior, 0-RTT decryption, application-data delivery, or hosted interop readiness."
+    }
+  ]
+}
