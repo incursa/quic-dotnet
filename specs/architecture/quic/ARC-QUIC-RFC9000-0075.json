@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0075",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Connection ID Retry Sequencing and Migration Pool Tail",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the S5P1P1 tail closure for non-sequenced client-selected and Retry connection IDs plus migration-aware local CID replenishment.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0027",
+    "ARC-QUIC-RFC9000-0030",
+    "ARC-QUIC-RFC9000-0074",
+    "WI-QUIC-RFC9000-0075",
+    "VER-QUIC-RFC9000-0075"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P1P1-0007",
+    "REQ-QUIC-RFC9000-S5P1P1-0019"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0019.cs"
+  ],
+  "design_summary": "Peer connection-ID sequence state records the peer Initial Source Connection ID as the implicit sequence-0 value when that value has been observed, rather than using transient client-selected or Retry-provided destination connection IDs. NEW_CONNECTION_ID and preferred_address connection-ID admission share this sequencing input so a Retry Source Connection ID can later be explicitly issued as sequence 1 or higher. Local CID issuance continues to replenish the peer-usable pool when a packet arrives on a previously unused locally issued CID, including migrated-path packets, while respecting the peer active_connection_id_limit, zero-length local CID mode, and local issuance budget.",
+  "data_and_state_considerations": "The observed peer Initial Source CID remains a copied runtime field and is exposed only as a read-only span at the sequencing boundary. The first client-selected Destination CID and the Retry Source CID remain packet-routing or packet-protection inputs unless later received through an explicit peer-issued CID surface. Locally issued CID route and stateless-reset-token state remain paired so replacement NEW_CONNECTION_ID frames advertise the exact bytes and token registered with the endpoint.",
+  "edge_cases_and_constraints": [
+    "A first client-selected Destination CID can later be accepted as an explicitly sequenced peer-issued CID without colliding with sequence 0.",
+    "A maximum-length Retry Source CID can later be accepted through preferred_address sequence 1 after the peer Initial Source CID is observed.",
+    "A preferred_address CID equal to the observed peer Initial Source CID remains invalid because the Initial Source CID owns sequence 0.",
+    "Migration-path replenishment is suppressed when the peer active_connection_id_limit is already full or local CID issuance budget is exhausted."
+  ],
+  "risks": [
+    "This slice does not add a public local migration initiation API.",
+    "This slice does not change Retry integrity validation or Retry packet authentication behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the remaining S5P1P1 generated trace tail only. It does not claim multipath, public migration controls, Retry integrity changes, public API widening, or hosted interop readiness."
+    }
+  ]
+}

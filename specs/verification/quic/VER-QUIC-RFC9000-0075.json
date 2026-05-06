@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0075",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Connection ID Retry Sequencing and Migration Pool Tail Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0075",
+    "WI-QUIC-RFC9000-0075"
+  ],
+  "verification_method": "Focused S5P1P1 requirement-home tests over non-sequenced first client-selected and Retry-provided CIDs plus migrated-path local CID pool replenishment, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S5P1P1-0007",
+    "REQ-QUIC-RFC9000-S5P1P1-0019"
+  ],
+  "scope": "This verification covers the remaining generated non-clean S5P1P1 tail after the sequence and active-set floor closure.",
+  "expected_result": "The focused tests show that a first client-selected Destination CID and a Retry Source CID do not consume peer CID sequence numbers, the observed peer Initial Source CID remains the implicit sequence-0 input, a Retry Source CID can later be explicitly issued through preferred_address sequence 1 including the maximum-length boundary, and migrated-path use of a previously unused locally issued CID replenishes the peer-usable CID pool only when the peer active limit and local issuance budget allow it.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S5P1P1 tail requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The S5P1P1 connection-ID sequence and active-set floor remains closed under ARC-QUIC-RFC9000-0074.",
+    "Retry replay processing remains closed under ARC-QUIC-RFC9000-0060.",
+    "Transport-parameter connection-ID binding remains closed under ARC-QUIC-RFC9000-0059."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0019.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0019\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim public local migration APIs, multipath, Retry integrity validation changes, public API widening, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S5P1P1 tail filter passed 7/7, regenerated coverage triage marks REQ-QUIC-RFC9000-S5P1P1-0007 and REQ-QUIC-RFC9000-S5P1P1-0019 trace_clean and reports 1,296 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 469 artifacts, the full Release no-build suite passed 4,542/4,542, and git diff --check returned exit code 0 with line-ending warnings only."
+}

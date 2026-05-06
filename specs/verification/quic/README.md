@@ -94,6 +94,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0072.json`](VER-QUIC-RFC9000-0072.json): canonical RFC 9000 packet classification and connection association verification source
 - [`VER-QUIC-RFC9000-0073.json`](VER-QUIC-RFC9000-0073.json): canonical RFC 9000 weakly protected packet failure policy verification source
 - [`VER-QUIC-RFC9000-0074.json`](VER-QUIC-RFC9000-0074.json): canonical RFC 9000 connection-ID sequence and active-set floor verification source
+- [`VER-QUIC-RFC9000-0075.json`](VER-QUIC-RFC9000-0075.json): canonical RFC 9000 connection-ID Retry sequencing and migration pool tail verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

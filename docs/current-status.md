@@ -1,8 +1,9 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S5P1P1 connection-ID sequence and
-active-set floor, S5P2 weakly protected packet failure policy, S5P2 packet
-classification and connection association floor, S7P4P1
+Last verified: 2026-05-06 for the S5P1P1 Retry sequencing and migration
+pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
+protected packet failure policy, S5P2 packet classification and connection
+association floor, S7P4P1
 client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
 supersession policy, S7P4P1 server 0-RTT transport-parameter acceptance
 policy, S7P4P1 client 0-RTT remembered transport-parameter policy, S18P2
@@ -21,6 +22,23 @@ architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
 
+Follow-on S5P1P1 Retry sequencing and migration pool tail closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0007` and
+`REQ-QUIC-RFC9000-S5P1P1-0019` under `ARC-QUIC-RFC9000-0075`,
+`WI-QUIC-RFC9000-0075`, and `VER-QUIC-RFC9000-0075`. The proof covers
+first client-selected Destination Connection IDs and Retry Source Connection
+IDs not consuming peer CID sequence numbers, the observed peer Initial Source
+CID remaining the implicit sequence-0 input, later explicit preferred_address
+issuance of a Retry Source CID as sequence 1 including the maximum-length
+boundary, and migrated-path use of a previously unused locally issued CID
+replenishing the peer-usable pool only when the peer active limit and local
+issuance budget allow it. Regenerated coverage triage marks both requirements
+as `trace_clean` and reports 1,296 of 1,771 QUIC requirements trace-clean
+overall, leaving 475 non-clean. `S5P1P1` has no remaining non-clean
+requirements in generated triage. This closure does not claim multipath,
+public local migration controls, Retry integrity validation changes, public API
+widening, or hosted interop readiness.
+
 Follow-on S5P1P1 connection-ID sequence and active-set floor closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0003`,
 `REQ-QUIC-RFC9000-S5P1P1-0004`, `REQ-QUIC-RFC9000-S5P1P1-0006`,
@@ -35,12 +53,12 @@ issued-CID route lifetime until retirement, active issued-CID routing for short
 and long headers, `active_connection_id_limit` advertisement, and replacement
 CID supply after peer retirement. Regenerated coverage triage marks those eight
 requirements as `trace_clean` and reports 1,294 of 1,771 QUIC requirements
-trace-clean overall, leaving 477 non-clean. `S5P1P1` now has two remaining
+trace-clean overall, leaving 477 non-clean. `S5P1P1` then had two remaining
 non-clean requirements: `REQ-QUIC-RFC9000-S5P1P1-0007` and
-`REQ-QUIC-RFC9000-S5P1P1-0019`. This closure does not claim local-initiated
-migration pool completeness, first client-selected Destination Connection ID or
-Retry-provided CID sequencing closure, Retry integrity validation changes,
-public API widening, or hosted interop readiness.
+`REQ-QUIC-RFC9000-S5P1P1-0019`; the later S5P1P1 tail closure under
+`ARC-QUIC-RFC9000-0075` now closes that generated triage tail. This closure
+does not claim Retry integrity validation changes, public API widening, or
+hosted interop readiness.
 
 Follow-on S5P2 weakly protected packet failure policy closure on 2026-05-06
 closes `REQ-QUIC-RFC9000-S5P2-0010`,

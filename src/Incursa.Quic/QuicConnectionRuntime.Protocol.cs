@@ -2383,11 +2383,13 @@ internal sealed partial class QuicConnectionRuntime
     {
         stateChanged = false;
 
+        ReadOnlySpan<byte> peerInitialSourceConnectionIdForSequencing =
+            GetPeerInitialSourceConnectionIdForSequencing();
         if (!peerConnectionIdState.TryAcceptNewConnectionId(
             newConnectionIdFrame,
             PeerRequestedZeroLengthConnectionId(),
             GetLocalActiveConnectionIdLimit(),
-            handshakeFlowCoordinator.DestinationConnectionId.Span,
+            peerInitialSourceConnectionIdForSequencing,
             out QuicTransportErrorCode errorCode,
             out bool destinationConnectionIdChanged,
             out ulong[] retiredSequenceNumbers))
@@ -3478,13 +3480,15 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
+        ReadOnlySpan<byte> peerInitialSourceConnectionIdForSequencing =
+            GetPeerInitialSourceConnectionIdForSequencing();
         bool preferredAddressConnectionIdChanged = false;
         if (receiverRole == QuicTransportParameterRole.Client
             && peerTransportParameters.PreferredAddress is QuicPreferredAddress preferredAddress
             && !peerConnectionIdState.TryAcceptPreferredAddressConnectionId(
                 preferredAddress,
                 GetLocalActiveConnectionIdLimit(),
-                handshakeFlowCoordinator.DestinationConnectionId.Span,
+                peerInitialSourceConnectionIdForSequencing,
                 out QuicTransportErrorCode preferredAddressErrorCode,
                 out preferredAddressConnectionIdChanged))
         {
@@ -3540,6 +3544,13 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             ref effects);
         return stateChanged;
+    }
+
+    private ReadOnlySpan<byte> GetPeerInitialSourceConnectionIdForSequencing()
+    {
+        return observedPeerInitialSourceConnectionId is null
+            ? handshakeFlowCoordinator.DestinationConnectionId.Span
+            : observedPeerInitialSourceConnectionId;
     }
 
     private bool HandleTlsKeyDiscard(QuicTlsEncryptionLevel encryptionLevel, ref List<QuicConnectionEffect>? effects)

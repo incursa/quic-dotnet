@@ -164,6 +164,24 @@ internal static class QuicConnectionIdLifecycleTestSupport
         return protectedPacket;
     }
 
+    internal static QuicConnectionTransitionResult TransitionOneRttPacket(
+        QuicConnectionRuntime runtime,
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> destinationConnectionId,
+        ReadOnlySpan<byte> payload,
+        ulong? routedLocallyIssuedConnectionId,
+        long observedAtTicks)
+    {
+        byte[] protectedPacket = BuildOneRttPacket(runtime, destinationConnectionId, payload);
+        return runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                observedAtTicks,
+                pathIdentity,
+                protectedPacket,
+                routedLocallyIssuedConnectionId),
+            nowTicks: observedAtTicks);
+    }
+
     internal static bool TryAcceptNewConnectionId(
         QuicConnectionPeerConnectionIdState state,
         ulong sequenceNumber,

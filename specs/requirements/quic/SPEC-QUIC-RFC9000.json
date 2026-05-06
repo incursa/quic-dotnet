@@ -5478,17 +5478,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0075"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0075"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0075"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs::FirstClientSelectedDestinationConnectionIdCanBeIssuedLaterWithASequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs::RetryProvidedConnectionIdCanBeUsedByPreferredAddressSequenceOneAfterServerInitialSourceIsObserved",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs::ObservedServerInitialSourceConnectionIdCannotBeReusedByPreferredAddressSequenceOneAfterRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0007.cs::MaximumLengthRetryProvidedConnectionIdStillDoesNotConsumeASequenceNumber"
         ]
       }
     },
@@ -5855,17 +5864,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0075"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0075"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0075"
         ],
         "upstream_refs": [
           "RFC 9000 §5.1.1 RFC9000-S5.1.1-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0019.cs::MigratedPathPacketOnPreviouslyUnusedIssuedConnectionId_ReplenishesPeerUsableConnectionIdPool",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0019.cs::MigratedPathPacket_WhenPeerActiveConnectionIdLimitIsFull_DoesNotReplenishPool",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0019.cs::MigratedPathPacket_WhenLocalIssuanceBudgetIsExhausted_DoesNotReplenishPool"
         ]
       }
     },
