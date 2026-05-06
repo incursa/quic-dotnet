@@ -91,6 +91,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0069.json`](ARC-QUIC-RFC9000-0069.json): canonical RFC 9000 server 0-RTT transport-parameter acceptance policy design source
 - [`ARC-QUIC-RFC9000-0070.json`](ARC-QUIC-RFC9000-0070.json): canonical RFC 9000 client 0-RTT handshake value supersession policy design source
 - [`ARC-QUIC-RFC9000-0071.json`](ARC-QUIC-RFC9000-0071.json): canonical RFC 9000 client 0-RTT updated transport-parameter packet-use policy design source
+- [`ARC-QUIC-RFC9000-0072.json`](ARC-QUIC-RFC9000-0072.json): canonical RFC 9000 packet classification and connection association design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

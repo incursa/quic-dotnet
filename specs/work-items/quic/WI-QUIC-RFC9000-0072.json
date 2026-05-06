@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0072",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Packet Classification And Connection Association Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0072",
+    "VER-QUIC-RFC9000-0072"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S5P2-0001",
+    "REQ-QUIC-RFC9000-S5P2-0002",
+    "REQ-QUIC-RFC9000-S5P2-0003",
+    "REQ-QUIC-RFC9000-S5P2-0004",
+    "REQ-QUIC-RFC9000-S5P2-0005",
+    "REQ-QUIC-RFC9000-S5P2-0006",
+    "REQ-QUIC-RFC9000-S5P2-0008",
+    "REQ-QUIC-RFC9000-S5P2-0009",
+    "REQ-QUIC-RFC9000-S5P2-0011"
+  ],
+  "summary": "Close the bounded S5P2 packet classification and association floor by adding focused requirement-home proof for endpoint routing, listener Initial admission, zero-length connection-ID routing, version mismatch discard, and weakly protected invalid packet discard.",
+  "planned_changes": "- Add shared S5P2 endpoint association test support.\n- Add focused tests for incoming packet classification, existing connection association, server Initial admission, non-zero Destination Connection ID routing, zero-length connection-ID route matching, and local-endpoint mismatch rejection.\n- Retarget existing S5P2 packet-number-space, version mismatch, and weakly protected invalid packet tests to method-level x_test_refs.\n- Add focused architecture, work-item, and verification artifacts for the closed S5P2 association floor.\n- Regenerate QUIC requirement coverage triage and update status ledgers.",
+  "verification_plan": "Run a Release build, run the focused S5P2 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0072"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0072"
+  ],
+  "out_of_scope": [
+    "REQ-QUIC-RFC9000-S5P2-0010 packet-protection removal failure handling.",
+    "REQ-QUIC-RFC9000-S5P2-0012 pre-error connection-error generation.",
+    "REQ-QUIC-RFC9000-S5P2-0013 rollback of weakly protected packet side effects.",
+    "Public API widening.",
+    "Hosted interop readiness."
+  ],
+  "completion_notes": "Completed as a focused endpoint ingress and association proof for REQ-QUIC-RFC9000-S5P2-0001 through REQ-QUIC-RFC9000-S5P2-0006, REQ-QUIC-RFC9000-S5P2-0008, REQ-QUIC-RFC9000-S5P2-0009, and REQ-QUIC-RFC9000-S5P2-0011."
+}

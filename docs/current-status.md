@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S7P4P1 client 0-RTT updated
-transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
+Last verified: 2026-05-06 for the S5P2 packet classification and connection
+association floor, S7P4P1 client 0-RTT updated transport-parameter packet-use
+policy, S7P4P1 client 0-RTT handshake-value
 supersession policy, S7P4P1 server 0-RTT transport-parameter acceptance
 policy, S7P4P1 client 0-RTT remembered transport-parameter policy, S18P2
 max_ack_delay alarm-slack policy, S18P2 max_udp_payload_size receiver limit,
@@ -18,6 +19,26 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S5P2 packet classification and connection association floor closure
+on 2026-05-06 closes `REQ-QUIC-RFC9000-S5P2-0001` through
+`REQ-QUIC-RFC9000-S5P2-0006`, `REQ-QUIC-RFC9000-S5P2-0008`,
+`REQ-QUIC-RFC9000-S5P2-0009`, and `REQ-QUIC-RFC9000-S5P2-0011`
+under `ARC-QUIC-RFC9000-0072`, `WI-QUIC-RFC9000-0072`, and
+`VER-QUIC-RFC9000-0072`. The proof covers packet classification on receipt,
+existing connection association before unroutable handling, conforming Initial
+server connection creation, non-zero Destination Connection ID exact routing
+including maximum-length IDs, zero-length connection ID local-address matching
+across remote-address changes, version-mismatch discard, and discard of invalid
+weakly protected packet forms without runtime packet-space processing.
+Regenerated coverage triage marks those nine requirements as `trace_clean` and
+reports 1,283 of 1,771 QUIC requirements trace-clean overall, leaving 488
+non-clean. `S5P2` now has three remaining non-clean requirements:
+`REQ-QUIC-RFC9000-S5P2-0010`, `REQ-QUIC-RFC9000-S5P2-0012`, and
+`REQ-QUIC-RFC9000-S5P2-0013`. This closure does not claim packet-protection
+removal failure handling, pre-error connection-error generation, rollback of
+weakly protected packet side effects, public API widening, or hosted interop
+readiness.
 
 Follow-on S7P4P1 updated-value packet-use policy closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S7P4P1-0010` through

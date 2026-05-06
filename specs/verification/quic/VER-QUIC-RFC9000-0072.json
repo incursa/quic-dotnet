@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0072",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Packet Classification And Connection Association Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0072",
+    "WI-QUIC-RFC9000-0072"
+  ],
+  "verification_method": "Focused S5P2 requirement-home tests over endpoint packet classification, existing connection association, server Initial admission, non-zero and zero-length connection-ID routing, version mismatch discard, and weakly protected invalid packet discard, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S5P2-0001",
+    "REQ-QUIC-RFC9000-S5P2-0002",
+    "REQ-QUIC-RFC9000-S5P2-0003",
+    "REQ-QUIC-RFC9000-S5P2-0004",
+    "REQ-QUIC-RFC9000-S5P2-0005",
+    "REQ-QUIC-RFC9000-S5P2-0006",
+    "REQ-QUIC-RFC9000-S5P2-0008",
+    "REQ-QUIC-RFC9000-S5P2-0009",
+    "REQ-QUIC-RFC9000-S5P2-0011"
+  ],
+  "scope": "This verification covers the bounded endpoint ingress floor for packet classification and connection association before the weak-protection rollback tail.",
+  "expected_result": "The focused tests show incoming packets are classified on receipt, existing routes are preferred when they match, conforming Initial packets can create server connections, non-zero Destination Connection IDs route exactly, zero-length connection IDs route by the endpoint's local-address identity, packets for a different protocol version are discarded, and invalid weakly protected packet forms are discardable without runtime packet-space processing.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S5P2 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The server pre-acceptance ingress policy under ARC-QUIC-RFC9000-0055 remains the owner for unsupported-version Version Negotiation and listener admission before route creation.",
+    "The stateless-reset path remains separately owned by the S10/S9001 stateless reset artifacts."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2PacketAssociationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0011.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2_0011\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim packet-protection removal failure handling, pre-error connection-error generation, rollback of weakly protected packet side effects, public API widening, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S5P2 association filter passed 20/20, regenerated coverage triage marks REQ-QUIC-RFC9000-S5P2-0001 through REQ-QUIC-RFC9000-S5P2-0006, REQ-QUIC-RFC9000-S5P2-0008, REQ-QUIC-RFC9000-S5P2-0009, and REQ-QUIC-RFC9000-S5P2-0011 trace_clean and reports 1,283 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 460 artifacts, the full Release no-build suite passed 4,515/4,515, and git diff --check returned exit code 0 with line-ending warnings only."
+}

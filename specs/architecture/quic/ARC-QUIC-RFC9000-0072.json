@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0072",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Packet Classification And Connection Association",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded endpoint ingress floor that classifies packets, associates routed packets with existing connections, supports server Initial admission, and handles zero-length connection-ID routing.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0055",
+    "ARC-QUIC-RFC9000-0056",
+    "WI-QUIC-RFC9000-0072",
+    "VER-QUIC-RFC9000-0072"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S5P2-0001",
+    "REQ-QUIC-RFC9000-S5P2-0002",
+    "REQ-QUIC-RFC9000-S5P2-0003",
+    "REQ-QUIC-RFC9000-S5P2-0004",
+    "REQ-QUIC-RFC9000-S5P2-0005",
+    "REQ-QUIC-RFC9000-S5P2-0006",
+    "REQ-QUIC-RFC9000-S5P2-0008",
+    "REQ-QUIC-RFC9000-S5P2-0009",
+    "REQ-QUIC-RFC9000-S5P2-0011"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2PacketAssociationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0011.cs"
+  ],
+  "design_summary": "The endpoint ingress path classifies datagrams by header form before routing. Long-header packets route by exact Destination Connection ID after excluding Version Negotiation and Retry endpoint-handled packets. Short-header packets route by the longest registered Destination Connection ID prefix, including the zero-length route when a connection has selected zero-length connection-ID mode. The zero-length route is intentionally scoped to the local endpoint tuple so remote address or port changes can still be processed while traffic for a different local endpoint is not associated. Listener-host pre-acceptance remains responsible for creating a new server connection from a conforming Initial packet when no existing route matches.",
+  "data_and_state_considerations": "Routes live in QuicConnectionRuntimeEndpoint buckets keyed by connection-ID length and route key. Zero-length routes rely on endpoint binding state rather than peer connection-ID bytes. Routed packets are posted to the owning runtime as QuicConnectionPacketReceivedEvent instances; malformed or unroutable packets do not reach the runtime path.",
+  "edge_cases_and_constraints": [
+    "Maximum-length connection IDs route through the same exact-match path as ordinary non-zero connection IDs.",
+    "Zero-length connection-ID routing can match across remote address changes when the local endpoint remains stable.",
+    "Packets with different protocol versions and endpoint-handled weakly protected packet forms remain discardable before runtime processing.",
+    "The weak-protection rollback tail is not closed by this design."
+  ],
+  "risks": [
+    "Later work still needs focused proof for packet-protection removal failure and rollback after weakly protected packet processing discovers an error.",
+    "Future endpoint routing changes must preserve the distinction between existing-connection association and listener pre-acceptance admission."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes only the packet classification, connection association, zero-length route matching, version mismatch discard, and weakly protected invalid packet discard floor. It does not claim packet-protection removal failure handling, pre-error connection-error generation, rollback of weakly protected packet side effects, public API widening, or hosted interop readiness."
+    }
+  ]
+}
