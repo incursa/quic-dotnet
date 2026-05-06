@@ -313,7 +313,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
                 if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection
-                    || ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling)
+                    || ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling
+                    || ingressResult.Disposition == QuicConnectionIngressDisposition.Dropped)
                 {
                     continue;
                 }

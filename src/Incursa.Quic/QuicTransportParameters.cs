@@ -6,6 +6,16 @@ namespace Incursa.Quic;
 internal sealed class QuicTransportParameters
 {
     /// <summary>
+    /// Gets the default max_udp_payload_size value when the transport parameter is absent.
+    /// </summary>
+    internal const ulong DefaultMaxUdpPayloadSize = 65527;
+
+    /// <summary>
+    /// Gets the minimum valid max_udp_payload_size value for QUIC version 1.
+    /// </summary>
+    internal const ulong MinimumMaxUdpPayloadSize = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
+
+    /// <summary>
     /// Gets or sets the original_destination_connection_id transport parameter value.
     /// </summary>
     internal byte[]? OriginalDestinationConnectionId { get; set; }
@@ -85,4 +95,3 @@ internal sealed class QuicTransportParameters
     /// </summary>
     internal byte[]? RetrySourceConnectionId { get; set; }
 }
-

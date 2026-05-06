@@ -171,7 +171,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 byte[] datagram = buffer.AsSpan(0, bytesReceived).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, peerPathIdentity);
                 if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
-                    and not QuicConnectionIngressDisposition.EndpointHandling)
+                    and not QuicConnectionIngressDisposition.EndpointHandling
+                    and not QuicConnectionIngressDisposition.Dropped)
                 {
                     SendStatelessResetResponse(datagram, peerPathIdentity);
                 }

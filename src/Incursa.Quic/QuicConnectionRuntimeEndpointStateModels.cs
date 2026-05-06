@@ -9,6 +9,7 @@ internal enum QuicConnectionIngressDisposition
     EndpointHandling = 1,
     Unroutable = 2,
     Malformed = 3,
+    Dropped = 4,
 }
 
 internal enum QuicConnectionEndpointHandlingKind

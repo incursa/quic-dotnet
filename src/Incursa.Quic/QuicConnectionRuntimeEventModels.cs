@@ -38,6 +38,7 @@ internal enum QuicConnectionEffectKind
     EmitDiagnostic = 9,
     RegisterConnectionIdRoute = 10,
     RetireConnectionIdRoute = 11,
+    UpdateMaxUdpPayloadSize = 12,
 }
 
 internal enum QuicConnectionStreamActionKind
@@ -218,6 +219,9 @@ internal sealed record QuicConnectionRetireConnectionIdRouteEffect(
     ulong ConnectionId,
     ReadOnlyMemory<byte> ConnectionIdBytes)
     : QuicConnectionEffect(QuicConnectionEffectKind.RetireConnectionIdRoute);
+
+internal sealed record QuicConnectionUpdateMaxUdpPayloadSizeEffect(ulong MaxUdpPayloadSize)
+    : QuicConnectionEffect(QuicConnectionEffectKind.UpdateMaxUdpPayloadSize);
 
 internal sealed record QuicConnectionNotifyStreamsOfTerminalStateEffect(
     QuicConnectionTerminalState TerminalState)

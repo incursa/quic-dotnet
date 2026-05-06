@@ -3275,7 +3275,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return ApplyTransportParameters(
+        _ = ApplyTransportParameters(
             new QuicConnectionTransportParametersCommittedEvent(
                 ObservedAtTicks: nowTicks,
                 TransportFlags: QuicConnectionTransportState.None,
@@ -3283,6 +3283,10 @@ internal sealed partial class QuicConnectionRuntime
                     localTransportParameters.MaxIdleTimeout)),
             nowTicks,
             ref effects);
+
+        ulong maxUdpPayloadSize = localTransportParameters.MaxUdpPayloadSize ?? QuicTransportParameters.DefaultMaxUdpPayloadSize;
+        AppendEffect(ref effects, new QuicConnectionUpdateMaxUdpPayloadSizeEffect(maxUdpPayloadSize));
+        return true;
     }
 
     private bool TryCaptureOwnedResumptionTicketSnapshot(long nowTicks)

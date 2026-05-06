@@ -19,6 +19,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<ulong, QuicConnectionStatelessResetBinding> statelessResetBindingsByConnectionId = new();
     private readonly ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>> retainedStatelessResetBindingsByRouteLength = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionVersionProfile> versionProfilesByHandle = new();
+    private readonly ConcurrentDictionary<QuicConnectionHandle, ulong> maxUdpPayloadSizeByHandle = new();
     private readonly ConcurrentDictionary<string, int> statelessResetEmissionCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumStatelessResetEmissionsPerRemoteAddress;
 
@@ -70,6 +71,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         }
 
         versionProfilesByHandle[handle] = runtime.VersionProfile;
+        maxUdpPayloadSizeByHandle[handle] = QuicTransportParameters.DefaultMaxUdpPayloadSize;
 
         return true;
     }
@@ -89,6 +91,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         registeredHandles.TryRemove(handle, out _);
         pathByHandle.TryRemove(handle, out _);
         versionProfilesByHandle.TryRemove(handle, out _);
+        maxUdpPayloadSizeByHandle.TryRemove(handle, out _);
 
         if (routeIdsByHandle.TryRemove(handle, out ConcurrentDictionary<QuicConnectionIdKey, byte>? routeIds))
         {
@@ -249,6 +252,18 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         }
 
         pathByHandle[handle] = pathIdentity;
+        return true;
+    }
+
+    public bool TryUpdateMaxUdpPayloadSize(QuicConnectionHandle handle, ulong maxUdpPayloadSize)
+    {
+        if (!registeredHandles.ContainsKey(handle)
+            || maxUdpPayloadSize < QuicTransportParameters.MinimumMaxUdpPayloadSize)
+        {
+            return false;
+        }
+
+        maxUdpPayloadSizeByHandle[handle] = maxUdpPayloadSize;
         return true;
     }
 
@@ -501,6 +516,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             out QuicConnectionHandle routedHandle,
             out ulong? routedLocallyIssuedConnectionId))
         {
+            if (ExceedsMaxUdpPayloadSize(routedHandle, datagram.Length))
+            {
+                return CreateDroppedIngressResult(routedHandle);
+            }
+
             if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId))
             {
                 return new QuicConnectionIngressResult(
@@ -567,6 +587,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 => TryRegisterStatelessResetToken(handle, registerStatelessResetTokenEffect.ConnectionId, registerStatelessResetTokenEffect.Token.Span),
             QuicConnectionRetireStatelessResetTokenEffect retireStatelessResetTokenEffect
                 => TryRetireStatelessResetToken(handle, retireStatelessResetTokenEffect.ConnectionId),
+            QuicConnectionUpdateMaxUdpPayloadSizeEffect updateMaxUdpPayloadSizeEffect
+                => TryUpdateMaxUdpPayloadSize(handle, updateMaxUdpPayloadSizeEffect.MaxUdpPayloadSize),
             QuicConnectionDiscardConnectionStateEffect discardConnectionStateEffect
                 => TryUnregisterConnection(handle, discardConnectionStateEffect.TerminalState is not null),
             _ => false,
@@ -587,6 +609,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         statelessResetBindingsByConnectionId.Clear();
         retainedStatelessResetBindingsByRouteLength.Clear();
         versionProfilesByHandle.Clear();
+        maxUdpPayloadSizeByHandle.Clear();
         statelessResetEmissionCountsByRemoteAddress.Clear();
     }
 
@@ -617,6 +640,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 out QuicConnectionHandle routedHandle,
                 out ulong? routedLocallyIssuedConnectionId))
             {
+                if (ExceedsMaxUdpPayloadSize(routedHandle, datagram.Length))
+                {
+                    return CreateDroppedIngressResult(routedHandle);
+                }
+
                 if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId))
                 {
                     return new QuicConnectionIngressResult(
@@ -651,6 +679,23 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             QuicConnectionIngressDisposition.Malformed,
             QuicConnectionEndpointHandlingKind.None,
             null);
+    }
+
+    private bool ExceedsMaxUdpPayloadSize(QuicConnectionHandle handle, int datagramLength)
+    {
+        ulong limit = maxUdpPayloadSizeByHandle.TryGetValue(handle, out ulong configuredLimit)
+            ? configuredLimit
+            : QuicTransportParameters.DefaultMaxUdpPayloadSize;
+
+        return (ulong)datagramLength > limit;
+    }
+
+    private static QuicConnectionIngressResult CreateDroppedIngressResult(QuicConnectionHandle handle)
+    {
+        return new QuicConnectionIngressResult(
+            QuicConnectionIngressDisposition.Dropped,
+            QuicConnectionEndpointHandlingKind.None,
+            handle);
     }
 
     private bool TryLookupExactRoute(

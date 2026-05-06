@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0066",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Maximum UDP Payload Size Receiver Limit",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded endpoint/runtime path that applies a connection's local max_udp_payload_size transport parameter as a receiver-side UDP payload processing limit.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0066",
+    "VER-QUIC-RFC9000-0066"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S18P2-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs"
+  ],
+  "design_summary": "Local transport-parameter commit publishes a QuicConnectionUpdateMaxUdpPayloadSizeEffect carrying either the advertised max_udp_payload_size value or the RFC 9000 default used when the parameter is absent. The endpoint stores that per registered connection and checks already-routed long-header and short-header datagrams before posting a PacketReceived event into the connection runtime. Datagrams whose UDP payload length exceeds the stored local receive limit return a Dropped ingress disposition with no runtime post, and endpoint hosts treat that disposition as terminal local handling rather than as a route miss that should trigger stateless reset or server pre-acceptance policy.",
+  "data_and_state_considerations": "The receive limit is endpoint-side state keyed by QuicConnectionHandle because it gates datagram dispatch before runtime packet processing. Registered connections start with the default 65527-byte receive limit and are updated by the local transport-parameter effect after TLS publishes local parameters. The endpoint rejects configured limits below QUIC v1's 1200-byte floor.",
+  "edge_cases_and_constraints": [
+    "Datagrams at exactly the local max_udp_payload_size remain eligible for runtime processing.",
+    "Datagrams larger than the local max_udp_payload_size are dropped after route attribution and before PacketReceived posting.",
+    "Unrouted datagrams and listener pre-acceptance policy remain outside this per-connection receive-limit slice.",
+    "The absent transport-parameter case uses the RFC 9000 default max_udp_payload_size value."
+  ],
+  "risks": [
+    "This slice proves receiver-side processing suppression for routed datagrams only; it does not claim UDP socket receive-buffer sizing, PMTU discovery, peer send-size enforcement, broader Section 18.2 closure, public configuration APIs, or hosted interop readiness.",
+    "No parser, serializer, encoder, or decoder is introduced. Existing transport-parameter codec proof remains separate from this endpoint dispatch proof."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes REQ-QUIC-RFC9000-S18P2-0007 by preventing over-limit routed UDP payloads from being posted into the connection runtime."
+    }
+  ]
+}

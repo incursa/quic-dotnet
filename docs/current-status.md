@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S18P2 initial_max_data runtime commit,
+Last verified: 2026-05-06 for the S18P2 max_udp_payload_size receiver limit,
+S18P2 initial_max_data runtime commit,
 S18P2 max_idle_timeout trace cleanup, S22P1P1 provisional-registration policy
 closeout, S18P2 preferred-address field-shape, disable-active-migration, and
 initial stream-count transport parameter closeouts, the S17P2P5P2/P3 Retry
@@ -13,6 +14,23 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S18P2 max_udp_payload_size receiver-limit closure on 2026-05-06
+closes `REQ-QUIC-RFC9000-S18P2-0007` under
+`ARC-QUIC-RFC9000-0066`, `WI-QUIC-RFC9000-0066`, and
+`VER-QUIC-RFC9000-0066`. The proof covers local transport-parameter commit
+publishing a max-UDP-payload-size endpoint effect, per-connection receive-limit
+state in the endpoint, exact-limit routed datagrams being posted to the
+runtime, over-limit routed datagrams being dropped before `PacketReceived`, and
+host shells treating those drops as terminal local handling rather than
+stateless-reset or listener pre-acceptance route misses. Regenerated coverage
+triage marks `REQ-QUIC-RFC9000-S18P2-0007` as `trace_clean` and reports 1,260
+of 1,771 QUIC requirements trace-clean overall, leaving 511 non-clean. `S18P2`
+is now down to one remaining non-clean requirement:
+`REQ-QUIC-RFC9000-S18P2-0015` for `max_ack_delay` alarm-delay policy. This
+closure does not claim UDP socket receive-buffer sizing, path MTU discovery,
+peer send-size enforcement, public `max_udp_payload_size` configuration APIs,
+broader Section 18.2 closure, or hosted interop readiness.
 
 Follow-on S18P2 initial_max_data runtime commit on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S18P2-0008` under `ARC-QUIC-RFC9000-0065`,

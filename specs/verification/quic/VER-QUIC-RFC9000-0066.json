@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0066",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 Maximum UDP Payload Size Receiver Limit Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0066",
+    "WI-QUIC-RFC9000-0066"
+  ],
+  "verification_method": "Focused S18P2-0007 requirement-home tests over endpoint receive-limit dispatch behavior and local transport-parameter effect publication, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S18P2-0007"
+  ],
+  "scope": "This verification covers routed UDP datagrams being processed only when their payload length is less than or equal to the connection's local max_udp_payload_size and being dropped before PacketReceived posting when larger.",
+  "expected_result": "The focused tests show exact-limit datagrams route to the runtime, larger datagrams return Dropped without a runtime transition, the absent-parameter default limit is enforced, and local transport-parameter commit publishes the endpoint effect carrying max_udp_payload_size.",
+  "procedure": [
+    "Run a Release build.",
+    "Run the focused S18P2-0007 and endpoint-routing regression requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The datagram is attributable to a registered connection route before the receive-size limit is evaluated.",
+    "The connection's local transport parameters have either published max_udp_payload_size or rely on the RFC 9000 default value."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S18P2_0007|FullyQualifiedName~REQ_QUIC_CRT_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S14P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0005\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim UDP socket receive-buffer sizing, path MTU discovery, peer send-size enforcement, broader Section 18.2 closure, public configuration APIs, or hosted interop readiness."
+    }
+  ],
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S18P2-0007 and endpoint-routing regression filter passed 13/13, regenerated coverage triage marks REQ-QUIC-RFC9000-S18P2-0007 trace_clean and reports 1,260 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 442 artifacts, the full Release no-build suite passed 4,460/4,460, and git diff --check returned exit code 0 with line-ending warnings only."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05T19:49:27.5597355-06:00",
+  "generated_at": "2026-05-05T20:17:02.7990639-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-05T19:49:27.5562075-06:00",
+    "generated_at": "2026-05-05T20:17:02.7948848-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 61,
-      "covered_but_proof_too_broad": 51,
+      "covered_but_proof_too_broad": 50,
       "partially_covered": 145,
-      "trace_clean": 1259,
+      "trace_clean": 1260,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 184
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1259,
+      "clean": 1260,
       "metadata_only": 61,
-      "new_tests_needed": 444,
-      "restructure_needed": 72
+      "new_tests_needed": 443,
+      "restructure_needed": 71
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 61,
-          "covered_but_proof_too_broad": 51,
+          "covered_but_proof_too_broad": 50,
           "partially_covered": 145,
-          "trace_clean": 946,
+          "trace_clean": 947,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 184
         }
@@ -91501,44 +91501,33 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
+        "total": 11,
+        "focused": 8,
         "broad": 3,
         "by_kind": {
-          "positive": 2,
-          "negative": 0,
-          "edge": 0,
+          "positive": 4,
+          "negative": 2,
+          "edge": 4,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -91743,6 +91732,182 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect",
+          "method": "LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect",
+          "line": 127,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect",
+          "method": "LocalTransportParameterCommitPublishesMaximumUdpPayloadSizeEndpointEffect",
+          "line": 127,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+          "method": "ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+          "line": 56,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+          "method": "ReceiveDatagram_DropsDatagramLargerThanTheLocalMaximumUdpPayloadSize",
+          "line": 56,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+          "method": "ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+          "method": "ReceiveDatagram_RoutesDatagramAtTheLocalMaximumUdpPayloadSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+          "method": "ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+          "line": 100,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18P2-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs::ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18P2_0007",
+          "member": "REQ_QUIC_RFC9000_S18P2_0007.ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+          "method": "ReceiveDatagram_UsesDefaultMaximumUdpPayloadSizeWhenNoLocalParameterWasPublished",
+          "line": 100,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },

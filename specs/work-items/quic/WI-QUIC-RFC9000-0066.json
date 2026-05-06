@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0066",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Maximum UDP Payload Size Receiver Limit Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0066",
+    "VER-QUIC-RFC9000-0066"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S18P2-0007"
+  ],
+  "summary": "Close the RFC 9000 Section 18.2 max_udp_payload_size receiver-processing gap by enforcing the local advertised receive limit before routed datagrams are posted to a connection runtime.",
+  "planned_changes": "- Add transport-parameter constants for the max_udp_payload_size default and QUIC v1 minimum.\n- Publish a runtime endpoint effect when local transport parameters commit.\n- Store per-connection max UDP payload size in the endpoint and drop routed datagrams that exceed it before PacketReceived posting.\n- Add a dropped ingress disposition so host shells do not treat receive-limit drops as stateless-reset or pre-acceptance route misses.\n- Add focused requirement-home tests for exact-limit routing, over-limit dropping, and local transport-parameter effect publication.\n- Retarget REQ-QUIC-RFC9000-S18P2-0007 trace links from broad transport-parameter codec tests to direct receiver-limit proof.",
+  "verification_plan": "Run a Release build, run the focused S18P2-0007 and endpoint-routing regression requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0066"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0066"
+  ],
+  "out_of_scope": [
+    "UDP socket receive-buffer sizing.",
+    "Path MTU discovery or peer send-size enforcement.",
+    "Broader RFC 9000 Section 18.2 closure.",
+    "Public max_udp_payload_size configuration APIs.",
+    "Hosted interop readiness claims."
+  ],
+  "completion_notes": "Completed as a focused endpoint dispatch and requirement-home proof for REQ-QUIC-RFC9000-S18P2-0007."
+}
