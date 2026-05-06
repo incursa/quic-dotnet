@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0076",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Stream Limit Enforcement and Blocked Open Tail Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0076",
+    "VER-QUIC-RFC9000-0076"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S4P6-0008",
+    "REQ-QUIC-RFC9000-S4P6-0009",
+    "REQ-QUIC-RFC9000-S4P6-0012"
+  ],
+  "summary": "Close the S4P6 stream-limit enforcement tail by adding focused requirement-home proof for local-open peer limits, inbound over-limit STREAM_LIMIT_ERROR handling, and blocked-open STREAMS_BLOCKED frame production.",
+  "planned_changes": "- Add positive local-open boundary proof for bidirectional and unidirectional peer stream limits.\n- Add inbound STREAM acceptance proof at the advertised limit and zero-limit rejection edge proof.\n- Add direct S4P6 positive STREAMS_BLOCKED frame proof while preserving the existing active-runtime S19P14 emission proof.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S4P6 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0076"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0076"
+  ],
+  "out_of_scope": [
+    "Automatic stream-limit autotuning.",
+    "Public stream API widening.",
+    "Broader stream-management parity.",
+    "Hosted interop readiness.",
+    "Closing the deferred S4P6-0009 fuzz expectation."
+  ],
+  "completion_notes": "Completed as a focused S4P6 proof for REQ-QUIC-RFC9000-S4P6-0008, REQ-QUIC-RFC9000-S4P6-0009, and REQ-QUIC-RFC9000-S4P6-0012."
+}

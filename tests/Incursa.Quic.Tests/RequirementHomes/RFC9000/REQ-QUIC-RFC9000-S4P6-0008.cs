@@ -3,6 +3,41 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S4P6-0008")]
 public sealed class REQ_QUIC_RFC9000_S4P6_0008
 {
+    [Theory]
+    [InlineData(true, 0UL, 4UL)]
+    [InlineData(false, 2UL, 6UL)]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0008")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit(
+        bool bidirectional,
+        ulong firstExpectedStreamId,
+        ulong secondExpectedStreamId)
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            peerBidirectionalStreamLimit: bidirectional ? 2UL : 4UL,
+            peerUnidirectionalStreamLimit: bidirectional ? 4UL : 2UL);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional,
+            out QuicStreamId firstStreamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+        Assert.Equal(firstExpectedStreamId, firstStreamId.Value);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional,
+            out QuicStreamId secondStreamId,
+            out blockedFrame));
+        Assert.Equal(default, blockedFrame);
+        Assert.Equal(secondExpectedStreamId, secondStreamId.Value);
+
+        Assert.True(state.TryGetStreamSnapshot(firstStreamId.Value, out QuicConnectionStreamSnapshot firstSnapshot));
+        Assert.True(state.TryGetStreamSnapshot(secondStreamId.Value, out QuicConnectionStreamSnapshot secondSnapshot));
+        Assert.Equal(QuicStreamSendState.Ready, firstSnapshot.SendState);
+        Assert.Equal(QuicStreamSendState.Ready, secondSnapshot.SendState);
+    }
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0008")]
     [CoverageType(RequirementCoverageType.Negative)]

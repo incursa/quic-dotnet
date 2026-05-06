@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S5P1P1 Retry sequencing and migration
-pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
+Last verified: 2026-05-06 for the S4P6 stream-limit enforcement and
+blocked-open tail, S5P1P1 Retry sequencing and migration pool tail,
+S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
 protected packet failure policy, S5P2 packet classification and connection
 association floor, S7P4P1
 client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
@@ -21,6 +22,28 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S4P6 stream-limit enforcement and blocked-open tail closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S4P6-0008`,
+`REQ-QUIC-RFC9000-S4P6-0009`, and
+`REQ-QUIC-RFC9000-S4P6-0012` under `ARC-QUIC-RFC9000-0076`,
+`WI-QUIC-RFC9000-0076`, and `VER-QUIC-RFC9000-0076`. The proof covers local
+bidirectional and unidirectional opens staying within the peer's current stream
+limit, inbound STREAM frames at the advertised limit being accepted, zero
+advertised incoming stream limits rejecting the first peer stream with
+`STREAM_LIMIT_ERROR`, and blocked local opens returning correctly shaped
+`STREAMS_BLOCKED` frames while the active-runtime protected emission proof
+remains linked through the existing S19P14 path. Regenerated coverage triage
+marks those three requirements as `trace_clean` and reports 1,299 of 1,771
+QUIC requirements trace-clean overall, leaving 472 non-clean. `S4P6` now has
+nine remaining non-clean requirements: metadata-only xref cleanup for
+`REQ-QUIC-RFC9000-S4P6-0002` through `REQ-QUIC-RFC9000-S4P6-0005`, and
+missing-proof work for `REQ-QUIC-RFC9000-S4P6-0001`,
+`REQ-QUIC-RFC9000-S4P6-0006`, `REQ-QUIC-RFC9000-S4P6-0007`,
+`REQ-QUIC-RFC9000-S4P6-0010`, and `REQ-QUIC-RFC9000-S4P6-0011`. This closure
+does not claim automatic stream-limit autotuning, public stream API widening,
+broader stream-management parity, hosted interop readiness, or closure of the
+deferred S4P6-0009 fuzz expectation.
 
 Follow-on S5P1P1 Retry sequencing and migration pool tail closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0007` and
@@ -600,9 +623,9 @@ Current artifact inventory:
 |---|---:|
 | Requirement specs in `specs/requirements/quic` | 7 |
 | Requirement clauses | 1,949 |
-| Architecture artifacts | 102 |
-| Work-item artifacts | 103 |
-| Verification artifacts | 104 |
+| Architecture artifacts | 103 |
+| Work-item artifacts | 104 |
+| Verification artifacts | 105 |
 
 Requirement family counts:
 
@@ -620,9 +643,9 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 
 | Artifact type | Passed or implemented | Planned or draft |
 |---|---:|---:|
-| Architecture | 102 implemented | 0 draft |
-| Work items | 103 complete | 0 planned |
-| Verification | 104 passed | 0 planned |
+| Architecture | 103 implemented | 0 draft |
+| Work items | 104 complete | 0 planned |
+| Verification | 105 passed | 0 planned |
 
 ## Implementation State
 
@@ -680,6 +703,13 @@ explicit requirements and gap records, not inferred from the green baseline.
 
 The next useful lanes are:
 
+- Continue S4P6 with the runtime/proof-focused `MAX_STREAMS` monotonic update
+  tail (`REQ-QUIC-RFC9000-S4P6-0010` and
+  `REQ-QUIC-RFC9000-S4P6-0011`), then the broader incoming stream-limit proof
+  set (`REQ-QUIC-RFC9000-S4P6-0001`,
+  `REQ-QUIC-RFC9000-S4P6-0006`, and `REQ-QUIC-RFC9000-S4P6-0007`).
+  `REQ-QUIC-RFC9000-S4P6-0002` through
+  `REQ-QUIC-RFC9000-S4P6-0005` are metadata-only xref cleanup.
 - Dispatch and inspect the opt-in hosted `supported-subset` interop profile
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
@@ -691,16 +721,16 @@ The next useful lanes are:
   already authorize it.
 - Additional fuzz and benchmark evidence for any newly touched wire-facing or
   hot-path code.
-- No known planned or draft trace artifacts, stale open local proof-tail gaps,
-  or red local executable clusters remain in the current core QUIC artifact
-  set. The RFC 9002 recovery/congestion front door, migration-core
+- No known red local executable clusters remain in the current core QUIC
+  artifact set. The RFC 9002 recovery/congestion front door, migration-core
   path-state decomposition front, handshake-orchestration umbrella, and ACK
   piggyback proof-tail are closed for their current repository-owned proof
-  surfaces. Future work should be selected from explicit gap records such as
-  hosted interop expansion, public-surface hardening, 0-RTT receive/anti-replay,
-  concrete future path-migration matrix cells, or newly discovered behavior
-  gaps. The internal repeated key-update lifecycle and epoch-cap slices are
-  closed, but they are not broad public key-update support claims.
+  surfaces. Future work should be selected from explicit generated triage and
+  gap records such as the remaining S4P6 proof tail, hosted interop expansion,
+  public-surface hardening, 0-RTT receive/anti-replay, concrete future
+  path-migration matrix cells, or newly discovered behavior gaps. The internal
+  repeated key-update lifecycle and epoch-cap slices are closed, but they are
+  not broad public key-update support claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
