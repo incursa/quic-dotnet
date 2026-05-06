@@ -9228,17 +9228,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0070"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0070"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0070"
         ],
         "upstream_refs": [
           "RFC 9000 §7.4.1 RFC9000-S7.4.1-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0003.cs::ClientUsesServerHandshakeValuesInsteadOfRememberedProhibitedValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0003.cs::ClientUsesDefaultValuesWhenServerOmitsNewHandshakeValues"
         ]
       }
     },

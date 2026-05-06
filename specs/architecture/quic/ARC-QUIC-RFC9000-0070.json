@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0070",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Client 0-RTT Handshake Value Supersession Policy",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded client-side policy that uses server handshake values or defaults for transport parameters that must not be remembered for 0-RTT.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0068",
+    "WI-QUIC-RFC9000-0070",
+    "VER-QUIC-RFC9000-0070"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S7P4P1-0003"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0003.cs"
+  ],
+  "design_summary": "QuicZeroRttTransportParameterPolicy now exposes a client-side resolver for the transport parameters that Section 7.4.1 prohibits remembering for 0-RTT. The resolver deliberately ignores remembered values for original_destination_connection_id, stateless_reset_token, max_ack_delay, preferred_address, initial_source_connection_id, and retry_source_connection_id, uses the server's new handshake values when they are present, and falls back to the repo's default or absent value when the server omits them.",
+  "data_and_state_considerations": "The resolved view clones byte-array and preferred-address values so the handshake-derived values cannot alias mutable remembered snapshots. max_ack_delay falls back to QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros because the current runtime represents this parameter in its microsecond ACK-delay model.",
+  "edge_cases_and_constraints": [
+    "ack_delay_exponent remains classified as prohibited but is not represented as a QuicTransportParameters field in this runtime model.",
+    "Absent prohibited connection-ID and preferred-address parameters resolve to null rather than remembered values.",
+    "This slice does not change public early-data admission or 0-RTT packet construction."
+  ],
+  "risks": [
+    "The remaining S7P4P1 updated-value packet-context rules still need a sender/receiver enforcement slice.",
+    "If the runtime later models ack_delay_exponent directly, it must be added to the same handshake-supersession path."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes only REQ-QUIC-RFC9000-S7P4P1-0003. It does not claim updated-value use in 0-RTT packets, server protocol-violation handling, public early-data APIs, TLS early_data extension admission, or application-data delivery."
+    }
+  ]
+}

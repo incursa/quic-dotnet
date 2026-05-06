@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0070",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Client 0-RTT Handshake Value Supersession Policy Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0070",
+    "VER-QUIC-RFC9000-0070"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S7P4P1-0003"
+  ],
+  "summary": "Close the bounded S7P4P1 client handshake-value policy by resolving prohibited remembered parameters from the server's new handshake values or defaults instead of prior remembered values.",
+  "planned_changes": "- Extend QuicZeroRttTransportParameterPolicy with a client handshake-value resolver for prohibited remembered parameters.\n- Clone server handshake values for connection-ID, stateless-reset-token, preferred-address, and max_ack_delay fields.\n- Fall back to default max_ack_delay and absent/null values when the server omits a prohibited remembered parameter.\n- Add focused requirement-home tests for handshake value supersession and default fallback.\n- Retarget REQ-QUIC-RFC9000-S7P4P1-0003 trace links to focused proof.",
+  "verification_plan": "Run a Release build, run the focused S7P4P1 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0070"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0070"
+  ],
+  "out_of_scope": [
+    "REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013 updated-value-in-0-RTT sender and receiver enforcement.",
+    "Public 0-RTT or early-data APIs.",
+    "TLS early_data extension admission wiring.",
+    "Server anti-replay or application-data delivery."
+  ],
+  "completion_notes": "Completed as a focused internal client handshake-value supersession policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0003."
+}

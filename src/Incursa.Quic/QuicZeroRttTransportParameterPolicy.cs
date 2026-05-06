@@ -232,6 +232,23 @@ internal static class QuicZeroRttTransportParameterPolicy
         return QuicZeroRttTransportParameterAcceptanceDecision.Accept;
     }
 
+    internal static QuicTransportParameters ResolveClientHandshakeValuesForProhibitedZeroRttParameters(
+        QuicTransportParameters? rememberedTransportParameters,
+        QuicTransportParameters? handshakeTransportParameters)
+    {
+        _ = rememberedTransportParameters;
+
+        return new QuicTransportParameters
+        {
+            OriginalDestinationConnectionId = CloneBytes(handshakeTransportParameters?.OriginalDestinationConnectionId),
+            StatelessResetToken = CloneBytes(handshakeTransportParameters?.StatelessResetToken),
+            MaxAckDelay = handshakeTransportParameters?.MaxAckDelay ?? QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros,
+            PreferredAddress = ClonePreferredAddress(handshakeTransportParameters?.PreferredAddress),
+            InitialSourceConnectionId = CloneBytes(handshakeTransportParameters?.InitialSourceConnectionId),
+            RetrySourceConnectionId = CloneBytes(handshakeTransportParameters?.RetrySourceConnectionId),
+        };
+    }
+
     internal static bool HasNonZeroClientApplicationDataAllowance(QuicTransportParameters transportParameters)
     {
         ArgumentNullException.ThrowIfNull(transportParameters);
@@ -291,5 +308,28 @@ internal static class QuicZeroRttTransportParameterPolicy
     private static ulong EffectiveActiveConnectionIdLimit(QuicTransportParameters parameters)
     {
         return parameters.ActiveConnectionIdLimit ?? QuicConnectionPeerConnectionIdState.DefaultActiveConnectionIdLimit;
+    }
+
+    private static QuicPreferredAddress? ClonePreferredAddress(QuicPreferredAddress? preferredAddress)
+    {
+        if (preferredAddress is null)
+        {
+            return null;
+        }
+
+        return new QuicPreferredAddress
+        {
+            IPv4Address = CloneBytes(preferredAddress.IPv4Address) ?? [],
+            IPv4Port = preferredAddress.IPv4Port,
+            IPv6Address = CloneBytes(preferredAddress.IPv6Address) ?? [],
+            IPv6Port = preferredAddress.IPv6Port,
+            ConnectionId = CloneBytes(preferredAddress.ConnectionId) ?? [],
+            StatelessResetToken = CloneBytes(preferredAddress.StatelessResetToken) ?? [],
+        };
+    }
+
+    private static byte[]? CloneBytes(byte[]? bytes)
+    {
+        return bytes?.ToArray();
     }
 }
