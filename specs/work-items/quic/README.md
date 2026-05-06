@@ -91,6 +91,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0078.json`](WI-QUIC-RFC9000-0078.json): canonical RFC 9000 max_streams oversized close policy tail work-item source
 - [`WI-QUIC-RFC9000-0079.json`](WI-QUIC-RFC9000-0079.json): canonical RFC 9000 cumulative incoming stream limit tail work-item source
 - [`WI-QUIC-RFC9000-0080.json`](WI-QUIC-RFC9000-0080.json): canonical RFC 9000 preferred address handshake-confirmed transition work-item source
+- [`WI-QUIC-RFC9000-0081.json`](WI-QUIC-RFC9000-0081.json): canonical RFC 9000 preferred address validation failure policy work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

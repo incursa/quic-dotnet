@@ -1,8 +1,9 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S9P6P1 preferred-address
-handshake-confirmed transition, S4P6 stream-limit metadata xref tail,
-S4P6 cumulative incoming stream-limit tail, S4P6 max_streams oversized
+Last verified: 2026-05-06 for the S9P6P1 preferred-address validation-failure
+policy, S9P6P1 preferred-address handshake-confirmed transition, S4P6
+stream-limit metadata xref tail, S4P6 cumulative incoming stream-limit tail,
+S4P6 max_streams oversized
 close-policy tail, S4P6 MAX_STREAMS monotonic limit update tail, S4P6
 stream-limit enforcement and blocked-open tail, S5P1P1 Retry sequencing and
 migration pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
@@ -25,6 +26,23 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S9P6P1 preferred-address validation-failure policy closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0005` under
+`ARC-QUIC-RFC9000-0081`, `WI-QUIC-RFC9000-0081`, and
+`VER-QUIC-RFC9000-0081`. The proof covers preferred-address validation
+failure abandoning the failed preferred path without promotion, not recording
+that path as recently validated, preserving the original server address as the
+active path, and sending future packets to the original server address for
+both IPv4 and IPv6 preferred-address failure cases. Regenerated coverage
+triage marks the requirement as `trace_clean` and reports 1,313 of 1,771 QUIC
+requirements trace-clean overall, leaving 458 non-clean. `S9P6P1` still has
+three remaining non-clean requirements: `REQ-QUIC-RFC9000-S9P6P1-0001`,
+`REQ-QUIC-RFC9000-S9P6P1-0006`, and
+`REQ-QUIC-RFC9000-S9P6P1-0007`. This closure does not claim complete S9P6P1
+closure, server preferred_address emission proof, per-family
+preferred-address metadata cleanup, public migration APIs, multipath support,
+hosted interop readiness, or closure of deferred fuzz obligations.
 
 Follow-on S9P6P1 preferred-address handshake-confirmed transition closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0002`,

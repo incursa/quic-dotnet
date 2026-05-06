@@ -316,6 +316,9 @@ internal sealed partial class QuicConnectionRuntime
         candidatePaths[pathValidationFailedEvent.PathIdentity] = candidatePath;
 
         bool stateChanged = true;
+        bool preserveActivePathAfterPreferredAddressFailure = activePath is not null
+            && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, candidatePath.Identity)
+            && IsPreferredAddressPath(candidatePath.Identity);
 
         if (activePath is not null
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, candidatePath.Identity))
@@ -337,6 +340,13 @@ internal sealed partial class QuicConnectionRuntime
 
         if (!HasValidatedPath)
         {
+            if (preserveActivePathAfterPreferredAddressFailure)
+            {
+                UpdatePeerAddressValidationFlag();
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                return stateChanged;
+            }
+
             // Keep the connection alive if another validation attempt can still succeed.
             if (HasPendingPathValidation())
             {

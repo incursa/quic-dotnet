@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T14:21:58.1243497-06:00",
+  "generated_at": "2026-05-06T14:58:23.6455883-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-06T14:21:58.1091857-06:00",
+    "generated_at": "2026-05-06T14:58:23.6416557-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 50,
       "covered_but_proof_too_broad": 48,
-      "partially_covered": 136,
-      "trace_clean": 1312,
+      "partially_covered": 135,
+      "trace_clean": 1313,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 154
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1312,
+      "clean": 1313,
       "metadata_only": 50,
-      "new_tests_needed": 402,
+      "new_tests_needed": 401,
       "restructure_needed": 68
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 50,
           "covered_but_proof_too_broad": 48,
-          "partially_covered": 136,
-          "trace_clean": 999,
+          "partially_covered": 135,
+          "trace_clean": 1000,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 154
         }
@@ -211950,31 +211950,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -211986,7 +211987,7 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
           "method": "ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
-          "line": 11,
+          "line": 49,
           "kinds": [
             "negative"
           ],
@@ -212008,12 +212009,100 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
           "method": "ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
-          "line": 11,
+          "line": 49,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+          "method": "ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+          "line": 128,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+          "method": "ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
+          "line": 128,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+          "method": "ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs::ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+          "method": "ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
