@@ -12,6 +12,8 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0004
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions()
     {
@@ -37,6 +39,8 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0004
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S6P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S21P12-0002")]
     public void ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(

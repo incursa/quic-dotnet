@@ -6,6 +6,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     public void TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors()
     {
         byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(
@@ -24,6 +25,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     public void TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose()
     {
         byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildTransportClose(
