@@ -65,7 +65,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0011">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0016">The first byte MUST contain the Reserved and Packet Number Length bits; see also Section 17.2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P2-0001">During the handshake, packets with the long header MUST be used to establish the connection IDs used by both endpoints.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0008">Packets with long headers MUST include Source Connection ID and Destination Connection ID fields.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0001")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0002")]
@@ -87,7 +86,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0001
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0011")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0016")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S5P1-0008")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload()
     {
