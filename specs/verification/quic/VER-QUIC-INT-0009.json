@@ -6,7 +6,7 @@
   "title": "QUIC Hosted Interop-Runner Handshake Corroboration Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Workflow review, local helper dry-run, local helper execution, artifact inspection, and SpecTrace validation.",
+  "verification_method": "Workflow review, requirement-home tests, local helper dry-run, local helper execution, artifact inspection, and SpecTrace validation.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "SPEC-QUIC-CRT",
@@ -24,6 +24,7 @@
   ],
   "scope": "Verify that the repository defines a manual hosted lane for the narrow server-role `handshake` helper cell, keeps the lane outside ordinary CI gates, uploads artifacts regardless of helper outcome, and preserves the helper's advisory classification boundary without claiming broad interop readiness.",
   "procedure": [
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0016`.",
     "Review `.github/workflows/interop-runner-handshake.yml` and confirm it is `workflow_dispatch` only.",
     "Confirm the workflow checks out this repository and the external `quic-interop-runner` checkout as separate workspaces.",
     "Confirm the workflow invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with `-LocalRole server`, `-PeerImplementationSlots quic-go`, `-TestCases handshake`, and an explicit `-RunnerRoot` path.",
@@ -38,6 +39,7 @@
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0016.cs",
     "artifacts/interop-runner/20260429-170106187-server-nginx/",
     "https://github.com/incursa/quic-dotnet/actions/runs/25141407138",
     "https://github.com/incursa/quic-dotnet/actions/runs/25145021654",

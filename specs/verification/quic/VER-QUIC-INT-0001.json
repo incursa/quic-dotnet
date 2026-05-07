@@ -11,7 +11,7 @@
     "ARC-QUIC-INT-0001",
     "WI-QUIC-INT-0001"
   ],
-  "scope": "Verify the boundary-clean harness foundation: companion-project shape, runner-facing dispatch, unsupported-exit behavior, qlog snapshot hooks, and packaging surfaces.",
+  "scope": "Verify the boundary-clean harness foundation: companion-project shape, runner-facing dispatch, unsupported-exit behavior, qlog snapshot hooks, honest SSLKEYLOGFILE TODO behavior, and packaging surfaces.",
   "preconditions": [
     "The solution builds successfully with the new harness project included.",
     "The test runner can discover requirement-home tests under the new INT folder.",
@@ -37,12 +37,12 @@
     "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0001|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0003|FullyQualifiedName~REQ_QUIC_INT_0004|FullyQualifiedName~REQ_QUIC_INT_0005\""
   ],
   "procedure": [
-    "Run the focused INT requirement-home tests for environment parsing, unsupported dispatch semantics, qlog snapshot persistence, SSL key log TODO behavior, and invalid-configuration handling.",
+    "Run the focused INT requirement-home tests for environment parsing, unsupported dispatch semantics, qlog snapshot persistence, SSL key log TODO behavior on supported and unsupported paths, and invalid-configuration handling.",
     "Build the solution and confirm the companion harness project participates in the normal CI build graph.",
     "Inspect the README, Dockerfile, and startup script to confirm the runner contract stays in the harness and that unsupported cases are documented honestly."
   ],
-  "expected_result": "The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, qlog snapshots are emitted when `QLOGDIR` is enabled for supported client/listener paths, and the repository can build the harness project and its Docker image without polluting the library boundary.",
-  "status_summary": "Passed on 2026-04-30. The focused `REQ_QUIC_INT_0001` through `REQ_QUIC_INT_0005` requirement-home filter passed 11/11, covering the companion-project shape, runner environment parsing, unsupported-testcase honesty, qlog snapshot hook, SSL keylog TODO honesty, invalid-configuration failure path, diagnostics sink behavior, and sender-runtime foundation seams. This proves a traceable harness foundation, not broad end-to-end interop readiness.",
+  "expected_result": "The harness parses runner-facing configuration without owning protocol behavior, unsupported testcases return `127`, invalid runner configuration returns `1`, qlog snapshots are emitted when `QLOGDIR` is enabled for supported client/listener paths, `SSLKEYLOGFILE` remains a clear TODO on supported localhost smoke runs, and the repository can build the harness project and its Docker image without polluting the library boundary.",
+  "status_summary": "Passed on 2026-04-30. The focused `REQ_QUIC_INT_0001` through `REQ_QUIC_INT_0005` requirement-home filter passed 12/12, covering the companion-project shape, runner environment parsing, unsupported-testcase honesty, qlog snapshot hook, SSL keylog TODO honesty, invalid-configuration failure path, diagnostics sink behavior, and sender-runtime foundation seams. The updated localhost handshake smoke keeps SSLKEYLOGFILE honest on a supported path without suppressing qlog capture or creating a fake keylog file. This proves a traceable harness foundation, not broad end-to-end interop readiness.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
