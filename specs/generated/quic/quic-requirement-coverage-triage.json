@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T01:18:43.8795668-06:00",
+  "generated_at": "2026-05-07T01:28:43.9379487-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T01:18:43.8763353-06:00",
+    "generated_at": "2026-05-07T01:28:43.9345839-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 49,
-      "covered_but_proof_too_broad": 45,
+      "covered_but_proof_too_broad": 44,
       "partially_covered": 120,
-      "trace_clean": 1340,
+      "trace_clean": 1341,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 146
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1340,
+      "clean": 1341,
       "metadata_only": 49,
-      "new_tests_needed": 377,
-      "restructure_needed": 59
+      "new_tests_needed": 376,
+      "restructure_needed": 58
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 49,
-          "covered_but_proof_too_broad": 45,
+          "covered_but_proof_too_broad": 44,
           "partially_covered": 120,
-          "trace_clean": 1027,
+          "trace_clean": 1028,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 146
         }
@@ -53460,34 +53460,75 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
-        "broad": 3,
+        "total": 4,
+        "focused": 2,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
-          "edge": 2,
+          "edge": 1,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S15_0001",
+          "member": "REQ_QUIC_RFC9000_S15_0001.TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
+          "method": "TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S15-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S15_0001",
+          "member": "REQ_QUIC_RFC9000_S15_0001.TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
+          "method": "TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S15-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
           "source": "requirement_attribute",
@@ -53531,45 +53572,6 @@
           "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs",
-          "class": "REQ_QUIC_RFC9000_S17P2P1_0013",
-          "member": "REQ_QUIC_RFC9000_S17P2P1_0013.TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "method": "TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "line": 46,
-          "kinds": [
-            "edge"
-          ],
-          "categories": [
-            "Property"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC8999-S5P1-0001",
-            "REQ-QUIC-RFC8999-S5P1-0003",
-            "REQ-QUIC-RFC8999-S5P1-0004",
-            "REQ-QUIC-RFC8999-S5P1-0006",
-            "REQ-QUIC-RFC8999-S5P1-0008",
-            "REQ-QUIC-RFC9000-S15-0001",
-            "REQ-QUIC-RFC9000-S17-0001",
-            "REQ-QUIC-RFC9000-S17P2P1-0003",
-            "REQ-QUIC-RFC9000-S17P2P1-0004",
-            "REQ-QUIC-RFC9000-S17P2P1-0005",
-            "REQ-QUIC-RFC9000-S17P2P1-0006",
-            "REQ-QUIC-RFC9000-S17P2P1-0007",
-            "REQ-QUIC-RFC9000-S17P2P1-0008",
-            "REQ-QUIC-RFC9000-S17P2P1-0009",
-            "REQ-QUIC-RFC9000-S17P2P1-0013",
-            "REQ-QUIC-RFC9000-S17P2P1-0019",
-            "REQ-QUIC-RFC9000-S5P1-0012",
-            "REQ-QUIC-RFC9000-S6P1-0001"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs",
           "class": "REQ_QUIC_RFC9000_S17P2P1_0013",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0013.TryParseVersionNegotiation_RoundTripsSupportedVersions",

@@ -25392,7 +25392,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues"
         ]
       }
     },
