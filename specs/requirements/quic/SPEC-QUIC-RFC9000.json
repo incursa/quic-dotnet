@@ -8158,8 +8158,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
@@ -8188,9 +8188,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
