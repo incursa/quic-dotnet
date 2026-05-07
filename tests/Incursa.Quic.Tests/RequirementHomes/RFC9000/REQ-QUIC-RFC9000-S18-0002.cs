@@ -147,6 +147,32 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S18-0002")]
+    public void TryFormatTransportParameters_EncodesASequenceOfTuples()
+    {
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x01, QuicVarintTestData.EncodeMinimal(25)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x0C, []));
+
+        QuicTransportParameters parameters = new()
+        {
+            MaxIdleTimeout = 25,
+            DisableActiveMigration = true,
+        };
+
+        Span<byte> destination = stackalloc byte[32];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Server,
+            destination,
+            out int bytesWritten));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S8-0001">The TLS handshake MUST carry values for QUIC transport parameters.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18-0002">They MUST be encoded as a sequence of transport parameters, as shown in Figure 20:</workbench-requirement>

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T02:31:45.9114427-06:00",
+  "generated_at": "2026-05-07T08:15:47.5863059-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T02:31:45.9081689-06:00",
+    "generated_at": "2026-05-07T08:15:47.5820316-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 46,
-      "covered_but_proof_too_broad": 43,
+      "covered_but_proof_too_broad": 42,
       "partially_covered": 112,
-      "trace_clean": 1353,
+      "trace_clean": 1354,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 146
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1353,
+      "clean": 1354,
       "metadata_only": 46,
-      "new_tests_needed": 367,
-      "restructure_needed": 57
+      "new_tests_needed": 366,
+      "restructure_needed": 56
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 46,
-          "covered_but_proof_too_broad": 43,
+          "covered_but_proof_too_broad": 42,
           "partially_covered": 112,
-          "trace_clean": 1040,
+          "trace_clean": 1041,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 146
         }
@@ -88561,13 +88561,12 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
@@ -88576,20 +88575,18 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 0,
+        "total": 7,
+        "focused": 1,
         "broad": 6,
         "by_kind": {
-          "positive": 4,
+          "positive": 5,
           "negative": 0,
           "edge": 0,
           "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -88601,7 +88598,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -88668,7 +88665,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -88723,6 +88720,28 @@
             "REQ-QUIC-RFC9000-S9P6P1-0001",
             "REQ-QUIC-RFC9000-S9P6P1-0007",
             "REQ-QUIC-RFC9001-S8-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0002",
+          "member": "REQ_QUIC_RFC9000_S18_0002.TryFormatTransportParameters_EncodesASequenceOfTuples",
+          "method": "TryFormatTransportParameters_EncodesASequenceOfTuples",
+          "line": 152,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0002"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -88871,7 +88890,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -88938,7 +88957,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -89052,7 +89071,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -89119,7 +89138,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -89322,7 +89341,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -89389,7 +89408,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -89653,7 +89672,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -89720,7 +89739,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -89923,7 +89942,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -89990,7 +90009,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -90254,7 +90273,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -90321,7 +90340,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -90524,7 +90543,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -90591,7 +90610,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -90855,7 +90874,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -90922,7 +90941,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -91125,7 +91144,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -91192,7 +91211,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -91471,7 +91490,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -91606,7 +91625,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -91716,7 +91735,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -91851,7 +91870,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -92056,7 +92075,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -92123,7 +92142,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -92258,7 +92277,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -92325,7 +92344,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -92486,7 +92505,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -92621,7 +92640,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -92915,7 +92934,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -93050,7 +93069,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -93422,7 +93441,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -93489,7 +93508,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -93624,7 +93643,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -93691,7 +93710,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -93901,7 +93920,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -94036,7 +94055,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -94417,7 +94436,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -94552,7 +94571,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -94838,7 +94857,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -94973,7 +94992,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -95256,7 +95275,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -95391,7 +95410,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -95894,7 +95913,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -96029,7 +96048,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -96449,7 +96468,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -96584,7 +96603,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -96871,7 +96890,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -97006,7 +97025,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -97555,7 +97574,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -97690,7 +97709,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -97888,7 +97907,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -98023,7 +98042,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -98218,7 +98237,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -98353,7 +98372,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -98507,7 +98526,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -98642,7 +98661,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -98837,7 +98856,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -98972,7 +98991,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -99303,7 +99322,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -99438,7 +99457,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -99681,7 +99700,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -99816,7 +99835,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -100186,7 +100205,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -100321,7 +100340,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -100472,7 +100491,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -100607,7 +100626,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -100758,7 +100777,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -100893,7 +100912,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -101044,7 +101063,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -101179,7 +101198,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -101334,7 +101353,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -101469,7 +101488,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -101711,7 +101730,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -101846,7 +101865,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -102128,7 +102147,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -102263,7 +102282,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -173408,7 +173427,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -173543,7 +173562,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -178075,7 +178094,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -178210,7 +178229,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -178483,7 +178502,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -178618,7 +178637,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -183661,7 +183680,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -183796,7 +183815,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -191292,7 +191311,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -191427,7 +191446,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -191593,7 +191612,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -191728,7 +191747,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -196957,7 +196976,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -197092,7 +197111,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -197247,7 +197266,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -197382,7 +197401,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -197625,7 +197644,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -197760,7 +197779,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -197999,7 +198018,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -198134,7 +198153,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -198837,7 +198856,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -198972,7 +198991,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -215220,7 +215239,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -215355,7 +215374,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -216362,7 +216381,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -216497,7 +216516,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
@@ -236056,7 +236075,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
           "method": "Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "line": 407,
+          "line": 433,
           "kinds": [
             "fuzz"
           ],
@@ -236191,7 +236210,7 @@
           "class": "REQ_QUIC_RFC9000_S18_0002",
           "member": "REQ_QUIC_RFC9000_S18_0002.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
           "method": "TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
-          "line": 245,
+          "line": 271,
           "kinds": [
             "positive"
           ],
