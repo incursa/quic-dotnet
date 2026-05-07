@@ -21810,6 +21810,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.5 RFC9000-S13.2.5-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0002.cs::TryFormatAckFrame_EncodesTheAckDelayFieldAsTheSelectedDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0002.cs::TryParseAckFrame_RejectsATruncatedAckDelayField"
         ]
       }
     },
