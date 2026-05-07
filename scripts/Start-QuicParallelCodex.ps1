@@ -320,6 +320,80 @@ Parallel coordination rules:
     [System.IO.File]::WriteAllText($EffectivePromptPath, ($basePrompt.TrimEnd() + $contract), [System.Text.UTF8Encoding]::new($false))
 }
 
+function Convert-ToPowerShellSingleQuotedString {
+    param([AllowEmptyString()][string]$Value)
+
+    if ($null -eq $Value) {
+        $Value = ""
+    }
+
+    return "'" + ($Value -replace "'", "''") + "'"
+}
+
+function Convert-ToPowerShellArrayLiteral {
+    param([AllowNull()][object]$Value)
+
+    $items = @(Get-StringArray -Value $Value)
+    if ($items.Count -eq 0) {
+        return "@()"
+    }
+
+    return "@(" + (($items | ForEach-Object { Convert-ToPowerShellSingleQuotedString -Value $_ }) -join ", ") + ")"
+}
+
+function Write-LaneRunnerScript {
+    param(
+        [Parameter(Mandatory = $true)][object]$Lane,
+        [Parameter(Mandatory = $true)][string]$RunnerScriptPath,
+        [Parameter(Mandatory = $true)][string]$WorkerScriptPath,
+        [Parameter(Mandatory = $true)][string]$WorktreePath,
+        [Parameter(Mandatory = $true)][string]$EffectivePromptPath,
+        [Parameter(Mandatory = $true)][string]$OutputDirectory,
+        [Parameter(Mandatory = $true)][string]$CodexCommand,
+        [Parameter(Mandatory = $true)][string]$Sandbox,
+        [Parameter(Mandatory = $true)][string]$Model,
+        [Parameter(Mandatory = $true)][string]$ReasoningEffort,
+        [Parameter(Mandatory = $true)][int]$MaxIterations
+    )
+
+    $laneId = [string]$Lane.id
+    $targetScope = [string](Get-PropertyValue -Object $Lane -Name "targetScope" -Default "")
+    $allowed = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "allowedPathPrefixes" -Default @())
+    $forbidden = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "forbiddenPathPrefixes" -Default @())
+    $requirementFamilies = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "requirementFamilies" -Default @())
+    $blockingGaps = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "blockingGapIds" -Default @())
+    $verification = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "verificationCommands" -Default @())
+    $mergeChecks = Convert-ToPowerShellArrayLiteral -Value (Get-PropertyValue -Object $Lane -Name "mergeCheckCommands" -Default @())
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    [void]$lines.Add("Set-StrictMode -Version Latest")
+    [void]$lines.Add('$ErrorActionPreference = "Stop"')
+    [void]$lines.Add("")
+    [void]$lines.Add('$parameters = @{')
+    [void]$lines.Add("    WorkingDirectory = $(Convert-ToPowerShellSingleQuotedString -Value $WorktreePath)")
+    [void]$lines.Add("    InitialPromptFile = $(Convert-ToPowerShellSingleQuotedString -Value $EffectivePromptPath)")
+    [void]$lines.Add("    OutputDirectory = $(Convert-ToPowerShellSingleQuotedString -Value $OutputDirectory)")
+    [void]$lines.Add("    CodexCommand = $(Convert-ToPowerShellSingleQuotedString -Value $CodexCommand)")
+    [void]$lines.Add("    Sandbox = $(Convert-ToPowerShellSingleQuotedString -Value $Sandbox)")
+    [void]$lines.Add("    Model = $(Convert-ToPowerShellSingleQuotedString -Value $Model)")
+    [void]$lines.Add("    ReasoningEffort = $(Convert-ToPowerShellSingleQuotedString -Value $ReasoningEffort)")
+    [void]$lines.Add("    MaxIterations = $MaxIterations")
+    [void]$lines.Add("    TargetLaneId = $(Convert-ToPowerShellSingleQuotedString -Value $laneId)")
+    [void]$lines.Add("    TargetScope = $(Convert-ToPowerShellSingleQuotedString -Value $targetScope)")
+    [void]$lines.Add("    AllowedPathPrefixes = $allowed")
+    [void]$lines.Add("    ForbiddenPathPrefixes = $forbidden")
+    [void]$lines.Add("    RequirementFamilies = $requirementFamilies")
+    [void]$lines.Add("    BlockingGapIds = $blockingGaps")
+    [void]$lines.Add("    VerificationCommands = $verification")
+    [void]$lines.Add("    MergeCheckCommands = $mergeChecks")
+    [void]$lines.Add("}")
+    [void]$lines.Add("")
+    [void]$lines.Add("& $(Convert-ToPowerShellSingleQuotedString -Value $WorkerScriptPath) @parameters -AutoCommitIfDirty -StopOnPathViolation")
+    [void]$lines.Add("if (-not `$?) { exit 1 }")
+
+    [System.IO.File]::WriteAllText($RunnerScriptPath, ($lines -join [Environment]::NewLine), [System.Text.UTF8Encoding]::new($false))
+}
+
 try {
     if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
         $RepoRoot = Join-Path -Path $PSScriptRoot -ChildPath ".."
@@ -421,6 +495,7 @@ try {
         $promptPath = Resolve-ExistingPath -Path (Resolve-ConfiguredPath -Path $promptRelativePath -BasePath $manifestRoot)
         $laneLaunchRoot = Ensure-Directory -Path (Join-Path -Path $launchRoot -ChildPath ("lanes/" + $laneId))
         $effectivePromptPath = Join-Path -Path $laneLaunchRoot -ChildPath "prompt.md"
+        $runnerScriptPath = Join-Path -Path $laneLaunchRoot -ChildPath "run-lane.ps1"
         $launcherStdout = Join-Path -Path $laneLaunchRoot -ChildPath "launcher.stdout.log"
         $launcherStderr = Join-Path -Path $laneLaunchRoot -ChildPath "launcher.stderr.log"
 
@@ -432,31 +507,13 @@ try {
             }
 
             Convert-LanePrompt -Lane $lane -PromptPath $promptPath -EffectivePromptPath $effectivePromptPath -BranchName $branchName -WorktreePath $worktreePath -BaseRef $BaseRef
+            Write-LaneRunnerScript -Lane $lane -RunnerScriptPath $runnerScriptPath -WorkerScriptPath $workerScriptFullPath -WorktreePath $worktreePath -EffectivePromptPath $effectivePromptPath -OutputDirectory $laneLaunchRoot -CodexCommand $CodexCommand -Sandbox $Sandbox -Model $Model -ReasoningEffort $ReasoningEffort -MaxIterations $MaxIterations
         }
 
         $arguments = New-Object System.Collections.Generic.List[string]
-        foreach ($arg in @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $workerScriptFullPath)) {
+        foreach ($arg in @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $runnerScriptPath)) {
             [void]$arguments.Add($arg)
         }
-
-        Add-Argument -List $arguments -Name "-WorkingDirectory" -Value $worktreePath
-        Add-Argument -List $arguments -Name "-InitialPromptFile" -Value $effectivePromptPath
-        Add-Argument -List $arguments -Name "-OutputDirectory" -Value $laneLaunchRoot
-        Add-Argument -List $arguments -Name "-CodexCommand" -Value $CodexCommand
-        Add-Argument -List $arguments -Name "-Sandbox" -Value $Sandbox
-        Add-Argument -List $arguments -Name "-Model" -Value $Model
-        Add-Argument -List $arguments -Name "-ReasoningEffort" -Value $ReasoningEffort
-        Add-Argument -List $arguments -Name "-MaxIterations" -Value $MaxIterations.ToString()
-        [void]$arguments.Add("-AutoCommitIfDirty")
-        Add-Argument -List $arguments -Name "-TargetLaneId" -Value $laneId
-        Add-Argument -List $arguments -Name "-TargetScope" -Value ([string](Get-PropertyValue -Object $lane -Name "targetScope" -Default ""))
-        Add-ArrayArgument -List $arguments -Name "-AllowedPathPrefixes" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "allowedPathPrefixes" -Default @()))
-        Add-ArrayArgument -List $arguments -Name "-ForbiddenPathPrefixes" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "forbiddenPathPrefixes" -Default @()))
-        Add-ArrayArgument -List $arguments -Name "-RequirementFamilies" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "requirementFamilies" -Default @()))
-        Add-ArrayArgument -List $arguments -Name "-BlockingGapIds" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "blockingGapIds" -Default @()))
-        Add-ArrayArgument -List $arguments -Name "-VerificationCommands" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "verificationCommands" -Default @()))
-        Add-ArrayArgument -List $arguments -Name "-MergeCheckCommands" -Values @(Get-StringArray -Value (Get-PropertyValue -Object $lane -Name "mergeCheckCommands" -Default @()))
-        [void]$arguments.Add("-StopOnPathViolation")
 
         $commandLine = Convert-ToQuotedCommandLine -FilePath $PowerShellExecutable -ArgumentList $arguments.ToArray()
         $processId = $null
@@ -489,6 +546,7 @@ try {
             BaseRef = $BaseRef
             PromptPath = $promptPath
             EffectivePromptPath = $effectivePromptPath
+            RunnerScriptPath = $runnerScriptPath
             OutputDirectory = $laneLaunchRoot
             LauncherStdout = $launcherStdout
             LauncherStderr = $launcherStderr

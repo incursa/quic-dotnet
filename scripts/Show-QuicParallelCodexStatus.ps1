@@ -89,6 +89,26 @@ function Get-LatestAutopilotRow {
     return ($rows | Sort-Object { [int]$_.Turn } | Select-Object -Last 1)
 }
 
+function Get-StartupErrorSummary {
+    param([Parameter(Mandatory = $true)][string]$LauncherStderr)
+
+    if ([string]::IsNullOrWhiteSpace($LauncherStderr) -or -not (Test-Path -LiteralPath $LauncherStderr)) {
+        return ""
+    }
+
+    $content = Get-Content -LiteralPath $LauncherStderr -Raw
+    if ([string]::IsNullOrWhiteSpace($content)) {
+        return ""
+    }
+
+    $summary = ($content -replace '\s+', ' ').Trim()
+    if ($summary.Length -gt 180) {
+        return $summary.Substring(0, 177) + "..."
+    }
+
+    return $summary
+}
+
 try {
     if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
         $RepoRoot = Join-Path -Path $PSScriptRoot -ChildPath ".."
@@ -145,11 +165,18 @@ try {
         $reconcile = ""
         $commit = ""
         $tests = ""
+        $details = ""
         if ($null -ne $latest) {
             $state = [string]$latest.State
             $reconcile = [string]$latest.ReconcileAction
             $commit = [string]$latest.CommitSha
             $tests = [string]$latest.Tests
+        }
+        elseif ($processState -eq "Exited") {
+            $details = Get-StartupErrorSummary -LauncherStderr ([string]$lane.LauncherStderr)
+            if (-not [string]::IsNullOrWhiteSpace($details)) {
+                $state = "startup_error"
+            }
         }
 
         $rows.Add([pscustomobject]@{
@@ -162,14 +189,24 @@ try {
             State = $state
             Reconcile = $reconcile
             Commit = $commit
-            OutputDirectory = [string]$lane.OutputDirectory
+            Details = $details
             Tests = $tests
+            OutputDirectory = [string]$lane.OutputDirectory
         })
     }
 
     Write-Host "Launch summary: $summaryPath"
     Write-Host ""
     $rows | Format-Table -AutoSize
+
+    $startupErrors = @($rows | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.Details) })
+    if ($startupErrors.Count -gt 0) {
+        Write-Host ""
+        Write-Host "Startup errors:"
+        foreach ($row in $startupErrors) {
+            Write-Host "  $($row.Lane): $($row.Details)"
+        }
+    }
 }
 catch {
     Write-Error ($_ | Out-String)
