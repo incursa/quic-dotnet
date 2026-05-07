@@ -708,6 +708,11 @@
         "upstream_refs": [
           "RFC 9000 §2.2 RFC9000-S2.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-2.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0002.cs::TryReadStreamData_DeliversBufferedFragmentsInOffsetOrder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0002.cs::TryReadStreamData_LeavesOutOfOrderTailBufferedUntilTheMissingPrefixArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0002.cs::TryReadStreamData_KeepsIdenticalOffsetsOnDifferentStreamsIndependent"
         ]
       }
     },
