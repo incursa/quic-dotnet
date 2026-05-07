@@ -8035,9 +8035,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0002.cs::TryFormatVersionNegotiationResponse_FormatsAResponseForAnUnsupportedClientVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0002.cs::TryFormatVersionNegotiationResponse_RejectsTheVersionNegotiationSentinelAsTheSelectedVersion"
         ]
       }
     },
@@ -30219,6 +30218,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0002.cs::TryBuildRetryPacket_RejectsRetrySourceConnectionIdsThatMatchTheClientsInitialDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0002.cs::TryBuildRetryPacket_AcceptsRetrySourceConnectionIdsThatDifferFromTheClientsInitialDestinationConnectionId"
         ]
       }
     },
