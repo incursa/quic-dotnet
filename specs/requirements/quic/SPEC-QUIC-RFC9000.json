@@ -2040,7 +2040,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_LeavesLocalUnidirectionalReceiveStateUnchanged"
         ]
       }
     },
