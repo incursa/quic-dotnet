@@ -474,7 +474,8 @@
         "x_code_refs": [
           ".github/workflows/interop-runner-handshake.yml",
           "scripts/interop/Invoke-QuicInteropRunner.ps1",
-          "scripts/interop/README.md"
+          "scripts/interop/README.md",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0016.cs"
         ]
       },
       "notes": [
