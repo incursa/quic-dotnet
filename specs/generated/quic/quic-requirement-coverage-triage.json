@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-07T12:20:01.5855623-06:00",
-  "repo_root": "C:\\src\\incursa\\quic-dotnet.prompt-worktrees\\s20-s22-errors-policy",
+  "generated_at": "2026-05-07T12:02:04.6597313-06:00",
+  "repo_root": ".",
   "sources": {
     "spec_files": [
       "specs/requirements/quic/SPEC-QUIC-RFC8999.json",
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T12:20:01.5811183-06:00",
+    "generated_at": "2026-05-07T12:02:04.6532475-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 36,
-      "covered_but_proof_too_broad": 30,
-      "partially_covered": 75,
-      "trace_clean": 1425,
+      "covered_but_missing_xrefs": 32,
+      "covered_but_proof_too_broad": 32,
+      "partially_covered": 74,
+      "trace_clean": 1428,
       "uncovered_blocked": 69,
       "uncovered_unblocked": 133
     },
     "by_work_queue_tag": {
       "blocked": 69,
-      "clean": 1425,
-      "metadata_only": 36,
-      "new_tests_needed": 305,
-      "restructure_needed": 37
+      "clean": 1428,
+      "metadata_only": 32,
+      "new_tests_needed": 306,
+      "restructure_needed": 39
     },
     "by_rfc": [
       {
@@ -52,10 +52,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 36,
-          "covered_but_proof_too_broad": 30,
-          "partially_covered": 75,
-          "trace_clean": 1112,
+          "covered_but_missing_xrefs": 32,
+          "covered_but_proof_too_broad": 32,
+          "partially_covered": 74,
+          "trace_clean": 1115,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 133
         }
@@ -77715,8 +77715,8 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs::HandshakePacketsCanCarryAckFrames",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs::HandshakePacketsCanCarryCryptoFrames"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs::HandshakePacketsCanCarryCryptoFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs::HandshakePacketsCanCarryAckFrames"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -79950,31 +79950,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::TrailingServerHandshakePacketCommitsPeerTransportParametersAfterTheLeadingInitialPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -79982,6 +79983,116 @@
           "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0016.CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters",
+          "method": "CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters",
+          "line": 62,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0016.CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters",
+          "method": "CoalescedInitialAndHandshakeFlightCommitsPeerTransportParameters",
+          "line": 62,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0016.InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+          "method": "InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+          "line": 42,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0016.InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+          "method": "InitialServerPacketAloneDoesNotCommitPeerTransportParameters",
+          "line": 42,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0016.TrailingServerHandshakePacketCommitsPeerTransportParametersAfterTheLeadingInitialPacket",
+          "method": "TrailingServerHandshakePacketCommitsPeerTransportParametersAfterTheLeadingInitialPacket",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs::TrailingServerHandshakePacketCommitsPeerTransportParametersAfterTheLeadingInitialPacket",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
           "class": "REQ_QUIC_RFC9000_S17P2P4_0016",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0016.TrailingServerHandshakePacketCommitsPeerTransportParametersAfterTheLeadingInitialPacket",
@@ -80022,9 +80133,7 @@
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0017.cs::TryParseLongHeader_ExposesHandshakeConnectionIds"
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0017.cs::TryParseLongHeader_ExposesHandshakeConnectionIds",
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
@@ -80101,31 +80210,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::FirstServerHandshakePacketStartsAtPacketNumberZero",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -80143,6 +80253,116 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::FirstServerHandshakePacketStartsAtPacketNumberZero",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0018",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0018.FirstServerHandshakePacketStartsAtPacketNumberZero",
+          "method": "FirstServerHandshakePacketStartsAtPacketNumberZero",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0018",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0018.TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary",
+          "method": "TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary",
+          "line": 83,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0018",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0018.TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary",
+          "method": "TryBuildProtectedHandshakePacket_UsesTheUintMaxValuePacketNumberBoundary",
+          "line": 83,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0018",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0018.TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+          "method": "TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0018"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0018",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs::TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0018",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0018.TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+          "method": "TryOpenHandshakePacket_RejectsTruncatedHandshakePackets",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -80173,9 +80393,7 @@
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0019.cs::HandshakePacketsCanCarryCryptoPingAndPaddingFrames"
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0019.cs::HandshakePacketsCanCarryCryptoPingAndPaddingFrames",
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
@@ -80259,9 +80477,7 @@
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0020.cs::HandshakePacketsCanCarryTransportConnectionCloseFrames"
-      ],
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0020.cs::HandshakePacketsCanCarryTransportConnectionCloseFrames",
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
@@ -80338,30 +80554,31 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs::TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs::TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -80369,6 +80586,72 @@
           "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0021",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0021.TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket",
+          "method": "TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs::TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0021",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0021.TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket",
+          "method": "TryHandleHandshakePacketReceived_AllowsTransportConnectionCloseInAHandshakePacket",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P4_0021",
+          "member": "REQ_QUIC_RFC9000_S17P2P4_0021.TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",
+          "method": "TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P4-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs::TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs",
           "class": "REQ_QUIC_RFC9000_S17P2P4_0021",
           "member": "REQ_QUIC_RFC9000_S17P2P4_0021.TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAResetStreamFrame",

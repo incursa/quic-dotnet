@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9000-S17P2P4-0021"
   ],
   "scope": "This verification covers the focused generated S17P2P4 hard proof tail for handshake packet format parsing, packet-number zero on first send, client receipt boundaries, and handshake payload acceptance/rejection.",
-  "expected_result": "The focused tests show that handshake packet headers parse with the expected long-header shape, the first server handshake packet uses packet number 0, truncated protected handshake packets fail to open, the largest four-byte packet-number boundary remains representable, initial-only client receipt does not commit peer transport parameters, coalesced Initial+Handshake receipt does commit them, and handshake packets carrying PING stay open while RESET_STREAM still triggers PROTOCOL_VIOLATION.",
+  "expected_result": "The focused tests show that handshake packet headers parse with the expected long-header shape, the first server handshake packet uses packet number 0, truncated protected handshake packets fail to open, the largest four-byte packet-number boundary remains representable, initial-only client receipt does not commit peer transport parameters, coalesced Initial+Handshake receipt does commit them, allowed Handshake-packet CONNECTION_CLOSE transitions to draining without a local protocol-violation close, and RESET_STREAM still triggers PROTOCOL_VIOLATION.",
   "procedure": [
     "Run the focused S17P2P4 requirement-home filter.",
     "Run a Release build.",
@@ -62,5 +62,5 @@
       "content": "This verification does not claim broader RFC 9000 packet-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
     }
   ],
-  "status_summary": "Pending local verification."
+  "status_summary": "Focused S17P2P4 verification passed for packet/header parsing, coalesced receipt boundaries, allowed Handshake-packet CONNECTION_CLOSE handling, SpecTrace validation, and diff checking; all seven S17P2P4 requirements are trace_clean, and the broader Release suite has unrelated INT failures outside this lane."
 }

@@ -35,5 +35,5 @@
     "Hosted interop readiness.",
     "Unrelated deferred fuzz obligations."
   ],
-  "completion_notes": "Completed as a focused S17P2P4 proof slice for handshake packet header parsing, first-send packet-number zero, coalesced client receipt, and allowed-versus-forbidden handshake payloads."
+  "completion_notes": "Completed as a focused S17P2P4 proof slice for handshake packet header parsing, first-send packet-number zero, coalesced client receipt, allowed Handshake-packet CONNECTION_CLOSE handling, and forbidden RESET_STREAM handling."
 }
