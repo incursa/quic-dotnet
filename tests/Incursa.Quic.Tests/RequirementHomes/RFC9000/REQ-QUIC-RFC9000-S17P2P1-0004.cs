@@ -1,11 +1,5 @@
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S17P2P1-0004")]
-public sealed class REQ_QUIC_RFC9000_S17P2P1_0004
-{
-}
-namespace Incursa.Quic.Tests;
-
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0004">The Unused field MUST be 7 bits long.</workbench-requirement>
 /// </workbench-requirements>

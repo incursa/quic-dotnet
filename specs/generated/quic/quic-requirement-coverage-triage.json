@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T08:59:35.3138224-06:00",
+  "generated_at": "2026-05-07T09:04:07.5373351-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T08:59:35.3104243-06:00",
+    "generated_at": "2026-05-07T09:04:07.5337411-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 45,
+      "covered_but_missing_xrefs": 44,
       "covered_but_proof_too_broad": 39,
       "partially_covered": 106,
-      "trace_clean": 1366,
+      "trace_clean": 1367,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 144
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1366,
-      "metadata_only": 45,
+      "clean": 1367,
+      "metadata_only": 44,
       "new_tests_needed": 355,
       "restructure_needed": 51
     },
@@ -47,10 +47,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 45,
+          "covered_but_missing_xrefs": 44,
           "covered_but_proof_too_broad": 39,
           "partially_covered": 106,
-          "trace_clean": 1053,
+          "trace_clean": 1054,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 144
         }
@@ -61562,38 +61562,15 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 5,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0004.cs::TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-        "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
-      ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0004",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
-        }
-      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0004.cs::TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
+      "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 5,
         "focused": 2,
@@ -61618,7 +61595,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0004",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0004.TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
           "method": "TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
-          "line": 21,
+          "line": 15,
           "kinds": [
             "positive"
           ],
@@ -61640,7 +61617,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0004",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0004.TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
           "method": "TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
-          "line": 21,
+          "line": 15,
           "kinds": [
             "positive"
           ],
