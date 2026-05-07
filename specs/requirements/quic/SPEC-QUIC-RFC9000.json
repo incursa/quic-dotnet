@@ -18254,6 +18254,9 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs::ProtocolViolationCanStandInForASpecificTransportErrorCode"
         ]
       }
     },
@@ -18280,6 +18283,9 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs::InternalErrorCanStandInForAnApplicableTransportErrorCode"
         ]
       }
     },
@@ -18396,7 +18402,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC"
         ]
       }
     },
@@ -18516,7 +18522,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames"
         ]
       }
     },
@@ -18545,7 +18553,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket"
         ]
       }
     },

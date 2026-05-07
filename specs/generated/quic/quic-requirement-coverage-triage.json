@@ -22,18 +22,18 @@
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 36,
-      "covered_but_proof_too_broad": 32,
-      "partially_covered": 77,
-      "trace_clean": 1421,
+      "covered_but_proof_too_broad": 30,
+      "partially_covered": 75,
+      "trace_clean": 1425,
       "uncovered_blocked": 69,
       "uncovered_unblocked": 136
     },
     "by_work_queue_tag": {
       "blocked": 69,
-      "clean": 1421,
+      "clean": 1425,
       "metadata_only": 36,
-      "new_tests_needed": 309,
-      "restructure_needed": 39
+      "new_tests_needed": 305,
+      "restructure_needed": 37
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 36,
-          "covered_but_proof_too_broad": 32,
-          "partially_covered": 77,
-          "trace_clean": 1108,
+          "covered_but_proof_too_broad": 30,
+          "partially_covered": 75,
+          "trace_clean": 1112,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 136
         }
@@ -17376,34 +17376,75 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs::ProtocolViolationCanStandInForASpecificTransportErrorCode",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 3,
+        "focused": 2,
         "broad": 1,
         "by_kind": {
           "positive": 0,
-          "negative": 0,
+          "negative": 1,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S11_0003",
+          "member": "REQ_QUIC_RFC9000_S11_0003.ProtocolViolationCanStandInForASpecificTransportErrorCode",
+          "method": "ProtocolViolationCanStandInForASpecificTransportErrorCode",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs::ProtocolViolationCanStandInForASpecificTransportErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S11_0003",
+          "member": "REQ_QUIC_RFC9000_S11_0003.ProtocolViolationCanStandInForASpecificTransportErrorCode",
+          "method": "ProtocolViolationCanStandInForASpecificTransportErrorCode",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S11-0003",
           "source": "requirement_attribute",
@@ -17461,34 +17502,75 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs::InternalErrorCanStandInForAnApplicableTransportErrorCode",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 3,
+        "focused": 2,
         "broad": 1,
         "by_kind": {
           "positive": 0,
-          "negative": 0,
+          "negative": 1,
           "edge": 0,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S11_0004",
+          "member": "REQ_QUIC_RFC9000_S11_0004.InternalErrorCanStandInForAnApplicableTransportErrorCode",
+          "method": "InternalErrorCanStandInForAnApplicableTransportErrorCode",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs::InternalErrorCanStandInForAnApplicableTransportErrorCode",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S11_0004",
+          "member": "REQ_QUIC_RFC9000_S11_0004.InternalErrorCanStandInForAnApplicableTransportErrorCode",
+          "method": "InternalErrorCanStandInForAnApplicableTransportErrorCode",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S11-0004",
           "source": "requirement_attribute",
@@ -18581,31 +18663,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsClientProtectedInitialPacketWithoutProcessingFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
-          "negative": 0,
-          "edge": 0,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -18652,6 +18735,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0007",
+          "member": "REQ_QUIC_RFC9000_S11P1_0007.ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "method": "ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0007",
+          "member": "REQ_QUIC_RFC9000_S11P1_0007.ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "method": "ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0007",
+          "member": "REQ_QUIC_RFC9000_S11P1_0007.ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames",
+          "method": "ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames",
+          "line": 83,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs::ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0007",
+          "member": "REQ_QUIC_RFC9000_S11P1_0007.ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames",
+          "method": "ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames",
+          "line": 83,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -18668,31 +18839,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotMutateStateWhenATamperedInitialPacketIsDiscarded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -18732,6 +18904,94 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0008",
+          "member": "REQ_QUIC_RFC9000_S11P1_0008.ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "method": "ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "line": 49,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0008",
+          "member": "REQ_QUIC_RFC9000_S11P1_0008.ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "method": "ServerRuntimeDoesNotDiscardValidClientInitialPacketWithPermittedFrames",
+          "line": 49,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0008",
+          "member": "REQ_QUIC_RFC9000_S11P1_0008.ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket",
+          "method": "ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S11P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs::ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S11P1_0008",
+          "member": "REQ_QUIC_RFC9000_S11P1_0008.ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket",
+          "method": "ServerRuntimeRevertsPotentialCryptoSideEffectsBeforeDiscardingAnInvalidInitialPacket",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
