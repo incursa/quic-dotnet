@@ -9317,6 +9317,10 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0001.cs::TryParseTransportParameters_RejectsAnInvalidActiveConnectionIdLimitValue"
         ]
       }
     },
@@ -9343,6 +9347,9 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack"
         ]
       }
     },
@@ -9369,6 +9376,10 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryParseTransportParameters_RejectsDuplicateTransportParameters"
         ]
       }
     },
@@ -27106,6 +27117,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0004.cs::TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits",
           "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
           "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
           "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
