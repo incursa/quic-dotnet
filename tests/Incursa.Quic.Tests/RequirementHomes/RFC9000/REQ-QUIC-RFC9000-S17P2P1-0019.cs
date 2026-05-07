@@ -137,6 +137,54 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryParseVersionNegotiation_ExposesSupportedVersionsWithoutPacketNumberFields()
+    {
+        byte[] destinationConnectionId = [0x10, 0x11];
+        byte[] sourceConnectionId = [0x20];
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId,
+            sourceConnectionId,
+            0x11223344,
+            0xAABBCCDD);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(2, header.SupportedVersionCount);
+        Assert.True(packet.AsSpan(QuicHeaderTestData.GetLongHeaderPayloadOffset(packet)).SequenceEqual(header.SupportedVersionBytes));
+        Assert.Equal(packet.Length - QuicHeaderTestData.GetLongHeaderPayloadOffset(packet), header.SupportedVersionBytes.Length);
+        Assert.Equal((uint)0x11223344, header.GetSupportedVersion(0));
+        Assert.Equal((uint)0xAABBCCDD, header.GetSupportedVersion(1));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void TryParseVersionNegotiation_ParsesTheMinimumValidVersionNegotiationPacket()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x01,
+            destinationConnectionId: [],
+            sourceConnectionId: [],
+            QuicVersionNegotiation.Version1);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(0, header.DestinationConnectionIdLength);
+        Assert.Equal(0, header.SourceConnectionIdLength);
+        Assert.Equal(1, header.SupportedVersionCount);
+        Assert.Equal(QuicVersionNegotiation.Version1, header.GetSupportedVersion(0));
+        Assert.Equal(QuicHeaderTestData.GetLongHeaderPayloadOffset(packet) + header.SupportedVersionBytes.Length, packet.Length);
+        Assert.True(packet.AsSpan(QuicHeaderTestData.GetLongHeaderPayloadOffset(packet)).SequenceEqual(header.SupportedVersionBytes));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsEmptyInput()
     {
