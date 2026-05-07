@@ -51,4 +51,53 @@ public sealed class REQ_QUIC_RFC9000_S4P5_0002
         Assert.True(snapshot.HasFinalSize);
         Assert.Equal(2UL, snapshot.FinalSize);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamFrame_LeavesFinalSizeUnknownWithoutFin()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8,
+            peerUnidirectionalReceiveLimit: 8,
+            localBidirectionalReceiveLimit: 8,
+            localUnidirectionalSendLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0C, 1, [0x33, 0x44], offset: 2),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.False(snapshot.HasFinalSize);
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.UniqueBytesReceived);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReceiveStreamFrame_CarriesImplicitZeroLengthFinalSizeWithFin()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8,
+            peerUnidirectionalReceiveLimit: 8,
+            localBidirectionalReceiveLimit: 8,
+            localUnidirectionalSendLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0D, 1, [], offset: 4),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(4UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, snapshot.ReceiveState);
+        Assert.Equal(0UL, snapshot.UniqueBytesReceived);
+    }
 }
