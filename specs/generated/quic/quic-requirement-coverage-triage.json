@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T08:15:47.5863059-06:00",
+  "generated_at": "2026-05-07T08:22:28.8942718-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T08:15:47.5820316-06:00",
+    "generated_at": "2026-05-07T08:22:28.8909996-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 46,
-      "covered_but_proof_too_broad": 42,
+      "covered_but_missing_xrefs": 47,
+      "covered_but_proof_too_broad": 41,
       "partially_covered": 112,
-      "trace_clean": 1354,
+      "trace_clean": 1355,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 146
+      "uncovered_unblocked": 145
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1354,
-      "metadata_only": 46,
-      "new_tests_needed": 366,
-      "restructure_needed": 56
+      "clean": 1355,
+      "metadata_only": 47,
+      "new_tests_needed": 364,
+      "restructure_needed": 55
     },
     "by_rfc": [
       {
@@ -47,12 +47,12 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 46,
-          "covered_but_proof_too_broad": 42,
+          "covered_but_missing_xrefs": 47,
+          "covered_but_proof_too_broad": 41,
           "partially_covered": 112,
-          "trace_clean": 1041,
+          "trace_clean": 1042,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 146
+          "uncovered_unblocked": 145
         }
       },
       {
@@ -91435,50 +91435,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
+        "total": 9,
+        "focused": 6,
         "broad": 3,
         "by_kind": {
-          "positive": 2,
-          "negative": 0,
-          "edge": 0,
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -91683,6 +91665,138 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "method": "TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "method": "TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence",
+          "method": "TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence",
+          "line": 61,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence",
+          "method": "TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence",
+          "line": 61,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "method": "TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "method": "TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -119621,35 +119735,98 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "covered_but_missing_xrefs",
+      "primary_issue": "spec_metadata",
       "work_queue_tags": [
-        "new_tests_needed"
+        "metadata_only"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
+      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 1,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P16-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P16_0010",
+          "member": "REQ_QUIC_RFC9000_S19P16_0010.NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionId_DoesNotEmitRetireConnectionIdFrame",
+          "method": "NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionId_DoesNotEmitRetireConnectionIdFrame",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P16-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P16-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P16_0010",
+          "member": "REQ_QUIC_RFC9000_S19P16_0010.NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionIdAndRetirePriorToIsZero_DoesNotEmitRetireConnectionIdFrame",
+          "method": "NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionIdAndRetirePriorToIsZero_DoesNotEmitRetireConnectionIdFrame",
+          "line": 64,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P16-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P16-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S19P16_0010",
+          "member": "REQ_QUIC_RFC9000_S19P16_0010.NewConnectionIdFrame_WithNonZeroPeerConnectionId_EmitsRetireConnectionIdFrame",
+          "method": "NewConnectionIdFrame_WithNonZeroPeerConnectionId_EmitsRetireConnectionIdFrame",
+          "line": 24,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P16-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S19P16-0011",
