@@ -18595,6 +18595,9 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0002.cs::TryBuildRetryPacket_ProducesAnIntegrityProtectedPacket"
         ]
       }
     },
@@ -18621,6 +18624,9 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0003.cs::TryProtectInitialPacket_UsesTheVisibleClientInitialDcidWhenDerivingKeys"
         ]
       }
     },
@@ -18647,6 +18653,11 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryProtectInitialPacket_LeavesTheLongHeaderConnectionIdsVisible",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryOpenInitialPacket_WithADifferentClientInitialDcid_DoesNotSucceed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryProtectInitialPacket_AcceptsTheMaximumClientInitialDcidLength"
         ]
       }
     },
