@@ -1,6 +1,6 @@
 namespace Incursa.Quic.Tests;
 
-[workbench-requirements generated="true" source="workbench quality sync"]
+/// <workbench-requirements generated="true" source="workbench quality sync">
 /// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0004">A receiver MUST limit the number of ACK Ranges it remembers and sends in ACK frames.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0004")]

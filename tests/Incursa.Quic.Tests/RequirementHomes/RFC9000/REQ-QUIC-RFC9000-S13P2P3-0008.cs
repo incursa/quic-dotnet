@@ -1,6 +1,6 @@
 namespace Incursa.Quic.Tests;
 
-[workbench-requirements generated="true" source="workbench quality sync"]
+/// <workbench-requirements generated="true" source="workbench quality sync">
 /// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0008">A receiver MUST discard unacknowledged ACK Ranges if an ACK frame would be too large to fit in a packet.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0008")]

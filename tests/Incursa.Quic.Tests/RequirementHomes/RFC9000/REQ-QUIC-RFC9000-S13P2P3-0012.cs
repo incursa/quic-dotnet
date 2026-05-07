@@ -1,6 +1,6 @@
 namespace Incursa.Quic.Tests;
 
-[workbench-requirements generated="true" source="workbench quality sync"]
+/// <workbench-requirements generated="true" source="workbench quality sync">
 /// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0012">A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0012")]
