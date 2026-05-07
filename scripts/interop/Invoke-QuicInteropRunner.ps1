@@ -1657,6 +1657,7 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
         '.dotnet-home',
         '.workbench',
         'BenchmarkDotNet.Artifacts',
+        'bdn',
         'StrykerOutput',
         'artifacts',
         'bin',
@@ -1678,6 +1679,7 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
 **/.dotnet-home
 **/.workbench
 **/BenchmarkDotNet.Artifacts
+**/bdn
 **/bin
 **/obj
 **/artifacts

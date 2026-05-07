@@ -17,7 +17,7 @@
   "procedure": [
     "Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0009.",
     "Run the retained-route, malformed-formatting, and known-token matrix guards for REQ-QUIC-RFC9001-S6P6-0006 through REQ-QUIC-RFC9001-S6P6-0008.",
-    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicStatelessResetBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/BenchmarkDotNet.Artifacts` to refresh the permanent stateless-reset benchmark evidence.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicStatelessResetBenchmarks*\" --artifacts artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/bdn` to refresh the permanent stateless-reset benchmark evidence.",
     "Render the touched SpecTrace Markdown views from JSON and run the render check for those scopes.",
     "Run `git diff --check` before committing the slice."
   ],
@@ -34,13 +34,13 @@
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs",
     "benchmarks/QuicStatelessResetBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/benchmark.log",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/focused-rfc9001-s6p6-non-retained-suppression-tests.log",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/quic-stateless-reset-benchmark-dry.log",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/render.log",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/render-check.log",
-    "artifacts/verification/20260425-rfc9001-s6p6-non-retained-suppression/git-diff-check.log"
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/benchmark.log",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/focused-rfc9001-s6p6-non-retained-suppression-tests.log",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/quic-stateless-reset-benchmark-dry.log",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/bdn/results/sr-report-github.md",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/render.log",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/render-check.log",
+    "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/git-diff-check.log"
   ],
   "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests passed 29/29, the QuicStatelessResetBenchmarks Dry suite executed 12/12 cases, and the touched SpecTrace markdown views rendered and rechecked cleanly with git diff --check."
 }

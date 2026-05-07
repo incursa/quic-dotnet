@@ -36,14 +36,14 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/focused-rfc9000-newtoken-ack-piggyback-tests.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/full-rfc9000-s13p2p1-tests.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/ack-piggyback-benchmark-dry.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/BenchmarkDotNet.Artifacts/results",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/render.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/render-check.log",
-    "artifacts/verification/20260425-rfc9000-newtoken-ack-piggyback/git-diff-check.log"
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/focused-rfc9000-newtoken-ack-piggyback-tests.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/full-rfc9000-s13p2p1-tests.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/ack-piggyback-benchmark-dry.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/bdn/results",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/render.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/render-check.log",
+    "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/git-diff-check.log"
   ],
   "supplemental_sections": [
     {

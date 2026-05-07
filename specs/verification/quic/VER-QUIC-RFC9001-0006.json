@@ -41,14 +41,14 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-0006-tests.log",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-supporting-tests.log",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/render.log",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/render-check.log",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ownership/git-diff-check.log",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report-github.md",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report.csv",
-    "artifacts/verification/20260424-rfc9001-s6p5-repeated-epoch-ledger/BenchmarkDotNet.Artifacts/20260424-140803/Incursa.Quic.Benchmarks.QuicRepeatedKeyUpdateControlBenchmarks-report.html"
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-0006-tests.log",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-supporting-tests.log",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/render.log",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/render-check.log",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/git-diff-check.log",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ledger/bdn/20260424-140803/rkuc-report-github.md",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ledger/bdn/20260424-140803/rkuc-report.csv",
+    "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ledger/bdn/20260424-140803/rkuc-report.html"
   ],
   "status_summary": "Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0006 ran green with 3 cases, the supporting next-key, old-key ordering, and repeated-retention guard set ran green with 31 total cases, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the permanent repeated old-key cleanup benchmark evidence remains preserved from the representative later-epoch slice.",
   "supplemental_sections": [

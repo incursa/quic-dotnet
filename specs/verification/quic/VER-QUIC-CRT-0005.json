@@ -48,13 +48,13 @@
     "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
     "src/Incursa.Quic/QuicPathValidation.cs",
     "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
-    "artifacts/verification/20260425-crt-path-state-bounded-cache/"
+    "artifacts/v/20260425-crt-path-state-bounded-cache/"
   ],
   "procedure": [
     "Inspect the runtime path record model and validation helpers for explicit identity, validation, amplification, recovery, RTT, ECN, activity, and challenge state.",
     "Run the requirement-home tests for REQ-QUIC-CRT-0032, REQ-QUIC-CRT-0034, and REQ-QUIC-CRT-0059 through REQ-QUIC-CRT-0070.",
     "Confirm the transition results show candidate creation, bounded candidate-path growth, bounded recently validated path retention, complete per-path state, handshake-gated promotion, and budget-checked sends.",
-    "Render and check the touched SpecTrace artifacts, then preserve the verification logs under `artifacts/verification/20260425-crt-path-state-bounded-cache/`."
+    "Render and check the touched SpecTrace artifacts, then preserve the verification logs under `artifacts/v/20260425-crt-path-state-bounded-cache/`."
   ],
   "supplemental_sections": [
     {

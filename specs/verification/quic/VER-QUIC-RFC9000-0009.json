@@ -48,18 +48,18 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P9-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs",
-    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-s4p2-0005-tests.log",
-    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-runtime-tests.log",
-    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-fuzz-tests.log",
-    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/quic-connection-stream-state-benchmark-dry.log",
-    "artifacts/verification/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md",
-    "artifacts/verification/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-runtime-tests.log",
-    "artifacts/verification/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-fuzz-tests.log",
-    "artifacts/verification/20260425-rfc9000-max-credit-runtime/quic-connection-stream-state-benchmark-dry.log",
-    "artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicConnectionStreamStateBenchmarks-report-github.md",
+    "artifacts/v/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-s4p2-0005-tests.log",
+    "artifacts/v/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-runtime-tests.log",
+    "artifacts/v/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/focused-rfc9000-max-credit-fuzz-tests.log",
+    "artifacts/v/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/quic-connection-stream-state-benchmark-dry.log",
+    "artifacts/v/20260501-rfc9000-s4p2-blocked-signal-credit-topoff/bdn/results/css-report-github.md",
+    "artifacts/v/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-runtime-tests.log",
+    "artifacts/v/20260425-rfc9000-max-credit-runtime/focused-rfc9000-max-credit-fuzz-tests.log",
+    "artifacts/v/20260425-rfc9000-max-credit-runtime/quic-connection-stream-state-benchmark-dry.log",
+    "artifacts/v/20260425-rfc9000-max-credit-runtime/bdn/results/css-report-github.md",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P9_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P10_0005\"",
-    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicConnectionStreamStateBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-max-credit-runtime/BenchmarkDotNet.Artifacts"
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicConnectionStreamStateBenchmarks*\" --artifacts artifacts/v/20260425-rfc9000-max-credit-runtime/bdn"
   ],
   "supplemental_sections": [
     {

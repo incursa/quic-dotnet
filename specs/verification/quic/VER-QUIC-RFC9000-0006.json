@@ -38,14 +38,14 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs",
     "benchmarks/QuicDplpmtudStateBenchmarks.cs",
-    "artifacts/benchmark-baseline/20260422-2343-dplpmtud-dry/",
+    "artifacts/bb/20260422-2343-dplpmtud-dry/",
     "dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S14P3\"",
     "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicDplpmtudStateBenchmarks*\""
   ],
   "supplemental_sections": [
     {
       "heading": "Benchmark Scope",
-      "content": "The permanent `QuicDplpmtudStateBenchmarks` suite covers padding-probe acknowledgment, padding-probe loss, and independent per-address-pair probe tracking. The 2026-04-22 Dry run is preserved under `artifacts/benchmark-baseline/20260422-2343-dplpmtud-dry/`; Dry warnings are limited to very small iteration times and should not be interpreted as stable performance numbers."
+      "content": "The permanent `QuicDplpmtudStateBenchmarks` suite covers padding-probe acknowledgment, padding-probe loss, and independent per-address-pair probe tracking. The 2026-04-22 Dry run is preserved under `artifacts/bb/20260422-2343-dplpmtud-dry/`; Dry warnings are limited to very small iteration times and should not be interpreted as stable performance numbers."
     }
   ],
   "status_summary": "Passed locally for the focused S14P3 requirement-home coverage and the new `QuicDplpmtudStateBenchmarks` Dry suite. The proof remains limited to the helper-backed DPLPMTUD subset and does not claim probe scheduling, packet-builder integration, OS ICMP ingress, alternative-path search, or public API support."

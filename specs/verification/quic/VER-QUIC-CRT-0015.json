@@ -46,11 +46,11 @@
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs",
-    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/dotnet-test-REQ-QUIC-CRT-0117.log",
-    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-render.log",
-    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-check.log",
-    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/git-diff-check.log",
-    "artifacts/verification/20260426-crt-server-role-peer-finished-proof/spec-trace-validate.log"
+    "artifacts/v/20260426-crt-server-role-peer-finished-proof/dotnet-test-REQ-QUIC-CRT-0117.log",
+    "artifacts/v/20260426-crt-server-role-peer-finished-proof/spec-trace-render.log",
+    "artifacts/v/20260426-crt-server-role-peer-finished-proof/spec-trace-check.log",
+    "artifacts/v/20260426-crt-server-role-peer-finished-proof/git-diff-check.log",
+    "artifacts/v/20260426-crt-server-role-peer-finished-proof/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",

@@ -48,14 +48,14 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/focused-rfc9000-application-ack-delay-timer-tests.log",
-    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/render.log",
-    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/render-check.log",
-    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-application-ack-delay-timer/git-diff-check.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-dry.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-short.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-application-ack-delay-timer/BenchmarkDotNet.Artifacts/results"
+    "artifacts/v/20260425-rfc9000-application-ack-delay-timer/focused-rfc9000-application-ack-delay-timer-tests.log",
+    "artifacts/v/20260425-rfc9000-application-ack-delay-timer/render.log",
+    "artifacts/v/20260425-rfc9000-application-ack-delay-timer/render-check.log",
+    "artifacts/v/20260425-rfc9000-application-ack-delay-timer/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-application-ack-delay-timer/git-diff-check.log",
+    "artifacts/bb/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-dry.log",
+    "artifacts/bb/20260425-rfc9000-application-ack-delay-timer/application-ack-delay-timer-benchmark-short.log",
+    "artifacts/bb/20260425-rfc9000-application-ack-delay-timer/bdn/results"
   ],
   "supplemental_sections": [
     {

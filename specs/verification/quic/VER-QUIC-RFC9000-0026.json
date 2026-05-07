@@ -41,9 +41,9 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs",
-    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report-github.md",
-    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report.csv",
-    "artifacts/verification/20260503-rfc9000-s2p3-priority/BenchmarkDotNet.Artifacts/20260503-085012/Incursa.Quic.Benchmarks.QuicApplicationSendPriorityBenchmarks-report.html"
+    "artifacts/v/20260503-rfc9000-s2p3-priority/bdn/20260503-085012/asp-report-github.md",
+    "artifacts/v/20260503-rfc9000-s2p3-priority/bdn/20260503-085012/asp-report.csv",
+    "artifacts/v/20260503-rfc9000-s2p3-priority/bdn/20260503-085012/asp-report.html"
   ],
   "supplemental_sections": [
     {

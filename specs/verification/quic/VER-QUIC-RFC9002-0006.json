@@ -46,8 +46,8 @@
   "expected_result": "The targeted requirement-home tests pass for all 23 selected clauses, deterministic fuzz top-offs exercise representative RTT adjustment, timer selection, and loss-delay helper arithmetic, existing RTT and congestion BenchmarkDotNet Dry runs validate the permanent helper performance suites, SpecTrace render/check stays current, and the known-baseline core SpecTrace profile remains classified as standing canonical backlog rather than a protocol failure.",
   "procedure": [
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9002_SAP2|FullyQualifiedName~REQ_QUIC_RFC9002_SAP7|FullyQualifiedName~REQ_QUIC_RFC9002_SAP8_0001|FullyQualifiedName~REQ_QUIC_RFC9002_SAP8_0002|FullyQualifiedName~REQ_QUIC_RFC9002_SAP8_0003|FullyQualifiedName~REQ_QUIC_RFC9002_SAP8_0004|FullyQualifiedName~REQ_QUIC_RFC9002_SAP8_0006|FullyQualifiedName~REQ_QUIC_RFC9002_SAP10\"`.",
-    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicRttEstimatorBenchmarks*\" --noOverwrite --artifacts artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/BenchmarkDotNet.Artifacts`.",
-    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicCongestionControlBenchmarks*\" --noOverwrite --artifacts artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/BenchmarkDotNet.Artifacts`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicRttEstimatorBenchmarks*\" --noOverwrite --artifacts artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/bdn`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicCongestionControlBenchmarks*\" --noOverwrite --artifacts artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/bdn`.",
     "Run the repo-local SpecTrace render/check flow for the changed canonical JSON artifacts.",
     "Run `git diff --check`.",
     "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/Validate-SpecTraceJson.ps1 -Profiles core` and preserve the output even though the profile currently fails on the standing canonical backlog."
@@ -67,14 +67,14 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP8-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP10-0002.cs",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/focused-rfc9002-appendix-a-helper-tests.log",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/benchmark-dry.log",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/BenchmarkDotNet.Artifacts/20260423-210217/Incursa.Quic.Benchmarks.QuicRttEstimatorBenchmarks-report-github.md",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/BenchmarkDotNet.Artifacts/20260423-210249/Incursa.Quic.Benchmarks.QuicCongestionControlBenchmarks-report-github.md",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/render.log",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/render-check.log",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/git-diff-check.log",
-    "artifacts/verification/20260423-rfc9002-appendix-a-helper-recovery-state/spec-trace-core-validation.log"
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/focused-rfc9002-appendix-a-helper-tests.log",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/benchmark-dry.log",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/bdn/20260423-210217/re-report-github.md",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/bdn/20260423-210249/cc-report-github.md",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/render.log",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/render-check.log",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/git-diff-check.log",
+    "artifacts/v/20260423-rfc9002-appendix-a-helper-recovery-state/spec-trace-core-validation.log"
   ],
   "status_summary": "Passed on 2026-04-23 for the bounded helper-backed Appendix A subset. The focused requirement-home run passed 73/73 tests, deterministic fuzz top-offs covered the shared RTT adjustment, loss-detection timer priority, and loss-delay helper arithmetic seams, and BenchmarkDotNet Dry passed for the existing RTT and congestion helper suites. SpecTrace render/check and diff-check passed. The core SpecTrace profile still failed with the known standing canonical backlog, now reported as 6218 errors after adding this traced artifact set; that output is preserved as evidence and is not classified as a protocol failure."
 }

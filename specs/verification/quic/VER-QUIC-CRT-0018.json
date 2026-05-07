@@ -33,11 +33,11 @@
     "docs/packaging.md",
     "tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
     "scripts/quality/run-aot-publish.ps1",
-    "artifacts/verification/20260426-crt-package-aot-compatibility/run-aot-publish.log",
-    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-render.log",
-    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-check.log",
-    "artifacts/verification/20260426-crt-package-aot-compatibility/git-diff-check.log",
-    "artifacts/verification/20260426-crt-package-aot-compatibility/spec-trace-validate.log"
+    "artifacts/v/20260426-crt-package-aot-compatibility/run-aot-publish.log",
+    "artifacts/v/20260426-crt-package-aot-compatibility/spec-trace-render.log",
+    "artifacts/v/20260426-crt-package-aot-compatibility/spec-trace-check.log",
+    "artifacts/v/20260426-crt-package-aot-compatibility/git-diff-check.log",
+    "artifacts/v/20260426-crt-package-aot-compatibility/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic library builds successfully on net10.0.",

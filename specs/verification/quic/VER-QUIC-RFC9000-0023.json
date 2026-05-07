@@ -39,15 +39,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/focused-rfc9000-bootstrap-replay-ack-piggyback-tests.log",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/adjacent-rfc9002-bootstrap-replay-tests.log",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/render.log",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/render-check.log",
-    "artifacts/verification/20260425-rfc9000-bootstrap-replay-ack-piggyback/git-diff-check.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-dry.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-short.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-bootstrap-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results"
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/focused-rfc9000-bootstrap-replay-ack-piggyback-tests.log",
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/adjacent-rfc9002-bootstrap-replay-tests.log",
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/render.log",
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/render-check.log",
+    "artifacts/v/20260425-rfc9000-bootstrap-replay-ack-piggyback/git-diff-check.log",
+    "artifacts/bb/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-dry.log",
+    "artifacts/bb/20260425-rfc9000-bootstrap-replay-ack-piggyback/bootstrap-replay-ack-piggyback-benchmark-short.log",
+    "artifacts/bb/20260425-rfc9000-bootstrap-replay-ack-piggyback/bdn/results"
   ],
   "supplemental_sections": [
     {

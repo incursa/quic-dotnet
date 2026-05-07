@@ -65,9 +65,9 @@ These are surfaced by `QuicCongestionControlState` and `QuicEcnValidationState`,
 - Result: `19 passed, 0 failed, 0 skipped`
 
 ## Preserved Evidence
-- `artifacts/benchmark-baseline/20260422-230344-dry/`
-- `artifacts/benchmark-baseline/20260422-230945-short/`
-- `artifacts/benchmark-baseline/20260422-2350-rfc9002-pmtu-accounting-dry/`
+- `artifacts/bb/20260422-230344-dry/`
+- `artifacts/bb/20260422-230945-short/`
+- `artifacts/bb/20260422-2350-rfc9002-pmtu-accounting-dry/`
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
 - `specs/requirements/quic/SPEC-QUIC-RFC9002.json`
 - `specs/architecture/quic/ARC-QUIC-RFC9002-0002.json`

@@ -46,16 +46,16 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/focused-rfc9000-retry-replay-ack-piggyback-tests.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-rfc9000-retry-replay-tests.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-crt-retry-bootstrap-tests.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/render.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/render-check.log",
-    "artifacts/verification/20260425-rfc9000-retry-replay-ack-piggyback/git-diff-check.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-dry.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-short.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-retry-replay-ack-piggyback/BenchmarkDotNet.Artifacts/results"
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/focused-rfc9000-retry-replay-ack-piggyback-tests.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-rfc9000-retry-replay-tests.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/adjacent-crt-retry-bootstrap-tests.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/render.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/render-check.log",
+    "artifacts/v/20260425-rfc9000-retry-replay-ack-piggyback/git-diff-check.log",
+    "artifacts/bb/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-dry.log",
+    "artifacts/bb/20260425-rfc9000-retry-replay-ack-piggyback/retry-replay-ack-piggyback-benchmark-short.log",
+    "artifacts/bb/20260425-rfc9000-retry-replay-ack-piggyback/bdn/results"
   ],
   "supplemental_sections": [
     {

@@ -40,15 +40,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/focused-rfc9000-ack-piggyback-tests.log",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/full-rfc9000-s13p2p1-tests.log",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/render.log",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/render-check.log",
-    "artifacts/verification/20260425-rfc9000-ack-piggyback-policy/git-diff-check.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-dry.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-short.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-ack-piggyback-policy/BenchmarkDotNet.Artifacts/results"
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/focused-rfc9000-ack-piggyback-tests.log",
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/full-rfc9000-s13p2p1-tests.log",
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/render.log",
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/render-check.log",
+    "artifacts/v/20260425-rfc9000-ack-piggyback-policy/git-diff-check.log",
+    "artifacts/bb/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-dry.log",
+    "artifacts/bb/20260425-rfc9000-ack-piggyback-policy/ack-piggyback-benchmark-short.log",
+    "artifacts/bb/20260425-rfc9000-ack-piggyback-policy/bdn/results"
   ],
   "supplemental_sections": [
     {

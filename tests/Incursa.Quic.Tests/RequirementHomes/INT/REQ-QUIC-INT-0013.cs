@@ -211,6 +211,7 @@ public sealed class REQ_QUIC_INT_0013
             Assert.Contains("**/.dotnet-home", dockerIgnore, StringComparison.Ordinal);
             Assert.Contains("**/.workbench", dockerIgnore, StringComparison.Ordinal);
             Assert.Contains("**/BenchmarkDotNet.Artifacts", dockerIgnore, StringComparison.Ordinal);
+            Assert.Contains("**/bdn", dockerIgnore, StringComparison.Ordinal);
             Assert.Contains("**/StrykerOutput", dockerIgnore, StringComparison.Ordinal);
 
             foreach (string relativePath in excludedRelativePaths)
@@ -1214,6 +1215,7 @@ public sealed class REQ_QUIC_INT_0013
                 Path.Combine(".dotnet-home", "cache", "context-marker.txt"),
                 Path.Combine(".workbench", "context-marker.txt"),
                 Path.Combine("BenchmarkDotNet.Artifacts", "context-marker.txt"),
+                Path.Combine("bdn", "context-marker.txt"),
                 Path.Combine("StrykerOutput", "context-marker.txt"),
             ];
 

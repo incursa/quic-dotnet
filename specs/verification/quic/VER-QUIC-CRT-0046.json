@@ -30,7 +30,7 @@
     "artifacts/interop-runner/20260422-125529196-server-nginx/runner-logs/nginx_quic-go/handshake/client/log.txt",
     "artifacts/interop-runner/20260422-222457332-server-nginx/runner-logs/nginx_quic-go/handshake/output.txt",
     "artifacts/interop-runner/20260422-222457332-server-nginx/runner-report.md",
-    "artifacts/benchmark-baseline/20260422-2321-alpn-dry/",
+    "artifacts/bb/20260422-2321-alpn-dry/",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "scripts/Validate-SpecTraceJson.ps1",
     "scripts/spec-trace/Render-SpecTraceMarkdownFromJson.ps1",

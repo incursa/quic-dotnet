@@ -36,11 +36,11 @@
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs",
-    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log",
-    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log",
-    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log",
-    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log",
-    "artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
+    "artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log",
+    "artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log",
+    "artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log",
+    "artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log",
+    "artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
@@ -49,7 +49,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log\n- artifacts/verification/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0113.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTlsTransport.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs\n- src/Incursa.Quic/QuicTlsTranscriptProgress.cs\n- src/Incursa.Quic/QuicTlsKeySchedule.cs\n- src/Incursa.Quic/QuicTlsCipherSuiteProfile.cs\n- artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/dotnet-test-REQ-QUIC-CRT-0112-0113.log\n- artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-render.log\n- artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-check.log\n- artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/git-diff-check.log\n- artifacts/v/20260425-crt-server-role-encryptedextensions-continuation/spec-trace-validate.log"
     }
   ]
 }

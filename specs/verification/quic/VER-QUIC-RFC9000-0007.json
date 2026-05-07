@@ -47,9 +47,9 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0014.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
-    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/rfc9000-streams-blocked-runtime-tests.log",
-    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry.log",
-    "artifacts/verification/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry-report-github.md",
+    "artifacts/v/20260423-rfc9000-streams-blocked-runtime/rfc9000-streams-blocked-runtime-tests.log",
+    "artifacts/v/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry.log",
+    "artifacts/v/20260423-rfc9000-streams-blocked-runtime/quic-frame-codec-benchmark-dry-report-github.md",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14_0003\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S19P14|FullyQualifiedName~REQ_QUIC_API_0014\"",
     "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\""

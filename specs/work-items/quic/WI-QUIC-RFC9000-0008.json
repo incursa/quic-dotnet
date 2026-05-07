@@ -23,7 +23,7 @@
   ],
   "summary": "Add protected-packet proof and permanent benchmark coverage for active-runtime `DATA_BLOCKED` emission when a stream write is blocked by connection-level flow-control credit.",
   "planned_changes": "- Add requirement-home coverage that forces connection-level flow-control exhaustion, opens the protected application packet, parses `DATA_BLOCKED`, and verifies the emitted `Maximum Data` limit.\n- Add negative requirement-home coverage that keeps an ack-eliciting packet in flight and proves the duplicate `DATA_BLOCKED` signal is suppressed.\n- Confirm the emitted protected advisory packet is retained by the sender/recovery ledger and can be retransmitted after loss.\n- Add a permanent BenchmarkDotNet case for the stream-state helper branch that publishes connection-level `DATA_BLOCKED`.\n- Add focused architecture and verification artifacts for the bounded `DATA_BLOCKED` runtime emission slice.",
-  "verification_plan": "Run the focused RFC 9000 S4P1/S13P3/S19P12 requirement-home tests, run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/verification/20260425-rfc9000-data-blocked-runtime/`.",
+  "verification_plan": "Run the focused RFC 9000 S4P1/S13P3/S19P12 requirement-home tests, run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/v/20260425-rfc9000-data-blocked-runtime/`.",
   "verification_links": [
     "VER-QUIC-RFC9000-0008"
   ],

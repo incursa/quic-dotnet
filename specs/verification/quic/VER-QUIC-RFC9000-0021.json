@@ -39,15 +39,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/focused-rfc9000-crypto-retransmission-ack-piggyback-tests.log",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/adjacent-rfc9002-crypto-retransmission-tests.log",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/spec-trace-validate.log",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/render.log",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/render-check.log",
-    "artifacts/verification/20260425-rfc9000-crypto-retransmission-ack-piggyback/git-diff-check.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-dry.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-short.log",
-    "artifacts/benchmark-baseline/20260425-rfc9000-crypto-retransmission-ack-piggyback/BenchmarkDotNet.Artifacts/results"
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/focused-tests.log",
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/adjacent-rfc9002-crypto-retransmission-tests.log",
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/spec-trace-validate.log",
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/render.log",
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/render-check.log",
+    "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/git-diff-check.log",
+    "artifacts/bb/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-dry.log",
+    "artifacts/bb/20260425-rfc9000-crypto-retransmission-ack-piggyback/crypto-retransmission-ack-piggyback-benchmark-short.log",
+    "artifacts/bb/20260425-rfc9000-crypto-retransmission-ack-piggyback/bdn/results"
   ],
   "supplemental_sections": [
     {

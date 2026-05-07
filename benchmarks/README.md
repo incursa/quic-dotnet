@@ -94,7 +94,6 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
 ```
 
-BenchmarkDotNet writes reports under `BenchmarkDotNet.Artifacts/results`
-relative to the current working directory. When you run the launcher from the
-repo root, reports land under the repo-root `BenchmarkDotNet.Artifacts/results`
-directory.
+BenchmarkDotNet writes reports under `.artifacts/bdn/results` by default.
+The baseline launcher writes each filtered suite under
+`.artifacts/bdn/baseline/<Job>/<Suite>/` unless `-ArtifactsRoot` is supplied.

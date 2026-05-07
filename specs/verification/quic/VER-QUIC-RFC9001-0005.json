@@ -38,14 +38,14 @@
     "benchmarks/QuicStatelessResetBenchmarks.cs",
     "src/Incursa.Quic/QuicStatelessReset.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/focused-rfc9001-s6p6-format-failure-tests.log",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/render.log",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/render-check.log",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/git-diff-check.log",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260424-format-failure.log",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/20260424-161924/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report-github.md",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/20260424-161924/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.csv",
-    "artifacts/verification/20260424-rfc9001-s6p6-format-failure/BenchmarkDotNet.Artifacts/20260424-161924/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-report.html"
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/focused-rfc9001-s6p6-format-failure-tests.log",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/render.log",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/render-check.log",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/git-diff-check.log",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/bdn/Incursa.Quic.Benchmarks.QuicStatelessResetBenchmarks-20260424-format-failure.log",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/bdn/20260424-161924/sr-report-github.md",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/bdn/20260424-161924/sr-report.csv",
+    "artifacts/v/20260424-rfc9001-s6p6-format-failure/bdn/20260424-161924/sr-report.html"
   ],
   "status_summary": "Passed locally on 2026-04-24. Focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0006 and REQ-QUIC-RFC9001-S6P6-0007 ran green with 11 total cases, the runtime endpoint returned FormatFailed when the retained version profile was forced empty, the touched SpecTrace markdown rendered cleanly from JSON, git diff --check stayed clean apart from the existing REQUIREMENT-GAPS CRLF warning, and the Dry QuicStatelessResetBenchmarks rerun preserved the formatting and retained-route lookup paths.",
   "supplemental_sections": [

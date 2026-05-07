@@ -347,27 +347,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.BufferZeroRtt
-                    && QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket zeroRttHeader))
+                    && TryBufferZeroRttPreInitialDatagram(datagram, pathIdentity))
                 {
-                    _ = zeroRttPreInitialBuffer.TryBuffer(
-                        zeroRttHeader.DestinationConnectionId,
-                        datagram,
-                        pathIdentity);
                     continue;
                 }
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.AdmitInitial
-                    && TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader))
+                    && TryReadInitialAdmissionFields(
+                        datagram,
+                        out byte[] initialDestinationConnectionId,
+                        out byte[] clientSourceConnectionId,
+                        out byte[] initialToken))
                 {
                     try
                     {
-                        if (!TryParseInitialToken(initialHeader.VersionSpecificData, out byte[] initialToken))
-                        {
-                            continue;
-                        }
-
-                        byte[] initialDestinationConnectionId = initialHeader.DestinationConnectionId.ToArray();
-                        byte[] clientSourceConnectionId = initialHeader.SourceConnectionId.ToArray();
                         if (await TryAdmitIncomingInitialConnectionAsync(
                             datagram,
                             pathIdentity,
@@ -397,6 +390,40 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             QuicBufferPool.ReturnBytes(buffer);
         }
+    }
+
+    private bool TryBufferZeroRttPreInitialDatagram(byte[] datagram, QuicConnectionPathIdentity pathIdentity)
+    {
+        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket zeroRttHeader))
+        {
+            return false;
+        }
+
+        return zeroRttPreInitialBuffer.TryBuffer(
+            zeroRttHeader.DestinationConnectionId,
+            datagram,
+            pathIdentity);
+    }
+
+    private static bool TryReadInitialAdmissionFields(
+        byte[] datagram,
+        out byte[] initialDestinationConnectionId,
+        out byte[] clientSourceConnectionId,
+        out byte[] initialToken)
+    {
+        initialDestinationConnectionId = [];
+        clientSourceConnectionId = [];
+        initialToken = [];
+
+        if (!TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader) ||
+            !TryParseInitialToken(initialHeader.VersionSpecificData, out initialToken))
+        {
+            return false;
+        }
+
+        initialDestinationConnectionId = initialHeader.DestinationConnectionId.ToArray();
+        clientSourceConnectionId = initialHeader.SourceConnectionId.ToArray();
+        return true;
     }
 
     private void FlushBufferedZeroRttDatagrams(ReadOnlySpan<byte> initialDestinationConnectionId)

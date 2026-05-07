@@ -33,11 +33,11 @@
     "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0029.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0030.cs",
-    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/focused-rfc9000-cid-retransmission-reliability-tests.log",
-    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/render.log",
-    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/render-check.log",
-    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/reciprocal-trace-check.log",
-    "artifacts/verification/20260425-rfc9000-cid-retransmission-reliability/git-diff-check.log",
+    "artifacts/v/20260425-rfc9000-cid-retransmission-reliability/focused-rfc9000-cid-retransmission-reliability-tests.log",
+    "artifacts/v/20260425-rfc9000-cid-retransmission-reliability/render.log",
+    "artifacts/v/20260425-rfc9000-cid-retransmission-reliability/render-check.log",
+    "artifacts/v/20260425-rfc9000-cid-retransmission-reliability/reciprocal-trace-check.log",
+    "artifacts/v/20260425-rfc9000-cid-retransmission-reliability/git-diff-check.log",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030\""
   ],
   "supplemental_sections": [

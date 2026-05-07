@@ -55,16 +55,16 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs",
     "benchmarks/QuicEcnValidationBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/focused-rfc9000-ecn-validation-tests.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/quic-ecn-validation-benchmark-dry.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts/Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-20260425-100131.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicEcnValidationBenchmarks-report-github.md",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/render.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/render-check.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/reciprocal-trace-check.log",
-    "artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/git-diff-check.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/focused-rfc9000-ecn-validation-tests.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/quic-ecn-validation-benchmark-dry.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/bdn/ev-20260425-100131.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/bdn/results/ev-report-github.md",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/render.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/render-check.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/reciprocal-trace-check.log",
+    "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/git-diff-check.log",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P4P2P1|FullyQualifiedName~REQ_QUIC_RFC9000_S13P4P2P2\"",
-    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicEcnValidationBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-ecn-ack-count-validation/BenchmarkDotNet.Artifacts"
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicEcnValidationBenchmarks*\" --artifacts artifacts/v/20260425-rfc9000-ecn-ack-count-validation/bdn"
   ],
   "supplemental_sections": [
     {

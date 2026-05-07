@@ -24,10 +24,9 @@ hot-path benchmark suites and to provide benchmark evidence for attestation.
 ## Outcome
 
 - The dry run completed successfully for all 3 benchmark methods in the Initial packet protection suite.
-- BenchmarkDotNet exported suite reports beneath
-  `BenchmarkDotNet.Artifacts/results` relative to the working directory. When
-  you run the command from the repo root, the reports land under the repo-root
-  `BenchmarkDotNet.Artifacts/results` directory.
+- BenchmarkDotNet exported suite reports beneath `.artifacts/bdn/results` by
+  default. The baseline launcher writes each filtered suite under
+  `.artifacts/bdn/baseline/<Job>/<Suite>/`.
 - This directory can now be consumed as benchmark evidence by Workbench
   attestation.
 - Earlier benchmark evidence for the existing hot-path suites remains in the

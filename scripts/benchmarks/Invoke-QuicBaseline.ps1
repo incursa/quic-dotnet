@@ -19,6 +19,8 @@ param(
 
     [switch]$NoBuild,
 
+    [string]$ArtifactsRoot = ".artifacts\bdn\baseline",
+
     [string[]]$BenchmarkFilter = @(
         "*QuicCongestionControlBenchmarks*",
         "*QuicRttEstimatorBenchmarks*",
@@ -31,6 +33,12 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $benchmarksProject = Join-Path $repoRoot "benchmarks\Incursa.Quic.Benchmarks.csproj"
+$resolvedArtifactsRoot = if ([System.IO.Path]::IsPathRooted($ArtifactsRoot)) {
+    $ArtifactsRoot
+}
+else {
+    Join-Path $repoRoot $ArtifactsRoot
+}
 
 if (-not $NoBuild) {
     $buildArgs = @(
@@ -52,6 +60,13 @@ if (-not $NoBuild) {
 }
 
 foreach ($filter in $BenchmarkFilter) {
+    $sliceName = $filter.Trim("*")
+    $sliceName = [System.Text.RegularExpressions.Regex]::Replace($sliceName, "[^A-Za-z0-9_.-]+", "-").Trim("-")
+    if ([string]::IsNullOrWhiteSpace($sliceName)) {
+        $sliceName = "benchmarks"
+    }
+
+    $filterArtifactsRoot = Join-Path (Join-Path $resolvedArtifactsRoot $Job) $sliceName
     $runArgs = @(
         "run"
         "-c"
@@ -71,10 +86,13 @@ foreach ($filter in $BenchmarkFilter) {
         $Job
         "--filter"
         $filter
+        "--artifacts"
+        $filterArtifactsRoot
     )
 
     Write-Host ""
     Write-Host "Running baseline slice: $filter" -ForegroundColor Cyan
+    Write-Host "Artifacts: $filterArtifactsRoot" -ForegroundColor Yellow
     Write-Host "Command: dotnet $($runArgs -join ' ')" -ForegroundColor Yellow
 
     & dotnet @runArgs

@@ -52,15 +52,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/focused-rfc9000-new-connection-id-frame-codec-tests.log",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/quic-frame-codec-benchmark-dry.log",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/BenchmarkDotNet.Artifacts/results/Incursa.Quic.Benchmarks.QuicFrameCodecBenchmarks-report-github.md",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/render.log",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/render-check.log",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/reciprocal-trace-check.log",
-    "artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/git-diff-check.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/focused-rfc9000-new-connection-id-frame-codec-tests.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/quic-frame-codec-benchmark-dry.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/bdn/results/fc-report-github.md",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/render.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/render-check.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/reciprocal-trace-check.log",
+    "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/git-diff-check.log",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0019\"",
-    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\" --artifacts artifacts/verification/20260425-rfc9000-new-connection-id-frame-codec/BenchmarkDotNet.Artifacts"
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\" --artifacts artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/bdn"
   ],
   "supplemental_sections": [
     {

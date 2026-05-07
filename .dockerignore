@@ -8,6 +8,7 @@
 .vs/
 .workbench/
 BenchmarkDotNet.Artifacts/
+bdn/
 StrykerOutput/
 artifacts/
 coverage/

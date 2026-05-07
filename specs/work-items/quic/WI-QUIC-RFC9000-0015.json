@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9000-S13P2P1-0014"
   ],
   "summary": "Add direct requirement-home proof and focused trace links for immediate ACK scheduling when a processed packet is marked ECN Congestion Experienced.",
-  "planned_changes": "- Add positive, negative, and edge requirement-home tests for `REQ-QUIC-RFC9000-S13P2P1-0014`.\n- Link the RFC 9000 Section 13.2.1 CE immediate-ACK requirement to a focused architecture, work-item, and verification artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve focused verification evidence under `artifacts/verification/20260425-rfc9000-ce-immediate-ack/`.",
-  "verification_plan": "Run the focused RFC 9000 CE immediate-ACK requirement-home tests and the existing ACK_ECN cross-reference test, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, run `git diff --check`, and preserve evidence under `artifacts/verification/20260425-rfc9000-ce-immediate-ack/`.",
+  "planned_changes": "- Add positive, negative, and edge requirement-home tests for `REQ-QUIC-RFC9000-S13P2P1-0014`.\n- Link the RFC 9000 Section 13.2.1 CE immediate-ACK requirement to a focused architecture, work-item, and verification artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve focused verification evidence under `artifacts/v/20260425-rfc9000-ce-immediate-ack/`.",
+  "verification_plan": "Run the focused RFC 9000 CE immediate-ACK requirement-home tests and the existing ACK_ECN cross-reference test, render/check the touched SpecTrace artifacts, verify reciprocal trace links for the focused artifact set, run `git diff --check`, and preserve evidence under `artifacts/v/20260425-rfc9000-ce-immediate-ack/`.",
   "verification_links": [
     "VER-QUIC-RFC9000-0015"
   ],
