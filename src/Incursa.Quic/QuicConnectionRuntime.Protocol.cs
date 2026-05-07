@@ -1332,6 +1332,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        bool receivedSpinBit = (openedPacket.Span[0] & QuicPacketHeaderBits.SpinBitMask) != 0;
+        stateChanged |= TryUpdatePathSpinBitFromReceivedPacket(
+            packetReceivedEvent.PathIdentity,
+            packetNumber,
+            receivedSpinBit);
+
         if (openedWithRetainedOldOpenMaterial
             && hasObservedCurrentOneRttKeyPhasePacketNumber
             && observedCurrentOneRttKeyPhase == tlsState.CurrentOneRttKeyPhase

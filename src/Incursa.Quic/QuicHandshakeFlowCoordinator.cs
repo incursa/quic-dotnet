@@ -379,6 +379,23 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            keyPhase,
+            spinBit: true,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
         packetNumber = default;
 
@@ -399,6 +416,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         if (!TryBuildApplicationDataPlaintextPacket(
             applicationPayload,
             keyPhase,
+            spinBit,
             currentPacketNumber,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
@@ -429,6 +447,23 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out QuicBufferLease protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacketLease(
+            applicationPayload,
+            material,
+            keyPhase,
+            spinBit: true,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketLease(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        out ulong packetNumber,
+        out QuicBufferLease protectedPacket)
+    {
         protectedPacket = default;
         packetNumber = default;
 
@@ -449,6 +484,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         if (!TryBuildApplicationDataPlaintextPacket(
                 applicationPayload,
                 keyPhase,
+                spinBit,
                 currentPacketNumber,
                 out QuicBufferLease plaintextPacket,
                 out int packetNumberOffset,
@@ -487,6 +523,25 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacketForRetransmission(
+            applicationPayload,
+            minimumPacketNumberExclusive,
+            material,
+            keyPhase,
+            spinBit: true,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketForRetransmission(
+        ReadOnlySpan<byte> applicationPayload,
+        ulong minimumPacketNumberExclusive,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
         packetNumber = default;
 
@@ -505,6 +560,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             applicationPayload,
             material,
             keyPhase,
+            spinBit,
             out packetNumber,
             out protectedPacket);
     }
@@ -1742,6 +1798,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
+        bool spinBit,
         ulong packetNumber,
         out byte[] plaintextPacket,
         out int packetNumberOffset,
@@ -1759,7 +1816,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
         packetNumberOffset = 1 + destinationConnectionId.Length;
-        bool spinBitEnabled = enableRandomizedSpinBitSelection && !ShouldDisableSpinBit(destinationConnectionId);
+        bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
 
         byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
         packet[0] = (byte)(
@@ -1787,6 +1844,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
+        bool spinBit,
         ulong packetNumber,
         out QuicBufferLease plaintextPacket,
         out int packetNumberOffset,
@@ -1804,7 +1862,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
         packetNumberOffset = 1 + destinationConnectionId.Length;
-        bool spinBitEnabled = enableRandomizedSpinBitSelection && !ShouldDisableSpinBit(destinationConnectionId);
+        bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
 
         plaintextPacket = QuicBufferPool.RentLease(packetNumberOffset + packetNumberLength + paddedPayloadLength);
         try

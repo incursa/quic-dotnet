@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S9P6P1 preferred-address conveyance and
+Last verified: 2026-05-06 for the S17P4 spin-bit per-path state tail,
+S9P6P1 preferred-address conveyance and
 per-family selection tail, S9P6P1 preferred-address validation-failure
 policy, S9P6P1 preferred-address handshake-confirmed transition, S4P6
 stream-limit metadata xref tail, S4P6 cumulative incoming stream-limit tail,
@@ -27,6 +28,22 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S17P4 spin-bit per-path state closure on 2026-05-06 closes
+`REQ-QUIC-RFC9000-S17P4-0008`, `REQ-QUIC-RFC9000-S17P4-0009`,
+and `REQ-QUIC-RFC9000-S17P4-0010` under `ARC-QUIC-RFC9000-0083`,
+`WI-QUIC-RFC9000-0083`, and `VER-QUIC-RFC9000-0083`. The proof covers
+protected 1-RTT runtime/wire behavior for emitting the stored path spin
+value, server receive-side storage of the received spin bit when the packet
+number advances, and client receive-side storage of the inverse spin bit when
+the packet number advances. `REQ-QUIC-RFC9000-S17P4-0005` also gained the
+missing zero-length connection-ID randomized-disablement edge proof.
+Regenerated coverage triage marks all four requirements as `trace_clean` and
+reports 1,320 of 1,771 QUIC requirements trace-clean overall, leaving 451
+non-clean. `S17P4` has no remaining non-clean requirements in generated
+triage. This closure does not claim public spin-bit administration API
+widening, observer RTT estimation completeness, hosted interop readiness, or
+closure of deferred fuzz obligations.
 
 Follow-on S9P6P1 preferred-address conveyance and per-family selection closure
 on 2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0001`,

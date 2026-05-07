@@ -554,6 +554,94 @@ internal sealed partial class QuicConnectionRuntime
         return recentlyValidatedPaths.TryGetValue(pathIdentity, out validatedPath);
     }
 
+    private bool TryGetStoredSpinBitForPath(QuicConnectionPathIdentity pathIdentity, out bool spinBit)
+    {
+        if (activePath is QuicConnectionActivePathRecord activePathValue
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePathValue.Identity, pathIdentity))
+        {
+            spinBit = activePathValue.SpinBitState.StoredValue;
+            return true;
+        }
+
+        if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            spinBit = candidatePath.SpinBitState.StoredValue;
+            return true;
+        }
+
+        if (TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath))
+        {
+            spinBit = recentlyValidatedPath.SpinBitState.StoredValue;
+            return true;
+        }
+
+        spinBit = QuicConnectionPathSpinBitState.CreateInitial().StoredValue;
+        return false;
+    }
+
+    private bool TryUpdatePathSpinBitFromReceivedPacket(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong packetNumber,
+        bool receivedSpinBit)
+    {
+        if (activePath is QuicConnectionActivePathRecord activePathValue
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePathValue.Identity, pathIdentity))
+        {
+            if (!activePathValue.SpinBitState.TryUpdateFromReceivedPacket(
+                    tlsState.Role,
+                    packetNumber,
+                    receivedSpinBit,
+                    out QuicConnectionPathSpinBitState updatedSpinBitState))
+            {
+                return false;
+            }
+
+            activePath = activePathValue with
+            {
+                SpinBitState = updatedSpinBitState,
+            };
+            return true;
+        }
+
+        if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            if (!candidatePath.SpinBitState.TryUpdateFromReceivedPacket(
+                    tlsState.Role,
+                    packetNumber,
+                    receivedSpinBit,
+                    out QuicConnectionPathSpinBitState updatedSpinBitState))
+            {
+                return false;
+            }
+
+            candidatePaths[pathIdentity] = candidatePath with
+            {
+                SpinBitState = updatedSpinBitState,
+            };
+            return true;
+        }
+
+        if (TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath))
+        {
+            if (!recentlyValidatedPath.SpinBitState.TryUpdateFromReceivedPacket(
+                    tlsState.Role,
+                    packetNumber,
+                    receivedSpinBit,
+                    out QuicConnectionPathSpinBitState updatedSpinBitState))
+            {
+                return false;
+            }
+
+            recentlyValidatedPaths[pathIdentity] = recentlyValidatedPath with
+            {
+                SpinBitState = updatedSpinBitState,
+            };
+            return true;
+        }
+
+        return false;
+    }
+
     private QuicConnectionPathClassification ClassifyPathChange(QuicConnectionPathIdentity pathIdentity)
     {
         if (TryGetRecentlyValidatedPath(pathIdentity, out _))

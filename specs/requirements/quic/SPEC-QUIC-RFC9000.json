@@ -31720,13 +31720,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0083"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0083"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0083"
         ],
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B5-P4-S3",
@@ -31734,7 +31737,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForOneInSixteenConnectionIds",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_LeavesTheSpinBitEnabledOutsideTheSelectionFloor"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_LeavesTheSpinBitEnabledOutsideTheSelectionFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds"
         ]
       }
     },
@@ -31808,17 +31812,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0083"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0083"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0083"
         ],
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs::LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue"
         ]
       }
     },
@@ -31834,17 +31844,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0083"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0083"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0083"
         ],
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs::ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath"
         ]
       }
     },
@@ -31860,17 +31876,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0083"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0083"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0083"
         ],
         "upstream_refs": [
           "RFC 9000 §17.4 RFC9000-S17.4-B9-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates"
         ]
       }
     },

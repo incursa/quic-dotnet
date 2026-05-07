@@ -223,6 +223,43 @@ internal readonly record struct QuicConnectionPathValidationState(
     long? ValidationDeadlineTicks,
     ReadOnlyMemory<byte> ChallengePayload);
 
+internal readonly record struct QuicConnectionPathSpinBitState(
+    bool StoredValue,
+    bool HasHighestReceivedPacketNumber,
+    ulong HighestReceivedPacketNumber)
+{
+    public static QuicConnectionPathSpinBitState CreateInitial()
+    {
+        return new QuicConnectionPathSpinBitState(
+            StoredValue: true,
+            HasHighestReceivedPacketNumber: false,
+            HighestReceivedPacketNumber: 0);
+    }
+
+    public bool TryUpdateFromReceivedPacket(
+        QuicTlsRole role,
+        ulong packetNumber,
+        bool receivedSpinBit,
+        out QuicConnectionPathSpinBitState updated)
+    {
+        updated = this;
+
+        if (HasHighestReceivedPacketNumber && packetNumber <= HighestReceivedPacketNumber)
+        {
+            return false;
+        }
+
+        bool storedValue = role == QuicTlsRole.Client
+            ? !receivedSpinBit
+            : receivedSpinBit;
+        updated = new QuicConnectionPathSpinBitState(
+            storedValue,
+            HasHighestReceivedPacketNumber: true,
+            packetNumber);
+        return updated != this;
+    }
+}
+
 internal readonly record struct QuicConnectionActivePathRecord(
     QuicConnectionPathIdentity Identity,
     long ActivatedAtTicks,
@@ -233,6 +270,8 @@ internal readonly record struct QuicConnectionActivePathRecord(
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
 
     public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
+    public QuicConnectionPathSpinBitState SpinBitState { get; init; } = QuicConnectionPathSpinBitState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionCandidatePathRecord(
@@ -245,6 +284,8 @@ internal readonly record struct QuicConnectionCandidatePathRecord(
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
 
     public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
+    public QuicConnectionPathSpinBitState SpinBitState { get; init; } = QuicConnectionPathSpinBitState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionValidatedPathRecord(
@@ -257,6 +298,8 @@ internal readonly record struct QuicConnectionValidatedPathRecord(
     public QuicConnectionPathAmplificationState AmplificationState { get; init; }
 
     public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
+
+    public QuicConnectionPathSpinBitState SpinBitState { get; init; } = QuicConnectionPathSpinBitState.CreateInitial();
 }
 
 internal readonly record struct QuicConnectionCloseMetadata(

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T18:29:40.5377095-06:00",
+  "generated_at": "2026-05-06T19:22:27.0627519-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-06T18:29:40.5333537-06:00",
+    "generated_at": "2026-05-06T19:22:27.0584070-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 50,
       "covered_but_proof_too_broad": 45,
-      "partially_covered": 135,
-      "trace_clean": 1316,
+      "partially_covered": 134,
+      "trace_clean": 1320,
       "uncovered_blocked": 71,
-      "uncovered_unblocked": 154
+      "uncovered_unblocked": 151
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1316,
+      "clean": 1320,
       "metadata_only": 50,
-      "new_tests_needed": 400,
+      "new_tests_needed": 396,
       "restructure_needed": 65
     },
     "by_rfc": [
@@ -49,10 +49,10 @@
         "by_state": {
           "covered_but_missing_xrefs": 50,
           "covered_but_proof_too_broad": 45,
-          "partially_covered": 135,
-          "trace_clean": 1003,
+          "partially_covered": 134,
+          "trace_clean": 1007,
           "uncovered_blocked": 56,
-          "uncovered_unblocked": 154
+          "uncovered_unblocked": 151
         }
       },
       {
@@ -86497,33 +86497,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForOneInSixteenConnectionIds",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_LeavesTheSpinBitEnabledOutsideTheSelectionFloor"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_LeavesTheSpinBitEnabledOutsideTheSelectionFloor",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -86563,6 +86562,50 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0005",
+          "member": "REQ_QUIC_RFC9000_S17P4_0005.TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds",
+          "method": "TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds",
+          "line": 102,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs::TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0005",
+          "member": "REQ_QUIC_RFC9000_S17P4_0005.TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds",
+          "method": "TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds",
+          "line": 102,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -86798,33 +86841,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs::LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0008",
+          "member": "REQ_QUIC_RFC9000_S17P4_0008.LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
+          "method": "LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs::LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0008",
+          "member": "REQ_QUIC_RFC9000_S17P4_0008.LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
+          "method": "LocalOneRttClose_SetsTheSpinBitToTheStoredActivePathValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P4-0009",
@@ -86839,33 +86925,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs::ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0009",
+          "member": "REQ_QUIC_RFC9000_S17P4_0009.ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
+          "method": "ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs::ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0009",
+          "member": "REQ_QUIC_RFC9000_S17P4_0009.ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
+          "method": "ServerReceiveOneRttPacket_StoresTheReceivedSpinBitForThePath",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
@@ -86880,33 +87009,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0010",
+          "member": "REQ_QUIC_RFC9000_S17P4_0010.ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates",
+          "method": "ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates",
+          "line": 35,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0010",
+          "member": "REQ_QUIC_RFC9000_S17P4_0010.ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates",
+          "method": "ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates",
+          "line": 35,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0010",
+          "member": "REQ_QUIC_RFC9000_S17P4_0010.ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "method": "ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs::ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S17P4_0010",
+          "member": "REQ_QUIC_RFC9000_S17P4_0010.ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "method": "ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P4-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S18-0001",

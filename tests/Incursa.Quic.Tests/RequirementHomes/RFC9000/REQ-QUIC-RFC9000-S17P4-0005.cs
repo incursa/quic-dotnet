@@ -95,4 +95,36 @@ public sealed class REQ_QUIC_RFC9000_S17P4_0005
         Assert.Equal(1 + destinationConnectionId.Length + 4, payloadOffset);
         Assert.True(payloadLength >= payload.Length);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForZeroLengthConnectionIds()
+    {
+        QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt);
+        byte[] payload = QuicS12P3TestSupport.CreatePingPayload();
+
+        QuicHandshakeFlowCoordinator coordinator = new(
+            ReadOnlyMemory<byte>.Empty,
+            ReadOnlyMemory<byte>.Empty,
+            enableRandomizedSpinBitSelection: true);
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            material,
+            out byte[] protectedPacket));
+
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(openedPacket, out QuicShortHeaderPacket header));
+        Assert.False(header.SpinBit);
+        Assert.Equal(1 + 4, payloadOffset);
+        Assert.True(payloadLength >= payload.Length);
+    }
 }

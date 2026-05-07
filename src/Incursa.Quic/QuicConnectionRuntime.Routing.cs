@@ -1475,6 +1475,7 @@ internal sealed partial class QuicConnectionRuntime
             applicationPayload[..bytesWritten],
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
+            currentPath.SpinBitState.StoredValue,
             out ulong packetNumber,
             out byte[] protectedPacket))
         {

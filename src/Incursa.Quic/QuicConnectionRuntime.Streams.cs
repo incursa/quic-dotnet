@@ -1261,6 +1261,7 @@ internal sealed partial class QuicConnectionRuntime
             packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
+            currentPath.SpinBitState.StoredValue,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -1406,10 +1407,17 @@ internal sealed partial class QuicConnectionRuntime
             piggybackedAckFrame = includedAckFrame;
         }
 
+        if (!TryGetStoredSpinBitForPath(pathIdentity, out bool pathSpinBit))
+        {
+            exception = new InvalidOperationException("The requested path is not available for an application packet.");
+            return false;
+        }
+
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
             packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
+            pathSpinBit,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -2883,6 +2891,7 @@ internal sealed partial class QuicConnectionRuntime
             minimumPacketNumberExclusive,
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
+            activePath?.SpinBitState.StoredValue ?? QuicConnectionPathSpinBitState.CreateInitial().StoredValue,
             out packetNumber,
             out protectedPacket))
         {
