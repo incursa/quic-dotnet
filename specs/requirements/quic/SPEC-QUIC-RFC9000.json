@@ -26572,7 +26572,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0020.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0020.cs::TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes"
         ]
       }
     },
