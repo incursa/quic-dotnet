@@ -265,23 +265,47 @@ internal sealed class QuicAckGenerationState
     /// <summary>
     /// Retires the ACK ranges that were carried in a previously sent ACK frame when the carrier packet is acknowledged.
     /// </summary>
-    internal bool TryRetireAcknowledgedAckRanges(QuicPacketNumberSpace packetNumberSpace, ulong acknowledgedPacketNumber)
+    internal bool TryRetireAcknowledgedAckRanges(QuicPacketNumberSpace packetNumberSpace, ulong ackedPacketNumber)
     {
         if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state)
-            || !state.SentAckFrames.TryGetValue(acknowledgedPacketNumber, out SentAckFrameState sentAckFrame))
+            || !state.SentAckFrames.TryGetValue(ackedPacketNumber, out SentAckFrameState sentAckFrame))
         {
             return false;
         }
 
-        state.SentAckFrames.Remove(acknowledgedPacketNumber);
-        foreach (PacketRange range in sentAckFrame.AckedRanges)
+        RetireSentAckFrame(state, ackedPacketNumber, sentAckFrame);
+        return true;
+    }
+
+    /// <summary>
+    /// Retires ACK ranges carried by sent ACK frames whose carrier packet is acknowledged by an ACK frame.
+    /// </summary>
+    internal bool TryRetireAcknowledgedAckRanges(QuicPacketNumberSpace packetNumberSpace, QuicAckFrame ackFrame)
+    {
+        if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state)
+            || state.SentAckFrames.Count == 0
+            || ackFrame.FirstAckRange > ackFrame.LargestAcknowledged)
         {
-            RemoveRange(state.Receipts, range);
+            return false;
         }
 
-        if (state.Receipts.Count == 0)
+        List<ulong>? acknowledgedAckFramePacketNumbers = null;
+        foreach (KeyValuePair<ulong, SentAckFrameState> sentAckFrameEntry in state.SentAckFrames)
         {
-            state.ImmediateAckRequired = false;
+            if (AckFrameAcknowledgesPacketNumber(ackFrame, sentAckFrameEntry.Key))
+            {
+                (acknowledgedAckFramePacketNumbers ??= []).Add(sentAckFrameEntry.Key);
+            }
+        }
+
+        if (acknowledgedAckFramePacketNumbers is null)
+        {
+            return false;
+        }
+
+        foreach (ulong packetNumber in acknowledgedAckFramePacketNumbers)
+        {
+            RetireSentAckFrame(state, packetNumber, state.SentAckFrames[packetNumber]);
         }
 
         return true;
@@ -293,6 +317,39 @@ internal sealed class QuicAckGenerationState
     internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
     {
         return spaces.Remove(packetNumberSpace);
+    }
+
+    private static bool AckFrameAcknowledgesPacketNumber(QuicAckFrame ackFrame, ulong packetNumber)
+    {
+        ulong firstRangeSmallestAcknowledged = ackFrame.LargestAcknowledged - ackFrame.FirstAckRange;
+        if (packetNumber >= firstRangeSmallestAcknowledged && packetNumber <= ackFrame.LargestAcknowledged)
+        {
+            return true;
+        }
+
+        foreach (QuicAckRange range in ackFrame.AdditionalRanges ?? [])
+        {
+            if (packetNumber >= range.SmallestAcknowledged && packetNumber <= range.LargestAcknowledged)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static void RetireSentAckFrame(SpaceState state, ulong packetNumber, SentAckFrameState sentAckFrame)
+    {
+        state.SentAckFrames.Remove(packetNumber);
+        foreach (PacketRange range in sentAckFrame.AckedRanges)
+        {
+            RemoveRange(state.Receipts, range);
+        }
+
+        if (state.Receipts.Count == 0)
+        {
+            state.ImmediateAckRequired = false;
+        }
     }
 
     private static List<PacketRange> BuildRanges(IEnumerable<ulong> packetNumbers)

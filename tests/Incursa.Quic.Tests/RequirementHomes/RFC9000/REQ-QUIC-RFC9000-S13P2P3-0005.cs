@@ -209,4 +209,89 @@ public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
         Assert.Equal(ackFrame.AdditionalRanges[0].SmallestAcknowledged, survivingFrame.AdditionalRanges[0].SmallestAcknowledged);
         Assert.Equal(ackFrame.AdditionalRanges[0].LargestAcknowledged, survivingFrame.AdditionalRanges[0].LargestAcknowledged);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0005")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryProcessAckFrame_RetiresTrackedAckRangesFromHugeAcknowledgmentRange()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+
+        Assert.True(sender.TryBuildAckFrame(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 2_000,
+            out QuicAckFrame ackFrame));
+
+        sender.MarkAckFrameSent(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 11,
+            ackFrame,
+            sentAtMicros: 2_100,
+            ackOnlyPacket: true);
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Initial,
+            new QuicAckFrame
+            {
+                LargestAcknowledged = 1UL << 62,
+                AckDelay = 0,
+                FirstAckRange = 1UL << 62,
+                AdditionalRanges = [],
+            },
+            ackReceivedAtMicros: 3_000,
+            pathValidated: false));
+
+        Assert.False(sender.TryBuildAckFrame(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 3_100,
+            out _));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0005")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryProcessAckFrame_IgnoresHugeAcknowledgmentRangeWhenNoTrackedPacketsMatch()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 1,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        Assert.False(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Handshake,
+            new QuicAckFrame
+            {
+                LargestAcknowledged = 1UL << 62,
+                AckDelay = 0,
+                FirstAckRange = (1UL << 62) - 10,
+                AdditionalRanges = [],
+            },
+            ackReceivedAtMicros: 2_000,
+            pathValidated: false));
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Handshake,
+            new QuicAckFrame
+            {
+                LargestAcknowledged = 1,
+                AckDelay = 0,
+                FirstAckRange = 0,
+                AdditionalRanges = [],
+            },
+            ackReceivedAtMicros: 3_000,
+            pathValidated: true));
+    }
+
 }

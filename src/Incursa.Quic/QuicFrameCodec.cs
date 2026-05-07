@@ -138,7 +138,8 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        if (firstAckRange > largestAcknowledged || ackRangeCount > int.MaxValue)
+        ulong maximumCompleteRangesInPayload = (ulong)(packetPayload.Length - index) / 2;
+        if (firstAckRange > largestAcknowledged || ackRangeCount > maximumCompleteRangesInPayload || ackRangeCount > int.MaxValue)
         {
             return false;
         }

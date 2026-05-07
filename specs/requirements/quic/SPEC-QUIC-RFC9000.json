@@ -21431,7 +21431,9 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesFromHugeAcknowledgmentRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_IgnoresHugeAcknowledgmentRangeWhenNoTrackedPacketsMatch"
         ]
       }
     },
@@ -34313,7 +34315,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_AckRangeCountSpecifiesAdditionalRangeFieldCount",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_AckRangeCountZeroCarriesNoAdditionalRanges",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_RejectsWhenDeclaredAckRangeCountIsNotPresent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_RejectsWhenDeclaredAckRangeCountIsNotPresent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0018.cs::TryParseAckFrame_RejectsDeclaredAckRangeCountLargerThanRemainingPayload"
         ]
       }
     },
