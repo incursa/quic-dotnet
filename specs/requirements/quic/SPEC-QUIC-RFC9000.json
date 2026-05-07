@@ -1889,6 +1889,10 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0001.cs::TryReceiveStreamFrame_DoesNotTrackUnobservableSendingPartStates",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs::TryReceiveStreamFrame_CreatesPeerInitiatedReceivingPartOnFirstFrame"
         ]
       }
     },
@@ -1945,6 +1949,11 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs::TryReceiveStreamFrame_CreatesPeerInitiatedReceivingPartOnFirstFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs::TryReceiveStreamFrame_RejectsPeerInitiatedReceivingPartPastIncomingLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs::TryReceiveResetStreamFrame_CreatesPeerInitiatedReceivingPartOnFirstResetStreamFrame"
         ]
       }
     },
