@@ -18467,9 +18467,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0001.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0003.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC"
         ]
       }
     },

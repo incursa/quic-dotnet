@@ -21,19 +21,19 @@
     "generated_at": "2026-05-07T12:20:01.5811183-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 0,
-      "covered_but_proof_too_broad": 32,
-      "partially_covered": 77,
-      "trace_clean": 1457,
+      "covered_but_missing_xrefs": 36,
+      "covered_but_proof_too_broad": 30,
+      "partially_covered": 75,
+      "trace_clean": 1425,
       "uncovered_blocked": 69,
       "uncovered_unblocked": 133
     },
     "by_work_queue_tag": {
       "blocked": 69,
-      "clean": 1457,
-      "metadata_only": 0,
-      "new_tests_needed": 309,
-      "restructure_needed": 39
+      "clean": 1425,
+      "metadata_only": 36,
+      "new_tests_needed": 305,
+      "restructure_needed": 37
     },
     "by_rfc": [
       {
@@ -52,10 +52,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 0,
-          "covered_but_proof_too_broad": 32,
-          "partially_covered": 77,
-          "trace_clean": 1144,
+          "covered_but_missing_xrefs": 36,
+          "covered_but_proof_too_broad": 30,
+          "partially_covered": 75,
+          "trace_clean": 1112,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 133
         }

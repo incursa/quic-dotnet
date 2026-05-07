@@ -44,6 +44,71 @@ public sealed class REQ_QUIC_RFC9000_S11P1_0007
         Assert.Null(runtime.TerminalState);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerRuntimeProcessesValidClientInitialPacketInsteadOfDiscardingIt()
+    {
+        byte[] initialDestinationConnectionId =
+        [
+            0x83, 0x94, 0xC8, 0xF0,
+            0x3E, 0x51, 0x57, 0x08,
+        ];
+        using QuicConnectionRuntime runtime =
+            QuicS5P2PacketAssociationTestSupport.CreateServerRuntimeWithInitialProtection(initialDestinationConnectionId);
+        QuicConnectionPathIdentity path = new("203.0.113.72", RemotePort: 443);
+        QuicConnectionCloseFrame closeFrame = new(QuicTransportErrorCode.NoError, triggeringFrameType: 0x02, []);
+        byte[] protectedPacket = QuicS5P2PacketAssociationTestSupport.BuildProtectedClientInitialPacket(
+            initialDestinationConnectionId,
+            QuicFrameTestData.BuildConnectionCloseFrame(closeFrame));
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 1,
+                path,
+                protectedPacket),
+            nowTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Draining, runtime.Phase);
+        Assert.NotNull(runtime.TerminalState);
+        Assert.Equal(QuicConnectionCloseOrigin.Remote, runtime.TerminalState!.Value.Origin);
+        Assert.Equal(QuicTransportErrorCode.NoError, runtime.TerminalState.Value.Close.TransportErrorCode);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ServerRuntimeDiscardsTruncatedInvalidInitialPacketWithoutProcessingFrames()
+    {
+        byte[] initialDestinationConnectionId =
+        [
+            0x83, 0x94, 0xC8, 0xF0,
+            0x3E, 0x51, 0x57, 0x08,
+        ];
+        QuicConnectionPathIdentity path = new("203.0.113.73", RemotePort: 443);
+        byte[] protectedPacket = CreateProtectedInitialPacket(
+            initialDestinationConnectionId,
+            QuicTlsRole.Client);
+        byte[] truncatedPacket = protectedPacket[..^1];
+
+        using QuicConnectionRuntime runtime = CreateServerRuntime(initialDestinationConnectionId);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                path,
+                truncatedPacket),
+            nowTicks: 2);
+
+        Assert.Null(runtime.TerminalState);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.Empty(runtime.SendRuntime.SentPackets);
+        Assert.Equal(0, runtime.TlsState.InitialIngressCryptoBuffer.BufferedBytes);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+    }
+
     private static byte[] CreateProtectedInitialPacket(
         ReadOnlySpan<byte> initialDestinationConnectionId,
         QuicTlsRole protectionRole)
