@@ -11,21 +11,21 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 1421 |
+| trace_clean | 1429 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 36 |
 | covered_but_proof_too_broad | 32 |
-| partially_covered | 77 |
+| partially_covered | 69 |
 | uncovered_blocked | 69 |
 | uncovered_unblocked | 136 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 1421 |
+| clean | 1429 |
 | coverage_contract_needed | 0 |
 | metadata_only | 36 |
 | restructure_needed | 39 |
-| new_tests_needed | 309 |
+| new_tests_needed | 301 |
 | blocked | 69 |
 
 ## Queue
@@ -41,6 +41,6 @@
 | RFC | Total | trace_clean | missing_coverage_contract | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9000 | 1443 | 1108 | 0 | 36 | 32 | 77 | 54 | 136 |
+| RFC9000 | 1443 | 1116 | 0 | 36 | 32 | 69 | 54 | 136 |
 | RFC9001 | 96 | 81 | 0 | 0 | 0 | 0 | 15 | 0 |
 | RFC9002 | 224 | 224 | 0 | 0 | 0 | 0 | 0 | 0 |

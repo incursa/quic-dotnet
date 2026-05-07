@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S9P4_0003
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P4-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PortOnlyPathPromotionRetainsCongestionControlState()
