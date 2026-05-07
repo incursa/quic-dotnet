@@ -7127,17 +7127,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0072"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0072"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0072"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs::EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId"
         ]
       }
     },
@@ -7153,17 +7159,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0072"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0072"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0072"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort"
         ]
       }
     },
@@ -7179,17 +7192,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0072"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0072"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0072"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId"
         ]
       }
     },
@@ -7205,17 +7226,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0072"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0072"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0072"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::ReplacementHandshakePacketsCanBeBufferedUntilTheMatchingReplacementInitialArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::CurrentAttemptHandshakeOpenFailuresAreNotDeferredForRetry"
         ]
       }
     },
@@ -7231,13 +7259,16 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0072"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0072"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0072"
         ],
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B4-P3-S1",
