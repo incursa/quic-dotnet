@@ -1751,6 +1751,11 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B10-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0013.cs::TryAcknowledgeSendCompletion_EntersDataRecvdAfterDataIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0013.cs::TryReserveSendCapacity_RejectsNewBytesAfterDataRecvd",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0013.cs::TryAcknowledgeSendCompletion_EntersDataRecvdAtTheMaximumFinalSize"
         ]
       }
     },
@@ -1837,6 +1842,11 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B12-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_OpensTheNextLocalStreamWhenResetIsTheFirstFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_OpensTheFirstLocalUnidirectionalStreamWhenResetIsTheFirstFrame"
         ]
       }
     },
@@ -1863,6 +1873,11 @@
         "upstream_refs": [
           "RFC 9000 §3.1 RFC9000-S3.1-B13-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs::TryAcknowledgeSendCompletion_EntersResetRecvdAfterResetStreamIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs::TryAcknowledgeSendCompletion_RejectsRedundantAcksAfterResetIsRecvd",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs::TryAcknowledgeSendCompletion_EntersResetRecvdOnTheFirstLocalUnidirectionalStream"
         ]
       }
     },

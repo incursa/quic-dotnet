@@ -42,4 +42,28 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0016
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
         Assert.False(state.TryGetStreamSnapshot(1, out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P1-0016")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryAbortLocalStreamWrites_OpensTheFirstLocalUnidirectionalStreamWhenResetIsTheFirstFrame()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localUnidirectionalSendLimit: 8,
+            peerUnidirectionalStreamLimit: 8);
+
+        Assert.False(state.TryGetStreamSnapshot(2, out _));
+
+        Assert.True(state.TryAbortLocalStreamWrites(2, out ulong finalSize, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(0UL, finalSize);
+
+        Assert.True(state.TryGetStreamSnapshot(2, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamType.Unidirectional, snapshot.StreamType);
+        Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+        Assert.Equal(QuicStreamReceiveState.None, snapshot.ReceiveState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(0UL, snapshot.FinalSize);
+    }
 }
