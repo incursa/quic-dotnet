@@ -3,4 +3,31 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
 public sealed class REQ_QUIC_RFC9000_S7P2_0002
 {
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryFormatVersionNegotiationResponse_UsesTheClientSourceConnectionIdAsDestinationConnectionId()
+    {
+        byte[] clientDestinationConnectionId = [0x01, 0x02];
+        byte[] clientSourceConnectionId = [0x03, 0x04, 0x05];
+        uint[] serverSupportedVersions = [QuicVersionNegotiation.Version1, 0x11223344];
+        byte[] destination = new byte[64];
+
+        Assert.True(QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+            0xAABBCCDD,
+            clientDestinationConnectionId,
+            clientSourceConnectionId,
+            serverSupportedVersions,
+            destination,
+            out int bytesWritten));
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(
+            destination[..bytesWritten],
+            out QuicVersionNegotiationPacket packet));
+        Assert.True(clientSourceConnectionId.AsSpan().SequenceEqual(packet.DestinationConnectionId));
+        Assert.True(clientDestinationConnectionId.AsSpan().SequenceEqual(packet.SourceConnectionId));
+        Assert.Equal(serverSupportedVersions.Length, packet.SupportedVersionCount);
+        Assert.True(packet.ContainsSupportedVersion(QuicVersionNegotiation.Version1));
+        Assert.True(packet.ContainsSupportedVersion(0x11223344));
+    }
 }
