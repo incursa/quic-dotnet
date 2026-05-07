@@ -14,7 +14,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private static readonly uint[] ListenerSupportedVersions = [QuicVersionNegotiation.Version1];
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
-    private const int RetryBootstrapTokenLength = 16;
     private const int RetryBootstrapReplayValidationFailureParseHeader = 2;
     private const int RetryBootstrapReplayValidationFailureVersionOrType = 3;
     private const int RetryBootstrapReplayValidationFailureDestinationConnectionIdMismatch = 4;
@@ -22,7 +21,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailureTokenMismatch = 6;
     private const int RetryBootstrapReplayValidationFailureOpen = 7;
     private const int RetryBootstrapReplayValidationFailurePayload = 8;
+    private const int RetryBootstrapReplayValidationFailureSourceEndpointMismatch = 9;
+    private const int RetryBootstrapReplayValidationFailureTokenValidation = 10;
     private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
+    private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
     private readonly Socket socket;
     private readonly CancellationTokenSource shutdown = new();
@@ -53,6 +55,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private byte[]? retryBootstrapOriginalDestinationConnectionId;
     private byte[]? retryBootstrapSourceConnectionId;
     private byte[]? retryBootstrapToken;
+    private QuicConnectionPathIdentity? retryBootstrapPathIdentity;
     private string? retryBootstrapTokenHex;
     private string? retryBootstrapReplayTokenHex;
     private string? newTokenValidationTokenHex;
@@ -731,7 +734,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 if (isRetryBootstrapReplayCandidate)
                 {
-                    if (!TryValidateRetryBootstrapReplay(datagram.Span))
+                    if (!TryValidateRetryBootstrapReplay(datagram.Span, pathIdentity))
                     {
                         return false;
                     }
@@ -967,10 +970,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         ReadOnlySpan<byte> originalDestinationConnectionId,
         ReadOnlySpan<byte> clientSourceConnectionId)
     {
+        int remotePort = pathIdentity.RemotePort
+            ?? throw new InvalidOperationException("The listener connection path is missing a remote port.");
         bool hasRetryBootstrapState =
             retryBootstrapOriginalDestinationConnectionId is not null
             && retryBootstrapSourceConnectionId is not null
-            && retryBootstrapToken is not null;
+            && retryBootstrapToken is not null
+            && retryBootstrapPathIdentity is not null;
 
         byte[] retryBootstrapOriginalDestinationConnectionIdBytes = hasRetryBootstrapState
             ? this.retryBootstrapOriginalDestinationConnectionId!
@@ -980,12 +986,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             : GenerateDistinctServerSourceConnectionId(retryBootstrapOriginalDestinationConnectionIdBytes);
         byte[] retryToken = hasRetryBootstrapState
             ? this.retryBootstrapToken!
-            : new byte[RetryBootstrapTokenLength];
-
-        if (!hasRetryBootstrapState)
-        {
-            RandomNumberGenerator.Fill(retryToken);
-        }
+            : addressValidationTokenProtector.IssueNewToken(
+                pathIdentity.RemoteAddress,
+                remotePort,
+                DateTimeOffset.UtcNow,
+                RetryBootstrapTokenLifetime);
 
         if (!QuicRetryIntegrity.TryBuildRetryPacket(
             retryBootstrapOriginalDestinationConnectionIdBytes,
@@ -1001,7 +1006,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             EndPoint remoteEndPoint = new IPEndPoint(
                 IPAddress.Parse(pathIdentity.RemoteAddress),
-                pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
+                remotePort);
 
             int bytesSent = socket.SendTo(retryPacket.AsSpan(), SocketFlags.None, remoteEndPoint);
             if (bytesSent != retryPacket.Length)
@@ -1027,6 +1032,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             this.retryBootstrapOriginalDestinationConnectionId = retryBootstrapOriginalDestinationConnectionIdBytes;
             retryBootstrapSourceConnectionId = retrySourceConnectionId;
             retryBootstrapToken = retryToken;
+            retryBootstrapPathIdentity = pathIdentity;
             retryBootstrapTokenHex = Convert.ToHexString(retryToken);
         }
 
@@ -1051,11 +1057,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             longHeader.SourceConnectionId);
     }
 
-    private bool TryValidateRetryBootstrapReplay(ReadOnlySpan<byte> datagram)
+    private bool TryValidateRetryBootstrapReplay(
+        ReadOnlySpan<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity)
     {
         if (retryBootstrapOriginalDestinationConnectionId is null
             || retryBootstrapSourceConnectionId is null
-            || retryBootstrapToken is null)
+            || retryBootstrapToken is null
+            || retryBootstrapPathIdentity is null)
         {
             Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, 1);
             return false;
@@ -1094,8 +1103,38 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
+        if (!HasSameRemoteEndpoint(pathIdentity, retryBootstrapPathIdentity.Value))
+        {
+            Interlocked.Exchange(
+                ref retryBootstrapReplayValidationFailureCode,
+                RetryBootstrapReplayValidationFailureSourceEndpointMismatch);
+            return false;
+        }
+
+        QuicAddressValidationTokenValidationResult validationResult =
+            addressValidationTokenProtector.ValidateNewToken(
+                retryToken,
+                pathIdentity.RemoteAddress,
+                pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."),
+                DateTimeOffset.UtcNow);
+        if (validationResult != QuicAddressValidationTokenValidationResult.Valid)
+        {
+            Interlocked.Exchange(
+                ref retryBootstrapReplayValidationFailureCode,
+                RetryBootstrapReplayValidationFailureTokenValidation);
+            return false;
+        }
+
         Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, 0);
         return true;
+    }
+
+    private static bool HasSameRemoteEndpoint(
+        QuicConnectionPathIdentity candidate,
+        QuicConnectionPathIdentity expected)
+    {
+        return string.Equals(candidate.RemoteAddress, expected.RemoteAddress, StringComparison.Ordinal)
+            && candidate.RemotePort == expected.RemotePort;
     }
 
     private QuicAddressValidationTokenValidationResult ValidateNewTokenForIncomingInitial(

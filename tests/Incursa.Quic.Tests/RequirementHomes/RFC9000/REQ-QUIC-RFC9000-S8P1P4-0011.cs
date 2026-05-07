@@ -7,6 +7,26 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S8P1P4_0011
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryRegisterReceivedDatagramPayloadBytes_EnforcesThreeTimesBudgetForChangedAddressDatagrams()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(1200, uniquelyAttributedToSingleConnection: true));
+        Assert.Equal(1200UL, budget.ReceivedPayloadBytes);
+        Assert.Equal(3600UL, budget.RemainingSendBudget);
+        Assert.True(budget.CanSend(3600));
+        Assert.False(budget.CanSend(3601));
+
+        Assert.True(budget.TryConsumeSendBudget(2400));
+        Assert.Equal(1200UL, budget.RemainingSendBudget);
+        Assert.False(budget.TryConsumeSendBudget(1201));
+        Assert.True(budget.TryConsumeSendBudget(1200));
+        Assert.Equal(0UL, budget.RemainingSendBudget);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams()

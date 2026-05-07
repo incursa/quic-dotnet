@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0085",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S8P1P4 Retry Token Source Binding and Lifetime Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0085",
+    "WI-QUIC-RFC9000-0085"
+  ],
+  "verification_method": "Focused S8P1P4 requirement-home tests over listener Retry bootstrap replay admission, source-port rejection, port-bound token lifetime validation, deterministic port mutation fuzzing, and anti-amplification budget enforcement, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S8P1P4-0003",
+    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "REQ-QUIC-RFC9000-S8P1P4-0011"
+  ],
+  "scope": "This verification covers the focused generated S8P1P4 hard proof tail for Retry token source endpoint continuity, short Retry token lifetime, and anti-amplification behavior when the client address changes.",
+  "expected_result": "The focused tests show that a Retry replay from the original source endpoint is validated and admitted, the same Retry token from a fresh source port is rejected before admission, port-bound token validation rejects mutated source ports, the token remains accepted through its expiration boundary and is rejected immediately after, and the anti-amplification budget remains capped at three times received bytes for an unvalidated changed address.",
+  "procedure": [
+    "Run the focused S8P1P4 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The listener Retry bootstrap path remains gated behind retryBootstrapEnabled.",
+    "The address-validation token protector remains the listener-owned source of Retry and NEW_TOKEN token integrity.",
+    "The anti-amplification budget remains the primitive used for unvalidated peer-address send accounting."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicAddressValidationTokenProtector.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0011.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0011\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim cluster-wide Retry token state, persistent token secrets across listener restarts, public token-management APIs, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S8P1P4 requirement-home filter 7/7; Release build 0 warnings/errors; regenerated QUIC coverage triage 1,326/1,771 trace-clean; SpecTrace core validation 499 artifacts; full Release no-build suite 4,598/4,598; git diff --check exited 0 with only CRLF normalization warnings for generated triage files."
+}

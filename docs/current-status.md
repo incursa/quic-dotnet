@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S17P1 packet-number encoding completion,
+Last verified: 2026-05-06 for the S8P1P4 Retry token source binding and
+lifetime tail, S17P1 packet-number encoding completion,
 S17P4 spin-bit per-path state tail,
 S9P6P1 preferred-address conveyance and
 per-family selection tail, S9P6P1 preferred-address validation-failure
@@ -29,6 +30,29 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S8P1P4 Retry token source binding and lifetime closure on
+2026-05-06 closes `REQ-QUIC-RFC9000-S8P1P4-0003`,
+`REQ-QUIC-RFC9000-S8P1P4-0007`, and
+`REQ-QUIC-RFC9000-S8P1P4-0011` under `ARC-QUIC-RFC9000-0085`,
+`WI-QUIC-RFC9000-0085`, and `VER-QUIC-RFC9000-0085`. The proof
+covers listener Retry replay admission from the issuing source address and
+port, rejection of the same Retry token from a fresh UDP source port before
+admission, deterministic source-port mutation fuzzing for port-bound tokens,
+short-lifetime token acceptance through the expiration boundary and rejection
+after it, and unchanged three-times anti-amplification budget enforcement for
+an unvalidated changed address. Regenerated coverage triage marks all three
+requirements as `trace_clean` and reports 1,326 of 1,771 QUIC requirements
+trace-clean overall, leaving 445 non-clean. `S8P1P4` is now down to one
+remaining non-clean requirement: `REQ-QUIC-RFC9000-S8P1P4-0005`, a
+metadata-only xref cleanup duplicate of the anti-amplification changed-address
+clause. Local verification passed: focused S8P1P4 requirement-home filter 7/7,
+Release build 0 warnings/errors, SpecTrace core validation 499 artifacts, full
+Release no-build suite 4,598/4,598, and `git diff --check` exited 0 with only
+generated-triage CRLF normalization warnings. This closure does not claim
+cluster-wide Retry token state, persistent token secrets across listener
+restarts, public token-management APIs, hosted interop readiness, or closure of
+unrelated deferred fuzz obligations.
 
 Follow-on S17P1 packet-number encoding completion on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S17P1-0002`, `REQ-QUIC-RFC9000-S17P1-0003`,

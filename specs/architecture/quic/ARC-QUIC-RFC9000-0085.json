@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0085",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S8P1P4 Retry Token Source Binding and Lifetime Tail",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S8P1P4 closure for Retry token source endpoint continuity, short lifetime validation, and anti-amplification proof after address change.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0085",
+    "VER-QUIC-RFC9000-0085"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S8P1P4-0003",
+    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "REQ-QUIC-RFC9000-S8P1P4-0011"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAddressValidationTokenProtector.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0011.cs"
+  ],
+  "design_summary": "Retry bootstrap tokens are issued by the address-validation token protector with the remote IP address and UDP source port included in the integrity-protected MAC input and an explicit one-minute Retry lifetime. The listener stores the issuing path identity, requires replay Initial packets to carry the exact Retry token, rejects replays from a different remote endpoint before admission, and validates the protected token lifetime before marking Retry replay validation successful. The anti-amplification budget remains the three-times-received-payload cap for unvalidated client addresses.",
+  "data_and_state_considerations": "The Retry bootstrap state remains listener-local and records the original destination connection ID, Retry source connection ID, Retry token bytes, and issuing remote endpoint. NEW_TOKEN issuance and validation continue to use address-only binding and the protector default lifetime so existing NEW_TOKEN semantics are not widened to source-port continuity or shortened to the Retry bootstrap lifetime. The port-bound token overload is internal and used by the listener Retry bootstrap path.",
+  "edge_cases_and_constraints": [
+    "A Retry replay from the original source address and port is admitted.",
+    "A Retry replay carrying the correct token from a fresh UDP source port is rejected before the connection-options callback runs.",
+    "Port-bound token validation accepts the exact expiration boundary and rejects the first second after expiration.",
+    "Deterministic port mutation fuzzing rejects alternate source ports for the same token.",
+    "The anti-amplification budget permits at most three times the bytes received on an unvalidated changed address."
+  ],
+  "risks": [
+    "This slice keeps Retry bootstrap state listener-local and does not claim cluster-wide Retry token state.",
+    "This slice does not add persistent token secrets across listener restarts.",
+    "This slice does not widen public token-management APIs.",
+    "This slice does not claim hosted interop readiness.",
+    "This slice does not close unrelated deferred fuzz obligations."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the focused S8P1P4 hard proof tail for REQ-QUIC-RFC9000-S8P1P4-0003, REQ-QUIC-RFC9000-S8P1P4-0007, and REQ-QUIC-RFC9000-S8P1P4-0011. It does not claim full token replay hardening beyond the existing listener-local NEW_TOKEN replay cache, public API widening, persistent cross-restart token state, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+    }
+  ]
+}

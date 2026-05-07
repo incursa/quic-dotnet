@@ -68,6 +68,54 @@ internal sealed class QuicAddressValidationTokenProtector
 
     internal byte[] IssueNewToken(string remoteAddress, DateTimeOffset issuedAt)
     {
+        return IssueNewToken(remoteAddress, remotePort: null, issuedAt);
+    }
+
+    internal byte[] IssueNewToken(string remoteAddress, int remotePort)
+    {
+        return IssueNewToken(remoteAddress, remotePort, DateTimeOffset.UtcNow);
+    }
+
+    internal byte[] IssueNewToken(string remoteAddress, int remotePort, DateTimeOffset issuedAt)
+    {
+        if (!TryNormalizeRemotePort(remotePort, out ushort normalizedRemotePort))
+        {
+            throw new ArgumentOutOfRangeException(nameof(remotePort));
+        }
+
+        return IssueNewToken(remoteAddress, (ushort?)normalizedRemotePort, issuedAt, tokenLifetime);
+    }
+
+    internal byte[] IssueNewToken(
+        string remoteAddress,
+        int remotePort,
+        DateTimeOffset issuedAt,
+        TimeSpan tokenLifetime)
+    {
+        if (!TryNormalizeRemotePort(remotePort, out ushort normalizedRemotePort))
+        {
+            throw new ArgumentOutOfRangeException(nameof(remotePort));
+        }
+
+        if (tokenLifetime <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(tokenLifetime));
+        }
+
+        return IssueNewToken(remoteAddress, (ushort?)normalizedRemotePort, issuedAt, tokenLifetime);
+    }
+
+    private byte[] IssueNewToken(string remoteAddress, ushort? remotePort, DateTimeOffset issuedAt)
+    {
+        return IssueNewToken(remoteAddress, remotePort, issuedAt, tokenLifetime);
+    }
+
+    private byte[] IssueNewToken(
+        string remoteAddress,
+        ushort? remotePort,
+        DateTimeOffset issuedAt,
+        TimeSpan tokenLifetime)
+    {
         if (!TryNormalizeRemoteAddress(remoteAddress, out byte[] remoteAddressBytes))
         {
             throw new ArgumentException("The remote address is not a valid IP address.", nameof(remoteAddress));
@@ -84,7 +132,7 @@ internal sealed class QuicAddressValidationTokenProtector
             token.AsSpan(ExpiresAtOffset, sizeof(long)),
             issuedAt.Add(tokenLifetime).ToUnixTimeSeconds());
 
-        byte[] tag = ComputeTag(token.AsSpan(0, TagOffset), remoteAddressBytes);
+        byte[] tag = ComputeTag(token.AsSpan(0, TagOffset), remoteAddressBytes, remotePort);
         tag.CopyTo(token.AsSpan(TagOffset, TagLength));
         return token;
     }
@@ -99,6 +147,37 @@ internal sealed class QuicAddressValidationTokenProtector
     internal QuicAddressValidationTokenValidationResult ValidateNewToken(
         ReadOnlySpan<byte> token,
         string remoteAddress,
+        DateTimeOffset now)
+    {
+        return ValidateNewToken(token, remoteAddress, remotePort: null, now);
+    }
+
+    internal QuicAddressValidationTokenValidationResult ValidateNewToken(
+        ReadOnlySpan<byte> token,
+        string remoteAddress,
+        int remotePort)
+    {
+        return ValidateNewToken(token, remoteAddress, remotePort, DateTimeOffset.UtcNow);
+    }
+
+    internal QuicAddressValidationTokenValidationResult ValidateNewToken(
+        ReadOnlySpan<byte> token,
+        string remoteAddress,
+        int remotePort,
+        DateTimeOffset now)
+    {
+        if (!TryNormalizeRemotePort(remotePort, out ushort normalizedRemotePort))
+        {
+            return QuicAddressValidationTokenValidationResult.Malformed;
+        }
+
+        return ValidateNewToken(token, remoteAddress, (ushort?)normalizedRemotePort, now);
+    }
+
+    private QuicAddressValidationTokenValidationResult ValidateNewToken(
+        ReadOnlySpan<byte> token,
+        string remoteAddress,
+        ushort? remotePort,
         DateTimeOffset now)
     {
         if (token.Length != TokenLength
@@ -117,7 +196,7 @@ internal sealed class QuicAddressValidationTokenProtector
             return QuicAddressValidationTokenValidationResult.Malformed;
         }
 
-        byte[] expectedTag = ComputeTag(token[..TagOffset], remoteAddressBytes);
+        byte[] expectedTag = ComputeTag(token[..TagOffset], remoteAddressBytes, remotePort);
         if (!CryptographicOperations.FixedTimeEquals(expectedTag, token.Slice(TagOffset, TagLength)))
         {
             return QuicAddressValidationTokenValidationResult.IntegrityFailure;
@@ -176,12 +255,26 @@ internal sealed class QuicAddressValidationTokenProtector
         }
     }
 
-    private byte[] ComputeTag(ReadOnlySpan<byte> tokenPrefix, ReadOnlySpan<byte> remoteAddressBytes)
+    private byte[] ComputeTag(
+        ReadOnlySpan<byte> tokenPrefix,
+        ReadOnlySpan<byte> remoteAddressBytes,
+        ushort? remotePort)
     {
-        byte[] macInput = new byte[tokenPrefix.Length + 1 + remoteAddressBytes.Length];
+        byte[] macInput = new byte[
+            tokenPrefix.Length
+            + 1
+            + remoteAddressBytes.Length
+            + (remotePort.HasValue ? sizeof(ushort) : 0)];
         tokenPrefix.CopyTo(macInput);
-        macInput[tokenPrefix.Length] = (byte)remoteAddressBytes.Length;
-        remoteAddressBytes.CopyTo(macInput.AsSpan(tokenPrefix.Length + 1));
+        int macInputOffset = tokenPrefix.Length;
+        macInput[macInputOffset++] = (byte)remoteAddressBytes.Length;
+        remoteAddressBytes.CopyTo(macInput.AsSpan(macInputOffset));
+        macInputOffset += remoteAddressBytes.Length;
+        if (remotePort is ushort remotePortValue)
+        {
+            BinaryPrimitives.WriteUInt16BigEndian(macInput.AsSpan(macInputOffset, sizeof(ushort)), remotePortValue);
+        }
+
         return HMACSHA256.HashData(secret, macInput);
     }
 
@@ -200,6 +293,19 @@ internal sealed class QuicAddressValidationTokenProtector
         }
 
         addressBytes = address.GetAddressBytes();
+        return true;
+    }
+
+    private static bool TryNormalizeRemotePort(int remotePort, out ushort normalizedRemotePort)
+    {
+        normalizedRemotePort = default;
+
+        if ((uint)remotePort > IPEndPoint.MaxPort)
+        {
+            return false;
+        }
+
+        normalizedRemotePort = (ushort)remotePort;
         return true;
     }
 }

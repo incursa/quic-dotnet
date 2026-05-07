@@ -9,6 +9,7 @@ namespace Incursa.Quic.Tests;
 internal static class QuicS8P1P3ServerTokenValidationTestSupport
 {
     internal const int TokenMismatchFailureCode = 6;
+    internal const int SourceEndpointMismatchFailureCode = 9;
     private const int MaximumUdpDatagramPayloadSize = 65_507;
 
     internal static async ValueTask<RetryValidationScenario> StartRetryValidationScenarioAsync(
@@ -24,6 +25,7 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
     {
         private readonly X509Certificate2 serverCertificate;
         private readonly Socket clientSocket;
+        private readonly IPEndPoint listenEndPoint;
         private readonly byte[] cryptoPayload;
         private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
         private readonly TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -34,7 +36,7 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         {
             this.addressValidationTokenProtector =
                 addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
-            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
             serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
             ListenerHost = new QuicListenerHost(
                 listenEndPoint,
@@ -61,6 +63,8 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         internal Task CallbackEntered => callbackEntered.Task;
 
         internal int CallbackCount => Volatile.Read(ref callbackCount);
+
+        internal IPEndPoint ClientLocalEndPoint => (IPEndPoint)clientSocket.LocalEndPoint!;
 
         internal void Start()
         {
@@ -181,6 +185,21 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
             byte[] replayPacket = BuildInitialPacket(metadata.RetrySourceConnectionId, token);
 
             int bytesSent = clientSocket.Send(replayPacket);
+            Assert.Equal(replayPacket.Length, bytesSent);
+        }
+
+        internal void SendRetryReplayFromFreshPort(ReadOnlySpan<byte> token)
+        {
+            QuicRetryBootstrapMetadata metadata = retryMetadata
+                ?? throw new InvalidOperationException("Retry must be issued before sending a replay Initial.");
+            byte[] replayPacket = BuildInitialPacket(metadata.RetrySourceConnectionId, token);
+
+            using Socket replaySocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            replaySocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+            replaySocket.Connect(listenEndPoint);
+
+            Assert.NotEqual(ClientLocalEndPoint.Port, ((IPEndPoint)replaySocket.LocalEndPoint!).Port);
+            int bytesSent = replaySocket.Send(replayPacket);
             Assert.Equal(replayPacket.Length, bytesSent);
         }
 
