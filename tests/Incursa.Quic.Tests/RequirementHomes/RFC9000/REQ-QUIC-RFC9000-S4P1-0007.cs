@@ -24,4 +24,37 @@ public sealed class REQ_QUIC_RFC9000_S4P1_0007
         Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
         Assert.Equal(12UL, snapshot.SendLimit);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryApplyMaxStreamDataFrame_OnlyChangesTheCorrespondingStream()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 16,
+            peerBidirectionalSendLimit: 8,
+            peerBidirectionalStreamLimit: 4,
+            peerUnidirectionalStreamLimit: 4);
+
+        Assert.True(state.TryOpenLocalStream(bidirectional: true, out QuicStreamId firstStreamId, out QuicStreamsBlockedFrame firstBlockedFrame));
+        Assert.Equal(default, firstBlockedFrame);
+
+        Assert.True(state.TryOpenLocalStream(bidirectional: true, out QuicStreamId secondStreamId, out QuicStreamsBlockedFrame secondBlockedFrame));
+        Assert.Equal(default, secondBlockedFrame);
+
+        Assert.True(state.TryGetStreamSnapshot(firstStreamId.Value, out QuicConnectionStreamSnapshot firstSnapshotBefore));
+        Assert.True(state.TryGetStreamSnapshot(secondStreamId.Value, out QuicConnectionStreamSnapshot secondSnapshotBefore));
+        Assert.Equal(8UL, firstSnapshotBefore.SendLimit);
+        Assert.Equal(8UL, secondSnapshotBefore.SendLimit);
+
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(firstStreamId.Value, 12), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(firstStreamId.Value, out QuicConnectionStreamSnapshot firstSnapshotAfter));
+        Assert.True(state.TryGetStreamSnapshot(secondStreamId.Value, out QuicConnectionStreamSnapshot secondSnapshotAfter));
+        Assert.Equal(12UL, firstSnapshotAfter.SendLimit);
+        Assert.Equal(firstSnapshotBefore.ReceiveState, firstSnapshotAfter.ReceiveState);
+        Assert.Equal(8UL, secondSnapshotAfter.SendLimit);
+        Assert.Equal(secondSnapshotBefore.ReceiveState, secondSnapshotAfter.ReceiveState);
+    }
 }
