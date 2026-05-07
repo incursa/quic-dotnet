@@ -1,3 +1,4 @@
+[CmdletBinding(PositionalBinding = $false)]
 param(
     [string]$RepoRoot = "",
 
@@ -7,7 +8,10 @@ param(
 
     [string]$GitCommand = "git",
 
-    [string[]]$LaneIds = @()
+    [string[]]$LaneIds = @(),
+
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$RemainingLaneIds = @()
 )
 
 Set-StrictMode -Version Latest
@@ -53,6 +57,26 @@ function Invoke-GitOrEmpty {
     catch {
         return @()
     }
+}
+
+function Get-NormalizedLaneIds {
+    param([AllowNull()][string[]]$Items = @())
+
+    $result = New-Object System.Collections.Generic.List[string]
+    foreach ($item in @($Items)) {
+        if ([string]::IsNullOrWhiteSpace($item)) {
+            continue
+        }
+
+        foreach ($part in ([string]$item -split ",")) {
+            $trimmed = $part.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                [void]$result.Add($trimmed)
+            }
+        }
+    }
+
+    return $result.ToArray()
 }
 
 function Find-LatestLaunchSummary {
@@ -128,9 +152,10 @@ try {
     $summary = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
     $lanes = @($summary.lanes)
 
-    if ($LaneIds.Count -gt 0) {
+    $selectedLaneIds = @(Get-NormalizedLaneIds -Items (@($LaneIds) + @($RemainingLaneIds)))
+    if ($selectedLaneIds.Count -gt 0) {
         $wanted = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-        foreach ($laneId in $LaneIds) {
+        foreach ($laneId in $selectedLaneIds) {
             [void]$wanted.Add($laneId)
         }
 
