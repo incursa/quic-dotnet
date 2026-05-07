@@ -38,11 +38,11 @@ public sealed class REQ_QUIC_RFC9000_S20P1_0001_Focused
     ];
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0008")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values()
     {
         foreach ((ulong wireValue, string expectedName) in DefinedTransportErrorCodes)
@@ -62,11 +62,11 @@ public sealed class REQ_QUIC_RFC9000_S20P1_0001_Focused
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0008")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void TransportErrorCodeRegistry_DoesNotDefineUnknownValues()
     {
         foreach (ulong wireValue in UndefinedTransportErrorCodes)
@@ -77,30 +77,28 @@ public sealed class REQ_QUIC_RFC9000_S20P1_0001_Focused
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0007")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void TransportErrorCodeRegistry_DescribesTheHandshakeSpecificErrorCodeRange()
     {
         Assert.Equal(0x0100UL, HandshakeSpecificErrorCodeRangeStart);
         Assert.Equal(0x01FFUL, HandshakeSpecificErrorCodeRangeEnd);
-        Assert.Equal(256UL, HandshakeSpecificErrorCodeRangeEnd - HandshakeSpecificErrorCodeRangeStart + 1);
+        Assert.Equal(256UL, HandshakeSpecificErrorCodeRangeEnd - HandshakeSpecificErrorCodeRangeStart + 1UL);
         Assert.Equal("Section 4.8 of [QUIC-TLS]", HandshakeSpecificErrorCodeReference);
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P1-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-S20P1-0006")]
     public void TransportErrorCodeRegistry_DoesNotDefineHandshakeSpecificCodepoints()
     {
-        Assert.False(Enum.IsDefined(typeof(QuicTransportErrorCode), HandshakeSpecificErrorCodeRangeStart));
-        Assert.False(Enum.IsDefined(typeof(QuicTransportErrorCode), HandshakeSpecificErrorCodeRangeEnd));
-        foreach ((ulong wireValue, _) in DefinedTransportErrorCodes)
+        for (ulong wireValue = HandshakeSpecificErrorCodeRangeStart; wireValue <= HandshakeSpecificErrorCodeRangeEnd; wireValue++)
         {
-            Assert.InRange(wireValue, 0UL, 0x10UL);
-            Assert.True(wireValue < HandshakeSpecificErrorCodeRangeStart);
+            Assert.False(Enum.IsDefined(typeof(QuicTransportErrorCode), wireValue));
+            Assert.Null(Enum.GetName(typeof(QuicTransportErrorCode), wireValue));
         }
     }
 }

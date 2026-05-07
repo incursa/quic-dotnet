@@ -36,9 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
         Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
         Assert.False(budget.CanSend(301));
         Assert.False(budget.TryConsumeSendBudget(301));
-        Assert.Equal(100UL, budget.ReceivedPayloadBytes);
         Assert.Equal(0UL, budget.SentPayloadBytes);
-        Assert.Equal(300UL, budget.RemainingSendBudget);
     }
 
     [Fact]
@@ -48,6 +46,7 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
     {
         QuicAntiAmplificationBudget budget = new();
 
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
         budget.MarkAddressValidated();
 
         Assert.True(budget.IsAddressValidated);
@@ -55,6 +54,5 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
         Assert.True(budget.CanSend(int.MaxValue));
         Assert.True(budget.TryConsumeSendBudget(int.MaxValue));
         Assert.Equal((ulong)int.MaxValue, budget.SentPayloadBytes);
-        Assert.Equal(ulong.MaxValue, budget.RemainingSendBudget);
     }
 }

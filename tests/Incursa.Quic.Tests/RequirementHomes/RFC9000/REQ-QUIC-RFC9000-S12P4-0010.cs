@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S12P4_0010
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P1-0002")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     [Requirement("REQ-QUIC-RFC9000-S20P1-0002")]

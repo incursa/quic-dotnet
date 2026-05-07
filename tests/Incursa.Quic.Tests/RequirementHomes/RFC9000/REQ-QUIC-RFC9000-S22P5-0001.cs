@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Incursa.Quic.Tests;
 
-/// <workbench-requirements generated="true" source="manual">
+/// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P5-0001">Permanent registrations in this registry MUST be assigned using the Specification Required policy.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S22P5-0001")]
@@ -26,9 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S22P5_0001
         Assert.Equal(
             "Permanent registrations in this registry MUST be assigned using the Specification Required policy.",
             requirement.GetProperty("statement").GetString());
-        Assert.Equal(
-            "RFC 9000 §22.5 RFC9000-S22.5-B3-P2-S3",
-            requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
+        Assert.Equal("RFC 9000 §22.5 RFC9000-S22.5-B3-P2-S3", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 
     private static string GetRepoRoot()

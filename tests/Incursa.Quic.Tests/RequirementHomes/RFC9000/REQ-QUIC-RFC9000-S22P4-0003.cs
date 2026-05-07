@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Incursa.Quic.Tests;
 
-/// <workbench-requirements generated="true" source="manual">
+/// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P4-0003">Permanent registrations in this registry MUST include the Frame Type Name field.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S22P4-0003")]
@@ -26,9 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S22P4_0003
         Assert.Equal(
             "Permanent registrations in this registry MUST include the Frame Type Name field.",
             requirement.GetProperty("statement").GetString());
-        Assert.Equal(
-            "RFC 9000 §22.4 RFC9000-S22.4-B4-P3-S1",
-            requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
+        Assert.Equal("RFC 9000 §22.4 RFC9000-S22.4-B4-P3-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 
     private static string GetRepoRoot()
