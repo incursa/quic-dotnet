@@ -1,5 +1,6 @@
 namespace Incursa.Quic.Tests;
 
+[workbench-requirements generated="true" source="workbench quality sync"]
 /// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0011">Receivers MAY discard all ACK Ranges if they retain the largest packet number that has been successfully processed.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0011")]

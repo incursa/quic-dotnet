@@ -1,5 +1,6 @@
 namespace Incursa.Quic.Tests;
 
+[workbench-requirements generated="true" source="workbench quality sync"]
 /// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0010">A receiver MUST retain an ACK Range unless it can ensure that it will not subsequently accept packets with numbers in that range.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0010")]

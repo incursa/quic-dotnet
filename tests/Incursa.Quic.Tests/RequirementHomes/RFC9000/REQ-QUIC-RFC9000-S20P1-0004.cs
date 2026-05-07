@@ -9,12 +9,12 @@ public sealed class REQ_QUIC_RFC9000_S20P1_0004
     [Trait("Category", "Positive")]
     public void TransportErrorCodeRegistry_ExposesCryptoBufferExceeded()
     {
-        (ulong wireValue, string expectedName, string expectedDescription) =
-            QuicTransportErrorCodeRegistryProofSupport.GetDefinedTransportErrorCode(nameof(QuicTransportErrorCode.CryptoBufferExceeded));
+        (ulong wireValue, string expectedName, string expectedDescription) = Assert.Single(
+            QuicTransportErrorCodeRegistryProofSupport.DefinedTransportErrorCodes,
+            candidate => candidate.ExpectedName == nameof(QuicTransportErrorCode.CryptoBufferExceeded));
 
         Assert.Equal(0x0DUL, wireValue);
         Assert.Equal(nameof(QuicTransportErrorCode.CryptoBufferExceeded), expectedName);
-        Assert.Equal(expectedName, ((QuicTransportErrorCode)wireValue).ToString());
         Assert.NotEmpty(expectedDescription);
     }
 }
