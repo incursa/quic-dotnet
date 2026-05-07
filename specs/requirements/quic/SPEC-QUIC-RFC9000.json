@@ -25847,7 +25847,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsInNetworkByteOrder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::Fuzz_VersionNegotiationParsing_UsesBigEndianSupportedVersionEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_RejectsTruncatedAndMisalignedVersionLists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_PreservesMaximumSupportedVersionValue"
         ]
       }
     },
