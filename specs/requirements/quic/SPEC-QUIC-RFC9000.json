@@ -3730,6 +3730,10 @@
         "upstream_refs": [
           "RFC 9000 §4.1 RFC9000-S4.1-B10-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0012.cs::TryReceiveStreamFrame_AcceptsFramesWithinTheAdvertisedLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0012.cs::TryReceiveStreamFrame_ClosesOnConnectionAndStreamFlowControlViolations"
         ]
       }
     },
