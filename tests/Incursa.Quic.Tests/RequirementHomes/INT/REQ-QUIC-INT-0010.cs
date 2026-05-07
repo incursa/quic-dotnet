@@ -245,6 +245,7 @@ public sealed class REQ_QUIC_INT_0010
         if (completed == completionTask)
         {
             await completionTask.ConfigureAwait(false);
+            await Task.WhenAll(serverProcess.CompleteCaptureAsync(), clientProcess.CompleteCaptureAsync()).ConfigureAwait(false);
             return;
         }
 
@@ -344,6 +345,11 @@ public sealed class REQ_QUIC_INT_0010
 
             throw new TimeoutException(
                 $"The harness process did not write '{value}' within {timeout}.\nSTDOUT:\n{Stdout}\nSTDERR:\n{Stderr}");
+        }
+
+        public Task CompleteCaptureAsync()
+        {
+            return Task.WhenAll(stdoutTask, stderrTask);
         }
 
         public async ValueTask DisposeAsync()
