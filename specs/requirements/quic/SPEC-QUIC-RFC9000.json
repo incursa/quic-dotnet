@@ -43877,6 +43877,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0003.cs::TransportErrorCodeRegistry_IncludesCodeAndDescriptionFields"
         ]
       }
     },
@@ -43903,6 +43906,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0004.cs::TransportErrorCodeRegistry_UsesShortMnemonicCodeNames"
         ]
       }
     },
@@ -43929,6 +43935,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0005.cs::TransportErrorCodeRegistry_UsesBriefDescriptions"
         ]
       },
       "notes": [
