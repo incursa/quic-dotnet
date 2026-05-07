@@ -2191,6 +2191,11 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::TryReadStreamData_DeliversBufferedFragmentsInOffsetOrder",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::TryReadStreamData_LeavesOutOfOrderTailBufferedUntilMissingPrefixArrives",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::Fuzz_TryReceiveStreamFrame_BuffersOutOfOrderFragmentsForOrderedDelivery"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -2264,6 +2269,11 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::TryReadStreamData_DeliversBufferedFragmentsInOffsetOrder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::TryReadStreamData_LeavesOutOfOrderTailBufferedUntilMissingPrefixArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs::Fuzz_TryReceiveStreamFrame_BuffersOutOfOrderFragmentsForOrderedDelivery"
         ]
       }
     },
@@ -2277,6 +2287,9 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs::TryReadStreamData_AdvertisesMoreReceiveCreditAsDataIsConsumed"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -2290,6 +2303,9 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B9-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs::TryReadStreamData_AdvertisesMoreReceiveCreditAsDataIsConsumed"
         ]
       }
     },
@@ -2334,6 +2350,9 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs::TryReceiveStreamFrame_KeepsDataRecvdUntilApplicationReadsIt"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -2363,6 +2382,9 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs::TryReadStreamData_EntersDataReadAfterDeliveryToTheApplication"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -2435,6 +2457,9 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B12-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs::TryReceiveStreamFrame_KeepsDataRecvdUntilApplicationReadsIt"
         ]
       }
     },
@@ -2461,6 +2486,9 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B12-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs::TryReadStreamData_EntersDataReadAfterDeliveryToTheApplication"
         ]
       }
     },
