@@ -27,6 +27,27 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveStreamDataBlockedFrame_CreatesPeerInitiatedReceivingPartOnFirstFrame()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            connectionSendLimit: 16);
+
+        Assert.True(state.TryReceiveStreamDataBlockedFrame(
+            new QuicStreamDataBlockedFrame(streamId: 3, maximumStreamData: 4),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(3, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamType.Unidirectional, snapshot.StreamType);
+        Assert.Equal(QuicStreamSendState.None, snapshot.SendState);
+        Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        Assert.False(snapshot.HasFinalSize);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_RejectsPeerInitiatedReceivingPartPastIncomingLimit()
@@ -43,6 +64,28 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0003
         Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
         Assert.False(state.TryGetStreamSnapshot(streamId, out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamDataBlockedFrame_RejectsLocalInitiatedStreams()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            connectionSendLimit: 16);
+
+        Assert.True(state.TryOpenLocalStream(bidirectional: false, out QuicStreamId streamId, out _));
+
+        Assert.False(state.TryReceiveStreamDataBlockedFrame(
+            new QuicStreamDataBlockedFrame(streamId.Value, 4),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamType.Unidirectional, snapshot.StreamType);
+        Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
+        Assert.Equal(QuicStreamReceiveState.None, snapshot.ReceiveState);
     }
 
     [Fact]
