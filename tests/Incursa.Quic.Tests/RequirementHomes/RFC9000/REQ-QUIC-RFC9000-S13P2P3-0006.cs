@@ -1,9 +1,25 @@
 namespace Incursa.Quic.Tests;
 
-/// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0006">Senders can expect acknowledgments for most packets, but QUIC does not guarantee receipt of an acknowledgment for every packet that the receiver processes.</workbench-requirement>
-/// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
 public sealed class REQ_QUIC_RFC9000_S13P2P3_0006
 {
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryBuildAckFrame_CanOmitEarlierPacketsFromTheRetainedAckRanges()
+    {
+        QuicS13P2P3AckFrameProofSupport.AssertBuildsSingleRangeAckFrame(
+            QuicS13P2P3AckFrameProofSupport.CreateTrackedState(maximumRetainedAckRanges: 1));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildAckFrame_DoesNotGuaranteeEveryProcessedPacketIsAcknowledged()
+    {
+        QuicS13P2P3AckFrameProofSupport.AssertBuildsTrimmedAckFrame(
+            QuicS13P2P3AckFrameProofSupport.CreateTrackedState(maximumRetainedAckRanges: 2));
+    }
 }

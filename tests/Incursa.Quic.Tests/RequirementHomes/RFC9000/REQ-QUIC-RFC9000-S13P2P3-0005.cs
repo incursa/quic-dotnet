@@ -7,7 +7,6 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged()
@@ -69,7 +68,6 @@ public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket()
@@ -140,7 +138,6 @@ public sealed class REQ_QUIC_RFC9000_S13P2P3_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged()

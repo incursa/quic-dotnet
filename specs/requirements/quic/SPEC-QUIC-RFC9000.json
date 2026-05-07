@@ -21562,6 +21562,9 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0002.cs::TryBuildAckFrame_AcknowledgesTheMostRecentlyReceivedPackets"
         ]
       }
     },
@@ -21588,6 +21591,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0003.cs::TryBuildAckFrame_OmitsOlderRangesWhenOnlyTheNewestRangeCanRemain",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0003.cs::TryBuildAckFrame_KeepsOlderRangesWhenTheConfiguredLimitStillFits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0003.cs::TryBuildAckFrame_LeavesASingleRangeWhenNoOlderRangesExist"
         ]
       }
     },
@@ -21614,6 +21622,9 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_LimitsTheNumberOfRememberedAckRanges"
         ]
       }
     },
@@ -21704,6 +21715,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0007.cs::TryBuildAckFrame_DoesNotDiscardOlderRangesWhenTheLimitIsAlreadySufficient",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0007.cs::TryBuildAckFrame_DropsOlderRangesWhenOnlyOneRangeCanBeRetained"
         ]
       }
     },
@@ -21730,6 +21745,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0008.cs::TryBuildAckFrame_DiscardsUnacknowledgedRangesWhenTheFrameWouldBeTooLarge",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0008.cs::TryBuildAckFrame_RetainsUnacknowledgedRangesWhenTheFrameStillFits"
         ]
       }
     },
@@ -21756,6 +21775,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0009.cs::TryBuildAckFrame_DoesNotLimitFurtherWhenAllRangesAlreadyFit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0009.cs::TryBuildAckFrame_CanLimitFurtherDownToTheNewestRange"
         ]
       }
     },
@@ -21782,6 +21805,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0010.cs::TryRetireAcknowledgedAckRanges_RetiresRangesWhenTheCarrierPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0010.cs::TryRetireAcknowledgedAckRanges_LeavesRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket"
         ]
       }
     },
@@ -21808,6 +21835,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0011.cs::TryBuildAckFrame_DoesNotDiscardEveryRangeWhenMoreThanOneRangeIsRetained",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0011.cs::TryBuildAckFrame_CanDiscardAllOlderRangesWhenOnlyTheLargestPacketNumberIsRetained"
         ]
       }
     },
@@ -21834,6 +21865,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0012.cs::TryBuildAckFrame_ReportsTheLargestReceivedPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0012.cs::TryBuildAckFrame_DoesNotReportAnOlderPacketNumberAsLargestAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0012.cs::TryBuildAckFrame_PreservesTheLargestReceivedPacketNumberWhenOnlyOnePacketWasObserved"
         ]
       }
     },
@@ -21860,13 +21896,6 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B9-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
-        ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0004.cs::TryBuildAckFrame_TrimsOldestRangesWhenLimitReached",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_RetiresTrackedAckRangesWhenTheCarrierPacketIsAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_PreservesTrackedAckRangesWhenASeparatePacketNumberSpaceAcknowledgesTheCarrierPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0005.cs::TryProcessAckFrame_LeavesTrackedAckRangesInPlaceWhenAnUnrelatedPacketIsAcknowledged"
-        ]
       }
     },
     {
@@ -41956,6 +41985,12 @@
         "upstream_refs": [
           "RFC 9000 §20.2 RFC9000-S20.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P2-0001.cs::ResetStreamFrame_UsesApplicationProtocolErrorCodes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P2-0001.cs::StopSendingFrame_UsesApplicationProtocolErrorCodes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P2-0001.cs::ConnectionCloseFrame_UsesApplicationProtocolErrorCodes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P2-0001.cs::ConnectionCloseFrame_DoesNotUseTransportErrorCodesForApplicationClose"
         ]
       }
     },
@@ -43863,7 +43898,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0003.cs::FrameRegistry_IncludesTheFrameTypeNameField"
         ]
       }
     },
@@ -43892,7 +43927,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0004.cs::FrameRegistry_UsesShortMnemonicFrameTypeNames"
         ]
       }
     },
@@ -43947,7 +43982,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0006.cs::FrameRegistry_DescribesFormatAndSemanticsOfPermanentFrameFields"
         ]
       }
     },
