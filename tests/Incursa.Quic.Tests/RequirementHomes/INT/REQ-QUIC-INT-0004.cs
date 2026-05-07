@@ -104,8 +104,8 @@ public sealed class REQ_QUIC_INT_0004
                     InteropHarnessEnvironment.CertificatePath,
                     InteropHarnessEnvironment.PrivateKeyPath,
                     qlogDirectory,
-                    sslKeyLogPath).ConfigureAwait(false);
-            }).ConfigureAwait(false);
+                    sslKeyLogPath);
+            });
 
             Assert.NotNull(serverResult);
             Assert.NotNull(clientResult);
