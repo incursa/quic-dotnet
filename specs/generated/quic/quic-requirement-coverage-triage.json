@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T08:38:29.3251371-06:00",
+  "generated_at": "2026-05-07T08:43:54.3250212-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T08:38:29.3220248-06:00",
+    "generated_at": "2026-05-07T08:43:54.3212425-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 44,
       "covered_but_proof_too_broad": 41,
-      "partially_covered": 110,
-      "trace_clean": 1360,
+      "partially_covered": 109,
+      "trace_clean": 1361,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 145
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1360,
+      "clean": 1361,
       "metadata_only": 44,
-      "new_tests_needed": 362,
-      "restructure_needed": 54
+      "new_tests_needed": 361,
+      "restructure_needed": 53
     },
     "by_rfc": [
       {
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 44,
           "covered_but_proof_too_broad": 41,
-          "partially_covered": 110,
-          "trace_clean": 1047,
+          "partially_covered": 109,
+          "trace_clean": 1048,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 145
         }
@@ -62238,13 +62238,12 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0007.cs::TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
@@ -62256,16 +62255,14 @@
         "focused": 4,
         "broad": 3,
         "by_kind": {
-          "positive": 1,
+          "positive": 3,
           "negative": 2,
           "edge": 3,
           "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -62277,12 +62274,14 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0007",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0007.TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
           "method": "TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
-          "line": 17,
+          "line": 18,
           "kinds": [
-            "edge"
+            "edge",
+            "positive"
           ],
           "categories": [
-            "Edge"
+            "Edge",
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -62299,12 +62298,14 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0007",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0007.TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
           "method": "TryParseVersionNegotiation_PreservesDestinationConnectionIdRange",
-          "line": 17,
+          "line": 18,
           "kinds": [
-            "edge"
+            "edge",
+            "positive"
           ],
           "categories": [
-            "Edge"
+            "Edge",
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -62321,7 +62322,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0007",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0007.TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId",
           "method": "TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId",
-          "line": 37,
+          "line": 38,
           "kinds": [
             "negative"
           ],
@@ -62343,7 +62344,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P1_0007",
           "member": "REQ_QUIC_RFC9000_S17P2P1_0007.TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId",
           "method": "TryParseVersionNegotiation_RejectsTruncatedDestinationConnectionId",
-          "line": 37,
+          "line": 38,
           "kinds": [
             "negative"
           ],
