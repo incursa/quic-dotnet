@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P6_0011
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P1-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit()

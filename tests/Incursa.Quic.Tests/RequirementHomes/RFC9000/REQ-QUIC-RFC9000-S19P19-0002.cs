@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S19P19_0002
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors()
@@ -22,6 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0002
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose()

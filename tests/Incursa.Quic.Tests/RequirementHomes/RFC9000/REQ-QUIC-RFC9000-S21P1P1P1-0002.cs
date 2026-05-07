@@ -25,4 +25,34 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
         Assert.False(budget.CanSend(1));
         Assert.False(budget.TryConsumeSendBudget(1));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CanSend_RejectsBytesBeyondTheThreeTimesCapBeforeValidation()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
+        Assert.False(budget.CanSend(301));
+        Assert.False(budget.TryConsumeSendBudget(301));
+        Assert.Equal(0UL, budget.SentPayloadBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void CanSend_AllowsUnlimitedBudgetAfterAddressValidation()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
+        budget.MarkAddressValidated();
+
+        Assert.True(budget.IsAddressValidated);
+        Assert.Equal(ulong.MaxValue, budget.RemainingSendBudget);
+        Assert.True(budget.CanSend(int.MaxValue));
+        Assert.True(budget.TryConsumeSendBudget(int.MaxValue));
+        Assert.Equal((ulong)int.MaxValue, budget.SentPayloadBytes);
+    }
 }

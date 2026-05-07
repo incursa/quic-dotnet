@@ -89,7 +89,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P12-0001">Version Negotiation packets MUST NOT contain any mechanism to prevent version downgrade attacks.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0012">A Version Negotiation packet MUST echo the connection IDs selected by the client.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P2-0002">Each endpoint MUST use the Source Connection ID field to specify the connection ID that is used in the Destination Connection ID field of packets being sent to it.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S5-0003">Version Negotiation packets MUST NOT have cryptographic protection.</workbench-requirement>
@@ -101,7 +100,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
     [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S21P12-0001")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]

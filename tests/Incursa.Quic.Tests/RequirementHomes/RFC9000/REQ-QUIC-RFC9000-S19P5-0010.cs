@@ -5,6 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0010
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AbortRead_EncodesApplicationErrorReason()
@@ -35,6 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0010
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_DoesNotForwardRejectedApplicationErrorReason()
@@ -51,6 +53,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0010
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveStopSendingFrame_ForwardsMaximumApplicationErrorReason()

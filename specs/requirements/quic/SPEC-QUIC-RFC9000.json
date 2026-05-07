@@ -41774,6 +41774,9 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B3-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P4-0010.cs::TryHandleInitialPacketReceived_AllowsTransportConnectionCloseInAnInitialPacket"
         ]
       }
     },
@@ -41800,6 +41803,10 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues"
         ]
       }
     },
@@ -41826,6 +41833,9 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B16-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs::TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit"
         ]
       }
     },
@@ -41852,6 +41862,10 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B19-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues"
         ]
       }
     },
@@ -41878,6 +41892,10 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B20-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DescribesTheHandshakeSpecificErrorCodeRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineHandshakeSpecificCodepoints"
         ]
       }
     },
@@ -41904,6 +41922,9 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B20-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DescribesTheHandshakeSpecificErrorCodeRange"
         ]
       }
     },
@@ -41930,6 +41951,10 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B22-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues"
         ]
       }
     },
@@ -41956,6 +41981,16 @@
         "upstream_refs": [
           "RFC 9000 §20.2 RFC9000-S20.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_StoresApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_DoesNotStoreRejectedApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0010.cs::TryReceiveResetStreamFrame_StoresMaximumApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::AbortRead_EncodesApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::TryReceiveStopSendingFrame_DoesNotForwardRejectedApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P5-0010.cs::TryReceiveStopSendingFrame_ForwardsMaximumApplicationErrorReason",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_UsesTheApplicationCloseFrameTypeForApplicationErrors",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P19-0002.cs::TryParseConnectionCloseFrame_DoesNotClassifyTransportCloseAsApplicationClose"
         ]
       }
     },
@@ -42011,6 +42046,11 @@
         "upstream_refs": [
           "RFC 9000 §21.1.1.1 RFC9000-S21.1.1.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.1.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0002.cs::CanSend_TracksTheThreeTimesAmplificationCapUntilValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0002.cs::CanSend_RejectsBytesBeyondTheThreeTimesCapBeforeValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P1P1P1-0002.cs::CanSend_AllowsUnlimitedBudgetAfterAddressValidation"
         ]
       }
     },
@@ -42586,6 +42626,10 @@
         "upstream_refs": [
           "RFC 9000 §21.12 RFC9000-S21.12-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.12"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
@@ -42612,6 +42656,11 @@
         "upstream_refs": [
           "RFC 9000 §21.12 RFC9000-S21.12-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.12"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
@@ -43863,7 +43912,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0003.cs::RequirementStatement_IncludesTheFrameTypeNameField"
         ]
       }
     },
@@ -43892,7 +43941,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0004.cs::RequirementStatement_UsesAShortMnemonicFrameTypeName"
         ]
       }
     },
@@ -43947,7 +43996,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0006.cs::RequirementStatement_DescribesFrameFieldFormatAndSemantics"
         ]
       }
     },
@@ -43974,6 +44023,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForTransportErrorCodes"
         ]
       }
     },
@@ -44000,6 +44052,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0002.cs::RequirementStatement_UsesStricterPolicyForLowTransportErrorCodepoints"
         ]
       }
     },
