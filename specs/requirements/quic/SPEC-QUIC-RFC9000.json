@@ -4048,6 +4048,11 @@
         "upstream_refs": [
           "RFC 9000 §4.4 RFC9000-S4.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0002.cs::TryReceiveResetStreamFrame_LeavesTheOppositeDirectionWritable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0004.cs::TryReceiveStreamFrame_RejectsBytesBeyondTheResetFinalSize"
         ]
       }
     },
@@ -4074,6 +4079,10 @@
         "upstream_refs": [
           "RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0002.cs::TryReceiveResetStreamFrame_LeavesTheOppositeDirectionWritable"
         ]
       }
     },
@@ -4100,6 +4109,10 @@
         "upstream_refs": [
           "RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0002.cs::TryReceiveResetStreamFrame_LeavesTheOppositeDirectionWritable"
         ]
       }
     },
@@ -4126,6 +4139,11 @@
         "upstream_refs": [
           "RFC 9000 §4.4 RFC9000-S4.4-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs::TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0002.cs::TryReceiveResetStreamFrame_LeavesTheOppositeDirectionWritable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0004.cs::TryReceiveStreamFrame_RejectsBytesBeyondTheResetFinalSize"
         ]
       }
     },
