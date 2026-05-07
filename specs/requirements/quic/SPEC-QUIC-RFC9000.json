@@ -17892,6 +17892,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3.2 RFC9000-S10.3.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_UsesAStaticKeyAcrossConnections",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_RejectsEmptyInputsOrUndersizedDestinations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_AcceptsTheMinimumNonEmptyInputs"
         ]
       }
     },
