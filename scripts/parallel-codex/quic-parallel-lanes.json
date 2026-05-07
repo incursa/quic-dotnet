@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "baseRef": "origin/main",
+  "worktreeRoot": "C:/src/incursa/quic-dotnet.worktrees",
+  "launchOutputRoot": ".artifacts/codex-parallel-launches",
+  "workerScript": "scripts/Run-CodexAutopilot.ps1",
+  "lanes": [
+    {
+      "id": "proof-cleanup",
+      "enabled": true,
+      "launchByDefault": true,
+      "runtimeExclusive": false,
+      "branch": "codex/quic-proof-cleanup",
+      "worktree": "proof-cleanup",
+      "prompt": "prompts/proof-cleanup.md",
+      "targetScope": "Proof-only QUIC requirement closure outside the transport runtime.",
+      "allowedPathPrefixes": [
+        "docs/requirements-workflow.md",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/",
+        "specs/templates/",
+        "tests/Incursa.Quic.Tests/",
+        "quality/",
+        "benchmarks/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime",
+        "src/Incursa.Quic/QuicConnectionRuntime."
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "codec-policy",
+      "enabled": true,
+      "launchByDefault": true,
+      "runtimeExclusive": false,
+      "branch": "codex/quic-codec-policy",
+      "worktree": "codec-policy",
+      "prompt": "prompts/codec-policy.md",
+      "targetScope": "Frame, packet, transport-parameter, and policy requirements that can close without editing QuicConnectionRuntime partials.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic/QuicAckFrame.cs",
+        "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
+        "src/Incursa.Quic/QuicCryptoFrame.cs",
+        "src/Incursa.Quic/QuicDataBlockedFrame.cs",
+        "src/Incursa.Quic/QuicFrame",
+        "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
+        "src/Incursa.Quic/QuicLong",
+        "src/Incursa.Quic/QuicMax",
+        "src/Incursa.Quic/QuicNew",
+        "src/Incursa.Quic/QuicPacket",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+        "src/Incursa.Quic/QuicShortHeaderPacket.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "src/Incursa.Quic/QuicStream",
+        "src/Incursa.Quic/QuicStreamsBlockedFrame.cs",
+        "src/Incursa.Quic/QuicTransportParameter",
+        "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
+        "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+        "tests/Incursa.Quic.Tests/",
+        "benchmarks/",
+        "fuzz/",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime."
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter FullyQualifiedName~QuicFrameCodec"
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "streams-runtime",
+      "enabled": true,
+      "launchByDefault": true,
+      "runtimeExclusive": true,
+      "branch": "codex/quic-streams-runtime",
+      "worktree": "streams-runtime",
+      "prompt": "prompts/streams-runtime.md",
+      "targetScope": "Stream lifecycle, stream frame, flow-control, and stream-state requirements limited to the stream runtime partial.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+        "src/Incursa.Quic/QuicConnectionStream",
+        "src/Incursa.Quic/QuicStream",
+        "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
+        "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
+        "src/Incursa.Quic/QuicResetStreamFrame.cs",
+        "src/Incursa.Quic/QuicStopSendingFrame.cs",
+        "tests/Incursa.Quic.Tests/",
+        "benchmarks/QuicConnectionStreamStateBenchmarks.cs",
+        "benchmarks/QuicStreamParsingBenchmarks.cs",
+        "benchmarks/QuicPublicApiStreamTransferBenchmarks.cs",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs"
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~Stream|FullyQualifiedName~QuicConnectionStreamState\""
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "interop-evidence",
+      "enabled": true,
+      "launchByDefault": true,
+      "runtimeExclusive": false,
+      "branch": "codex/quic-interop-evidence",
+      "worktree": "interop-evidence",
+      "prompt": "prompts/interop-evidence.md",
+      "targetScope": "Interop harness, replay evidence, qlog-adjacent reporting, and verification artifacts outside the core transport runtime.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic.InteropHarness/",
+        "src/Incursa.Quic.Qlog/",
+        "scripts/interop/",
+        "scripts/Invoke-QuicInteropAutopilot.ps1",
+        "tests/Incursa.Quic.Tests/Interop",
+        "tests/Incursa.Quic.Tests/QuicCapturedInterop",
+        "tests/Incursa.Quic.Tests/RequirementHomes/INT/",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime",
+        "src/Incursa.Quic/QuicConnectionRuntime."
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter FullyQualifiedName~Interop"
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "path-runtime",
+      "enabled": true,
+      "launchByDefault": false,
+      "runtimeExclusive": true,
+      "branch": "codex/quic-path-runtime",
+      "worktree": "path-runtime",
+      "prompt": "prompts/path-runtime.md",
+      "targetScope": "Path validation, migration, connection-id routing, and peer address changes limited to path/routing runtime partials.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+        "src/Incursa.Quic/QuicPath",
+        "src/Incursa.Quic/QuicConnectionId",
+        "src/Incursa.Quic/QuicNewConnectionIdFrame.cs",
+        "src/Incursa.Quic/QuicRetireConnectionIdFrame.cs",
+        "tests/Incursa.Quic.Tests/",
+        "benchmarks/QuicPathValidationBenchmarks.cs",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs"
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~Path|FullyQualifiedName~ConnectionId\""
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "tls-zero-rtt-runtime",
+      "enabled": true,
+      "launchByDefault": false,
+      "runtimeExclusive": true,
+      "branch": "codex/quic-tls-zero-rtt-runtime",
+      "worktree": "tls-zero-rtt-runtime",
+      "prompt": "prompts/tls-zero-rtt-runtime.md",
+      "targetScope": "TLS handshake, 0-RTT, key publication, and packet-protection runtime proof limited to protocol/TLS files.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+        "src/Incursa.Quic/QuicTls",
+        "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+        "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+        "src/Incursa.Quic/QuicPacketProtection",
+        "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+        "tests/Incursa.Quic.Tests/",
+        "benchmarks/QuicTls",
+        "benchmarks/QuicInitialPacketProtectionBenchmarks.cs",
+        "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
+        "specs/requirements/quic/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/",
+        "specs/generated/quic/"
+      ],
+      "forbiddenPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+        "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs"
+      ],
+      "verificationCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~Tls|FullyQualifiedName~ZeroRtt|FullyQualifiedName~PacketProtection\""
+      ],
+      "mergeCheckCommands": [
+        "pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1",
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    },
+    {
+      "id": "runtime-decomposition",
+      "enabled": true,
+      "launchByDefault": false,
+      "runtimeExclusive": true,
+      "branch": "codex/quic-runtime-decomposition",
+      "worktree": "runtime-decomposition",
+      "prompt": "prompts/runtime-decomposition.md",
+      "targetScope": "No-behavior-change extraction from QuicConnectionRuntime into helper components to create future parallel seams.",
+      "allowedPathPrefixes": [
+        "src/Incursa.Quic/QuicConnectionRuntime",
+        "src/Incursa.Quic/QuicApplication",
+        "src/Incursa.Quic/QuicAck",
+        "src/Incursa.Quic/QuicConnectionId",
+        "src/Incursa.Quic/QuicPath",
+        "src/Incursa.Quic/QuicRetransmission",
+        "src/Incursa.Quic/QuicStream",
+        "tests/Incursa.Quic.Tests/",
+        "benchmarks/",
+        "specs/architecture/quic/",
+        "specs/work-items/quic/",
+        "specs/verification/quic/"
+      ],
+      "forbiddenPathPrefixes": [],
+      "verificationCommands": [
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ],
+      "mergeCheckCommands": [
+        "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore"
+      ]
+    }
+  ]
+}
