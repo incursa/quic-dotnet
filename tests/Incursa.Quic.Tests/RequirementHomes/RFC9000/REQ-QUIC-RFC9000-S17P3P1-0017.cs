@@ -7,6 +7,31 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S17P3P1_0017
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseShortHeader_AllowsZeroReservedBits()
+    {
+        byte[] remainder = [0xA1, 0xB2];
+        byte[] packet = QuicHeaderTestData.BuildShortHeader(0x00, remainder);
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
+        Assert.Equal((byte)0x00, header.ReservedBits);
+        Assert.True(remainder.AsSpan().SequenceEqual(header.Remainder));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryParseShortHeader_ParsesTheShortestRecognizablePacket()
+    {
+        byte[] packet = QuicHeaderTestData.BuildShortHeader(0x00, []);
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
+        Assert.Equal((byte)0x00, header.ReservedBits);
+        Assert.True(header.Remainder.IsEmpty);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits()

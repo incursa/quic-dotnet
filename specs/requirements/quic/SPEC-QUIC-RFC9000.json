@@ -5395,9 +5395,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0012.cs::TryFormatVersionNegotiationResponse_EchoesTheClientsConnectionIds"
         ]
       }
     },
@@ -7244,6 +7242,10 @@
         "upstream_refs": [
           "RFC 9000 §5.2.1 RFC9000-S5.2.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0005.cs::TryGetPacketNumberSpace_AcceptsVersion1Packets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0005.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions"
         ]
       }
     },
@@ -8172,9 +8174,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndServerSupport",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryFormatVersionNegotiationResponse_FormatsEchoedConnectionIdsAndSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0002.cs::TryFormatVersionNegotiationResponse_FormatsAResponseForAnUnsupportedClientVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P1-0002.cs::TryFormatVersionNegotiationResponse_RejectsTheVersionNegotiationSentinelAsTheSelectedVersion"
         ]
       }
     },
@@ -8296,8 +8297,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
@@ -8326,9 +8327,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldAbandonConnectionAttempt_RequiresOnlyTheSelectedVersionAndANonDiscardablePacket",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0001.cs::ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldDiscardVersionNegotiation_RespectsPreviouslyProcessedPacketsAndSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P2-0004.cs::ShouldKeepVersionNegotiationWhenNoEarlierPacketWasProcessedAndTheSelectedVersionIsNotListed"
         ]
       }
     },
@@ -9458,6 +9459,10 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B7-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0001.cs::TryParseTransportParameters_RejectsAnInvalidActiveConnectionIdLimitValue"
         ]
       }
     },
@@ -9484,6 +9489,9 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack"
         ]
       }
     },
@@ -9510,6 +9518,10 @@
         "upstream_refs": [
           "RFC 9000 §7.4 RFC9000-S7.4-B8-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4-0002.cs::TryParseTransportParameters_RejectsDuplicateTransportParameters"
         ]
       }
     },
@@ -9966,6 +9978,10 @@
         "upstream_refs": [
           "RFC 9000 §7.4.2 RFC9000-S7.4.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters"
         ]
       }
     },
@@ -18033,6 +18049,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3.2 RFC9000-S10.3.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_UsesAStaticKeyAcrossConnections",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_RejectsEmptyInputsOrUndersizedDestinations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0010.cs::TryGenerateStatelessResetToken_AcceptsTheMinimumNonEmptyInputs"
         ]
       }
     },
@@ -18085,6 +18106,11 @@
         "upstream_refs": [
           "RFC 9000 §10.3.2 RFC9000-S10.3.2-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0012.cs::TryGenerateStatelessResetToken_RejectsZeroLengthConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0012.cs::TryGenerateStatelessResetToken_AcceptsNonZeroLengthConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0012.cs::TryGenerateStatelessResetToken_AcceptsMinimumNonZeroLengthConnectionIds"
         ]
       }
     },
@@ -18726,6 +18752,9 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0002.cs::TryBuildRetryPacket_ProducesAnIntegrityProtectedPacket"
         ]
       }
     },
@@ -18752,6 +18781,9 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0003.cs::TryProtectInitialPacket_UsesTheVisibleClientInitialDcidWhenDerivingKeys"
         ]
       }
     },
@@ -18778,6 +18810,11 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryProtectInitialPacket_LeavesTheLongHeaderConnectionIdsVisible",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryOpenInitialPacket_WithADifferentClientInitialDcid_DoesNotSucceed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0004.cs::TryProtectInitialPacket_AcceptsTheMaximumClientInitialDcidLength"
         ]
       }
     },
@@ -19364,7 +19401,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::HandshakeAcksDoNotAcknowledgeInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialAndHandshakeSpacesCanUsePacketNumberZeroIndependently"
         ]
       }
     },
@@ -19393,7 +19432,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::InitialAcksDoNotAcknowledgeHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakeAndInitialSpacesCanUsePacketNumberZeroIndependently"
         ]
       }
     },
@@ -21913,6 +21954,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.5 RFC9000-S13.2.5-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0002.cs::TryFormatAckFrame_EncodesTheAckDelayFieldAsTheSelectedDelay",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0002.cs::TryParseAckFrame_RejectsATruncatedAckDelayField"
         ]
       }
     },
@@ -22112,6 +22157,10 @@
         "upstream_refs": [
           "RFC 9000 §13.2.6 RFC9000-S13.2.6-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCannotUseOneRttAckPacketsWithoutOneRttMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable"
         ]
       }
     },
@@ -25538,7 +25587,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsAsUnsigned32BitValues"
         ]
       }
     },
@@ -25713,6 +25762,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B7-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0007.cs::TryFormatVersionNegotiationResponse_AdvertisesReservedVersionsInTheSupportedVersionList",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0009.cs::ShouldDiscardVersionNegotiation_IgnoresReservedVersionsInTheAdvertisedList"
         ]
       }
     },
@@ -25769,6 +25822,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0007.cs::TryFormatVersionNegotiationResponse_AdvertisesReservedVersionsInTheSupportedVersionList",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0009.cs::ShouldDiscardVersionNegotiation_IgnoresReservedVersionsInTheAdvertisedList"
         ]
       }
     },
@@ -25795,6 +25852,10 @@
         "upstream_refs": [
           "RFC 9000 §15 RFC9000-S15-B8-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0010.cs::TryParseLongHeader_ParsesReservedVersionPacketsAsLongHeaders",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0010.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions"
         ]
       }
     },
@@ -25975,7 +26036,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_PreservesSupportedVersionsInNetworkByteOrder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::Fuzz_VersionNegotiationParsing_UsesBigEndianSupportedVersionEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_RejectsTruncatedAndMisalignedVersionLists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17-0001.cs::TryParseVersionNegotiation_PreservesMaximumSupportedVersionValue"
         ]
       }
     },
@@ -26709,7 +26773,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0020.cs::TryParseLongHeader_AllowsVersion1DestinationConnectionIdUpTo20Bytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2-0020.cs::TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes"
         ]
       }
     },
@@ -27215,10 +27280,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0004.cs::TryParseVersionNegotiation_PreservesTheSevenUnusedControlBits"
         ]
       }
     },
@@ -27484,7 +27546,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_ExposesZeroVersionAsVersionNegotiationState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0013.cs::TryParseVersionNegotiation_ExposesZeroVersionAsVersionNegotiationState"
         ]
       }
     },
@@ -27662,9 +27724,11 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseVersionNegotiation_RoundTripsSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ExposesSupportedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ExposesSupportedVersionsWithoutPacketNumberFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_ParsesTheMinimumValidVersionNegotiationPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsEmptyInput",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsPacketsWithoutSupportedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0019.cs::TryParseVersionNegotiation_RejectsTruncatedSupportedVersions"
         ]
       }
     },
@@ -30183,6 +30247,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0013.cs::TryParseLongHeader_ExposesTheRetryPacketWithoutProtectedFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0013.cs::TryValidateRetryPacketIntegrity_RejectsRetryPacketsWithInjectedProtectedFieldBytes"
         ]
       }
     },
@@ -30209,6 +30277,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0014.cs::RetryMetadataParserIgnoresUnusedBitsInTheRetryHeader"
         ]
       }
     },
@@ -30235,6 +30306,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0015.cs::TryParseLongHeader_ExposesTheRetryPacketAdditionalFields"
         ]
       }
     },
@@ -30261,6 +30335,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0016.cs::TryParseRetryBootstrapMetadata_ExtractsTheOpaqueRetryToken"
         ]
       }
     },
@@ -30316,6 +30393,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0002.cs::TryBuildRetryPacket_RejectsRetrySourceConnectionIdsThatMatchTheClientsInitialDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0002.cs::TryBuildRetryPacket_AcceptsRetrySourceConnectionIdsThatDifferFromTheClientsInitialDestinationConnectionId"
         ]
       }
     },
@@ -30342,6 +30423,11 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5.1 RFC9000-S17.2.5.1-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0003.cs::RetryMetadataParserAcceptsRetryPacketsWithDistinctSourceConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0003.cs::RetryMetadataParserRejectsRetryPacketsThatReuseTheInitialDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0003.cs::RetryMetadataParserRejectsRetryPacketsWithZeroLengthMatchingConnectionIds"
         ]
       }
     },
@@ -31335,10 +31421,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0008.cs::TryParseShortHeader_ReportsThePacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0008.cs::TryParseShortHeader_AllowsTheMinimumAndMaximumPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0008.cs::TryParseShortHeader_RejectsShortHeadersWithoutTheFixedBit"
         ]
       }
     },
@@ -31607,11 +31692,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_AllowsZeroReservedBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_ParsesTheShortestRecognizablePacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits"
         ]
       }
@@ -31700,10 +31782,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryParseShortHeader_EncodesThePacketNumberLengthAsOneLessThanTheFieldLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryOpenProtectedApplicationDataPacket_EncodesTheBoundaryPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthEncodingMismatches"
         ]
       }
     },
@@ -31730,6 +31811,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B13-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0021.cs::TryOpenProtectedApplicationDataPacket_AllowsPacketNumberFieldsFromOneToFourBytes"
         ]
       }
     },
@@ -31756,6 +31840,11 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B13-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryParseShortHeader_EncodesThePacketNumberLengthAsOneLessThanTheFieldLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryParseShortHeader_EncodesTheBoundaryPacketNumberLengthValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthMismatches"
         ]
       }
     },
@@ -31782,6 +31871,9 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B14-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0023.cs::TryBuildProtectedApplicationDataPacket_CarriesTheApplicationPayload"
         ]
       }
     },
@@ -32121,7 +32213,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0001.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
         ]
       }
     },
@@ -32181,10 +32273,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32213,10 +32307,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32245,10 +32341,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32277,10 +32375,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32309,9 +32409,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_EncodesTransportParametersAsHandshakeBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryParseTransportParameters_RejectsTruncatedHandshakeBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs::TryFormatTransportParameters_ProducesTheEmptyHandshakeByteSequence"
         ]
       }
     },
@@ -32340,9 +32440,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters"
         ]
       }
     },
@@ -40000,6 +40099,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_UsesBoundarySequenceNumberEncodings",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
@@ -40030,6 +40130,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_UsesBoundarySequenceNumberEncodings",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
@@ -40087,6 +40188,11 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B9-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_AcceptsPreviouslyIssuedSequences",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_RejectsSequencesGreaterThanTheHighestIssuedValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_RejectsTheMaximumSequenceBoundary"
         ]
       }
     },
@@ -40113,6 +40219,11 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B10-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0008.cs::RetireConnectionIdFrame_AcceptsASequenceNumberThatDiffersFromThePacketDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0008.cs::RetireConnectionIdFrame_RejectsThePacketDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0008.cs::RetireConnectionIdFrame_AllowsTheLowestSequenceNumberWhenThePacketDestinationConnectionIdDiffers"
         ]
       }
     },
@@ -40169,6 +40280,11 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B11-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WithNonZeroPeerConnectionId_EmitsRetireConnectionIdFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionId_DoesNotEmitRetireConnectionIdFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionIdAndRetirePriorToIsZero_DoesNotEmitRetireConnectionIdFrame"
         ]
       }
     },
@@ -40408,9 +40524,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs::Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_ParsesAndFormatsTheEightBytePayload",
-          "tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs::TryParsePathFrames_RejectsTruncatedInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_ParsesAndFormatsTheEightBytePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryParsePathResponseFrame_RejectsANonMinimalTypeEncoding",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::TryFormatPathResponseFrame_WritesTheFixedTypeAtTheMinimumBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0001.cs::Fuzz_PathResponseFrame_RoundTripsRepresentativeShapesAndRejectsTruncation"
         ]
       }
     },
@@ -41627,6 +41744,10 @@
         "upstream_refs": [
           "RFC 9000 §20.1 RFC9000-S20.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-20.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues"
         ]
       }
     },
@@ -43905,6 +44026,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0003.cs::TransportErrorCodeRegistry_IncludesCodeAndDescriptionFields"
         ]
       }
     },
@@ -43931,6 +44055,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B5-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0004.cs::TransportErrorCodeRegistry_UsesShortMnemonicCodeNames"
         ]
       }
     },
@@ -43957,6 +44084,9 @@
         "upstream_refs": [
           "RFC 9000 §22.5 RFC9000-S22.5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P5-0005.cs::TransportErrorCodeRegistry_UsesBriefDescriptions"
         ]
       },
       "notes": [

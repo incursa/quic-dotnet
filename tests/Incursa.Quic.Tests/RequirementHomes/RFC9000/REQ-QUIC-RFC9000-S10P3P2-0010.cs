@@ -8,6 +8,13 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
 public sealed class REQ_QUIC_RFC9000_S10P3P2_0010
 {
+    public static TheoryData<byte[], byte[], int> InvalidGenerationCases => new()
+    {
+        { Array.Empty<byte>(), QuicStatelessResetRequirementTestData.CreateSecret(), QuicStatelessReset.StatelessResetTokenLength },
+        { QuicStatelessResetRequirementTestData.CreateConnectionId(), Array.Empty<byte>(), QuicStatelessReset.StatelessResetTokenLength },
+        { QuicStatelessResetRequirementTestData.CreateConnectionId(), QuicStatelessResetRequirementTestData.CreateSecret(), QuicStatelessReset.StatelessResetTokenLength - 1 },
+    };
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -37,5 +44,38 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0010
         Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(otherConnectionId, secretKey, otherConnectionToken, out int otherConnectionBytesWritten));
         Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, otherConnectionBytesWritten);
         Assert.False(token.SequenceEqual(otherConnectionToken));
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidGenerationCases))]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryGenerateStatelessResetToken_RejectsEmptyInputsOrUndersizedDestinations(
+        byte[] connectionId,
+        byte[] secretKey,
+        int destinationLength)
+    {
+        byte[] destination = new byte[destinationLength];
+
+        Assert.False(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, destination, out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryGenerateStatelessResetToken_AcceptsTheMinimumNonEmptyInputs()
+    {
+        byte[] connectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(0x10, 1);
+        byte[] secretKey = QuicStatelessResetRequirementTestData.CreateSecret(0x90, 1);
+        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
+
+        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, token, out int bytesWritten));
+        Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, bytesWritten);
+
+        using HMACSHA256 hmac = new(secretKey);
+        byte[] expectedToken = hmac.ComputeHash(connectionId);
+
+        Assert.True(token.SequenceEqual(expectedToken.AsSpan(..QuicStatelessReset.StatelessResetTokenLength)));
     }
 }

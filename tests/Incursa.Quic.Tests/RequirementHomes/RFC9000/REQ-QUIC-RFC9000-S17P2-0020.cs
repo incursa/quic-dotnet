@@ -30,6 +30,26 @@ public sealed class REQ_QUIC_RFC9000_S17P2_0020
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2-0020">In QUIC version 1, this value MUST NOT exceed 20 bytes.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2-0020")]
+    public void TryParseLongHeader_RejectsVersion1DestinationConnectionIdLongerThan20Bytes()
+    {
+        byte[] versionSpecificData = BuildValidVersion1VersionSpecificData(0x41);
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x41,
+            version: 1,
+            destinationConnectionId: new byte[21],
+            sourceConnectionId: [0x5C],
+            versionSpecificData: versionSpecificData);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
+
     private static byte[] BuildValidVersion1VersionSpecificData(byte headerControlBits)
     {
         int packetNumberLength = (headerControlBits & 0x03) + 1;

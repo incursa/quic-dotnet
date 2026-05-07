@@ -148,4 +148,24 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0013
             }
         }
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0013">The Version field of a Version Negotiation packet MUST be set to 0x00000000.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S17P2P1-0013")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseVersionNegotiation_ExposesZeroVersionAsVersionNegotiationState()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            supportedVersions: [0x11223344]);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(0u, header.Version);
+        Assert.True(header.IsVersionNegotiation);
+    }
 }

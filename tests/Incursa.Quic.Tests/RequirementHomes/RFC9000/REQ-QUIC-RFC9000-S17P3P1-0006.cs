@@ -16,4 +16,14 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0006
         Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
         Assert.Equal((byte)0x00, header.ReservedBits);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits()
+    {
+        byte[] packet = QuicHeaderTestData.BuildShortHeader(0x18, [0xA1, 0xB2]);
+
+        Assert.False(QuicPacketParser.TryParseShortHeader(packet, out _));
+    }
 }

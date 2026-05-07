@@ -20,4 +20,32 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0023
             material,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryBuildProtectedApplicationDataPacket_CarriesTheApplicationPayload()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreatePacketCoordinator();
+        QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt);
+        byte[] applicationPayload = QuicS12P3TestSupport.CreatePingPayload();
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            out byte[] protectedPacket));
+
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(payloadLength >= applicationPayload.Length);
+        Assert.True(openedPacket.AsSpan(payloadOffset, applicationPayload.Length).SequenceEqual(applicationPayload));
+        Assert.True(openedPacket.AsSpan(payloadOffset + applicationPayload.Length, payloadLength - applicationPayload.Length)
+            .SequenceEqual(new byte[payloadLength - applicationPayload.Length]));
+    }
 }
