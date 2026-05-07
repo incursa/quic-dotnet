@@ -2434,6 +2434,15 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
+        if (CurrentPeerDestinationConnectionId.IsEmpty)
+        {
+            return HandleFatalTlsSignal(
+                nowTicks,
+                QuicTransportErrorCode.ProtocolViolation,
+                "The peer retired a connection ID while operating in zero-length destination connection ID mode.",
+                ref effects);
+        }
+
         if (retireConnectionIdFrame.SequenceNumber > highestConnectionIdIssuedToPeer)
         {
             return HandleFatalTlsSignal(
