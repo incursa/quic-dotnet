@@ -30089,6 +30089,10 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0013.cs::TryParseLongHeader_ExposesTheRetryPacketWithoutProtectedFields",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0013.cs::TryValidateRetryPacketIntegrity_RejectsRetryPacketsWithInjectedProtectedFieldBytes"
         ]
       }
     },
@@ -30115,6 +30119,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0014.cs::RetryMetadataParserIgnoresUnusedBitsInTheRetryHeader"
         ]
       }
     },
@@ -30141,6 +30148,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B5-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0015.cs::TryParseLongHeader_ExposesTheRetryPacketAdditionalFields"
         ]
       }
     },
@@ -30167,6 +30177,9 @@
         "upstream_refs": [
           "RFC 9000 §17.2.5 RFC9000-S17.2.5-B6-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5-0016.cs::TryParseRetryBootstrapMetadata_ExtractsTheOpaqueRetryToken"
         ]
       }
     },
