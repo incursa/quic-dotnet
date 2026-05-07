@@ -18555,6 +18555,10 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders"
         ]
       }
     },
@@ -18659,6 +18663,11 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_InBothDirections",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips"
         ]
       }
     },

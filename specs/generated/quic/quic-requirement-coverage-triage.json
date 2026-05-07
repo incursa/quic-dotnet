@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T23:28:06.9787855-06:00",
+  "generated_at": "2026-05-07T00:25:59.1135879-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-06T23:28:06.9753846-06:00",
+    "generated_at": "2026-05-07T00:25:59.1101838-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 50,
+      "covered_but_missing_xrefs": 48,
       "covered_but_proof_too_broad": 45,
       "partially_covered": 128,
-      "trace_clean": 1330,
+      "trace_clean": 1332,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 147
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1330,
-      "metadata_only": 50,
+      "clean": 1332,
+      "metadata_only": 48,
       "new_tests_needed": 386,
       "restructure_needed": 65
     },
@@ -47,10 +47,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 50,
+          "covered_but_missing_xrefs": 48,
           "covered_but_proof_too_broad": 45,
           "partially_covered": 128,
-          "trace_clean": 1017,
+          "trace_clean": 1019,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 147
         }
@@ -19188,22 +19188,25 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -19237,8 +19240,52 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S12P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S12P1_0001",
+          "member": "REQ_QUIC_RFC9000_S12P1_0001.TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket",
+          "method": "TryFormatVersionNegotiationResponse_WritesAStatelessParseablePacket",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S12P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S12P1-0001",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S12P1_0001",
+          "member": "REQ_QUIC_RFC9000_S12P1_0001.TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders",
+          "method": "TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders",
+          "line": 37,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S12P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S12P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs::TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0001.cs",
           "class": "REQ_QUIC_RFC9000_S12P1_0001",
           "member": "REQ_QUIC_RFC9000_S12P1_0001.TryParseVersionNegotiation_RejectsOrdinaryProtectedLongHeaders",
@@ -19502,23 +19549,27 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_InBothDirections",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 1,
-          "edge": 1,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -19531,6 +19582,28 @@
           "requirement_id": "REQ-QUIC-RFC9000-S12P1-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S12P1_0005",
+          "member": "REQ_QUIC_RFC9000_S12P1_0005.TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
+          "method": "TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
+          "line": 74,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S12P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S12P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs",
           "class": "REQ_QUIC_RFC9000_S12P1_0005",
           "member": "REQ_QUIC_RFC9000_S12P1_0005.TryOpenInitialPacket_WithAReceiverDerivedFromADifferentClientInitialDcid_DoesNotSucceed",
@@ -19573,8 +19646,52 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S12P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_InBothDirections",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S12P1_0005",
+          "member": "REQ_QUIC_RFC9000_S12P1_0005.TryProtectInitialPacket_AndTryOpenInitialPacket_InBothDirections",
+          "method": "TryProtectInitialPacket_AndTryOpenInitialPacket_InBothDirections",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S12P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S12P1-0005",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S12P1_0005",
+          "member": "REQ_QUIC_RFC9000_S12P1_0005.TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips",
+          "method": "TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips",
+          "line": 116,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S12P1-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S12P1-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs::TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0005.cs",
           "class": "REQ_QUIC_RFC9000_S12P1_0005",
           "member": "REQ_QUIC_RFC9000_S12P1_0005.TryProtectInitialPacket_AtTheMinimumProtectedPayloadBoundaryStillRoundTrips",
