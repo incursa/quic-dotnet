@@ -4,63 +4,76 @@ internal static class QuicS13P2P3AckFrameProofSupport
 {
     public static QuicAckGenerationState CreateTrackedState(int maximumRetainedAckRanges)
     {
-        QuicAckGenerationState tracker = new(maximumRetainedAckRanges);
+        return CreateTrackedState(maximumRetainedAckRanges, 1, 2, 5, 6, 9, 10);
+    }
 
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 1, ackEliciting: true, receivedAtMicros: 1_000);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 2, ackEliciting: true, receivedAtMicros: 1_010);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 5, ackEliciting: true, receivedAtMicros: 1_020);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 6, ackEliciting: true, receivedAtMicros: 1_030);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 9, ackEliciting: true, receivedAtMicros: 1_040);
-        tracker.RecordProcessedPacket(QuicPacketNumberSpace.ApplicationData, 10, ackEliciting: true, receivedAtMicros: 1_050);
+    public static QuicAckGenerationState CreateTrackedState(int maximumRetainedAckRanges, params ulong[] packetNumbers)
+    {
+        QuicAckGenerationState tracker = new(maximumRetainedAckRanges);
+        ulong receivedAtMicros = 1_000;
+
+        foreach (ulong packetNumber in packetNumbers)
+        {
+            tracker.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                ackEliciting: true,
+                receivedAtMicros: receivedAtMicros);
+            receivedAtMicros += 10;
+        }
 
         return tracker;
     }
 
-    public static void AssertBuildsThreeRangeAckFrame(QuicAckGenerationState tracker)
+    public static void AssertBuildsAckFrame(
+        QuicAckGenerationState tracker,
+        ulong expectedLargestAcknowledged,
+        ulong expectedFirstAckRange,
+        params QuicAckRange[] expectedAdditionalRanges)
     {
         Assert.True(tracker.TryBuildAckFrame(
             QuicPacketNumberSpace.ApplicationData,
             nowMicros: 2_000,
             out QuicAckFrame frame));
 
-        Assert.Equal(10UL, frame.LargestAcknowledged);
-        Assert.Equal(1UL, frame.FirstAckRange);
-        Assert.Equal(2, frame.AdditionalRanges.Length);
-        Assert.Equal(1UL, frame.AdditionalRanges[0].Gap);
-        Assert.Equal(1UL, frame.AdditionalRanges[0].AckRangeLength);
-        Assert.Equal(5UL, frame.AdditionalRanges[0].SmallestAcknowledged);
-        Assert.Equal(6UL, frame.AdditionalRanges[0].LargestAcknowledged);
-        Assert.Equal(1UL, frame.AdditionalRanges[1].Gap);
-        Assert.Equal(1UL, frame.AdditionalRanges[1].AckRangeLength);
-        Assert.Equal(1UL, frame.AdditionalRanges[1].SmallestAcknowledged);
-        Assert.Equal(2UL, frame.AdditionalRanges[1].LargestAcknowledged);
+        Assert.Equal(0x02, frame.FrameType);
+        Assert.Equal(expectedLargestAcknowledged, frame.LargestAcknowledged);
+        Assert.Equal(expectedFirstAckRange, frame.FirstAckRange);
+        Assert.Equal(expectedAdditionalRanges.Length, frame.AdditionalRanges.Length);
+
+        for (int index = 0; index < expectedAdditionalRanges.Length; index++)
+        {
+            Assert.Equal(expectedAdditionalRanges[index].Gap, frame.AdditionalRanges[index].Gap);
+            Assert.Equal(expectedAdditionalRanges[index].AckRangeLength, frame.AdditionalRanges[index].AckRangeLength);
+            Assert.Equal(expectedAdditionalRanges[index].SmallestAcknowledged, frame.AdditionalRanges[index].SmallestAcknowledged);
+            Assert.Equal(expectedAdditionalRanges[index].LargestAcknowledged, frame.AdditionalRanges[index].LargestAcknowledged);
+        }
+    }
+
+    public static void AssertBuildsThreeRangeAckFrame(QuicAckGenerationState tracker)
+    {
+        AssertBuildsAckFrame(
+            tracker,
+            expectedLargestAcknowledged: 10,
+            expectedFirstAckRange: 1,
+            new QuicAckRange(1, 1, 5, 6),
+            new QuicAckRange(1, 1, 1, 2));
     }
 
     public static void AssertBuildsTrimmedAckFrame(QuicAckGenerationState tracker)
     {
-        Assert.True(tracker.TryBuildAckFrame(
-            QuicPacketNumberSpace.ApplicationData,
-            nowMicros: 2_000,
-            out QuicAckFrame frame));
-
-        Assert.Equal(10UL, frame.LargestAcknowledged);
-        Assert.Equal(1UL, frame.FirstAckRange);
-        Assert.Single(frame.AdditionalRanges);
-        Assert.Equal(1UL, frame.AdditionalRanges[0].Gap);
-        Assert.Equal(1UL, frame.AdditionalRanges[0].AckRangeLength);
-        Assert.Equal(5UL, frame.AdditionalRanges[0].SmallestAcknowledged);
-        Assert.Equal(6UL, frame.AdditionalRanges[0].LargestAcknowledged);
+        AssertBuildsAckFrame(
+            tracker,
+            expectedLargestAcknowledged: 10,
+            expectedFirstAckRange: 1,
+            new QuicAckRange(1, 1, 5, 6));
     }
 
     public static void AssertBuildsSingleRangeAckFrame(QuicAckGenerationState tracker)
     {
-        Assert.True(tracker.TryBuildAckFrame(
-            QuicPacketNumberSpace.ApplicationData,
-            nowMicros: 2_000,
-            out QuicAckFrame frame));
-
-        Assert.Equal(10UL, frame.LargestAcknowledged);
-        Assert.Equal(1UL, frame.FirstAckRange);
-        Assert.Empty(frame.AdditionalRanges);
+        AssertBuildsAckFrame(
+            tracker,
+            expectedLargestAcknowledged: 10,
+            expectedFirstAckRange: 1);
     }
 }
