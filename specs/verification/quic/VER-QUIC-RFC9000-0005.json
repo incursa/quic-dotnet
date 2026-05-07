@@ -19,14 +19,17 @@
     "REQ-QUIC-RFC9000-S9P2-0002",
     "REQ-QUIC-RFC9000-S9P2-0003",
     "REQ-QUIC-RFC9000-S9P2-0004",
-    "REQ-QUIC-RFC9000-S9P2-0005"
+    "REQ-QUIC-RFC9000-S9P2-0005",
+    "REQ-QUIC-RFC9000-S9P4-0002",
+    "REQ-QUIC-RFC9000-S9P4-0003",
+    "REQ-QUIC-RFC9000-S9P4-0005"
   ],
-  "scope": "This verification covers RFC 9000 Sections 9.1 and 9.2 for the runtime-owned migration slice.\nIt checks that new local addresses remain candidate paths until path validation succeeds, that the runtime emits a PATH_CHALLENGE before treating the path as normal send traffic, that migration promotion resets congestion, RTT, and ECN validation state, and that port-only address changes can retain the prior recovery snapshot.\nIt does not claim a generalized multipath scheduler or broader recovery policy outside the migration promotion path.",
-  "expected_result": "A new local address is probed before normal use, path validation remains explicit, migration resets congestion/RTT/ECN validation state unless only the peer port changed, ECN revalidation restarts on the new path, and the requirement-home proof stays limited to the migration slice.",
+  "scope": "This verification covers RFC 9000 Sections 9.1 and 9.2 for the runtime-owned migration slice.\nIt checks that new local addresses remain candidate paths until path validation succeeds, that the runtime emits a PATH_CHALLENGE before treating the path as normal send traffic, that migration promotion resets congestion, RTT, and ECN validation state, that port-only address changes can retain the prior recovery snapshot, and that recently validated application-data traffic stays on the current active path.\nIt does not claim a generalized multipath scheduler or broader recovery policy outside the migration promotion path.",
+  "expected_result": "A new local address is probed before normal use, path validation remains explicit, migration resets congestion/RTT/ECN validation state unless only the peer port changed, ECN revalidation restarts on the new path, recently validated application-data traffic stays on the current active path, and the requirement-home proof stays limited to the migration slice.",
   "procedure": [
-    "Run the requirement-home tests for REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-S9P2-0001, REQ-QUIC-RFC9000-S9P2-0002, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, and REQ-QUIC-RFC9000-S9P2-0005.",
+    "Run the requirement-home tests for REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-S9P2-0001, REQ-QUIC-RFC9000-S9P2-0002, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, REQ-QUIC-RFC9000-S9P2-0005, REQ-QUIC-RFC9000-S9P4-0002, REQ-QUIC-RFC9000-S9P4-0003, and REQ-QUIC-RFC9000-S9P4-0005.",
     "Inspect the runtime path records and recovery snapshots for the candidate, validated, and active path transitions.",
-    "Confirm that promotion emits the reset path for non-port-only migration and preserves the recovery snapshot only for port-only changes."
+    "Confirm that promotion emits the reset path for non-port-only migration, preserves the recovery snapshot only for port-only changes, and leaves a recently validated path on the current active path when application data arrives."
   ],
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
@@ -40,6 +43,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
@@ -48,5 +53,5 @@
     "src/Incursa.Quic/QuicEcnValidationState.cs",
     "src/Incursa.Quic/QuicCongestionControlState.cs"
   ],
-  "status_summary": "This verification artifact records the landed Section 9 migration slice, including path validation before new-local-address use, migration promotion reset behavior, port-only retention, and ECN revalidation, and points at the requirement-home and runtime evidence in the working tree."
+  "status_summary": "This verification artifact records the landed Section 9 migration slice, including path validation before new-local-address use, migration promotion reset behavior, recently validated application-data deferral, port-only retention, and ECN revalidation, and points at the requirement-home and runtime evidence in the working tree."
 }
