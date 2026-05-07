@@ -9,6 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S2P1_0006
     [Theory]
     [InlineData(new byte[] { 0x40 })]
     [InlineData(new byte[] { 0x80, 0x00, 0x00 })]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseStreamIdentifier_RejectsTruncatedEncodings(byte[] encoded)

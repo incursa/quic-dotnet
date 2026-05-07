@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S3P2_0018
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStreamFrame_DiscardsRedundantFramesAfterDataRecvd()
@@ -43,6 +44,7 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0018
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_RejectsBytesBeyondTheFinalSizeAfterDataRecvd()

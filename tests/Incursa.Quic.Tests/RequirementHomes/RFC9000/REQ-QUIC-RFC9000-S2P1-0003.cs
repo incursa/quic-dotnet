@@ -9,6 +9,8 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S2P1_0003
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryParseStreamIdentifier_ReportsTheEncodedStreamIdValue()

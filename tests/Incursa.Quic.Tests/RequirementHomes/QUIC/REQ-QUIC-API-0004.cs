@@ -11,6 +11,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_API_0004
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void QuicStream_ExposesTheNarrowAbortAndCompletionSurface()
@@ -38,6 +39,7 @@ public sealed class REQ_QUIC_API_0004
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task SupportedLoopbackStreamEntry_ReturnsRealQuicStreamFacades()

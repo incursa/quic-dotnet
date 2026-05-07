@@ -35,6 +35,42 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task SupportedLoopbackWrite_EncodesApplicationBytesInAStreamFrame()
+    {
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+        byte[] payload = [0x10, 0x20, 0x30, 0x40];
+        await pair.ClientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        QuicConnectionRuntime senderRuntime = GetRuntime(pair.ClientConnection);
+        QuicConnectionSentPacket? dataPacket = null;
+        for (int attempt = 0; attempt < 100 && dataPacket is null; attempt++)
+        {
+            dataPacket = senderRuntime.SendRuntime.SentPackets.Values.FirstOrDefault(packet =>
+                packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && TryFindStreamFrame(
+                    packet.PlaintextPayload.Span,
+                    (ulong)pair.ClientStream.Id,
+                    offset: 0,
+                    streamDataLength: payload.Length,
+                    fin: false,
+                    out _));
+
+            if (dataPacket is null)
+            {
+                await Task.Delay(20);
+            }
+        }
+
+        Assert.NotNull(dataPacket);
+
+        await pair.ClientStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ClientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide()
