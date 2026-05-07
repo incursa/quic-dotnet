@@ -13737,17 +13737,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0082"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0082"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0082"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0001.cs::ServerPreferredAddressCanCommunicateBothAddressFamilies"
         ]
       }
     },
@@ -13899,20 +13905,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0082"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0082"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0082"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs::ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter"
         ]
       }
     },
@@ -13928,17 +13937,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0082"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0082"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0082"
         ],
         "upstream_refs": [
           "RFC 9000 §9.6.1 RFC9000-S9.6.1-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0007.cs::ClientChoosesThePreferredAddressFamilyMatchingTheOriginalServerAddress"
         ]
       }
     },

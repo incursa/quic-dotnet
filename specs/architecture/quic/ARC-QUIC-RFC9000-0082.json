@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0082",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Conveyance And Per-Family Selection",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S9P6P1 closure for preferred_address TLS conveyance and per-family preferred-address selection.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0080",
+    "WI-QUIC-RFC9000-0082",
+    "VER-QUIC-RFC9000-0082"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S9P6P1-0001",
+    "REQ-QUIC-RFC9000-S9P6P1-0006",
+    "REQ-QUIC-RFC9000-S9P6P1-0007"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0007.cs"
+  ],
+  "design_summary": "Server preferred_address conveyance is proven through the deterministic TLS EncryptedExtensions transport-parameters message path, and per-family preferred-address behavior is proven through focused server encoding/client parsing and client family-selection tests.",
+  "data_and_state_considerations": "The preferred_address transport parameter remains the single carrier for IPv4 and IPv6 preferred addresses, ports, preferred connection ID, and stateless reset token. Client-side selection continues to choose the preferred address family matching the original server path family after handshake confirmation.",
+  "edge_cases_and_constraints": [
+    "The server-side preferred_address is carried inside the QUIC transport-parameters TLS extension in EncryptedExtensions.",
+    "Both IPv4 and IPv6 preferred-address families are preserved through server encoding and client parsing.",
+    "The client selects the IPv4 preferred address for an IPv4 original server path.",
+    "The client selects the IPv6 preferred address for an IPv6 original server path."
+  ],
+  "risks": [
+    "This slice does not add public preferred-address configuration APIs.",
+    "This slice does not claim hosted interop readiness.",
+    "This slice does not close deferred fuzz obligations for S9P6P1."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the remaining generated S9P6P1 non-clean tail only: REQ-QUIC-RFC9000-S9P6P1-0001, REQ-QUIC-RFC9000-S9P6P1-0006, and REQ-QUIC-RFC9000-S9P6P1-0007. It does not claim public migration APIs, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ]
+}

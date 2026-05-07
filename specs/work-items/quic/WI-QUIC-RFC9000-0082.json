@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0082",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Conveyance And Per-Family Selection Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0082",
+    "VER-QUIC-RFC9000-0082"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S9P6P1-0001",
+    "REQ-QUIC-RFC9000-S9P6P1-0006",
+    "REQ-QUIC-RFC9000-S9P6P1-0007"
+  ],
+  "summary": "Close the remaining generated S9P6P1 preferred-address non-clean tail with focused TLS conveyance and per-family selection proof.",
+  "planned_changes": "- Add focused requirement-home proof for server preferred_address conveyance through TLS EncryptedExtensions.\n- Add focused requirement-home proof that server preferred_address can carry both IPv4 and IPv6 families.\n- Add focused requirement-home proof that the client selects the preferred address family matching the original server path family.\n- Link the focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S9P6P1 remaining-tail requirement-home filter, run the tight TLS transport-parameter canary, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0082"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0082"
+  ],
+  "out_of_scope": [
+    "Public preferred-address configuration APIs.",
+    "Public migration APIs.",
+    "Multipath support.",
+    "Hosted interop readiness.",
+    "Deferred fuzz obligations."
+  ],
+  "completion_notes": "Completed as a focused S9P6P1 proof for preferred_address TLS conveyance and per-family client selection."
+}

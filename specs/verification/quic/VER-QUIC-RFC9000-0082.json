@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0082",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S9P6P1 Preferred Address Conveyance And Per-Family Selection Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0082",
+    "WI-QUIC-RFC9000-0082"
+  ],
+  "verification_method": "Focused S9P6P1 requirement-home tests over preferred_address TLS conveyance and per-family selection, followed by the TLS transport-parameter canary, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S9P6P1-0001",
+    "REQ-QUIC-RFC9000-S9P6P1-0006",
+    "REQ-QUIC-RFC9000-S9P6P1-0007"
+  ],
+  "scope": "This verification covers the remaining generated non-clean S9P6P1 preferred-address conveyance and per-family selection tail.",
+  "expected_result": "The focused tests show that server preferred_address is carried in the TLS EncryptedExtensions transport-parameters extension, both IPv4 and IPv6 families survive server encoding and client parsing, and the client selects the preferred address family matching the original server path family.",
+  "procedure": [
+    "Run the focused S9P6P1 remaining-tail requirement-home filter.",
+    "Run the tight TLS transport-parameter canary.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The S9P6P1 preferred-address handshake-confirmed transition remains closed under ARC-QUIC-RFC9000-0080.",
+    "The S9P6P1 preferred-address validation-failure policy remains closed under ARC-QUIC-RFC9000-0081.",
+    "The base runtime path-validation model remains owned by ARC-QUIC-RFC9000-0001."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0007.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0007\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S18_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S4_0001\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim public preferred-address configuration APIs, public migration APIs, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S9P6P1 remaining-tail requirement-home filter 3/3; tight TLS transport-parameter canary 5/5; Release build 0 warnings/errors; regenerated QUIC coverage triage 1,316/1,771 trace-clean; SpecTrace core validation 490 artifacts; full Release no-build suite 4,580/4,580. git diff --check is recorded in the final closure report."
+}

@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S9P6P1 preferred-address validation-failure
+Last verified: 2026-05-06 for the S9P6P1 preferred-address conveyance and
+per-family selection tail, S9P6P1 preferred-address validation-failure
 policy, S9P6P1 preferred-address handshake-confirmed transition, S4P6
 stream-limit metadata xref tail, S4P6 cumulative incoming stream-limit tail,
 S4P6 max_streams oversized
@@ -26,6 +27,22 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S9P6P1 preferred-address conveyance and per-family selection closure
+on 2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0001`,
+`REQ-QUIC-RFC9000-S9P6P1-0006`, and
+`REQ-QUIC-RFC9000-S9P6P1-0007` under `ARC-QUIC-RFC9000-0082`,
+`WI-QUIC-RFC9000-0082`, and `VER-QUIC-RFC9000-0082`. The proof covers
+server `preferred_address` conveyance through the TLS `EncryptedExtensions`
+transport-parameters extension, both IPv4 and IPv6 preferred-address families
+surviving server encoding and client parsing, and the client selecting the
+preferred address family matching the original server path family. Regenerated
+coverage triage marks the requirements as `trace_clean` and reports 1,316 of
+1,771 QUIC requirements trace-clean overall, leaving 455 non-clean. `S9P6P1`
+has no remaining non-clean requirements in generated triage. This closure does
+not claim public preferred-address configuration APIs, public migration APIs,
+multipath support, hosted interop readiness, or closure of deferred fuzz
+obligations.
 
 Follow-on S9P6P1 preferred-address validation-failure policy closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0005` under
