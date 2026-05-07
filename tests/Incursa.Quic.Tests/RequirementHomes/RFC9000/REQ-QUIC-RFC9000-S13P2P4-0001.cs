@@ -31,6 +31,8 @@ public sealed class REQ_QUIC_RFC9000_S13P2P4_0001
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0010")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryBuildAckFrame_DropsTheOldestAckRangeAfterTheWindowAdvances()
@@ -64,6 +66,11 @@ public sealed class REQ_QUIC_RFC9000_S13P2P4_0001
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0011")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryBuildAckFrame_WithASingleRangeLimitKeepsOnlyTheNewestAckRange()
