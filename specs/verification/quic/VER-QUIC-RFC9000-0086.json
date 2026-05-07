@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0086",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S19P20 HANDSHAKE_DONE Proof Tail Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0086",
+    "WI-QUIC-RFC9000-0086"
+  ],
+  "verification_method": "Focused S19P20 requirement-home tests over HANDSHAKE_DONE frame type encoding, parser rejection behavior, trailing-frame consumption, server-only send gating, completion-boundary send timing, one-shot send behavior, and server receipt PROTOCOL_VIOLATION handling, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S19P20-0003",
+    "REQ-QUIC-RFC9000-S19P20-0004",
+    "REQ-QUIC-RFC9000-S19P20-0005",
+    "REQ-QUIC-RFC9000-S19P20-0006"
+  ],
+  "scope": "This verification covers the focused generated S19P20 hard proof tail for HANDSHAKE_DONE frame type encoding, server-only emission, completion-boundary send timing, and server-side receipt error policy.",
+  "expected_result": "The focused tests show that HANDSHAKE_DONE formats as the single-byte varint value 0x1e, parser rejection covers adjacent and non-minimal encodings, parsing consumes exactly the type byte before a following frame, clients do not emit HANDSHAKE_DONE, servers emit exactly one HANDSHAKE_DONE only after peer handshake transcript completion, and servers close with PROTOCOL_VIOLATION when receiving HANDSHAKE_DONE while keeping non-HANDSHAKE_DONE protected packets open.",
+  "procedure": [
+    "Run the focused S19P20 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "HANDSHAKE_DONE remains parsed and formatted through QuicFrameCodec.",
+    "The server send path remains gated by role, peer handshake transcript completion, active path availability, 1-RTT protect material, and the one-shot handshakeDonePacketSent flag.",
+    "The application-data receive path dispatches HANDSHAKE_DONE before ordinary connection-close and path-management frame handling."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P20HandshakeDoneTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0006.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P20_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S19P20_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S19P20_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S19P20_0006\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim broad S19 frame-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S19P20 requirement-home filter 13/13; Release build 0 warnings/errors; regenerated QUIC coverage triage 1,330/1,771 trace-clean; SpecTrace core validation 502 artifacts; full Release no-build suite 4,609/4,609; git diff --check exited 0 with only CRLF normalization warnings for generated triage files."
+}

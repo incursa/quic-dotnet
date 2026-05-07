@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S8P1P4 Retry token source binding and
-lifetime tail, S17P1 packet-number encoding completion,
+Last verified: 2026-05-06 for the S19P20 HANDSHAKE_DONE proof tail,
+S8P1P4 Retry token source binding and lifetime tail,
+S17P1 packet-number encoding completion,
 S17P4 spin-bit per-path state tail,
 S9P6P1 preferred-address conveyance and
 per-family selection tail, S9P6P1 preferred-address validation-failure
@@ -30,6 +31,27 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S19P20 HANDSHAKE_DONE proof-tail closure on 2026-05-06 closes
+`REQ-QUIC-RFC9000-S19P20-0003`, `REQ-QUIC-RFC9000-S19P20-0004`,
+`REQ-QUIC-RFC9000-S19P20-0005`, and `REQ-QUIC-RFC9000-S19P20-0006`
+under `ARC-QUIC-RFC9000-0086`, `WI-QUIC-RFC9000-0086`, and
+`VER-QUIC-RFC9000-0086`. The proof covers HANDSHAKE_DONE single-byte
+varint type encoding as `0x1e`, adjacent and non-minimal type rejection,
+one-byte consumption before a following frame, active-client send
+suppression, server send only after peer handshake transcript completion,
+pre-completion suppression with 1-RTT send material present, one-shot server
+send behavior, server receipt closure with `PROTOCOL_VIOLATION`, and a
+protected non-HANDSHAKE_DONE receive negative control. Regenerated coverage
+triage marks all four requirements as `trace_clean` and reports 1,330 of
+1,771 QUIC requirements trace-clean overall, leaving 441 non-clean.
+`S19P20` has no remaining non-clean requirements in generated triage. Local
+verification passed: focused S19P20 requirement-home filter 13/13, Release
+build 0 warnings/errors, SpecTrace core validation 502 artifacts, full
+Release no-build suite 4,609/4,609, and `git diff --check` exited 0 with
+only generated-triage CRLF normalization warnings. This closure does not
+claim broad S19 frame-family closure, public API widening, hosted interop
+readiness, or closure of unrelated deferred fuzz obligations.
 
 Follow-on S8P1P4 Retry token source binding and lifetime closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S8P1P4-0003`,

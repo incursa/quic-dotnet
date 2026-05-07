@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0086",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S19P20 HANDSHAKE_DONE Proof Tail Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0086",
+    "VER-QUIC-RFC9000-0086"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S19P20-0003",
+    "REQ-QUIC-RFC9000-S19P20-0004",
+    "REQ-QUIC-RFC9000-S19P20-0005",
+    "REQ-QUIC-RFC9000-S19P20-0006"
+  ],
+  "summary": "Close the focused S19P20 HANDSHAKE_DONE proof tail for frame type encoding, server-only send gating, completion timing, and server receipt error handling.",
+  "planned_changes": "- Add focused requirement-home tests for HANDSHAKE_DONE type encoding, adjacent-type rejection, non-minimal varint rejection, and trailing-frame consumption.\n- Add focused runtime tests proving active clients do not send HANDSHAKE_DONE while servers do after peer handshake transcript completion.\n- Add focused runtime tests proving servers do not send HANDSHAKE_DONE before completion and do not duplicate the send after repeated completion signals.\n- Add focused negative receive proof that non-HANDSHAKE_DONE protected packets do not trigger the server HANDSHAKE_DONE PROTOCOL_VIOLATION path.\n- Link focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S19P20 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0086"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0086"
+  ],
+  "out_of_scope": [
+    "Broad S19 frame-family closure.",
+    "Public API widening.",
+    "Hosted interop readiness.",
+    "Unrelated deferred fuzz obligations."
+  ],
+  "completion_notes": "Completed as a focused S19P20 hard proof slice for HANDSHAKE_DONE encoding, server-only emission, completion-boundary send gating, one-shot send behavior, and server-side PROTOCOL_VIOLATION handling on receipt."
+}

@@ -41031,17 +41031,27 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0086"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0086"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0086"
         ],
         "upstream_refs": [
           "RFC 9000 §19.20 RFC9000-S19.20-B4-P0-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::TryFormatHandshakeDoneFrame_WritesTheSingleByteVarintTypeValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::TryParseHandshakeDoneFrame_RejectsOtherSingleByteVarintTypeValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::TryParseHandshakeDoneFrame_RejectsNonMinimalVarintEncodingOfTheTypeValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::TryParseHandshakeDoneFrame_ConsumesOnlyTheSingleTypeByteWhenAnotherFrameFollows",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs::Fuzz_HandshakeDoneFrame_RoundTripsAndRejectsTruncation"
         ]
       }
     },
@@ -41057,17 +41067,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0086"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0086"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0086"
         ],
         "upstream_refs": [
           "RFC 9000 §19.20 RFC9000-S19.20-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0004.cs::ActiveClientRuntimeDoesNotSendHandshakeDoneFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0004.cs::ServerPeerHandshakeCompletionSendsTheHandshakeDoneFrame"
         ]
       }
     },
@@ -41083,17 +41100,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0086"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0086"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0086"
         ],
         "upstream_refs": [
           "RFC 9000 §19.20 RFC9000-S19.20-B6-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0005.cs::ServerSendsHandshakeDoneWhenThePeerHandshakeCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0005.cs::ServerDoesNotSendHandshakeDoneWhenOneRttKeysArriveBeforePeerHandshakeCompletion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0005.cs::ServerSendsHandshakeDoneOnlyOnceAcrossRepeatedCompletionSignals"
         ]
       }
     },
@@ -41109,17 +41134,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0086"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0086"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0086"
         ],
         "upstream_refs": [
           "RFC 9000 §19.20 RFC9000-S19.20-B6-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.20"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0006.cs::ServerTreatsReceivedHandshakeDoneAsAProtocolViolation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0006.cs::ServerKeepsTheConnectionOpenWhenTheProtectedPacketDoesNotContainHandshakeDone"
         ]
       }
     },

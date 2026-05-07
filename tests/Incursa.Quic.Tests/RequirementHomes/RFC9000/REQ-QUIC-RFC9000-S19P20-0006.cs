@@ -22,4 +22,27 @@ public sealed class REQ_QUIC_RFC9000_S19P20_0006
         Assert.Equal(0x1EUL, runtime.TerminalState.Value.Close.TriggeringFrameType);
         Assert.Contains(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerKeepsTheConnectionOpenWhenTheProtectedPacketDoesNotContainHandshakeDone()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        byte[] protectedPacket = QuicS19P20HandshakeDoneTestSupport.CreateProtectedApplicationDataPacket(
+            runtime,
+            QuicFrameTestData.BuildPingFrame());
+        QuicConnectionPathIdentity pathIdentity = runtime.ActivePath?.Identity
+            ?? QuicS19P20HandshakeDoneTestSupport.PacketPathIdentity;
+
+        _ = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                pathIdentity,
+                protectedPacket),
+            nowTicks: 20);
+
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+    }
 }
