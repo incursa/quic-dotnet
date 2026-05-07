@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T00:52:45.3215089-06:00",
+  "generated_at": "2026-05-07T01:01:34.9346813-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T00:52:45.3181080-06:00",
+    "generated_at": "2026-05-07T01:01:34.9314766-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 49,
       "covered_but_proof_too_broad": 45,
-      "partially_covered": 123,
-      "trace_clean": 1337,
+      "partially_covered": 122,
+      "trace_clean": 1338,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 146
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1337,
+      "clean": 1338,
       "metadata_only": 49,
-      "new_tests_needed": 380,
-      "restructure_needed": 61
+      "new_tests_needed": 379,
+      "restructure_needed": 60
     },
     "by_rfc": [
       {
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 49,
           "covered_but_proof_too_broad": 45,
-          "partially_covered": 123,
-          "trace_clean": 1024,
+          "partially_covered": 122,
+          "trace_clean": 1025,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 146
         }
@@ -85621,60 +85621,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 6,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-        "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-        "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_AllowsZeroReservedBits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_ParsesTheShortestRecognizablePacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits"
       ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_RejectsReservedBitsNonZero"
-        }
-      ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 2,
+        "total": 7,
+        "focused": 6,
         "broad": 1,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 2,
-          "edge": 1,
+          "edge": 3,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -85717,9 +85689,97 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs",
           "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
+          "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_AllowsZeroReservedBits",
+          "method": "TryParseShortHeader_AllowsZeroReservedBits",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P3P1-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_AllowsZeroReservedBits",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
+          "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_AllowsZeroReservedBits",
+          "method": "TryParseShortHeader_AllowsZeroReservedBits",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P3P1-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
+          "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_ParsesTheShortestRecognizablePacket",
+          "method": "TryParseShortHeader_ParsesTheShortestRecognizablePacket",
+          "line": 25,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P3P1-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs::TryParseShortHeader_ParsesTheShortestRecognizablePacket",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
+          "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_ParsesTheShortestRecognizablePacket",
+          "method": "TryParseShortHeader_ParsesTheShortestRecognizablePacket",
+          "line": 25,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P3P1-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0017.cs",
+          "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
           "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits",
           "method": "TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits",
-          "line": 12,
+          "line": 37,
           "kinds": [
             "negative"
           ],
@@ -85741,7 +85801,7 @@
           "class": "REQ_QUIC_RFC9000_S17P3P1_0017",
           "member": "REQ_QUIC_RFC9000_S17P3P1_0017.TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits",
           "method": "TryParseShortHeader_RejectsPacketsWithNonZeroReservedBits",
-          "line": 12,
+          "line": 37,
           "kinds": [
             "negative"
           ],
