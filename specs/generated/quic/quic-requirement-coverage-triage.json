@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T12:02:04.6597313-06:00",
+  "generated_at": "2026-05-07T12:10:12.2723108-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T12:02:04.6532475-06:00",
+    "generated_at": "2026-05-07T12:10:12.2680688-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 32,
-      "covered_but_proof_too_broad": 32,
-      "partially_covered": 74,
-      "trace_clean": 1428,
+      "covered_but_missing_xrefs": 35,
+      "covered_but_proof_too_broad": 31,
+      "partially_covered": 77,
+      "trace_clean": 1426,
       "uncovered_blocked": 69,
       "uncovered_unblocked": 133
     },
     "by_work_queue_tag": {
       "blocked": 69,
-      "clean": 1428,
-      "metadata_only": 32,
-      "new_tests_needed": 306,
-      "restructure_needed": 39
+      "clean": 1426,
+      "metadata_only": 35,
+      "new_tests_needed": 305,
+      "restructure_needed": 38
     },
     "by_rfc": [
       {
@@ -52,10 +52,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 32,
-          "covered_but_proof_too_broad": 32,
-          "partially_covered": 74,
-          "trace_clean": 1115,
+          "covered_but_missing_xrefs": 35,
+          "covered_but_proof_too_broad": 31,
+          "partially_covered": 77,
+          "trace_clean": 1113,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 133
         }
@@ -451,7 +451,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -478,7 +478,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -494,7 +493,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -529,7 +528,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -578,7 +576,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -613,8 +611,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -930,7 +927,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -957,7 +954,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -973,7 +969,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -1008,7 +1004,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -1023,7 +1018,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -1058,8 +1053,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -1473,7 +1467,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -1500,7 +1494,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -1516,7 +1509,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -1551,7 +1544,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -1566,7 +1558,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -1601,8 +1593,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -2098,7 +2089,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -2125,7 +2116,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -2141,7 +2131,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -2176,7 +2166,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -2191,7 +2180,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -2226,8 +2215,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -2932,7 +2920,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -2959,7 +2947,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -2975,7 +2962,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -3010,7 +2997,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -3025,7 +3011,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -3060,8 +3046,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -3641,7 +3626,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -3668,7 +3653,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -3684,7 +3668,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -3719,7 +3703,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -3734,7 +3717,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -3769,8 +3752,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -59570,7 +59552,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -59605,8 +59587,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -65906,7 +65887,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket",
           "method": "TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket",
-          "line": 149,
+          "line": 147,
           "kinds": [
             "edge"
           ],
@@ -65928,7 +65909,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket",
           "method": "TryParseLongHeader_AcceptsTheShortestStructurallyValidInitialPacket",
-          "line": 149,
+          "line": 147,
           "kinds": [
             "edge"
           ],
@@ -65979,7 +65960,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType",
           "method": "TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType",
-          "line": 124,
+          "line": 122,
           "kinds": [
             "positive"
           ],
@@ -66001,7 +65982,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType",
           "method": "TryParseLongHeader_ClassifiesVersion1InitialPacketsAsTheInitialLongHeaderType",
-          "line": 124,
+          "line": 122,
           "kinds": [
             "positive"
           ],
@@ -66023,7 +66004,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets",
           "method": "TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets",
-          "line": 137,
+          "line": 135,
           "kinds": [
             "negative"
           ],
@@ -66045,7 +66026,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets",
           "method": "TryParseLongHeader_DoesNotClassifyZeroRttPacketsAsInitialPackets",
-          "line": 137,
+          "line": 135,
           "kinds": [
             "negative"
           ],
@@ -66067,7 +66048,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -66094,7 +66075,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -66193,7 +66173,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -66220,7 +66200,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -66236,7 +66215,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -66271,7 +66250,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -66286,7 +66264,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm",
           "method": "TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm",
-          "line": 240,
+          "line": 236,
           "kinds": [
             "positive"
           ],
@@ -66308,7 +66286,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm",
           "method": "TryClassifyHeaderForm_ClassifiesInitialPacketsAsLongHeaderForm",
-          "line": 240,
+          "line": 236,
           "kinds": [
             "positive"
           ],
@@ -66364,7 +66342,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -66399,8 +66377,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -66456,7 +66433,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -66483,7 +66460,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -66499,7 +66475,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -66534,7 +66510,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -66583,7 +66558,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -66618,8 +66593,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -66803,7 +66777,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -66830,7 +66804,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -66846,7 +66819,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -66881,7 +66854,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -66930,7 +66902,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -66965,8 +66937,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -67109,7 +67080,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -67136,7 +67107,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -67152,7 +67122,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -67187,7 +67157,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -67236,7 +67205,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -67271,8 +67240,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -67460,7 +67428,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -67487,7 +67455,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -67503,7 +67470,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -67538,7 +67505,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -67587,7 +67553,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -67622,8 +67588,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -67851,7 +67816,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -67878,7 +67843,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -67894,7 +67858,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -67929,7 +67893,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -67978,7 +67941,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -68013,8 +67976,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -68189,7 +68151,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -68216,7 +68178,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -68232,7 +68193,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -68267,7 +68228,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -68316,7 +68276,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -68351,8 +68311,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -68601,7 +68560,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -68628,7 +68587,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -68644,7 +68602,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -68679,7 +68637,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -68728,7 +68685,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -68763,8 +68720,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -68984,7 +68940,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -69011,7 +68967,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -69027,7 +68982,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -69062,7 +69017,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -69111,7 +69065,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -69146,8 +69100,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -69396,7 +69349,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -69423,7 +69376,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -69439,7 +69391,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -69474,7 +69426,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -69523,7 +69474,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -69558,8 +69509,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -70572,7 +70522,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -70599,7 +70549,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -70615,7 +70564,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -70650,7 +70599,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -70665,7 +70613,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -70700,8 +70648,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -72540,7 +72487,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -72575,7 +72522,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -72590,7 +72536,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -72625,8 +72571,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -72868,7 +72813,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -72903,7 +72848,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -72918,7 +72862,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -72953,8 +72897,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -73492,7 +73435,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -73527,7 +73470,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -73542,7 +73484,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -73577,8 +73519,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -73762,7 +73703,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -73797,7 +73738,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -73812,7 +73752,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -73847,8 +73787,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -73988,7 +73927,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -74023,7 +73962,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -74038,7 +73976,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -74073,8 +74011,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -74217,7 +74154,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -74252,7 +74189,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -74267,7 +74203,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -74302,8 +74238,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -74491,7 +74426,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -74526,7 +74461,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -74541,7 +74475,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -74576,8 +74510,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -74805,7 +74738,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -74840,7 +74773,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -74855,7 +74787,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -74890,8 +74822,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -75023,7 +74954,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -75058,7 +74989,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -75073,7 +75003,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
           "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
+          "line": 107,
           "kinds": [
             "edge"
           ],
@@ -75108,8 +75038,7 @@
             "REQ-QUIC-RFC9000-S17P2P3-0008",
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008"
+            "REQ-QUIC-RFC9000-S17P2P3-0011"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -184331,48 +184260,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 3,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-        "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields",
-        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
-      ],
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseLongHeader_RoundTripsHeaderFields"
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
-        }
-      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0008.cs::TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 0,
-        "broad": 3,
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
         "by_kind": {
-          "positive": 1,
+          "positive": 2,
           "negative": 0,
-          "edge": 1,
-          "fuzz": 1,
+          "edge": 0,
+          "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -184380,139 +184289,41 @@
           "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs",
-          "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
-          "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0008",
+          "member": "REQ_QUIC_RFC9000_S5P1_0008.TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+          "method": "TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+          "line": 13,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC8999-S5P1-0001",
-            "REQ-QUIC-RFC8999-S5P1-0002",
-            "REQ-QUIC-RFC8999-S5P1-0003",
-            "REQ-QUIC-RFC8999-S5P1-0004",
-            "REQ-QUIC-RFC8999-S5P1-0006",
-            "REQ-QUIC-RFC8999-S5P1-0008",
-            "REQ-QUIC-RFC9000-S17P2P2-0001",
-            "REQ-QUIC-RFC9000-S17P2P2-0002",
-            "REQ-QUIC-RFC9000-S17P2P2-0003",
-            "REQ-QUIC-RFC9000-S17P2P2-0004",
-            "REQ-QUIC-RFC9000-S17P2P2-0005",
-            "REQ-QUIC-RFC9000-S17P2P2-0006",
-            "REQ-QUIC-RFC9000-S17P2P2-0007",
-            "REQ-QUIC-RFC9000-S17P2P2-0008",
-            "REQ-QUIC-RFC9000-S17P2P2-0009",
-            "REQ-QUIC-RFC9000-S17P2P2-0010",
-            "REQ-QUIC-RFC9000-S17P2P2-0011",
-            "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
-            "REQ-QUIC-RFC9000-S7P2-0001",
-            "REQ-QUIC-RFC9002-S3-0001",
-            "REQ-QUIC-RFC9002-S3-0003"
+            "REQ-QUIC-RFC9000-S5P1-0008"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs",
-          "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
-          "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0008.cs::TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0008",
+          "member": "REQ_QUIC_RFC9000_S5P1_0008.TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+          "method": "TryParseLongHeader_RoundTripsLongHeaderConnectionIdFields",
+          "line": 13,
           "kinds": [
-            "fuzz"
+            "positive"
           ],
           "categories": [
-            "Fuzz"
+            "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC8999-S5P1-0001",
-            "REQ-QUIC-RFC8999-S5P1-0002",
-            "REQ-QUIC-RFC8999-S5P1-0003",
-            "REQ-QUIC-RFC8999-S5P1-0004",
-            "REQ-QUIC-RFC8999-S5P1-0006",
-            "REQ-QUIC-RFC8999-S5P1-0008",
-            "REQ-QUIC-RFC9000-S17P2P2-0002",
-            "REQ-QUIC-RFC9000-S17P2P2-0003",
-            "REQ-QUIC-RFC9000-S17P2P2-0004",
-            "REQ-QUIC-RFC9000-S17P2P2-0005",
-            "REQ-QUIC-RFC9000-S17P2P2-0006",
-            "REQ-QUIC-RFC9000-S17P2P2-0007",
-            "REQ-QUIC-RFC9000-S17P2P2-0008",
-            "REQ-QUIC-RFC9000-S17P2P2-0009",
-            "REQ-QUIC-RFC9000-S17P2P2-0010",
-            "REQ-QUIC-RFC9000-S17P2P2-0011",
-            "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S17P2P3-0001",
-            "REQ-QUIC-RFC9000-S17P2P3-0002",
-            "REQ-QUIC-RFC9000-S17P2P3-0005",
-            "REQ-QUIC-RFC9000-S17P2P3-0006",
-            "REQ-QUIC-RFC9000-S17P2P3-0007",
-            "REQ-QUIC-RFC9000-S17P2P3-0008",
-            "REQ-QUIC-RFC9000-S17P2P3-0009",
-            "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
-            "REQ-QUIC-RFC9000-S7P2-0001",
-            "REQ-QUIC-RFC9001-S6-0002"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0002.cs",
-          "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
-          "member": "REQ_QUIC_RFC9000_S17P2P2_0002.TryParseLongHeader_RoundTripsHeaderFields",
-          "method": "TryParseLongHeader_RoundTripsHeaderFields",
-          "line": 109,
-          "kinds": [
-            "edge"
-          ],
-          "categories": [
-            "Property"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC8999-S5P1-0001",
-            "REQ-QUIC-RFC8999-S5P1-0002",
-            "REQ-QUIC-RFC8999-S5P1-0003",
-            "REQ-QUIC-RFC8999-S5P1-0004",
-            "REQ-QUIC-RFC8999-S5P1-0006",
-            "REQ-QUIC-RFC8999-S5P1-0008",
-            "REQ-QUIC-RFC9000-S17P2-0012",
-            "REQ-QUIC-RFC9000-S17P2P2-0002",
-            "REQ-QUIC-RFC9000-S17P2P2-0003",
-            "REQ-QUIC-RFC9000-S17P2P2-0004",
-            "REQ-QUIC-RFC9000-S17P2P2-0005",
-            "REQ-QUIC-RFC9000-S17P2P2-0006",
-            "REQ-QUIC-RFC9000-S17P2P2-0007",
-            "REQ-QUIC-RFC9000-S17P2P2-0008",
-            "REQ-QUIC-RFC9000-S17P2P2-0009",
-            "REQ-QUIC-RFC9000-S17P2P2-0010",
-            "REQ-QUIC-RFC9000-S17P2P2-0011",
-            "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S17P2P3-0001",
-            "REQ-QUIC-RFC9000-S17P2P3-0002",
-            "REQ-QUIC-RFC9000-S17P2P3-0005",
-            "REQ-QUIC-RFC9000-S17P2P3-0006",
-            "REQ-QUIC-RFC9000-S17P2P3-0007",
-            "REQ-QUIC-RFC9000-S17P2P3-0008",
-            "REQ-QUIC-RFC9000-S17P2P3-0009",
-            "REQ-QUIC-RFC9000-S17P2P3-0010",
-            "REQ-QUIC-RFC9000-S17P2P3-0011",
             "REQ-QUIC-RFC9000-S5P1-0008"
           ],
           "requirement_tagged": true,
@@ -192931,33 +192742,76 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs::EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0001.EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs::EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0001.EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
@@ -192972,34 +192826,123 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0002.EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "method": "EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0002.EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "method": "EndpointDoesNotMatchZeroLengthConnectionIdPacketsWhenTheLocalEndpointDiffers",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0002.EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort",
+          "method": "EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs::EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0002",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0002.EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort",
+          "method": "EndpointMatchesZeroLengthConnectionIdPacketsByLocalAddressAndPort",
+          "line": 30,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
@@ -193014,35 +192957,168 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_unblocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found for this requirement.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "method": "EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "method": "EndpointDoesNotProcessShortHeaderPacketWithDifferentClientSelectedDestinationConnectionId",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesShortHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId",
+          "line": 46,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs::EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0003",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0003.EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId",
+          "method": "EndpointProcessesShortHeaderPacketWithMaximumLengthClientSelectedDestinationConnectionId",
+          "line": 46,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0004",
@@ -193065,8 +193141,8 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::CurrentAttemptHandshakeOpenFailuresAreNotDeferredForRetry",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::ReplacementHandshakePacketsCanBeBufferedUntilTheMatchingReplacementInitialArrives"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::ReplacementHandshakePacketsCanBeBufferedUntilTheMatchingReplacementInitialArrives",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs::CurrentAttemptHandshakeOpenFailuresAreNotDeferredForRetry"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -198599,7 +198675,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -198626,7 +198702,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -198642,7 +198717,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -198677,7 +198752,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -228039,7 +228113,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0002",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0002.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
           "method": "Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation",
-          "line": 195,
+          "line": 191,
           "kinds": [
             "fuzz"
           ],
@@ -228074,7 +228148,6 @@
             "REQ-QUIC-RFC9000-S17P2P3-0009",
             "REQ-QUIC-RFC9000-S17P2P3-0010",
             "REQ-QUIC-RFC9000-S17P2P3-0011",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9001-S6-0002"
           ],
@@ -243490,7 +243563,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -243517,7 +243590,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
@@ -243758,7 +243830,7 @@
           "class": "REQ_QUIC_RFC9000_S17P2P2_0001",
           "member": "REQ_QUIC_RFC9000_S17P2P2_0001.TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
           "method": "TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload",
-          "line": 92,
+          "line": 90,
           "kinds": [
             "positive"
           ],
@@ -243785,7 +243857,6 @@
             "REQ-QUIC-RFC9000-S17P2P2-0010",
             "REQ-QUIC-RFC9000-S17P2P2-0011",
             "REQ-QUIC-RFC9000-S17P2P2-0016",
-            "REQ-QUIC-RFC9000-S5P1-0008",
             "REQ-QUIC-RFC9000-S7P2-0001",
             "REQ-QUIC-RFC9002-S3-0001",
             "REQ-QUIC-RFC9002-S3-0003"
