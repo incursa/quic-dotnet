@@ -2622,7 +2622,10 @@
           "RFC 9001 §7 RFC9001-S7-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-7"
         ]
-      }
+      },
+      "notes": [
+        "This is a scope rule for security analysis rather than a packet-processing rule."
+      ]
     },
     {
       "id": "REQ-QUIC-RFC9001-S7-0002",
