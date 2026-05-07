@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T10:01:29.4209355-06:00",
+  "generated_at": "2026-05-07T10:03:04.6622775-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T10:01:29.4178537-06:00",
+    "generated_at": "2026-05-07T10:03:04.6589192-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "covered_but_missing_xrefs": 42,
+      "covered_but_missing_xrefs": 41,
       "covered_but_proof_too_broad": 36,
       "partially_covered": 97,
-      "trace_clean": 1385,
+      "trace_clean": 1386,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 140
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1385,
-      "metadata_only": 42,
+      "clean": 1386,
+      "metadata_only": 41,
       "new_tests_needed": 339,
       "restructure_needed": 44
     },
@@ -47,10 +47,10 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "covered_but_missing_xrefs": 42,
+          "covered_but_missing_xrefs": 41,
           "covered_but_proof_too_broad": 36,
           "partially_covered": 97,
-          "trace_clean": 1072,
+          "trace_clean": 1073,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 140
         }
@@ -157779,22 +157779,25 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 2,
+        "total": 5,
+        "focused": 4,
         "broad": 1,
         "by_kind": {
-          "positive": 2,
-          "negative": 1,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -157828,8 +157831,52 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S20P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_DoesNotDefineUnknownValues",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S20P1_0001_Focused",
+          "member": "REQ_QUIC_RFC9000_S20P1_0001_Focused.TransportErrorCodeRegistry_DoesNotDefineUnknownValues",
+          "method": "TransportErrorCodeRegistry_DoesNotDefineUnknownValues",
+          "line": 60,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S20P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S20P1-0001",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs",
+          "class": "REQ_QUIC_RFC9000_S20P1_0001_Focused",
+          "member": "REQ_QUIC_RFC9000_S20P1_0001_Focused.TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "method": "TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S20P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S20P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs::TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S20P1-0001-Focused.cs",
           "class": "REQ_QUIC_RFC9000_S20P1_0001_Focused",
           "member": "REQ_QUIC_RFC9000_S20P1_0001_Focused.TransportErrorCodeRegistry_ExposesTheDefinedRFC9000Values",
