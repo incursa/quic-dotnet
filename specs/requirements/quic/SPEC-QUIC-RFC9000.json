@@ -40539,6 +40539,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0011.cs::RetireConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionId_ClosesWithProtocolViolation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0011.cs::ProtectedPacketWithoutRetireConnectionIdKeepsTheConnectionOpen",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0011.cs::RetireConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionIdAndSequenceIsZero_ClosesWithProtocolViolation"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
