@@ -31595,10 +31595,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero",
-          "tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs::TryParseShortHeader_PreservesOpaqueRemainder",
-          "tests/Incursa.Quic.Tests/QuicPacketParserTests.cs::TryParseHeader_PreservesTheSevenControlBits",
-          "tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs::TryParseShortHeader_PreservesOpaqueRemainder"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryParseShortHeader_EncodesThePacketNumberLengthAsOneLessThanTheFieldLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryOpenProtectedApplicationDataPacket_EncodesTheBoundaryPacketNumberLengthBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0020.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthEncodingMismatches"
         ]
       }
     },
@@ -31654,6 +31653,11 @@
         "upstream_refs": [
           "RFC 9000 §17.3.1 RFC9000-S17.3.1-B13-P0-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryParseShortHeader_EncodesThePacketNumberLengthAsOneLessThanTheFieldLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryParseShortHeader_EncodesTheBoundaryPacketNumberLengthValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P3P1-0022.cs::TryOpenProtectedApplicationDataPacket_RejectsPacketNumberLengthMismatches"
         ]
       }
     },
