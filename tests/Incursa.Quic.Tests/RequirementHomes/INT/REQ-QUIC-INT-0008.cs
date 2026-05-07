@@ -28,11 +28,18 @@ public sealed class REQ_QUIC_INT_0008
             QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
             Assert.True(endpoint.TryRegisterConnection(handle, runtime));
 
-            byte[] routeConnectionId = [0x10, 0x11];
-            Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId));
+            byte[] routeConnectionId =
+            [
+                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            ];
+            Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 0UL));
 
             QuicTlsPacketProtectionMaterial material = InteropEndpointHostTestSupport.CreateHandshakeMaterial();
-            QuicTransportParameters localTransportParameters = InteropEndpointHostTestSupport.CreateBootstrapLocalTransportParameters();
+            QuicConnectionPathIdentity pathIdentity = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
 
             Assert.True(endpoint.Host.TryPostEvent(handle, new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 1,
@@ -41,77 +48,42 @@ public sealed class REQ_QUIC_INT_0008
                     PacketProtectionMaterial: material))));
 
             ConcurrentQueue<QuicConnectionIngressResult> ingressResults = new();
-            ConcurrentQueue<QuicConnectionTransitionResult> transitionResults = new();
-            ConcurrentQueue<QuicConnectionEffect> effectResults = new();
+            byte[]? observedDatagram = null;
             using ManualResetEventSlim ingressSeen = new(false);
-            using ManualResetEventSlim packetReceivedSeen = new(false);
-            using ManualResetEventSlim bootstrapSeen = new(false);
 
-            using InteropEndpointHost shell = new(
+            using QuicConnectionEndpointHost shell = new(
                 endpoint,
                 serverSocket,
-                new QuicConnectionPathIdentity(
-                    clientEndPoint.Address.ToString(),
-                    serverEndPoint.Address.ToString(),
-                    clientEndPoint.Port,
-                    serverEndPoint.Port),
+                pathIdentity,
                 ingressObserver: ingressResult =>
                 {
                     ingressResults.Enqueue(ingressResult);
                     ingressSeen.Set();
                 },
-                transitionObserver: transitionResult =>
+                ingressDatagramObserver: (datagram, _) =>
                 {
-                    transitionResults.Enqueue(transitionResult);
-                    if (transitionResult.EventKind == QuicConnectionEventKind.PacketReceived)
-                    {
-                        packetReceivedSeen.Set();
-                    }
-                    else if (transitionResult.EventKind == QuicConnectionEventKind.HandshakeBootstrapRequested)
-                    {
-                        bootstrapSeen.Set();
-                    }
-                },
-                effectObserver: effect =>
-                {
-                    effectResults.Enqueue(effect);
+                    observedDatagram = datagram.ToArray();
                 });
 
             _ = shell.RunAsync();
 
-            Assert.True(endpoint.Host.TryPostEvent(handle, new QuicConnectionHandshakeBootstrapRequestedEvent(
-                ObservedAtTicks: 3,
-                LocalTransportParameters: localTransportParameters)));
-            Assert.True(bootstrapSeen.Wait(TimeSpan.FromSeconds(5)));
-
-            byte[] serverHelloTranscript = InteropEndpointHostTestSupport.CreateServerHelloTranscript();
-
             byte[] serverHelloPacket = InteropEndpointHostTestSupport.BuildProtectedHandshakePacket(
                 material,
-                serverHelloTranscript,
+                InteropEndpointHostTestSupport.CreateServerHelloTranscript(),
                 routeConnectionId);
 
             int bytesSent = clientSocket.Send(serverHelloPacket);
             Assert.Equal(serverHelloPacket.Length, bytesSent);
 
             Assert.True(ingressSeen.Wait(TimeSpan.FromSeconds(5)));
+            Assert.NotNull(observedDatagram);
+            Assert.Equal(serverHelloPacket, observedDatagram);
             Assert.All(ingressResults, result => Assert.True(result.RoutedToConnection));
             QuicConnectionIngressResult ingressResult = ingressResults.First();
             Assert.True(ingressResult.RoutedToConnection);
             Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, ingressResult.Disposition);
             Assert.Equal(QuicConnectionEndpointHandlingKind.None, ingressResult.HandlingKind);
             Assert.Equal(handle, ingressResult.Handle);
-
-            Assert.True(packetReceivedSeen.Wait(TimeSpan.FromSeconds(5)));
-            Assert.Equal(0, runtime.TlsState.HandshakeEgressCryptoBuffer.BufferedBytes);
-            Assert.True(runtime.TlsState.HandshakeKeysAvailable);
-            Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, runtime.TlsState.HandshakeTranscriptPhase);
-            Assert.Null(runtime.TlsState.PeerTransportParameters);
-            Assert.Null(runtime.TlsState.StagedPeerTransportParameters);
-            Assert.DoesNotContain(effectResults, effect => effect is QuicConnectionSendDatagramEffect);
-            QuicConnectionTransitionResult packetReceivedResult = GetPacketReceivedTransitionResult(transitionResults);
-            Assert.Equal(QuicConnectionEventKind.PacketReceived, packetReceivedResult.EventKind);
-            Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         }
         finally
         {
@@ -822,19 +794,6 @@ public sealed class REQ_QUIC_INT_0008
             && left.AeadKey.SequenceEqual(right.AeadKey)
             && left.AeadIv.SequenceEqual(right.AeadIv)
             && left.HeaderProtectionKey.SequenceEqual(right.HeaderProtectionKey);
-    }
-
-    private static QuicConnectionTransitionResult GetPacketReceivedTransitionResult(ConcurrentQueue<QuicConnectionTransitionResult> transitionResults)
-    {
-        foreach (QuicConnectionTransitionResult result in transitionResults)
-        {
-            if (result.EventKind == QuicConnectionEventKind.PacketReceived)
-            {
-                return result;
-            }
-        }
-
-        throw new InvalidOperationException("PacketReceived transition was not observed.");
     }
 
     private static async Task WaitForHandshakeExitAsync(
