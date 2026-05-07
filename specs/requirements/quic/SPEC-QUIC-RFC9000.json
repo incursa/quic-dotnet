@@ -39894,6 +39894,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_UsesBoundarySequenceNumberEncodings",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
@@ -39924,6 +39925,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_ParsesAndFormatsTheSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0004.cs::TryParseRetireConnectionIdFrame_UsesBoundarySequenceNumberEncodings",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0005.cs::TryParseRetireConnectionIdFrame_RejectsTruncatedInput"
         ]
       }
