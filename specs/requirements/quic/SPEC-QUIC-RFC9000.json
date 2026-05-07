@@ -32035,10 +32035,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32067,10 +32069,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32099,10 +32103,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
@@ -32131,10 +32137,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryFormatTransportParameters_WritesExactTupleSequence",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RejectsTruncatedTupleValue",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryFormatTransportParameters_WritesExactTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0002.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryFormatTransportParameters_EmitsTheExpectedTupleSequence",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_AcceptsTwoByteVarintTupleBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0003.cs::TryParseTransportParameters_RejectsTruncatedTupleValue"
         ]
       }
     },
