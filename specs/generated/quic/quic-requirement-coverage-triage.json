@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T01:28:43.9379487-06:00",
+  "generated_at": "2026-05-07T01:36:19.6066868-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\codec-policy",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T01:28:43.9345839-06:00",
+    "generated_at": "2026-05-07T01:36:19.6034266-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 49,
       "covered_but_proof_too_broad": 44,
-      "partially_covered": 120,
-      "trace_clean": 1341,
+      "partially_covered": 119,
+      "trace_clean": 1342,
       "uncovered_blocked": 71,
       "uncovered_unblocked": 146
     },
     "by_work_queue_tag": {
       "blocked": 71,
-      "clean": 1341,
+      "clean": 1342,
       "metadata_only": 49,
-      "new_tests_needed": 376,
+      "new_tests_needed": 375,
       "restructure_needed": 58
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 49,
           "covered_but_proof_too_broad": 44,
-          "partially_covered": 120,
-          "trace_clean": 1028,
+          "partially_covered": 119,
+          "trace_clean": 1029,
           "uncovered_blocked": 56,
           "uncovered_unblocked": 146
         }
@@ -35951,30 +35951,31 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCannotUseOneRttAckPacketsWithoutOneRttMaterial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 1,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -35992,6 +35993,72 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCannotUseOneRttAckPacketsWithoutOneRttMaterial",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P6_0004",
+          "member": "REQ_QUIC_RFC9000_S13P2P6_0004.ClientCannotUseOneRttAckPacketsWithoutOneRttMaterial",
+          "method": "ClientCannotUseOneRttAckPacketsWithoutOneRttMaterial",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P6_0004",
+          "member": "REQ_QUIC_RFC9000_S13P2P6_0004.ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable",
+          "method": "ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable",
+          "line": 90,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P6-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs::ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P6_0004",
+          "member": "REQ_QUIC_RFC9000_S13P2P6_0004.ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable",
+          "method": "ClientCanUseOneRttAckPacketsWhenOneRttMaterialIsAvailable",
+          "line": 90,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
