@@ -4329,6 +4329,12 @@
         "upstream_refs": [
           "RFC 9000 §4.5 RFC9000-S4.5-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary"
         ]
       }
     },

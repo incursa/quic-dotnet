@@ -54,6 +54,31 @@ public sealed class REQ_QUIC_RFC9000_S4P5_0007
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: QuicVariableLengthInteger.MaxValue,
+            peerBidirectionalReceiveLimit: 8);
+
+        ulong streamId = 1;
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x09, streamId, []),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(0UL, snapshot.FinalSize);
+        Assert.Equal(QuicStreamReceiveState.DataRead, snapshot.ReceiveState);
+        Assert.Equal(0UL, snapshot.AccountedBytesReceived);
+        Assert.Equal(0UL, snapshot.UniqueBytesReceived);
+        Assert.Equal(0UL, state.ConnectionAccountedBytesReceived);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData()

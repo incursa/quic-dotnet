@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T02:08:55.4065622-06:00",
+  "generated_at": "2026-05-07T02:15:37.5375728-06:00",
   "repo_root": "C:\\src\\incursa\\quic-dotnet.worktrees\\streams-runtime",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T02:08:55.4034227-06:00",
+    "generated_at": "2026-05-07T02:15:37.5342494-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 50,
       "covered_but_proof_too_broad": 45,
-      "partially_covered": 119,
-      "trace_clean": 1345,
+      "partially_covered": 118,
+      "trace_clean": 1346,
       "uncovered_blocked": 69,
       "uncovered_unblocked": 143
     },
     "by_work_queue_tag": {
       "blocked": 69,
-      "clean": 1345,
+      "clean": 1346,
       "metadata_only": 50,
-      "new_tests_needed": 371,
+      "new_tests_needed": 370,
       "restructure_needed": 64
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 50,
           "covered_but_proof_too_broad": 45,
-          "partially_covered": 119,
-          "trace_clean": 1032,
+          "partially_covered": 118,
+          "trace_clean": 1033,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 143
         }
@@ -176551,30 +176551,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 2,
-          "edge": 0,
+          "positive": 2,
+          "negative": 4,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -176607,13 +176610,57 @@
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S4P5_0007",
+          "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize",
+          "method": "TryReceiveResetStreamFrame_AllowsAResetStreamThatKeepsTheSameFinalSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
           "class": "REQ_QUIC_RFC9000_S4P5_0007",
           "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
           "method": "TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
-          "line": 94,
+          "line": 119,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S4P5_0007",
+          "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "method": "TryReceiveResetStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "line": 119,
           "kinds": [
             "negative"
           ],
@@ -176633,9 +176680,75 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
           "class": "REQ_QUIC_RFC9000_S4P5_0007",
+          "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary",
+          "method": "TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary",
+          "line": 59,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S4P5_0007",
+          "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary",
+          "method": "TryReceiveStreamFrame_AllowsAZeroLengthFinalSizeAtTheBoundary",
+          "line": 59,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S4P5_0007",
           "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
           "method": "TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
-          "line": 59,
+          "line": 84,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S4P5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S4P5-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs::TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S4P5_0007",
+          "member": "REQ_QUIC_RFC9000_S4P5_0007.TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "method": "TryReceiveStreamFrame_RejectsFinalSizeRegressionAfterHigherOffsetData",
+          "line": 84,
           "kinds": [
             "negative"
           ],
