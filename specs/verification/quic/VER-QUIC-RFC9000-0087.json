@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0087",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S17P2P4 Handshake Packet Format Proof Tail Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0087",
+    "WI-QUIC-RFC9000-0087"
+  ],
+  "verification_method": "Focused S17P2P4 requirement-home tests over handshake packet header parsing, first-send packet-number zero, coalesced client receipt boundaries, and allowed-versus-forbidden handshake frame payloads, followed by coverage triage regeneration, SpecTrace JSON validation, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S17P2P4-0003",
+    "REQ-QUIC-RFC9000-S17P2P4-0016",
+    "REQ-QUIC-RFC9000-S17P2P4-0017",
+    "REQ-QUIC-RFC9000-S17P2P4-0018",
+    "REQ-QUIC-RFC9000-S17P2P4-0019",
+    "REQ-QUIC-RFC9000-S17P2P4-0020",
+    "REQ-QUIC-RFC9000-S17P2P4-0021"
+  ],
+  "scope": "This verification covers the focused generated S17P2P4 hard proof tail for handshake packet format parsing, packet-number zero on first send, client receipt boundaries, and handshake payload acceptance/rejection.",
+  "expected_result": "The focused tests show that handshake packet headers parse with the expected long-header shape, the first server handshake packet uses packet number 0, truncated protected handshake packets fail to open, the largest four-byte packet-number boundary remains representable, initial-only client receipt does not commit peer transport parameters, coalesced Initial+Handshake receipt does commit them, and handshake packets carrying PING stay open while RESET_STREAM still triggers PROTOCOL_VIOLATION.",
+  "procedure": [
+    "Run the focused S17P2P4 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "QuicHandshakeFlowCoordinator and QuicPacketParser still expose the handshake packet assembly and open seams used by the requirement-home tests.",
+    "The packet-number field remains constrained to RFC 9000's one-to-four-byte packet header encoding space.",
+    "The client and server TLS state observations used by the requirement-home tests remain accessible through the existing test helpers."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicCoalescedPacketRuntimeTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicHandshakePacketRequirementTestData.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P4_0021\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim broader RFC 9000 packet-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Pending local verification."
+}

@@ -29,6 +29,29 @@ public sealed class REQ_QUIC_RFC9000_S17P2P4_0021
         Assert.Null(runtime.TerminalState.Value.Close.TriggeringFrameType);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryHandleHandshakePacketReceived_ClosesTheConnectionWithProtocolViolationWhenItReceivesAPingFrame()
+    {
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+            QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+        using QuicConnectionRuntime _clientRuntime = scenario.ClientRuntime;
+        using QuicConnectionRuntime runtime = scenario.ServerRuntime;
+
+        QuicConnectionTransitionResult result = ReceiveHandshakePacket(
+            runtime,
+            QuicFrameTestData.BuildPingFrame(),
+            observedAtTicks: 22);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.NotNull(runtime.TerminalState);
+        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState!.Value.Origin);
+        Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState.Value.Close.TransportErrorCode);
+        Assert.Null(runtime.TerminalState.Value.Close.TriggeringFrameType);
+    }
+
     private static QuicConnectionTransitionResult ReceiveHandshakePacket(
         QuicConnectionRuntime runtime,
         ReadOnlySpan<byte> prefixFramePayload,

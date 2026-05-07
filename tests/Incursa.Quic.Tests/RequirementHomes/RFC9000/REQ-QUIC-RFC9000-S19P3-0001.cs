@@ -24,8 +24,6 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0020">MUST contain additional ranges of packets that are alternately not acknowledged (Gap) and acknowledged (ACK Range); see Section 19.3.1.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0010">ACK frames MUST carry the most recent set of acknowledgments and the acknowledgment delay from the largest acknowledged packet.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0001">When an ACK frame is sent, one or more ranges of acknowledged packets MUST be included.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0002">ACK frames SHOULD always acknowledge the most recently received packets.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0012">A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P5-0002">The endpoint MUST encode this acknowledgment delay in the ACK Delay field of an ACK frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0001">Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0002">ACK Ranges MAY be repeated.</workbench-requirement>
@@ -64,8 +62,6 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
     [Requirement("REQ-QUIC-RFC9000-S19P3-0020")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0012")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0002")]

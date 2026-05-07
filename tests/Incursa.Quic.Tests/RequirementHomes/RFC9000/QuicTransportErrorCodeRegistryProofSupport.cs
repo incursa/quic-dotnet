@@ -22,4 +22,17 @@ internal static class QuicTransportErrorCodeRegistryProofSupport
         (0x0FUL, nameof(QuicTransportErrorCode.AeadLimitReached), "The endpoint reached the AEAD usage limit."),
         (0x10UL, nameof(QuicTransportErrorCode.NoViablePath), "The endpoint has no viable path to its peer."),
     ];
+
+    internal static (ulong WireValue, string ExpectedName, string ExpectedDescription) GetDefinedTransportErrorCode(string expectedName)
+    {
+        foreach ((ulong wireValue, string name, string expectedDescription) in DefinedTransportErrorCodes)
+        {
+            if (name == expectedName)
+            {
+                return (wireValue, name, expectedDescription);
+            }
+        }
+
+        throw new InvalidOperationException($"No defined transport error code named '{expectedName}' was found.");
+    }
 }
