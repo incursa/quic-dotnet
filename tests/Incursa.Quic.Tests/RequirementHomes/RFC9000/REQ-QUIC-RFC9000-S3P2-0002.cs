@@ -65,4 +65,45 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0002
         Assert.Equal(4UL, snapshot.ReadOffset);
         Assert.Equal(0, snapshot.BufferedReadableBytes);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P2-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReadStreamData_DoesNotMarkDeliveryCompleteAfterPartialRead()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 32,
+            peerBidirectionalReceiveLimit: 8);
+
+        ulong streamId = 5;
+        byte[] packet = QuicStreamTestData.BuildStreamFrame(0x0F, streamId, [0x11, 0x22, 0x33, 0x44]);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(packet, out QuicStreamFrame frame));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Span<byte> destination = stackalloc byte[2];
+        Assert.True(state.TryReadStreamData(
+            streamId,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out QuicMaxDataFrame maxDataFrame,
+            out QuicMaxStreamDataFrame maxStreamDataFrame,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(2, bytesWritten);
+        Assert.False(completed);
+        Assert.True(new byte[] { 0x11, 0x22 }.AsSpan().SequenceEqual(destination));
+        Assert.Equal(34UL, maxDataFrame.MaximumData);
+        Assert.Equal(streamId, maxStreamDataFrame.StreamId);
+        Assert.Equal(10UL, maxStreamDataFrame.MaximumStreamData);
+
+        Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.DataRecvd, snapshot.ReceiveState);
+        Assert.Equal(2UL, snapshot.ReadOffset);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
+    }
 }

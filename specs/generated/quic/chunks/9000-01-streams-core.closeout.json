@@ -106,14 +106,13 @@
     },
     "S2P2": {
       "implemented_and_tested": [
-        "REQ-QUIC-RFC9000-S2P2-0001"
+        "REQ-QUIC-RFC9000-S2P2-0001",
+        "REQ-QUIC-RFC9000-S2P2-0002"
       ],
       "tested_but_implementation_mapping_unclear": [
         "REQ-QUIC-RFC9000-S2P2-0009"
       ],
-      "partially_implemented": [
-        "REQ-QUIC-RFC9000-S2P2-0002"
-      ],
+      "partially_implemented": [],
       "not_implemented": [
         "REQ-QUIC-RFC9000-S2P2-0003",
         "REQ-QUIC-RFC9000-S2P2-0004",

@@ -51,7 +51,7 @@
 ### S2P2
 
 - `REQ-QUIC-RFC9000-S2P2-0001` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P2-0002` - partially implemented
+- `REQ-QUIC-RFC9000-S2P2-0002` - implemented and tested
 - `REQ-QUIC-RFC9000-S2P2-0003` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0004` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0005` - not implemented

@@ -72,4 +72,39 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0013
             out errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P1-0013")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryAcknowledgeSendCompletion_EntersDataRecvdAtTheMaximumFinalSize()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localUnidirectionalSendLimit: QuicVariableLengthInteger.MaxValue,
+            peerUnidirectionalStreamLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(false, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: QuicVariableLengthInteger.MaxValue,
+            length: 0,
+            fin: true,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryAcknowledgeSendCompletion(streamId.Value));
+
+        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamSendState.DataRecvd, snapshot.SendState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, snapshot.FinalSize);
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, snapshot.SendLimit);
+        Assert.Equal(0UL, snapshot.UniqueBytesSent);
+    }
 }
