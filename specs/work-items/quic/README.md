@@ -97,6 +97,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0084.json`](WI-QUIC-RFC9000-0084.json): canonical RFC 9000 packet number encoding completion work-item source
 - [`WI-QUIC-RFC9000-0085.json`](WI-QUIC-RFC9000-0085.json): canonical RFC 9000 Retry token source binding and lifetime work-item source
 - [`WI-QUIC-RFC9000-0086.json`](WI-QUIC-RFC9000-0086.json): canonical RFC 9000 HANDSHAKE_DONE proof tail work-item source
+- [`WI-QUIC-RFC9000-0087.json`](WI-QUIC-RFC9000-0087.json): canonical RFC 9000 S17P2P4 handshake packet format proof tail work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source
