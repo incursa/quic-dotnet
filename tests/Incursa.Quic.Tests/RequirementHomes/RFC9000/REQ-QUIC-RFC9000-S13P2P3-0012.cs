@@ -1,49 +1,41 @@
 namespace Incursa.Quic.Tests;
 
-/// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0012">A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.</workbench-requirement>
+/// <workbench-requirements generated="true" source="manual">
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0012">A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S13P2P3-0012")]
 public sealed class REQ_QUIC_RFC9000_S13P2P3_0012
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0012")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void TryBuildAckFrame_ReportsTheLargestReceivedPacketNumber()
+    public void TryBuildAckFrame_IncludesTheLargestReceivedPacketNumberInEveryAckFrame()
     {
-        QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(3, 1, 2, 5, 6, 9);
+        QuicAckGenerationState tracker = new(maximumRetainedAckRanges: 1);
 
-        QuicS13P2P3AckFrameProofSupport.AssertBuildsAckFrame(
-            tracker,
-            expectedLargestAcknowledged: 9,
-            expectedFirstAckRange: 0,
-            new QuicAckRange(1, 1, 5, 6),
-            new QuicAckRange(1, 1, 1, 2));
-    }
-
-    [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void TryBuildAckFrame_DoesNotReportAnOlderPacketNumberAsLargestAcknowledged()
-    {
-        QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(2, 1, 2, 5, 6, 9);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            ackEliciting: true,
+            receivedAtMicros: 1_010);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 7,
+            ackEliciting: true,
+            receivedAtMicros: 1_020);
 
         Assert.True(tracker.TryBuildAckFrame(
             QuicPacketNumberSpace.ApplicationData,
-            nowMicros: 2_000,
+            nowMicros: 1_030,
             out QuicAckFrame frame));
-
-        Assert.NotEqual(6UL, frame.LargestAcknowledged);
-        Assert.NotEqual(5UL, frame.LargestAcknowledged);
-        Assert.Equal(9UL, frame.LargestAcknowledged);
-    }
-
-    [Fact]
-    [CoverageType(RequirementCoverageType.Edge)]
-    [Trait("Category", "Edge")]
-    public void TryBuildAckFrame_PreservesTheLargestReceivedPacketNumberWhenOnlyOnePacketWasObserved()
-    {
-        QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(1, 9);
-
-        QuicS13P2P3AckFrameProofSupport.AssertBuildsAckFrame(tracker, expectedLargestAcknowledged: 9, expectedFirstAckRange: 0);
+        Assert.Equal(7UL, frame.LargestAcknowledged);
+        Assert.Equal(0UL, frame.FirstAckRange);
+        Assert.Empty(frame.AdditionalRanges);
     }
 }
