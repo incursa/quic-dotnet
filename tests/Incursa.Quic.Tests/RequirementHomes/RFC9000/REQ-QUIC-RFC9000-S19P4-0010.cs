@@ -5,6 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0010
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveResetStreamFrame_StoresApplicationErrorReason()
@@ -24,6 +25,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0010
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveResetStreamFrame_DoesNotStoreRejectedApplicationErrorReason()
@@ -47,6 +49,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0010
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveResetStreamFrame_StoresMaximumApplicationErrorReason()

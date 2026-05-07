@@ -6,6 +6,7 @@ public sealed class REQ_QUIC_RFC9000_S19P6_0011
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S20P1-0004")]
     public void TryAddFrame_ReportsCryptoBufferExceededForFramesBeyondTheStreamLimit()
     {
         QuicCryptoBuffer buffer = new();
