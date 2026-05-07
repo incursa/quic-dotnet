@@ -2421,6 +2421,11 @@
         "edge": "required",
         "fuzz": "deferred"
       },
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_EntersResetRecvdWhenResetStreamArrives",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_EntersResetRecvdAtTheMaximumFinalSizeInSizeKnownState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_RejectsMismatchedFinalSizeWhenTheStreamIsAlreadySizeKnown"
+      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -2434,6 +2439,11 @@
         "upstream_refs": [
           "RFC 9000 §3.2 RFC9000-S3.2-B13-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_EntersResetRecvdWhenResetStreamArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_EntersResetRecvdAtTheMaximumFinalSizeInSizeKnownState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs::TryReceiveResetStreamFrame_RejectsMismatchedFinalSizeWhenTheStreamIsAlreadySizeKnown"
         ]
       }
     },

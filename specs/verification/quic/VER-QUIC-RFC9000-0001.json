@@ -1644,6 +1644,10 @@
     {
       "heading": "2026-05-05 S19P11 MAX_STREAMS Runtime And Cumulative-Limit Topoff",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P11_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S19P11_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P11_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S19P11_0013\"` passed 20/20.\n- `REQ-QUIC-RFC9000-S19P11-0001` and `REQ-QUIC-RFC9000-S19P11-0002` now have direct positive, negative, and edge proof for the fixed MAX_STREAMS type range and Maximum Streams varint field shape.\n- `REQ-QUIC-RFC9000-S19P11-0006` now has direct parser and protected Application Data proof that values above the 2^60 stream-ID encoding limit close with FRAME_ENCODING_ERROR, while values at the limit are accepted without overflowing stream-capacity notifications.\n- `REQ-QUIC-RFC9000-S19P11-0013` now has direct stream-state proof that closed streams remain part of the cumulative advertised MAX_STREAMS limit.\n- This remains bounded to MAX_STREAMS frame parsing, protected Application Data close behavior, stream-capacity increment saturation, and stream-state cumulative counting; it does not claim broader stream-management completion, retransmission policy, or interop readiness."
+    },
+    {
+      "heading": "2026-05-07 S3P2 Reset Recvd Size-Known Topoff",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0021\"` passed 3/3.\n- `REQ-QUIC-RFC9000-S3P2-0021` now has direct positive proof that RESET_STREAM in Recv transitions the receiving part to Reset Recvd, edge proof that the same transition holds at the maximum representable final size in Size Known, and negative proof that a mismatched final size in the Size Known path is rejected and leaves the stream in Size Known.\n- This remains bounded to receive-side stream-state reset handling and does not claim broader receive interruption policy beyond the reset/discard seam."
     }
   ],
   "domain": "quic"

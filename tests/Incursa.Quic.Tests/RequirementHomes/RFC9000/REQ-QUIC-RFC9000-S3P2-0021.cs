@@ -40,4 +40,80 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0021
             out errorCode));
         Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryReceiveResetStreamFrame_EntersResetRecvdAtTheMaximumFinalSizeInSizeKnownState()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: QuicVariableLengthInteger.MaxValue,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(
+                0x0F,
+                streamId: 1,
+                streamData: [0x33, 0x44],
+                offset: QuicVariableLengthInteger.MaxValue - 2),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot preResetSnapshot));
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, preResetSnapshot.ReceiveState);
+        Assert.True(preResetSnapshot.HasFinalSize);
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, preResetSnapshot.FinalSize);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(
+                streamId: 1,
+                applicationProtocolErrorCode: 0x99,
+                finalSize: QuicVariableLengthInteger.MaxValue),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, state.ConnectionAccountedBytesReceived);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(QuicVariableLengthInteger.MaxValue, snapshot.FinalSize);
+        Assert.Equal(0, snapshot.BufferedReadableBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveResetStreamFrame_RejectsMismatchedFinalSizeWhenTheStreamIsAlreadySizeKnown()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0F, streamId: 1, streamData: [0x33, 0x44], offset: 2),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot preResetSnapshot));
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, preResetSnapshot.ReceiveState);
+        Assert.True(preResetSnapshot.HasFinalSize);
+        Assert.Equal(4UL, preResetSnapshot.FinalSize);
+
+        Assert.False(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 1, applicationProtocolErrorCode: 0x99, finalSize: 5),
+            out QuicMaxDataFrame maxDataFrame,
+            out errorCode));
+        Assert.Equal(default, maxDataFrame);
+        Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(QuicStreamReceiveState.SizeKnown, snapshot.ReceiveState);
+        Assert.True(snapshot.HasFinalSize);
+        Assert.Equal(4UL, snapshot.FinalSize);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
+    }
 }
