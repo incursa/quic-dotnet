@@ -40065,6 +40065,11 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B11-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WithNonZeroPeerConnectionId_EmitsRetireConnectionIdFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionId_DoesNotEmitRetireConnectionIdFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0010.cs::NewConnectionIdFrame_WhenPeerRequestedZeroLengthConnectionIdAndRetirePriorToIsZero_DoesNotEmitRetireConnectionIdFrame"
         ]
       }
     },
