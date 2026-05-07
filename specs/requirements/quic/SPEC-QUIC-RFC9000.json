@@ -19223,7 +19223,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialPacketsStayBoundToInitialAcknowledgments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::HandshakeAcksDoNotAcknowledgeInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0004.cs::InitialAndHandshakeSpacesCanUsePacketNumberZeroIndependently"
         ]
       }
     },
@@ -19252,7 +19254,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakePacketsStayBoundToHandshakeAcknowledgments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::InitialAcksDoNotAcknowledgeHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0005.cs::HandshakeAndInitialSpacesCanUsePacketNumberZeroIndependently"
         ]
       }
     },

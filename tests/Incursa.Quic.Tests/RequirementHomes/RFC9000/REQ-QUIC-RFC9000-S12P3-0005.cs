@@ -79,4 +79,84 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0005
             packetNumber,
             sentAtMicros: 1_000));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void InitialAcksDoNotAcknowledgeHandshakePackets()
+    {
+        QuicSenderFlowController sender = new();
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 0,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+
+        QuicAckFrame ackFrame = new()
+        {
+            LargestAcknowledged = 0,
+            AckDelay = 0,
+            FirstAckRange = 0,
+            AdditionalRanges = [],
+        };
+
+        Assert.False(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Initial,
+            ackFrame,
+            ackReceivedAtMicros: 2_000,
+            pathValidated: true));
+        Assert.True(sender.TryRegisterLoss(
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 0,
+            sentAtMicros: 1_000));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void HandshakeAndInitialSpacesCanUsePacketNumberZeroIndependently()
+    {
+        QuicSenderFlowController sender = new();
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 0,
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            ackEliciting: true);
+        sender.RecordPacketSent(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 0,
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            ackEliciting: true);
+
+        QuicAckFrame ackFrame = new()
+        {
+            LargestAcknowledged = 0,
+            AckDelay = 0,
+            FirstAckRange = 0,
+            AdditionalRanges = [],
+        };
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Handshake,
+            ackFrame,
+            ackReceivedAtMicros: 3_000,
+            pathValidated: true));
+        Assert.False(sender.TryRegisterLoss(
+            QuicPacketNumberSpace.Handshake,
+            packetNumber: 0,
+            sentAtMicros: 1_000));
+
+        Assert.True(sender.TryProcessAckFrame(
+            QuicPacketNumberSpace.Initial,
+            ackFrame,
+            ackReceivedAtMicros: 4_000,
+            pathValidated: true));
+        Assert.False(sender.TryRegisterLoss(
+            QuicPacketNumberSpace.Initial,
+            packetNumber: 0,
+            sentAtMicros: 2_000));
+    }
 }
