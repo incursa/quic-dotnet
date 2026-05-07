@@ -31,4 +31,21 @@ public sealed class REQ_QUIC_RFC9000_S18P1_0001
         Assert.Null(parsed.StatelessResetToken);
         Assert.Null(parsed.PreferredAddress);
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P1-0001">Transport parameters with an identifier of the form 31 * N + 27 for integer values of N MUST be reserved to exercise the requirement that unknown transport parameters be ignored.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters()
+    {
+        byte[] greaseTuple = QuicTransportParameterTestData.BuildTransportParameterTuple(58, [0xCA, 0xFE]);
+        byte[] block = QuicTransportParameterTestData.BuildTransportParameterBlock(greaseTuple, greaseTuple);
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            block,
+            QuicTransportParameterRole.Client,
+            out _));
+    }
 }

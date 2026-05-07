@@ -32202,9 +32202,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters"
         ]
       }
     },
