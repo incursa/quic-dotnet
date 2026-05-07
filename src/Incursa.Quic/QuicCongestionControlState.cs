@@ -854,23 +854,17 @@ internal sealed class QuicSenderFlowController
         bool updated = false;
         ulong largestAcknowledgedPacketSentAtMicros = 0;
 
-        List<ulong> acknowledgedPacketNumbers = EnumerateAcknowledgedPacketNumbers(ackFrame);
         if (TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
         {
-            HashSet<ulong> deduplicatedPacketNumbers = [];
-
-            foreach (ulong packetNumber in acknowledgedPacketNumbers)
+            List<ulong>? acknowledgedSentPacketNumbers = null;
+            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
             {
-                if (!deduplicatedPacketNumbers.Add(packetNumber))
+                if (!AckFrameAcknowledgesPacketNumber(ackFrame, sentPacketEntry.Key))
                 {
                     continue;
                 }
 
-                if (!sentPackets.TryGetValue(packetNumber, out SentPacketState sentPacket))
-                {
-                    continue;
-                }
-
+                SentPacketState sentPacket = sentPacketEntry.Value;
                 updated = CongestionControlState.TryRegisterAcknowledgedPacket(
                     sentPacket.SentBytes,
                     sentPacket.SentAtMicros,
@@ -879,15 +873,20 @@ internal sealed class QuicSenderFlowController
                     flowControlLimited: flowControlLimited,
                     pacingLimited: pacingLimited) || updated;
 
-                sentPackets.Remove(packetNumber);
+                (acknowledgedSentPacketNumbers ??= []).Add(sentPacketEntry.Key);
                 largestAcknowledgedPacketSentAtMicros = Math.Max(largestAcknowledgedPacketSentAtMicros, sentPacket.SentAtMicros);
+            }
+
+            if (acknowledgedSentPacketNumbers is not null)
+            {
+                foreach (ulong packetNumber in acknowledgedSentPacketNumbers)
+                {
+                    sentPackets.Remove(packetNumber);
+                }
             }
         }
 
-        foreach (ulong packetNumber in acknowledgedPacketNumbers)
-        {
-            updated = AckGenerationState.TryRetireAcknowledgedAckRanges(packetNumberSpace, packetNumber) || updated;
-        }
+        updated = AckGenerationState.TryRetireAcknowledgedAckRanges(packetNumberSpace, ackFrame) || updated;
 
         if (ackFrame.EcnCounts.HasValue)
         {
@@ -1148,39 +1147,28 @@ internal sealed class QuicSenderFlowController
         AckGenerationState.MarkAckFrameSent(packetNumberSpace, packetNumber, ackFrame, sentAtMicros, ackOnlyPacket);
     }
 
-    private static List<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
+    private static bool AckFrameAcknowledgesPacketNumber(QuicAckFrame ackFrame, ulong packetNumber)
     {
-        List<ulong> acknowledgedPackets = [];
-
-        if (ackFrame.LargestAcknowledged < ackFrame.FirstAckRange)
+        if (ackFrame.FirstAckRange > ackFrame.LargestAcknowledged)
         {
-            return acknowledgedPackets;
+            return false;
         }
 
-        ulong largestAcknowledged = ackFrame.LargestAcknowledged;
-        ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
-        for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
+        ulong firstRangeSmallestAcknowledged = ackFrame.LargestAcknowledged - ackFrame.FirstAckRange;
+        if (packetNumber >= firstRangeSmallestAcknowledged && packetNumber <= ackFrame.LargestAcknowledged)
         {
-            acknowledgedPackets.Add(packetNumber);
-            if (packetNumber == largestAcknowledged)
+            return true;
+        }
+
+        foreach (QuicAckRange range in ackFrame.AdditionalRanges ?? [])
+        {
+            if (packetNumber >= range.SmallestAcknowledged && packetNumber <= range.LargestAcknowledged)
             {
-                break;
+                return true;
             }
         }
 
-        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
-        {
-            for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
-            {
-                acknowledgedPackets.Add(packetNumber);
-                if (packetNumber == range.LargestAcknowledged)
-                {
-                    break;
-                }
-            }
-        }
-
-        return acknowledgedPackets;
+        return false;
     }
 
     private SortedDictionary<ulong, SentPacketState> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)

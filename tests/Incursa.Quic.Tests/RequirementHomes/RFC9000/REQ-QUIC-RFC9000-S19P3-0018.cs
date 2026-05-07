@@ -43,6 +43,21 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0018
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0018")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseAckFrame_RejectsDeclaredAckRangeCountLargerThanRemainingPayload()
+    {
+        QuicS19P3AckFrameTestSupport.AssertRejects(
+            QuicS19P3AckFrameTestSupport.BuildPayload(
+                [0x02],
+                QuicS19P3AckFrameTestSupport.Varint(10),
+                QuicS19P3AckFrameTestSupport.Varint(0),
+                QuicS19P3AckFrameTestSupport.Varint(10_000),
+                QuicS19P3AckFrameTestSupport.Varint(0)));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P3-0018")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryParseAckFrame_AckRangeCountZeroCarriesNoAdditionalRanges()
