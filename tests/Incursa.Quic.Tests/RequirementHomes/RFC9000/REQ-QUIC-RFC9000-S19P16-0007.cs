@@ -62,4 +62,34 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0007
         Assert.True(result.StateChanged);
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0007">Receipt of a RETIRE_CONNECTION_ID frame containing a sequence number greater than any previously sent to the peer MUST be treated as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S19P16-0007")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    public void RetireConnectionIdFrame_RejectsTheMaximumSequenceBoundary()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        byte[] statelessResetToken = QuicS17P2P3TestSupport.CreateSequentialBytes(0x32, QuicStatelessReset.StatelessResetTokenLength);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionConnectionIdIssuedEvent(
+                ObservedAtTicks: 0,
+                ConnectionId: ulong.MaxValue - 1,
+                StatelessResetToken: statelessResetToken),
+            nowTicks: 0).StateChanged);
+
+        byte[] retirePayload = QuicFrameTestData.BuildRetireConnectionIdFrame(new QuicRetireConnectionIdFrame(ulong.MaxValue));
+        QuicConnectionTransitionResult result = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+            runtime,
+            runtime.ActivePath!.Value.Identity,
+            QuicS17P2P3TestSupport.PacketConnectionId,
+            retirePayload,
+            observedAtTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+    }
 }

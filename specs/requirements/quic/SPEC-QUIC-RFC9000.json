@@ -39990,6 +39990,11 @@
         "upstream_refs": [
           "RFC 9000 §19.16 RFC9000-S19.16-B9-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.16"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_AcceptsPreviouslyIssuedSequences",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_RejectsSequencesGreaterThanTheHighestIssuedValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P16-0007.cs::RetireConnectionIdFrame_RejectsTheMaximumSequenceBoundary"
         ]
       }
     },
