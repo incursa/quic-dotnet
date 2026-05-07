@@ -104,6 +104,36 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0002
             out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedInitialPacket_UsesFourByteBoundaryPacketNumberBeforeAnyAcknowledgment()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P1TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P1TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateInitialCoordinator();
+        byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x60, 20);
+
+        QuicS17P1TestSupport.SetNextHandshakePacketNumber(coordinator, uint.MaxValue);
+
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal(uint.MaxValue, packetNumber);
+        AssertOpenedInitialPacketNumber(protectedPacket, serverProtection, packetNumber);
+    }
+
     private static void AssertOpenedInitialPacketNumber(
         ReadOnlySpan<byte> protectedPacket,
         QuicInitialPacketProtection protection,

@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS17P1TestSupport
@@ -56,5 +58,52 @@ internal static class QuicS17P1TestSupport
         }
 
         return packetNumber;
+    }
+
+    internal static void SetNextHandshakePacketNumber(
+        QuicHandshakeFlowCoordinator coordinator,
+        ulong packetNumber)
+    {
+        SetPrivatePacketNumber(coordinator, "nextPacketNumber", packetNumber);
+    }
+
+    internal static void AssertOpenedApplicationPacketNumber(
+        QuicHandshakeFlowCoordinator coordinator,
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber)
+    {
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out _));
+        Assert.True(QuicPacketParser.TryParseShortHeader(openedPacket, out QuicShortHeaderPacket header));
+        Assert.Equal(4, header.PacketNumberLengthBits + 1);
+        Assert.Equal(expectedPacketNumber, ReadPacketNumber(openedPacket.AsSpan(payloadOffset - 4, 4)));
+    }
+
+    internal static byte[] RemoveByte(ReadOnlySpan<byte> value, int offset)
+    {
+        Assert.InRange(offset, 0, value.Length - 1);
+
+        byte[] result = new byte[value.Length - 1];
+        value[..offset].CopyTo(result);
+        value[(offset + 1)..].CopyTo(result.AsSpan(offset));
+        return result;
+    }
+
+    private static void SetPrivatePacketNumber(
+        QuicHandshakeFlowCoordinator coordinator,
+        string fieldName,
+        ulong packetNumber)
+    {
+        FieldInfo? field = typeof(QuicHandshakeFlowCoordinator).GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        Assert.NotNull(field);
+        field.SetValue(coordinator, packetNumber);
     }
 }

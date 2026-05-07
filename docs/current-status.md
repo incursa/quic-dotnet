@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S17P4 spin-bit per-path state tail,
+Last verified: 2026-05-06 for the S17P1 packet-number encoding completion,
+S17P4 spin-bit per-path state tail,
 S9P6P1 preferred-address conveyance and
 per-family selection tail, S9P6P1 preferred-address validation-failure
 policy, S9P6P1 preferred-address handshake-confirmed transition, S4P6
@@ -28,6 +29,24 @@ next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-06 Restart Note
+
+Follow-on S17P1 packet-number encoding completion on 2026-05-06 closes
+`REQ-QUIC-RFC9000-S17P1-0002`, `REQ-QUIC-RFC9000-S17P1-0003`,
+and `REQ-QUIC-RFC9000-S17P1-0004` under
+`ARC-QUIC-RFC9000-0084`, `WI-QUIC-RFC9000-0084`, and
+`VER-QUIC-RFC9000-0084`. The proof covers protected packet behavior for
+full four-byte Initial and Handshake packet numbers before acknowledgment,
+the maximum four-byte Initial packet-number boundary without truncation, the
+largest post-ack Application Data packet-number difference that remains safe
+with a four-byte field, rejecting a late packet that is missing a
+packet-number byte, and recovering out-of-order Application Data packets at
+the four-byte boundary. Regenerated coverage triage marks all three
+requirements as `trace_clean` and reports 1,323 of 1,771 QUIC requirements
+trace-clean overall, leaving 448 non-clean. `S17P1` has no remaining
+non-clean requirements in generated triage. This closure does not claim
+adaptive packet-number length selection, full packet-number reconstruction for
+arbitrary reordered receive windows, hosted interop readiness, or closure of
+deferred fuzz obligations.
 
 Follow-on S17P4 spin-bit per-path state closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S17P4-0008`, `REQ-QUIC-RFC9000-S17P4-0009`,

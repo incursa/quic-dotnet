@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0084",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S17P1 Packet Number Encoding Completion Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0084",
+    "WI-QUIC-RFC9000-0084"
+  ],
+  "verification_method": "Focused S17P1 requirement-home tests over protected Initial, Handshake, and Application Data packet-number encoding and open paths, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S17P1-0002",
+    "REQ-QUIC-RFC9000-S17P1-0003",
+    "REQ-QUIC-RFC9000-S17P1-0004"
+  ],
+  "scope": "This verification covers the focused generated S17P1 packet-number encoding proof tail for full-width pre-ack encoding, post-ack range sufficiency, and out-of-order recovery with four-byte packet numbers.",
+  "expected_result": "The focused tests show that Initial and Handshake packet builders use four-byte packet numbers before any acknowledgment, the Initial builder reaches the maximum four-byte boundary without truncation, the Application Data builder uses a four-byte packet number at the largest post-ack safe range, late packets missing a packet-number byte fail to open, and out-of-order packets at the four-byte boundary can still be opened and recovered.",
+  "procedure": [
+    "Run the focused S17P1 requirement-home filter.",
+    "Run a Release build.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON.",
+    "Run the full Release test suite without rebuilding.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The protected packet construction and open seams remain under ARC-QUIC-RFC9000-0001.",
+    "The packet-protection material test support can create deterministic Initial, Handshake, and OneRtt protection material.",
+    "The packet-number field remains constrained to RFC 9000's one-to-four-byte packet header encoding space."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0004.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P1_\"",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim adaptive packet-number length selection, full packet-number reconstruction for arbitrary reordered receive windows, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ],
+  "status_summary": "Local verification on 2026-05-06 passed: focused S17P1 requirement-home filter 19/19; Release build 0 warnings/errors; regenerated QUIC coverage triage 1,323/1,771 trace-clean; SpecTrace core validation 496 artifacts; full Release no-build suite 4,589/4,589; git diff --check exited 0 with only CRLF normalization warnings for generated/spec files."
+}

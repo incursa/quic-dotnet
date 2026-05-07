@@ -103,6 +103,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0081.json`](ARC-QUIC-RFC9000-0081.json): canonical RFC 9000 preferred address validation failure policy design source
 - [`ARC-QUIC-RFC9000-0082.json`](ARC-QUIC-RFC9000-0082.json): canonical RFC 9000 preferred address conveyance and per-family selection design source
 - [`ARC-QUIC-RFC9000-0083.json`](ARC-QUIC-RFC9000-0083.json): canonical RFC 9000 spin bit per-path state design source
+- [`ARC-QUIC-RFC9000-0084.json`](ARC-QUIC-RFC9000-0084.json): canonical RFC 9000 packet number encoding completion design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

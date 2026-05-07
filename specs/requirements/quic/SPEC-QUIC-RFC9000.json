@@ -25848,17 +25848,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0084"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0084"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0084"
         ],
         "upstream_refs": [
           "RFC 9000 §17.1 RFC9000-S17.1-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedInitialPacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedHandshakePacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryOpenInitialPacket_RejectsTruncatedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedInitialPacket_UsesFourByteBoundaryPacketNumberBeforeAnyAcknowledgment"
         ]
       }
     },
@@ -25874,17 +25883,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0084"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0084"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0084"
         ],
         "upstream_refs": [
           "RFC 9000 §17.1 RFC9000-S17.1-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs::TryBuildProtectedApplicationDataPacket_UsesFourBytePacketNumbersAfterAnAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs::TryOpenProtectedApplicationDataPacket_RejectsTruncatedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs::TryBuildProtectedApplicationDataPacket_UsesLargestFourByteSafeRangeAfterAcknowledgment"
         ]
       }
     },
@@ -25900,17 +25917,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0084"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0084"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0084"
         ],
         "upstream_refs": [
           "RFC 9000 §17.1 RFC9000-S17.1-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0004.cs::TryBuildProtectedApplicationDataPacket_AllowsPacketNumberRecoveryWhenPacketsArriveOutOfOrder",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0004.cs::TryOpenProtectedApplicationDataPacket_RejectsLatePacketWithMissingPacketNumberByte",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0004.cs::TryBuildProtectedApplicationDataPacket_RecoversFourByteBoundaryPacketNumbersOutOfOrder"
         ]
       }
     },

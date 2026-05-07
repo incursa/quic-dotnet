@@ -54,4 +54,87 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0004
         Assert.Equal(0UL, firstPacketNumber);
         Assert.Equal(1UL, secondPacketNumber);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryOpenProtectedApplicationDataPacket_RejectsLatePacketWithMissingPacketNumberByte()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+        byte[] payload = QuicS12P3TestSupport.CreatePingPayload();
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            applicationMaterial,
+            out _,
+            out byte[] firstProtectedPacket));
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            applicationMaterial,
+            out _,
+            out byte[] secondProtectedPacket));
+
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            secondProtectedPacket,
+            applicationMaterial,
+            out _,
+            out _,
+            out _));
+
+        int packetNumberOffset = 1 + QuicS17P1TestSupport.ApplicationDestinationConnectionId.Length;
+        byte[] firstPacketMissingPacketNumberByte = QuicS17P1TestSupport.RemoveByte(
+            firstProtectedPacket,
+            packetNumberOffset);
+
+        Assert.False(coordinator.TryOpenProtectedApplicationDataPacket(
+            firstPacketMissingPacketNumberByte,
+            applicationMaterial,
+            out _,
+            out _,
+            out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedApplicationDataPacket_RecoversFourByteBoundaryPacketNumbersOutOfOrder()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+        byte[] payload = QuicS12P3TestSupport.CreatePingPayload();
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            payload,
+            minimumPacketNumberExclusive: uint.MaxValue - 2UL,
+            applicationMaterial,
+            keyPhase: false,
+            out ulong firstPacketNumber,
+            out byte[] firstProtectedPacket));
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            applicationMaterial,
+            out ulong secondPacketNumber,
+            out byte[] secondProtectedPacket));
+
+        Assert.Equal(uint.MaxValue - 1UL, firstPacketNumber);
+        Assert.Equal(uint.MaxValue, secondPacketNumber);
+
+        QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+            coordinator,
+            secondProtectedPacket,
+            applicationMaterial,
+            secondPacketNumber);
+        QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+            coordinator,
+            firstProtectedPacket,
+            applicationMaterial,
+            firstPacketNumber);
+    }
 }

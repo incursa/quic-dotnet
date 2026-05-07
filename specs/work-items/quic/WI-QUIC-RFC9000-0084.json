@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0084",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S17P1 Packet Number Encoding Completion Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0084",
+    "VER-QUIC-RFC9000-0084"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S17P1-0002",
+    "REQ-QUIC-RFC9000-S17P1-0003",
+    "REQ-QUIC-RFC9000-S17P1-0004"
+  ],
+  "summary": "Close the focused S17P1 packet-number encoding proof tail with requirement-home boundary and negative evidence.",
+  "planned_changes": "- Add missing edge proof for full-width pre-ack Initial packet-number encoding.\n- Add missing edge proof for the largest post-ack packet-number difference safely representable by a four-byte packet number.\n- Add missing negative and edge proof for out-of-order application-data packet-number recovery.\n- Link focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
+  "verification_plan": "Run the focused S17P1 requirement-home filter, run a Release build, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0084"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0084"
+  ],
+  "out_of_scope": [
+    "Adaptive packet-number length selection.",
+    "Public packet-number administration APIs.",
+    "Hosted interop readiness.",
+    "Deferred fuzz obligations."
+  ],
+  "completion_notes": "Completed as a focused S17P1 wire-format proof for four-byte packet-number encoding boundaries and late-packet recovery behavior."
+}

@@ -94,6 +94,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9000-0081.json`](WI-QUIC-RFC9000-0081.json): canonical RFC 9000 preferred address validation failure policy work-item source
 - [`WI-QUIC-RFC9000-0082.json`](WI-QUIC-RFC9000-0082.json): canonical RFC 9000 preferred address conveyance and per-family selection work-item source
 - [`WI-QUIC-RFC9000-0083.json`](WI-QUIC-RFC9000-0083.json): canonical RFC 9000 spin bit per-path state work-item source
+- [`WI-QUIC-RFC9000-0084.json`](WI-QUIC-RFC9000-0084.json): canonical RFC 9000 packet number encoding completion work-item source
 - [`WI-QUIC-RFC9001-0001.json`](WI-QUIC-RFC9001-0001.json): canonical RFC 9001 work-item source
 - [`WI-QUIC-RFC9001-0002.json`](WI-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition work-item source
 - [`WI-QUIC-RFC9001-0003.json`](WI-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle work-item source

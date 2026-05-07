@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0084",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S17P1 Packet Number Encoding Completion",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S17P1 closure for packet-number encoding width, post-ack range sufficiency, and out-of-order recovery proof.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0084",
+    "VER-QUIC-RFC9000-0084"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S17P1-0002",
+    "REQ-QUIC-RFC9000-S17P1-0003",
+    "REQ-QUIC-RFC9000-S17P1-0004"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0004.cs"
+  ],
+  "design_summary": "The packet construction seam uses a four-byte packet-number field for Initial, Handshake, 0-RTT, and protected 1-RTT packet builders. The focused proof exercises the full-width pre-ack Initial and Handshake behavior, the largest post-ack packet-number difference that remains safely representable by four bytes, and late arrival of earlier packets after later packets have already been opened.",
+  "data_and_state_considerations": "Handshake and Initial packets share the coordinator handshake packet-number counter, while 0-RTT and 1-RTT packets use the application packet-number counter. The proof keeps those counters local to the coordinator and validates the opened packet bytes rather than widening the public API for packet-number administration.",
+  "edge_cases_and_constraints": [
+    "The pre-ack proof reaches the maximum four-byte packet-number value for Initial packets.",
+    "The post-ack proof reaches the largest difference for which a four-byte packet-number range remains greater than twice the gap from the largest acknowledged packet.",
+    "The out-of-order proof opens a later maximum four-byte packet number before the preceding packet number and then recovers the earlier packet.",
+    "The negative proof removes a packet-number byte from a late protected packet and verifies that the packet cannot be opened."
+  ],
+  "risks": [
+    "This slice does not implement adaptive packet-number length selection.",
+    "This slice does not claim full packet-number reconstruction for arbitrary reordered receive windows.",
+    "This slice does not claim hosted interop readiness.",
+    "This slice does not close deferred fuzz obligations for S17P1."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the focused generated S17P1 packet-number encoding proof tail for REQ-QUIC-RFC9000-S17P1-0002 through REQ-QUIC-RFC9000-S17P1-0004. It does not claim adaptive packet-number encoding, public packet-number control APIs, hosted interop readiness, or closure of deferred fuzz obligations."
+    }
+  ]
+}
