@@ -302,7 +302,7 @@ internal static class InteropHarnessRunner
                     ListenEndPoint = listenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                     ListenBacklog = 1,
-                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
                 };
 
                 using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
@@ -400,7 +400,7 @@ internal static class InteropHarnessRunner
                     ListenEndPoint = listenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                     ListenBacklog = 1,
-                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
                 };
 
                 using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
@@ -617,7 +617,7 @@ internal static class InteropHarnessRunner
                 QuicListenerHost listenerHost = new(
                     listenEndPoint,
                     [InteropHarnessProtocols.QuicInterop],
-                    (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                    (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
                     listenBacklog: 1,
                     retryBootstrapEnabled: true,
                     diagnosticsSinkFactory: diagnosticsSinkFactory);
@@ -917,7 +917,7 @@ internal static class InteropHarnessRunner
                     ListenEndPoint = dispatchPlan.ListenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                     ListenBacklog = dispatchPlan.ExpectedConnectionCount,
-                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
                 };
 
                 using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
@@ -1102,7 +1102,7 @@ internal static class InteropHarnessRunner
                     ListenEndPoint = dispatchPlan.ListenEndPoint,
                     ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                     ListenBacklog = 1,
-                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
                 };
 
                 using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();

@@ -51,6 +51,49 @@ public sealed class REQ_QUIC_RFC9001_S5_0002
         Assert.True(CreateSequentialBytes(0x31, 16).AsSpan().SequenceEqual(storedMaterial.HeaderProtectionKey));
         Assert.False(runtime.PeerHandshakeTranscriptCompleted);
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+
+        QuicConnectionRuntime chacha20Runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            clock,
+            selectedCipherSuite: QuicTlsCipherSuite.TlsChacha20Poly1305Sha256);
+        byte[] chacha20AeadKey = CreateSequentialBytes(0x41, 32);
+        byte[] chacha20AeadIv = CreateSequentialBytes(0x51, 12);
+        byte[] chacha20HeaderProtectionKey = CreateSequentialBytes(0x61, 32);
+
+        Assert.True(QuicTlsPacketProtectionMaterial.TryCreate(
+            QuicTlsEncryptionLevel.OneRtt,
+            QuicAeadAlgorithm.Chacha20Poly1305,
+            chacha20AeadKey,
+            chacha20AeadIv,
+            chacha20HeaderProtectionKey,
+            new QuicAeadUsageLimits(32, 64),
+            out QuicTlsPacketProtectionMaterial chacha20Material));
+
+        Assert.True(chacha20Runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 20,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: chacha20Material)),
+            nowTicks: 20).StateChanged);
+
+        chacha20AeadKey[0] = 0xFF;
+        chacha20AeadIv[0] = 0xEE;
+        chacha20HeaderProtectionKey[0] = 0xDD;
+
+        Assert.True(chacha20Runtime.TlsState.TryGetPacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial storedChacha20Material));
+        Assert.Equal(QuicTlsEncryptionLevel.OneRtt, storedChacha20Material.EncryptionLevel);
+        Assert.Equal(QuicAeadAlgorithm.Chacha20Poly1305, storedChacha20Material.Algorithm);
+        Assert.Equal(32d, storedChacha20Material.UsageLimits.ConfidentialityLimitPackets);
+        Assert.Equal(64d, storedChacha20Material.UsageLimits.IntegrityLimitPackets);
+        Assert.Equal(32, storedChacha20Material.AeadKey.Length);
+        Assert.Equal(12, storedChacha20Material.AeadIv.Length);
+        Assert.Equal(32, storedChacha20Material.HeaderProtectionKey.Length);
+        Assert.True(CreateSequentialBytes(0x41, 32).AsSpan().SequenceEqual(storedChacha20Material.AeadKey));
+        Assert.True(CreateSequentialBytes(0x51, 12).AsSpan().SequenceEqual(storedChacha20Material.AeadIv));
+        Assert.True(CreateSequentialBytes(0x61, 32).AsSpan().SequenceEqual(storedChacha20Material.HeaderProtectionKey));
     }
 
     [Fact]

@@ -24,6 +24,11 @@ public sealed class QuicClientConnectionOptions : QuicConnectionOptions
     public QuicPeerCertificatePolicy? PeerCertificatePolicy { get; set; }
 
     /// <summary>
+    /// Gets or sets the TLS cipher suite selected for the managed client handshake slice.
+    /// </summary>
+    internal QuicTlsCipherSuite? SelectedCipherSuite { get; set; }
+
+    /// <summary>
     /// Gets or sets the remote endpoint to connect.
     /// </summary>
     public EndPoint RemoteEndPoint { get; set; } = null!;

@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "chacha20,keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            "keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));

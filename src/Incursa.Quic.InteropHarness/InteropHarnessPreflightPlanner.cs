@@ -75,6 +75,7 @@ internal sealed class InteropHarnessPreflightPlanner
         return new QuicClientConnectionOptions
         {
             RemoteEndPoint = remoteEndPoint,
+            SelectedCipherSuite = GetSupportedCipherSuite(),
             ClientAuthenticationOptions = new SslClientAuthenticationOptions
             {
                 AllowRenegotiation = false,
@@ -94,10 +95,11 @@ internal sealed class InteropHarnessPreflightPlanner
         };
     }
 
-    internal static QuicServerConnectionOptions CreateSupportedServerOptions(X509Certificate2 serverCertificate)
+    internal QuicServerConnectionOptions CreateSupportedServerOptions(X509Certificate2 serverCertificate)
     {
         return new QuicServerConnectionOptions
         {
+            SelectedCipherSuite = GetSupportedCipherSuite(),
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
@@ -106,6 +108,13 @@ internal sealed class InteropHarnessPreflightPlanner
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
             },
         };
+    }
+
+    private QuicTlsCipherSuite GetSupportedCipherSuite()
+    {
+        return settings.TestCase == "chacha20"
+            ? QuicTlsCipherSuite.TlsChacha20Poly1305Sha256
+            : QuicTlsCipherSuite.TlsAes128GcmSha256;
     }
 
     internal static bool TryGetTransferPaths(

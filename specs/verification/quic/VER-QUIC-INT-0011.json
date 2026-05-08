@@ -40,7 +40,7 @@
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md"
   ],
-  "status_summary": "Draft verification plan only. The helper now accepts the documented non-HTTP/3 inventory and emits per-run inventory artifacts, versionnegotiation is now green, and the remaining work is to verify the blocked cells and preserve the trace evidence.",
+  "status_summary": "Draft verification plan only. The helper now accepts the documented non-HTTP/3 inventory and emits per-run inventory artifacts, versionnegotiation and chacha20 are now green, and the remaining work is to verify the blocked cells and preserve the trace evidence.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

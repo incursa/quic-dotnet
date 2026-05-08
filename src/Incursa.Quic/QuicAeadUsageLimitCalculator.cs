@@ -41,6 +41,16 @@ internal static class QuicAeadUsageLimitCalculator
     private const double CcmUsageLimitExponentUnrestricted = 21.5d;
 
     /// <summary>
+    /// RFC 9001 Appendix B ChaCha20-Poly1305 confidentiality limit.
+    /// </summary>
+    private const double Chacha20ConfidentialityLimitExponent = 62d;
+
+    /// <summary>
+    /// RFC 9001 Appendix B ChaCha20-Poly1305 integrity limit.
+    /// </summary>
+    private const double Chacha20IntegrityLimitExponent = 36d;
+
+    /// <summary>
     /// Computes the Appendix B confidentiality and integrity limits for the supplied AEAD and packet-size profiles.
     /// </summary>
     /// <remarks>
@@ -65,6 +75,7 @@ internal static class QuicAeadUsageLimitCalculator
                 confidentialityPacketSizeProfile,
                 integrityPacketSizeProfile,
                 out limits),
+            QuicAeadAlgorithm.Chacha20Poly1305 => TryGetChacha20UsageLimits(out limits),
             _ => false,
         };
     }
@@ -150,10 +161,17 @@ internal static class QuicAeadUsageLimitCalculator
         return true;
     }
 
+    private static bool TryGetChacha20UsageLimits(out QuicAeadUsageLimits limits)
+    {
+        return CreateUsageLimits(
+            Math.Pow(AeadUsageLimitBase, Chacha20ConfidentialityLimitExponent),
+            Math.Pow(AeadUsageLimitBase, Chacha20IntegrityLimitExponent),
+            out limits);
+    }
+
     private static bool CreateLimitPackets(double limitPackets, out double assignedLimitPackets)
     {
         assignedLimitPackets = limitPackets;
         return true;
     }
 }
-

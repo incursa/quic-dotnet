@@ -110,11 +110,13 @@ internal static class QuicServerConnectionOptionsValidator
         return new QuicServerConnectionSettings(
             options,
             certificateDer,
-            privateParameters.D.ToArray());
+            privateParameters.D.ToArray(),
+            options.SelectedCipherSuite);
     }
 }
 
 internal sealed record QuicServerConnectionSettings(
     QuicServerConnectionOptions Options,
     byte[] ServerLeafCertificateDer,
-    byte[] ServerLeafSigningPrivateKey);
+    byte[] ServerLeafSigningPrivateKey,
+    QuicTlsCipherSuite? SelectedCipherSuite = null);

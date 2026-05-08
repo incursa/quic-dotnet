@@ -1353,7 +1353,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             bookkeeping,
             tlsRole: QuicTlsRole.Server,
             diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink),
-            enableRandomizedSpinBitSelection: true);
+            enableRandomizedSpinBitSelection: true,
+            selectedCipherSuite: options.SelectedCipherSuite);
     }
 
     private sealed class PendingConnectionState

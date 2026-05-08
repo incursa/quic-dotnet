@@ -20,6 +20,14 @@ public sealed class REQ_QUIC_RFC9001_SB_0002
         Assert.True(double.IsFinite(limits.IntegrityLimitPackets));
         Assert.True(limits.ConfidentialityLimitPackets > 0d);
         Assert.True(limits.IntegrityLimitPackets > 0d);
+
+        Assert.True(QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+            QuicAeadAlgorithm.Chacha20Poly1305,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            out QuicAeadUsageLimits chacha20Limits));
+        Assert.Equal(Math.Pow(2d, 62), chacha20Limits.ConfidentialityLimitPackets);
+        Assert.Equal(Math.Pow(2d, 36), chacha20Limits.IntegrityLimitPackets);
     }
 
     [Fact]

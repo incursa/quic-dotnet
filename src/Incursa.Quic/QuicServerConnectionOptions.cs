@@ -23,4 +23,9 @@ public sealed class QuicServerConnectionOptions : QuicConnectionOptions
     /// Gets or sets the server authentication options.
     /// </summary>
     public SslServerAuthenticationOptions ServerAuthenticationOptions { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the TLS cipher suite selected for the managed server handshake slice.
+    /// </summary>
+    internal QuicTlsCipherSuite? SelectedCipherSuite { get; set; }
 }

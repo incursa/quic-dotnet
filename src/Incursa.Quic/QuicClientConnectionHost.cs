@@ -359,7 +359,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot,
             diagnosticsSink: diagnosticsSink,
             enableRandomizedSpinBitSelection: true,
-            allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript);
+            allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
+            selectedCipherSuite: settings.SelectedCipherSuite);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

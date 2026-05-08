@@ -273,12 +273,20 @@ public sealed class REQ_QUIC_INT_0015
             Assert.NotNull(settings);
 
             using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+            InteropHarnessEnvironment serverSettings = new(
+                InteropHarnessRole.Server,
+                "multiconnect",
+                Array.Empty<string>(),
+                null,
+                null,
+                default);
+            InteropHarnessPreflightPlanner serverPlanner = new(serverSettings, TextWriter.Null);
             QuicListenerOptions listenerOptions = new()
             {
                 ListenEndPoint = listenEndPoint,
                 ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
                 ListenBacklog = 1,
-                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(InteropHarnessPreflightPlanner.CreateSupportedServerOptions(serverCertificate)),
+                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverPlanner.CreateSupportedServerOptions(serverCertificate)),
             };
 
             await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);

@@ -14,37 +14,51 @@ public sealed class REQ_QUIC_CRT_0112
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
-        QuicTlsTranscriptProgress progress = new(QuicTlsRole.Server);
-        byte[] clientHello = CreateClientHelloTranscript(CreateClientTransportParameters());
+        QuicTlsCipherSuite[] selectedCipherSuites =
+        [
+            QuicTlsCipherSuite.TlsAes128GcmSha256,
+            QuicTlsCipherSuite.TlsChacha20Poly1305Sha256,
+        ];
 
-        progress.AppendCryptoBytes(0, clientHello);
-        QuicTlsTranscriptStep clientHelloStep = progress.Advance(QuicTlsRole.Server);
-        Assert.Equal(QuicTlsTranscriptStepKind.PeerTransportParametersStaged, clientHelloStep.Kind);
-        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, clientHelloStep.TranscriptPhase);
+        foreach (QuicTlsCipherSuite selectedCipherSuite in selectedCipherSuites)
+        {
+            QuicTlsTranscriptProgress progress = new(QuicTlsRole.Server, selectedCipherSuite);
+            byte[] clientHello = CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                cipherSuites: [(ushort)selectedCipherSuite]);
 
-        QuicTlsKeySchedule schedule = new(QuicTlsRole.Server, localHandshakePrivateKey);
-        IReadOnlyList<QuicTlsStateUpdate> updates = schedule.ProcessTranscriptStep(clientHelloStep, localTransportParameters);
+            progress.AppendCryptoBytes(0, clientHello);
+            QuicTlsTranscriptStep clientHelloStep = progress.Advance(QuicTlsRole.Server);
+            Assert.Equal(QuicTlsTranscriptStepKind.PeerTransportParametersStaged, clientHelloStep.Kind);
+            Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, clientHelloStep.TranscriptPhase);
 
-        Assert.True(updates.Count >= 4);
-        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[0].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[0].EncryptionLevel);
-        Assert.Equal(0UL, updates[0].CryptoDataOffset);
-        Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[1].Kind);
-        Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[2].Kind);
-        Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[3].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[3].EncryptionLevel);
-        Assert.True(schedule.HandshakeSecretsDerived);
+            QuicTlsKeySchedule schedule = new(
+                QuicTlsRole.Server,
+                localHandshakePrivateKey,
+                selectedCipherSuite: selectedCipherSuite);
+            IReadOnlyList<QuicTlsStateUpdate> updates = schedule.ProcessTranscriptStep(clientHelloStep, localTransportParameters);
 
-        QuicTlsTranscriptProgress serverHelloProgress = new(QuicTlsRole.Client);
-        serverHelloProgress.AppendCryptoBytes(0, updates[0].CryptoData.ToArray());
-        QuicTlsTranscriptStep serverHelloStep = serverHelloProgress.Advance(QuicTlsRole.Client);
+            Assert.True(updates.Count >= 4);
+            Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[0].Kind);
+            Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[0].EncryptionLevel);
+            Assert.Equal(0UL, updates[0].CryptoDataOffset);
+            Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[1].Kind);
+            Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[2].Kind);
+            Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[3].Kind);
+            Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[3].EncryptionLevel);
+            Assert.True(schedule.HandshakeSecretsDerived);
 
-        Assert.Equal(QuicTlsTranscriptStepKind.Progressed, serverHelloStep.Kind);
-        Assert.Equal(QuicTlsHandshakeMessageType.ServerHello, serverHelloStep.HandshakeMessageType);
-        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, serverHelloStep.SelectedCipherSuite);
-        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, serverHelloStep.TranscriptHashAlgorithm);
-        Assert.Equal(QuicTlsNamedGroup.Secp256r1, serverHelloStep.NamedGroup);
-        Assert.False(serverHelloStep.KeyShare.IsEmpty);
+            QuicTlsTranscriptProgress serverHelloProgress = new(QuicTlsRole.Client, selectedCipherSuite);
+            serverHelloProgress.AppendCryptoBytes(0, updates[0].CryptoData.ToArray());
+            QuicTlsTranscriptStep serverHelloStep = serverHelloProgress.Advance(QuicTlsRole.Client);
+
+            Assert.Equal(QuicTlsTranscriptStepKind.Progressed, serverHelloStep.Kind);
+            Assert.Equal(QuicTlsHandshakeMessageType.ServerHello, serverHelloStep.HandshakeMessageType);
+            Assert.Equal(selectedCipherSuite, serverHelloStep.SelectedCipherSuite);
+            Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, serverHelloStep.TranscriptHashAlgorithm);
+            Assert.Equal(QuicTlsNamedGroup.Secp256r1, serverHelloStep.NamedGroup);
+            Assert.False(serverHelloStep.KeyShare.IsEmpty);
+        }
     }
 
     [Fact]
@@ -55,55 +69,67 @@ public sealed class REQ_QUIC_CRT_0112
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
         QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
         QuicTransportParameters peerTransportParameters = CreateClientTransportParameters();
-        QuicTlsTransportBridgeDriver driver = new(
-            QuicTlsRole.Server,
-            localHandshakePrivateKey: localHandshakePrivateKey);
+        QuicTlsCipherSuite[] selectedCipherSuites =
+        [
+            QuicTlsCipherSuite.TlsAes128GcmSha256,
+            QuicTlsCipherSuite.TlsChacha20Poly1305Sha256,
+        ];
 
-        IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
-        Assert.Single(bootstrapUpdates);
-        Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, bootstrapUpdates[0].Kind);
+        foreach (QuicTlsCipherSuite selectedCipherSuite in selectedCipherSuites)
+        {
+            QuicTlsTransportBridgeDriver driver = new(
+                QuicTlsRole.Server,
+                localHandshakePrivateKey: localHandshakePrivateKey,
+                selectedCipherSuite: selectedCipherSuite);
 
-        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
-            QuicTlsEncryptionLevel.Handshake,
-            CreateClientHelloTranscript(peerTransportParameters));
+            IReadOnlyList<QuicTlsStateUpdate> bootstrapUpdates = driver.StartHandshake(localTransportParameters);
+            Assert.Single(bootstrapUpdates);
+            Assert.Equal(QuicTlsUpdateKind.LocalTransportParametersReady, bootstrapUpdates[0].Kind);
 
-        Assert.True(updates.Count >= 5);
-        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
-        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
-        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, updates[0].TranscriptPhase);
-        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, updates[0].SelectedCipherSuite);
-        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, updates[0].TranscriptHashAlgorithm);
-        Assert.NotNull(updates[0].TransportParameters);
-        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
-        Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[1].EncryptionLevel);
-        Assert.Equal(0UL, updates[1].CryptoDataOffset);
-        Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[2].Kind);
-        Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[3].Kind);
-        Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[4].Kind);
+            IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+                QuicTlsEncryptionLevel.Handshake,
+                CreateClientHelloTranscript(
+                    peerTransportParameters,
+                    cipherSuites: [(ushort)selectedCipherSuite]));
 
-        Span<byte> surfacedServerHello = stackalloc byte[updates[1].CryptoData.Length];
-        Assert.True(driver.TryPeekOutgoingCryptoData(
-            QuicTlsEncryptionLevel.Initial,
-            surfacedServerHello,
-            out ulong offset,
-            out int bytesWritten));
-        Assert.Equal(0UL, offset);
-        Assert.Equal(surfacedServerHello.Length, bytesWritten);
-        Assert.True(surfacedServerHello.SequenceEqual(updates[1].CryptoData.Span));
+            Assert.True(updates.Count >= 5);
+            Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+            Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
+            Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, updates[0].TranscriptPhase);
+            Assert.Equal(selectedCipherSuite, updates[0].SelectedCipherSuite);
+            Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, updates[0].TranscriptHashAlgorithm);
+            Assert.NotNull(updates[0].TransportParameters);
+            Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
+            Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[1].EncryptionLevel);
+            Assert.Equal(0UL, updates[1].CryptoDataOffset);
+            Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[2].Kind);
+            Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[3].Kind);
+            Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[4].Kind);
 
-        Assert.NotNull(driver.State.StagedPeerTransportParameters);
-        Assert.Equal(peerTransportParameters.MaxIdleTimeout, driver.State.StagedPeerTransportParameters!.MaxIdleTimeout);
-        Assert.Equal(peerTransportParameters.DisableActiveMigration, driver.State.StagedPeerTransportParameters.DisableActiveMigration);
-        Assert.Equal(peerTransportParameters.InitialSourceConnectionId, driver.State.StagedPeerTransportParameters.InitialSourceConnectionId);
-        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, driver.State.SelectedCipherSuite);
-        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, driver.State.TranscriptHashAlgorithm);
-        Assert.True(driver.State.HandshakeKeysAvailable);
-        Assert.True(driver.State.TryGetHandshakeOpenPacketProtectionMaterial(out _));
-        Assert.True(driver.State.TryGetHandshakeProtectPacketProtectionMaterial(out _));
-        Assert.False(driver.State.PeerFinishedVerified);
-        Assert.False(driver.State.PeerHandshakeTranscriptCompleted);
-        Assert.False(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
-        Assert.Empty(driver.CommitPeerTransportParameters(peerTransportParameters));
+            byte[] surfacedServerHello = new byte[updates[1].CryptoData.Length];
+            Assert.True(driver.TryPeekOutgoingCryptoData(
+                QuicTlsEncryptionLevel.Initial,
+                surfacedServerHello,
+                out ulong offset,
+                out int bytesWritten));
+            Assert.Equal(0UL, offset);
+            Assert.Equal(surfacedServerHello.Length, bytesWritten);
+            Assert.True(surfacedServerHello.SequenceEqual(updates[1].CryptoData.Span));
+
+            Assert.NotNull(driver.State.StagedPeerTransportParameters);
+            Assert.Equal(peerTransportParameters.MaxIdleTimeout, driver.State.StagedPeerTransportParameters!.MaxIdleTimeout);
+            Assert.Equal(peerTransportParameters.DisableActiveMigration, driver.State.StagedPeerTransportParameters.DisableActiveMigration);
+            Assert.Equal(peerTransportParameters.InitialSourceConnectionId, driver.State.StagedPeerTransportParameters.InitialSourceConnectionId);
+            Assert.Equal(selectedCipherSuite, driver.State.SelectedCipherSuite);
+            Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, driver.State.TranscriptHashAlgorithm);
+            Assert.True(driver.State.HandshakeKeysAvailable);
+            Assert.True(driver.State.TryGetHandshakeOpenPacketProtectionMaterial(out _));
+            Assert.True(driver.State.TryGetHandshakeProtectPacketProtectionMaterial(out _));
+            Assert.False(driver.State.PeerFinishedVerified);
+            Assert.False(driver.State.PeerHandshakeTranscriptCompleted);
+            Assert.False(driver.State.CanCommitPeerTransportParameters(peerTransportParameters));
+            Assert.Empty(driver.CommitPeerTransportParameters(peerTransportParameters));
+        }
     }
 
     [Fact]

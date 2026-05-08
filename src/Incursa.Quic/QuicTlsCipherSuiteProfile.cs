@@ -8,7 +8,7 @@ namespace Incursa.Quic;
 /// </summary>
 internal readonly struct QuicTlsCipherSuiteProfile
 {
-    private static readonly byte[] SupportedSubsetDescription = Encoding.ASCII.GetBytes("TLS_AES_128_GCM_SHA256 over secp256r1");
+    private static readonly byte[] SupportedSubsetDescription = Encoding.ASCII.GetBytes("TLS_AES_128_GCM_SHA256 or TLS_CHACHA20_POLY1305_SHA256 over secp256r1");
 
     private QuicTlsCipherSuiteProfile(
         QuicTlsCipherSuite cipherSuite,
@@ -67,6 +67,17 @@ internal readonly struct QuicTlsCipherSuiteProfile
                 HashAlgorithmName.SHA256,
                 QuicTlsNamedGroup.Secp256r1,
                 QuicAeadAlgorithm.Aes128Gcm);
+            return true;
+        }
+
+        if (cipherSuite == QuicTlsCipherSuite.TlsChacha20Poly1305Sha256)
+        {
+            profile = new QuicTlsCipherSuiteProfile(
+                QuicTlsCipherSuite.TlsChacha20Poly1305Sha256,
+                QuicTlsTranscriptHashAlgorithm.Sha256,
+                HashAlgorithmName.SHA256,
+                QuicTlsNamedGroup.Secp256r1,
+                QuicAeadAlgorithm.Chacha20Poly1305);
             return true;
         }
 

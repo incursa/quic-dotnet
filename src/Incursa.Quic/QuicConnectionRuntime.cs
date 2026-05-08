@@ -150,7 +150,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         uint[]? supportedVersions = null,
         ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
-        bool allowClientPeerInitialReplacementBeforeTranscript = false)
+        bool allowClientPeerInitialReplacementBeforeTranscript = false,
+        QuicTlsCipherSuite? selectedCipherSuite = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -181,7 +182,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             localServerLeafSigningPrivateKey,
             clientCertificatePolicySnapshot,
             remoteCertificateValidationCallback,
-            clientAuthenticationOptions);
+            clientAuthenticationOptions,
+            selectedCipherSuite);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,

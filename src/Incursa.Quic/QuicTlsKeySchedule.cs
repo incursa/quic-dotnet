@@ -38,7 +38,6 @@ internal sealed class QuicTlsKeySchedule
     private const int UInt24HighByteIndex = 0;
     private const int UInt24MidByteIndex = 1;
     private const int UInt24LowByteIndex = 2;
-    private const int HeaderProtectionKeyLength = 16;
     private const int TlsRandomLength = 32;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
@@ -89,14 +88,13 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
-    /// <summary>
-    /// Gets the RFC 9001 Appendix B usage limits used for supported packet-protection materials.
-    /// </summary>
-    private static readonly QuicAeadUsageLimits PacketProtectionUsageLimits = CreatePacketProtectionUsageLimits();
-
     private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
     private readonly QuicTlsCipherSuiteProfile profile;
+    private readonly QuicAeadUsageLimits packetProtectionUsageLimits;
+    private readonly int packetProtectionAeadKeyLength;
+    private readonly int packetProtectionAeadIvLength;
+    private readonly int packetProtectionHeaderProtectionKeyLength;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
     private readonly byte[]? deterministicClientHelloRandom;
@@ -138,17 +136,32 @@ internal sealed class QuicTlsKeySchedule
     /// <param name="role">The endpoint role that owns the key schedule.</param>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
     /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
+    /// <param name="selectedCipherSuite">The TLS 1.3 cipher suite to bind the schedule to when one has already been selected.</param>
     internal QuicTlsKeySchedule(
         QuicTlsRole role,
         ReadOnlyMemory<byte> localPrivateKey = default,
-        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
+        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null,
+        QuicTlsCipherSuite? selectedCipherSuite = null)
     {
         this.role = role;
 
-        if (!QuicTlsCipherSuiteProfile.TryGet(QuicTlsCipherSuite.TlsAes128GcmSha256, out profile))
+        if (!QuicTlsCipherSuiteProfile.TryGet(
+            selectedCipherSuite ?? QuicTlsCipherSuite.TlsAes128GcmSha256,
+            out profile))
         {
             throw new InvalidOperationException("The supported TLS 1.3 profile is unavailable.");
         }
+
+        if (!QuicAeadAlgorithmMetadata.TryGetPacketProtectionLengths(
+            profile.PacketProtectionAlgorithm,
+            out packetProtectionAeadKeyLength,
+            out packetProtectionAeadIvLength,
+            out packetProtectionHeaderProtectionKeyLength))
+        {
+            throw new InvalidOperationException("The supported packet-protection algorithm metadata is unavailable.");
+        }
+
+        packetProtectionUsageLimits = CreatePacketProtectionUsageLimits(profile.PacketProtectionAlgorithm);
 
         localKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
         if (!localPrivateKey.IsEmpty)
@@ -1356,7 +1369,7 @@ internal sealed class QuicTlsKeySchedule
         }
     }
 
-    private static bool TryCreatePacketProtectionMaterial(
+    private bool TryCreatePacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlySpan<byte> trafficSecret,
         ReadOnlySpan<byte> headerProtectionKey,
@@ -1364,23 +1377,23 @@ internal sealed class QuicTlsKeySchedule
     {
         material = default;
 
-        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], 16);
-        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], 12);
+        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], packetProtectionAeadKeyLength);
+        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], packetProtectionAeadIvLength);
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             encryptionLevel,
-            QuicAeadAlgorithm.Aes128Gcm,
+            profile.PacketProtectionAlgorithm,
             aeadKey,
             aeadIv,
             headerProtectionKey,
-            PacketProtectionUsageLimits,
+            packetProtectionUsageLimits,
             out material);
     }
 
-    private static QuicAeadUsageLimits CreatePacketProtectionUsageLimits()
+    private static QuicAeadUsageLimits CreatePacketProtectionUsageLimits(QuicAeadAlgorithm algorithm)
     {
         if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
-                QuicAeadAlgorithm.Aes128Gcm,
+                algorithm,
                 QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
                 QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
                 out QuicAeadUsageLimits usageLimits))
@@ -1391,9 +1404,9 @@ internal sealed class QuicTlsKeySchedule
         return usageLimits;
     }
 
-    private static byte[] DeriveHeaderProtectionKey(ReadOnlySpan<byte> trafficSecret)
+    private byte[] DeriveHeaderProtectionKey(ReadOnlySpan<byte> trafficSecret)
     {
-        return HkdfExpandLabel(trafficSecret, QuicHpLabel, [], HeaderProtectionKeyLength);
+        return HkdfExpandLabel(trafficSecret, QuicHpLabel, [], packetProtectionHeaderProtectionKeyLength);
     }
 
     private bool TryCreateInitialClientHello(

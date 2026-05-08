@@ -8,18 +8,6 @@ public sealed class REQ_QUIC_RFC9001_S5_0007
     [Trait("Category", "Positive")]
     public void TryProtectHandshakePacket_AndTryOpenHandshakePacket_RoundTrip()
     {
-        Assert.True(QuicTlsPacketProtectionMaterial.TryCreate(
-            QuicTlsEncryptionLevel.Handshake,
-            QuicAeadAlgorithm.Aes128Ccm,
-            CreateSequentialBytes(0x11, 16),
-            CreateSequentialBytes(0x21, 12),
-            CreateSequentialBytes(0x31, 16),
-            new QuicAeadUsageLimits(64, 128),
-            out QuicTlsPacketProtectionMaterial material));
-
-        Assert.True(QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection senderProtection));
-        Assert.True(QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection receiverProtection));
-
         byte[] plaintextPacket = QuicHandshakePacketProtectionTestData.BuildHandshakePlaintextPacket(
             destinationConnectionId: [0x10, 0x11, 0x12, 0x13],
             sourceConnectionId: [0x20, 0x21],
@@ -32,19 +20,40 @@ public sealed class REQ_QUIC_RFC9001_S5_0007
                 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
             ]);
 
-        byte[] protectedPacket = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
-        Assert.True(senderProtection.TryProtect(plaintextPacket, protectedPacket, out int protectedBytesWritten));
-        Assert.Equal(protectedPacket.Length, protectedBytesWritten);
-        Assert.False(plaintextPacket.AsSpan().SequenceEqual(protectedPacket));
+        (QuicAeadAlgorithm Algorithm, int KeyLength)[] supportedAlgorithms =
+        [
+            (QuicAeadAlgorithm.Aes128Ccm, 16),
+            (QuicAeadAlgorithm.Chacha20Poly1305, 32),
+        ];
 
-        byte[] recoveredPacket = new byte[plaintextPacket.Length];
-        Assert.True(receiverProtection.TryOpen(
-            protectedPacket.AsSpan(0, protectedBytesWritten),
-            recoveredPacket,
-            out int recoveredBytesWritten));
+        foreach ((QuicAeadAlgorithm algorithm, int keyLength) in supportedAlgorithms)
+        {
+            Assert.True(QuicTlsPacketProtectionMaterial.TryCreate(
+                QuicTlsEncryptionLevel.Handshake,
+                algorithm,
+                CreateSequentialBytes(0x11, keyLength),
+                CreateSequentialBytes(0x21, 12),
+                CreateSequentialBytes(0x31, keyLength),
+                new QuicAeadUsageLimits(64, 128),
+                out QuicTlsPacketProtectionMaterial material));
 
-        Assert.Equal(plaintextPacket.Length, recoveredBytesWritten);
-        Assert.True(plaintextPacket.AsSpan().SequenceEqual(recoveredPacket));
+            Assert.True(QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection senderProtection));
+            Assert.True(QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection receiverProtection));
+
+            byte[] protectedPacket = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
+            Assert.True(senderProtection.TryProtect(plaintextPacket, protectedPacket, out int protectedBytesWritten));
+            Assert.Equal(protectedPacket.Length, protectedBytesWritten);
+            Assert.False(plaintextPacket.AsSpan().SequenceEqual(protectedPacket));
+
+            byte[] recoveredPacket = new byte[plaintextPacket.Length];
+            Assert.True(receiverProtection.TryOpen(
+                protectedPacket.AsSpan(0, protectedBytesWritten),
+                recoveredPacket,
+                out int recoveredBytesWritten));
+
+            Assert.Equal(plaintextPacket.Length, recoveredBytesWritten);
+            Assert.True(plaintextPacket.AsSpan().SequenceEqual(recoveredPacket));
+        }
     }
 
     [Fact]
@@ -158,12 +167,13 @@ public sealed class REQ_QUIC_RFC9001_S5_0007
             QuicAeadAlgorithm.Aes128Gcm,
             QuicAeadAlgorithm.Aes256Gcm,
             QuicAeadAlgorithm.Aes128Ccm,
+            QuicAeadAlgorithm.Chacha20Poly1305,
         ];
 
         for (int iteration = 0; iteration < 32; iteration++)
         {
             QuicAeadAlgorithm algorithm = algorithms[random.Next(algorithms.Length)];
-            int aeadKeyLength = algorithm == QuicAeadAlgorithm.Aes256Gcm ? 32 : 16;
+            int aeadKeyLength = algorithm is QuicAeadAlgorithm.Aes256Gcm or QuicAeadAlgorithm.Chacha20Poly1305 ? 32 : 16;
             byte[] aeadKey = QuicHeaderTestData.RandomBytes(random, aeadKeyLength);
             byte[] aeadIv = QuicHeaderTestData.RandomBytes(random, 12);
             byte[] headerProtectionKey = QuicHeaderTestData.RandomBytes(random, aeadKeyLength);

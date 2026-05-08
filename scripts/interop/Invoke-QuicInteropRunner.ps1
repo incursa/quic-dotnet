@@ -427,8 +427,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'chacha20'
             RunnerTestCase = 'chacha20'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires a ciphersuite-selection slice that forces ChaCha20 on both peers.'
+            Classification = 'supported-executed'
+            Notes = 'Current green ChaCha20 ciphersuite-selection cell.'
         }
 
         [pscustomobject]@{

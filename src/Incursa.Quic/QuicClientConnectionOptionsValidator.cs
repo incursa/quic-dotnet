@@ -127,7 +127,8 @@ internal static class QuicClientConnectionOptionsValidator
             capturedCertificatePolicySnapshot,
             detachedResumptionTicketSnapshot,
             localHandshakePrivateKey,
-            initialAddressValidationToken);
+            initialAddressValidationToken,
+            options.SelectedCipherSuite);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -171,6 +172,7 @@ internal static class QuicClientConnectionOptionsValidator
                 TargetHost = authenticationOptions.TargetHost,
                 RemoteCertificateValidationCallback = authenticationOptions.RemoteCertificateValidationCallback,
             },
+            SelectedCipherSuite = source.SelectedCipherSuite,
         };
     }
 
@@ -209,4 +211,5 @@ internal sealed record QuicClientConnectionSettings(
     QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
     ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
     ReadOnlyMemory<byte> InitialAddressValidationToken = default,
+    QuicTlsCipherSuite? SelectedCipherSuite = null,
     bool AllowClientPeerInitialReplacementBeforeTranscript = false);
