@@ -22160,6 +22160,11 @@
         "upstream_refs": [
           "RFC 9000 §13.2.6 RFC9000-S13.2.6-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0001.cs::TryBuildAckFrame_UsesOnlyTheRequestedPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0001.cs::TryBuildAckFrame_DoesNotUseReceiptsFromADifferentPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0001.cs::TryBuildAckFrame_KeepsSameNumericPacketNumberSeparateAcrossSpaces"
         ]
       }
     },
