@@ -7628,11 +7628,9 @@
           "RFC 9000 §5.2.3 RFC9000-S5.2.3-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.3"
         ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_AcceptsPreferredAddressWithZeroedIpv4Family",
-          "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress"
-        ]
+      "x_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0002.cs::ServerPreferredAddressValueRoundTripsThroughClientParsing"
+      ]
       }
     },
     {

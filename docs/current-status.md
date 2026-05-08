@@ -21,6 +21,25 @@ This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
+## 2026-05-08 S5 Preferred-Address Migration Topoff Closure Note
+
+`REQ-QUIC-RFC9000-S5P2P3-0002` is now `trace_clean` under the baseline RFC
+9000 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
+`VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that a
+server-prepared preferred-address value round-trips through client parsing with
+the dedicated address, ports, connection ID, and stateless reset token intact.
+Regenerated coverage triage marks the requirement `trace_clean` and reports
+1,495 of 1,771 QUIC requirements trace-clean overall. This remains bounded to
+preferred-address codec/proof coverage and does not claim runtime migration
+policy, public migration APIs, multipath, or interop-runner success.
+
+Local verification for this closure passed: focused S5P2P3-0002 requirement-
+home filter 1/1, SpecTrace core validation 520 artifacts, Release build 0
+warnings/errors, and `git diff --check` with only generated-triage CRLF
+normalization warnings. The full Release no-build suite still reports 9
+failing tests in existing interop preflight/helper coverage, so the branch is
+not yet fully green.
+
 ## 2026-05-08 S5 Disable-Active-Migration Topoff Closure Note
 
 `REQ-QUIC-RFC9000-S5P2P3-0004` is now `trace_clean` under the baseline RFC
@@ -1380,11 +1399,11 @@ The next useful lanes are:
   missing-xref requirements, for example `REQ-QUIC-RFC9000-S19P16-0011`,
   `REQ-QUIC-RFC9000-S20P1-0002`, and
   `REQ-QUIC-RFC9000-S21P12-0001`.
-- If the goal is harder protocol proof, start with the 223 new-test-needed
-  requirements or the 6 restructure-needed proof requirements, for example
-  `REQ-QUIC-RFC9000-S13P4P2P2-0004`,
-  `REQ-QUIC-RFC9000-S2-0006`, or
-  `REQ-QUIC-RFC9000-S5P2P3-0002`.
+- If the goal is harder protocol proof, start with the 221 new-test-needed
+  requirements or the 45 partially-covered requirements, for example
+  `REQ-QUIC-RFC9000-S10P2P1-0006`,
+  `REQ-QUIC-RFC9000-S10P2P1-0009`, or
+  `REQ-QUIC-RFC9000-S12P3-0007`.
 - Resolve the 54 blocked requirements only through the recorded gap families,
   notably connection close, stateless reset, migration/path-validation, and
   RFC 9001 TLS/packet-space work.
