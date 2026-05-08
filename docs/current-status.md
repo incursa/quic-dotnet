@@ -1,8 +1,9 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S6 reserved-version ignore proof
-topoff, S2 concurrent-stream proof topoff, S2 stream-cancellation proof topoff,
-S13 ECN continuation-after-success proof
+Last verified: 2026-05-08 for RFC 9000 S5 disable-active-migration proof
+topoff, S6 reserved-version ignore proof topoff, S2 concurrent-stream proof
+topoff, S2 stream-cancellation proof topoff, S13 ECN
+continuation-after-success proof
 topoff, S13 ECN disable-on-validation-failure proof topoff, S13 ECT(1)+CE
 too-small validation proof topoff, S13 ECT(0)+CE too-small validation proof
 topoff, S13 ECN validation-before-use proof topoff, S13 ECT(1) validation count
@@ -19,6 +20,26 @@ individual dated closure notes below unless otherwise noted.
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S5 Disable-Active-Migration Topoff Closure Note
+
+`REQ-QUIC-RFC9000-S5P2P3-0004` is now `trace_clean` under the baseline RFC
+9000 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
+`VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that a
+server with `disable_active_migration` set encodes the empty transport
+parameter and that a client parses it back as migration-disabled.
+
+Current generated RFC requirement triage reports 1,494 of 1,771 requirements
+`trace_clean`, leaving 277 non-clean: 55 metadata-only missing-xref items, 1
+proof-too-broad item, 45 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S5P2P3-0004 requirement-home
+filter 1/1, SpecTrace core validation 517 artifacts, Release build 0
+warnings/errors, full Release no-build suite 4,856/4,856, regenerated QUIC
+requirement coverage triage, and `git diff --check` with only
+generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S6 Reserved-Version Ignore Topoff Closure Note
 
