@@ -1,21 +1,43 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 ECN disable-on-validation-failure
-proof topoff, S13 ECT(1)+CE too-small validation proof topoff, S13 ECT(0)+CE
-too-small validation proof topoff, S13 ECN validation-before-use proof topoff,
-S13 ECT(1) validation count topoff, S13 ECN packet-number-space separation, S13
-ACK frame largest-packet delay boundary closure, S13 CRYPTO retransmission
-acknowledgment-boundary closure, S13 packet-number-space ACK separation, S13
-multiple-packet ACK-decision closure, S13 max-ack-delay and non-ack inclusion
-closure, S13 ACK-only feedback-loop edge proof, S13 periodic ACK-probe closure,
-RFC9001 tail proof closure, trace substrate repair, metadata xref burn-down,
-SpecTrace core validation, and regenerated QUIC requirement coverage triage.
+Last verified: 2026-05-08 for RFC 9000 S13 ECN continuation-after-success proof
+topoff, S13 ECN disable-on-validation-failure proof topoff, S13 ECT(1)+CE
+too-small validation proof topoff, S13 ECT(0)+CE too-small validation proof
+topoff, S13 ECN validation-before-use proof topoff, S13 ECT(1) validation count
+topoff, S13 ECN packet-number-space separation, S13 ACK frame largest-packet
+delay boundary closure, S13 CRYPTO retransmission acknowledgment-boundary
+closure, S13 packet-number-space ACK separation, S13 multiple-packet ACK-decision
+closure, S13 max-ack-delay and non-ack inclusion closure, S13 ACK-only
+feedback-loop edge proof, S13 periodic ACK-probe closure, RFC9001 tail proof
+closure, trace substrate repair, metadata xref burn-down, SpecTrace core
+validation, and regenerated QUIC requirement coverage triage.
 Earlier runtime/proof-tail and hosted executive-read evidence remains pinned to
 the individual dated closure notes below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 ECN Continuation-After-Success Topoff Closure Note
+
+`REQ-QUIC-RFC9000-S13P4P2P2-0004` is now `trace_clean` under the existing
+ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
+`WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
+ownership. The closure adds direct focused positive proof that successful
+validation keeps the helper ECN-enabled and accepts a subsequent ECT-marked
+packet acknowledgment on the same path.
+
+Current generated RFC requirement triage reports 1,490 of 1,771 requirements
+`trace_clean`, leaving 281 non-clean: 55 metadata-only missing-xref items, 4
+proof-too-broad items, 46 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P4P2P2-0004
+requirement-home filter 1/1, SpecTrace core validation 517 artifacts, Release
+build 0 warnings/errors, full Release no-build suite 4,851/4,851, regenerated
+QUIC requirement coverage triage, and `git diff --check` with only
+generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 ECN Disable-On-Failure Topoff Closure Note
 
