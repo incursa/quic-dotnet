@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T01:42:10.1207988-06:00",
+  "generated_at": "2026-05-08T01:53:05.8761686-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-08T01:42:10.1165115-06:00",
+    "generated_at": "2026-05-08T01:53:05.8713830-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 55,
       "covered_but_proof_too_broad": 5,
-      "partially_covered": 50,
-      "trace_clean": 1485,
+      "partially_covered": 49,
+      "trace_clean": 1486,
       "uncovered_blocked": 54,
       "uncovered_unblocked": 122
     },
     "by_work_queue_tag": {
       "blocked": 54,
-      "clean": 1485,
+      "clean": 1486,
       "metadata_only": 55,
-      "new_tests_needed": 227,
-      "restructure_needed": 10
+      "new_tests_needed": 226,
+      "restructure_needed": 9
     },
     "by_rfc": [
       {
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 55,
           "covered_but_proof_too_broad": 5,
-          "partially_covered": 50,
-          "trace_clean": 1157,
+          "partially_covered": 49,
+          "trace_clean": 1158,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 122
         }
@@ -45591,7 +45591,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -45671,7 +45671,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -45702,7 +45702,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -46682,7 +46682,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -46949,7 +46949,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -47255,7 +47255,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -47293,36 +47293,34 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 2,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
       "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 10,
+        "focused": 8,
         "broad": 2,
         "by_kind": {
-          "positive": 2,
-          "negative": 0,
-          "edge": 0,
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -47339,7 +47337,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47366,7 +47364,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47393,7 +47391,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -47424,7 +47422,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -47446,6 +47444,138 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "method": "TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "method": "TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "method": "TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "line": 41,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "method": "TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "line": 41,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "method": "TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "method": "TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -47505,7 +47635,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47532,7 +47662,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47892,7 +48022,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47919,7 +48049,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -47946,7 +48076,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -48119,7 +48249,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48146,7 +48276,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48173,7 +48303,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -48488,7 +48618,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48515,7 +48645,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48711,7 +48841,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48738,7 +48868,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
           "method": "Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas",
-          "line": 68,
+          "line": 117,
           "kinds": [
             "fuzz"
           ],
@@ -48941,7 +49071,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],
@@ -49670,7 +49800,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P2P1_0001",
           "member": "REQ_QUIC_RFC9000_S13P4P2P1_0001.TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "method": "TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "line": 30,
+          "line": 79,
           "kinds": [
             "positive"
           ],

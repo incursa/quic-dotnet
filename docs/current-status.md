@@ -1,19 +1,42 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 ECT(1) validation count topoff,
-S13 ECN packet-number-space separation, S13 ACK frame largest-packet delay
-boundary closure, S13 CRYPTO retransmission acknowledgment-boundary closure,
-S13 packet-number-space ACK separation, S13 multiple-packet ACK-decision
-closure, S13 max-ack-delay and non-ack inclusion closure, S13 ACK-only
-feedback-loop edge proof, S13 periodic ACK-probe closure, RFC9001 tail proof
-closure, trace substrate repair, metadata xref burn-down, SpecTrace core
-validation, and regenerated QUIC requirement coverage triage. Earlier
-runtime/proof-tail and hosted executive-read evidence remains pinned to the
-individual dated closure notes below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S13 ECN validation-before-use proof
+topoff, S13 ECT(1) validation count topoff, S13 ECN packet-number-space
+separation, S13 ACK frame largest-packet delay boundary closure, S13 CRYPTO
+retransmission acknowledgment-boundary closure, S13 packet-number-space ACK
+separation, S13 multiple-packet ACK-decision closure, S13 max-ack-delay and
+non-ack inclusion closure, S13 ACK-only feedback-loop edge proof, S13 periodic
+ACK-probe closure, RFC9001 tail proof closure, trace substrate repair, metadata
+xref burn-down, SpecTrace core validation, and regenerated QUIC requirement
+coverage triage. Earlier runtime/proof-tail and hosted executive-read evidence
+remains pinned to the individual dated closure notes below unless otherwise
+noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 ECN Validation-Before-Use Topoff Closure Note
+
+`REQ-QUIC-RFC9000-S13P4P2P1-0001` is now `trace_clean` under the existing
+ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
+`WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
+ownership. The closure adds direct focused positive, negative, and edge proof
+that valid ACK ECN counts are accepted before state use, impossible reported
+counts are rejected before state use, and stale ACK counts are ignored when the
+largest acknowledged packet number does not advance.
+
+Current generated RFC requirement triage reports 1,486 of 1,771 requirements
+`trace_clean`, leaving 285 non-clean: 55 metadata-only missing-xref items, 5
+proof-too-broad items, 49 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P4P2P1-0001
+requirement-home filter 5/5, SpecTrace core validation 517 artifacts, Release
+build 0 warnings/errors, full Release no-build suite 4,847/4,847, regenerated
+QUIC requirement coverage triage, and `git diff --check` with only
+generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 ECT(1) Validation Count Topoff Closure Note
 
@@ -1183,10 +1206,10 @@ The next useful lanes are:
   missing-xref requirements, for example `REQ-QUIC-RFC9000-S19P16-0011`,
   `REQ-QUIC-RFC9000-S20P1-0002`, and
   `REQ-QUIC-RFC9000-S21P12-0001`.
-- If the goal is harder protocol proof, start with the 227 new-test-needed
-  requirements or the 10 restructure-needed proof requirements, for example
-  `REQ-QUIC-RFC9000-S13P4P2P1-0001`,
-  `REQ-QUIC-RFC9000-S13P4P2P1-0004`, or
+- If the goal is harder protocol proof, start with the 226 new-test-needed
+  requirements or the 9 restructure-needed proof requirements, for example
+  `REQ-QUIC-RFC9000-S13P4P2P1-0004`,
+  `REQ-QUIC-RFC9000-S13P4P2P1-0005`, or
   `REQ-QUIC-RFC9000-S5P2P3-0002`.
 - Resolve the 54 blocked requirements only through the recorded gap families,
   notably connection close, stateless reset, migration/path-validation, and

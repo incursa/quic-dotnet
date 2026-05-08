@@ -4,6 +4,55 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse()
+    {
+        QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+            sentEct0Count: 2,
+            sentEct1Count: 1);
+
+        QuicEcnValidationTestSupport.AssertValidationSuccess(
+            state,
+            new QuicEcnCounts(2, 1, 0),
+            newlyAcknowledgedEct0Packets: 2,
+            newlyAcknowledgedEct1Packets: 1);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse()
+    {
+        QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+            sentEct0Count: 1,
+            sentEct1Count: 0);
+
+        QuicEcnValidationTestSupport.AssertValidationFailure(
+            state,
+            new QuicEcnCounts(2, 0, 0),
+            newlyAcknowledgedEct0Packets: 1,
+            newlyAcknowledgedEct1Packets: 0);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance()
+    {
+        QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+            sentEct0Count: 1,
+            sentEct1Count: 0);
+
+        QuicEcnValidationTestSupport.AssertValidationSuccess(
+            state,
+            new QuicEcnCounts(2, 0, 0),
+            newlyAcknowledgedEct0Packets: 1,
+            newlyAcknowledgedEct1Packets: 0,
+            largestAcknowledgedPacketNumberIncreased: false);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4-0001">QUIC endpoints MAY use ECN [RFC3168] to detect and respond to network congestion.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2-0001">To ensure connectivity in the presence of such devices, an endpoint MUST validate the ECN counts for each network path and disable the use of ECN on that path if errors are detected.</workbench-requirement>
