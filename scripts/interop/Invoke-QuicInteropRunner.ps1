@@ -387,6 +387,142 @@ function Normalize-StringList {
     return $normalizedValues.ToArray()
 }
 
+function Get-InteropRunnerTestCaseInventory {
+    @(
+        [pscustomobject]@{
+            TestCase = 'handshake'
+            RunnerTestCase = 'handshake'
+            Classification = 'supported-executed'
+            Notes = 'Current green handshake cell.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'transfer'
+            RunnerTestCase = 'transfer'
+            Classification = 'supported-executed'
+            Notes = 'Current green transfer cell.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'retry'
+            RunnerTestCase = 'retry'
+            Classification = 'supported-executed'
+            Notes = 'Current green Retry cell.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'multiconnect'
+            RunnerTestCase = 'handshakeloss'
+            Classification = 'supported-executed'
+            Notes = 'Current green handshakeloss cell.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'versionnegotiation'
+            RunnerTestCase = 'versionnegotiation'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Currently disabled upstream while the version-negotiation prerequisite slice remains open.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'chacha20'
+            RunnerTestCase = 'chacha20'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires a ciphersuite-selection slice that forces ChaCha20 on both peers.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'keyupdate'
+            RunnerTestCase = 'keyupdate'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires key-update support during the first megabyte transferred.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'resumption'
+            RunnerTestCase = 'resumption'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires session-ticket and resumed-connection support.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'zerortt'
+            RunnerTestCase = 'zerortt'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires 0-RTT transport and ticket-reuse support.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'v2'
+            RunnerTestCase = 'v2'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires QUIC v2 version-selection support.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'rebind-port'
+            RunnerTestCase = 'rebind-port'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires port-rebinding and post-handshake path-validation support.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'rebind-addr'
+            RunnerTestCase = 'rebind-addr'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires address-rebinding and post-handshake path-validation support.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'connectionmigration'
+            RunnerTestCase = 'connectionmigration'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Requires preferred-address and active-migration support.'
+        }
+    )
+}
+
+function Get-InteropRunnerTestCaseInventoryEntry {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TestCase
+    )
+
+    return @(
+        Get-InteropRunnerTestCaseInventory |
+            Where-Object { $_.TestCase -eq $TestCase } |
+            Select-Object -First 1
+    )[0]
+}
+
+function Get-InteropRunnerTestCaseInventorySummary {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Inventory
+    )
+
+    $supportedExecuted = [System.Collections.Generic.List[string]]::new()
+    $intentionallyUnsupported = [System.Collections.Generic.List[string]]::new()
+    $prerequisiteBlocked = [System.Collections.Generic.List[string]]::new()
+    $notMappable = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($entry in $Inventory) {
+        switch ($entry.Classification) {
+            'supported-executed' { $supportedExecuted.Add($entry.TestCase) }
+            'intentionally-unsupported' { $intentionallyUnsupported.Add($entry.TestCase) }
+            'prerequisite-blocked' { $prerequisiteBlocked.Add($entry.TestCase) }
+            'not-mappable' { $notMappable.Add($entry.TestCase) }
+        }
+    }
+
+    return [pscustomobject]@{
+        SupportedExecuted = $supportedExecuted.ToArray()
+        IntentionallyUnsupported = $intentionallyUnsupported.ToArray()
+        PrerequisiteBlocked = $prerequisiteBlocked.ToArray()
+        NotMappable = $notMappable.ToArray()
+    }
+}
+
 function ConvertTo-RunnerTestCaseNames {
     param(
         [AllowEmptyCollection()]
@@ -397,12 +533,13 @@ function ConvertTo-RunnerTestCaseNames {
     $runnerTestCases = [System.Collections.Generic.List[string]]::new()
 
     foreach ($testCase in @($TestCases)) {
-        $runnerTestCase = $testCase
-        if ($testCase -eq 'multiconnect') {
-            $runnerTestCase = 'handshakeloss'
+        $inventoryEntry = Get-InteropRunnerTestCaseInventoryEntry -TestCase $testCase
+        if ($null -eq $inventoryEntry) {
+            $runnerTestCases.Add($testCase)
+            continue
         }
 
-        $runnerTestCases.Add($runnerTestCase)
+        $runnerTestCases.Add($inventoryEntry.RunnerTestCase)
     }
 
     return $runnerTestCases.ToArray()
@@ -488,7 +625,19 @@ function Get-InteropRunnerExecutionPlan {
         $runnerServerImplementations = @($ImplementationSlot)
     }
 
+    $testCaseInventory = @(Get-InteropRunnerTestCaseInventory)
+    $requestedTestCaseInventory = [System.Collections.Generic.List[object]]::new()
+    foreach ($testCase in $TestCases) {
+        $inventoryEntry = Get-InteropRunnerTestCaseInventoryEntry -TestCase $testCase
+        if ($null -eq $inventoryEntry) {
+            throw "Requested testcase '$testCase' is not part of the documented non-HTTP/3 inventory."
+        }
+
+        $requestedTestCaseInventory.Add($inventoryEntry)
+    }
+
     $runnerRequestedTestCases = ConvertTo-RunnerTestCaseNames -TestCases $TestCases
+    $testCaseInventorySummary = Get-InteropRunnerTestCaseInventorySummary -Inventory $testCaseInventory
     $safeSlotName = "$LocalRole-$ImplementationSlot" -replace '[^A-Za-z0-9_.-]', '-'
     $runRoot = Join-Path $ArtifactRootResolved "$RunStamp-$safeSlotName"
     $runnerLogDir = Join-Path $runRoot 'runner-logs'
@@ -496,6 +645,7 @@ function Get-InteropRunnerExecutionPlan {
     $runnerMarkdown = Join-Path $runRoot 'runner-report.md'
     $runnerStdErr = Join-Path $runRoot 'runner.stderr.log'
     $runnerJson = Join-Path $runRoot 'runner-report.json'
+    $testCaseInventoryJson = Join-Path $runRoot 'testcase-inventory.json'
     $invocationLog = Join-Path $runRoot 'invocation.txt'
     $artifactTreeLog = Join-Path $runRoot 'artifact-tree.txt'
     $runnerShimPath = Join-Path $runRoot 'runner-shim.py'
@@ -513,6 +663,9 @@ function Get-InteropRunnerExecutionPlan {
         RunnerTimeoutSeconds = $RunnerTimeoutSeconds
         TestCases = $TestCases
         RunnerRequestedTestCases = $runnerRequestedTestCases
+        TestCaseInventory = $testCaseInventory
+        RequestedTestCaseInventory = @($requestedTestCaseInventory)
+        TestCaseInventorySummary = $testCaseInventorySummary
         ArtifactRoot = $ArtifactRootResolved
         RunRoot = $runRoot
         RunnerLogDir = $runnerLogDir
@@ -520,6 +673,7 @@ function Get-InteropRunnerExecutionPlan {
         RunnerMarkdown = $runnerMarkdown
         RunnerStdErr = $runnerStdErr
         RunnerJson = $runnerJson
+        TestCaseInventoryJson = $testCaseInventoryJson
         InvocationLog = $invocationLog
         ArtifactTreeLog = $artifactTreeLog
         RunnerShimPath = $runnerShimPath
@@ -552,6 +706,34 @@ function Write-InteropRunnerPlan {
         [pscustomobject]$Plan
     )
 
+    $supportedExecuted = if (@($Plan.TestCaseInventorySummary.SupportedExecuted).Count -gt 0) {
+        $Plan.TestCaseInventorySummary.SupportedExecuted -join ','
+    }
+    else {
+        '(none)'
+    }
+
+    $prerequisiteBlocked = if (@($Plan.TestCaseInventorySummary.PrerequisiteBlocked).Count -gt 0) {
+        $Plan.TestCaseInventorySummary.PrerequisiteBlocked -join ','
+    }
+    else {
+        '(none)'
+    }
+
+    $intentionallyUnsupported = if (@($Plan.TestCaseInventorySummary.IntentionallyUnsupported).Count -gt 0) {
+        $Plan.TestCaseInventorySummary.IntentionallyUnsupported -join ','
+    }
+    else {
+        '(none)'
+    }
+
+    $notMappable = if (@($Plan.TestCaseInventorySummary.NotMappable).Count -gt 0) {
+        $Plan.TestCaseInventorySummary.NotMappable -join ','
+    }
+    else {
+        '(none)'
+    }
+
     Write-Host ''
     Write-Host 'Interop runner plan-only.' -ForegroundColor Green
     Write-Host "  Repo root:                    $($Plan.RepoRoot)"
@@ -563,6 +745,18 @@ function Write-InteropRunnerPlan {
     Write-Host "  Runner server implementations: $($Plan.RunnerServerImplementations -join ',')"
     Write-Host "  Test cases:                   $($Plan.TestCases -join ',')"
     Write-Host "  Runner test cases:            $($Plan.RunnerRequestedTestCases -join ',')"
+    Write-Host "  Inventory testcase count:     $($Plan.TestCaseInventory.Count)"
+    Write-Host "  Inventory JSON:               $($Plan.TestCaseInventoryJson)"
+    Write-Host "  Supported/executed:           $supportedExecuted"
+    Write-Host "  Prerequisite-blocked:         $prerequisiteBlocked"
+    Write-Host "  Intentionally unsupported:    $intentionallyUnsupported"
+    Write-Host "  Not mappable:                 $notMappable"
+    if (@($Plan.RequestedTestCaseInventory).Count -gt 0) {
+        Write-Host '  Requested inventory:'
+        foreach ($inventoryEntry in $Plan.RequestedTestCaseInventory) {
+            Write-Host "    $($inventoryEntry.TestCase) -> $($inventoryEntry.Classification) (runner: $($inventoryEntry.RunnerTestCase))"
+        }
+    }
     Write-Host "  Runner timeout override:      $($Plan.RunnerTimeoutSeconds)"
     Write-Host "  Artifact root:                $($Plan.ArtifactRoot)"
     Write-Host "  Run root:                     $($Plan.RunRoot)"
@@ -575,6 +769,7 @@ function Write-InteropRunnerPlan {
     Write-Host "    Runner JSON:                $($Plan.RunnerJson)"
     Write-Host "    Runner Markdown:            $($Plan.RunnerMarkdown)"
     Write-Host "    Runner stderr:              $($Plan.RunnerStdErr)"
+    Write-Host "    Inventory JSON:             $($Plan.TestCaseInventoryJson)"
     Write-Host "    Runner logs:                $($Plan.RunnerLogDir)"
     Write-Host "    Artifact tree:              $($Plan.ArtifactTreeLog)"
     Write-Host "    Runner shim:                $($Plan.RunnerShimPath)"
@@ -637,12 +832,49 @@ RunRoot: $($Plan.RunRoot)
 RunnerJson: $($Plan.RunnerJson)
 RunnerMarkdown: $($Plan.RunnerMarkdown)
 RunnerStdErr: $($Plan.RunnerStdErr)
+InventoryJson: $($Plan.TestCaseInventoryJson)
 RunnerLogDir: $($Plan.RunnerLogDir)
 ArtifactTreeLog: $($Plan.ArtifactTreeLog)
 RunnerShim: $($Plan.RunnerShimPath)
 RunnerArgs:
 $($runnerArgsLines -join [Environment]::NewLine)
 "@ | Set-Content -LiteralPath $Path -Encoding utf8
+}
+
+function Write-InteropRunnerInventory {
+    param(
+        [Parameter(Mandatory)]
+        [pscustomobject]$Plan,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $requestedNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($inventoryEntry in @($Plan.RequestedTestCaseInventory)) {
+        if ($null -ne $inventoryEntry) {
+            $null = $requestedNames.Add([string]$inventoryEntry.TestCase)
+        }
+    }
+
+    $payload = [ordered]@{
+        generated_at = (Get-Date).ToString('o')
+        local_role = $Plan.LocalRole
+        inventory = @(
+            $Plan.TestCaseInventory |
+                ForEach-Object {
+                    [ordered]@{
+                        testcase = $_.TestCase
+                        runner_testcase = $_.RunnerTestCase
+                        classification = $_.Classification
+                        notes = $_.Notes
+                        requested = $requestedNames.Contains([string]$_.TestCase)
+                    }
+                }
+        )
+    }
+
+    Write-Utf8File -Path $Path -Content ($payload | ConvertTo-Json -Depth 10)
 }
 
 function Get-InteropRunnerOutputValidation {
@@ -1070,13 +1302,6 @@ function Write-InteropRunnerFailureSummary {
     Write-Host '  Evidence was preserved in the run root for post-failure inspection.'
 }
 
-$runnerSupportedTestCases = @(
-    'handshake',
-    'retry',
-    'transfer',
-    'multiconnect'
-)
-
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 }
@@ -1113,15 +1338,6 @@ if ([string]::IsNullOrWhiteSpace($ImplementationSlot)) {
     }
 }
 
-$unsupportedRequestedTestCases = @(
-    $TestCases |
-        Where-Object { $_ -notin $runnerSupportedTestCases }
-)
-
-if (@($unsupportedRequestedTestCases).Count -gt 0) {
-    throw "Requested testcase(s) $($unsupportedRequestedTestCases -join ', ') are not part of the runner-recognized local subset for this helper. Supported testcase subset: $($runnerSupportedTestCases -join ', ')."
-}
-
 $runnerRootResolved = Get-EffectivePath -Path $RunnerRoot
 $artifactRootResolved = Get-EffectivePath -Path $ArtifactsRoot
 $runStamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
@@ -1144,6 +1360,7 @@ if ($DryRun) {
 
 $null = New-Item -Path $artifactRootResolved -ItemType Directory -Force
 New-Item -Path $executionPlan.RunRoot -ItemType Directory -Force | Out-Null
+Write-InteropRunnerInventory -Plan $executionPlan -Path $executionPlan.TestCaseInventoryJson
 
 $runRoot = $executionPlan.RunRoot
 $runnerLogDir = $executionPlan.RunnerLogDir
