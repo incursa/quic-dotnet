@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0089",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 CRYPTO Retransmission Acknowledgment Boundary Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0089",
+    "VER-QUIC-RFC9000-0089"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P3-0006"
+  ],
+  "summary": "Close the focused S13.3 CRYPTO retransmission proof tail by proving the queued-repair acknowledgment boundary and nonzero CRYPTO offset preservation.",
+  "planned_changes": "- Add negative requirement-home proof that a queued Handshake CRYPTO repair is removed when the original packet is acknowledged before the retransmission flush.\n- Add edge proof that retransmitted Handshake CRYPTO data preserves a nonzero CRYPTO stream offset after contiguous egress data advances the stream.\n- Add canonical x_test_refs and focused architecture/work-item/verification artifacts for REQ-QUIC-RFC9000-S13P3-0006.\n- Regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run focused and full Release verification, and keep endpoint interop claims out of scope.",
+  "verification_plan": "Run the focused S13P3-0006 requirement-home filter, regenerate QUIC requirement coverage triage, validate canonical SpecTrace JSON with the core profile, run the Release build, run the full Release no-build test suite, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0089"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0089"
+  ],
+  "out_of_scope": [
+    "Endpoint interop success classification.",
+    "General QUIC recovery algorithm completeness beyond the traced local CRYPTO repair boundary.",
+    "Packet-number-space discard policy.",
+    "Public API changes.",
+    "New congestion-control, loss-detection, or PTO heuristics."
+  ],
+  "completion_notes": "Completed as a focused proof and trace topoff over the existing Handshake CRYPTO retransmission recovery seam."
+}

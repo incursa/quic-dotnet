@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0089",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 CRYPTO Retransmission Acknowledgment Boundary Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0089",
+    "WI-QUIC-RFC9000-0089"
+  ],
+  "verification_method": "Focused requirement-home tests over Handshake CRYPTO retransmission recovery state, coverage triage regeneration, SpecTrace JSON validation, Release build, full Release no-build test execution, and diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P3-0006"
+  ],
+  "scope": "This verification covers the supported local Handshake CRYPTO retransmission boundary: unacknowledged lost CRYPTO data is rebuilt in a fresh packet, queued repair state is cleared if the original packet is acknowledged, and later CRYPTO frames preserve their nonzero stream offset when retransmitted.",
+  "expected_result": "Focused tests show a lost Handshake CRYPTO packet is rebuilt with the original bytes in a new packet, a queued repair is not sent after acknowledgment of the original packet, and a later contiguous Handshake CRYPTO frame retransmits with its nonzero CRYPTO stream offset and payload intact.",
+  "procedure": [
+    "Run the focused S13P3-0006 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON with the core profile.",
+    "Run the Release build.",
+    "Run the full Release no-build test suite.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "The runtime has an active path and Handshake packet-protection material.",
+    "The original CRYPTO packet is tracked in the Handshake packet number space before loss is registered.",
+    "Nonzero CRYPTO offset proof first sends contiguous offset-zero data so the egress stream can advance to the later offset."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim hosted interop success, public API behavior, packet-number-space discard behavior, or broader recovery tuning beyond the local CRYPTO repair boundary."
+    }
+  ],
+  "status_summary": "Local verification passed on 2026-05-08: focused S13P3-0006 requirement-home filter 3/3, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S13P3-0006 trace_clean and reports 1,482 of 1,771 QUIC requirements trace-clean overall, SpecTrace core validation passed for 511 artifacts, Release build passed with 0 warnings and 0 errors, full Release no-build suite passed 4,840/4,840, and git diff --check passed with only generated-triage CRLF normalization warnings."
+}

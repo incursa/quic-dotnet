@@ -1,17 +1,41 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 packet-number-space ACK separation,
-S13 multiple-packet ACK-decision closure, S13 max-ack-delay and non-ack
-inclusion closure, S13 ACK-only feedback-loop edge proof, S13 periodic
-ACK-probe closure, RFC9001 tail proof closure, trace substrate repair,
-metadata xref burn-down, SpecTrace core validation, and regenerated QUIC
-requirement coverage triage. Earlier runtime/proof-tail and hosted
-executive-read evidence remains pinned to the individual dated closure notes
-below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S13 CRYPTO retransmission
+acknowledgment-boundary closure, S13 packet-number-space ACK separation, S13
+multiple-packet ACK-decision closure, S13 max-ack-delay and non-ack inclusion
+closure, S13 ACK-only feedback-loop edge proof, S13 periodic ACK-probe
+closure, RFC9001 tail proof closure, trace substrate repair, metadata xref
+burn-down, SpecTrace core validation, and regenerated QUIC requirement
+coverage triage. Earlier runtime/proof-tail and hosted executive-read evidence
+remains pinned to the individual dated closure notes below unless otherwise
+noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 CRYPTO Retransmission Acknowledgment Boundary Closure Note
+
+`REQ-QUIC-RFC9000-S13P3-0006` is now `trace_clean` under
+`ARC-QUIC-RFC9000-0089`, `WI-QUIC-RFC9000-0089`, and
+`VER-QUIC-RFC9000-0089`, alongside the existing runtime and ACK-piggyback
+ownership. The closure adds direct positive, negative, and edge proof that a
+lost Handshake CRYPTO packet is rebuilt in a fresh packet, a queued repair is
+cleared when the original packet is acknowledged before retransmission flush,
+and a later contiguous Handshake CRYPTO frame preserves its nonzero CRYPTO
+stream offset and bytes when retransmitted.
+
+Current generated RFC requirement triage reports 1,482 of 1,771 requirements
+`trace_clean`, leaving 289 non-clean: 55 metadata-only missing-xref items, 6
+proof-too-broad items, 52 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P3-0006
+requirement-home filter 3/3, SpecTrace core validation 511 artifacts, Release
+build 0 warnings/errors, full Release no-build suite 4,840/4,840, regenerated
+QUIC requirement coverage triage, and `git diff --check` with only
+generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 Packet-Number-Space ACK Separation Closure Note
 

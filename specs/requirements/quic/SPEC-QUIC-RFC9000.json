@@ -22450,22 +22450,27 @@
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001",
-          "ARC-QUIC-RFC9000-0021"
+          "ARC-QUIC-RFC9000-0021",
+          "ARC-QUIC-RFC9000-0089"
         ],
         "implemented_by": [
           "WI-QUIC-RFC9000-0001",
-          "WI-QUIC-RFC9000-0021"
+          "WI-QUIC-RFC9000-0021",
+          "WI-QUIC-RFC9000-0089"
         ],
         "verified_by": [
           "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0021"
+          "VER-QUIC-RFC9000-0021",
+          "VER-QUIC-RFC9000-0089"
         ],
         "upstream_refs": [
           "RFC 9000 §13.3 RFC9000-S13.3-B4-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs::CryptoRetransmission_RebuildsCryptoDataInFreshPacketWithTransientAckPrefix"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs::CryptoRetransmission_RebuildsCryptoDataInFreshPacketWithTransientAckPrefix",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs::CryptoRetransmission_ClearsQueuedRepairWhenOriginalPacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs::CryptoRetransmission_PreservesNonZeroCryptoOffset"
         ]
       }
     },

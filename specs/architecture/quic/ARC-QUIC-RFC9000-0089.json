@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0089",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 CRYPTO Retransmission Acknowledgment Boundary",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S13.3 proof boundary for retransmitting sent CRYPTO data only while recovery still owns an unacknowledged repair plan.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0021",
+    "WI-QUIC-RFC9000-0089",
+    "VER-QUIC-RFC9000-0089"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P3-0006"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs"
+  ],
+  "design_summary": "The runtime tracks sent CRYPTO packets in their packet number space with enough protected bytes and CRYPTO metadata to rebuild the retransmittable CRYPTO frame after recovery reports loss. Registering loss removes the original sent-packet record and queues a retransmission plan; receiving an acknowledgment for the same original packet number removes either the sent record or the queued repair plan before it can be flushed. Rebuilt Handshake CRYPTO repairs parse the lost plaintext, skip non-reliable ACK, PING, and PADDING prefixes, preserve the original CRYPTO offset and payload bytes, protect the repair in a fresh packet, and track it under the new packet number.",
+  "data_and_state_considerations": "Queued CRYPTO repairs are recovery state, not duplicate TLS stream state. Acknowledgment of the original packet clears the queued plan, while an unacknowledged lost packet keeps a retransmittable CRYPTO payload available. The retransmission packet carries a fresh packet number and preserves the CRYPTO stream offset carried by the lost frame.",
+  "edge_cases_and_constraints": [
+    "The focused requirement-home proof covers the supported Handshake CRYPTO retransmission path.",
+    "The existing ACK-piggyback retransmission architecture remains responsible for fresh ACK prefix handling on rebuilt Initial and Handshake CRYPTO packets.",
+    "Acknowledgment of the original packet removes a queued repair before the retransmission flush can send it.",
+    "A nonzero CRYPTO stream offset is preserved when contiguous egress data advances the stream and the later CRYPTO frame is retransmitted.",
+    "Endpoint interop success, broader QUIC recovery algorithm completeness, and public API behavior remain outside this proof boundary."
+  ],
+  "risks": [
+    "This slice proves the local runtime retransmission boundary, not hosted peer interoperability.",
+    "This slice does not change congestion, PTO, or loss-detection heuristics.",
+    "This slice does not claim packet-number-space discard behavior, which remains owned by separate S13.3 requirements."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the S13.3 CRYPTO retransmission acknowledgment-boundary proof gap for REQ-QUIC-RFC9000-S13P3-0006. It is intentionally limited to local runtime recovery state and requirement-home packet inspection."
+    }
+  ]
+}
