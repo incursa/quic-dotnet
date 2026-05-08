@@ -1,14 +1,37 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC9001 tail proof closure, trace substrate
-repair, metadata xref burn-down, SpecTrace core validation, and regenerated
-QUIC requirement coverage triage. Earlier runtime/proof-tail and hosted
-executive-read evidence remains pinned to the individual dated closure notes
-below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S13 periodic ACK-probe closure,
+RFC9001 tail proof closure, trace substrate repair, metadata xref burn-down,
+SpecTrace core validation, and regenerated QUIC requirement coverage triage.
+Earlier runtime/proof-tail and hosted executive-read evidence remains pinned
+to the individual dated closure notes below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 Periodic ACK-Probe Closure Note
+
+`REQ-QUIC-RFC9000-S13P2P7-0001` and `REQ-QUIC-RFC9000-S13-0002` are now
+`trace_clean` under `ARC-QUIC-RFC9000-0088`, `WI-QUIC-RFC9000-0088`, and
+`VER-QUIC-RFC9000-0088`. The closure proves that an active 1-RTT path can send
+a non-retransmittable, ack-eliciting PING probe when no retransmittable payload
+is available, does not emit a padding-only probe before an active path and 1-RTT
+keys exist, and does not delay application data at the small-packet threshold.
+`REQ-QUIC-RFC9000-S13P2P1-0009` remains the adjacent explicit edge-proof gap for
+ACK-only feedback-loop behavior.
+
+Current generated RFC requirement triage reports 1,476 of 1,771 requirements
+`trace_clean`, leaving 295 non-clean: 55 metadata-only missing-xref items, 6
+restructure-needed proof items, 58 partially covered items, 54 blocked items,
+and 122 uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13 requirement-home filter
+9/9, `QuicAckPiggybackPolicyBenchmarks` Dry and Short runs 5/5 each, SpecTrace
+core validation 508 artifacts, Release build 0 warnings/errors, full Release
+no-build suite 4,830/4,830, regenerated QUIC requirement coverage triage, and
+`git diff --check` with only generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 RFC9001 Tail Proof Closure Note
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0088",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 S13 Periodic ACK-Probe Scheduling Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0088",
+    "VER-QUIC-RFC9000-0088"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13-0002",
+    "REQ-QUIC-RFC9000-S13P2P7-0001"
+  ],
+  "summary": "Close the active-path S13 ACK deadlock/send-scheduling proof gap by proving periodic PING recovery probes and the bounded application send-delay edge.",
+  "planned_changes": "- Add focused S13P2P7 requirement-home proof that the recovery PTO fallback emits an ack-eliciting PING probe, not a PADDING-only packet, when no retransmittable payload is available.\n- Add negative proof that the PING probe path stays unavailable without an active path and 1-RTT material.\n- Add S13-0002 edge proof for the small-packet delay threshold boundary.\n- Add canonical x_test_refs and focused architecture/work-item/verification artifacts.\n- Keep the existing ACK piggyback policy benchmark suite as the local benchmark guard and add a PING frame formatting case.",
+  "verification_plan": "Run the focused S13P2P7/S13-0002/S13P2P1-0009 requirement-home filter, run the ACK piggyback policy benchmark harness, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0088"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0088"
+  ],
+  "out_of_scope": [
+    "Candidate-path or multipath send scheduling.",
+    "General packet-composition completeness.",
+    "PMTU or datagram sizing behavior.",
+    "Hosted interop success classification.",
+    "Public API changes."
+  ],
+  "completion_notes": "Completed as a focused proof and benchmark-guard topoff over the existing active-path recovery PING probe and application-send delay seams."
+}

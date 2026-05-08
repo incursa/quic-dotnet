@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0088",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 S13 Periodic ACK-Probe Scheduling Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0088",
+    "WI-QUIC-RFC9000-0088"
+  ],
+  "verification_method": "Focused requirement-home tests over the active-path recovery PING probe and application-send delay boundary, plus the ACK piggyback policy benchmark harness, coverage triage regeneration, SpecTrace JSON validation, and diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13-0002",
+    "REQ-QUIC-RFC9000-S13P2P7-0001"
+  ],
+  "scope": "This verification covers the supported active-path Application Data floor for bounded small-packet send delay and periodic ack-eliciting PING probes when recovery has no retransmittable payload to send.",
+  "expected_result": "Focused tests show small writes can be coalesced after the short delay, the threshold edge sends without arming the delay timer, the recovery PTO fallback sends PING as a non-PADDING ack-eliciting probe, the probe is not retransmittable, a later recovery expiration can send another PING probe, and the probe path remains unavailable without active-path and 1-RTT prerequisites.",
+  "procedure": [
+    "Run the focused S13P2P7, S13-0002, and adjacent S13P2P1-0009 requirement-home filter.",
+    "Run the ACK piggyback policy benchmark harness with the Dry job.",
+    "Run the ACK piggyback policy benchmark harness with the Short job if local time permits.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON with the core profile.",
+    "Check the resulting diff for whitespace errors.",
+    "Run the full Release build and full Release no-build test suite."
+  ],
+  "preconditions": [
+    "The runtime has an active path and 1-RTT packet protection material before an Application Data PING probe can be sent.",
+    "Recovery has no retransmittable payload or queued application send available before falling back to PING.",
+    "Application stream writes below the small-packet threshold are eligible for the bounded send delay."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P7_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P1_0009\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicAckPiggybackPolicyBenchmarks*\"",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter \"*QuicAckPiggybackPolicyBenchmarks*\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim candidate-path or multipath send scheduling, general packet-composition completeness, PMTU behavior, hosted interop success, or public API changes."
+    }
+  ],
+  "status_summary": "Local verification passed for this closure: focused S13 requirement-home filter 9/9, ACK piggyback policy Dry and Short benchmark jobs 5/5 each, SpecTrace core validation 508 artifacts, Release build 0 warnings/errors, full Release no-build suite 4,830/4,830, regenerated QUIC coverage triage, and git diff --check with only generated-triage CRLF normalization warnings."
+}

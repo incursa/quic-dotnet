@@ -11,6 +11,7 @@ public class QuicAckPiggybackPolicyBenchmarks
     private QuicSenderFlowController pendingAck = null!;
     private QuicSenderFlowController alreadyPiggybackedAck = null!;
     private QuicSenderFlowController singleDelayedAck = null!;
+    private byte[] periodicAckProbePayload = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -49,6 +50,8 @@ public class QuicAckPiggybackPolicyBenchmarks
             packetNumber: 41,
             ackEliciting: true,
             receivedAtMicros: 1_000);
+
+        periodicAckProbePayload = new byte[32];
     }
 
     [Benchmark]
@@ -85,5 +88,17 @@ public class QuicAckPiggybackPolicyBenchmarks
             QuicPacketNumberSpace.ApplicationData,
             nowMicros: 26_000,
             maxAckDelayMicros: 25_000);
+    }
+
+    [Benchmark]
+    public int FormatPeriodicAckElicitingPingProbeFrame()
+    {
+        periodicAckProbePayload.AsSpan().Clear();
+        if (!QuicFrameCodec.TryFormatPingFrame(periodicAckProbePayload, out int bytesWritten))
+        {
+            throw new InvalidOperationException("Could not format the periodic ack-eliciting PING probe.");
+        }
+
+        return bytesWritten;
     }
 }

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0088",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 S13 Periodic ACK-Probe Scheduling",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused ACK deadlock avoidance floor that sends periodic ack-eliciting PING probes when recovery has no retransmittable payload to send, while keeping the short application-send delay bounded.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0088",
+    "VER-QUIC-RFC9000-0088"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13-0002",
+    "REQ-QUIC-RFC9000-S13P2P7-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
+    "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs"
+  ],
+  "design_summary": "The active-path send policy can briefly queue small application stream writes so adjacent frames can be packed into a single 1-RTT packet, but the boundary does not hold packets at or above the configured small-packet threshold. Separately, the recovery PTO fallback emits a PING frame, not PADDING-only data, when the selected Application Data space has no retransmittable payload or queued application send available. That PING probe is ack-eliciting, non-ACK-only, non-retransmittable, and marked as a probe packet so later PTO expirations can emit another PING rather than trying to retransmit the previous probe.",
+  "data_and_state_considerations": "The slice reuses the existing recovery controller, active-path packet protection, timer recomputation, and sender packet tracking state. PING probe packets are tracked in Application Data packet-number space as ack-eliciting probes while remaining non-retransmittable. The short application-send delay remains bounded by the existing 32-byte threshold and 1000 microsecond delay policy.",
+  "edge_cases_and_constraints": [
+    "A small stream write can wait for the short application-send delay so a nearby write or FIN can be packed into the same packet.",
+    "A stream write at the delay threshold sends immediately and does not arm the application-send delay timer.",
+    "The periodic recovery probe carries PING as the first non-PADDING frame.",
+    "The PING probe path is unavailable without an active path and 1-RTT packet protection material.",
+    "The PING probe is not treated as retransmittable payload, allowing a later PTO to send another periodic probe."
+  ],
+  "risks": [
+    "This slice proves a bounded active-path Application Data deadlock-avoidance floor, not a complete pacing or packet-batching scheduler.",
+    "This slice does not claim candidate-path or multipath packet scheduling.",
+    "This slice does not claim endpoint interop success beyond the traced S13 requirement homes.",
+    "This slice does not alter public APIs."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the focused S13 periodic ACK-probe scheduling gap for REQ-QUIC-RFC9000-S13-0002 and REQ-QUIC-RFC9000-S13P2P7-0001 only. It keeps broader packet-composition completeness, PMTU behavior, candidate-path scheduling, and hosted interop readiness out of scope."
+    }
+  ]
+}

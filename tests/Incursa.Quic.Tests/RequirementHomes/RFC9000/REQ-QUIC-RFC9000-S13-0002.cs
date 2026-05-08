@@ -290,6 +290,63 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                runtime.ActivePath.Value.Identity,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 9);
+        outboundEffects.Clear();
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        byte[] payload = Enumerable.Range(0, 32).Select(index => (byte)(0x40 + index)).ToArray();
+        await stream.WriteAsync(payload, 0, payload.Length);
+
+        Assert.DoesNotContain(outboundEffects, effect =>
+            effect is QuicConnectionArmTimerEffect arm
+            && arm.TimerKind == QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            sendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool keyPhase));
+        Assert.False(keyPhase);
+
+        ReadOnlySpan<byte> packetPayload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(packetPayload, out QuicStreamFrame frame));
+        Assert.Equal((ulong)stream.Id, frame.StreamId.Value);
+        Assert.Equal(0UL, frame.Offset);
+        Assert.True(frame.StreamData.SequenceEqual(payload));
+
+        ReadOnlySpan<byte> tail = SkipPadding(packetPayload[frame.ConsumedLength..]);
+        Assert.True(tail.IsEmpty);
+    }
+
     private static ReadOnlySpan<byte> SkipPadding(ReadOnlySpan<byte> payload)
     {
         while (!payload.IsEmpty)

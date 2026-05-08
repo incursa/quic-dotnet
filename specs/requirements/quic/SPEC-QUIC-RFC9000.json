@@ -20554,17 +20554,26 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0088"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0088"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0088"
         ],
         "upstream_refs": [
           "RFC 9000 §13 RFC9000-S13-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs::WriteAsync_CoalescesMultipleSmallWritesAfterTheSendDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs::WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs::WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs::WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay"
         ]
       }
     },
@@ -22237,17 +22246,24 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0088"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0088"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0088"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.7 RFC9000-S13.2.7-B2-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs::RecoveryTimerExpired_SendsPeriodicPingProbeWhenNoRetransmittablePayloadIsAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs::RecoveryPingProbe_DoesNotSendPaddingOnlyProbeWithoutActivePathOrOneRttKeys"
         ]
       }
     },
