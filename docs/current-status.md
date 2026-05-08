@@ -1,16 +1,39 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 max-ack-delay and non-ack
-inclusion closure, S13 ACK-only feedback-loop edge proof, S13 periodic
-ACK-probe closure, RFC9001 tail proof closure, trace substrate repair,
-metadata xref burn-down, SpecTrace core validation, and regenerated QUIC
-requirement coverage triage. Earlier runtime/proof-tail and hosted
-executive-read evidence remains pinned to the individual dated closure notes
-below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S13 multiple-packet ACK-decision
+closure, S13 max-ack-delay and non-ack inclusion closure, S13 ACK-only
+feedback-loop edge proof, S13 periodic ACK-probe closure, RFC9001 tail proof
+closure, trace substrate repair, metadata xref burn-down, SpecTrace core
+validation, and regenerated QUIC requirement coverage triage. Earlier
+runtime/proof-tail and hosted executive-read evidence remains pinned to the
+individual dated closure notes below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 Multiple-Packet ACK-Decision Closure Note
+
+`REQ-QUIC-RFC9000-S13P2P2-0003` is now `trace_clean` under the existing
+`ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`,
+`VER-QUIC-RFC9000-0001`, `ARC-QUIC-RFC9000-0024`,
+`WI-QUIC-RFC9000-0024`, and `VER-QUIC-RFC9000-0024` ownership. The closure
+adds direct negative proof that multiple processed non-ack-eliciting packets do
+not force an ACK decision, plus edge proof that a later gapped ack-eliciting
+packet can trigger the decision while the ACK frame preserves the earlier
+processed packet range.
+
+Current generated RFC requirement triage reports 1,480 of 1,771 requirements
+`trace_clean`, leaving 291 non-clean: 55 metadata-only missing-xref items, 6
+restructure-needed proof items, 54 partially covered items, 54 blocked items,
+and 122 uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P2P2 requirement-home
+filter 3/3, `QuicAckPiggybackPolicyBenchmarks` Dry run 5/5, SpecTrace core
+validation 508 artifacts, Release build 0 warnings/errors, full Release
+no-build suite 4,835/4,835, regenerated QUIC requirement coverage triage, and
+`git diff --check` with only generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 Max-Ack-Delay And Non-Ack Inclusion Closure Note
 

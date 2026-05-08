@@ -21542,20 +21542,25 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0024"
         ],
         "upstream_refs": [
           "RFC 9000 §13.2.2 RFC9000-S13.2.2-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::TryBuildAckFrame_IncludesPacketsProcessedBeforeTheAckDecisionIsMade"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::TryBuildAckFrame_IncludesPacketsProcessedBeforeTheAckDecisionIsMade",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::ShouldIncludeAckFrameWithOutgoingPacket_DoesNotTreatMultipleNonAckElicitingPacketsAsAnAckDecision",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs::TryBuildAckFrame_GappedAckElicitingPacketTriggersDecisionAfterEarlierPacketsWereProcessed"
         ]
       }
     },

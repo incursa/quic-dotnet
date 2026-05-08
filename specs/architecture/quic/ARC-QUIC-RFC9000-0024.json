@@ -25,7 +25,8 @@
     "REQ-QUIC-RFC9000-S13P2P1-0010",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
     "REQ-QUIC-RFC9000-S13P2P2-0001",
-    "REQ-QUIC-RFC9000-S13P2P2-0002"
+    "REQ-QUIC-RFC9000-S13P2P2-0002",
+    "REQ-QUIC-RFC9000-S13P2P2-0003"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
@@ -37,17 +38,19 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs"
   ],
-  "design_summary": "Application Data packet processing continues to record packet numbers and ack-eliciting classification in ACK-generation state. If that state requires an immediate ACK because the packet number is reordered, creates an ack-eliciting gap, or carries a CE observation, the runtime sends the ACK-only packet immediately. Otherwise, the first ordinary pending 1-RTT ACK arms a dedicated ACK-delay timer using the local max_ack_delay value, and the runtime withholds ACK-only emission until the timer expires or a later outgoing ack-eliciting packet can carry the ACK frame. A second pending ack-eliciting packet before the timer expires satisfies the packet-count threshold and sends a single ACK-only packet without injecting PING or STREAM frames. ACK piggybacking, ACK-only sends, and duplicate suppression all clear the pending ACK-delay timer.",
+  "design_summary": "Application Data packet processing continues to record packet numbers and ack-eliciting classification in ACK-generation state. If that state requires an immediate ACK because the packet number is reordered, creates an ack-eliciting gap, or carries a CE observation, the runtime sends the ACK-only packet immediately. Otherwise, the first ordinary pending 1-RTT ACK arms a dedicated ACK-delay timer using the local max_ack_delay value, and the runtime withholds ACK-only emission until the timer expires or a later outgoing ack-eliciting packet can carry the ACK frame. A second pending ack-eliciting packet before the timer expires satisfies the packet-count threshold and sends a single ACK-only packet without injecting PING or STREAM frames. Multiple processed packets do not by themselves force an ACK decision, but once a delayed or immediate ACK reason exists, the ACK frame is built from the accumulated processed packet ranges. ACK piggybacking, ACK-only sends, and duplicate suppression all clear the pending ACK-delay timer.",
   "data_and_state_considerations": "The timer is runtime scheduling state only. ACK ranges, duplicate suppression, and ACK Delay values remain owned by QuicAckGenerationState. The runtime uses the committed local max_ack_delay transport parameter when present and the RFC 9000 default value when the local parameter is omitted. The timer does not change ACK frame wire encoding, loss recovery accounting, peer RTT estimation, congestion response, or application stream payload construction.",
   "edge_cases_and_constraints": [
     "A single ordinary ack-eliciting Application Data packet arms an ACK-delay timer and does not immediately emit an ACK-only packet.",
     "The ACK-delay timer expiry emits at most one ACK-only packet containing an ACK frame and padding only.",
     "A non-ack-eliciting Application Data packet does not arm the ACK-delay timer by itself.",
     "A second pending ack-eliciting Application Data packet before the timer expires can satisfy the packet-count threshold and send one ACK-only packet immediately.",
+    "Multiple processed non-ack-eliciting packets do not create an ACK decision, while a later gapped ack-eliciting receipt can trigger an immediate decision that includes the earlier processed range.",
     "ACK piggybacking on outgoing ack-eliciting packets cancels the pending ACK-delay timer and does not permit a duplicate ACK-only packet for the same largest ack-eliciting receipt.",
     "Initial and Handshake ACK behavior, path-specific scheduling, multipath scheduling, interop success, and public API behavior stay outside this slice."
   ],
@@ -69,7 +72,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicConnectionRuntime.Routing.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Routing.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs)\n- [`QuicS13ApplicationSendDelayTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicConnectionRuntime.Routing.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Routing.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs)\n- [`REQ-QUIC-RFC9000-S13P2P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0003.cs)\n- [`QuicS13ApplicationSendDelayTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
     }
   ]
 }
