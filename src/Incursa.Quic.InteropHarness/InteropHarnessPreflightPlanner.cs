@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic.InteropHarness;
 
 internal sealed class InteropHarnessPreflightPlanner
@@ -91,6 +93,9 @@ internal sealed class InteropHarnessPreflightPlanner
                         $"interop harness: role=client, testcase={settings.TestCase}, certificate errors={errors}.");
                     return errors == SslPolicyErrors.RemoteCertificateChainErrors;
                 },
+                CipherSuitesPolicy = string.Equals(settings.TestCase, "chacha20", StringComparison.OrdinalIgnoreCase)
+                    ? new CipherSuitesPolicy([TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256])
+                    : null,
             },
         };
     }
@@ -354,3 +359,5 @@ internal sealed class InteropHarnessPreflightPlanner
         writer.Flush();
     }
 }
+
+#pragma warning restore CA1416

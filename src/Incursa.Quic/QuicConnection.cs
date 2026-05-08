@@ -83,6 +83,27 @@ public sealed class QuicConnection : IAsyncDisposable
         return runtime.OpenOutboundStreamAsync(streamType, cancellationToken);
     }
 
+    internal bool TryInitiateOneRttKeyUpdate()
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        return runtime.TryInitiateOneRttKeyUpdate();
+    }
+
+    internal bool TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        return runtime.TryExportDetachedResumptionTicketSnapshot(out detachedResumptionTicketSnapshot);
+    }
+
+    internal QuicTlsResumptionAttemptDisposition ResumptionAttemptDisposition
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+            return runtime.ResumptionAttemptDisposition;
+        }
+    }
+
     /// <summary>
     /// Closes the connection with the provided application error code.
     /// </summary>

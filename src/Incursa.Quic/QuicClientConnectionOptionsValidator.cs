@@ -3,6 +3,8 @@ using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic;
 
 internal static class QuicClientConnectionOptionsValidator
@@ -31,6 +33,7 @@ internal static class QuicClientConnectionOptionsValidator
             ?? throw new ArgumentNullException($"{parameterName}.{nameof(QuicClientConnectionOptions.ClientAuthenticationOptions)}");
         QuicClientCertificatePolicySnapshot? capturedCertificatePolicySnapshot =
             clientCertificatePolicySnapshot ?? CapturePeerCertificatePolicySnapshot(options.PeerCertificatePolicy);
+        CipherSuitesPolicy? capturedCipherSuitesPolicy = CaptureCipherSuitesPolicy(authenticationOptions.CipherSuitesPolicy);
 
         if (authenticationOptions.ApplicationProtocols is null)
         {
@@ -80,11 +83,6 @@ internal static class QuicClientConnectionOptionsValidator
             throw new NotSupportedException("Local certificate selection callbacks are not supported by this slice.");
         }
 
-        if (authenticationOptions.CipherSuitesPolicy is not null)
-        {
-            throw new NotSupportedException("Cipher suite policies are not supported by this slice.");
-        }
-
         if (authenticationOptions.EncryptionPolicy != EncryptionPolicy.RequireEncryption)
         {
             throw new NotSupportedException("Only EncryptionPolicy.RequireEncryption is supported by this slice.");
@@ -121,19 +119,19 @@ internal static class QuicClientConnectionOptionsValidator
         }
 
         return new QuicClientConnectionSettings(
-            CaptureOptions(options, authenticationOptions),
+            CaptureOptions(options, authenticationOptions, capturedCipherSuitesPolicy),
             CloneEndPoint(remoteEndPoint),
             options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
             capturedCertificatePolicySnapshot,
             detachedResumptionTicketSnapshot,
             localHandshakePrivateKey,
-            initialAddressValidationToken,
-            options.SelectedCipherSuite);
+            initialAddressValidationToken);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
         QuicClientConnectionOptions source,
-        SslClientAuthenticationOptions authenticationOptions)
+        SslClientAuthenticationOptions authenticationOptions,
+        CipherSuitesPolicy? cipherSuitesPolicy)
     {
         QuicReceiveWindowSizes windows = source.InitialReceiveWindowSizes;
         List<SslApplicationProtocol> applicationProtocols = authenticationOptions.ApplicationProtocols is { Count: > 0 } protocols
@@ -165,6 +163,7 @@ internal static class QuicClientConnectionOptionsValidator
                 AllowRenegotiation = authenticationOptions.AllowRenegotiation,
                 AllowTlsResume = authenticationOptions.AllowTlsResume,
                 ApplicationProtocols = applicationProtocols,
+                CipherSuitesPolicy = cipherSuitesPolicy,
                 CertificateChainPolicy = authenticationOptions.CertificateChainPolicy?.Clone(),
                 CertificateRevocationCheckMode = authenticationOptions.CertificateRevocationCheckMode,
                 EnabledSslProtocols = authenticationOptions.EnabledSslProtocols,
@@ -172,8 +171,29 @@ internal static class QuicClientConnectionOptionsValidator
                 TargetHost = authenticationOptions.TargetHost,
                 RemoteCertificateValidationCallback = authenticationOptions.RemoteCertificateValidationCallback,
             },
-            SelectedCipherSuite = source.SelectedCipherSuite,
-        };
+            };
+    }
+
+    private static CipherSuitesPolicy? CaptureCipherSuitesPolicy(CipherSuitesPolicy? source)
+    {
+        if (source is null)
+        {
+            return null;
+        }
+
+        List<TlsCipherSuite> allowedCipherSuites = [];
+        foreach (TlsCipherSuite allowedCipherSuite in source.AllowedCipherSuites)
+        {
+            allowedCipherSuites.Add(allowedCipherSuite);
+        }
+
+        if (allowedCipherSuites.Count != 1
+            || allowedCipherSuites[0] != TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256)
+        {
+            throw new NotSupportedException("Cipher suite policies are only supported when they pin TLS_CHACHA20_POLY1305_SHA256 on this slice.");
+        }
+
+        return new CipherSuitesPolicy(allowedCipherSuites);
     }
 
     private static QuicClientCertificatePolicySnapshot? CapturePeerCertificatePolicySnapshot(QuicPeerCertificatePolicy? source)
@@ -211,5 +231,6 @@ internal sealed record QuicClientConnectionSettings(
     QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
     ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
     ReadOnlyMemory<byte> InitialAddressValidationToken = default,
-    QuicTlsCipherSuite? SelectedCipherSuite = null,
     bool AllowClientPeerInitialReplacementBeforeTranscript = false);
+
+#pragma warning restore CA1416

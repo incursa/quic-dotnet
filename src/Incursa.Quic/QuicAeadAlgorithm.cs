@@ -21,7 +21,7 @@ internal enum QuicAeadAlgorithm
     Aes128Ccm = 2,
 
     /// <summary>
-    /// The AEAD_CHACHA20_POLY1305 algorithm.
+    /// The ChaCha20-Poly1305 AEAD algorithm.
     /// </summary>
     Chacha20Poly1305 = 3,
 }
@@ -47,11 +47,6 @@ internal static class QuicAeadAlgorithmMetadata
     private const int Aes256KeyLength = 32;
 
     /// <summary>
-    /// The key and header-protection key length used by AEAD_CHACHA20_POLY1305.
-    /// </summary>
-    private const int Chacha20KeyLength = 32;
-
-    /// <summary>
     /// Gets the key, IV, and header-protection key lengths for a supported packet-protection AEAD.
     /// </summary>
     internal static bool TryGetPacketProtectionLengths(
@@ -74,15 +69,10 @@ internal static class QuicAeadAlgorithmMetadata
                 return true;
 
             case QuicAeadAlgorithm.Aes256Gcm:
+            case QuicAeadAlgorithm.Chacha20Poly1305:
                 aeadKeyLength = Aes256KeyLength;
                 aeadIvLength = AeadNonceLength;
                 headerProtectionKeyLength = Aes256KeyLength;
-                return true;
-
-            case QuicAeadAlgorithm.Chacha20Poly1305:
-                aeadKeyLength = Chacha20KeyLength;
-                aeadIvLength = AeadNonceLength;
-                headerProtectionKeyLength = Chacha20KeyLength;
                 return true;
 
             default:

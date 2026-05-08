@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic.Tests;
 
 internal static class QuicLoopbackEstablishmentTestSupport
@@ -55,7 +57,8 @@ internal static class QuicLoopbackEstablishmentTestSupport
     internal static QuicClientConnectionOptions CreateSupportedClientOptions(
         IPEndPoint remoteEndPoint,
         string? targetHost = null,
-        X509Certificate2? trustedServerCertificate = null)
+        X509Certificate2? trustedServerCertificate = null,
+        CipherSuitesPolicy? cipherSuitesPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(remoteEndPoint);
 
@@ -66,6 +69,7 @@ internal static class QuicLoopbackEstablishmentTestSupport
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             EnabledSslProtocols = SslProtocols.Tls13,
             EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+            CipherSuitesPolicy = cipherSuitesPolicy,
         };
 
         if (trustedServerCertificate is not null)
@@ -154,6 +158,7 @@ internal static class QuicLoopbackEstablishmentTestSupport
                 $"PeerTP={(tlsState.PeerTransportParameters is null ? "<null>" : "set")}",
                 $"StagedPeerTP={(tlsState.StagedPeerTransportParameters is null ? "<null>" : "set")}",
                 $"HandshakePhase={tlsState.HandshakeTranscriptPhase}",
+                $"SelectedCipher={(tlsState.SelectedCipherSuite is null ? "<null>" : tlsState.SelectedCipherSuite.ToString())}",
                 $"InitialKeys={tlsState.InitialKeysAvailable}",
                 $"HandshakeKeys={tlsState.HandshakeKeysAvailable}",
                 $"OneRttKeys={tlsState.OneRttKeysAvailable}",
@@ -213,3 +218,5 @@ internal static class QuicLoopbackEstablishmentTestSupport
         return $"InitialDcid={initialDestination}, Dcid={destination}, Scid={source}, NextPn={nextPacketNumber}";
     }
 }
+
+#pragma warning restore CA1416

@@ -42,6 +42,8 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
+    private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
+    private const ushort TlsChacha20Poly1305Sha256Value = (ushort)QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
     private const byte UncompressedEcPointFormat = 0x00;
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
@@ -49,7 +51,6 @@ internal sealed class QuicTlsTranscriptProgress
     private const byte PskDheKeMode = 0x01;
 
     private readonly QuicTlsRole role;
-    private readonly QuicTlsCipherSuite preferredCipherSuite;
     private readonly ArrayBufferWriter<byte> partialTranscript = new();
     private readonly ArrayBufferWriter<byte> postHandshakeTranscript = new();
 
@@ -80,17 +81,8 @@ internal sealed class QuicTlsTranscriptProgress
     /// Initializes the transcript owner for a fixed endpoint role.
     /// </summary>
     internal QuicTlsTranscriptProgress(QuicTlsRole role)
-        : this(role, null)
-    {
-    }
-
-    /// <summary>
-    /// Initializes the transcript owner for a fixed endpoint role and cipher suite preference.
-    /// </summary>
-    internal QuicTlsTranscriptProgress(QuicTlsRole role, QuicTlsCipherSuite? preferredCipherSuite)
     {
         this.role = role;
-        this.preferredCipherSuite = preferredCipherSuite ?? QuicTlsCipherSuite.TlsAes128GcmSha256;
         progressState = role == QuicTlsRole.Server
             ? HandshakeProgressState.AwaitingClientHello
             : HandshakeProgressState.AwaitingServerHello;
@@ -1700,7 +1692,7 @@ internal sealed class QuicTlsTranscriptProgress
         return transcriptHashAlgorithmValue == QuicTlsTranscriptHashAlgorithm.Sha256;
     }
 
-    private bool TrySelectSupportedClientHelloCipherSuite(
+    private static bool TrySelectSupportedClientHelloCipherSuite(
         ReadOnlySpan<byte> cipherSuites,
         out QuicTlsCipherSuite cipherSuite,
         out QuicTlsTranscriptHashAlgorithm transcriptHashAlgorithmValue)
@@ -1715,8 +1707,7 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        ushort preferredCipherSuiteValue = (ushort)preferredCipherSuite;
-        bool foundPreferredCipherSuite = false;
+        bool foundSupportedCipherSuite = false;
         while (index < cipherSuites.Length)
         {
             if (!TryReadUInt16(cipherSuites, ref index, out ushort cipherSuiteValue))
@@ -1724,23 +1715,36 @@ internal sealed class QuicTlsTranscriptProgress
                 return false;
             }
 
-            if (cipherSuiteValue == preferredCipherSuiteValue)
+            if (cipherSuiteValue == TlsAes128GcmSha256Value)
             {
-                if (foundPreferredCipherSuite)
+                if (foundSupportedCipherSuite)
                 {
                     return false;
                 }
 
-                foundPreferredCipherSuite = true;
+                foundSupportedCipherSuite = true;
+                cipherSuite = QuicTlsCipherSuite.TlsAes128GcmSha256;
+                transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
+                continue;
+            }
+
+            if (cipherSuiteValue == TlsChacha20Poly1305Sha256Value)
+            {
+                if (foundSupportedCipherSuite)
+                {
+                    return false;
+                }
+
+                foundSupportedCipherSuite = true;
+                cipherSuite = QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
+                transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
             }
         }
 
-        if (!foundPreferredCipherSuite
-            || !TryMapCipherSuite(preferredCipherSuiteValue, out cipherSuite, out transcriptHashAlgorithmValue))
+        if (!foundSupportedCipherSuite)
         {
             return false;
         }
-
         return true;
     }
 

@@ -88,13 +88,14 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
+    /// <summary>
+    /// Gets the RFC 9001 Appendix B usage limits used for supported packet-protection materials.
+    /// </summary>
+    private static readonly QuicAeadUsageLimits PacketProtectionUsageLimits = CreatePacketProtectionUsageLimits();
+
     private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
-    private readonly QuicTlsCipherSuiteProfile profile;
-    private readonly QuicAeadUsageLimits packetProtectionUsageLimits;
-    private readonly int packetProtectionAeadKeyLength;
-    private readonly int packetProtectionAeadIvLength;
-    private readonly int packetProtectionHeaderProtectionKeyLength;
+    private QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
     private readonly byte[]? deterministicClientHelloRandom;
@@ -122,11 +123,13 @@ internal sealed class QuicTlsKeySchedule
     /// Creates the client-role TLS key schedule, optionally seeded with a deterministic local private key for tests.
     /// </summary>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
+    /// <param name="clientCipherSuiteProfile">An optional client cipher-suite profile to bind to the client role.</param>
     /// <param name="applicationProtocols">The configured ALPN protocols to advertise for the client role.</param>
     internal QuicTlsKeySchedule(
         ReadOnlyMemory<byte> localPrivateKey = default,
+        QuicTlsCipherSuiteProfile? clientCipherSuiteProfile = null,
         IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
-        : this(QuicTlsRole.Client, localPrivateKey, applicationProtocols)
+        : this(QuicTlsRole.Client, localPrivateKey, clientCipherSuiteProfile, applicationProtocols)
     {
     }
 
@@ -135,33 +138,24 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     /// <param name="role">The endpoint role that owns the key schedule.</param>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
+    /// <param name="clientCipherSuiteProfile">An optional client cipher-suite profile to bind when the schedule is created for the client role.</param>
     /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
-    /// <param name="selectedCipherSuite">The TLS 1.3 cipher suite to bind the schedule to when one has already been selected.</param>
     internal QuicTlsKeySchedule(
         QuicTlsRole role,
         ReadOnlyMemory<byte> localPrivateKey = default,
-        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null,
-        QuicTlsCipherSuite? selectedCipherSuite = null)
+        QuicTlsCipherSuiteProfile? clientCipherSuiteProfile = null,
+        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
     {
         this.role = role;
 
-        if (!QuicTlsCipherSuiteProfile.TryGet(
-            selectedCipherSuite ?? QuicTlsCipherSuite.TlsAes128GcmSha256,
-            out profile))
+        if (clientCipherSuiteProfile.HasValue)
+        {
+            profile = clientCipherSuiteProfile.Value;
+        }
+        else if (!QuicTlsCipherSuiteProfile.TryGet(QuicTlsCipherSuite.TlsAes128GcmSha256, out profile))
         {
             throw new InvalidOperationException("The supported TLS 1.3 profile is unavailable.");
         }
-
-        if (!QuicAeadAlgorithmMetadata.TryGetPacketProtectionLengths(
-            profile.PacketProtectionAlgorithm,
-            out packetProtectionAeadKeyLength,
-            out packetProtectionAeadIvLength,
-            out packetProtectionHeaderProtectionKeyLength))
-        {
-            throw new InvalidOperationException("The supported packet-protection algorithm metadata is unavailable.");
-        }
-
-        packetProtectionUsageLimits = CreatePacketProtectionUsageLimits(profile.PacketProtectionAlgorithm);
 
         localKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
         if (!localPrivateKey.IsEmpty)
@@ -511,14 +505,17 @@ internal sealed class QuicTlsKeySchedule
                     || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
                     || step.HandshakeMessageLength is null
                     || step.TransportParameters is not null
-                    || step.SelectedCipherSuite != profile.CipherSuite
-                    || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
-                    || step.NamedGroup != profile.NamedGroup
+                    || !step.SelectedCipherSuite.HasValue
+                    || !QuicTlsCipherSuiteProfile.TryGet(step.SelectedCipherSuite.Value, out QuicTlsCipherSuiteProfile helloRetryRequestProfile)
+                    || step.TranscriptHashAlgorithm != helloRetryRequestProfile.TranscriptHashAlgorithm
+                    || step.NamedGroup != helloRetryRequestProfile.NamedGroup
                     || !step.KeyShare.IsEmpty
                     || localTransportParameters is null)
                 {
                     return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
                 }
+
+                profile = helloRetryRequestProfile;
 
                 if (applicationProtocols.Length > 0
                     && !TryValidatePeerApplicationProtocolOffer(
@@ -562,14 +559,17 @@ internal sealed class QuicTlsKeySchedule
                 || step.HandshakeMessageType != QuicTlsHandshakeMessageType.ClientHello
                 || step.HandshakeMessageLength is null
                 || step.TransportParameters is null
-                || step.SelectedCipherSuite != profile.CipherSuite
-                || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
-                || step.NamedGroup != profile.NamedGroup
+                || !step.SelectedCipherSuite.HasValue
+                || !QuicTlsCipherSuiteProfile.TryGet(step.SelectedCipherSuite.Value, out QuicTlsCipherSuiteProfile clientHelloProfile)
+                || step.TranscriptHashAlgorithm != clientHelloProfile.TranscriptHashAlgorithm
+                || step.NamedGroup != clientHelloProfile.NamedGroup
                 || step.KeyShare.IsEmpty
                 || localTransportParameters is null)
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
+
+            profile = clientHelloProfile;
 
             ReadOnlySpan<byte> selectedApplicationProtocol = default;
             if (applicationProtocols.Length > 0)
@@ -743,13 +743,16 @@ internal sealed class QuicTlsKeySchedule
             return Array.Empty<QuicTlsStateUpdate>();
         }
 
-        if (step.SelectedCipherSuite != profile.CipherSuite
-            || step.TranscriptHashAlgorithm != profile.TranscriptHashAlgorithm
-            || step.NamedGroup != profile.NamedGroup
+        if (!step.SelectedCipherSuite.HasValue
+            || !QuicTlsCipherSuiteProfile.TryGet(step.SelectedCipherSuite.Value, out QuicTlsCipherSuiteProfile serverHelloProfile)
+            || step.TranscriptHashAlgorithm != serverHelloProfile.TranscriptHashAlgorithm
+            || step.NamedGroup != serverHelloProfile.NamedGroup
             || step.KeyShare.IsEmpty)
         {
             return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
         }
+
+        profile = serverHelloProfile;
 
         AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
 
@@ -1065,12 +1068,10 @@ internal sealed class QuicTlsKeySchedule
             if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.Handshake,
                 openTrafficSecret,
-                DeriveHeaderProtectionKey(openTrafficSecret),
                 out openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.Handshake,
                     protectTrafficSecret,
-                    DeriveHeaderProtectionKey(protectTrafficSecret),
                     out protectMaterial))
             {
                 return false;
@@ -1127,12 +1128,10 @@ internal sealed class QuicTlsKeySchedule
             if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
-                DeriveHeaderProtectionKey(openTrafficSecret),
                 out openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
-                    DeriveHeaderProtectionKey(protectTrafficSecret),
                     out protectMaterial))
             {
                 return false;
@@ -1247,12 +1246,10 @@ internal sealed class QuicTlsKeySchedule
             if (!TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.OneRtt,
                 openTrafficSecret,
-                currentOpenHeaderProtectionKey,
                 out QuicTlsPacketProtectionMaterial openMaterial)
                 || !TryCreatePacketProtectionMaterial(
                     QuicTlsEncryptionLevel.OneRtt,
                     protectTrafficSecret,
-                    currentProtectHeaderProtectionKey,
                     out QuicTlsPacketProtectionMaterial protectMaterial))
             {
                 return false;
@@ -1347,7 +1344,6 @@ internal sealed class QuicTlsKeySchedule
             return TryCreatePacketProtectionMaterial(
                 QuicTlsEncryptionLevel.ZeroRtt,
                 clientEarlyTrafficSecret,
-                DeriveHeaderProtectionKey(clientEarlyTrafficSecret),
                 out material);
         }
         finally
@@ -1372,13 +1368,22 @@ internal sealed class QuicTlsKeySchedule
     private bool TryCreatePacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlySpan<byte> trafficSecret,
-        ReadOnlySpan<byte> headerProtectionKey,
         out QuicTlsPacketProtectionMaterial material)
     {
         material = default;
 
-        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], packetProtectionAeadKeyLength);
-        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], packetProtectionAeadIvLength);
+        if (!QuicAeadAlgorithmMetadata.TryGetPacketProtectionLengths(
+                profile.PacketProtectionAlgorithm,
+                out int aeadKeyLength,
+                out int aeadIvLength,
+                out int headerProtectionKeyLength))
+        {
+            return false;
+        }
+
+        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], aeadKeyLength);
+        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], aeadIvLength);
+        byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], headerProtectionKeyLength);
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             encryptionLevel,
@@ -1386,14 +1391,14 @@ internal sealed class QuicTlsKeySchedule
             aeadKey,
             aeadIv,
             headerProtectionKey,
-            packetProtectionUsageLimits,
+            PacketProtectionUsageLimits,
             out material);
     }
 
-    private static QuicAeadUsageLimits CreatePacketProtectionUsageLimits(QuicAeadAlgorithm algorithm)
+    private static QuicAeadUsageLimits CreatePacketProtectionUsageLimits()
     {
         if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
-                algorithm,
+                QuicAeadAlgorithm.Chacha20Poly1305,
                 QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
                 QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
                 out QuicAeadUsageLimits usageLimits))
@@ -1402,11 +1407,6 @@ internal sealed class QuicTlsKeySchedule
         }
 
         return usageLimits;
-    }
-
-    private byte[] DeriveHeaderProtectionKey(ReadOnlySpan<byte> trafficSecret)
-    {
-        return HkdfExpandLabel(trafficSecret, QuicHpLabel, [], packetProtectionHeaderProtectionKeyLength);
     }
 
     private bool TryCreateInitialClientHello(

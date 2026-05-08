@@ -5,6 +5,8 @@ using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -46,17 +48,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
-        SslClientAuthenticationOptions? clientAuthenticationOptions = null,
-        QuicTlsCipherSuite? selectedCipherSuite = null)
+        SslClientAuthenticationOptions? clientAuthenticationOptions = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
-        handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role, selectedCipherSuite);
+        handshakeTranscriptProgress = new QuicTlsTranscriptProgress(Role);
+        QuicTlsCipherSuiteProfile? clientCipherSuiteProfile = ResolveClientCipherSuiteProfile(Role, clientAuthenticationOptions);
         keySchedule = new QuicTlsKeySchedule(
             Role,
             localHandshakePrivateKey,
-            clientAuthenticationOptions?.ApplicationProtocols,
-            selectedCipherSuite);
+            clientCipherSuiteProfile,
+            clientAuthenticationOptions?.ApplicationProtocols);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
 
@@ -82,6 +84,36 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         this.remoteCertificateValidationCallback = remoteCertificateValidationCallback;
         this.localServerLeafCertificateDer = localServerLeafCertificateDer;
         this.localServerLeafSigningPrivateKey = localServerLeafSigningPrivateKey;
+    }
+
+    private static QuicTlsCipherSuiteProfile? ResolveClientCipherSuiteProfile(
+        QuicTlsRole role,
+        SslClientAuthenticationOptions? clientAuthenticationOptions)
+    {
+        if (role != QuicTlsRole.Client
+            || clientAuthenticationOptions?.CipherSuitesPolicy is null)
+        {
+            return null;
+        }
+
+        List<TlsCipherSuite> allowedCipherSuites = [];
+        foreach (TlsCipherSuite cipherSuite in clientAuthenticationOptions.CipherSuitesPolicy.AllowedCipherSuites)
+        {
+            allowedCipherSuites.Add(cipherSuite);
+        }
+
+        if (allowedCipherSuites.Count != 1
+            || allowedCipherSuites[0] != TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256)
+        {
+            throw new NotSupportedException("Cipher suite policies are only supported when they pin TLS_CHACHA20_POLY1305_SHA256 on this slice.");
+        }
+
+        if (!QuicTlsCipherSuiteProfile.TryGet(QuicTlsCipherSuite.TlsChacha20Poly1305Sha256, out QuicTlsCipherSuiteProfile profile))
+        {
+            throw new InvalidOperationException("The supported ChaCha20 profile is unavailable.");
+        }
+
+        return profile;
     }
 
     /// <summary>
@@ -1302,3 +1334,5 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return sum < left ? ulong.MaxValue : sum;
     }
 }
+
+#pragma warning restore CA1416

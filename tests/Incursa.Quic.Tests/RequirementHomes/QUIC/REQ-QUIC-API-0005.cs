@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
@@ -145,6 +147,18 @@ public sealed class REQ_QUIC_API_0005
         QuicClientConnectionOptions renegotiationOptions = CreateClientOptions();
         renegotiationOptions.ClientAuthenticationOptions.AllowRenegotiation = true;
         Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(renegotiationOptions));
+
+        QuicClientConnectionOptions cipherSuiteOptions = CreateClientOptions();
+        try
+        {
+            cipherSuiteOptions.ClientAuthenticationOptions.CipherSuitesPolicy = new CipherSuitesPolicy([TlsCipherSuite.TLS_AES_128_GCM_SHA256]);
+        }
+        catch (PlatformNotSupportedException)
+        {
+            return;
+        }
+
+        Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(cipherSuiteOptions));
     }
 
     [Fact]
@@ -899,3 +913,5 @@ public sealed class REQ_QUIC_API_0005
             : string.Join(", ", sendDatagrams);
     }
 }
+
+#pragma warning restore CA1416

@@ -45,7 +45,7 @@ public sealed class REQ_QUIC_CRT_0108
     {
         QuicTlsKeySchedule schedule = new(
             CreateScalar(0x11),
-            [SslApplicationProtocol.Http3]);
+            applicationProtocols: [SslApplicationProtocol.Http3]);
 
         Assert.True(schedule.TryCreateClientHello(CreateBootstrapLocalTransportParameters(), out byte[] clientHelloTranscript));
 

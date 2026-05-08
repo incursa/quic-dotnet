@@ -4,6 +4,8 @@ using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
+#pragma warning disable CA1416
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
@@ -78,6 +80,63 @@ public sealed class REQ_QUIC_API_0013
         {
             Assert.NotNull(serverConnection);
             Assert.NotNull(clientConnection);
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConnectAsync_AcceptsChaCha20CipherSuitePolicyAndNegotiatesThatCipher()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+        };
+
+        CipherSuitesPolicy? cipherSuitesPolicy;
+        try
+        {
+            cipherSuitesPolicy = new CipherSuitesPolicy([TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256]);
+        }
+        catch (PlatformNotSupportedException)
+        {
+            return;
+        }
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate,
+            cipherSuitesPolicy: cipherSuitesPolicy);
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask).WaitAsync(TimeSpan.FromSeconds(5));
+
+        QuicConnection serverConnection = await acceptTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            string clientRuntimeDescription = QuicLoopbackEstablishmentTestSupport.DescribeConnection(clientConnection);
+            string serverRuntimeDescription = QuicLoopbackEstablishmentTestSupport.DescribeConnection(serverConnection);
+
+            Assert.Contains("SelectedCipher=TlsChacha20Poly1305Sha256", clientRuntimeDescription);
+            Assert.Contains("SelectedCipher=TlsChacha20Poly1305Sha256", serverRuntimeDescription);
         }
         finally
         {
@@ -185,3 +244,5 @@ public sealed class REQ_QUIC_API_0013
         Assert.Throws<NotSupportedException>(() => QuicConnection.ConnectAsync(clientOptions));
     }
 }
+
+#pragma warning restore CA1416

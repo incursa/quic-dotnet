@@ -58,11 +58,13 @@ public sealed class QuicQlogCapture
         QuicClientConnectionOptions options,
         ReadOnlyMemory<byte> localHandshakePrivateKey,
         CancellationToken cancellationToken = default,
-        bool allowClientPeerInitialReplacementBeforeTranscript = false)
+        bool allowClientPeerInitialReplacementBeforeTranscript = false,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
+            detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
             localHandshakePrivateKey: localHandshakePrivateKey) with
         {
             AllowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript,

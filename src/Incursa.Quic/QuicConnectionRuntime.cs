@@ -360,6 +360,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool HasResumptionMasterSecret => resumptionMasterSecret is not null || tlsState.HasResumptionMasterSecret;
 
+    internal QuicTlsResumptionAttemptDisposition ResumptionAttemptDisposition => tlsState.ResumptionAttemptDisposition;
+
     internal bool IsEarlyDataAdmissionOpen => false;
 
     internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
