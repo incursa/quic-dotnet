@@ -24014,17 +24014,23 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0011"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0011"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0011"
         ],
         "upstream_refs": [
           "RFC 9000 §13.4.2 RFC9000-S13.4.2-B8-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs::TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets"
         ]
       }
     },

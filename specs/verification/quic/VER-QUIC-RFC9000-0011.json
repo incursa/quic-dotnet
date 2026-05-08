@@ -13,6 +13,7 @@
   ],
   "verification_method": "Requirement-home execution, deterministic state-machine fuzz topoffs, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded ECN ACK-count validation helper slice.",
   "verifies": [
+    "REQ-QUIC-RFC9000-S13P4P2-0006",
     "REQ-QUIC-RFC9000-S13P4P2P1-0001",
     "REQ-QUIC-RFC9000-S13P4P2P1-0002",
     "REQ-QUIC-RFC9000-S13P4P2P1-0003",
@@ -43,6 +44,7 @@
     "src/Incursa.Quic/QuicEcnValidationState.cs",
     "src/Incursa.Quic/QuicEcnCounts.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicEcnValidationTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
@@ -72,5 +74,5 @@
       "content": "Deterministic requirement-home fuzz topoffs cover representative missing-count, zeroed-count, too-small ECT-plus-CE, exceed-sent, never-applied, and reordered ACK cases. The permanent benchmark suite covers helper success and failure branches only; Dry validation is harness evidence and is not treated as a stable performance baseline."
     }
   ],
-  "status_summary": "Passed locally on 2026-04-25. Focused ECN validation requirement-home tests passed 19/19, and the new QuicEcnValidationBenchmarks Dry suite executed all 5 cases. Dry benchmark results are harness evidence only and are not treated as stable performance baselines."
+  "status_summary": "Passed locally on 2026-04-25 for the original ECN ACK-count validation helper slice: focused ECN validation requirement-home tests passed 19/19, and QuicEcnValidationBenchmarks Dry executed all 5 cases. The 2026-05-08 ECT(1) validation topoff also passed: focused S13P4P2-0006 requirement-home filter 1/1, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S13P4P2-0006 trace_clean and reports 1,485 of 1,771 QUIC requirements trace-clean overall, SpecTrace core validation passed for 517 artifacts, Release build passed with 0 warnings and 0 errors, full Release no-build suite passed 4,844/4,844, and git diff --check passed with only generated-triage CRLF normalization warnings. Dry benchmark results remain harness evidence only and are not treated as stable performance baselines."
 }

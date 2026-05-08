@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T01:32:14.8662223-06:00",
+  "generated_at": "2026-05-08T01:42:10.1207988-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-08T01:32:14.8622312-06:00",
+    "generated_at": "2026-05-08T01:42:10.1165115-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 55,
-      "covered_but_proof_too_broad": 6,
+      "covered_but_proof_too_broad": 5,
       "partially_covered": 50,
-      "trace_clean": 1484,
+      "trace_clean": 1485,
       "uncovered_blocked": 54,
       "uncovered_unblocked": 122
     },
     "by_work_queue_tag": {
       "blocked": 54,
-      "clean": 1484,
+      "clean": 1485,
       "metadata_only": 55,
-      "new_tests_needed": 228,
-      "restructure_needed": 11
+      "new_tests_needed": 227,
+      "restructure_needed": 10
     },
     "by_rfc": [
       {
@@ -48,9 +48,9 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 55,
-          "covered_but_proof_too_broad": 6,
+          "covered_but_proof_too_broad": 5,
           "partially_covered": 50,
-          "trace_clean": 1156,
+          "trace_clean": 1157,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 122
         }
@@ -47173,31 +47173,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs::TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 0,
+        "total": 3,
+        "focused": 2,
         "broad": 1,
         "by_kind": {
-          "positive": 1,
+          "positive": 3,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -47206,6 +47203,50 @@
         }
       ],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2_0006",
+          "member": "REQ_QUIC_RFC9000_S13P4P2_0006.TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
+          "method": "TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs::TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P2_0006",
+          "member": "REQ_QUIC_RFC9000_S13P4P2_0006.TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
+          "method": "TryValidateAcknowledgedEcnCounts_UsesReportedEct1CountsForEct1MarkedPackets",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0006",
           "source": "requirement_attribute",
