@@ -1601,6 +1601,10 @@
   ],
   "supplemental_sections": [
     {
+      "heading": "2026-05-08 S2 Concurrent Streams Topoff",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S2_0008\"` passed 2/2.\n- `REQ-QUIC-RFC9000-S2-0008` now has direct focused positive proof that the stream-state helper can keep multiple local bidirectional and unidirectional streams open together and can keep multiple peer bidirectional and unidirectional receive streams open together under the configured stream limits.\n- Regenerated coverage triage marks the requirement `trace_clean` and reports 1,492 of 1,771 QUIC requirements trace-clean overall.\n- This remains bounded to focused concurrent stream-state bookkeeping proof and does not claim arbitrary public API concurrency, stream scheduler fairness, sender/recovery orchestration, dynamic limit autotuning, or interop-runner success."
+    },
+    {
       "heading": "2026-05-08 S2 Stream Cancellation Topoff",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S2_0006\"` passed 1/1.\n- `REQ-QUIC-RFC9000-S2-0006` now has direct focused positive proof that the stream-cancellation frame paths round-trip both `RESET_STREAM` and `STOP_SENDING`.\n- Regenerated coverage triage marks the requirement `trace_clean` and reports 1,491 of 1,771 QUIC requirements trace-clean overall.\n- This remains bounded to focused cancellation frame proof and does not claim broad stream-management completion, sender/recovery orchestration, public API widening, or interop-runner success."
     },

@@ -1,22 +1,44 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S2 stream-cancellation proof topoff, S13
-ECN continuation-after-success proof topoff, S13 ECN disable-on-validation-failure
-proof topoff, S13 ECT(1)+CE too-small validation proof topoff, S13 ECT(0)+CE
-too-small validation proof topoff, S13 ECN validation-before-use proof topoff,
-S13 ECT(1) validation count topoff, S13 ECN packet-number-space separation, S13
-ACK frame largest-packet delay boundary closure, S13 CRYPTO retransmission
-acknowledgment-boundary closure, S13 packet-number-space ACK separation, S13
-multiple-packet ACK-decision closure, S13 max-ack-delay and non-ack inclusion
-closure, S13 ACK-only feedback-loop edge proof, S13 periodic ACK-probe closure,
-RFC9001 tail proof closure, trace substrate repair, metadata xref burn-down,
-SpecTrace core validation, and regenerated QUIC requirement coverage triage.
-Earlier runtime/proof-tail and hosted executive-read evidence remains pinned to
-the individual dated closure notes below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S2 concurrent-stream proof topoff, S2
+stream-cancellation proof topoff, S13 ECN continuation-after-success proof
+topoff, S13 ECN disable-on-validation-failure proof topoff, S13 ECT(1)+CE
+too-small validation proof topoff, S13 ECT(0)+CE too-small validation proof
+topoff, S13 ECN validation-before-use proof topoff, S13 ECT(1) validation count
+topoff, S13 ECN packet-number-space separation, S13 ACK frame largest-packet
+delay boundary closure, S13 CRYPTO retransmission acknowledgment-boundary
+closure, S13 packet-number-space ACK separation, S13 multiple-packet
+ACK-decision closure, S13 max-ack-delay and non-ack inclusion closure, S13
+ACK-only feedback-loop edge proof, S13 periodic ACK-probe closure, RFC9001 tail
+proof closure, trace substrate repair, metadata xref burn-down, SpecTrace core
+validation, and regenerated QUIC requirement coverage triage. Earlier
+runtime/proof-tail and hosted executive-read evidence remains pinned to the
+individual dated closure notes below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S2 Concurrent-Streams Topoff Closure Note
+
+`REQ-QUIC-RFC9000-S2-0008` is now `trace_clean` under the baseline RFC 9000
+artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
+`VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that
+the stream-state helper can keep multiple local bidirectional and
+unidirectional streams open together and can keep multiple peer bidirectional
+and unidirectional receive streams open together under configured stream
+limits.
+
+Current generated RFC requirement triage reports 1,492 of 1,771 requirements
+`trace_clean`, leaving 279 non-clean: 55 metadata-only missing-xref items, 2
+proof-too-broad items, 46 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S2-0008 requirement-home
+filter 2/2, SpecTrace core validation 517 artifacts, Release build 0
+warnings/errors, full Release no-build suite 4,854/4,854, regenerated QUIC
+requirement coverage triage, and `git diff --check`.
 
 ## 2026-05-08 S2 Stream-Cancellation Topoff Closure Note
 
