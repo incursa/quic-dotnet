@@ -25,6 +25,9 @@
     "REQ-QUIC-RFC9001-S3-0005"
   ],
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
   ],
@@ -34,7 +37,7 @@
     "Render the RFC 9001 SpecTrace markdown siblings and validate the JSON artifacts so the downstream trace reflects the new 0002 leaf slice."
   ],
   "expected_result": "The requirement-home tests prove a real post-handshake TLS KeyUpdate is classified and closed through the existing KeyUpdateError path, NewSessionTicket remains separately supported, and the managed key-phase install path is still distinct.",
-  "status_summary": "This verification slice proves the classifier seam plus the existing KeyUpdateError close path while keeping ticket publication and key-phase installation distinct.",
+  "status_summary": "This verification slice proves the classifier seam plus the existing KeyUpdateError close path while keeping ticket publication and key-phase installation distinct. On 2026-05-08, the RFC9001 tail proof added focused canonical-ownership tests for the broad S3 TLS delivery, record-layer replacement, and security-critical negotiation clauses traced to this slice.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",

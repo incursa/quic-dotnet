@@ -91,6 +91,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0001.cs::CanonicalArtifactsAssignPacketProtectionResponsibilityToQuic"
         ]
       },
       "notes": [
@@ -120,6 +123,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0002.cs::CanonicalArtifactsBindPacketKeysToTlsDerivedMaterial"
         ]
       },
       "notes": [
@@ -149,6 +155,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0003.cs::CanonicalArtifactsKeepHandshakeAndAlertMessagesOnQuicTransport"
         ]
       },
       "notes": [
@@ -178,6 +187,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0004.cs::CanonicalArtifactsKeepTlsRecordResponsibilitiesInQuicPacketProtection"
         ]
       },
       "notes": [
@@ -207,6 +219,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B5-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0005.cs::CanonicalArtifactsKeepSecurityCriticalNegotiationOnTlsBridge"
         ]
       },
       "notes": [
@@ -236,6 +251,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0006.cs::CanonicalArtifactsOwnTheTlsHandshakeCoordinationSlice"
         ]
       },
       "notes": [
@@ -265,6 +283,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B6-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0007.cs::CanonicalArtifactsKeepTlsDeliveryOnQuicCryptoFrames"
         ]
       },
       "notes": [
@@ -360,6 +381,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0010.cs::CanonicalArtifactsOwnTlsToQuicUpdateDelivery"
         ]
       },
       "notes": [
@@ -389,6 +413,9 @@
         "upstream_refs": [
           "RFC 9001 §3 RFC9001-S3-B13-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0011.cs::RuntimeRejectsTlsApplicationDataRecordsOnCryptoPath"
         ]
       },
       "notes": [
@@ -658,6 +685,9 @@
         "upstream_refs": [
           "RFC 9001 §4 RFC9001-S4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0008.cs::SenderRuntimeMapsEncryptionLevelsToPacketNumberSpaces"
         ]
       }
     },
@@ -684,6 +714,9 @@
         "upstream_refs": [
           "RFC 9001 §4 RFC9001-S4-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0009.cs::SenderRuntimeKeepsFrameSemanticsScopedByPacketNumberSpace"
         ]
       }
     },
@@ -710,6 +743,9 @@
         "upstream_refs": [
           "RFC 9001 §4 RFC9001-S4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0010.cs::PacketParserMapsPacketTypeToPacketNumberSpace"
         ]
       }
     },
@@ -736,6 +772,9 @@
         "upstream_refs": [
           "RFC 9001 §4 RFC9001-S4-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0011.cs::CanonicalArtifactsKeepCoalescingPreferenceInsidePacketProtectionScope"
         ]
       }
     },
@@ -2621,6 +2660,9 @@
         "upstream_refs": [
           "RFC 9001 §7 RFC9001-S7-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0001.cs::CanonicalArtifactsKeepUnauthenticatedInitialDataCautionInScope"
         ]
       },
       "notes": [
@@ -2744,6 +2786,9 @@
         "upstream_refs": [
           "RFC 9001 §9 RFC9001-S9-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S9-0001.cs::CanonicalArtifactsApplyTlsSecurityConsiderationsToQuicTlsUse"
         ]
       },
       "notes": [

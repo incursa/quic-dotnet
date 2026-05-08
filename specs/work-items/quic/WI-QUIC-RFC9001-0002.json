@@ -32,5 +32,5 @@
     "Changing the managed QUIC key-phase install path.",
     "Adding public API or interop surface for TLS KeyUpdate."
   ],
-  "completion_notes": "Completed for the narrow TLS KeyUpdate classifier slice. The requirement-home tests prove the prohibited KeyUpdate path while NewSessionTicket remains separately supported and the managed key-phase install path stays distinct."
+  "completion_notes": "Completed for the narrow TLS KeyUpdate classifier slice. The requirement-home tests prove the prohibited KeyUpdate path while NewSessionTicket remains separately supported and the managed key-phase install path stays distinct. On 2026-05-08, focused canonical-ownership tests closed the broad S3 TLS delivery, record-layer replacement, and security-critical negotiation clauses that are traced to this slice."
 }

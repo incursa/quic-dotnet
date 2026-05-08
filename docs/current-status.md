@@ -1,14 +1,38 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for trace substrate repair, metadata xref
-burn-down, SpecTrace core validation, and regenerated QUIC requirement
-coverage triage. Earlier runtime/proof-tail and hosted executive-read evidence
-remains pinned to the individual dated closure notes below unless otherwise
-noted.
+Last verified: 2026-05-08 for RFC9001 tail proof closure, trace substrate
+repair, metadata xref burn-down, SpecTrace core validation, and regenerated
+QUIC requirement coverage triage. Earlier runtime/proof-tail and hosted
+executive-read evidence remains pinned to the individual dated closure notes
+below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 RFC9001 Tail Proof Closure Note
+
+RFC9001 is now fully trace-clean in the generated requirement coverage triage:
+96 of 96 requirements are `trace_clean`. The closure added focused
+requirement-home proof and canonical `trace.x_test_refs` for the remaining
+S3/S4/S7/S9 tail, including behavioral proof for `REQ-QUIC-RFC9001-S3-0011`
+and `REQ-QUIC-RFC9001-S4-0008` through `REQ-QUIC-RFC9001-S4-0010`, plus
+canonical-ownership proof for policy/document-scope clauses such as
+`REQ-QUIC-RFC9001-S7-0001` and `REQ-QUIC-RFC9001-S9-0001`.
+
+Current generated RFC requirement triage reports 1,474 of 1,771 requirements
+`trace_clean`, leaving 297 non-clean: 55 metadata-only missing-xref items, 13
+restructure-needed proof items, 59 partially covered items, 54 blocked items,
+and 123 uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: Release build 0 warnings/errors,
+focused RFC9001 S3/S4/S7/S9 tail requirement-home filter 15/15, SpecTrace core
+validation 505 artifacts, full Release no-build suite 4,827/4,827, and
+regenerated QUIC requirement coverage triage. This closure does not claim broad
+endpoint handshake completeness, public early-data support, general repeated
+key-update support, or expanded interop readiness beyond separately traced
+hosted supported-subset evidence.
 
 ## 2026-05-08 Metadata Xref Burn-down Note
 
