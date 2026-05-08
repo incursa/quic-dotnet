@@ -16,6 +16,7 @@
 - `transfer`
 
 Unsupported testcases return `127`.
+The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above.
 
 ## Build Locally
 

@@ -301,6 +301,12 @@ Notes on dependency:
    - Status: landed. The managed client/runtime path now observes peer `EncryptedExtensions` `early_data` disposition and keeps the public early-data promise closed.
    - Depends on: the client-role 1-RTT readiness seam, the current handshake/runtime proof floor, the detached handoff slice, the detached credential-capture slice, the ClientHello PSK-attempt slice, the ServerHello branch-point slice, the abbreviated resumption completion slice, the internal early-data prerequisite capture slice, the dormant early-data attempt-readiness slice, and the first client-side 0-RTT send-attempt slice staying stable.
 
+20. `Non-HTTP/3 testcase inventory/profile`
+   - Goal: make the documented upstream QUIC testcase surface explicit by classifying every non-HTTP/3 testcase as supported and executed, intentionally unsupported, prerequisite-blocked, or not mappable through the current helper/workflow.
+   - Focus: the documented upstream cases `versionnegotiation`, `handshake`, `transfer`, `chacha20`, `keyupdate`, `retry`, `resumption`, `zerortt`, `multiconnect`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration`, while keeping `http3` out of scope.
+   - Status: in progress. The helper/workflow surface now accepts the documented non-HTTP/3 inventory and writes explicit inventory artifacts; the remaining work is turning the blocked cells green case-by-case.
+   - Depends on: the current helper/workflow subset, the documented upstream testcase list, and the runtime prerequisite gates for 0-RTT, key update, and migration staying explicit.
+
 ## Do-Not-Widen Boundaries
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.
@@ -312,6 +318,7 @@ Notes on dependency:
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
 - Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry`, `post-handshake-stream`, and `multiconnect` child-process contracts.
+- Keep the documented non-HTTP/3 testcase inventory separate from the current supported subset until the explicit inventory/profile slice lands and the remaining cases are classified case-by-case.
 
 ## Current Unstable Areas Before Interop Continues
 
@@ -321,6 +328,7 @@ Notes on dependency:
 - The narrow child-process `retry` contract under `REQ-QUIC-INT-0012`, `ARC-QUIC-INT-0005`, `WI-QUIC-INT-0005`, and `VER-QUIC-INT-0005` is now closed.
 - The managed client/listener bootstrap seam is already proven.
 - The current client trust story now has a public exact peer-identity and explicit trust-material carrier plus the internal snapshot seam, and the remaining trust-policy story still does not widen to trust-store or hostname-validation semantics.
+- The documented non-HTTP/3 interop testcase inventory is now canonically represented in the helper/workflow surface, but the blocked cells are still red and `http3` remains out of scope.
 - The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but public early-data support, 0-RTT receive handling, and anti-replay remain out of scope.
 - The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but broader receive, anti-replay, and public-promise families remain separate.
 - The peer early-data disposition observation slice under `REQ-QUIC-CRT-0143` is now closed. The managed client/runtime path now observes peer EncryptedExtensions early_data disposition and discards dormant ZeroRtt material on rejection, but public early-data support remains explicitly closed.
