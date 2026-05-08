@@ -241,10 +241,6 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0004.cs::ClosingRuntimeRepliesToMalformedDatagramsWithConnectionClose",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0004.cs::DrainingRuntimeDoesNotReplyToMalformedDatagramsWithConnectionClose"
-      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -1464,11 +1460,6 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "x_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAfterPacketNumberExhaustionDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_DoesNotEmitBeforePacketNumberExhaustionDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAtTheMinimumStatelessResetLengthAfterPacketNumberExhaustionDiscard"
-      ],
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-RFC9000-0001"
@@ -15799,6 +15790,10 @@
         "upstream_refs": [
           "RFC 9000 §10.2.1 RFC9000-S10.2.1-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0004.cs::ClosingRuntimeRepliesToMalformedDatagramsWithConnectionClose",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0004.cs::DrainingRuntimeDoesNotReplyToMalformedDatagramsWithConnectionClose"
         ]
       }
     },
@@ -18197,7 +18192,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0001.cs::UnusableConnectionErrorsAreSignaledUsingConnectionCloseFrames"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_ParsesTransportAndApplicationVariants",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0001.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes"
         ]
       }
     },
@@ -18254,6 +18250,9 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0003.cs::ProtocolViolationCanStandInForASpecificTransportErrorCode"
         ]
       }
     },
@@ -18280,6 +18279,9 @@
         "upstream_refs": [
           "RFC 9000 §11 RFC9000-S11-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0004.cs::InternalErrorCanStandInForAnApplicableTransportErrorCode"
         ]
       }
     },
@@ -18338,7 +18340,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0002.cs::ApplicationErrorsUseConnectionCloseTypeOneD"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0001.cs::UnusableConnectionErrorsAreSignaledUsingConnectionCloseFrames"
         ]
       }
     },
@@ -18367,7 +18369,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0002.cs::ApplicationErrorsUseConnectionCloseTypeOneD"
         ]
       }
     },
@@ -18396,7 +18398,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0003.cs::TransportErrorsUseConnectionCloseTypeOneC"
         ]
       }
     },
@@ -18872,6 +18874,9 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B5-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0006.cs::TryOpenInitialPacket_AuthenticatesTheOriginalPacketAndRejectsTampering"
         ]
       }
     },
@@ -18898,6 +18903,11 @@
         "upstream_refs": [
           "RFC 9000 §12.1 RFC9000-S12.1-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0007.cs::HandshakePacketProtectionRoundTripsWithMatchingTlsMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0007.cs::HandshakePacketProtectionRejectsPacketsProtectedWithDifferentTlsMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P1-0007.cs::ClientRuntimeRevealsZeroRttAndOneRttKeysOnlyAtTheirHandshakeBoundaries"
         ]
       }
     },
@@ -19135,6 +19145,10 @@
         "upstream_refs": [
           "RFC 9000 §12.2 RFC9000-S12.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0008.cs::TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram_RewritesBothPacketsToTheCurrentPeerDestinationConnectionIdAfterRotation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0008.cs::TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram_DoesNotRetainTheStaleDestinationConnectionIdInEitherPacket"
         ]
       }
     },
@@ -19545,6 +19559,11 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B13-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAfterPacketNumberExhaustionDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_DoesNotEmitBeforePacketNumberExhaustionDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0009.cs::TryCreateStatelessResetDatagramForPacket_EmitsAtTheMinimumStatelessResetLengthAfterPacketNumberExhaustionDiscard"
         ]
       }
     },
@@ -19571,6 +19590,11 @@
         "upstream_refs": [
           "RFC 9000 §12.3 RFC9000-S12.3-B13-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0010.cs::TryBuildProtectedHandshakePacket_AllowsTheLastSendablePacketNumberBeforeExhaustion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0010.cs::TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0010.cs::TrySendRecoveryPingProbe_DiscardsTheConnectionWhenApplicationPacketNumbersAreExhausted"
         ]
       }
     },
@@ -21896,6 +21920,7 @@
         "upstream_refs": [
           "RFC 9000 §13.2.3 RFC9000-S13.2.3-B9-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
+        ]
       }
     },
     {

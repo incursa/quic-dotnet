@@ -1,34 +1,50 @@
 # Current Repository Status
 
-Last verified: 2026-05-06 for the S19P20 HANDSHAKE_DONE proof tail,
-S8P1P4 Retry token source binding and lifetime tail,
-S17P1 packet-number encoding completion,
-S17P4 spin-bit per-path state tail,
-S9P6P1 preferred-address conveyance and
-per-family selection tail, S9P6P1 preferred-address validation-failure
-policy, S9P6P1 preferred-address handshake-confirmed transition, S4P6
-stream-limit metadata xref tail, S4P6 cumulative incoming stream-limit tail,
-S4P6 max_streams oversized
-close-policy tail, S4P6 MAX_STREAMS monotonic limit update tail, S4P6
-stream-limit enforcement and blocked-open tail, S5P1P1 Retry sequencing and
-migration pool tail, S5P1P1 connection-ID sequence and active-set floor, S5P2 weakly
-protected packet failure policy, S5P2 packet classification and connection
-association floor, S7P4P1
-client 0-RTT updated transport-parameter packet-use policy, S7P4P1 client 0-RTT handshake-value
-supersession policy, S7P4P1 server 0-RTT transport-parameter acceptance
-policy, S7P4P1 client 0-RTT remembered transport-parameter policy, S18P2
-max_ack_delay alarm-slack policy, S18P2 max_udp_payload_size receiver limit,
-S18P2 initial_max_data runtime commit, S18P2 max_idle_timeout trace cleanup,
-S22P1P1 provisional-registration policy closeout, S18P2 preferred-address
-field-shape, disable-active-migration, and initial stream-count transport
-parameter closeouts, the S17P2P5P2/P3 Retry client processing closeout, and
-the adjacent S7P3 transport-parameter connection-ID authentication closeout;
-broader executive-read evidence remains pinned to its stated 2026-04-30
-refresh unless otherwise noted.
+Last verified: 2026-05-08 for trace substrate repair, metadata xref
+burn-down, SpecTrace core validation, and regenerated QUIC requirement
+coverage triage. Earlier runtime/proof-tail and hosted executive-read evidence
+remains pinned to the individual dated closure notes below unless otherwise
+noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 Metadata Xref Burn-down Note
+
+Follow-on metadata cleanup moved nine already-proved requirements from
+`covered_but_missing_xrefs` to `trace_clean` by attaching focused
+requirement-home evidence under `trace.x_test_refs`: `REQ-QUIC-RFC9000-S10P2P1-0004`,
+`REQ-QUIC-RFC9000-S11-0003`, `REQ-QUIC-RFC9000-S11-0004`,
+`REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-S12P1-0006`,
+`REQ-QUIC-RFC9000-S12P1-0007`, `REQ-QUIC-RFC9000-S12P2-0008`,
+`REQ-QUIC-RFC9000-S12P3-0009`, and `REQ-QUIC-RFC9000-S12P3-0010`.
+Adjacent stale refs for `REQ-QUIC-RFC9000-S11-0001`,
+`REQ-QUIC-RFC9000-S11P1-0001`, and `REQ-QUIC-RFC9000-S11P1-0002` were
+corrected to their direct requirement homes without changing their clean
+state.
+
+Current generated RFC requirement triage reports 1,445 of 1,771 requirements
+`trace_clean`, leaving 326 non-clean: 69 metadata-only missing-xref items, 13
+restructure-needed proof items, 59 partially covered items, 69 blocked items,
+and 123 uncovered-unblocked items. RFC 8999 and RFC 9002 remain fully
+trace-clean; RFC 9000 is 1,132 of 1,443 trace-clean, and RFC 9001 is 81 of 96
+trace-clean.
+
+## 2026-05-08 Trace Repair Note
+
+A malformed RFC 9000 requirement trace entry for
+`REQ-QUIC-RFC9000-S13P2P3-0013` was repaired by closing its
+`trace.upstream_refs` array. The canonical QUIC requirement JSON files now
+parse cleanly, `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1
+-Profiles core` validates 505 SpecTrace JSON artifacts, and
+`scripts\spec-trace\Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`
+regenerates the coverage triage.
+
+The immediate post-repair generated RFC requirement triage reported 1,436 of
+1,771 requirements `trace_clean`, leaving 335 non-clean. Treat that and older
+per-slice count snapshots below as historical closure evidence, not the current
+global count.
 
 ## 2026-05-06 Restart Note
 
@@ -910,10 +926,21 @@ explicit requirements and gap records, not inferred from the green baseline.
 
 The next useful lanes are:
 
-- Continue S4P6 with the broader incoming stream-limit proof set
-  (`REQ-QUIC-RFC9000-S4P6-0001`, `REQ-QUIC-RFC9000-S4P6-0006`, and
-  `REQ-QUIC-RFC9000-S4P6-0007`). `REQ-QUIC-RFC9000-S4P6-0002` through
-  `REQ-QUIC-RFC9000-S4P6-0005` are metadata-only xref cleanup.
+- Use `specs/generated/quic/quic-requirement-coverage-triage.*` as the
+  current selection surface. The canonical/generated trace gate is repaired,
+  and older per-slice count snapshots in this file are historical notes.
+- If the goal is fast trace-clean burn-down, continue with the 69 metadata-only
+  missing-xref requirements, for example `REQ-QUIC-RFC9000-S13P2-0001`,
+  `REQ-QUIC-RFC9000-S13P2P3-0003`, and
+  `REQ-QUIC-RFC9000-S17P2P4-0003`.
+- If the goal is harder protocol proof, start with the 253 new-test-needed
+  requirements or the 13 restructure-needed proof requirements, for example
+  `REQ-QUIC-RFC9000-S13P3-0010`,
+  `REQ-QUIC-RFC9000-S13P4P1-0006`, or
+  `REQ-QUIC-RFC9000-S5P2P3-0002`.
+- Resolve the 69 blocked requirements only through the recorded gap families,
+  notably connection close, stateless reset, migration/path-validation, and
+  RFC 9001 TLS/packet-space work.
 - Dispatch and inspect the opt-in hosted `supported-subset` interop profile
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
@@ -929,12 +956,12 @@ The next useful lanes are:
   artifact set. The RFC 9002 recovery/congestion front door, migration-core
   path-state decomposition front, handshake-orchestration umbrella, and ACK
   piggyback proof-tail are closed for their current repository-owned proof
-  surfaces. Future work should be selected from explicit generated triage and
-  gap records such as the remaining S4P6 proof tail, hosted interop expansion,
-  public-surface hardening, 0-RTT receive/anti-replay, concrete future
-  path-migration matrix cells, or newly discovered behavior gaps. The internal
-  repeated key-update lifecycle and epoch-cap slices are closed, but they are
-  not broad public key-update support claims.
+  surfaces. Future work should still be selected from explicit generated
+  triage and gap records, including hosted interop expansion, public-surface
+  hardening, 0-RTT receive/anti-replay, concrete future path-migration matrix
+  cells, or newly discovered behavior gaps. The internal repeated key-update
+  lifecycle and epoch-cap slices are closed, but they are not broad public
+  key-update support claims.
 
 When starting a new protocol slice, follow
 [`docs/requirements-workflow.md`](requirements-workflow.md), inspect
