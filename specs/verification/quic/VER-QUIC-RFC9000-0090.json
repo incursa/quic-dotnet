@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9000-0090",
+  "artifact_type": "verification",
+  "title": "QUIC RFC 9000 ACK Frame Largest-Packet Delay Boundary Verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0090",
+    "WI-QUIC-RFC9000-0090"
+  ],
+  "verification_method": "Focused requirement-home tests over ACK frame construction and codec round trip, coverage triage regeneration, SpecTrace JSON validation, Release build, full Release no-build test execution, and diff checking.",
+  "verifies": [
+    "REQ-QUIC-RFC9000-S13P3-0010"
+  ],
+  "scope": "This verification covers local ACK frame construction for the current acknowledgment set and ACK Delay calculation from the largest acknowledged packet, including the edge where a smaller packet arrives later than the largest acknowledged packet.",
+  "expected_result": "Focused tests show ACK frames carry the largest acknowledged packet, include the current acknowledgment ranges, reject an empty ACK set, preserve the selected fields through codec round trip, and compute ACK Delay from the largest acknowledged packet rather than a later-arriving smaller packet.",
+  "procedure": [
+    "Run the focused S13P3-0010 requirement-home filter.",
+    "Regenerate QUIC requirement coverage triage.",
+    "Validate canonical SpecTrace JSON with the core profile.",
+    "Run the Release build.",
+    "Run the full Release no-build test suite.",
+    "Check the resulting diff for whitespace errors."
+  ],
+  "preconditions": [
+    "ACK-generation state has recorded processed packets in the selected packet number space.",
+    "The focused edge records the largest acknowledged packet before a smaller packet to prove receipt order does not replace the ACK Delay basis."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This verification does not claim delayed-ACK scheduling, ECN validation, endpoint interop success, public API behavior, or peer ACK-processing behavior."
+    }
+  ],
+  "status_summary": "Local verification passed on 2026-05-08: focused S13P3-0010 requirement-home filter 4/4, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S13P3-0010 trace_clean and reports 1,483 of 1,771 QUIC requirements trace-clean overall, SpecTrace core validation passed for 514 artifacts, Release build passed with 0 warnings and 0 errors, full Release no-build suite passed 4,841/4,841, and git diff --check passed with only generated-triage CRLF normalization warnings."
+}

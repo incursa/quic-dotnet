@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0090",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 ACK Frame Largest-Packet Delay Boundary Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0090",
+    "VER-QUIC-RFC9000-0090"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P3-0010"
+  ],
+  "summary": "Close the S13.3 ACK-frame edge proof gap by proving ACK Delay is computed from the largest acknowledged packet when a smaller packet arrives later.",
+  "planned_changes": "- Add focused edge requirement-home proof for out-of-order receipt where the largest acknowledged packet is not the most recently received packet.\n- Add canonical x_test_refs and focused architecture/work-item/verification artifacts for REQ-QUIC-RFC9000-S13P3-0010.\n- Regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run focused and full Release verification, and keep ACK scheduling, ECN validation, and endpoint interop claims out of scope.",
+  "verification_plan": "Run the focused S13P3-0010 requirement-home filter, regenerate QUIC requirement coverage triage, validate canonical SpecTrace JSON with the core profile, run the Release build, run the full Release no-build test suite, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0090"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0090"
+  ],
+  "out_of_scope": [
+    "Delayed-ACK scheduling policy.",
+    "ECN validation behavior.",
+    "Endpoint interop success classification.",
+    "Public API changes.",
+    "Peer ACK-processing behavior."
+  ],
+  "completion_notes": "Completed as a focused proof and trace topoff over the existing ACK-generation state and ACK frame codec."
+}

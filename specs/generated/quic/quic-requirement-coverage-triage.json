@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T01:14:46.4632861-06:00",
+  "generated_at": "2026-05-08T01:24:34.3559272-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,22 +18,22 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-08T01:14:46.4595419-06:00",
+    "generated_at": "2026-05-08T01:24:34.3524489-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 55,
       "covered_but_proof_too_broad": 6,
-      "partially_covered": 52,
-      "trace_clean": 1482,
+      "partially_covered": 51,
+      "trace_clean": 1483,
       "uncovered_blocked": 54,
       "uncovered_unblocked": 122
     },
     "by_work_queue_tag": {
       "blocked": 54,
-      "clean": 1482,
+      "clean": 1483,
       "metadata_only": 55,
-      "new_tests_needed": 230,
-      "restructure_needed": 13
+      "new_tests_needed": 229,
+      "restructure_needed": 12
     },
     "by_rfc": [
       {
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 55,
           "covered_but_proof_too_broad": 6,
-          "partially_covered": 52,
-          "trace_clean": 1154,
+          "partially_covered": 51,
+          "trace_clean": 1155,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 122
         }
@@ -39461,35 +39461,33 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 3,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesTheLargestAcknowledgedPacketForAckDelay",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_RejectsAnEmptyAckSet",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 7,
+        "total": 11,
+        "focused": 9,
         "broad": 2,
         "by_kind": {
           "positive": 5,
           "negative": 2,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -39590,7 +39588,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0010",
           "member": "REQ_QUIC_RFC9000_S13P3_0010.Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders",
           "method": "Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders",
-          "line": 52,
+          "line": 86,
           "kinds": [
             "fuzz"
           ],
@@ -39612,7 +39610,7 @@
           "class": "REQ_QUIC_RFC9000_S13P3_0010",
           "member": "REQ_QUIC_RFC9000_S13P3_0010.Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders",
           "method": "Fuzz_TryBuildAckFrame_UsesTheLargestAcknowledgedPacketAcrossRandomOrders",
-          "line": 52,
+          "line": 86,
           "kinds": [
             "fuzz"
           ],
@@ -39662,6 +39660,50 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P3-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S13P3_0010",
+          "member": "REQ_QUIC_RFC9000_S13P3_0010.TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
+          "method": "TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P3-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs::TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S13P3_0010",
+          "member": "REQ_QUIC_RFC9000_S13P3_0010.TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
+          "method": "TryBuildAckFrame_UsesLargestAcknowledgedDelayWhenSmallerPacketArrivesLater",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

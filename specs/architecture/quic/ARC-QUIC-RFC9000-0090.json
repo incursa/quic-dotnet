@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0090",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 ACK Frame Largest-Packet Delay Boundary",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the focused S13.3 ACK-generation boundary that keeps ACK Delay tied to the largest acknowledged packet even when packets arrive out of packet-number order.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0090",
+    "VER-QUIC-RFC9000-0090"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S13P3-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs"
+  ],
+  "design_summary": "ACK-generation state records processed packet numbers and their receipt times per packet number space. When an ACK frame is built, it selects the highest packet number as Largest Acknowledged, emits the current acknowledgment range set, and computes ACK Delay from the receipt timestamp associated with that largest acknowledged packet. This remains true when a smaller packet arrives later than the largest packet; the later smaller-packet receipt can extend the current acknowledgment set but must not become the ACK Delay basis.",
+  "data_and_state_considerations": "The ACK state stores packet-number membership and receipt timestamps separately enough to recover the timestamp for the largest acknowledged packet. Encoding and parsing the ACK frame preserve the selected Largest Acknowledged value and the computed ACK Delay.",
+  "edge_cases_and_constraints": [
+    "Out-of-order receipt where a smaller packet arrives after the largest acknowledged packet still uses the largest packet's receipt timestamp for ACK Delay.",
+    "Empty ACK state remains rejected rather than inventing an ACK frame.",
+    "The focused proof covers local ACK frame construction and codec round trip, not peer ACK-processing policy or interop timing behavior."
+  ],
+  "risks": [
+    "This slice does not alter delayed-ACK scheduling or packet-emission policy.",
+    "This slice does not claim broader ECN validation behavior.",
+    "This slice does not claim endpoint interop success."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This design closes the focused ACK Delay edge proof for REQ-QUIC-RFC9000-S13P3-0010 only. It leaves ACK scheduling, ECN validation, and peer interop behavior to their own traced requirements."
+    }
+  ]
+}
