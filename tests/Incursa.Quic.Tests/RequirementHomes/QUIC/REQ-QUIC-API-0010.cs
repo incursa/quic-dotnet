@@ -48,15 +48,22 @@ public sealed class REQ_QUIC_API_0010
         QuicConnectionSentPacket? dataPacket = null;
         for (int attempt = 0; attempt < 100 && dataPacket is null; attempt++)
         {
-            dataPacket = senderRuntime.SendRuntime.SentPackets.Values.FirstOrDefault(packet =>
-                packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
-                && TryFindStreamFrame(
-                    packet.PlaintextPayload.Span,
-                    (ulong)pair.ClientStream.Id,
-                    offset: 0,
-                    streamDataLength: payload.Length,
-                    fin: false,
-                    out _));
+            try
+            {
+                dataPacket = senderRuntime.SendRuntime.SentPackets.Values.ToArray().FirstOrDefault(packet =>
+                    packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                    && TryFindStreamFrame(
+                        packet.PlaintextPayload.Span,
+                        (ulong)pair.ClientStream.Id,
+                        offset: 0,
+                        streamDataLength: payload.Length,
+                        fin: false,
+                        out _));
+            }
+            catch (InvalidOperationException)
+            {
+                dataPacket = null;
+            }
 
             if (dataPacket is null)
             {
