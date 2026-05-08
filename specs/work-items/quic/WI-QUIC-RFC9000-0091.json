@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0091",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 ECN Packet-Number-Space Separation Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0091",
+    "VER-QUIC-RFC9000-0091"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S13P4P1-0006"
+  ],
+  "summary": "Close the S13.4.1 ECN packet-number-space separation proof gap by proving ACK-generation state does not share ECN counts across spaces.",
+  "planned_changes": "- Add focused negative proof that ACK frame construction for an empty packet number space does not borrow ECN-marked acknowledgment state from another space.\n- Add focused edge proof that identical numeric packet numbers in Initial, Handshake, and Application Data spaces keep separate ECN counts.\n- Add canonical x_test_refs and focused architecture/work-item/verification artifacts for REQ-QUIC-RFC9000-S13P4P1-0006.\n- Regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run focused and full Release verification, and keep ECN validation and endpoint interop claims out of scope.",
+  "verification_plan": "Run the focused S13P4P1-0006 requirement-home filter, regenerate QUIC requirement coverage triage, validate canonical SpecTrace JSON with the core profile, run the Release build, run the full Release no-build test suite, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0091"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0091"
+  ],
+  "out_of_scope": [
+    "ECN validation of peer ACK frames.",
+    "Coalesced-packet ECN accounting.",
+    "Endpoint interop success classification.",
+    "Public API changes.",
+    "Congestion-control response to ECN validation results."
+  ],
+  "completion_notes": "Completed as a focused proof and trace topoff over the existing ACK-generation ECN state seam."
+}

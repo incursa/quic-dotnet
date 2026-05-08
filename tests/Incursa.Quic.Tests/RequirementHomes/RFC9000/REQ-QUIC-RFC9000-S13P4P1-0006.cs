@@ -59,4 +59,70 @@ public sealed class REQ_QUIC_RFC9000_S13P4P1_0006
         Assert.Equal(0UL, applicationFrame.EcnCounts!.Value.Ect1Count);
         Assert.Equal(2UL, applicationFrame.EcnCounts!.Value.EcnCeCount);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildAckFrame_DoesNotBorrowEcnCountsFromOtherPacketNumberSpaces()
+    {
+        QuicAckGenerationState tracker = new();
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Initial,
+            3,
+            ackEliciting: true,
+            receivedAtMicros: 1000,
+            ecnCounts: new QuicEcnCounts(7, 0, 0));
+
+        Assert.False(tracker.TryBuildAckFrame(QuicPacketNumberSpace.Handshake, nowMicros: 1100, out _));
+        Assert.False(tracker.TryBuildAckFrame(QuicPacketNumberSpace.ApplicationData, nowMicros: 1100, out _));
+
+        Assert.True(tracker.TryBuildAckFrame(QuicPacketNumberSpace.Initial, nowMicros: 1100, out QuicAckFrame initialFrame));
+        Assert.Equal(3UL, initialFrame.LargestAcknowledged);
+        Assert.Equal(7UL, initialFrame.EcnCounts!.Value.Ect0Count);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildAckFrame_KeepsSamePacketNumberEcnCountsSeparateAcrossSpaces()
+    {
+        QuicAckGenerationState tracker = new();
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Initial,
+            9,
+            ackEliciting: true,
+            receivedAtMicros: 1000,
+            ecnCounts: new QuicEcnCounts(1, 0, 0));
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.Handshake,
+            9,
+            ackEliciting: true,
+            receivedAtMicros: 1010,
+            ecnCounts: new QuicEcnCounts(0, 1, 0));
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            9,
+            ackEliciting: true,
+            receivedAtMicros: 1020,
+            ecnCounts: new QuicEcnCounts(0, 0, 1));
+
+        Assert.True(tracker.TryBuildAckFrame(QuicPacketNumberSpace.Initial, nowMicros: 1100, out QuicAckFrame initialFrame));
+        Assert.True(tracker.TryBuildAckFrame(QuicPacketNumberSpace.Handshake, nowMicros: 1100, out QuicAckFrame handshakeFrame));
+        Assert.True(tracker.TryBuildAckFrame(QuicPacketNumberSpace.ApplicationData, nowMicros: 1100, out QuicAckFrame applicationFrame));
+
+        Assert.Equal(9UL, initialFrame.LargestAcknowledged);
+        Assert.Equal(1UL, initialFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(0UL, initialFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(0UL, initialFrame.EcnCounts!.Value.EcnCeCount);
+        Assert.Equal(9UL, handshakeFrame.LargestAcknowledged);
+        Assert.Equal(0UL, handshakeFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(1UL, handshakeFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(0UL, handshakeFrame.EcnCounts!.Value.EcnCeCount);
+        Assert.Equal(9UL, applicationFrame.LargestAcknowledged);
+        Assert.Equal(0UL, applicationFrame.EcnCounts!.Value.Ect0Count);
+        Assert.Equal(0UL, applicationFrame.EcnCounts!.Value.Ect1Count);
+        Assert.Equal(1UL, applicationFrame.EcnCounts!.Value.EcnCeCount);
+    }
 }
