@@ -24336,6 +24336,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnOnValidationFailure",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs::TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AckOmitsEcnCounts",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AckOmitsEcnCounts",

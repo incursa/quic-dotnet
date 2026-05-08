@@ -4,6 +4,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P4P2P2_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryValidateAcknowledgedEcnCounts_DisablesEcnOnValidationFailure()
+    {
+        QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+            sentEct0Count: 1,
+            sentEct1Count: 0);
+
+        QuicEcnValidationTestSupport.AssertValidationFailure(
+            state,
+            reportedCounts: null,
+            newlyAcknowledgedEct0Packets: 1,
+            newlyAcknowledgedEct1Packets: 0);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P1-0002">If an ACK frame newly acknowledges a packet that the endpoint sent with either the ECT(0) or ECT(1) codepoint set, ECN validation MUST fail if the corresponding ECN counts are not present in the ACK frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P1-0003">This check detects a network element that zeroes the ECN field or a peer that MUST NOT report ECN markings.</workbench-requirement>
