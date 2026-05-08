@@ -69,6 +69,7 @@ public sealed class InteropRunnerScriptPreflightFailureTests
         string runRoot = runRoots[0];
         string invocationPath = Path.Combine(runRoot, "invocation.txt");
         string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+        string inventoryJsonPath = Path.Combine(runRoot, "testcase-inventory.json");
         string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
         string runnerShimPath = Path.Combine(runRoot, "runner-shim.py");
         string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
@@ -77,12 +78,14 @@ public sealed class InteropRunnerScriptPreflightFailureTests
         string runnerLogsPath = Path.Combine(runRoot, "runner-logs");
 
         string[] fileSystemEntries = Directory.GetFileSystemEntries(runRoot);
-        Assert.Equal(2, fileSystemEntries.Length);
+        Assert.Equal(3, fileSystemEntries.Length);
         Assert.Contains(invocationPath, fileSystemEntries);
         Assert.Contains(artifactTreePath, fileSystemEntries);
+        Assert.Contains(inventoryJsonPath, fileSystemEntries);
 
         Assert.True(File.Exists(invocationPath));
         Assert.True(File.Exists(artifactTreePath));
+        Assert.True(File.Exists(inventoryJsonPath));
         Assert.False(File.Exists(dockerBuildLogPath));
         Assert.False(File.Exists(runnerShimPath));
         Assert.False(File.Exists(runnerMarkdownPath));
@@ -94,6 +97,7 @@ public sealed class InteropRunnerScriptPreflightFailureTests
 
         string artifactTree = File.ReadAllText(artifactTreePath);
         Assert.Contains("invocation.txt", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("testcase-inventory.json", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("docker-build.log", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("runner-shim.py", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("runner-report.json", artifactTree, StringComparison.OrdinalIgnoreCase);

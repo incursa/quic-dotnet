@@ -488,11 +488,9 @@ function Get-InteropRunnerTestCaseInventoryEntry {
         [string]$TestCase
     )
 
-    return @(
-        Get-InteropRunnerTestCaseInventory |
-            Where-Object { $_.TestCase -eq $TestCase } |
-            Select-Object -First 1
-    )[0]
+    return Get-InteropRunnerTestCaseInventory |
+        Where-Object { $_.TestCase -eq $TestCase } |
+        Select-Object -First 1
 }
 
 function Get-InteropRunnerTestCaseInventorySummary {
