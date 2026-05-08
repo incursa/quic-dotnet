@@ -1,15 +1,41 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 ACK-only feedback-loop edge proof,
-S13 periodic ACK-probe closure, RFC9001 tail proof closure, trace substrate
-repair, metadata xref burn-down, SpecTrace core validation, and regenerated
-QUIC requirement coverage triage. Earlier runtime/proof-tail and hosted
+Last verified: 2026-05-08 for RFC 9000 S13 max-ack-delay and non-ack
+inclusion closure, S13 ACK-only feedback-loop edge proof, S13 periodic
+ACK-probe closure, RFC9001 tail proof closure, trace substrate repair,
+metadata xref burn-down, SpecTrace core validation, and regenerated QUIC
+requirement coverage triage. Earlier runtime/proof-tail and hosted
 executive-read evidence remains pinned to the individual dated closure notes
 below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 Max-Ack-Delay And Non-Ack Inclusion Closure Note
+
+`REQ-QUIC-RFC9000-S13P2-0002` and `REQ-QUIC-RFC9000-S13P2-0003` are now
+`trace_clean` under the existing `ARC-QUIC-RFC9000-0017`,
+`WI-QUIC-RFC9000-0017`, `VER-QUIC-RFC9000-0017`,
+`ARC-QUIC-RFC9000-0024`, `WI-QUIC-RFC9000-0024`, and
+`VER-QUIC-RFC9000-0024` ownership. The closure proves that an ack-eliciting
+Application Data packet schedules a delayed ACK at the advertised
+`max_ack_delay`, emits an ACK-only response when that timer expires, and that
+non-ack-eliciting packet numbers are included in ACK ranges only after an
+ack-eliciting packet creates an ACK reason.
+
+Current generated RFC requirement triage reports 1,479 of 1,771 requirements
+`trace_clean`, leaving 292 non-clean: 55 metadata-only missing-xref items, 6
+restructure-needed proof items, 55 partially covered items, 54 blocked items,
+and 122 uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P2/S13P2P1
+requirement-home filter 7/7, `QuicAckPiggybackPolicyBenchmarks` Dry run 5/5,
+SpecTrace core validation 508 artifacts, Release build 0 warnings/errors, full
+Release no-build suite 4,833/4,833, regenerated QUIC requirement coverage
+triage, and `git diff --check` with only generated-triage CRLF normalization
+warnings.
 
 ## 2026-05-08 S13 ACK-Only Feedback-Loop Edge Closure Note
 

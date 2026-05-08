@@ -12,6 +12,8 @@
     "VER-QUIC-RFC9000-0017"
   ],
   "addresses": [
+    "REQ-QUIC-RFC9000-S13P2-0002",
+    "REQ-QUIC-RFC9000-S13P2-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0008",
     "REQ-QUIC-RFC9000-S13P2P1-0011"
   ],
@@ -33,5 +35,5 @@
     "Endpoint interop success classification.",
     "Public API exposure."
   ],
-  "completion_notes": "Completed as a direct requirement-home proof over existing ACK-generation state; no production behavior changed."
+  "completion_notes": "Completed as a direct requirement-home proof over existing ACK-generation state; no production behavior changed. The 2026-05-08 topoff added direct section-level S13P2 proof for ack-eliciting max_ack_delay scheduling and non-ack-eliciting inclusion only when another ACK reason exists."
 }

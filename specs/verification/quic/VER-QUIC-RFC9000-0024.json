@@ -13,6 +13,7 @@
   ],
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Application Data ACK-delay runtime timer floor.",
   "verifies": [
+    "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2P1-0001",
     "REQ-QUIC-RFC9000-S13P2P1-0004",
     "REQ-QUIC-RFC9000-S13P2P1-0006",
@@ -43,6 +44,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
     "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
@@ -63,5 +65,5 @@
       "content": "The benchmark evidence is an internal Incursa-only ACK scheduling helper suite. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
     }
   ],
-  "status_summary": "Focused runtime, deterministic fuzz/property, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded Application Data ACK-delay runtime timer floor. Repository-wide SpecTrace JSON validation may still report standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+  "status_summary": "Focused runtime, deterministic fuzz/property, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded Application Data ACK-delay runtime timer floor. The 2026-05-08 topoff added direct S13P2-0002 proof that an ack-eliciting Application Data packet schedules and emits ACK-only output at the advertised max_ack_delay. Repository-wide SpecTrace JSON validation may still report standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
 }

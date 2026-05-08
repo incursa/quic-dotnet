@@ -20829,15 +20829,22 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0017",
+          "ARC-QUIC-RFC9000-0024"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0017",
+          "WI-QUIC-RFC9000-0024"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0017",
+          "VER-QUIC-RFC9000-0024"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs::AckElicitingApplicationDataPacketSchedulesAckAtAdvertisedMaxAckDelay",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_RemainsFalseWhenOnlyNonAckElicitingPacketsArePending",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs::ShouldIncludeAckFrameWithOutgoingPacket_StillDelaysNonAckElicitingOnlyPacketsAfterMaxAckDelay"
         ],
@@ -20859,15 +20866,19 @@
       },
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-RFC9000-0001"
+          "ARC-QUIC-RFC9000-0001",
+          "ARC-QUIC-RFC9000-0017"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9000-0001"
+          "WI-QUIC-RFC9000-0001",
+          "WI-QUIC-RFC9000-0017"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0017"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs::TryBuildAckFrame_IncludesNonAckElicitingGapOnlyAfterAckElicitingReason",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_RemainsFalseForGapFilledNonAckElicitingApplicationDataPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs::CanSendAckOnlyPacket_AllowsTheGapFilledPacketWhenItIsAckEliciting"
         ],

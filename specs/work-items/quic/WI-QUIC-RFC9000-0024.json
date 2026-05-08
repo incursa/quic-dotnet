@@ -12,6 +12,7 @@
     "VER-QUIC-RFC9000-0024"
   ],
   "addresses": [
+    "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2P1-0001",
     "REQ-QUIC-RFC9000-S13P2P1-0004",
     "REQ-QUIC-RFC9000-S13P2P1-0006",
@@ -38,5 +39,5 @@
     "Transport-parameter public option redesign.",
     "ACK frame parser or serializer behavior."
   ],
-  "completion_notes": "Completed as a bounded active-path Application Data ACK-delay runtime timer floor. Path scheduling and endpoint interop coverage remain separate."
+  "completion_notes": "Completed as a bounded active-path Application Data ACK-delay runtime timer floor. The 2026-05-08 topoff added direct S13P2-0002 proof that an ack-eliciting Application Data packet schedules and emits ACK-only output at the advertised max_ack_delay. Path scheduling and endpoint interop coverage remain separate."
 }

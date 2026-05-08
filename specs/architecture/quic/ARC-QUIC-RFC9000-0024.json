@@ -17,6 +17,7 @@
     "VER-QUIC-RFC9000-0024"
   ],
   "satisfies": [
+    "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2P1-0001",
     "REQ-QUIC-RFC9000-S13P2P1-0004",
     "REQ-QUIC-RFC9000-S13P2P1-0006",
@@ -32,6 +33,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
     "src/Incursa.Quic/QuicAckGenerationState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",

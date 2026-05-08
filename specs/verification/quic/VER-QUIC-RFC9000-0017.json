@@ -13,6 +13,8 @@
   ],
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, reciprocal trace inspection, and SpecTrace render/check for the bounded non-ack-eliciting ACK deferral and inclusion proof.",
   "verifies": [
+    "REQ-QUIC-RFC9000-S13P2-0002",
+    "REQ-QUIC-RFC9000-S13P2-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0008",
     "REQ-QUIC-RFC9000-S13P2P1-0011"
   ],
@@ -32,6 +34,8 @@
   "evidence": [
     "src/Incursa.Quic/QuicAckGenerationState.cs",
     "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0011.cs",
     "artifacts/v/20260425-rfc9000-nonack-deferral-inclusion/focused-rfc9000-nonack-deferral-inclusion-tests.log",
@@ -47,5 +51,5 @@
       "content": "This slice adds focused trace and requirement-home proof for existing ACK-generation behavior. It does not alter parser, serializer, wire-format, state-machine, or hot-path production code; deterministic fuzz/property coverage exercises retained range and scheduling classification without requiring a benchmark refresh."
     }
   ],
-  "status_summary": "Passed locally on 2026-04-25. Focused non-ack-eliciting ACK deferral and inclusion requirement-home tests passed, including deterministic fuzz/property coverage, and the focused reciprocal trace check linked only S13P2P1-0008 and S13P2P1-0011 to the new artifact set."
+  "status_summary": "Passed locally on 2026-04-25. Focused non-ack-eliciting ACK deferral and inclusion requirement-home tests passed, including deterministic fuzz/property coverage, and the focused reciprocal trace check linked only S13P2P1-0008 and S13P2P1-0011 to the new artifact set. The 2026-05-08 topoff added direct S13P2-0002 and S13P2-0003 section-level requirement-home evidence without changing production code."
 }
