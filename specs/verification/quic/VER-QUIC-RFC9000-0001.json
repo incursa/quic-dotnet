@@ -6,7 +6,7 @@
     "ARC-QUIC-RFC9000-0001",
     "WI-QUIC-RFC9000-0001"
   ],
-  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.\n- The top-level S9 peer-address validation proof is linked to focused requirement-home tests for preferred-address CID handoff without claiming full migration-core closure.\n- The local-issued connection-ID route-lifetime proof is linked to focused requirement-home tests for endpoint route registration, short-header and long-header active-CID routing, maximum-length CID routing, and route removal after peer retirement.\n- The local-issued connection-ID replenishment proof is linked to focused requirement-home tests for retiring an active issued CID via RETIRE_CONNECTION_ID, invalidating the retired route/token state, registering a replacement route/token pair, and sending a replacement NEW_CONNECTION_ID frame when the peer's active CID limit allows it.",
+  "expected_result": "- The spec requirements carry downstream trace links.\n- The quality lane surfaces the evidence in the repo-local reports without missing downstream trace or verification links.\n- The bounded stream/runtime flow-control slice is visible in the trace plan, including supported final-size-bearing FIN/RESET retransmission preservation, without implying full sender/recovery or STOP_SENDING/RESET coverage.\n- The S2 stream-cancellation topoff is visible through focused RESET_STREAM and STOP_SENDING frame proof without implying broad runtime abort orchestration.\n- The top-level S9 peer-address validation proof is linked to focused requirement-home tests for preferred-address CID handoff without claiming full migration-core closure.\n- The local-issued connection-ID route-lifetime proof is linked to focused requirement-home tests for endpoint route registration, short-header and long-header active-CID routing, maximum-length CID routing, and route removal after peer retirement.\n- The local-issued connection-ID replenishment proof is linked to focused requirement-home tests for retiring an active issued CID via RETIRE_CONNECTION_ID, invalidating the retired route/token state, registering a replacement route/token pair, and sending a replacement NEW_CONNECTION_ID frame when the peer's active CID limit allows it.",
   "artifact_id": "VER-QUIC-RFC9000-0001",
   "verifies": [
     "REQ-QUIC-RFC9000-S2-0001",
@@ -1600,6 +1600,10 @@
     "The parser, property, fuzz, and benchmark suites remain runnable in the local workbench flow."
   ],
   "supplemental_sections": [
+    {
+      "heading": "2026-05-08 S2 Stream Cancellation Topoff",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S2_0006\"` passed 1/1.\n- `REQ-QUIC-RFC9000-S2-0006` now has direct focused positive proof that the stream-cancellation frame paths round-trip both `RESET_STREAM` and `STOP_SENDING`.\n- Regenerated coverage triage marks the requirement `trace_clean` and reports 1,491 of 1,771 QUIC requirements trace-clean overall.\n- This remains bounded to focused cancellation frame proof and does not claim broad stream-management completion, sender/recovery orchestration, public API widening, or interop-runner success."
+    },
     {
       "heading": "ACK Range Processing Availability Regression",
       "content": "Focused S13.2.3 and S19.3 requirement-home tests cover ACK Range Count rejection before proportional allocation and sender ACK processing that checks finite tracked packet state against symbolic ACK ranges instead of materializing every acknowledged packet number."
