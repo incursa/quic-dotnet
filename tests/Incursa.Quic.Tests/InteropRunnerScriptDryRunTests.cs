@@ -66,6 +66,42 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-logs"), GetPlanValue(output, "Runner logs"));
         Assert.Equal(Path.Combine(runRoot, "artifact-tree.txt"), GetPlanValue(output, "Artifact tree"));
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
+        Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal(
+            "chacha20,keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            GetPlanValue(output, "Prerequisite-blocked"));
+        Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
+        Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsDocumentedInventoryCellsAndKeepsThemExplicit()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "versionnegotiation,connectionmigration"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("versionnegotiation,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }

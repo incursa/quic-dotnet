@@ -22,8 +22,29 @@ public sealed class REQ_QUIC_RFC9000_S14_0003
             [QuicVersionNegotiation.Version1],
             out int requiredPayloadSize));
         Assert.Equal(QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, requiredPayloadSize);
+    }
 
-        Assert.False(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize([], out _));
-        Assert.False(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize([0x0A0A0A0A], out _));
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists()
+    {
+        Assert.False(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize([], out int requiredPayloadSize));
+        Assert.Equal(0, requiredPayloadSize);
+
+        Assert.False(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize([0x0A0A0A0A], out requiredPayloadSize));
+        Assert.Equal(0, requiredPayloadSize);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated()
+    {
+        Assert.True(QuicVersionNegotiation.TryGetRequiredInitialDatagramPayloadSize(
+            [QuicVersionNegotiation.Version1, QuicVersionNegotiation.Version1],
+            out int requiredPayloadSize));
+
+        Assert.Equal(QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, requiredPayloadSize);
     }
 }

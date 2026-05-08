@@ -18,6 +18,7 @@ Default behavior:
 - Testcases: `handshake,retry,transfer`
 - The helper also accepts `multiconnect` when you want the sequential managed transfer path.
 - The helper translates local `multiconnect` into the runner's CLI testcase name `handshakeloss`, because the upstream runner uses `multiconnect` only for the container-facing `TESTCASE_*` values.
+- The helper also recognizes the documented non-HTTP/3 upstream inventory, classifies each cell explicitly, and writes `testcase-inventory.json` beside the runner outputs so blocked cells stay visible instead of collapsing into a generic unsupported bucket.
 - The smaller `post-handshake-stream` proof remains available through the local harness requirement-home lane; this helper does not expose that testcase yet.
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
 - Non-`DryRun` execution now preflights Docker, Python, `tshark`, and `editcap` before the image build starts, because the upstream runner needs packet-analysis tools for its post-checks.
@@ -44,6 +45,7 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
+The current supported/executed cells are still `handshake`, `transfer`, `retry`, `multiconnect`, and `versionnegotiation`; the remaining documented non-HTTP/3 cells are now surfaced as explicit inventory entries that are still red or blocked.
 
 Hosted corroboration:
 
@@ -85,6 +87,7 @@ Each run creates a timestamped directory containing:
 - `runner-report.json`
 - `runner-report.md`
 - `runner.stderr.log`
+- `testcase-inventory.json`
 - `runner-logs/`
 - `artifact-tree.txt`
 

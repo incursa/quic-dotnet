@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0011",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Non-HTTP/3 Interop-Testcase Inventory Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Workflow review, requirement-home tests, helper dry-run plans, artifact inspection, SpecTrace validation, and Workbench validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0011",
+    "WI-QUIC-INT-0011"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0018"
+  ],
+  "preconditions": [
+    "The documented upstream QUIC testcase inventory remains available from quic-interop-runner documentation.",
+    "The repository keeps the existing supported subset stable while the inventory/profile slice is drafted."
+  ],
+  "scope": "Verify that the repository can represent every documented non-HTTP/3 upstream QUIC testcase as an explicit inventory/profile cell with a clear classification, while HTTP/3 stays out of scope and no broad interop-readiness claim is implied.",
+  "procedure": [
+    "Review the upstream QUIC testcase documentation and confirm the documented non-HTTP/3 suite is the inventory source.",
+    "Confirm the new requirement and architecture define explicit classes for supported, intentionally unsupported, prerequisite-blocked, and non-mappable cells.",
+    "Confirm HTTP/3 remains excluded from the inventory/profile.",
+    "Confirm the helper/workflow surface can emit or plan per-cell artifact retention for the inventoried cases without silently collapsing them into generic unsupported fallthrough.",
+    "Run the requirement-home tests and helper script tests tied to the inventory/profile slice.",
+    "Run SpecTrace core validation and Workbench core validation."
+  ],
+  "expected_result": "The repository has a canonical non-HTTP/3 testcase inventory/profile that makes the broader upstream QUIC suite visible and classed without widening the support promise, while HTTP/3 remains out of scope.",
+  "evidence": [
+    "https://github.com/quic-interop/quic-interop-runner/blob/master/quic.md",
+    "docs/design/quic-interop-prep-plan.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/architecture/quic/ARC-QUIC-INT-0011.json",
+    "specs/work-items/quic/WI-QUIC-INT-0011.json",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md"
+  ],
+  "status_summary": "Draft verification plan only. The helper now accepts the documented non-HTTP/3 inventory and emits per-run inventory artifacts, versionnegotiation is now green, and the remaining work is to verify the blocked cells and preserve the trace evidence.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "HTTP/3 remains out of scope for this inventory/profile slice. Turning blocked or unsupported cells green is separate from making the inventory explicit."
+    }
+  ]
+}

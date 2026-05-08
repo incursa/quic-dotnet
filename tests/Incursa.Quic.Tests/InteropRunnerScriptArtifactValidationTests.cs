@@ -146,6 +146,7 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         string invocationPath = Path.Combine(runRoot, "invocation.txt");
         string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
         string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
+        string inventoryJsonPath = Path.Combine(runRoot, "testcase-inventory.json");
         string runnerJsonPath = Path.Combine(runRoot, "runner-report.json");
         string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
         string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
@@ -154,6 +155,7 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         Assert.True(File.Exists(invocationPath));
         Assert.True(File.Exists(artifactTreePath));
         Assert.True(File.Exists(dockerBuildLogPath));
+        Assert.True(File.Exists(inventoryJsonPath));
         Assert.True(File.Exists(runnerJsonPath));
         Assert.True(File.Exists(runnerMarkdownPath));
         Assert.True(File.Exists(runnerStdErrPath));
@@ -170,9 +172,11 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         Assert.Contains("RunnerLogDir:", invocationText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ArtifactTreeLog:", invocationText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("RunnerArgs:", invocationText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("InventoryJson:", invocationText, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("invocation.txt", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("docker-build.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("testcase-inventory.json", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-report.json", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-report.md", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner.stderr.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
@@ -190,6 +194,7 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         string invocationPath = Path.Combine(runRoot, "invocation.txt");
         string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
         string dockerBuildLogPath = Path.Combine(runRoot, "docker-build.log");
+        string inventoryJsonPath = Path.Combine(runRoot, "testcase-inventory.json");
         string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
         string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
         string runnerLogsPath = Path.Combine(runRoot, "runner-logs");
@@ -197,6 +202,7 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         Assert.True(File.Exists(invocationPath));
         Assert.True(File.Exists(artifactTreePath));
         Assert.True(File.Exists(dockerBuildLogPath));
+        Assert.True(File.Exists(inventoryJsonPath));
         Assert.True(File.Exists(runnerMarkdownPath));
         Assert.True(File.Exists(runnerStdErrPath));
         Assert.True(Directory.Exists(runnerLogsPath));
@@ -212,9 +218,11 @@ public sealed class InteropRunnerScriptArtifactValidationTests
         Assert.Contains("RunnerLogDir:", invocationText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ArtifactTreeLog:", invocationText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("RunnerArgs:", invocationText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("InventoryJson:", invocationText, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("invocation.txt", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("docker-build.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("testcase-inventory.json", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-report.md", artifactTreeText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner.stderr.log", artifactTreeText, StringComparison.OrdinalIgnoreCase);
 

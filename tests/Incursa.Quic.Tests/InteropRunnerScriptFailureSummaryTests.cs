@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Incursa.Quic.Tests;
 
@@ -34,19 +35,23 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.Contains("Evidence was preserved in the run root for post-failure inspection.", output, StringComparison.OrdinalIgnoreCase);
 
         string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationPath = Path.Combine(runRoot, "invocation.txt");
         string runnerJsonPath = Path.Combine(runRoot, "runner-report.json");
         string runnerMarkdownPath = Path.Combine(runRoot, "runner-report.md");
         string runnerStdErrPath = Path.Combine(runRoot, "runner.stderr.log");
         string runnerLogsPath = Path.Combine(runRoot, "runner-logs");
         string runnerLogPath = Directory.GetFiles(runnerLogsPath, "*", SearchOption.AllDirectories).Single();
         string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+        string inventoryJsonPath = Path.Combine(runRoot, "testcase-inventory.json");
 
-        Assert.True(File.Exists(Path.Combine(runRoot, "invocation.txt")));
+        Assert.True(File.Exists(invocationPath));
         Assert.True(File.Exists(Path.Combine(runRoot, "docker-build.log")));
+        Assert.True(File.Exists(inventoryJsonPath));
         Assert.True(File.Exists(runnerJsonPath));
         Assert.True(File.Exists(runnerMarkdownPath));
         Assert.True(File.Exists(runnerStdErrPath));
         Assert.True(Directory.Exists(runnerLogsPath));
+        Assert.Contains("InventoryJson:", File.ReadAllText(invocationPath), StringComparison.OrdinalIgnoreCase);
 
         Assert.Equal("{\"mode\":\"non-zero-valid-outputs\"}", File.ReadAllText(runnerJsonPath).Trim());
         Assert.Contains(
@@ -67,7 +72,61 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.Contains("runner-report.json", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-report.md", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner.stderr.log", artifactTree, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("testcase-inventory.json", artifactTree, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner-logs", artifactTree, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedInventoryCellsAndRecordsThem()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-valid-outputs");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "versionnegotiation");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "Reason: the runner exited non-zero after producing the expected outputs.",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string inventoryJsonPath = Path.Combine(runRoot, "testcase-inventory.json");
+        string artifactTreePath = Path.Combine(runRoot, "artifact-tree.txt");
+
+        Assert.True(File.Exists(inventoryJsonPath));
+        Assert.Contains("testcase-inventory.json", File.ReadAllText(artifactTreePath), StringComparison.OrdinalIgnoreCase);
+
+        using JsonDocument inventoryDocument = JsonDocument.Parse(File.ReadAllText(inventoryJsonPath));
+        JsonElement requestedEntry = inventoryDocument.RootElement
+            .GetProperty("inventory")
+            .EnumerateArray()
+            .Single(item => string.Equals(
+                item.GetProperty("testcase").GetString(),
+                "versionnegotiation",
+                StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal("supported-executed", requestedEntry.GetProperty("classification").GetString());
+        Assert.True(requestedEntry.GetProperty("requested").GetBoolean());
     }
 
     [Fact]

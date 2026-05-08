@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0011",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "QUIC Non-HTTP/3 Interop-Testcase Inventory Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a canonical inventory/profile slice that enumerates every documented non-HTTP/3 upstream QUIC testcase, classifies each case explicitly, and keeps per-cell artifact retention without claiming broad interop readiness.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0011",
+    "VER-QUIC-INT-0011"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0011"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0011"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0018"
+  ],
+  "planned_changes": "- Add a non-HTTP/3 inventory/profile slice to SPEC-QUIC-INT.\n- Classify the documented upstream QUIC testcases into supported, intentionally unsupported, prerequisite-blocked, or not-mappable cells.\n- Keep HTTP/3 out of scope.\n- Preserve per-cell artifact retention and avoid generic unsupported fallthrough for the inventoried cases.\n- Update the interop prep plan and gap ledger so the new goal is visible before code changes start.",
+  "out_of_scope": [
+    "turning every inventory cell green immediately",
+    "HTTP/3 support",
+    "protocol/runtime behavior changes",
+    "public API widening",
+    "support-readiness claims"
+  ],
+  "verification_plan": "Review the upstream QUIC testcase inventory from quic-interop-runner documentation, verify the new requirement and architecture classify each testcase explicitly, run any helper dry-run planning necessary to emit the inventory/profile, and finish with SpecTrace plus Workbench validation.",
+  "completion_notes": "Helper inventory plumbing is in progress. The documented non-HTTP/3 inventory is now explicit in the helper and per-run artifacts, versionnegotiation is now green, and the remaining blocked cells still need verification and case-by-case greening."
+}
