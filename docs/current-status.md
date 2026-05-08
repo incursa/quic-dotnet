@@ -12,6 +12,27 @@ architecture, work items, or verification artifacts under `specs/`.
 
 ## 2026-05-08 Metadata Xref Burn-down Note
 
+Follow-on S13/S17 metadata cleanup moved fourteen already-proved requirements
+from `covered_but_missing_xrefs` to `trace_clean` by attaching focused
+requirement-home evidence under `trace.x_test_refs`:
+`REQ-QUIC-RFC9000-S13P2-0001`, `REQ-QUIC-RFC9000-S13P2P3-0003`,
+`REQ-QUIC-RFC9000-S13P2P3-0004`, `REQ-QUIC-RFC9000-S13P2P3-0007`,
+`REQ-QUIC-RFC9000-S13P2P3-0008`, `REQ-QUIC-RFC9000-S13P2P3-0013`,
+`REQ-QUIC-RFC9000-S17P2P4-0003`, `REQ-QUIC-RFC9000-S17P2P4-0016`,
+`REQ-QUIC-RFC9000-S17P2P4-0017`, `REQ-QUIC-RFC9000-S17P2P4-0018`,
+`REQ-QUIC-RFC9000-S17P2P4-0019`, `REQ-QUIC-RFC9000-S17P2P4-0020`,
+`REQ-QUIC-RFC9000-S17P2P4-0021`, and `REQ-QUIC-RFC9000-S17P2P5-0002`.
+The S17P2P4 requirements also gained reciprocal ownership under
+`ARC-QUIC-RFC9000-0087`, `WI-QUIC-RFC9000-0087`, and
+`VER-QUIC-RFC9000-0087`.
+
+Current generated RFC requirement triage reports 1,459 of 1,771 requirements
+`trace_clean`, leaving 312 non-clean: 55 metadata-only missing-xref items, 13
+restructure-needed proof items, 59 partially covered items, 69 blocked items,
+and 123 uncovered-unblocked items. RFC 8999 and RFC 9002 remain fully
+trace-clean; RFC 9000 is 1,146 of 1,443 trace-clean, and RFC 9001 is 81 of 96
+trace-clean.
+
 Follow-on metadata cleanup moved nine already-proved requirements from
 `covered_but_missing_xrefs` to `trace_clean` by attaching focused
 requirement-home evidence under `trace.x_test_refs`: `REQ-QUIC-RFC9000-S10P2P1-0004`,
@@ -24,12 +45,9 @@ Adjacent stale refs for `REQ-QUIC-RFC9000-S11-0001`,
 corrected to their direct requirement homes without changing their clean
 state.
 
-Current generated RFC requirement triage reports 1,445 of 1,771 requirements
-`trace_clean`, leaving 326 non-clean: 69 metadata-only missing-xref items, 13
-restructure-needed proof items, 59 partially covered items, 69 blocked items,
-and 123 uncovered-unblocked items. RFC 8999 and RFC 9002 remain fully
-trace-clean; RFC 9000 is 1,132 of 1,443 trace-clean, and RFC 9001 is 81 of 96
-trace-clean.
+The immediate post-batch generated RFC requirement triage reported 1,445 of
+1,771 requirements `trace_clean`, leaving 326 non-clean. Later same-day
+metadata cleanup supersedes this count.
 
 ## 2026-05-08 Trace Repair Note
 
@@ -929,10 +947,10 @@ The next useful lanes are:
 - Use `specs/generated/quic/quic-requirement-coverage-triage.*` as the
   current selection surface. The canonical/generated trace gate is repaired,
   and older per-slice count snapshots in this file are historical notes.
-- If the goal is fast trace-clean burn-down, continue with the 69 metadata-only
-  missing-xref requirements, for example `REQ-QUIC-RFC9000-S13P2-0001`,
-  `REQ-QUIC-RFC9000-S13P2P3-0003`, and
-  `REQ-QUIC-RFC9000-S17P2P4-0003`.
+- If the goal is fast trace-clean burn-down, continue with the 55 metadata-only
+  missing-xref requirements, for example `REQ-QUIC-RFC9000-S19P16-0011`,
+  `REQ-QUIC-RFC9000-S20P1-0002`, and
+  `REQ-QUIC-RFC9000-S21P12-0001`.
 - If the goal is harder protocol proof, start with the 253 new-test-needed
   requirements or the 13 restructure-needed proof requirements, for example
   `REQ-QUIC-RFC9000-S13P3-0010`,
