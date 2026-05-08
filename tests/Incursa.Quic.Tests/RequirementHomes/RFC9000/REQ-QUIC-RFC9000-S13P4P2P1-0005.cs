@@ -4,6 +4,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0005
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryValidateAcknowledgedEcnCounts_AcceptsEct1IncreaseThatCoversNewlyAcknowledgedEct1Packets()
+    {
+        QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+            sentEct0Count: 0,
+            sentEct1Count: 2);
+
+        QuicEcnValidationTestSupport.AssertValidationSuccess(
+            state,
+            new QuicEcnCounts(0, 2, 0),
+            newlyAcknowledgedEct0Packets: 0,
+            newlyAcknowledgedEct1Packets: 2);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]

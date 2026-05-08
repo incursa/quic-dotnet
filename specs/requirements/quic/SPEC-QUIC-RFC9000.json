@@ -24200,6 +24200,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct1IncreaseThatCoversNewlyAcknowledgedEct1Packets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AndCeIncreaseIsTooSmall",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0005.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct1PacketsReportedAsCe",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
