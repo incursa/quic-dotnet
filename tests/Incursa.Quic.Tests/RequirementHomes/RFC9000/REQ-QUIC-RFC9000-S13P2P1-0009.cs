@@ -80,4 +80,52 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0009
             nowMicros: 1_001,
             maxAckDelayMicros: 0));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath();
+
+        _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1);
+        long ackDelayDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay)!.Value;
+        ulong ackDelayGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.AckDelay);
+
+        QuicConnectionTransitionResult ackOnlySendResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ackDelayDueTicks,
+                QuicConnectionTimerKind.AckDelay,
+                ackDelayGeneration),
+            nowTicks: ackDelayDueTicks);
+
+        QuicConnectionSendDatagramEffect ackOnlySend = Assert.Single(
+            ackOnlySendResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedAckOnlyPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, ackOnlySend.Datagram);
+        Assert.True(trackedAckOnlyPacket.Value.AckOnlyPacket);
+        Assert.False(trackedAckOnlyPacket.Value.AckEliciting);
+        Assert.False(trackedAckOnlyPacket.Value.Retransmittable);
+
+        QuicConnectionTransitionResult peerAckOnlyResult = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
+            runtime,
+            observedAtTicks: ackDelayDueTicks + 1,
+            packetNumber: 2,
+            largestAcknowledged: trackedAckOnlyPacket.Key.PacketNumber);
+
+        Assert.Empty(peerAckOnlyResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+        Assert.False(runtime.SendRuntime.FlowController.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: ulong.MaxValue,
+            maxAckDelayMicros: 0));
+        Assert.False(runtime.SendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: ulong.MaxValue,
+            maxAckDelayMicros: 0));
+    }
 }

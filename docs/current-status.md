@@ -1,14 +1,37 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S13 periodic ACK-probe closure,
-RFC9001 tail proof closure, trace substrate repair, metadata xref burn-down,
-SpecTrace core validation, and regenerated QUIC requirement coverage triage.
-Earlier runtime/proof-tail and hosted executive-read evidence remains pinned
-to the individual dated closure notes below unless otherwise noted.
+Last verified: 2026-05-08 for RFC 9000 S13 ACK-only feedback-loop edge proof,
+S13 periodic ACK-probe closure, RFC9001 tail proof closure, trace substrate
+repair, metadata xref burn-down, SpecTrace core validation, and regenerated
+QUIC requirement coverage triage. Earlier runtime/proof-tail and hosted
+executive-read evidence remains pinned to the individual dated closure notes
+below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 S13 ACK-Only Feedback-Loop Edge Closure Note
+
+`REQ-QUIC-RFC9000-S13P2P1-0009` is now `trace_clean` under the existing
+`ARC-QUIC-RFC9000-0018`, `WI-QUIC-RFC9000-0018`, and
+`VER-QUIC-RFC9000-0018` ownership. The edge-proof topoff shows that a local
+ACK-only packet remains non-ack-eliciting and non-retransmittable, and that a
+peer ACK-only packet acknowledging that local ACK-only packet does not trigger
+another ACK-only response, does not re-arm the ACK-delay timer, and does not
+reopen piggyback eligibility for the same ack-eliciting receipt.
+
+Current generated RFC requirement triage reports 1,477 of 1,771 requirements
+`trace_clean`, leaving 294 non-clean: 55 metadata-only missing-xref items, 6
+restructure-needed proof items, 57 partially covered items, 54 blocked items,
+and 122 uncovered-unblocked items. RFC 8999, RFC 9001, and RFC 9002 are fully
+trace-clean; remaining non-clean requirements are all in RFC 9000.
+
+Local verification for this closure passed: focused S13P2P1 requirement-home
+filter 30/30, `QuicAckPiggybackPolicyBenchmarks` Dry run 5/5, SpecTrace core
+validation 508 artifacts, Release build 0 warnings/errors, full Release
+no-build suite 4,831/4,831, regenerated QUIC requirement coverage triage, and
+`git diff --check` with only generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 Periodic ACK-Probe Closure Note
 

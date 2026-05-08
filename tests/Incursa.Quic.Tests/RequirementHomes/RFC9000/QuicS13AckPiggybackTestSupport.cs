@@ -235,11 +235,12 @@ internal static class QuicS13AckPiggybackTestSupport
     internal static QuicConnectionTransitionResult ReceiveOneRttAckOnly(
         QuicConnectionRuntime runtime,
         long observedAtTicks,
-        ulong packetNumber = 1)
+        ulong packetNumber = 1,
+        ulong largestAcknowledged = 0)
     {
         byte[] protectedPacket = BuildProtectedOneRttPacket(
             runtime,
-            CreateAckFramePayload(largestAcknowledged: 0),
+            CreateAckFramePayload(largestAcknowledged),
             packetNumber);
 
         return runtime.Transition(

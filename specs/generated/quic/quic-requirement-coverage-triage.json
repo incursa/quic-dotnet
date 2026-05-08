@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T23:53:45.2047998-06:00",
+  "generated_at": "2026-05-08T00:06:42.1334432-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,21 +18,21 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-07T23:53:45.2014395-06:00",
+    "generated_at": "2026-05-08T00:06:42.1213666-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 55,
       "covered_but_proof_too_broad": 6,
-      "partially_covered": 58,
-      "trace_clean": 1476,
+      "partially_covered": 57,
+      "trace_clean": 1477,
       "uncovered_blocked": 54,
       "uncovered_unblocked": 122
     },
     "by_work_queue_tag": {
       "blocked": 54,
-      "clean": 1476,
+      "clean": 1477,
       "metadata_only": 55,
-      "new_tests_needed": 236,
+      "new_tests_needed": 235,
       "restructure_needed": 13
     },
     "by_rfc": [
@@ -49,8 +49,8 @@
         "by_state": {
           "covered_but_missing_xrefs": 55,
           "covered_but_proof_too_broad": 6,
-          "partially_covered": 58,
-          "trace_clean": 1148,
+          "partially_covered": 57,
+          "trace_clean": 1149,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 122
         }
@@ -31648,16 +31648,17 @@
         "edge": "required",
         "fuzz": "not_applicable"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 13,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 14,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::InitialCryptoFlush_IncludesPendingInitialAckFrame",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
@@ -31672,20 +31673,18 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 15,
-        "focused": 15,
+        "total": 17,
+        "focused": 17,
         "broad": 0,
         "by_kind": {
           "positive": 8,
           "negative": 3,
-          "edge": 0,
+          "edge": 2,
           "fuzz": 4,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -31769,6 +31768,50 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P1_0009",
+          "member": "REQ_QUIC_RFC9000_S13P2P1_0009.PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "method": "PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "line": 87,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P1-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P1_0009",
+          "member": "REQ_QUIC_RFC9000_S13P2P1_0009.PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "method": "PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "line": 87,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

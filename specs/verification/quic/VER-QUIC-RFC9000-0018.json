@@ -56,5 +56,5 @@
       "content": "The benchmark evidence is an internal Incursa-only policy benchmark for ACK-generation checks used by the active-path 1-RTT piggyback composition floor. It is not a public facade, System.Net.Quic, MSQUIC, HTTP/3, or interop comparison."
     }
   ],
-  "status_summary": "Focused runtime, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded active-path 1-RTT Application Data ACK piggyback policy floor. Repository-wide SpecTrace JSON validation still reports standing residual Markdown and unresolved-reference backlog; the failure log is preserved as evidence rather than reclassified as a focused behavior failure."
+  "status_summary": "Focused runtime, benchmark, render/check, and diff-hygiene proof passed locally on 2026-04-25 for the bounded active-path 1-RTT Application Data ACK piggyback policy floor. The 2026-05-08 edge-proof topoff added direct S13P2P1-0009 evidence that a peer ACK-only packet acknowledging a local ACK-only packet does not trigger another ACK-only response or re-arm the ACK-delay timer."
 }
