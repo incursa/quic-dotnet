@@ -8356,9 +8356,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs::TryParseVersionNegotiation_ReportsSelectedAndReservedSupportedVersions",
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::IsReservedVersion_UsesTheReservedPattern"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P3-0001.cs::IsReservedVersion_UsesTheReservedPattern",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S6P3-0001.cs::ShouldDiscardVersionNegotiation_IgnoresReservedVersionAdvertisements"
         ]
       }
     },

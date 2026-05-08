@@ -1601,6 +1601,10 @@
   ],
   "supplemental_sections": [
     {
+      "heading": "2026-05-08 S6 Reserved-Version Ignore Topoff",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S6P3_0001\"` passed 2/2.\n- Full local gate passed: SpecTrace core validation 517 artifacts, Release build 0 warnings/errors, full Release no-build suite 4,855/4,855, and `git diff --check` with only generated-triage CRLF normalization warnings.\n- `REQ-QUIC-RFC9000-S6P3-0001` now has direct focused negative proof that client-side Version Negotiation processing ignores a reserved-version advertisement instead of treating it as the selected version, alongside existing focused positive proof for the reserved-version pattern.\n- Regenerated coverage triage marks the requirement `trace_clean` and reports 1,493 of 1,771 QUIC requirements trace-clean overall.\n- This remains bounded to reserved-version ignore proof on the version-negotiation helper and does not claim full version-negotiation runtime integration, downgrade-resistant future-version negotiation, public API widening, or interop-runner success."
+    },
+    {
       "heading": "2026-05-08 S2 Concurrent Streams Topoff",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S2_0008\"` passed 2/2.\n- `REQ-QUIC-RFC9000-S2-0008` now has direct focused positive proof that the stream-state helper can keep multiple local bidirectional and unidirectional streams open together and can keep multiple peer bidirectional and unidirectional receive streams open together under the configured stream limits.\n- Regenerated coverage triage marks the requirement `trace_clean` and reports 1,492 of 1,771 QUIC requirements trace-clean overall.\n- This remains bounded to focused concurrent stream-state bookkeeping proof and does not claim arbitrary public API concurrency, stream scheduler fairness, sender/recovery orchestration, dynamic limit autotuning, or interop-runner success."
     },
