@@ -48,7 +48,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         ReadOnlyMemory<byte> localServerLeafSigningPrivateKey = default,
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
-        SslClientAuthenticationOptions? clientAuthenticationOptions = null)
+        SslClientAuthenticationOptions? clientAuthenticationOptions = null,
+        QuicTlsCipherSuite? selectedCipherSuite = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);

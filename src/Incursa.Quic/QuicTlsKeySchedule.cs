@@ -138,6 +138,22 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     /// <param name="role">The endpoint role that owns the key schedule.</param>
     /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
+    /// <param name="selectedCipherSuite">An optional selected cipher suite to bind when the schedule is created for the client role.</param>
+    /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
+    internal QuicTlsKeySchedule(
+        QuicTlsRole role,
+        ReadOnlyMemory<byte> localPrivateKey,
+        QuicTlsCipherSuite selectedCipherSuite,
+        IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null)
+        : this(role, localPrivateKey, ResolveSelectedCipherSuiteProfile(selectedCipherSuite), applicationProtocols)
+    {
+    }
+
+    /// <summary>
+    /// Creates the managed TLS key schedule for the current role, optionally seeded with a deterministic local private key for tests.
+    /// </summary>
+    /// <param name="role">The endpoint role that owns the key schedule.</param>
+    /// <param name="localPrivateKey">An optional P-256 private scalar to import for deterministic tests.</param>
     /// <param name="clientCipherSuiteProfile">An optional client cipher-suite profile to bind when the schedule is created for the client role.</param>
     /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
     internal QuicTlsKeySchedule(
@@ -178,6 +194,16 @@ internal sealed class QuicTlsKeySchedule
 
         localKeyShare = ExportUncompressedPoint(localKeyPair.ExportParameters(true));
         this.applicationProtocols = NormalizeApplicationProtocols(applicationProtocols);
+    }
+
+    private static QuicTlsCipherSuiteProfile? ResolveSelectedCipherSuiteProfile(QuicTlsCipherSuite selectedCipherSuite)
+    {
+        if (!QuicTlsCipherSuiteProfile.TryGet(selectedCipherSuite, out QuicTlsCipherSuiteProfile profile))
+        {
+            throw new NotSupportedException("The selected cipher suite is not supported by this slice.");
+        }
+
+        return profile;
     }
 
     /// <summary>

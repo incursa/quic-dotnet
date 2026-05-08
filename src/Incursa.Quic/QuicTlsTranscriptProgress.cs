@@ -88,6 +88,15 @@ internal sealed class QuicTlsTranscriptProgress
             : HandshakeProgressState.AwaitingServerHello;
     }
 
+    /// <summary>
+    /// Initializes the transcript owner for a fixed endpoint role and a selected cipher suite.
+    /// </summary>
+    internal QuicTlsTranscriptProgress(QuicTlsRole role, QuicTlsCipherSuite selectedCipherSuite)
+        : this(role)
+    {
+        this.selectedCipherSuite = selectedCipherSuite;
+    }
+
     internal void ConfigureServerClientAuthentication(bool clientCertificateRequired)
     {
         serverClientCertificateRequired = clientCertificateRequired;
