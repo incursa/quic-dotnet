@@ -45,7 +45,7 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
-The current supported/executed cells are still `handshake`, `retry`, `transfer`, and `multiconnect`; the remaining documented non-HTTP/3 cells are now surfaced as explicit inventory entries that are still red or blocked.
+The current supported/executed cells are still `handshake`, `transfer`, `retry`, `multiconnect`, and `versionnegotiation`; the remaining documented non-HTTP/3 cells are now surfaced as explicit inventory entries that are still red or blocked.
 
 Hosted corroboration:
 

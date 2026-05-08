@@ -420,8 +420,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'versionnegotiation'
             RunnerTestCase = 'versionnegotiation'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Currently disabled upstream while the version-negotiation prerequisite slice remains open.'
+            Classification = 'supported-executed'
+            Notes = 'Current green versionnegotiation cell.'
         }
 
         [pscustomobject]@{

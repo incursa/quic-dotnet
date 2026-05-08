@@ -31,5 +31,5 @@
     "support-readiness claims"
   ],
   "verification_plan": "Review the upstream QUIC testcase inventory from quic-interop-runner documentation, verify the new requirement and architecture classify each testcase explicitly, run any helper dry-run planning necessary to emit the inventory/profile, and finish with SpecTrace plus Workbench validation.",
-  "completion_notes": "Helper inventory plumbing is in progress. The documented non-HTTP/3 inventory is now explicit in the helper and per-run artifacts, but the remaining blocked cells still need verification and case-by-case greening."
+  "completion_notes": "Helper inventory plumbing is in progress. The documented non-HTTP/3 inventory is now explicit in the helper and per-run artifacts, versionnegotiation is now green, and the remaining blocked cells still need verification and case-by-case greening."
 }

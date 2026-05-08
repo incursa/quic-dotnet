@@ -8076,7 +8076,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated"
         ]
       }
     },
@@ -8105,7 +8107,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated"
         ]
       }
     },

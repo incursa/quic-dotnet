@@ -77,7 +77,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
-    public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedBlockedInventoryCellsAndRecordsThem()
+    public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedInventoryCellsAndRecordsThem()
     {
         using InteropRunnerScriptFixture fixture = new();
         fixture.WriteRunnerScript("non-zero-valid-outputs");
@@ -125,7 +125,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 "versionnegotiation",
                 StringComparison.OrdinalIgnoreCase));
 
-        Assert.Equal("prerequisite-blocked", requestedEntry.GetProperty("classification").GetString());
+        Assert.Equal("supported-executed", requestedEntry.GetProperty("classification").GetString());
         Assert.True(requestedEntry.GetProperty("requested").GetBoolean());
     }
 

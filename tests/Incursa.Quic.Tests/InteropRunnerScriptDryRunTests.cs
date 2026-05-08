@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "versionnegotiation,chacha20,keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            "chacha20,keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -79,7 +79,7 @@ public sealed class InteropRunnerScriptDryRunTests
     }
 
     [Fact]
-    public async Task DryRunAcceptsDocumentedBlockedInventoryCellsAndKeepsThemExplicit()
+    public async Task DryRunAcceptsDocumentedInventoryCellsAndKeepsThemExplicit()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -100,7 +100,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal("versionnegotiation,connectionmigration", GetPlanValue(output, "Runner test cases"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("versionnegotiation -> prerequisite-blocked (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
