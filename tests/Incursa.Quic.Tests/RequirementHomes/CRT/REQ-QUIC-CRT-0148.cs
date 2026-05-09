@@ -74,7 +74,7 @@ public sealed class REQ_QUIC_CRT_0148
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void QuicGoHelloRetryRequestFollowOnReplayPublishesExactlyOneSelectedHttp3ProtocolInsideEncryptedExtensions()
+    public void UnsupportedHybridHelloRetryRequestFollowOnReplayPublishesExactlyOneSelectedHttp3ProtocolInsideEncryptedExtensions()
     {
         // Provenance: preserved server-role handshake rerun narrowed to the post-HRR
         // `server did not select an ALPN protocol` failure under
@@ -82,15 +82,17 @@ public sealed class REQ_QUIC_CRT_0148
         // runner-logs/nginx_quic-go/handshake/output.txt,
         // runner-logs/nginx_quic-go/handshake/client/log.txt, and
         // runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-4cd8218da0654fa3b7534582e451a0c8.qlog.
+        // The HRR trigger remains synthetic so this ALPN proof does not depend on
+        // the bounded X25519 first-flight compatibility branch.
         byte[] retryEligibleClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(
             CreateClientTransportParameters(),
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
+            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x11EC],
             applicationProtocols:
             [
                 Http3Protocol,
             ],
-            keyShareNamedGroup: 0x001D,
-            keyShare: REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32));
+            keyShareNamedGroup: 0x11EC,
+            keyShare: REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 1216));
         byte[] retriedClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(
             CreateClientTransportParameters(),
             applicationProtocols:

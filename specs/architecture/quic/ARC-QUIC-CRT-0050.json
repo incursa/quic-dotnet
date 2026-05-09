@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0050",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC server first-flight x25519 key-share compatibility architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the narrow server-side managed TLS compatibility branch that accepts an advertised usable first-flight x25519 ClientHello key share without broad TLS group negotiation or interop support promotion.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0011",
+    "WI-QUIC-CRT-0052",
+    "VER-QUIC-CRT-0052"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0154"
+  ],
+  "design_summary": "The transcript parser treats x25519 as a second explicitly supported server first-flight key-share branch. It continues to ignore unsupported hybrid key-share entries, rejects duplicate, malformed, or unadvertised x25519 entries, and still emits the existing secp256r1 HelloRetryRequest only when no usable first-flight supported share exists and the peer advertised secp256r1. The key schedule keeps the existing P-256 client profile and public support boundary, adds a server-owned x25519 ephemeral key pair for ServerHello construction and ECDHE secret derivation, and selects the ServerHello key_share group from the parsed ClientHello step. This avoids the quic-go first-flight HRR blocker without adding hybrid groups, broad group negotiation, client-side x25519, HTTP/3, anti-replay, or interop support promotion.",
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs"
+  ],
+  "edge_cases_and_constraints": [
+    "A ClientHello x25519 key share is accepted only when supported_groups also advertises x25519.",
+    "Duplicate x25519 key_share entries fail deterministically instead of allowing ambiguous selection.",
+    "Malformed x25519 key_share lengths fail deterministically.",
+    "Unsupported hybrid key shares are ignored and are never selected.",
+    "The existing secp256r1 HRR fallback remains the only HelloRetryRequest branch.",
+    "The client-generated ClientHello and public IsSupported boundary remain unchanged."
+  ],
+  "alternatives_considered": [
+    "Continue forcing HelloRetryRequest for peers that send x25519. Rejected because the zerortt runner proof shows quic-go closes 0-RTT after HRR even when a usable first-flight x25519 key share is present.",
+    "Add general TLS group negotiation. Rejected because the approved slice is only a bounded CRT compatibility branch for a checked first-flight group.",
+    "Accept unsupported hybrid key shares. Rejected because that would widen cryptographic support beyond available proof and platform ownership."
+  ],
+  "risks": [
+    "Treating x25519 parser acceptance as broad client-side x25519 support would overstate the support boundary.",
+    "Selecting x25519 without verifying supported_groups would accept unadvertised key-share material.",
+    "Promoting the interop zerortt cell before live runner proof would hide remaining runtime or harness failures."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope Boundaries",
+      "content": "- Server-side first-flight x25519 only.\n- No hybrid group support.\n- No client-side x25519 ClientHello generation.\n- No public API or IsSupported widening.\n- No HTTP/3 scope.\n- No interop promotion without a separate live runner proof."
+    }
+  ]
+}

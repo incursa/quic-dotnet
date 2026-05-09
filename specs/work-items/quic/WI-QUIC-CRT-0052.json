@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0052",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC server first-flight x25519 key-share compatibility work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the narrow managed TLS server branch that accepts an advertised usable x25519 first-flight key share, publishes an x25519 ServerHello, and keeps unsupported hybrid groups and interop promotion out of scope.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0011"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0050"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0052"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0154"
+  ],
+  "planned_changes": "- Add x25519 as a server first-flight named-group candidate without changing the client-generated ClientHello profile.\n- Teach ClientHello parsing to accept exactly one advertised, well-formed x25519 key_share and to ignore unsupported hybrid entries.\n- Keep duplicate, malformed, or unadvertised x25519 key shares on the fatal path.\n- Teach the server key schedule to construct an x25519 ServerHello and derive Handshake secrets from the x25519 ECDHE shared secret.\n- Preserve the existing secp256r1 HelloRetryRequest fallback when no usable first-flight supported share exists and secp256r1 was advertised.\n- Keep public API, IsSupported, HTTP/3, anti-replay, hybrid groups, general group negotiation, and interop support promotion out of scope.",
+  "verification_plan": "Run focused REQ_QUIC_CRT_0154 and REQ_QUIC_CRT_0147 requirement-home tests first, then SpecTrace core validation, Release build, full Release tests, and diff whitespace checks.",
+  "completion_notes": "Implemented the bounded managed-server first-flight x25519 branch. ClientHello parsing now accepts exactly one advertised well-formed x25519 key share, ignores unsupported hybrid key-share entries, rejects duplicate, malformed, or unadvertised x25519 entries, and leaves the secp256r1 HRR fallback in REQ-QUIC-CRT-0147. The server key schedule now publishes an x25519 ServerHello and derives Handshake packet-protection material from x25519 ECDHE for the accepted branch. Focused REQ_QUIC_CRT_0154, REQ_QUIC_CRT_0147, and REQ_QUIC_CRT_0112 coverage passed 31/31 locally. Public API, IsSupported, HTTP/3, anti-replay, hybrid groups, general group negotiation, and interop zerortt promotion remain out of scope until separate proof.",
+  "out_of_scope": [
+    "hybrid named-group support",
+    "general TLS group negotiation",
+    "client-side x25519 ClientHello generation",
+    "public API widening",
+    "QuicConnection.IsSupported widening",
+    "HTTP/3",
+    "anti-replay changes",
+    "interop zerortt support promotion without live runner proof"
+  ]
+}

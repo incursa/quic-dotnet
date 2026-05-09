@@ -1123,7 +1123,7 @@
     {
       "id": "REQ-QUIC-CRT-0112",
       "title": "Own the server-role managed TLS crypto floor",
-      "statement": "In the server role, the library MUST own a permanent managed TLS 1.3 crypto floor behind the transport-facing TLS bridge that accepts only the supported peer `ClientHello` subset for TLS 1.3 with `TLS_AES_128_GCM_SHA256` and `secp256r1`, semantically validates the peer key-share and QUIC transport-parameters placement needed for that subset, constructs one local `ServerHello` for the same subset from the local ephemeral key-share state, appends that `ServerHello` at the `ClientHello` plus `ServerHello` transcript boundary, derives server-role Handshake traffic secrets and Handshake packet-protection material from the peer key share, the local ephemeral share, and the resulting transcript hash, surfaces explicit bridge-visible Handshake key-availability updates, surfaces the local `ServerHello` bytes through the existing Handshake-crypto output seam for later packetization, and deterministically rejects malformed, unsupported, premature, or conflicting `ClientHello` progression through the existing fatal/update path.",
+      "statement": "In the server role, the library MUST own a permanent managed TLS 1.3 crypto floor behind the transport-facing TLS bridge that accepts only the supported peer `ClientHello` subset for TLS 1.3 with `TLS_AES_128_GCM_SHA256`, the existing `TLS_CHACHA20_POLY1305_SHA256` profile, `secp256r1`, and the bounded first-flight `x25519` compatibility branch owned by REQ-QUIC-CRT-0154, semantically validates the peer key-share and QUIC transport-parameters placement needed for that subset, constructs one local `ServerHello` for the selected supported key-share branch from the local ephemeral key-share state, appends that `ServerHello` at the `ClientHello` plus `ServerHello` transcript boundary, derives server-role Handshake traffic secrets and Handshake packet-protection material from the peer key share, the local ephemeral share, and the resulting transcript hash, surfaces explicit bridge-visible Handshake key-availability updates, surfaces the local `ServerHello` bytes through the existing Handshake-crypto output seam for later packetization, and deterministically rejects malformed, unsupported, premature, or conflicting `ClientHello` progression through the existing fatal/update path.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0010"
@@ -1150,7 +1150,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::EmptyClientHelloApplicationProtocolNameFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::NonEmptyClientHelloSessionTicketExtensionFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ClientHelloEarlyDataWithoutPreSharedKeyStillFailsDeterministically",
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloNamedGroupWithoutAdvertisedSecp256r1SupportFailsDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloNamedGroupFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::UnsupportedClientHelloSupportedGroupsFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::MalformedClientHelloFramingFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::RepeatedServerRoleClientHelloProgressionIsRejectedDeterministically"
@@ -1158,14 +1158,14 @@
       },
       "notes": [
         "This slice is intentionally server-role only and permanent. It does not add `EncryptedExtensions`, certificate flight, server `Finished`, client-certificate authentication, 0-RTT, 1-RTT, key update, endpoint-host wiring, or interop-runner handshake support.",
-        "The supported cryptographic subset for this slice is exactly TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
+        "The supported cryptographic subset for this slice is TLS 1.3 with the checked SHA-256 cipher-suite profiles over `secp256r1`, plus the bounded first-flight server `x25519` compatibility branch in REQ-QUIC-CRT-0154.",
         "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
     {
       "id": "REQ-QUIC-CRT-0147",
       "title": "Emit one deterministic server-side HelloRetryRequest for the secp256r1 floor",
-      "statement": "In the server role, when an initial peer `ClientHello` is otherwise within the supported TLS 1.3 subset, advertises `secp256r1` in `supported_groups`, and omits a usable `secp256r1` entry from `key_share`, the library MUST emit exactly one local TLS 1.3 `HelloRetryRequest` that requests `secp256r1` on the existing Handshake-crypto output seam instead of failing that first attempt, keep Handshake key material unavailable until a retried `ClientHello` carrying the requested `secp256r1` key share is accepted, route repeated retry emission, missing `secp256r1` support, malformed or conflicting retried `ClientHello` progression, or retry branches that widen cipher-suite, `0-RTT`, endpoint-host, or interop-runner promises through the existing fatal/update path, and continue through the existing `REQ-QUIC-CRT-0112` `ServerHello` and Handshake key-publication floor without widening the supported cryptographic subset when the retried `ClientHello` satisfies the requested `secp256r1` key-share branch.",
+      "statement": "In the server role, when an initial peer `ClientHello` is otherwise within the supported TLS 1.3 subset, advertises `secp256r1` in `supported_groups`, and omits every usable first-flight supported key-share entry accepted by REQ-QUIC-CRT-0112 and REQ-QUIC-CRT-0154, the library MUST emit exactly one local TLS 1.3 `HelloRetryRequest` that requests `secp256r1` on the existing Handshake-crypto output seam instead of failing that first attempt, keep Handshake key material unavailable until a retried `ClientHello` carrying the requested `secp256r1` key share is accepted, route repeated retry emission, missing `secp256r1` support, malformed or conflicting retried `ClientHello` progression, or retry branches that widen cipher-suite, `0-RTT`, endpoint-host, or interop-runner promises through the existing fatal/update path, and continue through the existing `REQ-QUIC-CRT-0112` `ServerHello` and Handshake key-publication floor without widening the supported cryptographic subset when the retried `ClientHello` satisfies the requested `secp256r1` key-share branch.",
       "trace": {
         "upstream_refs": [
           "RFC 8446 Sections 4.1.2, 4.1.4, 4.2.8, and 7.1",
@@ -1173,12 +1173,12 @@
           "connection-runtime-state-machine.md"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::UnsupportedHybridFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedSecp256r1ClientHelloRejoinsTheExistingServerHelloPublicationFloorAfterHelloRetryRequest",
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedQuicGoZeroSourceConnectionIdClientHelloStillFlushesTheHelloRetryRequestInitialDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::ZeroSourceConnectionIdRetryEligibleClientHelloStillFlushesTheHelloRetryRequestInitialDatagram",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RetriedZeroSourceConnectionIdClientHelloFlushesServerHelloInitialBeforeTheHandshakeFlight",
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::CapturedServerMulticonnectDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FragmentedRetryEligibleDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FragmentedRetryEligibleDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MissingSecp256r1SupportedGroupsStillFailsInsteadOfEmittingHelloRetryRequest",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::RepeatedRetryEligibleClientHelloIsRejectedAfterTheSingleHelloRetryRequestBoundary",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::MalformedRetriedClientHelloFailsDeterministicallyAfterHelloRetryRequest",
@@ -1186,8 +1186,8 @@
         ]
       },
       "notes": [
-        "This slice is intentionally server-role only and keeps the supported cryptographic subset pinned to TLS 1.3 with `TLS_AES_128_GCM_SHA256` over `secp256r1`.",
-        "This slice does not add `x25519`, hybrid named-group acceptance, general TLS group negotiation, `EncryptedExtensions`, certificate flight, server `Finished`, `0-RTT`, `1-RTT`, key update, endpoint-host wiring, or interop-runner handshake support.",
+        "This slice is intentionally server-role only and keeps HelloRetryRequest pinned to the `secp256r1` floor.",
+        "This slice does not add hybrid named-group acceptance, general TLS group negotiation, `EncryptedExtensions`, certificate flight, server `Finished`, `0-RTT`, `1-RTT`, key update, endpoint-host wiring, or interop-runner handshake support.",
         "This slice does not add server-role peer transport-parameter commitment."
       ]
     },
@@ -1397,6 +1397,42 @@
         "This is an internal managed-server early-data slice and does not add public 0-RTT APIs or widen `QuicConnection.IsSupported`.",
         "The runtime delivery proof is intentionally bounded to STREAM/PING/PADDING on Version 1 ZeroRtt packets while explicitly rejecting forbidden early-data frame types.",
         "`zerortt` interop remains prerequisite-blocked until live runner proof and harness classification are added without HTTP/3 scope expansion."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0154",
+      "title": "Accept bounded server first-flight x25519 key shares",
+      "statement": "In the server role, when an initial peer `ClientHello` is otherwise within the supported TLS 1.3 subset, advertises `x25519` in `supported_groups`, and carries exactly one usable first-flight `x25519` `key_share` entry, the library MUST accept that first-flight `x25519` share without emitting `HelloRetryRequest`, ignore unsupported hybrid key-share entries instead of selecting them, construct one local `ServerHello` that selects `x25519` with a local `x25519` key share, derive server-role Handshake traffic secrets and Handshake packet-protection material from the `x25519` ECDHE shared secret and transcript hash through the existing REQ-QUIC-CRT-0112 key-publication floor, deterministically reject duplicate, malformed, or unadvertised `x25519` key shares through the existing fatal/update path, keep the `secp256r1` HelloRetryRequest fallback owned by REQ-QUIC-CRT-0147 when no usable first-flight supported key share exists and `secp256r1` was advertised, and exclude hybrid named-group acceptance, general TLS group negotiation, client-side `x25519`, public API or `IsSupported` widening, HTTP/3, anti-replay, and interop support promotion without separate proof.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0050"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0052"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0052"
+        ],
+        "upstream_refs": [
+          "RFC 8446 Sections 4.1.2, 4.1.3, 4.2.7, 4.2.8, and 7.4.1",
+          "RFC 9001 Sections 4.1, 5, and 8",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0011.json",
+          "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+          "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::CapturedQuicGoFirstClientHelloAcceptsX25519WithoutHelloRetryRequest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::MalformedX25519ClientHelloKeyShareFailsDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::UnadvertisedX25519ClientHelloKeyShareFailsDeterministically",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::DuplicateX25519ClientHelloKeySharesFailDeterministically"
+        ]
+      },
+      "notes": [
+        "This compatibility branch exists to avoid server-side HelloRetryRequest when a peer already sends a usable first-flight `x25519` key share, including quic-go offers that also contain an unsupported hybrid key-share entry.",
+        "The branch is server-side only and keeps the existing client-generated ClientHello, public API, `IsSupported`, HTTP/3, and interop support classification unchanged until separate proof closes those scopes.",
+        "Malformed, duplicate, or unadvertised `x25519` key shares fail closed; unsupported hybrid key shares remain ignored unless no usable supported key share is available and the `secp256r1` HRR fallback applies."
       ]
     },
     {

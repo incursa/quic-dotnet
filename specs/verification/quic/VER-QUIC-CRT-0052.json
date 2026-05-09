@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0052",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC server first-flight x25519 key-share compatibility verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with captured quic-go positive proof and deterministic negative coverage for malformed, duplicate, and unadvertised x25519 key shares, followed by SpecTrace, build, full-suite, and diff validation.",
+  "scope": "Verify that the server accepts an advertised usable first-flight x25519 ClientHello key share without HelloRetryRequest, constructs an x25519 ServerHello and Handshake key material, ignores unsupported hybrid entries, and keeps malformed, duplicate, unadvertised, and fallback HRR behavior bounded.",
+  "preconditions": [
+    "The peer ClientHello is otherwise within the managed TLS 1.3 server subset.",
+    "The peer advertises x25519 in supported_groups for x25519 acceptance.",
+    "The platform exposes managed ECDH curve25519 support for server x25519 derivation."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0154|FullyQualifiedName~REQ_QUIC_CRT_0147\"",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0154 and REQ-QUIC-CRT-0147 requirement-home tests.",
+    "Confirm the captured quic-go first ClientHello with hybrid plus x25519 key shares accepts x25519 without emitting HelloRetryRequest.",
+    "Confirm the server publishes Initial ServerHello CRYPTO data selecting x25519 and publishes Handshake packet-protection material.",
+    "Confirm malformed, duplicate, and unadvertised x25519 key shares fail deterministically.",
+    "Confirm the secp256r1 HelloRetryRequest fallback remains available when no usable first-flight supported share exists and secp256r1 was advertised.",
+    "Run SpecTrace core validation, Release build, full Release tests, and diff whitespace checks."
+  ],
+  "expected_result": "Advertised usable first-flight x25519 is accepted without HelloRetryRequest and reaches the existing server Handshake key-publication floor. Unsupported hybrid groups are not selected. Malformed, duplicate, and unadvertised x25519 key shares fail closed. The secp256r1 HRR fallback remains bounded. Public API, IsSupported, HTTP/3, anti-replay, and interop support classification remain unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-CRT-0050",
+    "WI-QUIC-CRT-0052",
+    "ARC-QUIC-INT-0011"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Captured quic-go first-flight ClientHello selects x25519 without HRR.\n- x25519 ServerHello CRYPTO data and Handshake key material are published.\n- Malformed, duplicate, and unadvertised x25519 key shares fail closed.\n- secp256r1 HRR fallback remains available for eligible first ClientHello attempts without a usable supported key share.\n- Public API, IsSupported, HTTP/3, and interop classification remain unchanged."
+    }
+  ],
+  "status_summary": "Passed locally for the bounded server first-flight x25519 compatibility slice. The focused filter `FullyQualifiedName~REQ_QUIC_CRT_0154|FullyQualifiedName~REQ_QUIC_CRT_0147|FullyQualifiedName~REQ_QUIC_CRT_0112` passed 31/31 on 2026-05-09, the surrounding CRT regression filter passed 78/78 after preserving legacy P-256 ClientHello fixture behavior, SpecTrace core validated 535 JSON artifacts, `dotnet build Incursa.Quic.slnx -c Release` passed with 0 warnings and 0 errors, `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` passed 4899/4899, and `git diff --check` exited 0 with only CRLF normalization warnings on three trace files. Coverage includes captured quic-go hybrid-plus-x25519 first-flight acceptance without HelloRetryRequest, x25519 ServerHello selection and Handshake key publication, malformed, duplicate, and unadvertised x25519 fail-closed paths, and preservation of the secp256r1 HRR fallback. Public API, IsSupported, HTTP/3, anti-replay, hybrid groups, general group negotiation, and interop zerortt promotion remain out of scope until separate proof.",
+  "verifies": [
+    "REQ-QUIC-CRT-0154"
+  ]
+}

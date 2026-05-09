@@ -42,6 +42,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
+    private const ushort X25519NamedGroup = (ushort)QuicTlsNamedGroup.X25519;
     private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const ushort TlsChacha20Poly1305Sha256Value = (ushort)QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
@@ -49,6 +50,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
+    private const int X25519KeyShareLength = 32;
     private const byte PskDheKeMode = 0x01;
 
     private readonly QuicTlsRole role;
@@ -944,6 +946,8 @@ internal sealed class QuicTlsTranscriptProgress
         bool foundPskKeyExchangeModes = false;
         bool foundPreSharedKey = false;
         bool foundEarlyData = false;
+        ClientHelloSupportedGroups supportedGroups = default;
+        ClientHelloKeyShareCandidates keyShareCandidates = default;
         List<ushort> seenExtensionTypes = [];
 
         int index = 0;
@@ -1054,7 +1058,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == SupportedGroupsExtensionType)
             {
-                if (foundSupportedGroups || !TryParseClientHelloSupportedGroups(extensionValue))
+                if (foundSupportedGroups || !TryParseClientHelloSupportedGroups(extensionValue, out supportedGroups))
                 {
                     return false;
                 }
@@ -1066,9 +1070,7 @@ internal sealed class QuicTlsTranscriptProgress
                 if (foundKeyShare
                     || !TryParseClientHelloKeyShare(
                         extensionValue,
-                        out keyShareDisposition,
-                        out peerNamedGroup,
-                        out peerKeyShare))
+                        out keyShareCandidates))
                 {
                     return false;
                 }
@@ -1133,12 +1135,44 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        if (keyShareDisposition == ClientHelloKeyShareDisposition.HelloRetryRequestRequired)
+        if (foundSupportedGroups)
         {
-            return allowHelloRetryRequest && foundSupportedGroups;
+            if ((keyShareCandidates.HasSecp256r1 && !supportedGroups.HasSecp256r1)
+                || (keyShareCandidates.HasX25519 && !supportedGroups.HasX25519))
+            {
+                return false;
+            }
+        }
+        else if (keyShareCandidates.HasX25519)
+        {
+            return false;
         }
 
-        return true;
+        if (keyShareCandidates.HasSecp256r1)
+        {
+            keyShareDisposition = ClientHelloKeyShareDisposition.Accepted;
+            peerNamedGroup = QuicTlsNamedGroup.Secp256r1;
+            peerKeyShare = keyShareCandidates.Secp256r1KeyShare;
+            return true;
+        }
+
+        if (keyShareCandidates.HasX25519)
+        {
+            keyShareDisposition = ClientHelloKeyShareDisposition.Accepted;
+            peerNamedGroup = QuicTlsNamedGroup.X25519;
+            peerKeyShare = keyShareCandidates.X25519KeyShare;
+            return true;
+        }
+
+        if (allowHelloRetryRequest && foundSupportedGroups && supportedGroups.HasSecp256r1)
+        {
+            keyShareDisposition = ClientHelloKeyShareDisposition.HelloRetryRequestRequired;
+            peerNamedGroup = QuicTlsNamedGroup.Secp256r1;
+            peerKeyShare = default;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool TryParseClientHelloSupportedVersions(ReadOnlySpan<byte> extensionValue)
@@ -1185,8 +1219,12 @@ internal sealed class QuicTlsTranscriptProgress
         return index == extensionValue.Length && foundSupportedSignatureScheme;
     }
 
-    private static bool TryParseClientHelloSupportedGroups(ReadOnlySpan<byte> extensionValue)
+    private static bool TryParseClientHelloSupportedGroups(
+        ReadOnlySpan<byte> extensionValue,
+        out ClientHelloSupportedGroups supportedGroups)
     {
+        supportedGroups = default;
+
         int index = 0;
         if (!TryReadUInt16(extensionValue, ref index, out ushort groupsLength)
             || groupsLength == 0
@@ -1196,7 +1234,8 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        bool foundSupportedGroup = false;
+        bool foundSecp256r1 = false;
+        bool foundX25519 = false;
         int groupsEnd = index + groupsLength;
         while (index < groupsEnd)
         {
@@ -1207,11 +1246,28 @@ internal sealed class QuicTlsTranscriptProgress
 
             if (namedGroup == Secp256r1NamedGroup)
             {
-                foundSupportedGroup = true;
+                if (foundSecp256r1)
+                {
+                    return false;
+                }
+
+                foundSecp256r1 = true;
+                continue;
+            }
+
+            if (namedGroup == X25519NamedGroup)
+            {
+                if (foundX25519)
+                {
+                    return false;
+                }
+
+                foundX25519 = true;
             }
         }
 
-        return index == extensionValue.Length && foundSupportedGroup;
+        supportedGroups = new ClientHelloSupportedGroups(foundSecp256r1, foundX25519);
+        return index == extensionValue.Length && (foundSecp256r1 || foundX25519);
     }
 
     private static bool TryParseApplicationLayerProtocolNegotiationExtension(
@@ -1356,13 +1412,9 @@ internal sealed class QuicTlsTranscriptProgress
 
     private static bool TryParseClientHelloKeyShare(
         ReadOnlySpan<byte> extensionValue,
-        out ClientHelloKeyShareDisposition keyShareDisposition,
-        out QuicTlsNamedGroup namedGroup,
-        out ReadOnlyMemory<byte> peerKeyShare)
+        out ClientHelloKeyShareCandidates keyShareCandidates)
     {
-        keyShareDisposition = default;
-        namedGroup = default;
-        peerKeyShare = default;
+        keyShareCandidates = default;
 
         int index = 0;
         if (!TryReadUInt16(extensionValue, ref index, out ushort keyShareVectorLength)
@@ -1373,6 +1425,9 @@ internal sealed class QuicTlsTranscriptProgress
         }
 
         bool foundUsableSecp256r1KeyShare = false;
+        bool foundUsableX25519KeyShare = false;
+        ReadOnlyMemory<byte> secp256r1KeyShare = default;
+        ReadOnlyMemory<byte> x25519KeyShare = default;
         int keyShareVectorEnd = index + keyShareVectorLength;
         while (index < keyShareVectorEnd)
         {
@@ -1385,21 +1440,30 @@ internal sealed class QuicTlsTranscriptProgress
             }
 
             ReadOnlySpan<byte> keyExchange = extensionValue.Slice(index - keyExchangeLength, keyExchangeLength);
-            if (namedGroupValue != Secp256r1NamedGroup)
+            if (namedGroupValue == Secp256r1NamedGroup)
             {
+                if (foundUsableSecp256r1KeyShare
+                    || keyExchangeLength != Secp256r1KeyShareLength
+                    || keyExchange[0] != UncompressedPointFormat)
+                {
+                    return false;
+                }
+
+                secp256r1KeyShare = keyExchange.ToArray();
+                foundUsableSecp256r1KeyShare = true;
                 continue;
             }
 
-            if (foundUsableSecp256r1KeyShare
-                || keyExchangeLength != Secp256r1KeyShareLength
-                || keyExchange[0] != UncompressedPointFormat)
+            if (namedGroupValue == X25519NamedGroup)
             {
-                return false;
-            }
+                if (foundUsableX25519KeyShare || keyExchangeLength != X25519KeyShareLength)
+                {
+                    return false;
+                }
 
-            namedGroup = QuicTlsNamedGroup.Secp256r1;
-            peerKeyShare = keyExchange.ToArray();
-            foundUsableSecp256r1KeyShare = true;
+                x25519KeyShare = keyExchange.ToArray();
+                foundUsableX25519KeyShare = true;
+            }
         }
 
         if (index != extensionValue.Length)
@@ -1407,9 +1471,11 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        keyShareDisposition = foundUsableSecp256r1KeyShare
-            ? ClientHelloKeyShareDisposition.Accepted
-            : ClientHelloKeyShareDisposition.HelloRetryRequestRequired;
+        keyShareCandidates = new ClientHelloKeyShareCandidates(
+            foundUsableSecp256r1KeyShare,
+            secp256r1KeyShare,
+            foundUsableX25519KeyShare,
+            x25519KeyShare);
         return true;
     }
 
@@ -1879,6 +1945,16 @@ internal sealed class QuicTlsTranscriptProgress
         Accepted = 0,
         HelloRetryRequestRequired = 1,
     }
+
+    private readonly record struct ClientHelloSupportedGroups(
+        bool HasSecp256r1,
+        bool HasX25519);
+
+    private readonly record struct ClientHelloKeyShareCandidates(
+        bool HasSecp256r1,
+        ReadOnlyMemory<byte> Secp256r1KeyShare,
+        bool HasX25519,
+        ReadOnlyMemory<byte> X25519KeyShare);
 
     private readonly record struct ParsedHandshakeMessage(
         QuicTlsTranscriptStepKind StepKind,

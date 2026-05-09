@@ -319,7 +319,7 @@ public sealed class REQ_QUIC_CRT_0112
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void UnsupportedClientHelloNamedGroupWithoutAdvertisedSecp256r1SupportFailsDeterministically()
+    public void UnsupportedClientHelloNamedGroupFailsDeterministically()
     {
         QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
         _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
@@ -328,8 +328,8 @@ public sealed class REQ_QUIC_CRT_0112
             QuicTlsEncryptionLevel.Handshake,
             CreateClientHelloTranscript(
                 CreateClientTransportParameters(),
-                supportedGroups: [0x001d],
-                keyShareNamedGroup: 0x001d,
+                supportedGroups: [0x11ec],
+                keyShareNamedGroup: 0x11ec,
                 keyShare: CreateSequentialBytes(0x90, 32)));
 
         Assert.Single(updates);

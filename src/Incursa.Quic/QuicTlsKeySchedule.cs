@@ -56,6 +56,9 @@ internal sealed class QuicTlsKeySchedule
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
+    private const ushort X25519NamedGroup = (ushort)QuicTlsNamedGroup.X25519;
+    private const int X25519KeyShareLength = 32;
+    private const string X25519CurveFriendlyName = "curve25519";
     private const ushort TlsCipherSuitesListLength = UInt16Length;
     private const ushort SignatureAlgorithmsVectorLength = UInt16Length;
     private const ushort SupportedGroupsVectorLength = UInt16Length;
@@ -100,9 +103,11 @@ internal sealed class QuicTlsKeySchedule
 
     private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
+    private readonly ECDiffieHellman? localX25519KeyPair;
     private QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
+    private readonly byte[]? localX25519KeyShare;
     private readonly QuicServerResumptionTicketStore? serverResumptionTicketStore;
     private readonly byte[]? deterministicClientHelloRandom;
     private readonly bool emitKeyLogSecrets;
@@ -217,6 +222,13 @@ internal sealed class QuicTlsKeySchedule
         }
 
         localKeyShare = ExportUncompressedPoint(localKeyPair.ExportParameters(true));
+        if (role == QuicTlsRole.Server
+            && TryCreateX25519LocalKeyPair(out ECDiffieHellman? x25519KeyPair, out byte[]? x25519KeyShare))
+        {
+            localX25519KeyPair = x25519KeyPair;
+            localX25519KeyShare = x25519KeyShare;
+        }
+
         this.applicationProtocols = NormalizeApplicationProtocols(applicationProtocols);
     }
 
@@ -229,6 +241,9 @@ internal sealed class QuicTlsKeySchedule
 
         return profile;
     }
+
+    private static bool IsSupportedServerClientHelloNamedGroup(QuicTlsNamedGroup namedGroup)
+        => namedGroup is QuicTlsNamedGroup.Secp256r1 or QuicTlsNamedGroup.X25519;
 
     /// <summary>
     /// Gets the public local ephemeral key share associated with the current role's key pair.
@@ -659,7 +674,8 @@ internal sealed class QuicTlsKeySchedule
                 || !step.SelectedCipherSuite.HasValue
                 || !QuicTlsCipherSuiteProfile.TryGet(step.SelectedCipherSuite.Value, out QuicTlsCipherSuiteProfile clientHelloProfile)
                 || step.TranscriptHashAlgorithm != clientHelloProfile.TranscriptHashAlgorithm
-                || step.NamedGroup != clientHelloProfile.NamedGroup
+                || !step.NamedGroup.HasValue
+                || !IsSupportedServerClientHelloNamedGroup(step.NamedGroup.Value)
                 || step.KeyShare.IsEmpty
                 || localTransportParameters is null)
             {
@@ -718,6 +734,7 @@ internal sealed class QuicTlsKeySchedule
                 out ParsedClientHelloPreSharedKeyOffer acceptedServerResumptionOffer);
             if (!TryCreateServerHello(
                 step.HandshakeMessageBytes.Span,
+                step.NamedGroup.Value,
                 acceptedServerResumption,
                 out byte[] serverHelloBytes))
             {
@@ -730,6 +747,7 @@ internal sealed class QuicTlsKeySchedule
                     step.KeyShare.Span,
                     transcriptHash,
                     protectWithClientTrafficSecret: false,
+                    step.NamedGroup.Value,
                     acceptedServerResumption ? acceptedServerResumptionPsk : ZeroHashInput,
                     out QuicTlsPacketProtectionMaterial openMaterial,
                     out QuicTlsPacketProtectionMaterial protectMaterial))
@@ -950,6 +968,7 @@ internal sealed class QuicTlsKeySchedule
                         step.KeyShare.Span,
                         acceptedTranscriptHash,
                         protectWithClientTrafficSecret: true,
+                        serverHelloProfile.NamedGroup,
                         pendingResumptionPsk,
                         out QuicTlsPacketProtectionMaterial acceptedOpenMaterial,
                         out QuicTlsPacketProtectionMaterial acceptedProtectMaterial))
@@ -987,6 +1006,7 @@ internal sealed class QuicTlsKeySchedule
                     step.KeyShare.Span,
                     transcriptHash,
                     protectWithClientTrafficSecret: true,
+                    serverHelloProfile.NamedGroup,
                     out QuicTlsPacketProtectionMaterial openMaterial,
                     out QuicTlsPacketProtectionMaterial protectMaterial))
             {
@@ -1018,6 +1038,7 @@ internal sealed class QuicTlsKeySchedule
                 step.KeyShare.Span,
                 nonResumptionTranscriptHash,
                 protectWithClientTrafficSecret: true,
+                serverHelloProfile.NamedGroup,
                 out QuicTlsPacketProtectionMaterial nonResumptionOpenMaterial,
                 out QuicTlsPacketProtectionMaterial nonResumptionProtectMaterial))
         {
@@ -1241,12 +1262,14 @@ internal sealed class QuicTlsKeySchedule
         ReadOnlySpan<byte> peerKeyShareBytes,
         ReadOnlySpan<byte> transcriptHash,
         bool protectWithClientTrafficSecret,
+        QuicTlsNamedGroup namedGroup,
         out QuicTlsPacketProtectionMaterial openMaterial,
         out QuicTlsPacketProtectionMaterial protectMaterial)
         => TryDeriveHandshakeTrafficSecrets(
             peerKeyShareBytes,
             transcriptHash,
             protectWithClientTrafficSecret,
+            namedGroup,
             ZeroHashInput,
             out openMaterial,
             out protectMaterial);
@@ -1255,6 +1278,7 @@ internal sealed class QuicTlsKeySchedule
         ReadOnlySpan<byte> peerKeyShareBytes,
         ReadOnlySpan<byte> transcriptHash,
         bool protectWithClientTrafficSecret,
+        QuicTlsNamedGroup namedGroup,
         ReadOnlySpan<byte> resumptionPsk,
         out QuicTlsPacketProtectionMaterial openMaterial,
         out QuicTlsPacketProtectionMaterial protectMaterial)
@@ -1262,28 +1286,7 @@ internal sealed class QuicTlsKeySchedule
         openMaterial = default;
         protectMaterial = default;
 
-        if (peerKeyShareBytes.Length != UncompressedPointLength || peerKeyShareBytes[0] != UncompressedPointFormat)
-        {
-            return false;
-        }
-
-        byte[] sharedSecret;
-        try
-        {
-            using ECDiffieHellman peer = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
-            peer.ImportParameters(new ECParameters
-            {
-                Curve = ECCurve.NamedCurves.nistP256,
-                Q = new ECPoint
-                {
-                    X = peerKeyShareBytes.Slice(1, Secp256r1CoordinateLength).ToArray(),
-                    Y = peerKeyShareBytes.Slice(1 + Secp256r1CoordinateLength, Secp256r1CoordinateLength).ToArray(),
-                },
-            });
-
-            sharedSecret = localKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
-        }
-        catch (CryptographicException)
+        if (!TryDeriveRawSharedSecret(namedGroup, peerKeyShareBytes, out byte[] sharedSecret))
         {
             return false;
         }
@@ -1315,6 +1318,73 @@ internal sealed class QuicTlsKeySchedule
             }
 
         return true;
+    }
+
+    private bool TryDeriveRawSharedSecret(
+        QuicTlsNamedGroup namedGroup,
+        ReadOnlySpan<byte> peerKeyShareBytes,
+        out byte[] sharedSecret)
+    {
+        sharedSecret = Array.Empty<byte>();
+
+        try
+        {
+            if (namedGroup == QuicTlsNamedGroup.Secp256r1)
+            {
+                if (peerKeyShareBytes.Length != UncompressedPointLength || peerKeyShareBytes[0] != UncompressedPointFormat)
+                {
+                    return false;
+                }
+
+                using ECDiffieHellman peer = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+                peer.ImportParameters(new ECParameters
+                {
+                    Curve = ECCurve.NamedCurves.nistP256,
+                    Q = new ECPoint
+                    {
+                        X = peerKeyShareBytes.Slice(1, Secp256r1CoordinateLength).ToArray(),
+                        Y = peerKeyShareBytes.Slice(1 + Secp256r1CoordinateLength, Secp256r1CoordinateLength).ToArray(),
+                    },
+                });
+
+                sharedSecret = localKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
+                return !IsAllZero(sharedSecret);
+            }
+
+            if (namedGroup == QuicTlsNamedGroup.X25519)
+            {
+                if (localX25519KeyPair is null
+                    || peerKeyShareBytes.Length != X25519KeyShareLength)
+                {
+                    return false;
+                }
+
+                using ECDiffieHellman peer = ECDiffieHellman.Create(
+                    ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName));
+                peer.ImportParameters(new ECParameters
+                {
+                    Curve = ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName),
+                    Q = new ECPoint
+                    {
+                        X = peerKeyShareBytes.ToArray(),
+                        Y = new byte[X25519KeyShareLength],
+                    },
+                });
+
+                sharedSecret = localX25519KeyPair.DeriveRawSecretAgreement(peer.PublicKey);
+                return sharedSecret.Length == X25519KeyShareLength && !IsAllZero(sharedSecret);
+            }
+        }
+        catch (CryptographicException)
+        {
+            return false;
+        }
+        catch (PlatformNotSupportedException)
+        {
+            return false;
+        }
+
+        return false;
     }
 
     private bool TryDeriveApplicationPacketProtectionMaterial(
@@ -2107,19 +2177,39 @@ internal sealed class QuicTlsKeySchedule
 
     private bool TryCreateServerHello(
         ReadOnlySpan<byte> clientHelloBytes,
+        QuicTlsNamedGroup selectedNamedGroup,
         bool selectPreSharedKey,
         out byte[] serverHelloBytes)
     {
         serverHelloBytes = Array.Empty<byte>();
+
+        ReadOnlySpan<byte> selectedLocalKeyShare = default;
+        ushort selectedNamedGroupValue = selectedNamedGroup switch
+        {
+            QuicTlsNamedGroup.Secp256r1 => Secp256r1NamedGroup,
+            QuicTlsNamedGroup.X25519 when localX25519KeyShare is not null => X25519NamedGroup,
+            _ => 0,
+        };
+        if (selectedNamedGroupValue == 0)
+        {
+            return false;
+        }
+
+        selectedLocalKeyShare = selectedNamedGroup == QuicTlsNamedGroup.Secp256r1
+            ? localKeyShare
+            : localX25519KeyShare!;
 
         if (!TryParseClientHelloSessionId(clientHelloBytes, out byte[] sessionId))
         {
             return false;
         }
 
-        byte[] serverRandom = SHA256.HashData([.. localKeyShare, .. clientHelloBytes]);
+        byte[] serverRandomInput = new byte[selectedLocalKeyShare.Length + clientHelloBytes.Length];
+        selectedLocalKeyShare.CopyTo(serverRandomInput);
+        clientHelloBytes.CopyTo(serverRandomInput.AsSpan(selectedLocalKeyShare.Length));
+        byte[] serverRandom = SHA256.HashData(serverRandomInput);
         int sessionIdLength = sessionId.Length;
-        int keyShareExtensionLength = UInt16Length + UInt16Length + localKeyShare.Length;
+        int keyShareExtensionLength = UInt16Length + UInt16Length + selectedLocalKeyShare.Length;
         int preSharedKeyExtensionLength = selectPreSharedKey
             ? UInt16Length + UInt16Length + UInt16Length
             : 0;
@@ -2167,12 +2257,12 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)keyShareExtensionLength));
         index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), selectedNamedGroupValue);
         index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)localKeyShare.Length));
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)selectedLocalKeyShare.Length));
         index += UInt16Length;
-        localKeyShare.CopyTo(body, index);
-        index += localKeyShare.Length;
+        selectedLocalKeyShare.CopyTo(body.AsSpan(index));
+        index += selectedLocalKeyShare.Length;
 
         if (selectPreSharedKey)
         {
@@ -3217,6 +3307,54 @@ internal sealed class QuicTlsKeySchedule
         parameters.Q.X.CopyTo(keyShare, 1);
         parameters.Q.Y.CopyTo(keyShare, 1 + Secp256r1CoordinateLength);
         return keyShare;
+    }
+
+    private static bool TryCreateX25519LocalKeyPair(
+        out ECDiffieHellman? keyPair,
+        out byte[]? keyShare)
+    {
+        keyPair = null;
+        keyShare = null;
+
+        try
+        {
+            keyPair = ECDiffieHellman.Create(ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName));
+            ECParameters parameters = keyPair.ExportParameters(true);
+            if (parameters.Q.X is not { Length: X25519KeyShareLength } xCoordinate)
+            {
+                keyPair.Dispose();
+                keyPair = null;
+                return false;
+            }
+
+            keyShare = xCoordinate.ToArray();
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            keyPair?.Dispose();
+            keyPair = null;
+            return false;
+        }
+        catch (PlatformNotSupportedException)
+        {
+            keyPair?.Dispose();
+            keyPair = null;
+            return false;
+        }
+    }
+
+    private static bool IsAllZero(ReadOnlySpan<byte> value)
+    {
+        foreach (byte item in value)
+        {
+            if (item != 0)
+            {
+                return false;
+            }
+        }
+
+        return !value.IsEmpty;
     }
 
     private static bool CanAttemptResumption(QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)

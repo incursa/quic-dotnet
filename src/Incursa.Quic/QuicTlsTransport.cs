@@ -60,6 +60,7 @@ internal enum QuicTlsSignatureScheme : ushort
 internal enum QuicTlsNamedGroup : ushort
 {
     Secp256r1 = 0x0017,
+    X25519 = 0x001D,
 }
 
 /// <summary>

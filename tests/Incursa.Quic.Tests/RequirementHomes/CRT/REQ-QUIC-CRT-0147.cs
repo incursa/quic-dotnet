@@ -105,25 +105,19 @@ public sealed class REQ_QUIC_CRT_0147
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void CapturedQuicGoFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys()
+    public void UnsupportedHybridFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys()
     {
-        // Provenance: preserved quic-go server-role handshake evidence under
-        // artifacts/interop-runner/20260422-110409619-server-nginx/
-        // runner-logs/nginx_quic-go/handshake/output.txt and
-        // runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-929cd4466b6d4e8dba49b1be5f1b6d0e.qlog.
-        byte[] capturedClientHello = REQ_QUIC_CRT_0112.CreateCapturedQuicGoServerHandshakeClientHelloTranscript();
-        Assert.Contains(
-            "0x0033(keyshare=0x11EC:1216/0x001D:32)",
-            REQ_QUIC_CRT_0112.DescribeClientHello(capturedClientHello));
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
+            REQ_QUIC_CRT_0112.CreateClientTransportParameters());
 
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Initial,
-            capturedClientHello);
+            retryEligibleClientHello);
 
         Assert.True(
             updates.Count == 2,
-            $"{REQ_QUIC_CRT_0112.DescribeClientHello(capturedClientHello)} || {DescribeUpdates(updates, driver)}");
+            $"{REQ_QUIC_CRT_0112.DescribeClientHello(retryEligibleClientHello)} || {DescribeUpdates(updates, driver)}");
         Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
         Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
         Assert.Equal(QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage, updates[0].TranscriptPhase);
@@ -166,7 +160,7 @@ public sealed class REQ_QUIC_CRT_0147
         Assert.Equal(Tls13Version, helloRetryRequest.SupportedVersion);
         Assert.Equal(QuicTlsNamedGroup.Secp256r1, helloRetryRequest.SelectedGroup);
         Assert.True(
-            helloRetryRequest.SessionId.AsSpan().SequenceEqual(GetClientHelloSessionId(capturedClientHello)),
+            helloRetryRequest.SessionId.AsSpan().SequenceEqual(GetClientHelloSessionId(retryEligibleClientHello)),
             "The HelloRetryRequest must echo the original ClientHello session ID.");
     }
 
@@ -176,15 +170,7 @@ public sealed class REQ_QUIC_CRT_0147
     public void RetriedSecp256r1ClientHelloRejoinsTheExistingServerHelloPublicationFloorAfterHelloRetryRequest()
     {
         QuicTransportParameters peerTransportParameters = REQ_QUIC_CRT_0112.CreateClientTransportParameters();
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
-            peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ]);
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(peerTransportParameters);
         byte[] retriedClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(peerTransportParameters);
 
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
@@ -252,20 +238,16 @@ public sealed class REQ_QUIC_CRT_0147
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void CapturedQuicGoZeroSourceConnectionIdClientHelloStillFlushesTheHelloRetryRequestInitialDatagram()
+    public void ZeroSourceConnectionIdRetryEligibleClientHelloStillFlushesTheHelloRetryRequestInitialDatagram()
     {
-        // Provenance: preserved rerun after the transcript-level HelloRetryRequest change under
-        // artifacts/interop-runner/20260422-122418367-server-nginx/
-        // runner-logs/nginx_quic-go/handshake/client/log.txt and
-        // runner-logs/nginx_quic-go/handshake/server/qlog/server-handshake-3639ba87f96646ca94a7b2218dcaf39a.qlog.
-        // The live quic-go client advertises destination CID 19f036a30c94ca850c88 and an empty source CID,
-        // then times out because the managed server never flushes the HelloRetryRequest Initial response.
         byte[] originalDestinationConnectionId = Convert.FromHexString("19F036A30C94CA850C88");
         byte[] serverSourceConnectionId = [0x65, 0x66, 0x67, 0x68];
-        byte[] capturedClientHello = REQ_QUIC_CRT_0112.CreateCapturedQuicGoServerHandshakeClientHelloTranscript();
-        byte[][] clientInitialPackets = CreateCapturedQuicGoClientInitialPacketsWithZeroSourceConnectionId(
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
+            REQ_QUIC_CRT_0112.CreateClientTransportParameters(),
+            unsupportedKeyShareLength: 1216);
+        byte[][] clientInitialPackets = CreateClientInitialPacketsWithZeroSourceConnectionId(
             originalDestinationConnectionId,
-            capturedClientHello);
+            retryEligibleClientHello);
 
         using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("server4");
         QuicServerConnectionSettings serverSettings = QuicServerConnectionOptionsValidator.Capture(
@@ -368,7 +350,7 @@ public sealed class REQ_QUIC_CRT_0147
         Assert.Equal(Tls13Version, helloRetryRequest.SupportedVersion);
         Assert.Equal(QuicTlsNamedGroup.Secp256r1, helloRetryRequest.SelectedGroup);
         Assert.True(
-            helloRetryRequest.SessionId.AsSpan().SequenceEqual(GetClientHelloSessionId(capturedClientHello)),
+            helloRetryRequest.SessionId.AsSpan().SequenceEqual(GetClientHelloSessionId(retryEligibleClientHello)),
             DescribeRuntimeResult(serverRuntime, secondInitialResult));
     }
 
@@ -387,15 +369,8 @@ public sealed class REQ_QUIC_CRT_0147
         byte[] originalDestinationConnectionId = Convert.FromHexString("19F036A30C94CA850C88");
         byte[] serverSourceConnectionId = [0x65, 0x66, 0x67, 0x68];
         QuicTransportParameters peerTransportParameters = REQ_QUIC_CRT_0112.CreateClientTransportParameters();
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
             peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ],
             applicationProtocols: [SslApplicationProtocol.Http3.Protocol.ToArray()]);
         byte[] retriedClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(
             peerTransportParameters,
@@ -553,15 +528,8 @@ public sealed class REQ_QUIC_CRT_0147
         byte[] originalDestinationConnectionId = Convert.FromHexString("DFF75B130F1B4DCE");
         byte[] serverSourceConnectionId = Convert.FromHexString("BCCE37B011D2FCD8");
         QuicTransportParameters peerTransportParameters = REQ_QUIC_CRT_0112.CreateClientTransportParameters();
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
             peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ],
             applicationProtocols: [SslApplicationProtocol.Http3.Protocol.ToArray()]);
         byte[] retriedClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(
             peerTransportParameters,
@@ -794,17 +762,16 @@ public sealed class REQ_QUIC_CRT_0147
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket()
+    public void FragmentedRetryEligibleDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket()
     {
-        // Provenance:
-        // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-210022638-server-nginx\
-        //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt
-        //   runner-logs\nginx_quic-go\handshakeloss\server\qlog\server-multiconnect-e9838e9861bf4dc3a997a1536cf523eb.qlog
-        // Connection 11 received the first two quic-go Initial packets, emitted an HRR Initial, then received
-        // duplicate first-ClientHello Initial packets while the client never logged a received HRR. The server
-        // must retransmit the already-published HRR packet promptly without producing a second TLS HRR.
         byte[] originalDestinationConnectionId = Convert.FromHexString("E699B5051BFC2232F62A176D7ECB0AF4A0A29930");
         byte[] serverSourceConnectionId = Convert.FromHexString("C19E25085E926C93");
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
+            REQ_QUIC_CRT_0112.CreateClientTransportParameters(),
+            unsupportedKeyShareLength: 1216);
+        byte[][] clientInitialPackets = CreateClientInitialPacketsWithZeroSourceConnectionId(
+            originalDestinationConnectionId,
+            retryEligibleClientHello);
         using QuicConnectionRuntime serverRuntime = CreateServerRuntimeForCapturedHrrReplay(
             originalDestinationConnectionId,
             serverSourceConnectionId);
@@ -815,13 +782,13 @@ public sealed class REQ_QUIC_CRT_0147
             443);
 
         QuicConnectionTransitionResult firstInitialResult = serverRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial0),
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, clientInitialPackets[0]),
             nowTicks: 1);
         Assert.True(firstInitialResult.StateChanged, DescribeRuntimeResult(serverRuntime, firstInitialResult));
         Assert.Empty(firstInitialResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
 
         QuicConnectionTransitionResult secondInitialResult = serverRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial1),
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, clientInitialPackets[1]),
             nowTicks: 2);
         QuicConnectionSendDatagramEffect firstHrrEffect = Assert.Single(
             secondInitialResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
@@ -832,7 +799,7 @@ public sealed class REQ_QUIC_CRT_0147
             firstHrrEffect.Datagram.Span);
 
         QuicConnectionTransitionResult duplicateInitialResult = serverRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 3, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial2),
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 3, pathIdentity, clientInitialPackets[1]),
             nowTicks: 3);
         QuicConnectionSendDatagramEffect[] replayEffects = duplicateInitialResult.Effects
             .OfType<QuicConnectionSendDatagramEffect>()
@@ -840,7 +807,7 @@ public sealed class REQ_QUIC_CRT_0147
             .ToArray();
         Assert.True(
             replayEffects.Length == 1,
-            $"postHrr={DescribeRuntimeResult(serverRuntime, secondInitialResult)} | firstHrr={firstHrrFrame.Offset}+{firstHrrFrame.CryptoData.Length} | duplicateResult={DescribeRuntimeResult(serverRuntime, duplicateInitialResult)} | duplicate={DescribeClientInitialCryptoFrames(originalDestinationConnectionId, CapturedServerMulticonnectHrrReplayClientInitial2)}");
+            $"postHrr={DescribeRuntimeResult(serverRuntime, secondInitialResult)} | firstHrr={firstHrrFrame.Offset}+{firstHrrFrame.CryptoData.Length} | duplicateResult={DescribeRuntimeResult(serverRuntime, duplicateInitialResult)} | duplicate={DescribeClientInitialCryptoFrames(originalDestinationConnectionId, clientInitialPackets[1])}");
         QuicConnectionSendDatagramEffect replayedHrrEffect = replayEffects[0];
         Assert.False(serverRuntime.TlsState.HandshakeKeysAvailable, DescribeRuntimeResult(serverRuntime, duplicateInitialResult));
         Assert.Null(serverRuntime.TlsState.StagedPeerTransportParameters);
@@ -860,10 +827,16 @@ public sealed class REQ_QUIC_CRT_0147
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void CapturedServerMulticonnectDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr()
+    public void FragmentedRetryEligibleDuplicateInitialBeforeCompleteClientHelloDoesNotReplayHrr()
     {
         byte[] originalDestinationConnectionId = Convert.FromHexString("E699B5051BFC2232F62A176D7ECB0AF4A0A29930");
         byte[] serverSourceConnectionId = Convert.FromHexString("C19E25085E926C93");
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
+            REQ_QUIC_CRT_0112.CreateClientTransportParameters(),
+            unsupportedKeyShareLength: 1216);
+        byte[][] clientInitialPackets = CreateClientInitialPacketsWithZeroSourceConnectionId(
+            originalDestinationConnectionId,
+            retryEligibleClientHello);
         using QuicConnectionRuntime serverRuntime = CreateServerRuntimeForCapturedHrrReplay(
             originalDestinationConnectionId,
             serverSourceConnectionId);
@@ -874,12 +847,12 @@ public sealed class REQ_QUIC_CRT_0147
             443);
 
         QuicConnectionTransitionResult firstInitialResult = serverRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial0),
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 1, pathIdentity, clientInitialPackets[0]),
             nowTicks: 1);
         Assert.True(firstInitialResult.StateChanged, DescribeRuntimeResult(serverRuntime, firstInitialResult));
 
         QuicConnectionTransitionResult duplicateFragmentResult = serverRuntime.Transition(
-            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, CapturedServerMulticonnectHrrReplayClientInitial2),
+            new QuicConnectionPacketReceivedEvent(ObservedAtTicks: 2, pathIdentity, clientInitialPackets[0]),
             nowTicks: 2);
 
         Assert.Empty(duplicateFragmentResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
@@ -895,12 +868,12 @@ public sealed class REQ_QUIC_CRT_0147
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
         byte[] unsupportedClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
             REQ_QUIC_CRT_0112.CreateClientTransportParameters(),
-            supportedGroups: [0x001D],
+            supportedGroups: [(ushort)QuicTlsNamedGroup.X25519],
             keyShareEntries:
             [
                 new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
+                    0x11EC,
+                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 48)),
             ]);
 
         IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
@@ -920,15 +893,8 @@ public sealed class REQ_QUIC_CRT_0147
     [Trait("Category", "Negative")]
     public void RepeatedRetryEligibleClientHelloIsRejectedAfterTheSingleHelloRetryRequestBoundary()
     {
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
-            REQ_QUIC_CRT_0112.CreateClientTransportParameters(),
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ]);
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
+            REQ_QUIC_CRT_0112.CreateClientTransportParameters());
 
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
         IReadOnlyList<QuicTlsStateUpdate> firstUpdates = driver.ProcessCryptoFrame(
@@ -949,15 +915,7 @@ public sealed class REQ_QUIC_CRT_0147
     public void MalformedRetriedClientHelloFailsDeterministicallyAfterHelloRetryRequest()
     {
         QuicTransportParameters peerTransportParameters = REQ_QUIC_CRT_0112.CreateClientTransportParameters();
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
-            peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ]);
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(peerTransportParameters);
 
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
         IReadOnlyList<QuicTlsStateUpdate> firstUpdates = driver.ProcessCryptoFrame(
@@ -992,7 +950,6 @@ public sealed class REQ_QUIC_CRT_0147
             QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
             byte[] validSecpKeyShare = CreateValidSecp256r1KeyShare(unchecked((byte)(0x40 + iteration)));
             byte[] alternateSecpKeyShare = CreateValidSecp256r1KeyShare(unchecked((byte)(0x80 + iteration)));
-            byte[] x25519KeyShare = REQ_QUIC_CRT_0112.CreateSequentialBytes(unchecked((byte)(0x10 + iteration)), 32);
             byte[] hybridKeyShare = REQ_QUIC_CRT_0112.CreateSequentialBytes(unchecked((byte)(0x20 + iteration)), 48);
             byte[] malformedSecpKeyShare = validSecpKeyShare.ToArray();
             malformedSecpKeyShare[0] = 0x05;
@@ -1010,7 +967,6 @@ public sealed class REQ_QUIC_CRT_0147
                     ClientHelloKeyShareEntry[] keyShareEntries = Shuffle(
                         random,
                         [
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
                             new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, validSecpKeyShare),
                             new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                         ]);
@@ -1037,7 +993,6 @@ public sealed class REQ_QUIC_CRT_0147
                     ClientHelloKeyShareEntry[] keyShareEntries = Shuffle(
                         random,
                         [
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
                             new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                         ]);
 
@@ -1069,8 +1024,8 @@ public sealed class REQ_QUIC_CRT_0147
                             Shuffle(
                                 random,
                                 [
-                                    new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
                                     new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, validSecpKeyShare),
+                                    new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                                 ])));
 
                     Assert.True(retriedUpdates.Count >= 6);
@@ -1088,7 +1043,7 @@ public sealed class REQ_QUIC_CRT_0147
                         random,
                         [
                             new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, validSecpKeyShare),
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
+                            new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                             new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, alternateSecpKeyShare),
                         ]);
 
@@ -1112,7 +1067,7 @@ public sealed class REQ_QUIC_CRT_0147
                         random,
                         [
                             new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, malformedSecpKeyShare),
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
+                            new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                         ]);
 
                     firstUpdates = driver.ProcessCryptoFrame(
@@ -1128,12 +1083,12 @@ public sealed class REQ_QUIC_CRT_0147
 
                 case 4:
                 {
-                    ushort[] supportedGroups = Shuffle(random, [(ushort)0x001D, (ushort)0x11EC]);
+                    ushort[] supportedGroups = Shuffle(random, [(ushort)QuicTlsNamedGroup.X25519, (ushort)0x11EC]);
                     ClientHelloKeyShareEntry[] keyShareEntries = Shuffle(
                         random,
                         [
                             new ClientHelloKeyShareEntry((ushort)QuicTlsNamedGroup.Secp256r1, validSecpKeyShare),
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
+                            new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                         ]);
 
                     firstUpdates = driver.ProcessCryptoFrame(
@@ -1155,7 +1110,6 @@ public sealed class REQ_QUIC_CRT_0147
                     ClientHelloKeyShareEntry[] keyShareEntries = Shuffle(
                         random,
                         [
-                            new ClientHelloKeyShareEntry(0x001D, x25519KeyShare),
                             new ClientHelloKeyShareEntry(0x11EC, hybridKeyShare),
                         ]);
 
@@ -1192,21 +1146,29 @@ public sealed class REQ_QUIC_CRT_0147
         return driver;
     }
 
+    private static byte[] CreateRetryEligibleHybridOnlyClientHello(
+        QuicTransportParameters peerTransportParameters,
+        IReadOnlyList<byte[]>? applicationProtocols = null,
+        int unsupportedKeyShareLength = 48)
+        => CreateClientHelloTranscriptWithKeyShareEntries(
+            peerTransportParameters,
+            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, (ushort)QuicTlsNamedGroup.X25519, 0x11EC],
+            keyShareEntries:
+            [
+                new ClientHelloKeyShareEntry(
+                    0x11EC,
+                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, unsupportedKeyShareLength)),
+            ],
+            applicationProtocols: applicationProtocols);
+
     private static PostHrrServerFlightReplayScenario CreatePostHrrServerFlightReplayScenario(
         int minimumClientInitialProtectedPacketLength)
     {
         byte[] originalDestinationConnectionId = Convert.FromHexString("DFF75B130F1B4DCE");
         byte[] serverSourceConnectionId = Convert.FromHexString("BCCE37B011D2FCD8");
         QuicTransportParameters peerTransportParameters = REQ_QUIC_CRT_0112.CreateClientTransportParameters();
-        byte[] retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
+        byte[] retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
             peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, 0x001D],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(
-                    0x001D,
-                    REQ_QUIC_CRT_0112.CreateSequentialBytes(0x90, 32)),
-            ],
             applicationProtocols: [SslApplicationProtocol.Http3.Protocol.ToArray()]);
         byte[] retriedClientHello = REQ_QUIC_CRT_0112.CreateClientHelloTranscript(
             peerTransportParameters,
