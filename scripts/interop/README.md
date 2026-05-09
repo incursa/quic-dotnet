@@ -52,6 +52,7 @@ Hosted corroboration:
 - `.github/workflows/interop-runner-handshake.yml` exposes manual `workflow_dispatch` advisory profiles.
 - The default `hosted-handshake` profile runs only the narrow server-role `handshake` cell against `quic-go`.
 - The explicit `supported-subset` profile runs the hosted handshake job and fans out the additional helper-supported cells: same-slot `retry`, split-role `transfer`, and client-role `multiconnect` mapped to the runner's `handshakeloss` testcase.
+- The explicit `zerortt-server-proof` profile runs only the server-role `zerortt` attempt against a `quic-go` client on hosted Linux so the runner can get past the Windows long-filename setup blocker. This is advisory proof collection and does not classify the full `zerortt` inventory cell as supported.
 - The smaller `post-handshake-stream` proof remains local-harness coverage only; there is no hosted external-runner profile for it yet.
 - The workflow checks out this repository and `quic-interop-runner` separately, then runs this helper once per selected matrix cell.
 - The workflow pins Python 3.12 for the external runner dependencies instead of floating to the newest hosted-toolcache Python.

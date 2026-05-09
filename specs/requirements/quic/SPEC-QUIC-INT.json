@@ -63,7 +63,7 @@
     },
     {
       "heading": "Hosted Corroboration",
-      "content": "The manual hosted workflow defaults to the narrow server-role `handshake` helper cell against a quic-go client slot and uploads the full artifact bundle regardless of result. It also offers an explicit `supported-subset` profile that fans out over already-supported helper cells for retry, transfer, and multiconnect evidence collection. Both profiles are intentionally advisory and are not part of push, pull-request, or package gating."
+      "content": "The manual hosted workflow defaults to the narrow server-role `handshake` helper cell against a quic-go client slot and uploads the full artifact bundle regardless of result. It also offers an explicit `supported-subset` profile that fans out over already-supported helper cells for retry, transfer, and multiconnect evidence collection, plus an explicit `zerortt-server-proof` profile that targets only the server-role zerortt attempt on hosted Linux so the runner can produce evidence beyond the Windows long-filename setup blocker. These profiles are intentionally advisory and are not part of push, pull-request, or package gating."
     },
     {
       "heading": "Documented Non-HTTP/3 Inventory",
