@@ -20,7 +20,7 @@
 Unsupported testcases return `127`.
 The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above.
 `chacha20` remains inventory-visible but prerequisite-blocked pending CipherSuitesPolicy support. `resumption` is now inventory-green for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof; it does not imply HTTP/3, 0-RTT, anti-replay, or broader resumption API support.
-`zerortt` remains inventory-visible but prerequisite-blocked pending hosted/Linux runner proof, client-side 0-RTT request-stream proof, and harness classification. The server-role harness path can now enable managed resumption tickets plus server early-data admission for a runner-driven attempt, but that dispatch path and bounded internal early-data runtime proof are not enough to mark the inventory cell supported.
+`zerortt` remains inventory-visible but prerequisite-blocked pending first-flight key-share/HelloRetryRequest compatibility, full hosted/Linux runner proof, client-side 0-RTT request-stream proof, and harness classification. The server-role harness path can now enable managed resumption tickets plus server early-data admission for a runner-driven attempt, but that dispatch path, bounded internal early-data runtime proof, and partial hosted stream proof are not enough to mark the inventory cell supported.
 
 ## Build Locally
 

@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires hosted/Linux zerortt runner proof, client-side 0-RTT request-stream proof, and harness classification; server-role dispatch alone is not support evidence.'
+            Notes = 'Requires first-flight key-share/HelloRetryRequest compatibility, full hosted/Linux zerortt runner proof, client-side 0-RTT request-stream proof, and harness classification; server-role dispatch or partial hosted stream proof alone is not support evidence.'
         }
 
         [pscustomobject]@{
