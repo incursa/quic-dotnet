@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires 0-RTT transport and ticket-reuse support.'
+            Notes = 'Requires server-side 0-RTT admission and anti-replay ownership; current server tickets do not advertise early_data.'
         }
 
         [pscustomobject]@{
@@ -752,7 +752,15 @@ function Write-InteropRunnerPlan {
     if (@($Plan.RequestedTestCaseInventory).Count -gt 0) {
         Write-Host '  Requested inventory:'
         foreach ($inventoryEntry in $Plan.RequestedTestCaseInventory) {
-            Write-Host "    $($inventoryEntry.TestCase) -> $($inventoryEntry.Classification) (runner: $($inventoryEntry.RunnerTestCase))"
+            $notes = [string]$inventoryEntry.Notes
+            $noteSuffix = if ([string]::IsNullOrWhiteSpace($notes)) {
+                ''
+            }
+            else {
+                "; notes: $notes"
+            }
+
+            Write-Host "    $($inventoryEntry.TestCase) -> $($inventoryEntry.Classification) (runner: $($inventoryEntry.RunnerTestCase))$noteSuffix"
         }
     }
     Write-Host "  Runner timeout override:      $($Plan.RunnerTimeoutSeconds)"
