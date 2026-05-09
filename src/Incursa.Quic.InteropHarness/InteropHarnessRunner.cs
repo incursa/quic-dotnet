@@ -52,6 +52,11 @@ internal static class InteropHarnessRunner
         ServerTransferDispatchPlan? Plan,
         string? ErrorMessage);
 
+    internal sealed record ServerResumptionDispatchCounts(
+        int FirstConnectionExpectedRequestCount,
+        int ResumedConnectionExpectedRequestCount,
+        int ConfiguredRequestCount);
+
     internal sealed record ServerMulticonnectDispatchPlanBuildResult(
         bool Success,
         ServerMulticonnectDispatchPlan? Plan,
@@ -1240,9 +1245,13 @@ internal static class InteropHarnessRunner
                 {
                     const int ResumptionConnectionCount = 2;
 
-                    if (dispatchPlan.ConfiguredRequestCount < ResumptionConnectionCount)
+                    if (!TryCreateServerResumptionDispatchCounts(
+                        dispatchPlan,
+                        out ServerResumptionDispatchCounts? resumptionDispatchCounts,
+                        out string? resumptionDispatchError) ||
+                        resumptionDispatchCounts is null)
                     {
-                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=resumption requires at least {ResumptionConnectionCount} REQUESTS URLs.");
+                        WriteLineAndFlush(stderr, resumptionDispatchError ?? string.Empty);
                         return 1;
                     }
 
@@ -1250,18 +1259,18 @@ internal static class InteropHarnessRunner
                     await Task.Yield();
                     WriteLineAndFlush(
                         stdout,
-                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}, connectionCount={ResumptionConnectionCount}.");
+                        $"interop harness: role=server, testcase={testCase}, requestCount={resumptionDispatchCounts.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}, connectionCount={ResumptionConnectionCount}.");
 
                     await using QuicConnection firstConnection = await firstAcceptTask.ConfigureAwait(false);
                     WriteLineAndFlush(
                         stdout,
-                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} accepted managed connection 1/{ResumptionConnectionCount}.");
+                        $"interop harness: role=server, testcase={testCase}, requestCount={resumptionDispatchCounts.ConfiguredRequestCount} accepted managed connection 1/{ResumptionConnectionCount}.");
                     int firstServedRequestCount = await ServeHttp09RequestsAsync(
                         firstConnection,
                         stdout,
                         testCase,
-                        expectedRequestCount: 1,
-                        configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
+                        expectedRequestCount: resumptionDispatchCounts.FirstConnectionExpectedRequestCount,
+                        configuredRequestCount: resumptionDispatchCounts.ConfiguredRequestCount).ConfigureAwait(false);
 
                     if (firstServedRequestCount == 0)
                     {
@@ -1276,19 +1285,19 @@ internal static class InteropHarnessRunner
                         firstConnection,
                         stdout,
                         testCase,
-                        dispatchPlan.ConfiguredRequestCount,
+                        resumptionDispatchCounts.ConfiguredRequestCount,
                         ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
 
                     await using QuicConnection resumedConnection = await resumedAcceptTask.ConfigureAwait(false);
                     WriteLineAndFlush(
                         stdout,
-                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} accepted managed connection {ResumptionConnectionCount}/{ResumptionConnectionCount}.");
+                        $"interop harness: role=server, testcase={testCase}, requestCount={resumptionDispatchCounts.ConfiguredRequestCount} accepted managed connection {ResumptionConnectionCount}/{ResumptionConnectionCount}.");
                     int resumedServedRequestCount = await ServeHttp09RequestsAsync(
                         resumedConnection,
                         stdout,
                         testCase,
-                        expectedRequestCount: dispatchPlan.ConfiguredRequestCount - 1,
-                        configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
+                        expectedRequestCount: resumptionDispatchCounts.ResumedConnectionExpectedRequestCount,
+                        configuredRequestCount: resumptionDispatchCounts.ConfiguredRequestCount).ConfigureAwait(false);
 
                     if (resumedServedRequestCount == 0)
                     {
@@ -1300,7 +1309,7 @@ internal static class InteropHarnessRunner
                         resumedConnection,
                         stdout,
                         testCase,
-                        dispatchPlan.ConfiguredRequestCount,
+                        resumptionDispatchCounts.ConfiguredRequestCount,
                         ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
                     return 0;
                 }
@@ -1379,6 +1388,40 @@ internal static class InteropHarnessRunner
             true,
             new ServerTransferDispatchPlan(listenEndPoint, expectedRequestCount, configuredRequestCount),
             null);
+    }
+
+    internal static bool TryCreateServerResumptionDispatchCounts(
+        ServerTransferDispatchPlan dispatchPlan,
+        out ServerResumptionDispatchCounts? counts,
+        out string? errorMessage)
+    {
+        ArgumentNullException.ThrowIfNull(dispatchPlan);
+
+        const int ResumptionConnectionCount = 2;
+
+        if (dispatchPlan.ConfiguredRequestCount == 0)
+        {
+            counts = new ServerResumptionDispatchCounts(
+                FirstConnectionExpectedRequestCount: 1,
+                ResumedConnectionExpectedRequestCount: 1,
+                ConfiguredRequestCount: ResumptionConnectionCount);
+            errorMessage = null;
+            return true;
+        }
+
+        if (dispatchPlan.ConfiguredRequestCount < ResumptionConnectionCount)
+        {
+            counts = null;
+            errorMessage = $"interop harness: role=server, testcase=resumption requires at least {ResumptionConnectionCount} REQUESTS URLs when server REQUESTS is explicitly configured.";
+            return false;
+        }
+
+        counts = new ServerResumptionDispatchCounts(
+            FirstConnectionExpectedRequestCount: 1,
+            ResumedConnectionExpectedRequestCount: dispatchPlan.ConfiguredRequestCount - 1,
+            ConfiguredRequestCount: dispatchPlan.ConfiguredRequestCount);
+        errorMessage = null;
+        return true;
     }
 
     private static async Task<SequentialTransferPlanBuildResult> TryCreateSequentialTransferPlans(

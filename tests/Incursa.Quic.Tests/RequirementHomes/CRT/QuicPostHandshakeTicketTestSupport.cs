@@ -220,6 +220,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         ulong peerConnectionFlowControlLimit = DefaultConnectionFlowControlLimit,
         ulong peerStreamFlowControlLimit = DefaultStreamFlowControlLimit,
         bool enableServerResumptionTickets = false,
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         List<QuicConnectionEffect>? emittedEffects = null,
         bool initializeActivePath = false)
     {
@@ -259,7 +260,8 @@ internal static class QuicPostHandshakeTicketTestSupport
             localHandshakePrivateKey: localHandshakePrivateKey,
             localServerLeafCertificateDer: localLeafCertificateDer,
             localServerLeafSigningPrivateKey: localSigningPrivateKey,
-            enableServerResumptionTickets: enableServerResumptionTickets);
+            enableServerResumptionTickets: enableServerResumptionTickets,
+            serverResumptionTicketStore: serverResumptionTicketStore);
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(PacketConnectionId));
         Assert.True(runtime.TrySetBootstrapOutboundPath(PacketPathIdentity));
@@ -318,7 +320,8 @@ internal static class QuicPostHandshakeTicketTestSupport
 
     internal static QuicTlsTransportBridgeDriver CreateFinishedServerDriver(
         bool enableServerResumptionTickets,
-        out IReadOnlyList<QuicTlsStateUpdate> finishedUpdates)
+        out IReadOnlyList<QuicTlsStateUpdate> finishedUpdates,
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
     {
         byte[] clientHandshakePrivateKey = CreateScalar(0x11);
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
@@ -346,7 +349,8 @@ internal static class QuicPostHandshakeTicketTestSupport
             localHandshakePrivateKey: localHandshakePrivateKey,
             localServerLeafCertificateDer: localLeafCertificateDer,
             localServerLeafSigningPrivateKey: localSigningPrivateKey,
-            enableServerResumptionTickets: enableServerResumptionTickets);
+            enableServerResumptionTickets: enableServerResumptionTickets,
+            serverResumptionTicketStore: serverResumptionTicketStore);
 
         Assert.True(serverDriver.TryConfigureServerResumptionTicketIssuance(enableServerResumptionTickets));
         Assert.Single(serverDriver.StartHandshake(CreateBootstrapLocalTransportParameters()));

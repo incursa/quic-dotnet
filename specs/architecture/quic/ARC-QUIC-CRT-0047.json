@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0047",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC server-side resumption PSK acceptance architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the internal managed-listener ticket store and server PSK acceptance seam without widening public resumption support.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0049",
+    "VER-QUIC-CRT-0049"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0151"
+  ],
+  "design_summary": "Server-issued tickets remain listener-local and in-memory. The ticket issuer records the opaque ticket identity, ticket nonce, lifetime, age-add value, issue timestamp, and resumption master secret in an internal store when server ticket issuance is enabled. Later accepted connections on the same listener can consult that store when a ClientHello offers a pre_shared_key identity. A matching, live ticket is accepted only after the server recomputes the resumption PSK and verifies the binder over the binder-truncated ClientHello transcript. Accepted PSK attempts add the ServerHello pre_shared_key selection and derive PSK-DHE handshake traffic secrets from the accepted PSK plus the fresh ECDHE share. Unknown, expired, malformed, duplicate, or binder-invalid offers do not select PSK and continue on the existing full-handshake path when the ClientHello remains otherwise valid. The slice deliberately keeps early_data, server-side 0-RTT admission, anti-replay, external ticket persistence, HTTP/3, and public API changes outside the support boundary.",
+  "key_components": [
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs"
+  ],
+  "edge_cases_and_constraints": [
+    "Ticket lookup is scoped to the same managed listener store that issued the ticket.",
+    "Binder validation must use the stored resumption master secret and ticket nonce.",
+    "ServerHello pre_shared_key selection is emitted only for one validated identity.",
+    "Malformed or duplicate PSK offers are rejected by the existing transcript parse path rather than broadened into general PSK negotiation.",
+    "0-RTT, early_data, anti-replay, persistent ticket stores, public API changes, and HTTP/3 stay out of scope."
+  ],
+  "alternatives_considered": [
+    "Expose a public resumption-ticket cache. Rejected because public resumption support and persistence are not part of this slice.",
+    "Accept any syntactically valid PSK identity. Rejected because binder validation must bind the ClientHello to the stored ticket material.",
+    "Open early_data when a ticket is accepted. Rejected because anti-replay and server-side 0-RTT admission remain separate work."
+  ],
+  "risks": [
+    "Treating a binder-invalid offer as selected would produce unauthenticated resumed handshakes.",
+    "Leaking the listener-local store through public options would widen the support promise prematurely.",
+    "Reusing the full-handshake key schedule on accepted PSK branches would break interop because peers derive PSK-DHE handshake keys."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Code And Proof Surfaces",
+      "content": "- [`src/Incursa.Quic/QuicServerResumptionTicketStore.cs`](../../../src/Incursa.Quic/QuicServerResumptionTicketStore.cs)\n- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs)"
+    }
+  ]
+}

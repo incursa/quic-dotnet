@@ -34,6 +34,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
+    private readonly QuicServerResumptionTicketStore serverResumptionTicketStore = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
     private readonly ConcurrentDictionary<string, int> versionNegotiationResponseCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumVersionNegotiationResponsesPerRemoteAddress;
@@ -248,6 +249,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
 
         versionNegotiationResponseCountsByRemoteAddress.Clear();
+        serverResumptionTicketStore.Clear();
         cancellationSource?.Dispose();
         shutdown.Dispose();
     }
@@ -1355,7 +1357,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             tlsRole: QuicTlsRole.Server,
             diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink),
             enableRandomizedSpinBitSelection: true,
-            selectedCipherSuite: options.SelectedCipherSuite);
+            selectedCipherSuite: options.SelectedCipherSuite,
+            serverResumptionTicketStore: serverResumptionTicketStore);
     }
 
     private sealed class PendingConnectionState

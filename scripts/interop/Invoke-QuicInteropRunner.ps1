@@ -442,7 +442,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'resumption'
             RunnerTestCase = 'resumption'
             Classification = 'prerequisite-blocked'
-            Notes = 'Has opt-in server NewSessionTicket issuance; still requires shared ticket state, PSK binder validation, resumed ServerHello selection, PSK-DHE derivation, and resumed-connection acceptance.'
+            Notes = 'Source-level managed ticket issuance and PSK acceptance are implemented; live runner proof remains blocked because quic-interop-runner requires SSLKEYLOGFILE output to check resumption.'
         }
 
         [pscustomobject]@{

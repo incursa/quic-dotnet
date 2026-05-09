@@ -50,7 +50,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
         QuicTlsCipherSuite? selectedCipherSuite = null,
-        bool enableServerResumptionTickets = false)
+        bool enableServerResumptionTickets = false,
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
@@ -61,7 +62,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             localHandshakePrivateKey,
             clientCipherSuiteProfile,
             clientAuthenticationOptions?.ApplicationProtocols,
-            enableServerResumptionTickets);
+            enableServerResumptionTickets,
+            serverResumptionTicketStore);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
 

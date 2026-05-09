@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0049",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC server-side resumption PSK acceptance work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the internal managed-listener ticket store and server-side PSK binder validation path needed to accept a bounded resumed handshake.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0047"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0049"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0151"
+  ],
+  "planned_changes": "- Add an internal in-memory listener-scoped resumption ticket store.\n- Store ticket material when the managed server emits an opt-in NewSessionTicket.\n- Parse the supported single-identity ClientHello PSK offer for server-side validation.\n- Validate the binder against the stored resumption master secret and ticket nonce before selecting PSK.\n- Emit ServerHello pre_shared_key selection only on validated offers.\n- Derive accepted-branch handshake protection from PSK-DHE rather than the full-handshake zero PSK.\n- Keep early_data, 0-RTT admission, anti-replay, persistence, HTTP/3, and public API widening out of scope.\n- Add focused positive, negative, and fuzz-shaped requirement-home proof.",
+  "verification_plan": "Run focused REQ_QUIC_CRT_0151 tests first, then regenerated QUIC triage, SpecTrace core validation, Release build, full Release tests, and diff whitespace checks.",
+  "completion_notes": "The managed server now stores issued resumption-ticket material in a listener-local in-memory ticket store, validates same-listener PSK offers by recomputing the binder from the stored resumption master secret and ticket nonce, emits ServerHello pre_shared_key selection only for validated offers, and derives accepted-branch PSK-DHE handshake protection. Unknown, expired, binder-invalid, malformed, and duplicate offers fail closed without PSK selection. Early-data acceptance, server anti-replay, external ticket persistence, HTTP/3, public API widening, and broad external-runner readiness remain out of scope.",
+  "out_of_scope": [
+    "0-RTT receive admission",
+    "early_data acceptance",
+    "server anti-replay",
+    "external ticket persistence",
+    "public resumption APIs",
+    "HTTP/3"
+  ]
+}

@@ -1,7 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for CRT server NewSessionTicket issuance proof,
-INT non-HTTP/3 inventory dry-run proof and resumption blocker documentation,
+Last verified: 2026-05-08 for CRT server-side resumption PSK acceptance proof,
+CRT server NewSessionTicket issuance proof, INT non-HTTP/3 inventory dry-run proof and resumption blocker documentation,
 RFC 9000 S5 disable-active-migration proof topoff, S6 reserved-version ignore
 proof topoff, S2 concurrent-stream proof topoff, S2 stream-cancellation proof
 topoff, S13 ECN
@@ -23,6 +23,46 @@ This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
+## 2026-05-08 CRT Server Resumption PSK Acceptance Closure Note
+
+`REQ-QUIC-CRT-0151` now owns the internal managed server-side resumption
+acceptance slice. When server resumption is explicitly enabled, the managed
+listener keeps issued ticket material in a listener-local in-memory store, checks
+later ClientHello `pre_shared_key` identities against live tickets from that
+store, validates the binder from the stored resumption master secret and ticket
+nonce, emits ServerHello `pre_shared_key` selection only for validated offers,
+and derives matching PSK-DHE handshake protection on the accepted server/client
+branches.
+
+Focused negative proof covers unknown, expired, binder-invalid, malformed, and
+duplicate PSK offers failing closed without pre-shared-key selection. The slice
+does not open early_data or server-side 0-RTT admission, does not add anti-replay
+or external ticket persistence, does not widen the public API/support promise,
+and does not bring HTTP/3 into scope.
+
+This closes the previous source-level `resumption` prerequisites named in the
+2026-05-08 inventory note: shared server ticket state, binder validation,
+resumed ServerHello selection, and PSK-DHE resumed handshake-secret derivation.
+The live 2026-05-08 external runner attempt now progresses past the earlier
+server-dispatch failure and PSK-rejection boundary, but quic-interop-runner
+reports the testcase as `unsupported` with `Can't check test result. SSLKEYLOG
+required.` The interop inventory therefore remains conservative until an honest
+SSLKEYLOGFILE-backed proof path exists; the next source-level unresolved cell
+after this slice is `zerortt`, which remains blocked on server-side 0-RTT
+admission and anti-replay ownership.
+
+Local verification passed: focused
+`REQ_QUIC_CRT_0151|REQ_QUIC_INT_0002|InteropRunnerScriptDryRunTests`
+reported 17/17 passing, SpecTrace core validation reported 526 artifacts,
+Release build completed with 0 warnings and 0 errors, full Release no-build
+test rerun reported 4,877/4,877 passing, and `git diff --check` exited 0
+with only generated-triage CRLF normalization warnings. The live runner command
+`pwsh -File scripts\interop\Invoke-QuicInteropRunner.ps1 -RepoRoot .
+-TestCases resumption` produced runner report
+`artifacts\interop-runner\20260508-231043525-both-quic-go\runner-report.json`
+with `resumption` classified `unsupported` because SSLKEYLOG output is
+required.
+
 ## 2026-05-08 CRT Server NewSessionTicket Issuance Closure Note
 
 `REQ-QUIC-CRT-0150` now owns the first managed server-side resumption ticket
@@ -33,13 +73,11 @@ The ticket is published over the QUIC 1-RTT CRYPTO seam and can be flushed as a
 protected application-data packet when an active path exists. The default server
 path remains ticket-free.
 
-This does not make the `resumption` interop cell green. The next unresolved
-resumption blocker is server-side acceptance: shared ticket state across
-accepted connections, PSK binder/ticket validation, resumed PSK-DHE
-handshake-secret derivation, and `ServerHello` `pre_shared_key` selection remain
-future work. The emitted ticket carries no `early_data` extension and does not
-claim 0-RTT acceptance, anti-replay, public API widening, HTTP/3, or broader
-interop readiness.
+This did not by itself make the `resumption` interop cell green. The follow-on
+server-side acceptance source gap is now owned and closed by `REQ-QUIC-CRT-0151`.
+The emitted ticket carries no `early_data` extension and does not claim 0-RTT
+acceptance, anti-replay, public API widening, HTTP/3, or broader interop
+readiness.
 
 Local focused verification passed:
 `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release
@@ -57,12 +95,13 @@ non-HTTP/3 interop testcase list. The current helper inventory keeps
 prerequisite-blocked.
 
 `chacha20` is not green on this runner: it remains blocked on end-to-end runner
-platform support for the required cipher-suite selection. The next unresolved
-runtime cell is `resumption`. The managed server now has opt-in
-`NewSessionTicket` issuance under `REQ-QUIC-CRT-0150`, but the cell remains
-blocked because the server still does not share ticket state across accepted
-connections, validate the client's PSK binder/ticket identity, derive resumed
-PSK-DHE handshake secrets, or select the pre-shared key in ServerHello.
+platform support for the required cipher-suite selection. The source-level
+server resumption prerequisites named here are now closed under
+`REQ-QUIC-CRT-0151`, but the inventory still must not call the external
+`resumption` cell green because the live runner proof is blocked on required
+SSLKEYLOGFILE output. The next source-level unresolved runtime cell after this
+slice is `zerortt`, which requires server-side 0-RTT admission and anti-replay
+ownership.
 
 Current regenerated RFC requirement triage still reports 1,498 of 1,771
 requirements `trace_clean`, leaving 273 non-clean: 55 metadata-only

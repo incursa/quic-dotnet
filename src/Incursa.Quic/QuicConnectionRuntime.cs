@@ -152,7 +152,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
         QuicTlsCipherSuite? selectedCipherSuite = null,
-        bool enableServerResumptionTickets = false)
+        bool enableServerResumptionTickets = false,
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -185,7 +186,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             remoteCertificateValidationCallback,
             clientAuthenticationOptions,
             selectedCipherSuite,
-            enableServerResumptionTickets);
+            enableServerResumptionTickets,
+            serverResumptionTicketStore);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,

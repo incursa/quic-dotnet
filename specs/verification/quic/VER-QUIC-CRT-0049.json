@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0049",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC server-side resumption PSK acceptance verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with positive, negative, and fuzz-shaped coverage, followed by generated-triage, SpecTrace, build, full-suite, and diff validation.",
+  "scope": "Verify that an opt-in managed server accepts only live same-listener tickets with valid binders, selects pre_shared_key only on that branch, and derives PSK-DHE handshake protection while keeping early_data and public API promises closed.",
+  "preconditions": [
+    "The managed listener ticket store contains a live server-issued ticket.",
+    "The later server connection has internal resumption acceptance enabled.",
+    "The client offers the supported single-identity psk_dhe_ke ClientHello shape."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0151\"",
+    "pwsh -File scripts/interop/Invoke-QuicInteropRunner.ps1 -RepoRoot . -TestCases resumption",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0151 requirement-home tests.",
+    "Confirm a matching live ticket validates its binder and causes ServerHello pre_shared_key selection.",
+    "Confirm a ticket snapshot captured from a completed client handshake validates against the server listener store.",
+    "Confirm unknown, expired, malformed, duplicate, and binder-invalid offers do not select PSK.",
+    "Confirm accepted client and server schedules derive matching PSK-DHE handshake protection material.",
+    "Repeat deterministic identity and binder mutations to prove the lookup and binder boundary fails closed.",
+    "Regenerate requirement coverage triage and validate the core SpecTrace profile."
+  ],
+  "expected_result": "Server-side PSK acceptance is available only through the internal managed-listener ticket store and remains closed for invalid or unsupported offers. Early-data, anti-replay, persistence, HTTP/3, and public API widening remain out of scope.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0047",
+    "WI-QUIC-CRT-0049"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- A live same-listener ticket validates the ClientHello binder and causes ServerHello pre_shared_key selection.\n- Unknown, expired, malformed, duplicate, or binder-invalid offers do not select PSK.\n- Accepted server and client branches derive matching PSK-DHE handshake protection.\n- early_data and server-side 0-RTT admission remain closed.\n- No public resumption API or support promise is added."
+    }
+  ],
+  "status_summary": "Passed locally for focused REQ-QUIC-CRT-0151 requirement-home coverage, including a client-captured ticket replay against the listener store. The final gate passed with SpecTrace core validation, Release build, full Release no-build test rerun, and diff check. The live resumption runner attempt no longer fails on server dispatch or PSK rejection, but quic-interop-runner reports the testcase as unsupported because SSLKEYLOGFILE output is required for its resumption check; external interop promotion remains blocked on that proof prerequisite.",
+  "verifies": [
+    "REQ-QUIC-CRT-0151"
+  ]
+}

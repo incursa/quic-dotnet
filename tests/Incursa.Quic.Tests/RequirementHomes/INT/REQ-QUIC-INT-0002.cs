@@ -59,6 +59,28 @@ public sealed class REQ_QUIC_INT_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerResumptionDispatchAllowsEmptyRunnerRequestsAndExpectsPeerDrivenRequests()
+    {
+        InteropHarnessRunner.ServerTransferDispatchPlan dispatchPlan = new(
+            new IPEndPoint(IPAddress.Any, 443),
+            ExpectedRequestCount: 0,
+            ConfiguredRequestCount: 0);
+
+        Assert.True(InteropHarnessRunner.TryCreateServerResumptionDispatchCounts(
+            dispatchPlan,
+            out InteropHarnessRunner.ServerResumptionDispatchCounts? counts,
+            out string? errorMessage));
+
+        Assert.NotNull(counts);
+        Assert.Null(errorMessage);
+        Assert.Equal(1, counts!.FirstConnectionExpectedRequestCount);
+        Assert.Equal(1, counts.ResumedConnectionExpectedRequestCount);
+        Assert.Equal(2, counts.ConfiguredRequestCount);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientDispatchStillRejectsEmptyRequestsWithoutTheServerFallback()
@@ -75,5 +97,26 @@ public sealed class REQ_QUIC_INT_0002
         Assert.False(InteropHarnessRunner.TryGetDispatchRequestUri(environment, out Uri? requestUri, out errorMessage));
         Assert.Null(requestUri);
         Assert.Equal("REQUESTS must contain at least one URL for testcase dispatch.", errorMessage);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerResumptionDispatchRejectsExplicitSingleRequestPlan()
+    {
+        InteropHarnessRunner.ServerTransferDispatchPlan dispatchPlan = new(
+            new IPEndPoint(IPAddress.Any, 443),
+            ExpectedRequestCount: 1,
+            ConfiguredRequestCount: 1);
+
+        Assert.False(InteropHarnessRunner.TryCreateServerResumptionDispatchCounts(
+            dispatchPlan,
+            out InteropHarnessRunner.ServerResumptionDispatchCounts? counts,
+            out string? errorMessage));
+
+        Assert.Null(counts);
+        Assert.Equal(
+            "interop harness: role=server, testcase=resumption requires at least 2 REQUESTS URLs when server REQUESTS is explicitly configured.",
+            errorMessage);
     }
 }

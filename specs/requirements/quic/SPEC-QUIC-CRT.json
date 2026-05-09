@@ -1276,7 +1276,44 @@
       "notes": [
         "This is an opt-in server-ticket issuance slice only; default managed server behavior remains ticket-free.",
         "The emitted ticket has no `early_data` extension and does not create server-side 0-RTT admission, buffering, anti-replay, or public early-data promise.",
-        "Resumption interop remains blocked until a later slice adds shared ticket state, PSK binder validation, ServerHello pre_shared_key selection, and PSK-DHE resumed handshake-secret derivation."
+        "REQ-QUIC-CRT-0151 owns the later internal managed server PSK-acceptance slice; this issuance requirement does not by itself claim resumption interop readiness."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0151",
+      "title": "Accept an opt-in server resumption PSK on the managed TLS seam",
+      "statement": "In the server role, when internal managed-server resumption acceptance is explicitly enabled and a client Initial `ClientHello` offers a `pre_shared_key` identity that matches a server-issued live ticket from the same managed listener ticket store, the library MUST validate the PSK binder from the stored resumption master secret and ticket nonce, reject unknown, expired, malformed, duplicate, or binder-invalid identities without selecting PSK, emit `ServerHello` with `pre_shared_key` selection only for a validated identity, derive resumed PSK-DHE handshake secrets from the accepted resumption PSK plus the fresh ECDHE share, keep `early_data` and server-side 0-RTT admission closed, keep the public API and support promise unchanged, and exclude anti-replay, HTTP/3, external ticket persistence, or broad interop readiness.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0047"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0049"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0049"
+        ],
+        "upstream_refs": [
+          "RFC 8446 Sections 2.2, 4.2.11, 4.2.11.2, and 7.1",
+          "RFC 9001 Section 4.6",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+          "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+          "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs::ServerAcceptsLiveTicketAndDerivesMatchingPskDheHandshakeKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs::ServerAcceptsTicketCapturedFromCompletedClientHandshake",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0151.cs::ServerRejectsUnknownExpiredDuplicateAndBinderInvalidTicketsWithoutSelectingPsk"
+        ]
+      },
+      "notes": [
+        "This is an internal managed-listener resumption acceptance slice, not public resumption API support.",
+        "The accepted branch stays PSK-DHE and keeps early_data, 0-RTT receive admission, and anti-replay out of scope.",
+        "Ticket state is listener-local and in-memory; external ticket persistence remains future work."
       ]
     },
     {
