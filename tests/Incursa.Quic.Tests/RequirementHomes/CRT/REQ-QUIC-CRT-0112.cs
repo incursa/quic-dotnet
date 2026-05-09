@@ -154,6 +154,30 @@ public sealed class REQ_QUIC_CRT_0112
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRoleAcceptsCompatibilityClientHelloWithEmptySessionTicketAndPskModesOnly()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                extraExtensions:
+                [
+                    CreateClientHelloExtension(0x0023, []),
+                    CreateClientPskKeyExchangeModesExtension(),
+                ]));
+
+        Assert.True(updates.Count >= 5);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
+        Assert.True(driver.State.HandshakeKeysAvailable);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void HandshakeKeysStayUnavailableUntilTheSupportedClientHelloCompletes()
@@ -241,6 +265,50 @@ public sealed class REQ_QUIC_CRT_0112
             CreateClientHelloTranscript(
                 CreateClientTransportParameters(),
                 applicationProtocols: [Array.Empty<byte>()]));
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0032, updates[0].AlertDescription);
+        Assert.True(driver.State.IsTerminal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void NonEmptyClientHelloSessionTicketExtensionFailsDeterministically()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                extraExtensions: [CreateClientHelloExtension(0x0023, [0x01])]));
+
+        Assert.Single(updates);
+        Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
+        Assert.Equal((ushort)0x0032, updates[0].AlertDescription);
+        Assert.True(driver.State.IsTerminal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientHelloEarlyDataWithoutPreSharedKeyStillFailsDeterministically()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                extraExtensions:
+                [
+                    CreateClientPskKeyExchangeModesExtension(),
+                    CreateClientHelloExtension(0x002a, []),
+                ]));
 
         Assert.Single(updates);
         Assert.Equal(QuicTlsUpdateKind.FatalAlert, updates[0].Kind);
@@ -360,11 +428,13 @@ public sealed class REQ_QUIC_CRT_0112
         ushort[]? supportedGroups = null,
         byte[][]? applicationProtocols = null,
         ushort keyShareNamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1,
-        byte[]? keyShare = null)
+        byte[]? keyShare = null,
+        byte[][]? extraExtensions = null)
     {
         supportedVersions ??= [0x0304];
         cipherSuites ??= [(ushort)QuicTlsCipherSuite.TlsAes128GcmSha256];
         supportedGroups ??= [(ushort)QuicTlsNamedGroup.Secp256r1];
+        extraExtensions ??= [];
         keyShare ??= CreateClientKeyShare();
 
         byte[] supportedVersionsExtension = CreateClientSupportedVersionsExtension(supportedVersions);
@@ -381,6 +451,7 @@ public sealed class REQ_QUIC_CRT_0112
             + (applicationProtocolsExtension?.Length ?? 0)
             + supportedGroupsExtension.Length
             + keyShareExtension.Length
+            + SumLengths(extraExtensions)
             + transportParametersExtension.Length;
         byte[] body = new byte[43 + extensionsLength];
         int index = 0;
@@ -412,6 +483,12 @@ public sealed class REQ_QUIC_CRT_0112
         index += supportedGroupsExtension.Length;
         keyShareExtension.CopyTo(body.AsSpan(index));
         index += keyShareExtension.Length;
+        foreach (byte[] extraExtension in extraExtensions)
+        {
+            extraExtension.CopyTo(body.AsSpan(index));
+            index += extraExtension.Length;
+        }
+
         transportParametersExtension.CopyTo(body.AsSpan(index));
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
@@ -504,6 +581,31 @@ public sealed class REQ_QUIC_CRT_0112
         index += 2;
         keyShare.CopyTo(extension.AsSpan(index, keyShare.Length));
         return extension;
+    }
+
+    private static byte[] CreateClientPskKeyExchangeModesExtension()
+    {
+        return CreateClientHelloExtension(0x002d, [0x01, 0x01]);
+    }
+
+    private static byte[] CreateClientHelloExtension(ushort extensionType, ReadOnlySpan<byte> extensionValue)
+    {
+        byte[] extension = new byte[4 + extensionValue.Length];
+        WriteUInt16(extension.AsSpan(0, 2), extensionType);
+        WriteUInt16(extension.AsSpan(2, 2), checked((ushort)extensionValue.Length));
+        extensionValue.CopyTo(extension.AsSpan(4));
+        return extension;
+    }
+
+    private static int SumLengths(IReadOnlyList<byte[]> arrays)
+    {
+        int sum = 0;
+        foreach (byte[] array in arrays)
+        {
+            sum = checked(sum + array.Length);
+        }
+
+        return sum;
     }
 
     private static byte[] CreateClientKeyShare()

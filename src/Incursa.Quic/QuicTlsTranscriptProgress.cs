@@ -32,6 +32,7 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort SignatureAlgorithmsCertExtensionType = 0x0032;
     private const ushort SignedCertificateTimestampExtensionType = 0x0012;
     private const ushort StatusRequestExtensionType = 0x0005;
+    private const ushort SessionTicketExtensionType = 0x0023;
     private const ushort SupportedGroupsExtensionType = 0x000a;
     private const byte NullCompressionMethod = 0x00;
     private const int MaximumSessionIdLength = 32;
@@ -1044,6 +1045,13 @@ internal sealed class QuicTlsTranscriptProgress
                     return false;
                 }
             }
+            else if (extensionType == SessionTicketExtensionType)
+            {
+                if (extensionValue.Length != 0)
+                {
+                    return false;
+                }
+            }
             else if (extensionType == SupportedGroupsExtensionType)
             {
                 if (foundSupportedGroups || !TryParseClientHelloSupportedGroups(extensionValue))
@@ -1119,7 +1127,7 @@ internal sealed class QuicTlsTranscriptProgress
         if (!foundSupportedVersions
             || !foundKeyShare
             || !foundTransportParameters
-            || foundPskKeyExchangeModes != foundPreSharedKey
+            || (foundPreSharedKey && !foundPskKeyExchangeModes)
             || (foundEarlyData && !foundPreSharedKey))
         {
             return false;
