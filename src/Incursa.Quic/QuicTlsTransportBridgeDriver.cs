@@ -30,6 +30,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     private readonly SslClientAuthenticationOptions? clientAuthenticationOptions;
     private readonly byte[]? pinnedPeerLeafCertificateSha256;
     private readonly RemoteCertificateValidationCallback? remoteCertificateValidationCallback;
+    private readonly bool emitKeyLogSecrets;
     private X509ChainPolicy? serverClientCertificateChainPolicy;
     private X509RevocationMode serverClientCertificateRevocationCheckMode = X509RevocationMode.NoCheck;
     private RemoteCertificateValidationCallback? serverRemoteCertificateValidationCallback;
@@ -51,7 +52,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
         QuicTlsCipherSuite? selectedCipherSuite = null,
         bool enableServerResumptionTickets = false,
-        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
+        bool emitKeyLogSecrets = false)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
@@ -63,9 +65,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             clientCipherSuiteProfile,
             clientAuthenticationOptions?.ApplicationProtocols,
             enableServerResumptionTickets,
-            serverResumptionTicketStore);
+            serverResumptionTicketStore,
+            emitKeyLogSecrets);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
+        this.emitKeyLogSecrets = emitKeyLogSecrets;
 
         if (!pinnedPeerLeafCertificateSha256.IsEmpty)
         {
@@ -863,6 +867,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         List<QuicTlsStateUpdate> publishedUpdates = [];
         foreach (QuicTlsStateUpdate update in keyScheduleUpdates)
         {
+            if (update.Kind == QuicTlsUpdateKind.KeyLogSecretAvailable && !emitKeyLogSecrets)
+            {
+                continue;
+            }
+
             IReadOnlyList<QuicTlsStateUpdate> publishedUpdate = PublishUpdate(update);
             AppendPublishedUpdates(publishedUpdates, publishedUpdate);
 

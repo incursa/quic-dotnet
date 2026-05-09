@@ -14,11 +14,12 @@
 - `keyupdate`
 - `multiconnect`
 - `retry`
+- `resumption`
 - `transfer`
 
 Unsupported testcases return `127`.
 The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above.
-`chacha20` remains inventory-visible but prerequisite-blocked pending CipherSuitesPolicy support. `resumption` has source-level managed-server ticket issuance and PSK acceptance proof, but remains inventory-blocked because quic-interop-runner requires SSLKEYLOGFILE output before it can check and promote the resumption result.
+`chacha20` remains inventory-visible but prerequisite-blocked pending CipherSuitesPolicy support. `resumption` is now inventory-green for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof; it does not imply HTTP/3, 0-RTT, anti-replay, or broader resumption API support.
 
 ## Build Locally
 

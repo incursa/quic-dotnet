@@ -103,6 +103,7 @@ internal sealed class QuicTlsKeySchedule
     private readonly byte[] localKeyShare;
     private readonly QuicServerResumptionTicketStore? serverResumptionTicketStore;
     private readonly byte[]? deterministicClientHelloRandom;
+    private readonly bool emitKeyLogSecrets;
     private byte[][] applicationProtocols;
     private byte[]? localHandshakeTranscriptPrefix;
 
@@ -113,6 +114,7 @@ internal sealed class QuicTlsKeySchedule
     private byte[]? pendingResumptionPsk;
     private byte[]? clientApplicationTrafficSecret;
     private byte[]? serverApplicationTrafficSecret;
+    private byte[]? clientHelloRandom;
     private byte[]? peerLeafCertificateDer;
     private bool handshakeSecretsDerived;
     private bool localServerFlightCompleted;
@@ -165,17 +167,20 @@ internal sealed class QuicTlsKeySchedule
     /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
     /// <param name="enableServerResumptionTickets">Whether the server role may emit and accept post-handshake resumption tickets.</param>
     /// <param name="serverResumptionTicketStore">The server-owned ticket store used to validate managed resumption PSK offers.</param>
+    /// <param name="emitKeyLogSecrets">Whether traffic-secret updates should be published for opt-in SSLKEYLOGFILE export.</param>
     internal QuicTlsKeySchedule(
         QuicTlsRole role,
         ReadOnlyMemory<byte> localPrivateKey = default,
         QuicTlsCipherSuiteProfile? clientCipherSuiteProfile = null,
         IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null,
         bool enableServerResumptionTickets = false,
-        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
+        bool emitKeyLogSecrets = false)
     {
         this.role = role;
         serverResumptionTicketsEnabled = role == QuicTlsRole.Server && enableServerResumptionTickets;
         this.serverResumptionTicketStore = role == QuicTlsRole.Server ? serverResumptionTicketStore : null;
+        this.emitKeyLogSecrets = emitKeyLogSecrets;
 
         if (clientCipherSuiteProfile.HasValue)
         {
@@ -587,7 +592,8 @@ internal sealed class QuicTlsKeySchedule
                             : NoApplicationProtocolAlertDescription);
                 }
 
-                if (!TryCreateHelloRetryRequest(step.HandshakeMessageBytes.Span, out byte[] helloRetryRequestBytes))
+                if (!TryCaptureClientHelloRandom(step.HandshakeMessageBytes.Span)
+                    || !TryCreateHelloRetryRequest(step.HandshakeMessageBytes.Span, out byte[] helloRetryRequestBytes))
                 {
                     return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
                 }
@@ -667,6 +673,11 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptVerificationFailureAlertDescription);
             }
 
+            if (!TryCaptureClientHelloRandom(step.HandshakeMessageBytes.Span))
+            {
+                return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
+            }
+
             AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
             bool acceptedServerResumption = TryAcceptServerResumptionPsk(
                 step.HandshakeMessageBytes.Span,
@@ -728,6 +739,7 @@ internal sealed class QuicTlsKeySchedule
                     CryptoDataOffset: 0,
                     CryptoData: encryptedExtensionsBytes),
             ];
+            AddHandshakeKeyLogSecretUpdates(updates);
 
             if (acceptedServerResumption)
             {
@@ -884,6 +896,7 @@ internal sealed class QuicTlsKeySchedule
 
                 DiscardPendingResumptionPsk();
                 handshakeSecretsDerived = true;
+                AddHandshakeKeyLogSecretUpdates(acceptedUpdates);
                 acceptedUpdates.Add(new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
                     PacketProtectionMaterial: acceptedOpenMaterial));
@@ -917,6 +930,7 @@ internal sealed class QuicTlsKeySchedule
             }
 
             handshakeSecretsDerived = true;
+            AddHandshakeKeyLogSecretUpdates(rejectedUpdates);
             rejectedUpdates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
                 PacketProtectionMaterial: openMaterial));
@@ -946,7 +960,7 @@ internal sealed class QuicTlsKeySchedule
         }
 
         handshakeSecretsDerived = true;
-        return
+        List<QuicTlsStateUpdate> updates =
         [
             new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable,
@@ -958,6 +972,8 @@ internal sealed class QuicTlsKeySchedule
                 QuicTlsUpdateKind.KeysAvailable,
                 QuicTlsEncryptionLevel.Handshake),
         ];
+        AddHandshakeKeyLogSecretUpdates(updates);
+        return updates;
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> ProcessCertificate(QuicTlsTranscriptStep step)
@@ -1070,6 +1086,7 @@ internal sealed class QuicTlsKeySchedule
 
             this.resumptionMasterSecret = derivedResumptionMasterSecret;
 
+            AddApplicationKeyLogSecretUpdates(updates);
             updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.KeysAvailable,
                 QuicTlsEncryptionLevel.OneRtt));
@@ -1100,6 +1117,7 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
+            AddApplicationKeyLogSecretUpdates(updates);
             updates.Add(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.KeysAvailable,
                 QuicTlsEncryptionLevel.OneRtt));
@@ -1322,6 +1340,63 @@ internal sealed class QuicTlsKeySchedule
 
             handshakeSecret = null;
         }
+    }
+
+    private void AddHandshakeKeyLogSecretUpdates(List<QuicTlsStateUpdate> updates)
+    {
+        ArgumentNullException.ThrowIfNull(updates);
+        AddKeyLogSecretUpdate(
+            updates,
+            QuicTlsKeyLogSecret.ClientHandshakeTrafficSecretLabel,
+            clientHandshakeTrafficSecret);
+        AddKeyLogSecretUpdate(
+            updates,
+            QuicTlsKeyLogSecret.ServerHandshakeTrafficSecretLabel,
+            serverHandshakeTrafficSecret);
+    }
+
+    private void AddApplicationKeyLogSecretUpdates(List<QuicTlsStateUpdate> updates)
+    {
+        ArgumentNullException.ThrowIfNull(updates);
+        AddKeyLogSecretUpdate(
+            updates,
+            QuicTlsKeyLogSecret.ClientApplicationTrafficSecretLabel,
+            clientApplicationTrafficSecret);
+        AddKeyLogSecretUpdate(
+            updates,
+            QuicTlsKeyLogSecret.ServerApplicationTrafficSecretLabel,
+            serverApplicationTrafficSecret);
+    }
+
+    private void AddKeyLogSecretUpdate(
+        List<QuicTlsStateUpdate> updates,
+        string label,
+        ReadOnlySpan<byte> secret)
+    {
+        if (!emitKeyLogSecrets
+            || clientHelloRandom is not { Length: TlsRandomLength } random
+            || secret.IsEmpty)
+        {
+            return;
+        }
+
+        updates.Add(new QuicTlsStateUpdate(
+            QuicTlsUpdateKind.KeyLogSecretAvailable,
+            KeyLogSecret: new QuicTlsKeyLogSecret(label, random, secret)));
+    }
+
+    private bool TryCaptureClientHelloRandom(ReadOnlySpan<byte> clientHelloBytes)
+    {
+        if (clientHelloBytes.Length < HandshakeHeaderLength + UInt16Length + TlsRandomLength
+            || clientHelloBytes[0] != (byte)QuicTlsHandshakeMessageType.ClientHello)
+        {
+            return false;
+        }
+
+        clientHelloRandom = clientHelloBytes.Slice(
+            HandshakeHeaderLength + UInt16Length,
+            TlsRandomLength).ToArray();
+        return true;
     }
 
     internal bool TryDeriveOneRttSuccessorPacketProtectionMaterial(
@@ -2999,6 +3074,7 @@ internal sealed class QuicTlsKeySchedule
             RandomNumberGenerator.Fill(clientRandom);
         }
 
+        clientHelloRandom = clientRandom.ToArray();
         index += TlsRandomLength;
 
         body[index++] = 0x00;

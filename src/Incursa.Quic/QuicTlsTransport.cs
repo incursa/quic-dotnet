@@ -129,6 +129,7 @@ internal enum QuicTlsUpdateKind
     ResumptionMasterSecretAvailable = 19,
     ResumptionAttemptDispositionAvailable = 20,
     PeerEarlyDataDispositionAvailable = 21,
+    KeyLogSecretAvailable = 22,
 }
 
 /// <summary>
@@ -155,7 +156,8 @@ internal readonly record struct QuicTlsStateUpdate(
     ReadOnlyMemory<byte> ResumptionMasterSecret = default,
     QuicTlsResumptionAttemptDisposition? ResumptionAttemptDisposition = null,
     QuicTlsEarlyDataDisposition? PeerEarlyDataDisposition = null,
-    ReadOnlyMemory<byte> TicketBytes = default);
+    ReadOnlyMemory<byte> TicketBytes = default,
+    QuicTlsKeyLogSecret? KeyLogSecret = null);
 
 /// <summary>
 /// A transport-facing bridge to a concrete TLS implementation.

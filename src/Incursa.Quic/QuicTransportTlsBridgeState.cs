@@ -357,6 +357,9 @@ internal sealed class QuicTransportTlsBridgeState
                         update.TicketAgeAdd,
                         update.TicketMaxEarlyDataSize);
 
+            case QuicTlsUpdateKind.KeyLogSecretAvailable:
+                return update.KeyLogSecret.HasValue;
+
             case QuicTlsUpdateKind.TranscriptProgressed:
                 return TryApplyTranscriptProgress(update);
 

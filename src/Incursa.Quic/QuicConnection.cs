@@ -48,7 +48,8 @@ public sealed class QuicConnection : IAsyncDisposable
         IQuicDiagnosticsSink? diagnosticsSink = null,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
         QuicClientAddressValidationToken? addressValidationToken = null,
-        bool allowClientPeerInitialReplacementBeforeTranscript = false)
+        bool allowClientPeerInitialReplacementBeforeTranscript = false,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
@@ -62,7 +63,8 @@ public sealed class QuicConnection : IAsyncDisposable
         cancellationToken.ThrowIfCancellationRequested();
         return new QuicClientConnectionHost(
             settings,
-            diagnosticsSink is null ? null : () => diagnosticsSink).ConnectAsync(cancellationToken);
+            diagnosticsSink is null ? null : () => diagnosticsSink,
+            tlsKeyLogSecretObserver).ConnectAsync(cancellationToken);
     }
 
     /// <summary>

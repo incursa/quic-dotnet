@@ -23,7 +23,7 @@ public sealed class InteropHarnessKeylogHonestyTests
 
         Assert.Equal(127, exitCode);
         Assert.Equal(
-            $"interop harness: role={role}, testcase=multipath, SSLKEYLOGFILE is set but keylog export is not yet implemented.{Environment.NewLine}" +
+            $"interop harness: role={role}, testcase=multipath, SSLKEYLOGFILE is set but this unsupported testcase does not execute keylog export.{Environment.NewLine}" +
             $"interop harness: role={role}, testcase=multipath, requestCount=0 is currently unsupported.{Environment.NewLine}",
             stdout.ToString());
         Assert.Equal(string.Empty, stderr.ToString());

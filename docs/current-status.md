@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for CRT server-side resumption PSK acceptance proof,
-CRT server NewSessionTicket issuance proof, INT non-HTTP/3 inventory dry-run proof and resumption blocker documentation,
+Last verified: 2026-05-09 for INT resumption runner proof with managed SSLKEYLOGFILE export,
+CRT server-side resumption PSK acceptance proof, CRT server NewSessionTicket issuance proof,
+INT non-HTTP/3 inventory dry-run proof,
 RFC 9000 S5 disable-active-migration proof topoff, S6 reserved-version ignore
 proof topoff, S2 concurrent-stream proof topoff, S2 stream-cancellation proof
 topoff, S13 ECN
@@ -22,6 +23,28 @@ individual dated closure notes below unless otherwise noted.
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-09 INT Resumption Runner Closure Note
+
+The `resumption` interop inventory cell is now supported/executed for the
+checked QUIC interop-runner TLS session-resumption cell. The harness emits
+opt-in NSS-style `SSLKEYLOGFILE` traffic-secret lines from the managed TLS key
+schedule, while unsupported testcases still refuse to create a fake keylog file.
+This closes the previous external runner blocker without changing the official
+requirement statements.
+
+The live command `pwsh -File scripts\interop\Invoke-QuicInteropRunner.ps1
+-RepoRoot . -TestCases resumption` exited 0 on 2026-05-09 and preserved
+evidence under
+`artifacts\interop-runner\20260509-001723585-both-quic-go\`. The runner JSON
+report records testcase `resumption` with `result: succeeded`.
+
+This support claim stays limited to the runner's TLS session-resumption cell. It
+does not claim HTTP/3, 0-RTT, anti-replay, external ticket persistence, public
+API widening, or broader resumption support. `chacha20` remains blocked on
+runner/platform cipher-suite policy support. The next source-level unresolved
+runtime cell is `zerortt`, which requires server-side 0-RTT admission and
+anti-replay ownership.
 
 ## 2026-05-08 CRT Server Resumption PSK Acceptance Closure Note
 
@@ -89,19 +112,17 @@ verification artifact.
 
 `REQ-QUIC-INT-0018` remains the owning inventory/profile requirement for the
 non-HTTP/3 interop testcase list. The current helper inventory keeps
-`versionnegotiation` and `keyupdate` in the supported/executed class, keeps
-`http3` out of scope, and classifies `chacha20`, `resumption`, `zerortt`, `v2`,
-`rebind-port`, `rebind-addr`, and `connectionmigration` as
-prerequisite-blocked.
+`versionnegotiation`, `keyupdate`, and `resumption` in the supported/executed
+class, keeps `http3` out of scope, and classifies `chacha20`, `zerortt`, `v2`,
+`rebind-port`, `rebind-addr`, and `connectionmigration` as prerequisite-blocked.
 
 `chacha20` is not green on this runner: it remains blocked on end-to-end runner
 platform support for the required cipher-suite selection. The source-level
 server resumption prerequisites named here are now closed under
-`REQ-QUIC-CRT-0151`, but the inventory still must not call the external
-`resumption` cell green because the live runner proof is blocked on required
-SSLKEYLOGFILE output. The next source-level unresolved runtime cell after this
-slice is `zerortt`, which requires server-side 0-RTT admission and anti-replay
-ownership.
+`REQ-QUIC-CRT-0151`, and a later 2026-05-08 runner attempt made the external
+`resumption` cell green with SSLKEYLOGFILE-backed proof. The next source-level
+unresolved runtime cell after this slice is `zerortt`, which requires
+server-side 0-RTT admission and anti-replay ownership.
 
 Current regenerated RFC requirement triage still reports 1,498 of 1,771
 requirements `trace_clean`, leaving 273 non-clean: 55 metadata-only
@@ -1451,8 +1472,9 @@ The current honest support boundary is narrow:
   protection, recovery, and selected TLS/trust floors are implemented and
   traced.
 - Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
-  `multiconnect`, `retry`, and `transfer`, with local requirement-home and
-  integration proof now green.
+  `keyupdate`, `multiconnect`, `resumption`, `retry`, and `transfer`, with
+  local requirement-home and integration proof now green for the documented
+  supported cells.
 - Internal repeated 1-RTT key-update lifecycle proof is closed for the bounded
   moving-window runtime model, including wide internal epoch identifiers, but
   this remains outside the public support promise.

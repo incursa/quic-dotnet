@@ -72,7 +72,7 @@ public sealed class REQ_QUIC_INT_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task LocalhostHandshakeSmokeLeavesSslKeyLogFileAsAnHonestTodo()
+    public async Task LocalhostHandshakeSmokeWritesSslKeyLogFile()
     {
         using TempDirectoryFixture fixture = new("incursa-quic-qlog-keylog");
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
@@ -112,16 +112,16 @@ public sealed class REQ_QUIC_INT_0004
             Assert.Equal(0, serverResult!.ExitCode);
             Assert.Equal(0, clientResult!.ExitCode);
             Assert.Contains(
-                "SSLKEYLOGFILE is set but keylog export is not yet implemented.",
+                "SSLKEYLOGFILE export enabled",
                 serverResult.Stdout,
                 StringComparison.OrdinalIgnoreCase);
             Assert.Contains(
-                "SSLKEYLOGFILE is set but keylog export is not yet implemented.",
+                "SSLKEYLOGFILE export enabled",
                 clientResult.Stdout,
                 StringComparison.OrdinalIgnoreCase);
             Assert.Contains("qlog capture enabled", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("qlog capture enabled", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
-            Assert.False(File.Exists(sslKeyLogPath));
+            AssertSslKeyLogContainsTrafficSecrets(sslKeyLogPath);
             Assert.True(File.Exists(destinationPath));
             Assert.Equal(payload, File.ReadAllBytes(destinationPath));
 
@@ -253,6 +253,26 @@ public sealed class REQ_QUIC_INT_0004
         catch
         {
             // Best-effort cleanup only.
+        }
+    }
+
+    private static void AssertSslKeyLogContainsTrafficSecrets(string sslKeyLogPath)
+    {
+        Assert.True(File.Exists(sslKeyLogPath));
+        string[] keyLogLines = File.ReadAllLines(sslKeyLogPath);
+        Assert.Contains(keyLogLines, static line => line.StartsWith("CLIENT_HANDSHAKE_TRAFFIC_SECRET ", StringComparison.Ordinal));
+        Assert.Contains(keyLogLines, static line => line.StartsWith("SERVER_HANDSHAKE_TRAFFIC_SECRET ", StringComparison.Ordinal));
+        Assert.Contains(keyLogLines, static line => line.StartsWith("CLIENT_TRAFFIC_SECRET_0 ", StringComparison.Ordinal));
+        Assert.Contains(keyLogLines, static line => line.StartsWith("SERVER_TRAFFIC_SECRET_0 ", StringComparison.Ordinal));
+
+        foreach (string line in keyLogLines)
+        {
+            string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            Assert.Equal(3, parts.Length);
+            Assert.Equal(64, parts[1].Length);
+            Assert.Equal(64, parts[2].Length);
+            Assert.True(parts[1].All(Uri.IsHexDigit));
+            Assert.True(parts[2].All(Uri.IsHexDigit));
         }
     }
 

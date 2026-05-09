@@ -32,6 +32,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly List<SslApplicationProtocol> applicationProtocols;
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
+    private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
     private readonly QuicServerResumptionTicketStore serverResumptionTicketStore = new();
@@ -68,6 +69,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         int listenBacklog,
         bool retryBootstrapEnabled = false,
         Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
         int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue)
     {
@@ -89,6 +91,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
+        this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
         endpoint = new QuicConnectionRuntimeEndpoint(1);
@@ -1358,7 +1361,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink),
             enableRandomizedSpinBitSelection: true,
             selectedCipherSuite: options.SelectedCipherSuite,
-            serverResumptionTicketStore: serverResumptionTicketStore);
+            serverResumptionTicketStore: serverResumptionTicketStore,
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
     }
 
     private sealed class PendingConnectionState

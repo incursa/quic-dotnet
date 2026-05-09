@@ -40,13 +40,15 @@
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
     "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs",
+    "artifacts/interop-runner/20260509-001723585-both-quic-go/runner-report.json"
   ],
-  "status_summary": "The helper now accepts the documented non-HTTP/3 inventory and emits per-run inventory artifacts. The dry-run proof keeps versionnegotiation and keyupdate green while explicitly classifying chacha20, resumption, zerortt, v2, rebind-port, rebind-addr, and connectionmigration as prerequisite-blocked. Chacha20 remains blocked pending CipherSuitesPolicy support. Resumption source-level managed-server ticket issuance and PSK acceptance are now implemented under REQ-QUIC-CRT-0150 and REQ-QUIC-CRT-0151. A live 2026-05-08 resumption runner attempt progressed to runner classification `unsupported` with `Can't check test result. SSLKEYLOG required.`, so the inventory remains conservative until SSLKEYLOGFILE-backed external proof is available.",
+  "status_summary": "The helper now accepts the documented non-HTTP/3 inventory and emits per-run inventory artifacts. The dry-run proof keeps versionnegotiation, keyupdate, and resumption green while explicitly classifying chacha20, zerortt, v2, rebind-port, rebind-addr, and connectionmigration as prerequisite-blocked. Chacha20 remains blocked pending CipherSuitesPolicy support. Resumption source-level managed-server ticket issuance and PSK acceptance are implemented under REQ-QUIC-CRT-0150 and REQ-QUIC-CRT-0151, and the harness now emits opt-in managed SSLKEYLOGFILE traffic-secret lines. A live 2026-05-09 resumption runner attempt passed with runner report artifacts/interop-runner/20260509-001723585-both-quic-go/runner-report.json recording `result: succeeded`.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "HTTP/3 remains out of scope for this inventory/profile slice. Turning blocked or unsupported cells green is separate from making the inventory explicit. The source-level server resumption prerequisites named in this artifact are now closed under REQ-QUIC-CRT-0151, but the external resumption inventory cell remains blocked on SSLKEYLOGFILE-backed runner proof. The next source-level unresolved runtime cell is zerortt, which requires server-side 0-RTT admission and anti-replay ownership."
+      "content": "HTTP/3 remains out of scope for this inventory/profile slice. Turning blocked or unsupported cells green is separate from making the inventory explicit. The resumption inventory cell is green only for the checked TLS session-resumption runner cell with SSLKEYLOGFILE-backed proof. The next source-level unresolved runtime cell is zerortt, which requires server-side 0-RTT admission and anti-replay ownership."
     }
   ]
 }

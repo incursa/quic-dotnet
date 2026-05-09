@@ -40,7 +40,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     public QuicClientConnectionHost(
         QuicClientConnectionSettings settings,
-        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null)
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -60,7 +61,10 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             localEndPoint.Port);
 
         endpoint = new QuicConnectionRuntimeEndpoint(1);
-        runtime = CreateRuntime(settings, diagnosticsSinkFactory?.Invoke());
+        IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
+        runtime = tlsKeyLogSecretObserver is null
+            ? CreateRuntime(settings, diagnosticsSink)
+            : CreateRuntime(settings, diagnosticsSink, tlsKeyLogSecretObserver);
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 
@@ -330,6 +334,12 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private static QuicConnectionRuntime CreateRuntime(
         QuicClientConnectionSettings settings,
         IQuicDiagnosticsSink? diagnosticsSink = null)
+        => CreateRuntime(settings, diagnosticsSink, tlsKeyLogSecretObserver: null);
+
+    private static QuicConnectionRuntime CreateRuntime(
+        QuicClientConnectionSettings settings,
+        IQuicDiagnosticsSink? diagnosticsSink,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver)
     {
         QuicClientConnectionOptions options = settings.Options;
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
@@ -360,7 +370,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             diagnosticsSink: diagnosticsSink,
             enableRandomizedSpinBitSelection: true,
             allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
-            selectedCipherSuite: settings.SelectedCipherSuite);
+            selectedCipherSuite: settings.SelectedCipherSuite,
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(

@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,keyupdate", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,keyupdate,resumption", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "chacha20,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            "chacha20,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -105,14 +105,13 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("keyupdate -> supported-executed (runner: keyupdate)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("chacha20 -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("resumption -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("keyupdate -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }
 
     [Fact]
-    public async Task DryRunAcceptsResumptionAsBlockedAndKeepsTheGreenCellsExplicit()
+    public async Task DryRunAcceptsResumptionAsGreenAndKeepsLaterBlockedCellsExplicit()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -134,9 +133,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("resumption -> prerequisite-blocked (runner: resumption)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("resumption -> supported-executed (runner: resumption)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("resumption -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("resumption -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }

@@ -441,8 +441,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'resumption'
             RunnerTestCase = 'resumption'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Source-level managed ticket issuance and PSK acceptance are implemented; live runner proof remains blocked because quic-interop-runner requires SSLKEYLOGFILE output to check resumption.'
+            Classification = 'supported-executed'
+            Notes = 'Current green resumption cell with managed SSLKEYLOGFILE export proof.'
         }
 
         [pscustomobject]@{

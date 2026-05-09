@@ -66,6 +66,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly bool diagnosticsEnabled;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
+    private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly bool allowClientPeerInitialReplacementBeforeTranscript;
@@ -153,7 +154,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
         QuicTlsCipherSuite? selectedCipherSuite = null,
         bool enableServerResumptionTickets = false,
-        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -174,6 +176,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         dormantDetachedResumptionTicketSnapshot = detachedResumptionTicketSnapshot;
+        this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         tlsState = new QuicTransportTlsBridgeState(tlsRole);
         tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
             tlsRole,
@@ -187,7 +190,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             clientAuthenticationOptions,
             selectedCipherSuite,
             enableServerResumptionTickets,
-            serverResumptionTicketStore);
+            serverResumptionTicketStore,
+            emitKeyLogSecrets: tlsKeyLogSecretObserver is not null);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,

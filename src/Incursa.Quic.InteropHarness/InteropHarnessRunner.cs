@@ -109,7 +109,10 @@ internal static class InteropHarnessRunner
 
     private static int RunClient(InteropHarnessEnvironment settings, TextWriter stdout, TextWriter stderr)
     {
-        WriteSslKeyLogExportNotImplemented(stdout, settings);
+        if (IsSupportedHarnessTestCase(settings.TestCase))
+        {
+            WriteSslKeyLogExportEnabled(stdout, settings);
+        }
 
         return settings.TestCase switch
         {
@@ -131,7 +134,10 @@ internal static class InteropHarnessRunner
         string certificatePath,
         string privateKeyPath)
     {
-        WriteSslKeyLogExportNotImplemented(stdout, settings);
+        if (IsSupportedHarnessTestCase(settings.TestCase))
+        {
+            WriteSslKeyLogExportEnabled(stdout, settings);
+        }
 
         return settings.TestCase switch
         {
@@ -321,7 +327,7 @@ internal static class InteropHarnessRunner
                 {
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
-                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
@@ -419,7 +425,7 @@ internal static class InteropHarnessRunner
                 {
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
-                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
@@ -1054,7 +1060,7 @@ internal static class InteropHarnessRunner
                 {
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
-                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 WriteLineAndFlush(
                     stdout,
                     $"interop harness: role=server, testcase=multiconnect, requestCount={dispatchPlan.ConfiguredConnectionCount} listening on {dispatchPlan.ListenEndPoint}, connectionCount={dispatchPlan.ExpectedConnectionCount}.");
@@ -1239,7 +1245,7 @@ internal static class InteropHarnessRunner
                 {
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
-                await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 string testCase = settings.TestCase;
                 if (testCase == "resumption")
                 {
@@ -1953,6 +1959,7 @@ internal static class InteropHarnessRunner
 
     private static int ReturnUnsupported(InteropHarnessEnvironment settings, TextWriter stdout, string roleName)
     {
+        WriteSslKeyLogExportNotImplemented(stdout, settings);
         WriteLineAndFlush(
             stdout,
             $"interop harness: role={roleName}, testcase={settings.TestCase}, requestCount={settings.Requests.Count} is currently unsupported.");
@@ -1986,7 +1993,33 @@ internal static class InteropHarnessRunner
 
         WriteLineAndFlush(
             stdout,
-            $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, SSLKEYLOGFILE is set but keylog export is not yet implemented.");
+            $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, SSLKEYLOGFILE is set but this unsupported testcase does not execute keylog export.");
+    }
+
+    private static void WriteSslKeyLogExportEnabled(
+        TextWriter stdout,
+        InteropHarnessEnvironment settings)
+    {
+        if (settings.SslKeyLogFile is null)
+        {
+            return;
+        }
+
+        WriteLineAndFlush(
+            stdout,
+            $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, SSLKEYLOGFILE export enabled at {settings.SslKeyLogFile}.");
+    }
+
+    private static bool IsSupportedHarnessTestCase(string testCase)
+    {
+        return testCase is
+            "handshake" or
+            "post-handshake-stream" or
+            "retry" or
+            "multiconnect" or
+            "keyupdate" or
+            "resumption" or
+            "transfer";
     }
 
     private static void WriteDeterministicClientKeySelection(
@@ -2017,13 +2050,15 @@ internal static class InteropHarnessRunner
                 cancellationToken: cancellationToken,
                 diagnosticsSink: null,
                 localHandshakePrivateKey: settings.LocalHandshakePrivateKey,
-                allowClientPeerInitialReplacementBeforeTranscript: AllowClientPeerInitialReplacementBeforeTranscript(settings))
+                allowClientPeerInitialReplacementBeforeTranscript: AllowClientPeerInitialReplacementBeforeTranscript(settings),
+                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile))
             : qlogScope.Capture.ConnectAsync(
                 options,
                 settings.LocalHandshakePrivateKey,
                 cancellationToken,
                 AllowClientPeerInitialReplacementBeforeTranscript(settings),
-                detachedResumptionTicketSnapshot);
+                detachedResumptionTicketSnapshot,
+                InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
     }
 
     private static bool AllowClientPeerInitialReplacementBeforeTranscript(InteropHarnessEnvironment settings)
@@ -2033,13 +2068,21 @@ internal static class InteropHarnessRunner
     }
 
     private static ValueTask<QuicListener> ListenWithQlogCaptureAsync(
+        InteropHarnessEnvironment settings,
         InteropHarnessQlogCaptureScope? qlogScope,
         QuicListenerOptions options,
         CancellationToken cancellationToken = default)
     {
         return qlogScope is null
-            ? QuicListener.ListenAsync(options, cancellationToken)
-            : qlogScope.Capture.ListenAsync(options, cancellationToken);
+            ? QuicListener.ListenAsync(
+                options,
+                cancellationToken,
+                diagnosticsSinkFactory: null,
+                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile))
+            : qlogScope.Capture.ListenAsync(
+                options,
+                cancellationToken,
+                InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
     }
 
     internal static bool TryGetDispatchRequestUri(

@@ -45,7 +45,7 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
-The current supported/executed cells are `handshake`, `transfer`, `retry`, `multiconnect`, `versionnegotiation`, and `keyupdate`; the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked. `chacha20` remains blocked pending CipherSuitesPolicy support. `resumption` now has source-level managed-server ticket issuance and PSK acceptance proof, but the helper keeps the inventory cell prerequisite-blocked because quic-interop-runner still requires SSLKEYLOGFILE output to check and promote a clean resumption result.
+The current supported/executed cells are `handshake`, `transfer`, `retry`, `multiconnect`, `versionnegotiation`, `keyupdate`, and `resumption`; the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked. `chacha20` remains blocked pending CipherSuitesPolicy support. `resumption` is green only for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof; it does not imply HTTP/3, 0-RTT, anti-replay, or broader resumption API support.
 
 Hosted corroboration:
 

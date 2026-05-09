@@ -59,7 +59,8 @@ public sealed class QuicQlogCapture
         ReadOnlyMemory<byte> localHandshakePrivateKey,
         CancellationToken cancellationToken = default,
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
-        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null)
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
@@ -71,7 +72,7 @@ public sealed class QuicQlogCapture
         };
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new QuicClientConnectionHost(settings, CreateClientSink).ConnectAsync(cancellationToken);
+        return new QuicClientConnectionHost(settings, CreateClientSink, tlsKeyLogSecretObserver).ConnectAsync(cancellationToken);
     }
 
     /// <summary>
@@ -82,6 +83,14 @@ public sealed class QuicQlogCapture
         CancellationToken cancellationToken = default)
     {
         return QuicListener.ListenAsync(options, cancellationToken, CreateServerSink);
+    }
+
+    internal ValueTask<QuicListener> ListenAsync(
+        QuicListenerOptions options,
+        CancellationToken cancellationToken,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver)
+    {
+        return QuicListener.ListenAsync(options, cancellationToken, CreateServerSink, tlsKeyLogSecretObserver);
     }
 
     internal Func<IQuicDiagnosticsSink> CreateClientDiagnosticsSinkFactory()

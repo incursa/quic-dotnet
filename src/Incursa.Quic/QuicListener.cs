@@ -29,7 +29,8 @@ public sealed class QuicListener : IAsyncDisposable
     internal static ValueTask<QuicListener> ListenAsync(
         QuicListenerOptions options,
         CancellationToken cancellationToken,
-        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory)
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory,
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate(nameof(options));
@@ -41,7 +42,8 @@ public sealed class QuicListener : IAsyncDisposable
             options.ConnectionOptionsCallback,
             options.ListenBacklog,
             retryBootstrapEnabled: false,
-            diagnosticsSinkFactory: diagnosticsSinkFactory);
+            diagnosticsSinkFactory: diagnosticsSinkFactory,
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
 
         try
         {

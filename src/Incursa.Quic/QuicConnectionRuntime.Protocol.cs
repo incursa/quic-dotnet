@@ -291,6 +291,13 @@ internal sealed partial class QuicConnectionRuntime
                 }
                 break;
 
+            case QuicTlsUpdateKind.KeyLogSecretAvailable:
+                if (tlsStateUpdatedEvent.Update.KeyLogSecret is { } keyLogSecret)
+                {
+                    tlsKeyLogSecretObserver?.Invoke(keyLogSecret);
+                }
+                break;
+
             case QuicTlsUpdateKind.KeysDiscarded:
                 stateChanged |= HandleTlsKeyDiscard(tlsStateUpdatedEvent.Update.EncryptionLevel!.Value, ref effects);
                 break;
