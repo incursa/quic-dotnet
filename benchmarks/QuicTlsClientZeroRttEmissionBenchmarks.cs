@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Benchmarks the client-side 0-RTT emission path.
+/// Benchmarks the client-side 0-RTT emission path and paired server packet opening.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicTlsClientZeroRttEmissionBenchmarks
@@ -24,6 +24,7 @@ public class QuicTlsClientZeroRttEmissionBenchmarks
     private QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot = default!;
     private long observedAtTicks;
     private byte[] zeroRttApplicationPayload = [];
+    private byte[] protectedZeroRttApplicationPacket = [];
     private QuicTlsPacketProtectionMaterial zeroRttPacketProtectionMaterial;
 
     /// <summary>
@@ -42,6 +43,8 @@ public class QuicTlsClientZeroRttEmissionBenchmarks
         {
             throw new InvalidOperationException("Failed to prepare representative 0-RTT packet-protection material.");
         }
+
+        protectedZeroRttApplicationPacket = ProtectClientZeroRttApplicationPacketForSetup();
     }
 
     /// <summary>
@@ -75,6 +78,29 @@ public class QuicTlsClientZeroRttEmissionBenchmarks
         return protectedPacket.Length;
     }
 
+    /// <summary>
+    /// Measures server-side opening of a protected 0-RTT application packet.
+    /// </summary>
+    [Benchmark]
+    public int OpenServerZeroRttApplicationPacket()
+    {
+        QuicHandshakeFlowCoordinator packetCoordinator = new();
+        if (!packetCoordinator.TryOpenProtectedZeroRttApplicationDataPacketLease(
+            protectedZeroRttApplicationPacket,
+            zeroRttPacketProtectionMaterial,
+            out QuicBufferLease openedPacket,
+            out _,
+            out int payloadLength))
+        {
+            return -1;
+        }
+
+        using (openedPacket)
+        {
+            return payloadLength;
+        }
+    }
+
     private bool TryDeriveClientZeroRttPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial material)
     {
         QuicTlsKeySchedule schedule = new(QuicTlsRole.Client, localHandshakePrivateKey);
@@ -92,6 +118,22 @@ public class QuicTlsClientZeroRttEmissionBenchmarks
             detachedResumptionTicketSnapshot,
             clientHelloBytes,
             out material);
+    }
+
+    private byte[] ProtectClientZeroRttApplicationPacketForSetup()
+    {
+        QuicHandshakeFlowCoordinator packetCoordinator = new();
+        if (!packetCoordinator.TrySetInitialDestinationConnectionId(InitialDestinationConnectionId)
+            || !packetCoordinator.TrySetSourceConnectionId(SourceConnectionId)
+            || !packetCoordinator.TryBuildProtectedZeroRttApplicationPacket(
+                zeroRttApplicationPayload,
+                zeroRttPacketProtectionMaterial,
+                out byte[] protectedPacket))
+        {
+            throw new InvalidOperationException("Failed to prepare representative protected 0-RTT application packet.");
+        }
+
+        return protectedPacket;
     }
 
     private static QuicDetachedResumptionTicketSnapshot CreateDetachedResumptionTicketSnapshot()

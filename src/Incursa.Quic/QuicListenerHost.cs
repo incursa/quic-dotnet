@@ -871,6 +871,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols)
                 || !runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
+                || !runtime.TryConfigureServerEarlyData(validatedOptions.EnableEarlyData)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
                     validatedOptions.ServerLeafCertificateDer,
                     validatedOptions.ServerLeafSigningPrivateKey,
@@ -1361,6 +1362,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             diagnosticsSink: QuicDiagnostics.ResolveConnectionSink(diagnosticsSink),
             enableRandomizedSpinBitSelection: true,
             selectedCipherSuite: options.SelectedCipherSuite,
+            enableServerEarlyData: options.EnableEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
     }
@@ -1441,6 +1443,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.StreamCapacityCallback = returnedOptions.StreamCapacityCallback;
         selectedOptions.ServerAuthenticationOptions = returnedOptions.ServerAuthenticationOptions;
         selectedOptions.EnableResumptionTickets = returnedOptions.EnableResumptionTickets;
+        selectedOptions.EnableEarlyData = returnedOptions.EnableEarlyData;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

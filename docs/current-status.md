@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-09 for CRT server-side 0-RTT admission anti-replay gate proof,
+Last verified: 2026-05-09 for CRT internal server-side 0-RTT opening proof,
+CRT server-side 0-RTT admission anti-replay gate proof,
 INT resumption runner proof with managed SSLKEYLOGFILE export,
 CRT server-side resumption PSK acceptance proof, CRT server NewSessionTicket issuance proof,
 INT non-HTTP/3 inventory dry-run proof,
@@ -25,6 +26,38 @@ This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
+## 2026-05-09 CRT Internal Server 0-RTT Opening Closure Note
+
+`REQ-QUIC-CRT-0153` now owns the bounded internal managed-server early-data
+runtime path. When internal server resumption tickets and internal server early
+data are both explicitly enabled, the server emits TLS `NewSessionTicket`
+`early_data` with QUIC `max_early_data_size` `0xffffffff` only when remembered
+0-RTT transport-parameter material exists. Eligible clients emit zero-length
+ClientHello `early_data` before the final `pre_shared_key` extension.
+
+The server accepts early data only after same-listener PSK validation and the
+`REQ-QUIC-CRT-0152` listener-local admission gate approve the attempt. Successful
+admission publishes server ZeroRtt open packet-protection material and
+zero-length EncryptedExtensions `early_data`. The runtime can open Version 1
+ZeroRtt packets during the server establishing phase and deliver bounded
+STREAM/PING/PADDING data into the existing stream registry.
+
+Focused negative proof covers disabled server early data and replayed tickets
+not publishing server ZeroRtt open material. Runtime proof rejects forbidden
+ACK frames in 0-RTT with `PROTOCOL_VIOLATION` and without stream delivery. This
+is still not a `zerortt` interop promotion: public early-data APIs,
+`IsSupported` widening, HTTP/3, broad early-data frame-family support, external
+ticket persistence, and cluster-wide anti-replay remain out of scope. The
+`zerortt` inventory cell remains prerequisite-blocked until live runner proof
+and harness classification promote it.
+
+Local verification passed: focused `REQ_QUIC_CRT_0153` reported 6/6 passing;
+the nearby `REQ_QUIC_CRT_0149` through `REQ_QUIC_CRT_0153` homes plus interop
+dry-run tests reported 30/30 passing; SpecTrace core validation reported 532
+JSON artifacts; Release build completed with 0 warnings and 0 errors; and the
+full Release no-build test rerun reported 4,889/4,889 passing. `git diff
+--check` exited 0 with only line-ending normalization warnings.
+
 ## 2026-05-09 CRT Server 0-RTT Admission Anti-Replay Gate Closure Note
 
 `REQ-QUIC-CRT-0152` now owns the internal managed server 0-RTT admission gate
@@ -38,13 +71,10 @@ transport-parameter-rejected admission attempts failing closed. Unvalidated PSK
 and rejected-parameter attempts do not consume the live ticket; expired tickets
 are removed and cleared once the admission path reaches ticket consumption.
 
-This is not a `zerortt` interop promotion. The server still does not advertise
-the TLS `early_data` extension in NewSessionTicket, does not open server
-ZeroRtt packets, does not deliver early application data, does not add public
-early-data API or widen `IsSupported`, and does not bring HTTP/3 into scope.
-The next source-level unresolved `zerortt` work is the runtime path that
-advertises `early_data`, opens server ZeroRtt packets, and proves early
-application-data delivery.
+This gate is not a `zerortt` interop promotion. The later
+`REQ-QUIC-CRT-0153` slice composes it with bounded internal early-data runtime
+delivery, but public early-data API, `IsSupported`, HTTP/3, live runner proof,
+and harness classification remain separate.
 
 Local verification passed: focused
 `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release
@@ -98,10 +128,9 @@ resumed ServerHello selection, and PSK-DHE resumed handshake-secret derivation.
 The live 2026-05-08 external runner attempt now progresses past the earlier
 server-dispatch failure and PSK-rejection boundary, but quic-interop-runner
 reports the testcase as `unsupported` with `Can't check test result. SSLKEYLOG
-required.` The interop inventory therefore remains conservative until an honest
-SSLKEYLOGFILE-backed proof path exists; the next source-level unresolved cell
-after this slice is `zerortt`, which remains blocked on server-side 0-RTT
-admission and anti-replay ownership.
+required.` Later 2026-05-09 work closed the SSLKEYLOG-backed resumption runner
+proof and bounded internal server 0-RTT runtime proof, but the `zerortt` cell
+still requires live runner proof and harness classification.
 
 Local verification passed: focused
 `REQ_QUIC_CRT_0151|REQ_QUIC_INT_0002|InteropRunnerScriptDryRunTests`

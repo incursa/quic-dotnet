@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0051",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC internal server 0-RTT opening work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the smallest internal managed-server early-data path that advertises QUIC early_data, accepts only same-listener admitted PSKs, opens server ZeroRtt packets, and delivers bounded STREAM/PING/PADDING early data.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0048",
+    "ARC-QUIC-CRT-0049"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0051"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0153"
+  ],
+  "planned_changes": "- Add internal server early-data enablement behind managed resumption tickets.\n- Emit TLS NewSessionTicket early_data with the QUIC sentinel max_early_data_size value only when remembered 0-RTT transport parameters exist.\n- Emit ClientHello early_data when a detached ticket has early-data prerequisite material while keeping pre_shared_key last.\n- Compose server early-data acceptance with validated PSK binder state and the REQ-QUIC-CRT-0152 listener-local admission gate.\n- Publish server ZeroRtt open material and EncryptedExtensions early_data only after admission succeeds.\n- Add a server establishing-phase ZeroRtt packet opener and bounded STREAM/PING/PADDING runtime delivery path.\n- Reject forbidden 0-RTT ACK, CRYPTO, NEW_TOKEN, and HANDSHAKE_DONE frames.\n- Add focused positive, negative, fuzz-shaped tests and a benchmark lane for server ZeroRtt opening.\n- Preserve public API, IsSupported, HTTP/3, and interop zerortt inventory classification.",
+  "verification_plan": "Run focused REQ_QUIC_CRT_0153 tests first, then the nearby REQ_QUIC_CRT_0149 through REQ_QUIC_CRT_0153 homes, SpecTrace core validation, Release build, full Release tests, and diff whitespace checks.",
+  "completion_notes": "The managed server now has an internal early-data path that can advertise QUIC early_data, accept a zero-length ClientHello early_data offer only after same-listener PSK validation and listener-local admission, publish server ZeroRtt open material, open Version 1 ZeroRtt packets, and deliver bounded STREAM/PING/PADDING payloads to the stream registry. Disabled early data and replayed tickets do not publish server ZeroRtt material. Forbidden ACK frames in 0-RTT trigger a local protocol violation. Public API, IsSupported, HTTP/3, external anti-replay coordination, and interop zerortt support classification remain unchanged.",
+  "out_of_scope": [
+    "public early-data APIs",
+    "QuicConnection.IsSupported widening",
+    "HTTP/3 support",
+    "external ticket persistence",
+    "cluster-wide anti-replay coordination",
+    "live zerortt interop runner promotion",
+    "broad early-data frame-family support",
+    "QUIC v2 early-data behavior"
+  ]
+}

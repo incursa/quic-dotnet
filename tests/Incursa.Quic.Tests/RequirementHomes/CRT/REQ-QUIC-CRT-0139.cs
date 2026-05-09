@@ -139,7 +139,7 @@ public sealed class REQ_QUIC_CRT_0139
 
         Assert.True(parsedClientHello.HasPskKeyExchangeModes);
         Assert.True(parsedClientHello.HasPreSharedKey);
-        Assert.False(parsedClientHello.HasEarlyData);
+        Assert.True(parsedClientHello.HasEarlyData);
         Assert.False(clientRuntime.IsEarlyDataAdmissionOpen);
     }
 

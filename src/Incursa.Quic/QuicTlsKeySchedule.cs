@@ -15,6 +15,7 @@ internal sealed class QuicTlsKeySchedule
 {
     private const int HandshakeHeaderLength = 4;
     private const uint ServerResumptionTicketLifetimeSeconds = 600;
+    private const uint QuicEarlyDataMaxEarlyDataSizeSentinel = uint.MaxValue;
     private const int ServerResumptionTicketNonceLength = 8;
     private const int ServerResumptionTicketBytesLength = 32;
     private const int HkdfLengthFieldLength = sizeof(ushort);
@@ -53,6 +54,7 @@ internal sealed class QuicTlsKeySchedule
     private const ushort KeyShareExtensionType = 0x0033;
     private const ushort PreSharedKeyExtensionType = 0x0029;
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
+    private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort TlsCipherSuitesListLength = UInt16Length;
     private const ushort SignatureAlgorithmsVectorLength = UInt16Length;
@@ -124,6 +126,7 @@ internal sealed class QuicTlsKeySchedule
     private bool resumptionAttemptPending;
     private bool serverHelloRetryRequestPending;
     private bool serverResumptionTicketsEnabled;
+    private bool serverEarlyDataEnabled;
     private bool isTerminal;
     private ulong nextServerInitialCryptoOffset;
     private ulong nextServerOneRttCryptoOffset;
@@ -166,6 +169,7 @@ internal sealed class QuicTlsKeySchedule
     /// <param name="clientCipherSuiteProfile">An optional client cipher-suite profile to bind when the schedule is created for the client role.</param>
     /// <param name="applicationProtocols">The configured ALPN protocols owned by this role.</param>
     /// <param name="enableServerResumptionTickets">Whether the server role may emit and accept post-handshake resumption tickets.</param>
+    /// <param name="enableServerEarlyData">Whether the server role may advertise and accept QUIC early data.</param>
     /// <param name="serverResumptionTicketStore">The server-owned ticket store used to validate managed resumption PSK offers.</param>
     /// <param name="emitKeyLogSecrets">Whether traffic-secret updates should be published for opt-in SSLKEYLOGFILE export.</param>
     internal QuicTlsKeySchedule(
@@ -174,11 +178,13 @@ internal sealed class QuicTlsKeySchedule
         QuicTlsCipherSuiteProfile? clientCipherSuiteProfile = null,
         IReadOnlyList<SslApplicationProtocol>? applicationProtocols = null,
         bool enableServerResumptionTickets = false,
+        bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         bool emitKeyLogSecrets = false)
     {
         this.role = role;
         serverResumptionTicketsEnabled = role == QuicTlsRole.Server && enableServerResumptionTickets;
+        serverEarlyDataEnabled = role == QuicTlsRole.Server && enableServerResumptionTickets && enableServerEarlyData;
         this.serverResumptionTicketStore = role == QuicTlsRole.Server ? serverResumptionTicketStore : null;
         this.emitKeyLogSecrets = emitKeyLogSecrets;
 
@@ -285,6 +291,32 @@ internal sealed class QuicTlsKeySchedule
         }
 
         serverResumptionTicketsEnabled = enabled;
+        if (!enabled)
+        {
+            serverEarlyDataEnabled = false;
+        }
+
+        return true;
+    }
+
+    internal bool TryConfigureServerEarlyData(bool enabled)
+    {
+        if (role != QuicTlsRole.Server)
+        {
+            return !enabled;
+        }
+
+        if (enabled && !serverResumptionTicketsEnabled)
+        {
+            return false;
+        }
+
+        if (handshakeSecretsDerived && serverEarlyDataEnabled != enabled)
+        {
+            return false;
+        }
+
+        serverEarlyDataEnabled = enabled;
         return true;
     }
 
@@ -532,7 +564,7 @@ internal sealed class QuicTlsKeySchedule
                     localServerLeafSigningPrivateKey),
                 QuicTlsHandshakeMessageType.Certificate => ProcessCertificate(step),
                 QuicTlsHandshakeMessageType.CertificateVerify => ProcessCertificateVerify(step),
-                QuicTlsHandshakeMessageType.Finished => ProcessFinished(step),
+                QuicTlsHandshakeMessageType.Finished => ProcessFinished(step, localTransportParameters),
                 _ => BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription),
             };
         }
@@ -543,7 +575,7 @@ internal sealed class QuicTlsKeySchedule
             QuicTlsHandshakeMessageType.EncryptedExtensions => AppendTranscriptMessage(step.HandshakeMessageBytes.Span),
             QuicTlsHandshakeMessageType.Certificate => ProcessCertificate(step),
             QuicTlsHandshakeMessageType.CertificateVerify => ProcessCertificateVerify(step),
-            QuicTlsHandshakeMessageType.Finished => ProcessFinished(step),
+            QuicTlsHandshakeMessageType.Finished => ProcessFinished(step, localTransportParameters),
             _ => AppendTranscriptMessage(step.HandshakeMessageBytes.Span),
         };
     }
@@ -681,7 +713,9 @@ internal sealed class QuicTlsKeySchedule
             AppendTranscriptMessage(step.HandshakeMessageBytes.Span);
             bool acceptedServerResumption = TryAcceptServerResumptionPsk(
                 step.HandshakeMessageBytes.Span,
-                out acceptedServerResumptionPsk);
+                out acceptedServerResumptionPsk,
+                out QuicServerResumptionTicketRecord? acceptedServerResumptionTicket,
+                out ParsedClientHelloPreSharedKeyOffer acceptedServerResumptionOffer);
             if (!TryCreateServerHello(
                 step.HandshakeMessageBytes.Span,
                 acceptedServerResumption,
@@ -703,9 +737,33 @@ internal sealed class QuicTlsKeySchedule
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
             }
 
+            bool acceptedServerEarlyData = false;
+            QuicTlsPacketProtectionMaterial zeroRttOpenMaterial = default;
+            if (acceptedServerResumption
+                && serverEarlyDataEnabled
+                && acceptedServerResumptionPsk is not null
+                && acceptedServerResumptionTicket?.ZeroRttTransportParameters is not null
+                && acceptedServerResumptionOffer.EarlyDataOffered
+                && TryDeriveServerZeroRttOpenPacketProtectionMaterial(
+                    acceptedServerResumptionPsk,
+                    step.HandshakeMessageBytes.Span,
+                    out zeroRttOpenMaterial))
+            {
+                QuicServerZeroRttAdmissionGate admissionGate = new(serverResumptionTicketStore!);
+                QuicServerZeroRttAdmissionDecision admissionDecision = admissionGate.TryAdmit(
+                    pskBinderValidated: true,
+                    acceptedServerResumptionOffer.Identity,
+                    acceptedServerResumptionTicket.ZeroRttTransportParameters,
+                    localTransportParameters,
+                    Stopwatch.GetTimestamp(),
+                    out _);
+                acceptedServerEarlyData = admissionDecision.CanAdmit;
+            }
+
             if (!TryCreateEncryptedExtensions(
                 localTransportParameters,
                 selectedApplicationProtocol,
+                acceptedServerEarlyData,
                 out byte[] encryptedExtensionsBytes))
             {
                 return BuildFatalAlert(HandshakeTranscriptParseFailureAlertDescription);
@@ -740,6 +798,13 @@ internal sealed class QuicTlsKeySchedule
                     CryptoData: encryptedExtensionsBytes),
             ];
             AddHandshakeKeyLogSecretUpdates(updates);
+
+            if (acceptedServerEarlyData)
+            {
+                updates.Add(new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: zeroRttOpenMaterial));
+            }
 
             if (acceptedServerResumption)
             {
@@ -1028,7 +1093,9 @@ internal sealed class QuicTlsKeySchedule
         return [new QuicTlsStateUpdate(QuicTlsUpdateKind.PeerCertificateVerifyVerified)];
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> ProcessFinished(QuicTlsTranscriptStep step)
+    private IReadOnlyList<QuicTlsStateUpdate> ProcessFinished(
+        QuicTlsTranscriptStep step,
+        QuicTransportParameters? localTransportParameters)
     {
         ReadOnlySpan<byte> peerFinishedTrafficSecret = role == QuicTlsRole.Server
             ? clientHandshakeTrafficSecret ?? []
@@ -1128,9 +1195,14 @@ internal sealed class QuicTlsKeySchedule
                 QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
                 PacketProtectionMaterial: oneRttProtectMaterial));
 
+            QuicTransportParameters? zeroRttTransportParameters = serverEarlyDataEnabled
+                ? QuicZeroRttTransportParameterPolicy.CreateRememberedTransportParametersForClientZeroRtt(localTransportParameters)
+                : null;
+            bool advertiseEarlyData = zeroRttTransportParameters is not null;
             if (serverResumptionTicketsEnabled
                 && TryCreateNewSessionTicket(
                     derivedResumptionMasterSecret,
+                    advertiseEarlyData,
                     out byte[] newSessionTicketBytes,
                     out byte[] ticketBytes,
                     out byte[] ticketNonce,
@@ -1142,7 +1214,8 @@ internal sealed class QuicTlsKeySchedule
                     ticketNonce,
                     ticketAgeAdd,
                     ticketLifetimeSeconds,
-                    derivedResumptionMasterSecret);
+                    derivedResumptionMasterSecret,
+                    zeroRttTransportParameters);
 
                 ulong ticketOffset = nextServerOneRttCryptoOffset;
                 nextServerOneRttCryptoOffset = SaturatingAdd(
@@ -1599,6 +1672,47 @@ internal sealed class QuicTlsKeySchedule
         }
     }
 
+    private bool TryDeriveServerZeroRttOpenPacketProtectionMaterial(
+        ReadOnlySpan<byte> acceptedResumptionPsk,
+        ReadOnlySpan<byte> clientHelloBytes,
+        out QuicTlsPacketProtectionMaterial material)
+    {
+        material = default;
+
+        if (role != QuicTlsRole.Server
+            || acceptedResumptionPsk.Length != HashLength
+            || clientHelloBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        byte[]? earlySecret = null;
+        byte[]? clientEarlyTrafficSecret = null;
+        try
+        {
+            earlySecret = HkdfExtract(ZeroHashInput, acceptedResumptionPsk);
+            byte[] clientHelloTranscriptHash = SHA256.HashData(clientHelloBytes);
+            clientEarlyTrafficSecret = HkdfExpandLabel(earlySecret, ClientEarlyTrafficLabel, clientHelloTranscriptHash, HashLength);
+
+            return TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.ZeroRtt,
+                clientEarlyTrafficSecret,
+                out material);
+        }
+        finally
+        {
+            if (earlySecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(earlySecret);
+            }
+
+            if (clientEarlyTrafficSecret is not null)
+            {
+                CryptographicOperations.ZeroMemory(clientEarlyTrafficSecret);
+            }
+        }
+    }
+
     private bool TryCreatePacketProtectionMaterial(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlySpan<byte> trafficSecret,
@@ -1710,12 +1824,16 @@ internal sealed class QuicTlsKeySchedule
         int binderEntryLength = 1 + HashLength;
         int bindersVectorLength = binderEntryLength;
         int pskModesExtensionLength = UInt16Length + UInt16Length + 1 + PskKeyExchangeModesVectorLength;
+        int earlyDataExtensionLength = detachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial
+            ? UInt16Length + UInt16Length
+            : 0;
         int preSharedKeyExtensionLength = UInt16Length
             + identitiesVectorLength
             + UInt16Length
             + bindersVectorLength;
         int extensionsLength = baseExtensionsLength
             + pskModesExtensionLength
+            + earlyDataExtensionLength
             + (UInt16Length + UInt16Length + preSharedKeyExtensionLength);
 
         byte[] body = new byte[43 + extensionsLength];
@@ -1728,6 +1846,14 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         body[index++] = PskKeyExchangeModesVectorLength;
         body[index++] = PskDheKeMode;
+
+        if (earlyDataExtensionLength != 0)
+        {
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), EarlyDataExtensionType);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), 0);
+            index += UInt16Length;
+        }
 
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PreSharedKeyExtensionType);
         index += UInt16Length;
@@ -1794,9 +1920,13 @@ internal sealed class QuicTlsKeySchedule
 
     private bool TryAcceptServerResumptionPsk(
         ReadOnlySpan<byte> clientHelloBytes,
-        out byte[] acceptedResumptionPsk)
+        out byte[] acceptedResumptionPsk,
+        out QuicServerResumptionTicketRecord? acceptedTicket,
+        out ParsedClientHelloPreSharedKeyOffer acceptedOffer)
     {
         acceptedResumptionPsk = Array.Empty<byte>();
+        acceptedTicket = null;
+        acceptedOffer = default;
         if (role != QuicTlsRole.Server
             || !serverResumptionTicketsEnabled
             || serverResumptionTicketStore is null
@@ -1823,6 +1953,8 @@ internal sealed class QuicTlsKeySchedule
             }
 
             acceptedResumptionPsk = resumptionPsk.ToArray();
+            acceptedTicket = ticket;
+            acceptedOffer = offer;
             return true;
         }
         finally
@@ -1887,6 +2019,7 @@ internal sealed class QuicTlsKeySchedule
         int extensionsBodyOffset = clientHelloBody.Length - extensionsLength;
         ReadOnlySpan<byte> extensions = clientHelloBody.Slice(extensionsBodyOffset, extensionsLength);
         int extensionsIndex = 0;
+        bool earlyDataOffered = false;
         while (extensionsIndex < extensions.Length)
         {
             int extensionStart = extensionsIndex;
@@ -1895,6 +2028,17 @@ internal sealed class QuicTlsKeySchedule
                 || !TrySkipBytes(extensions, ref extensionsIndex, extensionLength))
             {
                 return false;
+            }
+
+            if (extensionType == EarlyDataExtensionType)
+            {
+                if (earlyDataOffered || extensionLength != 0)
+                {
+                    return false;
+                }
+
+                earlyDataOffered = true;
+                continue;
             }
 
             if (extensionType != PreSharedKeyExtensionType)
@@ -1953,7 +2097,8 @@ internal sealed class QuicTlsKeySchedule
                 identity,
                 obfuscatedTicketAge,
                 binder,
-                HandshakeHeaderLength + partialBodyLength);
+                HandshakeHeaderLength + partialBodyLength,
+                earlyDataOffered);
             return true;
         }
 
@@ -2044,6 +2189,7 @@ internal sealed class QuicTlsKeySchedule
 
     private static bool TryCreateNewSessionTicket(
         ReadOnlySpan<byte> resumptionMasterSecret,
+        bool advertiseEarlyData,
         out byte[] newSessionTicketBytes,
         out byte[] ticketBytes,
         out byte[] ticketNonceBytes,
@@ -2086,7 +2232,8 @@ internal sealed class QuicTlsKeySchedule
             + ServerResumptionTicketNonceLength
             + UInt16Length
             + ServerResumptionTicketBytesLength
-            + UInt16Length);
+            + UInt16Length
+            + (advertiseEarlyData ? UInt16Length + UInt16Length + sizeof(uint) : 0));
         byte[] body = new byte[bodyLength];
         int index = 0;
         BinaryPrimitives.WriteUInt32BigEndian(body.AsSpan(index, sizeof(uint)), ticketLifetimeSeconds);
@@ -2100,7 +2247,19 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         ticketBytes.AsSpan(0, ServerResumptionTicketBytesLength).CopyTo(body.AsSpan(index, ServerResumptionTicketBytesLength));
         index += ServerResumptionTicketBytesLength;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), 0);
+        BinaryPrimitives.WriteUInt16BigEndian(
+            body.AsSpan(index, UInt16Length),
+            checked((ushort)(advertiseEarlyData ? UInt16Length + UInt16Length + sizeof(uint) : 0)));
+        index += UInt16Length;
+
+        if (advertiseEarlyData)
+        {
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), EarlyDataExtensionType);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), sizeof(uint));
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt32BigEndian(body.AsSpan(index, sizeof(uint)), QuicEarlyDataMaxEarlyDataSizeSentinel);
+        }
 
         newSessionTicketBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.NewSessionTicket, body);
         ticketNonceBytes = ticketNonce.ToArray();
@@ -2172,6 +2331,7 @@ internal sealed class QuicTlsKeySchedule
     private static bool TryCreateEncryptedExtensions(
         QuicTransportParameters localTransportParameters,
         ReadOnlySpan<byte> selectedApplicationProtocol,
+        bool includeEarlyData,
         out byte[] encryptedExtensionsBytes)
     {
         encryptedExtensionsBytes = Array.Empty<byte>();
@@ -2188,7 +2348,8 @@ internal sealed class QuicTlsKeySchedule
 
         int transportParametersExtensionLength = checked(UInt16Length + UInt16Length + encodedTransportParametersBytes);
         int applicationProtocolExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(selectedApplicationProtocol);
-        int extensionsLength = checked(transportParametersExtensionLength + applicationProtocolExtensionLength);
+        int earlyDataExtensionLength = includeEarlyData ? UInt16Length + UInt16Length : 0;
+        int extensionsLength = checked(transportParametersExtensionLength + applicationProtocolExtensionLength + earlyDataExtensionLength);
         int messageBodyLength = checked(UInt16Length + extensionsLength);
 
         byte[] body = new byte[messageBodyLength];
@@ -2206,6 +2367,14 @@ internal sealed class QuicTlsKeySchedule
         index += encodedTransportParametersBytes;
 
         WriteApplicationLayerProtocolNegotiationExtension(selectedApplicationProtocol, body, ref index);
+
+        if (includeEarlyData)
+        {
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), EarlyDataExtensionType);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), 0);
+            index += UInt16Length;
+        }
 
         if (index != body.Length)
         {
@@ -3300,5 +3469,6 @@ internal sealed class QuicTlsKeySchedule
         byte[] Identity,
         uint ObfuscatedTicketAge,
         byte[] Binder,
-        int PartialTranscriptLength);
+        int PartialTranscriptLength,
+        bool EarlyDataOffered);
 }

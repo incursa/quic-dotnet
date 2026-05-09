@@ -23,6 +23,8 @@ internal sealed partial class QuicConnectionRuntime
     private const ulong HandshakePacketPathChallengeFrameType = 0x1AUL;
     private const ulong HandshakePacketPathResponseFrameType = 0x1BUL;
     private const ulong HandshakePacketHandshakeDoneFrameType = 0x1EUL;
+    private const ulong ApplicationPacketAckFrameType = 0x02UL;
+    private const ulong ApplicationPacketCryptoFrameType = 0x06UL;
     private static readonly bool ApplicationReceiveDebugEnabled =
         string.Equals(
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
@@ -85,6 +87,10 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects);
                 stateChanged |= TryPublishTlsKeyDiscard(
                     QuicTlsEncryptionLevel.Handshake,
+                    nowTicks,
+                    ref effects);
+                stateChanged |= TryPublishTlsKeyDiscard(
+                    QuicTlsEncryptionLevel.ZeroRtt,
                     nowTicks,
                     ref effects);
             }
@@ -1173,6 +1179,11 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
+        if (IsVersion1ZeroRttPacket(packetReceivedEvent.Datagram.Span))
+        {
+            return TryHandleZeroRttApplicationPacketReceived(packetReceivedEvent, nowTicks, ref effects);
+        }
+
         if ((phase != QuicConnectionPhase.Active && phase != QuicConnectionPhase.Establishing)
             || activePath is null
             || !tlsState.OneRttKeysAvailable
@@ -1900,6 +1911,228 @@ internal sealed partial class QuicConnectionRuntime
                 openedPacket.Dispose();
             }
         }
+    }
+
+    private bool TryHandleZeroRttApplicationPacketReceived(
+        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Establishing
+            || tlsState.Role != QuicTlsRole.Server
+            || activePath is null
+            || !IsEarlyDataAdmissionOpen
+            || !tlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.ZeroRtt, out QuicTlsPacketProtectionMaterial zeroRttOpenMaterial))
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        bool processedStreamFrame = false;
+        bool packetAckEliciting = false;
+        QuicBufferLease openedPacket = default;
+        bool openedPacketOwned = false;
+        try
+        {
+            if (!handshakeFlowCoordinator.TryOpenProtectedZeroRttApplicationDataPacketLease(
+                    packetReceivedEvent.Datagram.Span,
+                    zeroRttOpenMaterial,
+                    out openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength))
+            {
+                return false;
+            }
+
+            openedPacketOwned = true;
+            if (!TryExpandOpenedApplicationPacketNumber(openedPacket.Span, payloadOffset, out ulong packetNumber))
+            {
+                return false;
+            }
+
+            int payloadEnd = payloadOffset + payloadLength;
+            int offset = payloadOffset;
+            while (offset < payloadEnd)
+            {
+                ReadOnlySpan<byte> remaining = openedPacket.Span.Slice(offset, payloadEnd - offset);
+                if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+                {
+                    if (paddingBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    offset += paddingBytesConsumed;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+                {
+                    if (pingBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    offset += pingBytesConsumed;
+                    packetAckEliciting = true;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+                {
+                    if (ackBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        ApplicationPacketAckFrameType,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent an ACK frame in a 0-RTT packet.",
+                        ref effects);
+                }
+
+                if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
+                {
+                    if (cryptoBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        ApplicationPacketCryptoFrameType,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a CRYPTO frame in a 0-RTT packet.",
+                        ref effects);
+                }
+
+                if (QuicFrameCodec.TryParseNewTokenFrame(remaining, out _, out int newTokenBytesConsumed))
+                {
+                    if (newTokenBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    return TryHandleInvalidNewTokenFrameReceived(
+                        nowTicks,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a NEW_TOKEN frame in a 0-RTT packet.",
+                        ref effects);
+                }
+
+                if (QuicFrameCodec.TryParseHandshakeDoneFrame(remaining, out _, out int handshakeDoneBytesConsumed))
+                {
+                    if (handshakeDoneBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        HandshakePacketHandshakeDoneFrameType,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a HANDSHAKE_DONE frame in a 0-RTT packet.",
+                        ref effects);
+                }
+
+                if (QuicFrameCodec.TryParseConnectionCloseFrame(remaining, out QuicConnectionCloseFrame connectionCloseFrame, out int connectionCloseBytesConsumed))
+                {
+                    if (connectionCloseBytesConsumed <= 0)
+                    {
+                        return false;
+                    }
+
+                    QuicConnectionCloseMetadata closeMetadata = CreateCloseMetadata(connectionCloseFrame);
+                    stateChanged |= HandleConnectionCloseFrameReceived(
+                        new QuicConnectionConnectionCloseFrameReceivedEvent(
+                            nowTicks,
+                            closeMetadata),
+                        nowTicks,
+                        ref effects);
+                    return stateChanged;
+                }
+
+                if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+                {
+                    return false;
+                }
+
+                if (streamFrame.ConsumedLength <= 0)
+                {
+                    return false;
+                }
+
+                bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
+                if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
+                {
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        streamFrame.FrameType,
+                        errorCode,
+                        "The peer sent a STREAM frame that violated receive-side stream or flow-control state.",
+                        ref effects);
+                }
+
+                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                        streamFrame.StreamId.Value,
+                        out QuicConnectionStreamSnapshot updatedStreamSnapshot)
+                    && updatedStreamSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd)
+                {
+                    _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
+                }
+
+                if (!streamPreviouslyKnown)
+                {
+                    TryQueueInboundStreamId(streamFrame.StreamId.Value);
+                }
+
+                stateChanged = true;
+                processedStreamFrame = true;
+                offset += streamFrame.ConsumedLength;
+                packetAckEliciting = true;
+            }
+
+            sendRuntime.FlowController.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                packetAckEliciting,
+                GetElapsedMicros(nowTicks));
+
+            largestObservedApplicationPacketNumber = hasObservedApplicationPacketNumber
+                ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
+                : packetNumber;
+            hasObservedApplicationPacketNumber = true;
+
+            if (TrySendPendingApplicationAck(nowTicks, ref effects))
+            {
+                stateChanged = true;
+            }
+
+            if (UpdateApplicationAckDelayTimer(nowTicks))
+            {
+                stateChanged = true;
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            }
+
+            stateChanged |= TryHandlePreviouslyUnusedIssuedConnectionId(packetReceivedEvent, ref effects);
+            return processedStreamFrame || stateChanged;
+        }
+        finally
+        {
+            if (openedPacketOwned)
+            {
+                openedPacket.Dispose();
+            }
+        }
+    }
+
+    private static bool IsVersion1ZeroRttPacket(ReadOnlySpan<byte> packet)
+    {
+        return QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket longHeader)
+            && longHeader.Version == QuicVersionNegotiation.Version1
+            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt;
     }
 
     private bool TryExpandOpenedApplicationPacketNumber(ReadOnlySpan<byte> openedPacket, int payloadOffset, out ulong packetNumber)

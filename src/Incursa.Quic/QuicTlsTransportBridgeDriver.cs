@@ -52,6 +52,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
         QuicTlsCipherSuite? selectedCipherSuite = null,
         bool enableServerResumptionTickets = false,
+        bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         bool emitKeyLogSecrets = false)
     {
@@ -65,6 +66,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             clientCipherSuiteProfile,
             clientAuthenticationOptions?.ApplicationProtocols,
             enableServerResumptionTickets,
+            enableServerEarlyData,
             serverResumptionTicketStore,
             emitKeyLogSecrets);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
@@ -271,6 +273,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     internal bool TryConfigureServerResumptionTicketIssuance(bool enabled)
     {
         return keySchedule?.TryConfigureServerResumptionTicketIssuance(enabled) == true;
+    }
+
+    internal bool TryConfigureServerEarlyData(bool enabled)
+    {
+        return keySchedule?.TryConfigureServerEarlyData(enabled) == true;
     }
 
     /// <inheritdoc />

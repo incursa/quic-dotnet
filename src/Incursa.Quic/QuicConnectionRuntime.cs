@@ -154,6 +154,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
         QuicTlsCipherSuite? selectedCipherSuite = null,
         bool enableServerResumptionTickets = false,
+        bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
     {
@@ -190,6 +191,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             clientAuthenticationOptions,
             selectedCipherSuite,
             enableServerResumptionTickets,
+            enableServerEarlyData,
             serverResumptionTicketStore,
             emitKeyLogSecrets: tlsKeyLogSecretObserver is not null);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
@@ -370,7 +372,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicTlsResumptionAttemptDisposition ResumptionAttemptDisposition => tlsState.ResumptionAttemptDisposition;
 
-    internal bool IsEarlyDataAdmissionOpen => false;
+    internal bool IsEarlyDataAdmissionOpen =>
+        tlsState.Role == QuicTlsRole.Server
+        && phase == QuicConnectionPhase.Establishing
+        && tlsState.TryGetPacketProtectionMaterial(QuicTlsEncryptionLevel.ZeroRtt, out _);
 
     internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
 
@@ -481,6 +486,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool TryConfigureServerResumptionTicketIssuance(bool enabled)
     {
         return tlsBridgeDriver.TryConfigureServerResumptionTicketIssuance(enabled);
+    }
+
+    internal bool TryConfigureServerEarlyData(bool enabled)
+    {
+        return tlsBridgeDriver.TryConfigureServerEarlyData(enabled);
     }
 
     internal bool TryConfigureServerAuthenticationMaterial(

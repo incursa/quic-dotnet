@@ -780,6 +780,33 @@ internal sealed class QuicHandshakeFlowCoordinator
         return false;
     }
 
+    /// <summary>
+    /// Opens a protected 0-RTT long-header application packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    internal bool TryOpenProtectedZeroRttApplicationDataPacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = default;
+        payloadOffset = default;
+        payloadLength = default;
+
+        if (material.EncryptionLevel != QuicTlsEncryptionLevel.ZeroRtt)
+        {
+            return false;
+        }
+
+        return TryOpenZeroRttApplicationDataPacket(
+            protectedPacket,
+            material,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
+
     internal bool TryBuildHandshakePlaintextPacketForTest(
         ReadOnlySpan<byte> cryptoPayload,
         ulong cryptoPayloadOffset,
@@ -2288,6 +2315,124 @@ internal sealed class QuicHandshakeFlowCoordinator
 
             // Only publish the observed Key Phase after the packet authenticates successfully.
             keyPhase = observedKeyPhase;
+            openedPacket.SetLength(unprotectedPacketLength);
+            payloadOffset = packetNumberOffset + packetNumberLength;
+            payloadLength = ciphertextPayloadLength;
+            success = true;
+            return true;
+        }
+        finally
+        {
+            if (!success)
+            {
+                openedPacket.Dispose();
+                openedPacket = default;
+            }
+        }
+    }
+
+    private bool TryOpenZeroRttApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = default;
+        payloadOffset = default;
+        payloadLength = default;
+
+        if (!TryValidatePacketProtectionMaterial(material)
+            || !QuicPacketParsing.TryParseLongHeaderFields(
+                protectedPacket,
+                out byte protectedHeaderControlBits,
+                out uint version,
+                out _,
+                out _,
+                out ReadOnlySpan<byte> versionSpecificData)
+            || version != QuicVersionNegotiation.Version1
+            || ((protectedHeaderControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.ZeroRtt
+            || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong lengthFieldValue, out int lengthFieldBytes))
+        {
+            return false;
+        }
+
+        int remainingAfterLength = versionSpecificData.Length - lengthFieldBytes;
+        if (lengthFieldValue != (ulong)remainingAfterLength
+            || lengthFieldValue > int.MaxValue)
+        {
+            return false;
+        }
+
+        int versionSpecificDataOffset = protectedPacket.Length - versionSpecificData.Length;
+        int packetNumberOffset = versionSpecificDataOffset + lengthFieldBytes;
+        int sampleOffset = packetNumberOffset + QuicInitialPacketProtection.HeaderProtectionSampleOffset;
+        if (packetNumberOffset < 0
+            || sampleOffset > protectedPacket.Length - QuicInitialPacketProtection.HeaderProtectionSampleLength)
+        {
+            return false;
+        }
+
+        Span<byte> mask = stackalloc byte[HeaderProtectionMaskLength];
+        if (!material.TryGenerateHeaderProtectionMask(
+            protectedPacket.Slice(sampleOffset, QuicInitialPacketProtection.HeaderProtectionSampleLength),
+            mask))
+        {
+            return false;
+        }
+
+        byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
+        int packetNumberLength = (unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
+            || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
+            || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.ZeroRtt
+            || (unmaskedFirstByte & QuicPacketHeaderBits.LongReservedBitsMask) != 0
+            || packetNumberLength < 1
+            || packetNumberLength > ApplicationPacketNumberLength)
+        {
+            return false;
+        }
+
+        int ciphertextPayloadLength = checked((int)lengthFieldValue) - packetNumberLength - QuicInitialPacketProtection.AuthenticationTagLength;
+        if (ciphertextPayloadLength < 0
+            || packetNumberOffset > protectedPacket.Length - packetNumberLength - ciphertextPayloadLength - QuicInitialPacketProtection.AuthenticationTagLength)
+        {
+            return false;
+        }
+
+        int unprotectedPacketLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
+        openedPacket = QuicBufferPool.RentLease(unprotectedPacketLength);
+        bool success = false;
+        try
+        {
+            Span<byte> openedPacketBuffer = openedPacket.Span;
+            protectedPacket[..packetNumberOffset].CopyTo(openedPacketBuffer);
+            openedPacketBuffer[0] = unmaskedFirstByte;
+
+            for (int i = 0; i < packetNumberLength; i++)
+            {
+                openedPacketBuffer[packetNumberOffset + i] = (byte)(protectedPacket[packetNumberOffset + i] ^ mask[1 + i]);
+            }
+
+            Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
+            BuildNonce(
+                material.AeadIvBytes,
+                openedPacketBuffer,
+                packetNumberOffset,
+                packetNumberLength,
+                nonce);
+
+            if (!TryDecryptPacketPayload(
+                material,
+                nonce,
+                protectedPacket.Slice(packetNumberOffset + packetNumberLength, ciphertextPayloadLength),
+                protectedPacket.Slice(packetNumberOffset + packetNumberLength + ciphertextPayloadLength, QuicInitialPacketProtection.AuthenticationTagLength),
+                openedPacketBuffer.Slice(packetNumberOffset + packetNumberLength, ciphertextPayloadLength),
+                openedPacketBuffer[..(packetNumberOffset + packetNumberLength)]))
+            {
+                return false;
+            }
+
             openedPacket.SetLength(unprotectedPacketLength);
             payloadOffset = packetNumberOffset + packetNumberLength;
             payloadLength = ciphertextPayloadLength;

@@ -33,4 +33,9 @@ public sealed class QuicServerConnectionOptions : QuicConnectionOptions
     /// Gets or sets whether the internal managed server path may emit post-handshake resumption tickets.
     /// </summary>
     internal bool EnableResumptionTickets { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the internal managed server path may advertise and accept QUIC early data.
+    /// </summary>
+    internal bool EnableEarlyData { get; set; }
 }

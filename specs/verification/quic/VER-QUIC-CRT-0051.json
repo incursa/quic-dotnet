@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0051",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC internal server 0-RTT opening verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with positive, negative, replay, forbidden-frame, and fuzz-shaped coverage; benchmark lane for server ZeroRtt packet opening; followed by SpecTrace, build, full-suite, and diff validation.",
+  "scope": "Verify the internal managed-server early-data path from ticket advertisement through admitted server ZeroRtt packet opening and bounded application delivery while preserving closed public support and interop classification.",
+  "preconditions": [
+    "Internal managed server resumption tickets are enabled.",
+    "Internal server early data is enabled.",
+    "A detached ticket carries early-data prerequisite material and remembered 0-RTT transport parameters.",
+    "The listener-local ticket store contains the matching live server-issued ticket."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs",
+    "benchmarks/QuicTlsClientZeroRttEmissionBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0153\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0149|FullyQualifiedName~REQ_QUIC_CRT_0150|FullyQualifiedName~REQ_QUIC_CRT_0151|FullyQualifiedName~REQ_QUIC_CRT_0152|FullyQualifiedName~REQ_QUIC_CRT_0153\"",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0153 requirement-home tests.",
+    "Confirm server early-data ticket issuance adds the TLS early_data extension with max_early_data_size 0xffffffff and stores remembered 0-RTT parameters.",
+    "Confirm eligible clients offer zero-length ClientHello early_data before pre_shared_key and preserve binder validation.",
+    "Confirm admitted same-listener attempts publish server ZeroRtt open material and EncryptedExtensions early_data.",
+    "Confirm disabled server early data and replayed tickets do not publish ZeroRtt open material.",
+    "Confirm the runtime opens an authenticated Version 1 ZeroRtt STREAM packet and delivers bytes to the stream registry.",
+    "Confirm forbidden 0-RTT ACK frames trigger a local protocol violation without delivering stream data.",
+    "Repeat randomized authenticated STREAM payloads through the 0-RTT opener.",
+    "Run nearby 0-RTT/resumption homes, SpecTrace core validation, Release build, full Release tests, and diff check."
+  ],
+  "expected_result": "The internal server early-data path admits only validated, listener-local, anti-replay-approved tickets, opens server ZeroRtt packets, delivers bounded STREAM/PING/PADDING early data, rejects forbidden 0-RTT frames, and leaves public API, IsSupported, HTTP/3, and interop zerortt classification unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-CRT-0048",
+    "ARC-QUIC-CRT-0049",
+    "WI-QUIC-CRT-0051"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Server early-data ticket issuance advertises the QUIC max_early_data_size sentinel only with remembered 0-RTT parameters.\n- ClientHello early_data is zero-length and appears before the final pre_shared_key extension.\n- Server ZeroRtt open material and EncryptedExtensions early_data appear only after PSK validation and listener-local admission.\n- Disabled early data and replayed tickets fail closed.\n- Runtime delivery is bounded to STREAM/PING/PADDING and forbidden 0-RTT frames are rejected.\n- Public support surfaces and interop inventory remain conservative."
+    }
+  ],
+  "status_summary": "Passed locally for focused REQ-QUIC-CRT-0153 coverage with 6/6 tests passing and the surrounding REQ-QUIC-CRT-0149 through REQ-QUIC-CRT-0153 plus interop dry-run homes with 30/30 tests passing. SpecTrace core validation passed for 532 JSON artifacts, Release build completed with 0 warnings and 0 errors, the full Release no-build test rerun passed 4,889/4,889, and git diff --check exited 0 with only line-ending normalization warnings.",
+  "verifies": [
+    "REQ-QUIC-CRT-0153"
+  ]
+}

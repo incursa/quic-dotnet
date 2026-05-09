@@ -20,6 +20,7 @@ internal sealed class QuicServerResumptionTicketStore
             ticketAgeAdd,
             ticketLifetimeSeconds,
             resumptionMasterSecret,
+            zeroRttTransportParameters: null,
             Stopwatch.GetTimestamp());
 
     internal bool TryStoreIssuedTicket(
@@ -28,6 +29,39 @@ internal sealed class QuicServerResumptionTicketStore
         uint ticketAgeAdd,
         uint ticketLifetimeSeconds,
         ReadOnlySpan<byte> resumptionMasterSecret,
+        QuicTransportParameters? zeroRttTransportParameters)
+        => TryStoreIssuedTicket(
+            ticketBytes,
+            ticketNonce,
+            ticketAgeAdd,
+            ticketLifetimeSeconds,
+            resumptionMasterSecret,
+            zeroRttTransportParameters,
+            Stopwatch.GetTimestamp());
+
+    internal bool TryStoreIssuedTicket(
+        ReadOnlySpan<byte> ticketBytes,
+        ReadOnlySpan<byte> ticketNonce,
+        uint ticketAgeAdd,
+        uint ticketLifetimeSeconds,
+        ReadOnlySpan<byte> resumptionMasterSecret,
+        long issuedAtTicks)
+        => TryStoreIssuedTicket(
+            ticketBytes,
+            ticketNonce,
+            ticketAgeAdd,
+            ticketLifetimeSeconds,
+            resumptionMasterSecret,
+            zeroRttTransportParameters: null,
+            issuedAtTicks);
+
+    internal bool TryStoreIssuedTicket(
+        ReadOnlySpan<byte> ticketBytes,
+        ReadOnlySpan<byte> ticketNonce,
+        uint ticketAgeAdd,
+        uint ticketLifetimeSeconds,
+        ReadOnlySpan<byte> resumptionMasterSecret,
+        QuicTransportParameters? zeroRttTransportParameters,
         long issuedAtTicks)
     {
         if (ticketBytes.IsEmpty || ticketNonce.IsEmpty || resumptionMasterSecret.IsEmpty)
@@ -42,7 +76,8 @@ internal sealed class QuicServerResumptionTicketStore
             ticketAgeAdd,
             ticketLifetimeSeconds,
             issuedAtTicks,
-            resumptionMasterSecret.ToArray());
+            resumptionMasterSecret.ToArray(),
+            CloneZeroRttTransportParameters(zeroRttTransportParameters));
 
         if (tickets.TryAdd(key, record))
         {
@@ -125,6 +160,28 @@ internal sealed class QuicServerResumptionTicketStore
 
         tickets.Clear();
     }
+
+    private static QuicTransportParameters? CloneZeroRttTransportParameters(QuicTransportParameters? parameters)
+    {
+        if (parameters is null)
+        {
+            return null;
+        }
+
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = parameters.MaxIdleTimeout,
+            MaxUdpPayloadSize = parameters.MaxUdpPayloadSize,
+            InitialMaxData = parameters.InitialMaxData,
+            InitialMaxStreamDataBidiLocal = parameters.InitialMaxStreamDataBidiLocal,
+            InitialMaxStreamDataBidiRemote = parameters.InitialMaxStreamDataBidiRemote,
+            InitialMaxStreamDataUni = parameters.InitialMaxStreamDataUni,
+            InitialMaxStreamsBidi = parameters.InitialMaxStreamsBidi,
+            InitialMaxStreamsUni = parameters.InitialMaxStreamsUni,
+            DisableActiveMigration = parameters.DisableActiveMigration,
+            ActiveConnectionIdLimit = parameters.ActiveConnectionIdLimit,
+        };
+    }
 }
 
 internal sealed class QuicServerResumptionTicketRecord
@@ -135,7 +192,8 @@ internal sealed class QuicServerResumptionTicketRecord
         uint ticketAgeAdd,
         uint ticketLifetimeSeconds,
         long issuedAtTicks,
-        byte[] resumptionMasterSecret)
+        byte[] resumptionMasterSecret,
+        QuicTransportParameters? zeroRttTransportParameters = null)
     {
         TicketBytes = ticketBytes;
         TicketNonce = ticketNonce;
@@ -143,6 +201,7 @@ internal sealed class QuicServerResumptionTicketRecord
         TicketLifetimeSeconds = ticketLifetimeSeconds;
         IssuedAtTicks = issuedAtTicks;
         ResumptionMasterSecret = resumptionMasterSecret;
+        ZeroRttTransportParameters = zeroRttTransportParameters;
     }
 
     internal byte[] TicketBytes { get; }
@@ -156,6 +215,8 @@ internal sealed class QuicServerResumptionTicketRecord
     internal long IssuedAtTicks { get; }
 
     internal byte[] ResumptionMasterSecret { get; }
+
+    internal QuicTransportParameters? ZeroRttTransportParameters { get; }
 
     internal bool IsExpired(long nowTicks)
     {

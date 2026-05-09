@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires early_data ticket advertisement, server ZeroRtt packet opening, and early application-delivery proof; internal admission-gate proof alone is not support evidence.'
+            Notes = 'Requires live zerortt runner proof and harness classification; bounded internal early-data runtime proof alone is not support evidence.'
         }
 
         [pscustomobject]@{

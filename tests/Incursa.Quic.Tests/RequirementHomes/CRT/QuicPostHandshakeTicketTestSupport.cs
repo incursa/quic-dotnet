@@ -220,6 +220,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         ulong peerConnectionFlowControlLimit = DefaultConnectionFlowControlLimit,
         ulong peerStreamFlowControlLimit = DefaultStreamFlowControlLimit,
         bool enableServerResumptionTickets = false,
+        bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         List<QuicConnectionEffect>? emittedEffects = null,
         bool initializeActivePath = false)
@@ -261,6 +262,7 @@ internal static class QuicPostHandshakeTicketTestSupport
             localServerLeafCertificateDer: localLeafCertificateDer,
             localServerLeafSigningPrivateKey: localSigningPrivateKey,
             enableServerResumptionTickets: enableServerResumptionTickets,
+            enableServerEarlyData: enableServerEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore);
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(PacketConnectionId));
@@ -321,7 +323,8 @@ internal static class QuicPostHandshakeTicketTestSupport
     internal static QuicTlsTransportBridgeDriver CreateFinishedServerDriver(
         bool enableServerResumptionTickets,
         out IReadOnlyList<QuicTlsStateUpdate> finishedUpdates,
-        QuicServerResumptionTicketStore? serverResumptionTicketStore = null)
+        QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
+        bool enableServerEarlyData = false)
     {
         byte[] clientHandshakePrivateKey = CreateScalar(0x11);
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
@@ -350,9 +353,11 @@ internal static class QuicPostHandshakeTicketTestSupport
             localServerLeafCertificateDer: localLeafCertificateDer,
             localServerLeafSigningPrivateKey: localSigningPrivateKey,
             enableServerResumptionTickets: enableServerResumptionTickets,
+            enableServerEarlyData: enableServerEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore);
 
         Assert.True(serverDriver.TryConfigureServerResumptionTicketIssuance(enableServerResumptionTickets));
+        Assert.True(serverDriver.TryConfigureServerEarlyData(enableServerEarlyData));
         Assert.Single(serverDriver.StartHandshake(CreateBootstrapLocalTransportParameters()));
         IReadOnlyList<QuicTlsStateUpdate> clientHelloUpdates = serverDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,

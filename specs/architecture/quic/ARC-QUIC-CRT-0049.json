@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0049",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC internal server 0-RTT opening architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the narrow internal server 0-RTT path that composes early_data ticket advertisement, validated same-listener PSK resumption, REQ-QUIC-CRT-0152 admission, server ZeroRtt packet opening, and bounded application delivery without changing public support claims.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-CRT-0048",
+    "WI-QUIC-CRT-0051",
+    "VER-QUIC-CRT-0051"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0153"
+  ],
+  "design_summary": "Server early data remains internal and opt-in. A managed server advertises TLS early_data only when resumption tickets are enabled and a remembered 0-RTT transport-parameter snapshot exists. A client with a detached ticket that contains early-data prerequisite material emits zero-length ClientHello early_data before pre_shared_key and derives client 0-RTT packet-protection material from the resumption PSK and ClientHello transcript. The server accepts early data only after the resumption PSK binder validates and the listener-local anti-replay admission gate consumes the ticket. Acceptance publishes server ZeroRtt open material and zero-length EncryptedExtensions early_data. The runtime then opens Version 1 ZeroRtt long-header packets during the establishing server phase and delivers only the bounded STREAM/PING/PADDING subset into the existing application-data packet-number space and stream registry, while forbidden early-data frames produce protocol errors. Public APIs, IsSupported, HTTP/3, interop inventory classification, external persistence, and cluster-wide anti-replay stay outside the slice.",
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs",
+    "benchmarks/QuicTlsClientZeroRttEmissionBenchmarks.cs"
+  ],
+  "edge_cases_and_constraints": [
+    "Server early data requires the existing internal managed resumption-ticket path and cannot be enabled by public API callers.",
+    "NewSessionTicket early_data uses the QUIC sentinel max_early_data_size value 0xffffffff.",
+    "ClientHello early_data is accepted only as a zero-length extension and pre_shared_key remains the last ClientHello extension.",
+    "The server consumes listener-local anti-replay state only after PSK binder validation and remembered transport-parameter acceptance.",
+    "Replay, disabled server early data, missing remembered parameters, or rejected parameters do not publish server ZeroRtt open material.",
+    "0-RTT runtime delivery is bounded to STREAM/PING/PADDING; forbidden ACK, CRYPTO, NEW_TOKEN, and HANDSHAKE_DONE frames are rejected.",
+    "The interop zerortt cell remains blocked until a live runner proof exists."
+  ],
+  "alternatives_considered": [
+    "Promote zerortt interop support after internal runtime delivery proof. Rejected because the external runner cell still needs live proof and harness classification.",
+    "Expose public early-data options. Rejected because the support boundary is not ready for public API commitments or platform support claims.",
+    "Route 0-RTT through the full 1-RTT application packet handler. Rejected to avoid coupling early-data receive with 1-RTT key update, spin-bit, and retained-key lifecycle logic.",
+    "Advertise arbitrary max_early_data_size values. Rejected because QUIC uses the TLS early_data sentinel value rather than byte-granular limits."
+  ],
+  "risks": [
+    "Expanding the frame set beyond the tested subset could accidentally admit state-changing early data before the trace and proof plan cover it.",
+    "Treating listener-local one-time consumption as cluster-wide anti-replay would overstate the design.",
+    "Changing public support classification before live zerortt proof would make the inventory misleading."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Code And Proof Surfaces",
+      "content": "- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTranscriptProgress.cs`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs)\n- [`src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs)\n- [`benchmarks/QuicTlsClientZeroRttEmissionBenchmarks.cs`](../../../benchmarks/QuicTlsClientZeroRttEmissionBenchmarks.cs)"
+    }
+  ]
+}

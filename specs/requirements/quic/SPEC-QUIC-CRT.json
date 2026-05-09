@@ -1240,7 +1240,7 @@
     {
       "id": "REQ-QUIC-CRT-0150",
       "title": "Emit opt-in server NewSessionTicket on the 1-RTT CRYPTO seam",
-      "statement": "In the server role, when internal managed-server resumption-ticket issuance is explicitly enabled and the peer Finished has been verified, the library MUST emit one bounded TLS 1.3 `NewSessionTicket` after 1-RTT open and protect packet-protection material is available, publish that ticket as 1-RTT CRYPTO data so the connection runtime can protect it in an application-data packet when an active path exists, keep the default server path ticket-free when issuance is disabled, omit the `early_data` extension, keep the public API and support promise unchanged, and exclude server-side PSK cache sharing, client PSK binder validation, resumed `ServerHello` pre-shared-key selection, PSK-DHE resumed handshake-secret derivation, 0-RTT acceptance, server anti-replay, or HTTP/3 interop readiness.",
+      "statement": "In the server role, when internal managed-server resumption-ticket issuance is explicitly enabled and the peer Finished has been verified, the library MUST emit one bounded TLS 1.3 `NewSessionTicket` after 1-RTT open and protect packet-protection material is available, publish that ticket as 1-RTT CRYPTO data so the connection runtime can protect it in an application-data packet when an active path exists, keep the default server path ticket-free when issuance is disabled, omit the `early_data` extension unless the separate internal server early-data path in REQ-QUIC-CRT-0153 is explicitly enabled, keep the public API and support promise unchanged, and exclude server-side PSK cache sharing, client PSK binder validation, resumed `ServerHello` pre-shared-key selection, PSK-DHE resumed handshake-secret derivation, 0-RTT acceptance, server anti-replay, or HTTP/3 interop readiness.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0046"
@@ -1275,14 +1275,14 @@
       },
       "notes": [
         "This is an opt-in server-ticket issuance slice only; default managed server behavior remains ticket-free.",
-        "The emitted ticket has no `early_data` extension and does not create server-side 0-RTT admission, buffering, anti-replay, or public early-data promise.",
+        "The emitted ticket has no `early_data` extension unless the separate internal server early-data path in REQ-QUIC-CRT-0153 is explicitly enabled; ticket issuance alone does not create server-side 0-RTT admission, buffering, anti-replay, or public early-data promise.",
         "REQ-QUIC-CRT-0151 owns the later internal managed server PSK-acceptance slice; this issuance requirement does not by itself claim resumption interop readiness."
       ]
     },
     {
       "id": "REQ-QUIC-CRT-0151",
       "title": "Accept an opt-in server resumption PSK on the managed TLS seam",
-      "statement": "In the server role, when internal managed-server resumption acceptance is explicitly enabled and a client Initial `ClientHello` offers a `pre_shared_key` identity that matches a server-issued live ticket from the same managed listener ticket store, the library MUST validate the PSK binder from the stored resumption master secret and ticket nonce, reject unknown, expired, malformed, duplicate, or binder-invalid identities without selecting PSK, emit `ServerHello` with `pre_shared_key` selection only for a validated identity, derive resumed PSK-DHE handshake secrets from the accepted resumption PSK plus the fresh ECDHE share, keep `early_data` and server-side 0-RTT admission closed, keep the public API and support promise unchanged, and exclude anti-replay, HTTP/3, external ticket persistence, or broad interop readiness.",
+      "statement": "In the server role, when internal managed-server resumption acceptance is explicitly enabled and a client Initial `ClientHello` offers a `pre_shared_key` identity that matches a server-issued live ticket from the same managed listener ticket store, the library MUST validate the PSK binder from the stored resumption master secret and ticket nonce, reject unknown, expired, malformed, duplicate, or binder-invalid identities without selecting PSK, emit `ServerHello` with `pre_shared_key` selection only for a validated identity, derive resumed PSK-DHE handshake secrets from the accepted resumption PSK plus the fresh ECDHE share, keep `early_data` and server-side 0-RTT admission closed unless the separate internal server early-data path in REQ-QUIC-CRT-0153 is explicitly enabled, keep the public API and support promise unchanged, and exclude anti-replay, HTTP/3, external ticket persistence, or broad interop readiness.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0047"
@@ -1312,14 +1312,14 @@
       },
       "notes": [
         "This is an internal managed-listener resumption acceptance slice, not public resumption API support.",
-        "The accepted branch stays PSK-DHE and keeps early_data, 0-RTT receive admission, and anti-replay out of scope.",
+        "The accepted branch stays PSK-DHE; early_data, 0-RTT receive admission, and anti-replay remain out of scope unless composed by the separate internal server early-data path in REQ-QUIC-CRT-0153.",
         "Ticket state is listener-local and in-memory; external ticket persistence remains future work."
       ]
     },
     {
       "id": "REQ-QUIC-CRT-0152",
       "title": "Gate server 0-RTT admission through listener-local anti-replay",
-      "statement": "In the server role, before any server 0-RTT data is opened or delivered, the library MUST route the internal 0-RTT admission decision through a managed-server gate that requires an already validated same-listener PSK binder, validates remembered 0-RTT transport parameters against the current server transport parameters, consumes the matching live ticket through a listener-local anti-replay gate at most once, rejects missing, expired, replayed, unknown, unvalidated-PSK, and rejected-transport-parameter attempts without consuming unrelated state or delivering early data, keeps `early_data` ticket advertisement, server ZeroRtt packet opening, application delivery, public API, `IsSupported`, HTTP/3, and interop classification unchanged, and excludes external ticket persistence or cluster-wide anti-replay coordination.",
+      "statement": "In the server role, before any server 0-RTT data is opened or delivered, the library MUST route the internal 0-RTT admission decision through a managed-server gate that requires an already validated same-listener PSK binder, validates remembered 0-RTT transport parameters against the current server transport parameters, consumes the matching live ticket through a listener-local anti-replay gate at most once, rejects missing, expired, replayed, unknown, unvalidated-PSK, and rejected-transport-parameter attempts without consuming unrelated state or delivering early data, keep this gate itself independent of `early_data` ticket advertisement, server ZeroRtt packet opening, application delivery, public API, `IsSupported`, HTTP/3, and interop classification changes, and excludes external ticket persistence or cluster-wide anti-replay coordination.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0048"
@@ -1350,7 +1350,50 @@
       "notes": [
         "This is an internal prerequisite for future server-side 0-RTT receive support, not a supported 0-RTT feature claim.",
         "The gate composes already validated PSK state, remembered transport-parameter acceptance, and listener-local one-time ticket consumption.",
-        "`zerortt` remains prerequisite-blocked until the server advertises `early_data`, opens ZeroRtt packets, and proves early application-data delivery."
+        "`zerortt` remains prerequisite-blocked until a separate slice composes this gate with `early_data` advertisement, server ZeroRtt packet opening, and proven early application-data delivery."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0153",
+      "title": "Admit and open bounded server 0-RTT application data internally",
+      "statement": "In the server role, when internal managed-server resumption tickets and internal server early data are both explicitly enabled, the library MUST emit TLS 1.3 `NewSessionTicket` `early_data` with QUIC max_early_data_size `0xffffffff` only when remembered 0-RTT transport-parameter material is available, include zero-length ClientHello `early_data` before `pre_shared_key` when a detached ticket has early-data prerequisite material, accept zero-length EncryptedExtensions `early_data` only after the validated same-listener PSK and REQ-QUIC-CRT-0152 admission gate approve the attempt, publish server ZeroRtt open packet-protection material, open protected Version 1 ZeroRtt packets during the establishing server phase, deliver bounded STREAM/PING/PADDING application data into the existing stream registry, reject forbidden ACK, CRYPTO, NEW_TOKEN, and HANDSHAKE_DONE frames in 0-RTT packets, preserve public API, `IsSupported`, HTTP/3, and interop inventory classification, and exclude external ticket persistence, cluster-wide anti-replay, live zerortt runner proof, and broad early-data frame-family support.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0049"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0051"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0051"
+        ],
+        "upstream_refs": [
+          "RFC 8446 Sections 4.2.10, 4.6.1, and 8",
+          "RFC 9001 Section 4.6",
+          "RFC 9000 Sections 7.4.1, 12.5, and 17.2.3",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/architecture/quic/ARC-QUIC-CRT-0048.json",
+          "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+          "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+          "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+          "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs",
+          "benchmarks/QuicTlsClientZeroRttEmissionBenchmarks.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::EnabledServerEarlyDataAdvertisesNewSessionTicketExtensionAndStoresRememberedParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::ServerAcceptsOfferedEarlyDataAfterValidatedSameListenerTicketAndPublishesZeroRttOpenMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::DisabledServerEarlyDataAndReplayKeepZeroRttOpenMaterialAndEncryptedExtensionsClosed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::ServerRuntimeOpensAdmittedZeroRttStreamPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::ServerRuntimeRejectsForbiddenZeroRttAckFrameWithoutDeliveringStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::FuzzServerRuntimeOpensAuthenticatedZeroRttStreamPayloads"
+        ]
+      },
+      "notes": [
+        "This is an internal managed-server early-data slice and does not add public 0-RTT APIs or widen `QuicConnection.IsSupported`.",
+        "The runtime delivery proof is intentionally bounded to STREAM/PING/PADDING on Version 1 ZeroRtt packets while explicitly rejecting forbidden early-data frame types.",
+        "`zerortt` interop remains prerequisite-blocked until live runner proof and harness classification are added without HTTP/3 scope expansion."
       ]
     },
     {

@@ -107,12 +107,18 @@ internal static class QuicServerConnectionOptionsValidator
             throw new NotSupportedException("ServerAuthenticationOptions.ServerCertificate must carry a complete ECDsa P-256 private key for this slice.");
         }
 
+        if (options.EnableEarlyData && !options.EnableResumptionTickets)
+        {
+            throw new NotSupportedException("Server early data requires internal managed resumption tickets to be enabled for this slice.");
+        }
+
         return new QuicServerConnectionSettings(
             options,
             certificateDer,
             privateParameters.D.ToArray(),
             options.SelectedCipherSuite,
-            options.EnableResumptionTickets);
+            options.EnableResumptionTickets,
+            options.EnableEarlyData);
     }
 }
 
@@ -121,4 +127,5 @@ internal sealed record QuicServerConnectionSettings(
     byte[] ServerLeafCertificateDer,
     byte[] ServerLeafSigningPrivateKey,
     QuicTlsCipherSuite? SelectedCipherSuite = null,
-    bool EnableResumptionTickets = false);
+    bool EnableResumptionTickets = false,
+    bool EnableEarlyData = false);

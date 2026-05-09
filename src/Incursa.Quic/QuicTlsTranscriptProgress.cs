@@ -942,6 +942,7 @@ internal sealed class QuicTlsTranscriptProgress
         bool foundApplicationProtocols = false;
         bool foundPskKeyExchangeModes = false;
         bool foundPreSharedKey = false;
+        bool foundEarlyData = false;
         List<ushort> seenExtensionTypes = [];
 
         int index = 0;
@@ -1089,6 +1090,15 @@ internal sealed class QuicTlsTranscriptProgress
 
                 foundPskKeyExchangeModes = true;
             }
+            else if (extensionType == EarlyDataExtensionType)
+            {
+                if (foundEarlyData || extensionValue.Length != 0)
+                {
+                    return false;
+                }
+
+                foundEarlyData = true;
+            }
             else if (extensionType == PreSharedKeyExtensionType)
             {
                 if (foundPreSharedKey
@@ -1109,7 +1119,8 @@ internal sealed class QuicTlsTranscriptProgress
         if (!foundSupportedVersions
             || !foundKeyShare
             || !foundTransportParameters
-            || foundPskKeyExchangeModes != foundPreSharedKey)
+            || foundPskKeyExchangeModes != foundPreSharedKey
+            || (foundEarlyData && !foundPreSharedKey))
         {
             return false;
         }
