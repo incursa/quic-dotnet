@@ -64,6 +64,10 @@ public sealed class REQ_QUIC_API_0010
             {
                 dataPacket = null;
             }
+            catch (ArgumentException)
+            {
+                dataPacket = null;
+            }
 
             if (dataPacket is null)
             {
