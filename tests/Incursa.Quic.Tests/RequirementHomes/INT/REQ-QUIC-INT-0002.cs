@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Incursa.Quic.InteropHarness;
 
 namespace Incursa.Quic.Tests;
@@ -81,6 +82,53 @@ public sealed class REQ_QUIC_INT_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerZeroRttDispatchAllowsOpenEndedSecondConnectionForRunnerRequests()
+    {
+        InteropHarnessRunner.ServerTransferDispatchPlan dispatchPlan = new(
+            new IPEndPoint(IPAddress.Any, 443),
+            ExpectedRequestCount: 0,
+            ConfiguredRequestCount: 0);
+
+        Assert.True(InteropHarnessRunner.TryCreateServerResumptionDispatchCounts(
+            dispatchPlan,
+            "zerortt",
+            emptySecondConnectionExpectedRequestCount: 0,
+            out InteropHarnessRunner.ServerResumptionDispatchCounts? counts,
+            out string? errorMessage));
+
+        Assert.NotNull(counts);
+        Assert.Null(errorMessage);
+        Assert.Equal(1, counts!.FirstConnectionExpectedRequestCount);
+        Assert.Equal(0, counts.ResumedConnectionExpectedRequestCount);
+        Assert.Equal(0, counts.ConfiguredRequestCount);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerZeroRttOptionsEnableResumptionTicketsAndEarlyData()
+    {
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "server",
+                testcase: "zerortt"),
+            out InteropHarnessEnvironment? environment,
+            out string? errorMessage));
+
+        Assert.NotNull(environment);
+        Assert.Null(errorMessage);
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        InteropHarnessPreflightPlanner planner = new(environment!, TextWriter.Null);
+        QuicServerConnectionOptions options = planner.CreateSupportedServerOptions(serverCertificate);
+
+        Assert.True(options.EnableResumptionTickets);
+        Assert.True(options.EnableEarlyData);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientDispatchStillRejectsEmptyRequestsWithoutTheServerFallback()
@@ -117,6 +165,29 @@ public sealed class REQ_QUIC_INT_0002
         Assert.Null(counts);
         Assert.Equal(
             "interop harness: role=server, testcase=resumption requires at least 2 REQUESTS URLs when server REQUESTS is explicitly configured.",
+            errorMessage);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerZeroRttDispatchRejectsExplicitSingleRequestPlan()
+    {
+        InteropHarnessRunner.ServerTransferDispatchPlan dispatchPlan = new(
+            new IPEndPoint(IPAddress.Any, 443),
+            ExpectedRequestCount: 1,
+            ConfiguredRequestCount: 1);
+
+        Assert.False(InteropHarnessRunner.TryCreateServerResumptionDispatchCounts(
+            dispatchPlan,
+            "zerortt",
+            emptySecondConnectionExpectedRequestCount: 0,
+            out InteropHarnessRunner.ServerResumptionDispatchCounts? counts,
+            out string? errorMessage));
+
+        Assert.Null(counts);
+        Assert.Equal(
+            "interop harness: role=server, testcase=zerortt requires at least 2 REQUESTS URLs when server REQUESTS is explicitly configured.",
             errorMessage);
     }
 }

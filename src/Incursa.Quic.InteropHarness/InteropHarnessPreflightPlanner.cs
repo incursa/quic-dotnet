@@ -105,7 +105,8 @@ internal sealed class InteropHarnessPreflightPlanner
         return new QuicServerConnectionOptions
         {
             SelectedCipherSuite = GetSupportedCipherSuite(),
-            EnableResumptionTickets = settings.TestCase == "resumption",
+            EnableResumptionTickets = settings.TestCase is "resumption" or "zerortt",
+            EnableEarlyData = settings.TestCase == "zerortt",
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],

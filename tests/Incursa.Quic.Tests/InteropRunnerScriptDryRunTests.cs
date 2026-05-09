@@ -165,7 +165,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "notes: Requires live zerortt runner proof and harness classification",
+            "notes: Requires hosted/Linux zerortt runner proof, client-side 0-RTT request-stream proof, and harness classification",
             output,
             StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);

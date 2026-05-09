@@ -5,7 +5,6 @@ public sealed class REQ_QUIC_INT_0007
 {
     [Theory]
     [InlineData("multipath")]
-    [InlineData("zerortt")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UnsupportedInteropTestCasesReturn127WithoutPretendingTlsSupport(string testcase)

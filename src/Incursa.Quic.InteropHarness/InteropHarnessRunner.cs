@@ -109,7 +109,7 @@ internal static class InteropHarnessRunner
 
     private static int RunClient(InteropHarnessEnvironment settings, TextWriter stdout, TextWriter stderr)
     {
-        if (IsSupportedHarnessTestCase(settings.TestCase))
+        if (IsSupportedHarnessTestCase(settings))
         {
             WriteSslKeyLogExportEnabled(stdout, settings);
         }
@@ -134,7 +134,7 @@ internal static class InteropHarnessRunner
         string certificatePath,
         string privateKeyPath)
     {
-        if (IsSupportedHarnessTestCase(settings.TestCase))
+        if (IsSupportedHarnessTestCase(settings))
         {
             WriteSslKeyLogExportEnabled(stdout, settings);
         }
@@ -148,6 +148,7 @@ internal static class InteropHarnessRunner
             "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "zerortt" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
     }
@@ -1247,12 +1248,14 @@ internal static class InteropHarnessRunner
                 }
                 await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 string testCase = settings.TestCase;
-                if (testCase == "resumption")
+                if (testCase is "resumption" or "zerortt")
                 {
                     const int ResumptionConnectionCount = 2;
 
                     if (!TryCreateServerResumptionDispatchCounts(
                         dispatchPlan,
+                        testCase,
+                        testCase == "zerortt" ? 0 : 1,
                         out ServerResumptionDispatchCounts? resumptionDispatchCounts,
                         out string? resumptionDispatchError) ||
                         resumptionDispatchCounts is null)
@@ -1280,7 +1283,7 @@ internal static class InteropHarnessRunner
 
                     if (firstServedRequestCount == 0)
                     {
-                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=resumption did not observe an HTTP/0.9 request stream on the first connection.");
+                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={testCase} did not observe an HTTP/0.9 request stream on the first connection.");
                         return 1;
                     }
 
@@ -1307,7 +1310,7 @@ internal static class InteropHarnessRunner
 
                     if (resumedServedRequestCount == 0)
                     {
-                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=resumption did not observe an HTTP/0.9 request stream on the resumed connection.");
+                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={testCase} did not observe an HTTP/0.9 request stream on the resumed connection.");
                         return 1;
                     }
 
@@ -1400,8 +1403,22 @@ internal static class InteropHarnessRunner
         ServerTransferDispatchPlan dispatchPlan,
         out ServerResumptionDispatchCounts? counts,
         out string? errorMessage)
+        => TryCreateServerResumptionDispatchCounts(
+            dispatchPlan,
+            "resumption",
+            emptySecondConnectionExpectedRequestCount: 1,
+            out counts,
+            out errorMessage);
+
+    internal static bool TryCreateServerResumptionDispatchCounts(
+        ServerTransferDispatchPlan dispatchPlan,
+        string testCase,
+        int emptySecondConnectionExpectedRequestCount,
+        out ServerResumptionDispatchCounts? counts,
+        out string? errorMessage)
     {
         ArgumentNullException.ThrowIfNull(dispatchPlan);
+        ArgumentException.ThrowIfNullOrWhiteSpace(testCase);
 
         const int ResumptionConnectionCount = 2;
 
@@ -1409,8 +1426,8 @@ internal static class InteropHarnessRunner
         {
             counts = new ServerResumptionDispatchCounts(
                 FirstConnectionExpectedRequestCount: 1,
-                ResumedConnectionExpectedRequestCount: 1,
-                ConfiguredRequestCount: ResumptionConnectionCount);
+                ResumedConnectionExpectedRequestCount: emptySecondConnectionExpectedRequestCount,
+                ConfiguredRequestCount: emptySecondConnectionExpectedRequestCount == 0 ? 0 : ResumptionConnectionCount);
             errorMessage = null;
             return true;
         }
@@ -1418,7 +1435,7 @@ internal static class InteropHarnessRunner
         if (dispatchPlan.ConfiguredRequestCount < ResumptionConnectionCount)
         {
             counts = null;
-            errorMessage = $"interop harness: role=server, testcase=resumption requires at least {ResumptionConnectionCount} REQUESTS URLs when server REQUESTS is explicitly configured.";
+            errorMessage = $"interop harness: role=server, testcase={testCase} requires at least {ResumptionConnectionCount} REQUESTS URLs when server REQUESTS is explicitly configured.";
             return false;
         }
 
@@ -2010,16 +2027,17 @@ internal static class InteropHarnessRunner
             $"interop harness: role={settings.Role.ToString().ToLowerInvariant()}, testcase={settings.TestCase}, SSLKEYLOGFILE export enabled at {settings.SslKeyLogFile}.");
     }
 
-    private static bool IsSupportedHarnessTestCase(string testCase)
+    private static bool IsSupportedHarnessTestCase(InteropHarnessEnvironment settings)
     {
-        return testCase is
+        return (settings.TestCase is
             "handshake" or
             "post-handshake-stream" or
             "retry" or
             "multiconnect" or
             "keyupdate" or
             "resumption" or
-            "transfer";
+            "transfer")
+            || (settings.Role == InteropHarnessRole.Server && settings.TestCase == "zerortt");
     }
 
     private static void WriteDeterministicClientKeySelection(
