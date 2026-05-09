@@ -1418,12 +1418,14 @@
           "RFC 9001 Sections 4.1, 5, and 8",
           "specs/requirements/quic/REQUIREMENT-GAPS.md",
           "specs/architecture/quic/ARC-QUIC-INT-0011.json",
+          "src/Incursa.Quic/QuicTlsX25519.cs",
           "src/Incursa.Quic/QuicTlsKeySchedule.cs",
           "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs"
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::CapturedQuicGoFirstClientHelloAcceptsX25519WithoutHelloRetryRequest",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::ManagedX25519MatchesRfc7748DiffieHellmanTestVector",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::MalformedX25519ClientHelloKeyShareFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::UnadvertisedX25519ClientHelloKeyShareFailsDeterministically",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs::DuplicateX25519ClientHelloKeySharesFailDeterministically"

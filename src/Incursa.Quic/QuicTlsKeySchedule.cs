@@ -58,7 +58,6 @@ internal sealed class QuicTlsKeySchedule
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
     private const ushort X25519NamedGroup = (ushort)QuicTlsNamedGroup.X25519;
     private const int X25519KeyShareLength = 32;
-    private const string X25519CurveFriendlyName = "curve25519";
     private const ushort TlsCipherSuitesListLength = UInt16Length;
     private const ushort SignatureAlgorithmsVectorLength = UInt16Length;
     private const ushort SupportedGroupsVectorLength = UInt16Length;
@@ -103,7 +102,7 @@ internal sealed class QuicTlsKeySchedule
 
     private readonly QuicTlsRole role;
     private readonly ECDiffieHellman localKeyPair;
-    private readonly ECDiffieHellman? localX25519KeyPair;
+    private readonly byte[]? localX25519PrivateKey;
     private QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
     private readonly byte[] localKeyShare;
@@ -223,9 +222,9 @@ internal sealed class QuicTlsKeySchedule
 
         localKeyShare = ExportUncompressedPoint(localKeyPair.ExportParameters(true));
         if (role == QuicTlsRole.Server
-            && TryCreateX25519LocalKeyPair(out ECDiffieHellman? x25519KeyPair, out byte[]? x25519KeyShare))
+            && QuicTlsX25519.TryCreateKeyPair(out byte[] x25519PrivateKey, out byte[] x25519KeyShare))
         {
-            localX25519KeyPair = x25519KeyPair;
+            localX25519PrivateKey = x25519PrivateKey;
             localX25519KeyShare = x25519KeyShare;
         }
 
@@ -1353,26 +1352,17 @@ internal sealed class QuicTlsKeySchedule
 
             if (namedGroup == QuicTlsNamedGroup.X25519)
             {
-                if (localX25519KeyPair is null
+                if (localX25519PrivateKey is null
                     || peerKeyShareBytes.Length != X25519KeyShareLength)
                 {
                     return false;
                 }
 
-                using ECDiffieHellman peer = ECDiffieHellman.Create(
-                    ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName));
-                peer.ImportParameters(new ECParameters
-                {
-                    Curve = ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName),
-                    Q = new ECPoint
-                    {
-                        X = peerKeyShareBytes.ToArray(),
-                        Y = new byte[X25519KeyShareLength],
-                    },
-                });
-
-                sharedSecret = localX25519KeyPair.DeriveRawSecretAgreement(peer.PublicKey);
-                return sharedSecret.Length == X25519KeyShareLength && !IsAllZero(sharedSecret);
+                sharedSecret = new byte[X25519KeyShareLength];
+                return QuicTlsX25519.TryDeriveSharedSecret(
+                    localX25519PrivateKey,
+                    peerKeyShareBytes,
+                    sharedSecret);
             }
         }
         catch (CryptographicException)
@@ -3307,41 +3297,6 @@ internal sealed class QuicTlsKeySchedule
         parameters.Q.X.CopyTo(keyShare, 1);
         parameters.Q.Y.CopyTo(keyShare, 1 + Secp256r1CoordinateLength);
         return keyShare;
-    }
-
-    private static bool TryCreateX25519LocalKeyPair(
-        out ECDiffieHellman? keyPair,
-        out byte[]? keyShare)
-    {
-        keyPair = null;
-        keyShare = null;
-
-        try
-        {
-            keyPair = ECDiffieHellman.Create(ECCurve.CreateFromFriendlyName(X25519CurveFriendlyName));
-            ECParameters parameters = keyPair.ExportParameters(true);
-            if (parameters.Q.X is not { Length: X25519KeyShareLength } xCoordinate)
-            {
-                keyPair.Dispose();
-                keyPair = null;
-                return false;
-            }
-
-            keyShare = xCoordinate.ToArray();
-            return true;
-        }
-        catch (CryptographicException)
-        {
-            keyPair?.Dispose();
-            keyPair = null;
-            return false;
-        }
-        catch (PlatformNotSupportedException)
-        {
-            keyPair?.Dispose();
-            keyPair = null;
-            return false;
-        }
     }
 
     private static bool IsAllZero(ReadOnlySpan<byte> value)

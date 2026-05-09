@@ -17,9 +17,10 @@
   "satisfies": [
     "REQ-QUIC-CRT-0154"
   ],
-  "design_summary": "The transcript parser treats x25519 as a second explicitly supported server first-flight key-share branch. It continues to ignore unsupported hybrid key-share entries, rejects duplicate, malformed, or unadvertised x25519 entries, and still emits the existing secp256r1 HelloRetryRequest only when no usable first-flight supported share exists and the peer advertised secp256r1. The key schedule keeps the existing P-256 client profile and public support boundary, adds a server-owned x25519 ephemeral key pair for ServerHello construction and ECDHE secret derivation, and selects the ServerHello key_share group from the parsed ClientHello step. This avoids the quic-go first-flight HRR blocker without adding hybrid groups, broad group negotiation, client-side x25519, HTTP/3, anti-replay, or interop support promotion.",
+  "design_summary": "The transcript parser treats x25519 as a second explicitly supported server first-flight key-share branch. It continues to ignore unsupported hybrid key-share entries, rejects duplicate, malformed, or unadvertised x25519 entries, and still emits the existing secp256r1 HelloRetryRequest only when no usable first-flight supported share exists and the peer advertised secp256r1. The key schedule keeps the existing P-256 client profile and public support boundary, adds a server-owned x25519 ephemeral key pair backed by the repo-local RFC 7748 helper for ServerHello construction and ECDHE secret derivation, and selects the ServerHello key_share group from the parsed ClientHello step. This avoids the quic-go first-flight HRR blocker without adding hybrid groups, broad group negotiation, client-side x25519, HTTP/3, anti-replay, or interop support promotion.",
   "key_components": [
     "src/Incursa.Quic/QuicTlsTransport.cs",
+    "src/Incursa.Quic/QuicTlsX25519.cs",
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs"
@@ -40,6 +41,7 @@
   "risks": [
     "Treating x25519 parser acceptance as broad client-side x25519 support would overstate the support boundary.",
     "Selecting x25519 without verifying supported_groups would accept unadvertised key-share material.",
+    "Treating the repo-local RFC 7748 helper as a general-purpose constant-time crypto primitive would overstate this bounded compatibility slice.",
     "Promoting the interop zerortt cell before live runner proof would hide remaining runtime or harness failures."
   ],
   "supplemental_sections": [

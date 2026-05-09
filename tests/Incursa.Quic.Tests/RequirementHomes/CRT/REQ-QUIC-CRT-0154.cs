@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
 
@@ -51,6 +50,38 @@ public sealed class REQ_QUIC_CRT_0154
         Assert.Equal(0x0304, serverHello.SupportedVersion);
         Assert.Equal(QuicTlsNamedGroup.X25519, serverHello.SelectedGroup);
         Assert.Equal(32, serverHello.KeyShare.Length);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ManagedX25519MatchesRfc7748DiffieHellmanTestVector()
+    {
+        byte[] alicePrivateKey = Convert.FromHexString(
+            "77076D0A7318A57D3C16C17251B26645DF4C2F87EBC0992AB177FBA51DB92C2A");
+        byte[] expectedAlicePublicKey = Convert.FromHexString(
+            "8520F0098930A754748B7DDCB43EF75A0DBF3A0D26381AF4EBA4A98EAA9B4E6A");
+        byte[] bobPrivateKey = Convert.FromHexString(
+            "5DAB087E624A8A4B79E17F8B83800EE66F3BB1292618B6FD1C2F8B27FF88E0EB");
+        byte[] expectedBobPublicKey = Convert.FromHexString(
+            "DE9EDB7D7B7DC1B4D35B61C2ECE435373F8343C85B78674DADFC7E146F882B4F");
+        byte[] expectedSharedSecret = Convert.FromHexString(
+            "4A5D9D5BA4CE2DE1728E3BF480350F25E07E21C947D19E3376F09B3C1E161742");
+
+        byte[] alicePublicKey = new byte[QuicTlsX25519.KeyLength];
+        byte[] bobPublicKey = new byte[QuicTlsX25519.KeyLength];
+        byte[] aliceSharedSecret = new byte[QuicTlsX25519.KeyLength];
+        byte[] bobSharedSecret = new byte[QuicTlsX25519.KeyLength];
+
+        Assert.True(QuicTlsX25519.TryGetPublicKey(alicePrivateKey, alicePublicKey));
+        Assert.True(QuicTlsX25519.TryGetPublicKey(bobPrivateKey, bobPublicKey));
+        Assert.True(QuicTlsX25519.TryDeriveSharedSecret(alicePrivateKey, bobPublicKey, aliceSharedSecret));
+        Assert.True(QuicTlsX25519.TryDeriveSharedSecret(bobPrivateKey, alicePublicKey, bobSharedSecret));
+
+        Assert.Equal(expectedAlicePublicKey, alicePublicKey);
+        Assert.Equal(expectedBobPublicKey, bobPublicKey);
+        Assert.Equal(expectedSharedSecret, aliceSharedSecret);
+        Assert.Equal(expectedSharedSecret, bobSharedSecret);
     }
 
     [Fact]
@@ -128,14 +159,11 @@ public sealed class REQ_QUIC_CRT_0154
 
     private static byte[] CreateX25519ClientKeyShare(byte scalarTail)
     {
-        _ = scalarTail;
-        using ECDiffieHellman clientKeyPair = ECDiffieHellman.Create(
-            ECCurve.CreateFromFriendlyName("curve25519"));
-
-        ECParameters parameters = clientKeyPair.ExportParameters(true);
-        Assert.NotNull(parameters.Q.X);
-        Assert.Equal(32, parameters.Q.X!.Length);
-        return parameters.Q.X.ToArray();
+        byte[] privateKey = REQ_QUIC_CRT_0112.CreateSequentialBytes(0x31, QuicTlsX25519.KeyLength);
+        privateKey[^1] = scalarTail;
+        byte[] publicKey = new byte[QuicTlsX25519.KeyLength];
+        Assert.True(QuicTlsX25519.TryGetPublicKey(privateKey, publicKey));
+        return publicKey;
     }
 
     private static byte[] CreateClientHelloTranscriptWithKeyShareEntries(
