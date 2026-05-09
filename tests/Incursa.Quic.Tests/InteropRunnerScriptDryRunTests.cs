@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,keyupdate", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "chacha20,keyupdate,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            "chacha20,resumption,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -89,19 +89,147 @@ public sealed class InteropRunnerScriptDryRunTests
                 "client",
                 "chrome",
                 "quic-go,msquic",
-                "versionnegotiation,connectionmigration"));
+                "versionnegotiation,chacha20,keyupdate,connectionmigration"));
 
         string output = result.CombinedOutput;
         string runRoot = GetPlanValue(output, "Run root");
 
         Assert.Equal(0, result.ExitCode);
         Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
-        Assert.Equal("versionnegotiation,connectionmigration", GetPlanValue(output, "Test cases"));
-        Assert.Equal("versionnegotiation,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal("versionnegotiation,chacha20,keyupdate,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,chacha20,keyupdate,connectionmigration", GetPlanValue(output, "Runner test cases"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("chacha20 -> prerequisite-blocked (runner: chacha20)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("keyupdate -> supported-executed (runner: keyupdate)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("chacha20 -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("resumption -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("keyupdate -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsResumptionAsBlockedAndKeepsTheGreenCellsExplicit()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "versionnegotiation,resumption,connectionmigration"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("versionnegotiation,resumption,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,resumption,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("resumption -> prerequisite-blocked (runner: resumption)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("resumption -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsZerorttAsBlockedAndKeepsTheGreenCellsExplicit()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "versionnegotiation,zerortt,connectionmigration"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("versionnegotiation,zerortt,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,zerortt,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("zerortt -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsV2AsBlockedAndKeepsTheGreenCellsExplicit()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "versionnegotiation,v2,connectionmigration"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("versionnegotiation,v2,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,v2,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("v2 -> prerequisite-blocked (runner: v2)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("v2 -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsPathValidationCellsAsBlockedAndKeepsTheGreenCellsExplicit()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "versionnegotiation,rebind-port,rebind-addr,connectionmigration"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("versionnegotiation,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("rebind-port -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("rebind-addr -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("connectionmigration -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }

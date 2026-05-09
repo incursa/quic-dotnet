@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T11:08:20.7965937-06:00",
+  "generated_at": "2026-05-08T21:46:08.5033068-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,20 +18,20 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-08T11:08:20.7924923-06:00",
+    "generated_at": "2026-05-08T21:46:08.4987913-06:00",
     "total_requirements": 1771,
     "by_state": {
       "covered_but_missing_xrefs": 55,
-      "partially_covered": 45,
-      "trace_clean": 1495,
+      "partially_covered": 42,
+      "trace_clean": 1498,
       "uncovered_blocked": 54,
       "uncovered_unblocked": 122
     },
     "by_work_queue_tag": {
       "blocked": 54,
-      "clean": 1495,
+      "clean": 1498,
       "metadata_only": 55,
-      "new_tests_needed": 221
+      "new_tests_needed": 218
     },
     "by_rfc": [
       {
@@ -46,8 +46,8 @@
         "total": 1443,
         "by_state": {
           "covered_but_missing_xrefs": 55,
-          "partially_covered": 45,
-          "trace_clean": 1167,
+          "partially_covered": 42,
+          "trace_clean": 1170,
           "uncovered_blocked": 54,
           "uncovered_unblocked": 122
         }
@@ -50479,34 +50479,53 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0002.cs::ConstructorAndUpdate_TrackTheCurrentMaximumDatagramSize",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 3,
-          "negative": 0,
-          "edge": 0,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S14-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "line": 30,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S14-0003",
           "source": "requirement_attribute",
@@ -50532,6 +50551,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S14-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "line": 42,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S14-0003",
@@ -200664,36 +200705,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1"
-        }
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated"
       ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -200702,6 +200739,28 @@
         }
       ],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "line": 30,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
           "source": "requirement_attribute",
@@ -200727,6 +200786,54 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003",
+            "REQ-QUIC-RFC9000-S14-0004",
+            "REQ-QUIC-RFC9000-S15-0003",
+            "REQ-QUIC-RFC9000-S6-0001",
+            "REQ-QUIC-RFC9000-S6-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "line": 42,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
         }
       ]
     },
@@ -200743,36 +200850,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
-      "unresolved_test_refs": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
-          "x_test_ref": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1"
-        }
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated"
       ],
+      "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 1,
-        "focused": 1,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 1,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -200781,6 +200884,28 @@
         }
       ],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_RejectsEmptyAndUnknownVersionLists",
+          "line": 30,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
           "source": "requirement_attribute",
@@ -200806,6 +200931,54 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumForVersion1",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003",
+            "REQ-QUIC-RFC9000-S14-0004",
+            "REQ-QUIC-RFC9000-S15-0003",
+            "REQ-QUIC-RFC9000-S6-0001",
+            "REQ-QUIC-RFC9000-S6-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S6-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs::TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S14_0003",
+          "member": "REQ_QUIC_RFC9000_S14_0003.TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "method": "TryGetRequiredInitialDatagramPayloadSize_UsesTheKnownMinimumWhenVersion1IsRepeated",
+          "line": 42,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14-0003"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
         }
       ]
     },
@@ -230924,7 +231097,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0002",
           "member": "REQ_QUIC_RFC9001_S5_0002.TryCreate_RejectsUnsupportedAeadAlgorithms",
           "method": "TryCreate_RejectsUnsupportedAeadAlgorithms",
-          "line": 59,
+          "line": 102,
           "kinds": [
             "negative"
           ],
@@ -230946,7 +231119,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0002",
           "member": "REQ_QUIC_RFC9001_S5_0002.TryCreate_RejectsUnsupportedAeadAlgorithms",
           "method": "TryCreate_RejectsUnsupportedAeadAlgorithms",
-          "line": 59,
+          "line": 102,
           "kinds": [
             "negative"
           ],
@@ -231739,7 +231912,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs",
           "method": "Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs",
-          "line": 153,
+          "line": 162,
           "kinds": [
             "fuzz",
             "negative"
@@ -231763,7 +231936,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs",
           "method": "Fuzz_HandshakePacketProtection_RoundTripsRandomValidInputs",
-          "line": 153,
+          "line": 162,
           "kinds": [
             "fuzz",
             "negative"
@@ -231787,7 +231960,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryCreate_RejectsMissingMaterial",
           "method": "TryCreate_RejectsMissingMaterial",
-          "line": 53,
+          "line": 62,
           "kinds": [
             "negative"
           ],
@@ -231809,7 +231982,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryCreate_RejectsMissingMaterial",
           "method": "TryCreate_RejectsMissingMaterial",
-          "line": 53,
+          "line": 62,
           "kinds": [
             "negative"
           ],
@@ -231831,7 +232004,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryCreate_RejectsWrongLevelMaterial",
           "method": "TryCreate_RejectsWrongLevelMaterial",
-          "line": 63,
+          "line": 72,
           "kinds": [
             "negative"
           ],
@@ -231853,7 +232026,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryCreate_RejectsWrongLevelMaterial",
           "method": "TryCreate_RejectsWrongLevelMaterial",
-          "line": 63,
+          "line": 72,
           "kinds": [
             "negative"
           ],
@@ -231875,7 +232048,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
           "method": "TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
-          "line": 80,
+          "line": 89,
           "kinds": [
             "negative"
           ],
@@ -231897,7 +232070,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
           "method": "TryOpenHandshakePacket_RejectsTamperedProtectedPayload",
-          "line": 80,
+          "line": 89,
           "kinds": [
             "negative"
           ],
@@ -231963,7 +232136,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
           "method": "TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
-          "line": 121,
+          "line": 130,
           "kinds": [
             "negative"
           ],
@@ -231985,7 +232158,7 @@
           "class": "REQ_QUIC_RFC9001_S5_0007",
           "member": "REQ_QUIC_RFC9001_S5_0007.TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
           "method": "TryProtectHandshakePacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
-          "line": 121,
+          "line": 130,
           "kinds": [
             "negative"
           ],
@@ -246351,7 +246524,7 @@
           "class": "REQ_QUIC_RFC9001_SB_0002",
           "member": "REQ_QUIC_RFC9001_SB_0002.TryGetUsageLimits_RejectsUnsupportedPolicyCombinations",
           "method": "TryGetUsageLimits_RejectsUnsupportedPolicyCombinations",
-          "line": 28,
+          "line": 39,
           "kinds": [
             "negative"
           ],
@@ -246373,7 +246546,7 @@
           "class": "REQ_QUIC_RFC9001_SB_0002",
           "member": "REQ_QUIC_RFC9001_SB_0002.TryGetUsageLimits_RejectsUnsupportedPolicyCombinations",
           "method": "TryGetUsageLimits_RejectsUnsupportedPolicyCombinations",
-          "line": 28,
+          "line": 39,
           "kinds": [
             "negative"
           ],

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0048",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC server-side resumption ticket issuance verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with positive, negative, and fuzz-shaped coverage plus regression, build, full-suite, generated-triage, and SpecTrace JSON validation.",
+  "scope": "Verify that opt-in managed server resumption ticket issuance publishes a bounded TLS 1.3 NewSessionTicket over the QUIC 1-RTT CRYPTO seam without changing the default server path or claiming PSK acceptance.",
+  "preconditions": [
+    "The managed server has completed peer Finished verification.",
+    "1-RTT open and protect packet-protection material is available.",
+    "The internal server resumption-ticket issuance switch is enabled."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0150.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0150\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0150|FullyQualifiedName~InteropRunnerScriptDryRunTests|FullyQualifiedName~REQ_QUIC_INT_0013\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9001_S6_0001|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1_0002|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6P1_0010|FullyQualifiedName~REQ_QUIC_CRT_0147.CapturedQuicGoFirstClientHelloEmitsExactlyOneDeterministicHelloRetryRequestBeforeServerHelloOrHandshakeKeys|FullyQualifiedName~REQ_QUIC_CRT_0147.CapturedQuicGoZeroSourceConnectionIdClientHelloStillFlushesTheHelloRetryRequestInitialDatagram|FullyQualifiedName~REQ_QUIC_CRT_0147.CapturedServerMulticonnectDuplicateInitialAfterHelloRetryRequestReplaysThePendingHrrPacket\"",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0150 requirement-home tests.",
+    "Confirm the enabled server path publishes exactly one 1-RTT CRYPTO update carrying a TLS NewSessionTicket with bounded lifetime, nonce, ticket, and no early_data extension.",
+    "Confirm the runtime can flush the enabled 1-RTT CRYPTO bytes as an additional protected application-data datagram when an active path exists.",
+    "Confirm the disabled/default server path does not publish or buffer a resumption ticket.",
+    "Repeat enabled issuance across randomized ticket material to keep the serialized NewSessionTicket shape bounded.",
+    "Regenerate requirement coverage triage and validate the core SpecTrace profile."
+  ],
+  "expected_result": "The managed server emits a bounded opt-in NewSessionTicket after 1-RTT key availability, the runtime flushes it on the 1-RTT CRYPTO path when an active path exists, and the default path remains ticket-free. Resumption acceptance remains blocked on future PSK cache, binder validation, ServerHello selection, and PSK-DHE derivation work.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0046",
+    "WI-QUIC-CRT-0048"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- Enabled server issuance publishes one 1-RTT CRYPTO update containing a TLS NewSessionTicket.\n- The ticket has a bounded lifetime, non-empty nonce, non-empty opaque ticket, and no early_data extension.\n- Runtime 1-RTT CRYPTO egress drains when an active path and 1-RTT protect material are present.\n- Disabled/default server issuance publishes no ticket and buffers no 1-RTT CRYPTO bytes.\n- The interop resumption cell remains prerequisite-blocked until PSK acceptance is implemented."
+    }
+  ],
+  "status_summary": "Passed locally for focused REQ-QUIC-CRT-0150 requirement-home coverage, interop inventory dry-run coverage, captured HRR/key-update regression coverage, regenerated QUIC triage, SpecTrace core validation, Release build, full Release tests, and diff whitespace validation.",
+  "verifies": [
+    "REQ-QUIC-CRT-0150"
+  ]
+}

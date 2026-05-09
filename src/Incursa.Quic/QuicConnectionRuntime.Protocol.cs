@@ -74,6 +74,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+            stateChanged |= TryFlushOneRttCryptoPackets(ref effects);
             stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
 
             if (tlsState.Role == QuicTlsRole.Server)
@@ -339,6 +340,7 @@ internal sealed partial class QuicConnectionRuntime
                 stateChanged |= TryFlushZeroRttPackets(ref effects);
                 stateChanged |= TryFlushHandshakePackets(ref effects);
                 stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+                stateChanged |= TryFlushOneRttCryptoPackets(ref effects);
                 stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
                 break;
         }
@@ -1066,6 +1068,7 @@ internal sealed partial class QuicConnectionRuntime
 
         stateChanged |= TryFlushInitialPackets(ref effects);
         stateChanged |= TryFlushHandshakePackets(ref effects);
+        stateChanged |= TryFlushOneRttCryptoPackets(ref effects);
         if (processedCryptoFrame && !progressedTranscript && !replayedDuplicateInitialCrypto)
         {
             stateChanged |= TryReplayOutstandingCryptoAfterDuplicateInitialIngress(
@@ -3001,6 +3004,84 @@ internal sealed partial class QuicConnectionRuntime
             {
                 break;
             }
+        }
+
+        return stateChanged;
+    }
+
+    private bool TryFlushOneRttCryptoPackets(ref List<QuicConnectionEffect>? effects)
+    {
+        if (phase != QuicConnectionPhase.Active
+            || activePath is null
+            || tlsState.OneRttEgressCryptoBuffer.BufferedBytes <= 0
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        Span<byte> cryptoBuffer = stackalloc byte[HandshakeEgressChunkBytes];
+
+        while (tlsState.OneRttEgressCryptoBuffer.BufferedBytes > 0)
+        {
+            int requestedBytes = Math.Min(cryptoBuffer.Length, tlsState.OneRttEgressCryptoBuffer.BufferedBytes);
+            if (requestedBytes <= 0)
+            {
+                break;
+            }
+
+            Span<byte> cryptoChunk = cryptoBuffer[..requestedBytes];
+            if (!tlsBridgeDriver.TryPeekOutgoingCryptoData(
+                QuicTlsEncryptionLevel.OneRtt,
+                cryptoChunk,
+                out ulong cryptoOffset,
+                out int cryptoBytesWritten)
+                || cryptoBytesWritten <= 0)
+            {
+                break;
+            }
+
+            if (!TryBuildOutboundOneRttCryptoPayload(
+                cryptoChunk[..cryptoBytesWritten],
+                cryptoOffset,
+                out byte[] applicationPayload))
+            {
+                break;
+            }
+
+            if (!TryProtectAndAccountApplicationPayload(
+                applicationPayload,
+                "The connection runtime could not protect the post-handshake CRYPTO packet.",
+                "The connection cannot send the post-handshake CRYPTO packet.",
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out byte[] protectedPacket,
+                out Exception? exception))
+            {
+                _ = exception;
+                break;
+            }
+
+            if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                QuicTlsEncryptionLevel.OneRtt,
+                cryptoChunk[..cryptoBytesWritten],
+                out ulong dequeuedOffset,
+                out int dequeuedBytesWritten)
+                || dequeuedOffset != cryptoOffset
+                || dequeuedBytesWritten != cryptoBytesWritten)
+            {
+                break;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+            stateChanged = true;
         }
 
         return stateChanged;

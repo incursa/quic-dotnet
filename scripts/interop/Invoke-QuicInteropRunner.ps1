@@ -434,15 +434,15 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'keyupdate'
             RunnerTestCase = 'keyupdate'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires key-update support during the first megabyte transferred.'
+            Classification = 'supported-executed'
+            Notes = 'Current green keyupdate cell.'
         }
 
         [pscustomobject]@{
             TestCase = 'resumption'
             RunnerTestCase = 'resumption'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires session-ticket and resumed-connection support.'
+            Notes = 'Has opt-in server NewSessionTicket issuance; still requires shared ticket state, PSK binder validation, resumed ServerHello selection, PSK-DHE derivation, and resumed-connection acceptance.'
         }
 
         [pscustomobject]@{

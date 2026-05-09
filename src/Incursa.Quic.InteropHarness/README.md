@@ -11,13 +11,14 @@
 
 - `handshake`
 - `post-handshake-stream`
-- `chacha20`
+- `keyupdate`
 - `multiconnect`
 - `retry`
 - `transfer`
 
 Unsupported testcases return `127`.
-The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above. `chacha20` remains blocked pending CipherSuitesPolicy support.
+The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above.
+`chacha20` remains inventory-visible but prerequisite-blocked pending CipherSuitesPolicy support. `resumption` enables managed-server ticket issuance for the cell, but remains prerequisite-blocked until server-side PSK cache sharing, binder validation, resumed `ServerHello` selection, and PSK-DHE derivation are implemented.
 
 ## Build Locally
 

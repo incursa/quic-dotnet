@@ -865,6 +865,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols)
+                || !runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
                     validatedOptions.ServerLeafCertificateDer,
                     validatedOptions.ServerLeafSigningPrivateKey,
@@ -1432,6 +1433,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.MaxInboundUnidirectionalStreams = returnedOptions.MaxInboundUnidirectionalStreams;
         selectedOptions.StreamCapacityCallback = returnedOptions.StreamCapacityCallback;
         selectedOptions.ServerAuthenticationOptions = returnedOptions.ServerAuthenticationOptions;
+        selectedOptions.EnableResumptionTickets = returnedOptions.EnableResumptionTickets;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

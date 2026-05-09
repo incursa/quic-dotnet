@@ -1716,7 +1716,8 @@ internal sealed class QuicTlsTranscriptProgress
             return false;
         }
 
-        bool foundSupportedCipherSuite = false;
+        bool foundAes128GcmSha256 = false;
+        bool foundChacha20Poly1305Sha256 = false;
         while (index < cipherSuites.Length)
         {
             if (!TryReadUInt16(cipherSuites, ref index, out ushort cipherSuiteValue))
@@ -1726,35 +1727,31 @@ internal sealed class QuicTlsTranscriptProgress
 
             if (cipherSuiteValue == TlsAes128GcmSha256Value)
             {
-                if (foundSupportedCipherSuite)
-                {
-                    return false;
-                }
-
-                foundSupportedCipherSuite = true;
-                cipherSuite = QuicTlsCipherSuite.TlsAes128GcmSha256;
-                transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
+                foundAes128GcmSha256 = true;
                 continue;
             }
 
             if (cipherSuiteValue == TlsChacha20Poly1305Sha256Value)
             {
-                if (foundSupportedCipherSuite)
-                {
-                    return false;
-                }
-
-                foundSupportedCipherSuite = true;
-                cipherSuite = QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
-                transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
+                foundChacha20Poly1305Sha256 = true;
             }
         }
 
-        if (!foundSupportedCipherSuite)
+        if (foundAes128GcmSha256)
         {
-            return false;
+            cipherSuite = QuicTlsCipherSuite.TlsAes128GcmSha256;
+            transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
+            return true;
         }
-        return true;
+
+        if (foundChacha20Poly1305Sha256)
+        {
+            cipherSuite = QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
+            transcriptHashAlgorithmValue = QuicTlsTranscriptHashAlgorithm.Sha256;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool TryReadUInt8(ReadOnlySpan<byte> source, ref int index, out int value)

@@ -14,6 +14,8 @@ internal static class InteropHarnessRunner
     private const int StreamCopyBufferSize = 4096;
     private const int MaxHttp09RequestLineBytes = 4096;
     private const int QuicStreamBodyWriteChunkSize = 1024;
+    // The upstream keyupdate cell expects a key update during the first MB transferred.
+    private const long KeyUpdateTriggerBytes = 1_000_000;
     private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
     private const string FlowControlCreditExhaustedMessage = "Writes that wait for additional flow-control credit are not supported by this slice.";
     private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
@@ -110,6 +112,8 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "keyupdate" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "resumption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "client"),
         };
@@ -130,6 +134,8 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             _ => ReturnUnsupported(settings, stdout, "server"),
         };
@@ -827,7 +833,7 @@ internal static class InteropHarnessRunner
             IPEndPoint remoteEndPoint = firstPlan.RemoteEndPoint;
             WriteLineAndFlush(
                 stdout,
-                $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, targetCount={transferPlans.Count}.");
+                $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, targetCount={transferPlans.Count}.");
 
             QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
 
@@ -838,6 +844,102 @@ internal static class InteropHarnessRunner
             }
             WriteDeterministicClientKeySelection(settings, stdout);
             await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+            string testCase = settings.TestCase;
+            if (testCase == "resumption")
+            {
+                const int ResumptionConnectionCount = 2;
+
+                if (transferPlans.Count < ResumptionConnectionCount)
+                {
+                    throw new InvalidOperationException($"interop harness: role=client, testcase=resumption requires at least {ResumptionConnectionCount} REQUESTS URLs.");
+                }
+
+                SequentialTransferPlan firstResumptionPlan = transferPlans[0];
+                SequentialTransferPlan[] resumedTransferPlans = [.. transferPlans.Skip(1)];
+
+                long firstBytesDownloaded = await DownloadHttp09ResponseAsync(
+                    connection,
+                    firstResumptionPlan,
+                    stdout,
+                    testCase,
+                    settings.Requests.Count,
+                    0,
+                    1,
+                    responseReadTimeout: InteropRequestWaitTimeout,
+                    sendCreditRetryTimeout: InteropRequestWaitTimeout).ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} completed managed resumption download to {firstResumptionPlan.DestinationPath} from {firstResumptionPlan.RequestUri.PathAndQuery}, bytes={firstBytesDownloaded}, connection 1/{ResumptionConnectionCount}.");
+
+                long detachedSnapshotWaitStartedAt = Stopwatch.GetTimestamp();
+                TimeSpan detachedSnapshotTimeout = TimeSpan.FromSeconds(60);
+                QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null;
+                while (!connection.TryExportDetachedResumptionTicketSnapshot(out detachedResumptionTicketSnapshot)
+                    || detachedResumptionTicketSnapshot is null)
+                {
+                    if (Stopwatch.GetElapsedTime(detachedSnapshotWaitStartedAt) >= detachedSnapshotTimeout)
+                    {
+                        throw new InvalidOperationException("interop harness: role=client, testcase=resumption did not receive a detached resumption ticket snapshot in time.");
+                    }
+
+                    await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+                }
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} captured detached resumption ticket after connection 1/{ResumptionConnectionCount}.");
+
+                if (!detachedResumptionTicketSnapshot.HasResumptionCredentialMaterial)
+                {
+                    throw new InvalidOperationException("interop harness: role=client, testcase=resumption captured an incomplete detached resumption ticket snapshot.");
+                }
+
+                await connection.CloseAsync(0).ConfigureAwait(false);
+
+                QuicClientConnectionOptions resumedClientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, resumedTransferPlans[0].RequestUri.Host);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, target={resumedTransferPlans[0].RelativePath}, resumed connection {ResumptionConnectionCount}/{ResumptionConnectionCount}.");
+                await using QuicConnection resumedConnection = await ConnectWithQlogCaptureAsync(
+                    settings,
+                    qlogScope,
+                    resumedClientOptions,
+                    detachedResumptionTicketSnapshot).ConfigureAwait(false);
+
+                if (resumedConnection.ResumptionAttemptDisposition != QuicTlsResumptionAttemptDisposition.Accepted)
+                {
+                    throw new InvalidOperationException($"interop harness: role=client, testcase=resumption failed to negotiate a resumed connection; disposition={resumedConnection.ResumptionAttemptDisposition}.");
+                }
+
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} established resumed connection 2/2 with disposition={resumedConnection.ResumptionAttemptDisposition}.");
+
+                for (int index = 0; index < resumedTransferPlans.Length; index++)
+                {
+                    SequentialTransferPlan transferPlan = resumedTransferPlans[index];
+                    long bytesDownloaded = await DownloadHttp09ResponseAsync(
+                        resumedConnection,
+                        transferPlan,
+                        stdout,
+                        testCase,
+                        settings.Requests.Count,
+                        index,
+                        resumedTransferPlans.Length,
+                        responseReadTimeout: InteropRequestWaitTimeout,
+                        sendCreditRetryTimeout: InteropRequestWaitTimeout).ConfigureAwait(false);
+
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} completed managed resumption download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, connection {ResumptionConnectionCount}/{ResumptionConnectionCount}.");
+                }
+
+                await resumedConnection.CloseAsync(0).ConfigureAwait(false);
+                return 0;
+            }
+
+            bool keyUpdateInitiated = false;
 
             for (int index = 0; index < transferPlans.Count; index++)
             {
@@ -851,11 +953,33 @@ internal static class InteropHarnessRunner
                     index,
                     transferPlans.Count,
                     responseReadTimeout: InteropRequestWaitTimeout,
-                    sendCreditRetryTimeout: InteropRequestWaitTimeout).ConfigureAwait(false);
+                    sendCreditRetryTimeout: InteropRequestWaitTimeout,
+                    bytesDownloadedObserver: bytesDownloaded =>
+                    {
+                        if (testCase != "keyupdate" || keyUpdateInitiated || bytesDownloaded < KeyUpdateTriggerBytes)
+                        {
+                            return;
+                        }
+
+                        keyUpdateInitiated = true;
+                        if (!connection.TryInitiateOneRttKeyUpdate())
+                        {
+                            throw new InvalidOperationException("interop harness: role=client, testcase=keyupdate failed to initiate a one-RTT key update after transferring the first megabyte.");
+                        }
+
+                        WriteLineAndFlush(
+                            stdout,
+                            $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} initiated one-RTT key update after {bytesDownloaded} bytes transferred.");
+                    }).ConfigureAwait(false);
 
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=client, testcase=transfer, requestCount={settings.Requests.Count} completed managed transfer download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
+                    $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} completed managed {testCase} download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
+            }
+
+            if (testCase == "keyupdate" && !keyUpdateInitiated)
+            {
+                throw new InvalidOperationException("interop harness: role=client, testcase=keyupdate did not transfer enough bytes to initiate a one-RTT key update.");
             }
 
             await connection.CloseAsync(0).ConfigureAwait(false);
@@ -863,7 +987,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=transfer failed: {ex.Message}");
+            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase={settings.TestCase} failed: {ex.Message}");
             WriteLineAndFlush(stderr, ex.ToString());
             return 1;
         }
@@ -1111,23 +1235,93 @@ internal static class InteropHarnessRunner
                     WriteQlogCaptureEnabled(stdout, settings, qlogScope);
                 }
                 await using QuicListener listener = await ListenWithQlogCaptureAsync(qlogScope, listenerOptions).ConfigureAwait(false);
+                string testCase = settings.TestCase;
+                if (testCase == "resumption")
+                {
+                    const int ResumptionConnectionCount = 2;
+
+                    if (dispatchPlan.ConfiguredRequestCount < ResumptionConnectionCount)
+                    {
+                        WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=resumption requires at least {ResumptionConnectionCount} REQUESTS URLs.");
+                        return 1;
+                    }
+
+                    ValueTask<QuicConnection> firstAcceptTask = listener.AcceptConnectionAsync();
+                    await Task.Yield();
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}, connectionCount={ResumptionConnectionCount}.");
+
+                    await using QuicConnection firstConnection = await firstAcceptTask.ConfigureAwait(false);
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} accepted managed connection 1/{ResumptionConnectionCount}.");
+                    int firstServedRequestCount = await ServeHttp09RequestsAsync(
+                        firstConnection,
+                        stdout,
+                        testCase,
+                        expectedRequestCount: 1,
+                        configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
+
+                    if (firstServedRequestCount == 0)
+                    {
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=resumption did not observe an HTTP/0.9 request stream on the first connection.");
+                        return 1;
+                    }
+
+                    ValueTask<QuicConnection> resumedAcceptTask = listener.AcceptConnectionAsync();
+                    await Task.Yield();
+
+                    await LingerForPeerCloseAfterFinalResponseAsync(
+                        firstConnection,
+                        stdout,
+                        testCase,
+                        dispatchPlan.ConfiguredRequestCount,
+                        ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
+
+                    await using QuicConnection resumedConnection = await resumedAcceptTask.ConfigureAwait(false);
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} accepted managed connection {ResumptionConnectionCount}/{ResumptionConnectionCount}.");
+                    int resumedServedRequestCount = await ServeHttp09RequestsAsync(
+                        resumedConnection,
+                        stdout,
+                        testCase,
+                        expectedRequestCount: dispatchPlan.ConfiguredRequestCount - 1,
+                        configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
+
+                    if (resumedServedRequestCount == 0)
+                    {
+                        WriteLineAndFlush(stderr, "interop harness: role=server, testcase=resumption did not observe an HTTP/0.9 request stream on the resumed connection.");
+                        return 1;
+                    }
+
+                    await LingerForPeerCloseAfterFinalResponseAsync(
+                        resumedConnection,
+                        stdout,
+                        testCase,
+                        dispatchPlan.ConfiguredRequestCount,
+                        ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
+                    return 0;
+                }
+
                 Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
                 await Task.Yield();
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=transfer, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}.");
+                    $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
                 int servedRequestCount = await ServeHttp09RequestsAsync(
                     connection,
                     stdout,
-                    "transfer",
+                    testCase,
                     expectedRequestCount: dispatchPlan.ExpectedRequestCount,
                     configuredRequestCount: dispatchPlan.ConfiguredRequestCount).ConfigureAwait(false);
 
                 if (servedRequestCount == 0)
                 {
-                    WriteLineAndFlush(stderr, "interop harness: role=server, testcase=transfer did not observe an HTTP/0.9 request stream.");
+                    WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={testCase} did not observe an HTTP/0.9 request stream.");
                     return 1;
                 }
 
@@ -1136,7 +1330,7 @@ internal static class InteropHarnessRunner
                     await LingerForPeerCloseAfterFinalResponseAsync(
                         connection,
                         stdout,
-                        "transfer",
+                        testCase,
                         dispatchPlan.ConfiguredRequestCount,
                         ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
                 }
@@ -1146,7 +1340,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=transfer failed: {ex.Message}");
+            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={settings.TestCase} failed: {ex.Message}");
             return 1;
         }
     }
@@ -1254,7 +1448,8 @@ internal static class InteropHarnessRunner
         int requestIndex,
         int totalRequestCount,
         TimeSpan responseReadTimeout = default,
-        TimeSpan? sendCreditRetryTimeout = null)
+        TimeSpan? sendCreditRetryTimeout = null,
+        Action<long>? bytesDownloadedObserver = null)
     {
         TimeSpan effectiveSendCreditRetryTimeout = sendCreditRetryTimeout ?? CongestionRetryTimeout;
 
@@ -1328,6 +1523,7 @@ internal static class InteropHarnessRunner
                 WriteLineAndFlush(
                     stdout,
                     $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} read {bytesRead} bytes (total={bytesDownloaded}) from {transferPlan.RequestUri.PathAndQuery}, stream {requestIndex + 1}/{totalRequestCount}.");
+                bytesDownloadedObserver?.Invoke(bytesDownloaded);
             }
 
             await destinationStream.FlushAsync().ConfigureAwait(false);
@@ -1768,12 +1964,13 @@ internal static class InteropHarnessRunner
         InteropHarnessEnvironment settings,
         InteropHarnessQlogCaptureScope? qlogScope,
         QuicClientConnectionOptions options,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
         CancellationToken cancellationToken = default)
     {
         return qlogScope is null
             ? QuicConnection.ConnectAsync(
                 options,
-                detachedResumptionTicketSnapshot: null,
+                detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
                 cancellationToken: cancellationToken,
                 diagnosticsSink: null,
                 localHandshakePrivateKey: settings.LocalHandshakePrivateKey,
@@ -1782,7 +1979,8 @@ internal static class InteropHarnessRunner
                 options,
                 settings.LocalHandshakePrivateKey,
                 cancellationToken,
-                AllowClientPeerInitialReplacementBeforeTranscript(settings));
+                AllowClientPeerInitialReplacementBeforeTranscript(settings),
+                detachedResumptionTicketSnapshot);
     }
 
     private static bool AllowClientPeerInitialReplacementBeforeTranscript(InteropHarnessEnvironment settings)

@@ -151,7 +151,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
-        QuicTlsCipherSuite? selectedCipherSuite = null)
+        QuicTlsCipherSuite? selectedCipherSuite = null,
+        bool enableServerResumptionTickets = false)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -183,7 +184,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             clientCertificatePolicySnapshot,
             remoteCertificateValidationCallback,
             clientAuthenticationOptions,
-            selectedCipherSuite);
+            selectedCipherSuite,
+            enableServerResumptionTickets);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -468,6 +470,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool TryConfigureLocalApplicationProtocols(IReadOnlyList<SslApplicationProtocol> applicationProtocols)
     {
         return tlsBridgeDriver.TryConfigureLocalApplicationProtocols(applicationProtocols);
+    }
+
+    internal bool TryConfigureServerResumptionTicketIssuance(bool enabled)
+    {
+        return tlsBridgeDriver.TryConfigureServerResumptionTicketIssuance(enabled);
     }
 
     internal bool TryConfigureServerAuthenticationMaterial(

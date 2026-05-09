@@ -218,7 +218,10 @@ internal static class QuicPostHandshakeTicketTestSupport
         ulong incomingBidirectionalStreamReceiveLimit = DefaultStreamFlowControlLimit,
         ulong outgoingBidirectionalStreamReceiveLimit = DefaultStreamFlowControlLimit,
         ulong peerConnectionFlowControlLimit = DefaultConnectionFlowControlLimit,
-        ulong peerStreamFlowControlLimit = DefaultStreamFlowControlLimit)
+        ulong peerStreamFlowControlLimit = DefaultStreamFlowControlLimit,
+        bool enableServerResumptionTickets = false,
+        List<QuicConnectionEffect>? emittedEffects = null,
+        bool initializeActivePath = false)
     {
         byte[] clientHandshakePrivateKey = CreateScalar(0x11);
         byte[] localHandshakePrivateKey = CreateScalar(0x22);
@@ -255,12 +258,17 @@ internal static class QuicPostHandshakeTicketTestSupport
             tlsRole: QuicTlsRole.Server,
             localHandshakePrivateKey: localHandshakePrivateKey,
             localServerLeafCertificateDer: localLeafCertificateDer,
-            localServerLeafSigningPrivateKey: localSigningPrivateKey);
+            localServerLeafSigningPrivateKey: localSigningPrivateKey,
+            enableServerResumptionTickets: enableServerResumptionTickets);
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(PacketConnectionId));
         Assert.True(runtime.TrySetBootstrapOutboundPath(PacketPathIdentity));
         Assert.True(runtime.TrySetHandshakeSourceConnectionId(PacketSourceConnectionId));
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(PacketConnectionId));
+        if (initializeActivePath)
+        {
+            Assert.True(InitializeRuntimeActivePath(runtime, PacketPathIdentity, 1200, observedAtTicks: 0));
+        }
 
         Assert.True(runtime.Transition(
             new QuicConnectionHandshakeBootstrapRequestedEvent(
@@ -290,14 +298,14 @@ internal static class QuicPostHandshakeTicketTestSupport
             clientHelloBytes);
         Assert.Equal(9, clientHelloUpdates.Count);
         long observedAtTicks = 1;
-        observedAtTicks = ApplyRuntimeUpdates(runtime, clientHelloUpdates, observedAtTicks);
+        observedAtTicks = ApplyRuntimeUpdates(runtime, clientHelloUpdates, observedAtTicks, emittedEffects);
         Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = runtimeDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             CreateFinishedTranscript(expectedFinishedVerifyData));
-        Assert.Equal(6, finishedUpdates.Count);
-        observedAtTicks = ApplyRuntimeUpdates(runtime, finishedUpdates, observedAtTicks);
+        Assert.Equal(enableServerResumptionTickets ? 7 : 6, finishedUpdates.Count);
+        observedAtTicks = ApplyRuntimeUpdates(runtime, finishedUpdates, observedAtTicks, emittedEffects);
 
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
@@ -306,6 +314,57 @@ internal static class QuicPostHandshakeTicketTestSupport
         Assert.False(runtime.HasResumptionMasterSecret);
 
         return runtime;
+    }
+
+    internal static QuicTlsTransportBridgeDriver CreateFinishedServerDriver(
+        bool enableServerResumptionTickets,
+        out IReadOnlyList<QuicTlsStateUpdate> finishedUpdates)
+    {
+        byte[] clientHandshakePrivateKey = CreateScalar(0x11);
+        byte[] localHandshakePrivateKey = CreateScalar(0x22);
+        byte[] localSigningPrivateKey = CreateScalar(0x44);
+
+        QuicTlsTransportBridgeDriver clientDriver = new(
+            QuicTlsRole.Client,
+            localHandshakePrivateKey: clientHandshakePrivateKey);
+        IReadOnlyList<QuicTlsStateUpdate> clientBootstrapUpdates = clientDriver.StartHandshake(
+            CreateClientTransportParameters());
+        Assert.Equal(2, clientBootstrapUpdates.Count);
+        byte[] clientHelloBytes = clientBootstrapUpdates[1].CryptoData.ToArray();
+
+        using ECDsa localLeafCertificateKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        localLeafCertificateKey.ImportParameters(new ECParameters
+        {
+            Curve = ECCurve.NamedCurves.nistP256,
+            D = localSigningPrivateKey,
+        });
+
+        byte[] localLeafCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(localLeafCertificateKey);
+
+        QuicTlsTransportBridgeDriver serverDriver = new(
+            QuicTlsRole.Server,
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            localServerLeafCertificateDer: localLeafCertificateDer,
+            localServerLeafSigningPrivateKey: localSigningPrivateKey,
+            enableServerResumptionTickets: enableServerResumptionTickets);
+
+        Assert.True(serverDriver.TryConfigureServerResumptionTicketIssuance(enableServerResumptionTickets));
+        Assert.Single(serverDriver.StartHandshake(CreateBootstrapLocalTransportParameters()));
+        IReadOnlyList<QuicTlsStateUpdate> clientHelloUpdates = serverDriver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            clientHelloBytes);
+        Assert.Equal(9, clientHelloUpdates.Count);
+
+        FieldInfo runtimeKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
+            "keySchedule",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        QuicTlsKeySchedule runtimeKeySchedule = (QuicTlsKeySchedule)runtimeKeyScheduleField.GetValue(serverDriver)!;
+        Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+
+        finishedUpdates = serverDriver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateFinishedTranscript(expectedFinishedVerifyData));
+        return serverDriver;
     }
 
     private static void AssertRuntimeNotClosing(QuicConnectionRuntime runtime, string stage)
@@ -864,19 +923,33 @@ internal static class QuicPostHandshakeTicketTestSupport
     private static long ApplyRuntimeUpdates(
         QuicConnectionRuntime runtime,
         IReadOnlyList<QuicTlsStateUpdate> updates,
-        long observedAtTicks)
+        long observedAtTicks,
+        List<QuicConnectionEffect>? emittedEffects = null)
     {
         Assert.NotEmpty(updates);
 
         foreach (QuicTlsStateUpdate update in updates)
         {
-            _ = runtime.Transition(
+            QuicConnectionTransitionResult result = runtime.Transition(
                 new QuicConnectionTlsStateUpdatedEvent(observedAtTicks, update),
                 nowTicks: observedAtTicks);
+            emittedEffects?.AddRange(result.Effects);
             observedAtTicks++;
         }
 
         return observedAtTicks;
+    }
+
+    private static bool InitializeRuntimeActivePath(
+        QuicConnectionRuntime runtime,
+        QuicConnectionPathIdentity pathIdentity,
+        int payloadBytes,
+        long observedAtTicks)
+    {
+        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
+            "InitializeActivePath",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        return (bool)method.Invoke(runtime, [pathIdentity, payloadBytes, observedAtTicks])!;
     }
 
     private static void WriteUInt16(Span<byte> destination, ushort value)

@@ -111,7 +111,8 @@ internal static class QuicServerConnectionOptionsValidator
             options,
             certificateDer,
             privateParameters.D.ToArray(),
-            options.SelectedCipherSuite);
+            options.SelectedCipherSuite,
+            options.EnableResumptionTickets);
     }
 }
 
@@ -119,4 +120,5 @@ internal sealed record QuicServerConnectionSettings(
     QuicServerConnectionOptions Options,
     byte[] ServerLeafCertificateDer,
     byte[] ServerLeafSigningPrivateKey,
-    QuicTlsCipherSuite? SelectedCipherSuite = null);
+    QuicTlsCipherSuite? SelectedCipherSuite = null,
+    bool EnableResumptionTickets = false);

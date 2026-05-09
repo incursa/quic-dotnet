@@ -28,4 +28,9 @@ public sealed class QuicServerConnectionOptions : QuicConnectionOptions
     /// Gets or sets the TLS cipher suite selected for the managed server handshake slice.
     /// </summary>
     internal QuicTlsCipherSuite? SelectedCipherSuite { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the internal managed server path may emit post-handshake resumption tickets.
+    /// </summary>
+    internal bool EnableResumptionTickets { get; set; }
 }

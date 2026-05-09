@@ -1,8 +1,10 @@
 # Current Repository Status
 
-Last verified: 2026-05-08 for RFC 9000 S5 disable-active-migration proof
-topoff, S6 reserved-version ignore proof topoff, S2 concurrent-stream proof
-topoff, S2 stream-cancellation proof topoff, S13 ECN
+Last verified: 2026-05-08 for CRT server NewSessionTicket issuance proof,
+INT non-HTTP/3 inventory dry-run proof and resumption blocker documentation,
+RFC 9000 S5 disable-active-migration proof topoff, S6 reserved-version ignore
+proof topoff, S2 concurrent-stream proof topoff, S2 stream-cancellation proof
+topoff, S13 ECN
 continuation-after-success proof
 topoff, S13 ECN disable-on-validation-failure proof topoff, S13 ECT(1)+CE
 too-small validation proof topoff, S13 ECT(0)+CE too-small validation proof
@@ -20,6 +22,61 @@ individual dated closure notes below unless otherwise noted.
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
+
+## 2026-05-08 CRT Server NewSessionTicket Issuance Closure Note
+
+`REQ-QUIC-CRT-0150` now owns the first managed server-side resumption ticket
+issuance slice. When the internal server issuance switch is explicitly enabled,
+the managed TLS key schedule emits a bounded TLS 1.3 `NewSessionTicket` only
+after peer `Finished` verification and 1-RTT packet-protection availability.
+The ticket is published over the QUIC 1-RTT CRYPTO seam and can be flushed as a
+protected application-data packet when an active path exists. The default server
+path remains ticket-free.
+
+This does not make the `resumption` interop cell green. The next unresolved
+resumption blocker is server-side acceptance: shared ticket state across
+accepted connections, PSK binder/ticket validation, resumed PSK-DHE
+handshake-secret derivation, and `ServerHello` `pre_shared_key` selection remain
+future work. The emitted ticket carries no `early_data` extension and does not
+claim 0-RTT acceptance, anti-replay, public API widening, HTTP/3, or broader
+interop readiness.
+
+Local focused verification passed:
+`dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release
+-m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0150"` reported 4/4 passing.
+SpecTrace validation and regenerated triage are recorded in the slice
+verification artifact.
+
+## 2026-05-08 INT Inventory Boundary And Resumption Blocker Note
+
+`REQ-QUIC-INT-0018` remains the owning inventory/profile requirement for the
+non-HTTP/3 interop testcase list. The current helper inventory keeps
+`versionnegotiation` and `keyupdate` in the supported/executed class, keeps
+`http3` out of scope, and classifies `chacha20`, `resumption`, `zerortt`, `v2`,
+`rebind-port`, `rebind-addr`, and `connectionmigration` as
+prerequisite-blocked.
+
+`chacha20` is not green on this runner: it remains blocked on end-to-end runner
+platform support for the required cipher-suite selection. The next unresolved
+runtime cell is `resumption`. The managed server now has opt-in
+`NewSessionTicket` issuance under `REQ-QUIC-CRT-0150`, but the cell remains
+blocked because the server still does not share ticket state across accepted
+connections, validate the client's PSK binder/ticket identity, derive resumed
+PSK-DHE handshake secrets, or select the pre-shared key in ServerHello.
+
+Current regenerated RFC requirement triage still reports 1,498 of 1,771
+requirements `trace_clean`, leaving 273 non-clean: 55 metadata-only
+missing-xref items, 42 partially covered items, 54 blocked items, and 122
+uncovered-unblocked items.
+
+Local verification for this inventory/blocker refresh passed: focused
+`REQ_QUIC_CRT_0150|InteropRunnerScriptDryRunTests|REQ_QUIC_INT_0013` filter
+40/40, captured-HRR/key-update regression filter 16/16, regenerated QUIC
+requirement coverage triage, SpecTrace core validation 523 artifacts,
+`dotnet build Incursa.Quic.slnx -c Release` with 0 warnings and 0 errors,
+full `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` with
+4,872/4,872 passing, and `git diff --check` with only generated-triage CRLF
+normalization warnings.
 
 ## 2026-05-08 S5 Preferred-Address Migration Topoff Closure Note
 

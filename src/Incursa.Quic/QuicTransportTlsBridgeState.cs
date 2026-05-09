@@ -5,11 +5,13 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTransportTlsBridgeState
 {
+    private const int HandshakeHeaderLength = 4;
     private readonly QuicCryptoBuffer initialIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer oneRttIngressCryptoBuffer = new();
     private readonly QuicCryptoBuffer initialEgressCryptoBuffer = new();
     private readonly QuicCryptoBuffer handshakeEgressCryptoBuffer = new();
+    private readonly QuicCryptoBuffer oneRttEgressCryptoBuffer = new();
     private readonly QuicOneRttKeyUpdateLifecycle oneRttKeyUpdateLifecycle = new();
     private readonly Dictionary<QuicTlsEncryptionLevel, QuicTlsPacketProtectionMaterial> packetProtectionMaterials = new();
     private readonly QuicTlsRole role;
@@ -234,6 +236,8 @@ internal sealed class QuicTransportTlsBridgeState
 
     internal QuicCryptoBuffer HandshakeEgressCryptoBuffer => handshakeEgressCryptoBuffer;
 
+    internal QuicCryptoBuffer OneRttEgressCryptoBuffer => oneRttEgressCryptoBuffer;
+
     public bool TryApply(QuicTlsStateUpdate update)
     {
         switch (update.Kind)
@@ -376,6 +380,13 @@ internal sealed class QuicTransportTlsBridgeState
         ReadOnlyMemory<byte> cryptoData,
         out QuicCryptoBufferResult result)
     {
+        if (encryptionLevel == QuicTlsEncryptionLevel.OneRtt
+            && !IsAllowedOneRttOutgoingCryptoData(cryptoData.Span))
+        {
+            result = default;
+            return false;
+        }
+
         return TryBufferCryptoData(GetEgressCryptoBuffer(encryptionLevel), offset, cryptoData, out result);
     }
 
@@ -1129,6 +1140,21 @@ internal sealed class QuicTransportTlsBridgeState
         return result != QuicCryptoBufferResult.BufferExceeded;
     }
 
+    private static bool IsAllowedOneRttOutgoingCryptoData(ReadOnlySpan<byte> cryptoData)
+    {
+        if (cryptoData.Length < HandshakeHeaderLength
+            || cryptoData[0] != (byte)QuicTlsHandshakeMessageType.NewSessionTicket)
+        {
+            return false;
+        }
+
+        int messageBodyLength =
+            (cryptoData[1] << 16)
+            | (cryptoData[2] << 8)
+            | cryptoData[3];
+        return messageBodyLength == cryptoData.Length - HandshakeHeaderLength;
+    }
+
     private QuicCryptoBuffer? GetIngressCryptoBuffer(QuicTlsEncryptionLevel encryptionLevel)
     {
         return encryptionLevel switch
@@ -1146,6 +1172,7 @@ internal sealed class QuicTransportTlsBridgeState
         {
             QuicTlsEncryptionLevel.Initial => initialEgressCryptoBuffer,
             QuicTlsEncryptionLevel.Handshake => handshakeEgressCryptoBuffer,
+            QuicTlsEncryptionLevel.OneRtt => oneRttEgressCryptoBuffer,
             _ => null,
         };
     }
@@ -1248,6 +1275,7 @@ internal sealed class QuicTransportTlsBridgeState
             || handshakeIngressCryptoBuffer.BufferedBytes > 0
             || oneRttIngressCryptoBuffer.BufferedBytes > 0
             || handshakeEgressCryptoBuffer.BufferedBytes > 0
+            || oneRttEgressCryptoBuffer.BufferedBytes > 0
             || oneRttKeyUpdateLifecycle.HasPacketProtectionMaterial
             || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.Handshake)
             || packetProtectionMaterials.ContainsKey(QuicTlsEncryptionLevel.OneRtt)
@@ -1287,6 +1315,7 @@ internal sealed class QuicTransportTlsBridgeState
         handshakeIngressCryptoBuffer.Reset();
         oneRttIngressCryptoBuffer.Reset();
         handshakeEgressCryptoBuffer.Reset();
+        oneRttEgressCryptoBuffer.Reset();
         postHandshakeTicketBytes = null;
         postHandshakeTicketNonce = null;
         postHandshakeTicketLifetimeSeconds = null;

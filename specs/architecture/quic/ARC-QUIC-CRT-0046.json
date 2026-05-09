@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0046",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC server-side resumption ticket issuance architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first managed server-side resumption-ticket issuance seam without widening the public resumption promise or claiming PSK acceptance.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0048",
+    "VER-QUIC-CRT-0048"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0150"
+  ],
+  "design_summary": "Server ticket issuance is opt-in through internal managed-server configuration so the default server path and public API promise remain unchanged. The managed TLS key schedule emits a TLS 1.3 NewSessionTicket after the server verifies the peer Finished and derives 1-RTT packet-protection material. Post-handshake ticket bytes use the existing TLS CRYPTO publication model at the 1-RTT encryption level, with the runtime formatting those bytes into a QUIC CRYPTO frame before protecting an application-data packet. The ticket body is intentionally opaque to the public surface and carries no early_data extension, so the slice does not imply 0-RTT acceptance, server anti-replay, or replayable early-data delivery. Server-side PSK identity caching, binder validation, ServerHello pre_shared_key selection, and resumed PSK-DHE key-schedule derivation remain separate follow-on work.",
+  "key_components": [
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0150.cs"
+  ],
+  "edge_cases_and_constraints": [
+    "Server ticket issuance remains internal and opt-in.",
+    "Default managed server behavior remains ticket-free.",
+    "The ticket omits early_data and carries no 0-RTT acceptance promise.",
+    "The slice does not add server-side PSK cache sharing, binder validation, resumed ServerHello selection, PSK-DHE derivation, public API widening, or HTTP/3 interop."
+  ],
+  "alternatives_considered": [
+    "Expose a public resumption-ticket option. Rejected because the support promise is still blocked on PSK acceptance and resumed handshake derivation.",
+    "Treat client-side ticket capture as sufficient for resumption interop. Rejected because quic-interop-runner needs the managed server to issue a ticket before later resumed-handshake work can be exercised.",
+    "Emit early_data-capable tickets in this slice. Rejected because server anti-replay and 0-RTT admission are not implemented."
+  ],
+  "risks": [
+    "If the internal opt-in switch leaks into the public API, callers could infer resumption support before resumed PSK acceptance exists.",
+    "If ticket emission is not bound to peer Finished verification and 1-RTT key availability, post-handshake TLS bytes can be published at the wrong cryptographic boundary.",
+    "If follow-on PSK cache and binder validation work treats this opaque ticket as sufficient, resumed connection acceptance could be under-specified."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Code And Proof Surfaces",
+      "content": "- [`src/Incursa.Quic/QuicTlsKeySchedule.cs`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs)\n- [`src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs)\n- [`src/Incursa.Quic/QuicTransportTlsBridgeState.cs`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`src/Incursa.Quic/QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`src/Incursa.Quic/QuicListenerHost.cs`](../../../src/Incursa.Quic/QuicListenerHost.cs)\n- [`src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs`](../../../src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0150.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0150.cs)"
+    }
+  ]
+}

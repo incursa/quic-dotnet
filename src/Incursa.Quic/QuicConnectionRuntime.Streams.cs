@@ -3586,6 +3586,37 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    internal bool TryBuildOutboundOneRttCryptoPayload(
+        ReadOnlySpan<byte> cryptoData,
+        ulong cryptoOffset,
+        out byte[] payload)
+    {
+        payload = [];
+
+        if (cryptoData.IsEmpty)
+        {
+            return false;
+        }
+
+        int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, cryptoData.Length + 32);
+        byte[] buffer = new byte[bufferLength];
+        if (!QuicFrameCodec.TryFormatCryptoFrame(
+            new QuicCryptoFrame(cryptoOffset, cryptoData),
+            buffer,
+            out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        if (frameBytesWritten < buffer.Length)
+        {
+            buffer.AsSpan(frameBytesWritten).Fill(0);
+        }
+
+        payload = buffer;
+        return true;
+    }
+
     internal bool TryBuildOutboundNewTokenPayload(ReadOnlySpan<byte> token, out byte[] payload)
     {
         payload = [];

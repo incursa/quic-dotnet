@@ -277,6 +277,76 @@ public sealed class InteropHarnessProcessObservabilityTests
     }
 
     [Fact]
+    public async Task ChildProcessKeyUpdateEmitsTheClientKeyUpdateMarkerEarlyAndKeepsStderrEmptyOnTheGreenPath()
+    {
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string relativePath = $"keyupdate-{Guid.NewGuid():N}.bin";
+            string requestPath = $"/{relativePath}";
+            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = new byte[1_500_000];
+
+            new Random(12345).NextBytes(payload);
+
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
+            TryDelete(destinationPath);
+
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "keyupdate", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "keyupdate", requests, harnessDll);
+                await WaitForPairMarkersAsync(
+                    serverProcess,
+                    clientProcess,
+                    "completed managed keyupdate response",
+                    "completed managed keyupdate download",
+                    TimeSpan.FromSeconds(35));
+                await serverProcess.WaitForStdoutContainsAsync("completed managed keyupdate response", TimeSpan.FromSeconds(35));
+                await clientProcess.WaitForStdoutContainsAsync("initiated one-RTT key update after", TimeSpan.FromSeconds(35));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(35));
+
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Empty(serverProcess.Stderr);
+                Assert.Empty(clientProcess.Stderr);
+                Assert.True(File.Exists(destinationPath));
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("role=server, testcase=keyupdate", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("role=client, testcase=keyupdate", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("initiated one-RTT key update after", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    serverProcess.Stdout,
+                    "listening on",
+                    "accepted keyupdate request stream 1",
+                    "parsed HTTP/0.9 request target",
+                    "completed managed keyupdate response");
+                AssertContainsInOrder(
+                    clientProcess.Stdout,
+                    "connecting to",
+                    "opened keyupdate request stream 1/1",
+                    "sent HTTP/0.9 request line",
+                    "initiated one-RTT key update after",
+                    "completed managed keyupdate download");
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
+            }
+        });
+    }
+
+    [Fact]
     public async Task FailureHelperIncludesBothClientAndServerStreamsWhenTheExpectedMarkersNeverAppear()
     {
         await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>

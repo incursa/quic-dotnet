@@ -49,7 +49,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         RemoteCertificateValidationCallback? remoteCertificateValidationCallback = null,
         SslClientAuthenticationOptions? clientAuthenticationOptions = null,
-        QuicTlsCipherSuite? selectedCipherSuite = null)
+        QuicTlsCipherSuite? selectedCipherSuite = null,
+        bool enableServerResumptionTickets = false)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
@@ -59,7 +60,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             Role,
             localHandshakePrivateKey,
             clientCipherSuiteProfile,
-            clientAuthenticationOptions?.ApplicationProtocols);
+            clientAuthenticationOptions?.ApplicationProtocols,
+            enableServerResumptionTickets);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
 
@@ -258,6 +260,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         handshakeTranscriptProgress.ConfigureServerApplicationProtocols(applicationProtocolsConfigured: true);
         return true;
+    }
+
+    internal bool TryConfigureServerResumptionTicketIssuance(bool enabled)
+    {
+        return keySchedule?.TryConfigureServerResumptionTicketIssuance(enabled) == true;
     }
 
     /// <inheritdoc />

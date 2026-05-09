@@ -45,7 +45,7 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
-The current supported/executed cells are `handshake`, `transfer`, `retry`, `multiconnect`, and `versionnegotiation`; `chacha20` remains blocked pending CipherSuitesPolicy support, and the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked.
+The current supported/executed cells are `handshake`, `transfer`, `retry`, `multiconnect`, `versionnegotiation`, and `keyupdate`; the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked. `chacha20` remains blocked pending CipherSuitesPolicy support. `resumption` now has opt-in managed-server `NewSessionTicket` issuance, but it remains prerequisite-blocked until server PSK cache sharing, binder validation, resumed `ServerHello` selection, and PSK-DHE derivation are implemented.
 
 Hosted corroboration:
 

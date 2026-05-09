@@ -137,6 +137,40 @@ public sealed class REQ_QUIC_INT_0013
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task LocalHelperCapturesExpectedArtifactsForKeyUpdateRuns()
+    {
+        using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "both",
+            "-ImplementationSlot",
+            "quic-go",
+            "-TestCases",
+            "keyupdate");
+
+        await AssertSuccessfulHelperRunAsync(
+            fixture.ArtifactsRoot,
+            result,
+            expectedLocalRole: "both",
+            expectedLocalImplementationSlot: "quic-go",
+            expectedPeerImplementationSlots: "quic-go,msquic",
+            expectedRunnerServerImplementations: "quic-go",
+            expectedRunnerClientImplementations: "quic-go",
+            expectedReplacement: "quic-go=incursa-quic-interop-harness:local",
+            expectedTestCases: "keyupdate",
+            expectedRunnerTestCases: "keyupdate");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task LocalHelperCapturesExpectedArtifactsForMulticonnectRuns()
     {
         using InteropRunnerScriptFixture fixture = new(quicGoRole: "both");

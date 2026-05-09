@@ -162,6 +162,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0042.json`](ARC-QUIC-CRT-0042.json): canonical CRT client-side replacement peer Initial reset design source
 - [`ARC-QUIC-CRT-0043.json`](ARC-QUIC-CRT-0043.json): canonical CRT server-role secp256r1 HelloRetryRequest design source
 - [`ARC-QUIC-CRT-0045.json`](ARC-QUIC-CRT-0045.json): canonical CRT server-side 0-RTT receive admission closed-gate design source
+- [`ARC-QUIC-CRT-0046.json`](ARC-QUIC-CRT-0046.json): canonical CRT server-side resumption ticket issuance design source
 
 ## Notes
 
