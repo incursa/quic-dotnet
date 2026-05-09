@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0050",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC server-side 0-RTT admission anti-replay gate work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the internal managed-server gate that must approve 0-RTT admission with validated PSK state, remembered transport-parameter acceptance, and listener-local one-time ticket consumption.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0048",
+    "ARC-QUIC-RFC9000-0069"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0050"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0152"
+  ],
+  "planned_changes": "- Add a listener-local early-data ticket-consumption path that removes a live ticket at most once.\n- Add an internal server 0-RTT admission gate that requires prior PSK binder validation.\n- Reuse the existing server remembered-transport-parameter policy before ticket consumption.\n- Preserve normal 1-RTT resumption ticket lookup behavior.\n- Keep early_data advertisement, server ZeroRtt packet opening, application delivery, public API widening, IsSupported changes, HTTP/3, and interop zerortt promotion out of scope.\n- Add focused positive, negative, expiry, and fuzz-shaped requirement-home proof.",
+  "verification_plan": "Run focused REQ_QUIC_CRT_0152 tests first, then SpecTrace core validation, Release build, full Release tests, and diff whitespace checks.",
+  "completion_notes": "The managed server now has an internal 0-RTT admission gate that accepts only when the caller has already validated the PSK binder, the remembered transport parameters remain acceptable for server 0-RTT, and the listener-local ticket identity can be consumed exactly once. Unvalidated PSK offers and transport-parameter-rejected attempts fail without consuming the ticket. Expired, unknown, and replayed tickets fail closed. The slice does not advertise early_data, open server ZeroRtt packets, deliver early application data, widen public API or IsSupported, or promote the zerortt interop cell.",
+  "out_of_scope": [
+    "early_data ticket advertisement",
+    "server ZeroRtt packet opening or decryption",
+    "early application-data delivery",
+    "public early-data APIs",
+    "IsSupported widening",
+    "HTTP/3",
+    "external ticket persistence",
+    "cluster-wide anti-replay coordination",
+    "interop zerortt support classification"
+  ]
+}

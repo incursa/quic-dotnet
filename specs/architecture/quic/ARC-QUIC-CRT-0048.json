@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0048",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC server-side 0-RTT admission anti-replay gate architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the internal server 0-RTT admission gate that composes validated PSK state, remembered transport-parameter acceptance, and listener-local one-time ticket consumption before any future server ZeroRtt opening or delivery path can use early data.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-RFC9000-0069",
+    "WI-QUIC-CRT-0050",
+    "VER-QUIC-CRT-0050"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0152"
+  ],
+  "design_summary": "The server 0-RTT admission decision is kept behind an internal gate instead of being inferred from successful resumption. The caller must provide an already validated PSK-binder result from the same managed listener ticket store. The gate then evaluates remembered transport parameters with the existing server 0-RTT transport-parameter policy and consumes the matching live ticket identity from the listener-local store exactly once. Replayed, unknown, expired, unvalidated-PSK, or transport-parameter-rejected attempts fail closed before any early data can be delivered. The normal resumption lookup path stays available for 1-RTT resumption. The slice deliberately keeps early_data ticket advertisement, server ZeroRtt packet opening, application delivery, public API changes, IsSupported widening, HTTP/3, external ticket persistence, and cluster-wide anti-replay coordination outside the support boundary.",
+  "key_components": [
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0152.cs"
+  ],
+  "edge_cases_and_constraints": [
+    "PSK binder validation is a prerequisite input; this gate does not parse ClientHello or validate binders itself.",
+    "Transport-parameter rejection happens before ticket consumption so invalid parameter attempts do not burn a live ticket.",
+    "A live ticket identity can be consumed only once for early-data admission within the listener-local in-memory store.",
+    "Expired tickets are removed and cleared when an early-data admission attempt reaches the ticket-consumption step.",
+    "The normal live-ticket lookup path remains separate so the existing 1-RTT resumption proof is not weakened.",
+    "The gate is internal and does not advertise early_data, open server ZeroRtt packets, or deliver application data."
+  ],
+  "alternatives_considered": [
+    "Treat accepted resumption PSK as sufficient for 0-RTT. Rejected because server early-data admission also needs remembered transport-parameter validation and anti-replay ownership.",
+    "Consume the ticket before transport-parameter validation. Rejected because parameter-rejected attempts should fail without burning unrelated live state.",
+    "Mark the interop zerortt cell supported once anti-replay state exists. Rejected because the server still does not advertise early_data, open ZeroRtt packets, or deliver early application data."
+  ],
+  "risks": [
+    "Calling the gate before binder validation would make anti-replay state depend on unauthenticated input.",
+    "Sharing ticket state beyond one listener would imply persistence or cluster coordination that this slice does not implement.",
+    "Treating the internal gate as a runtime support claim would overstate zerortt readiness."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Code And Proof Surfaces",
+      "content": "- [`src/Incursa.Quic/QuicServerResumptionTicketStore.cs`](../../../src/Incursa.Quic/QuicServerResumptionTicketStore.cs)\n- [`src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs`](../../../src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs)\n- [`src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs`](../../../src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0152.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0152.cs)"
+    }
+  ]
+}

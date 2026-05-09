@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires server-side 0-RTT admission and anti-replay ownership; current server tickets do not advertise early_data.'
+            Notes = 'Requires early_data ticket advertisement, server ZeroRtt packet opening, and early application-delivery proof; internal admission-gate proof alone is not support evidence.'
         }
 
         [pscustomobject]@{

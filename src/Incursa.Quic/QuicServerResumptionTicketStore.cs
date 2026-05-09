@@ -89,6 +89,33 @@ internal sealed class QuicServerResumptionTicketStore
         return true;
     }
 
+    internal bool TryConsumeLiveTicketForEarlyData(
+        ReadOnlySpan<byte> ticketBytes,
+        long nowTicks,
+        out QuicServerResumptionTicketRecord ticket)
+    {
+        ticket = null!;
+        if (ticketBytes.IsEmpty)
+        {
+            return false;
+        }
+
+        string key = Convert.ToHexString(ticketBytes);
+        if (!tickets.TryRemove(key, out QuicServerResumptionTicketRecord? record))
+        {
+            return false;
+        }
+
+        if (record.IsExpired(nowTicks))
+        {
+            record.Clear();
+            return false;
+        }
+
+        ticket = record;
+        return true;
+    }
+
     internal void Clear()
     {
         foreach (QuicServerResumptionTicketRecord record in tickets.Values)

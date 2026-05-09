@@ -165,7 +165,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "notes: Requires server-side 0-RTT admission and anti-replay ownership",
+            "notes: Requires early_data ticket advertisement, server ZeroRtt packet opening, and early application-delivery proof",
             output,
             StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);

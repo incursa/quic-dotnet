@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0050",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC server-side 0-RTT admission anti-replay gate verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests with positive, negative, expiry, and fuzz-shaped coverage, followed by SpecTrace, build, full-suite, and diff validation.",
+  "scope": "Verify that server 0-RTT admission is available only through the internal gate after prior PSK validation, accepted remembered transport parameters, and listener-local one-time ticket consumption while keeping early_data advertisement, server ZeroRtt opening, application delivery, and public support promises closed.",
+  "preconditions": [
+    "The managed listener ticket store contains a live server-issued ticket.",
+    "The caller has separately validated the PSK binder for the offered ticket identity.",
+    "The remembered transport-parameter snapshot and current server parameters are available for server 0-RTT acceptance checks."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0152.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0152\"",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "dotnet build Incursa.Quic.slnx -c Release",
+    "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused REQ-QUIC-CRT-0152 requirement-home tests.",
+    "Confirm a validated PSK with acceptable remembered transport parameters consumes a live ticket exactly once.",
+    "Confirm replay of the same ticket identity is rejected after the first admission.",
+    "Confirm unvalidated PSK and rejected transport-parameter attempts fail before consuming a live ticket.",
+    "Confirm expired tickets are rejected and removed from the listener-local store.",
+    "Repeat deterministic ticket-identity mutations to prove at most one admission per ticket identity."
+  ],
+  "expected_result": "The internal server 0-RTT admission gate accepts only a validated, transport-parameter-compatible, live same-listener ticket once. Invalid attempts fail closed. early_data advertisement, server ZeroRtt packet opening, application delivery, public API support, HTTP/3, and interop zerortt support remain out of scope.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-CRT-0048",
+    "WI-QUIC-CRT-0050"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Acceptance Criteria",
+      "content": "- A validated PSK with acceptable remembered transport parameters consumes a live ticket exactly once.\n- Replays, unknown tickets, and expired tickets are rejected.\n- Unvalidated PSK and transport-parameter-rejected attempts do not consume live tickets.\n- The existing 1-RTT resumption ticket lookup remains available.\n- early_data advertisement, server ZeroRtt opening, application delivery, public API support, HTTP/3, and interop zerortt promotion remain unchanged."
+    }
+  ],
+  "status_summary": "Passed locally for focused REQ-QUIC-CRT-0152 requirement-home coverage, including one-time consumption, replay rejection, pre-consumption fail-closed behavior, expiry cleanup, and fuzz-shaped repeated-consumption proof. The final gate passed with SpecTrace core validation, Release build, full Release no-build test rerun, and diff check. This remains an internal prerequisite only; zerortt stays prerequisite-blocked until early_data ticket advertisement, server ZeroRtt packet opening, and early application-data delivery are implemented and proven.",
+  "verifies": [
+    "REQ-QUIC-CRT-0152"
+  ]
+}

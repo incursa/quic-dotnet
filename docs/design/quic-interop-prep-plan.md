@@ -307,14 +307,21 @@ Notes on dependency:
    - Status: in progress. The helper/workflow surface now accepts the documented non-HTTP/3 inventory and writes explicit inventory artifacts; the remaining work is turning the blocked cells green case-by-case.
    - Depends on: the current helper/workflow subset, the documented upstream testcase list, and the runtime prerequisite gates for 0-RTT, key update, and migration staying explicit.
 
+21. `Server-side 0-RTT admission anti-replay gate`
+   - Goal: keep the server-side 0-RTT admission prerequisite traceable under `REQ-QUIC-CRT-0152`, `ARC-QUIC-CRT-0048`, `WI-QUIC-CRT-0050`, and `VER-QUIC-CRT-0050`.
+   - Focus: internal admission only after prior PSK-binder validation, server remembered-transport-parameter acceptance, and listener-local one-time ticket consumption, with replay/unknown/expired/unvalidated-PSK/rejected-parameter attempts failing closed.
+   - Status: landed. The managed server now has the internal anti-replay gate needed before future receive work can advertise or open early data, but it still does not advertise `early_data`, open server ZeroRtt packets, deliver early application data, or promote the `zerortt` interop cell.
+   - Depends on: the server ticket issuance slice, server PSK acceptance slice, server remembered transport-parameter policy, and current interop inventory boundary staying stable.
+
 ## Do-Not-Widen Boundaries
 
 - Keep `QuicConnection` and `QuicListener` on the current narrow supported promise until the runtime and TLS buckets are stable.
 - Keep `IsSupported` as a narrow managed capability marker. It must not become a feature-completeness claim.
 - Keep `Abort(Both, ...)` support narrow and confined to the supported bidirectional loopback slice.
 - Keep `0-RTT` and key update out of the public promise.
-- Keep public early-data support, 0-RTT receive handling, and anti-replay out of
-  the promise until they are implemented and proven.
+- Keep public early-data support and full 0-RTT receive handling out of the
+  promise until `early_data` advertisement, server ZeroRtt opening, and early
+  application delivery are implemented and proven.
 - Keep broader stream-management parity out of the public promise until the stream bucket is actually closed.
 - Keep hostname validation, trust-store validation, and certificate-path validation out of the public client promise until they are implemented and proven.
 - Keep interop runner testcase support at `127` for unsupported cases other than the narrow supported `retry`, `post-handshake-stream`, and `multiconnect` child-process contracts.
@@ -332,6 +339,7 @@ Notes on dependency:
 - The early-data prerequisite capture slice under `REQ-QUIC-CRT-0139` is now closed. The managed client/runtime path carries the minimum dormant early-data prerequisite material behind the detached carrier, but public early-data support, 0-RTT receive handling, and anti-replay remain out of scope.
 - The dormant early-data attempt-readiness slice under `REQ-QUIC-CRT-0140` is now closed. The managed client/runtime path surfaces a narrow internal readiness observation when the dormant carrier has both ingredients, but broader receive, anti-replay, and public-promise families remain separate.
 - The peer early-data disposition observation slice under `REQ-QUIC-CRT-0143` is now closed. The managed client/runtime path now observes peer EncryptedExtensions early_data disposition and discards dormant ZeroRtt material on rejection, but public early-data support remains explicitly closed.
+- The internal server-side 0-RTT admission anti-replay gate under `REQ-QUIC-CRT-0152` is now closed. The managed server can consume a live listener-local ticket at most once after prior PSK validation and server remembered-transport-parameter acceptance, but `early_data` advertisement, server ZeroRtt opening, early application-data delivery, public early-data support, and interop `zerortt` promotion remain out of scope.
 - The narrow internal key-update epoch-cap slice under `REQ-QUIC-RFC9001-S6P5-0007`, `ARC-QUIC-RFC9001-0009`, `WI-QUIC-RFC9001-0009`, and `VER-QUIC-RFC9001-0009` is now closed. The internal epoch identifier can advance past the old 32-bit boundary without confusing the one-bit packet Key Phase signal, while public key-update support remains separate.
 - The internal repeated 1-RTT key-update lifecycle under `ARC-QUIC-RFC9001-0003`, `WI-QUIC-RFC9001-0003`, and `VER-QUIC-RFC9001-0003` is now closed for the bounded moving-window runtime model. Public key-update support and interop key-update proof remain out of scope.
 

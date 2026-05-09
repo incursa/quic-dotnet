@@ -1,6 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-09 for INT resumption runner proof with managed SSLKEYLOGFILE export,
+Last verified: 2026-05-09 for CRT server-side 0-RTT admission anti-replay gate proof,
+INT resumption runner proof with managed SSLKEYLOGFILE export,
 CRT server-side resumption PSK acceptance proof, CRT server NewSessionTicket issuance proof,
 INT non-HTTP/3 inventory dry-run proof,
 RFC 9000 S5 disable-active-migration proof topoff, S6 reserved-version ignore
@@ -24,6 +25,34 @@ This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
 architecture, work items, or verification artifacts under `specs/`.
 
+## 2026-05-09 CRT Server 0-RTT Admission Anti-Replay Gate Closure Note
+
+`REQ-QUIC-CRT-0152` now owns the internal managed server 0-RTT admission gate
+prerequisite. The gate requires a PSK binder that was already validated by the
+same managed listener ticket store, checks the remembered 0-RTT transport
+parameters against the current server parameters, and consumes the matching
+live ticket identity at most once through listener-local anti-replay state.
+
+Focused negative proof covers replayed, unknown, expired, unvalidated-PSK, and
+transport-parameter-rejected admission attempts failing closed. Unvalidated PSK
+and rejected-parameter attempts do not consume the live ticket; expired tickets
+are removed and cleared once the admission path reaches ticket consumption.
+
+This is not a `zerortt` interop promotion. The server still does not advertise
+the TLS `early_data` extension in NewSessionTicket, does not open server
+ZeroRtt packets, does not deliver early application data, does not add public
+early-data API or widen `IsSupported`, and does not bring HTTP/3 into scope.
+The next source-level unresolved `zerortt` work is the runtime path that
+advertises `early_data`, opens server ZeroRtt packets, and proves early
+application-data delivery.
+
+Local verification passed: focused
+`dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release
+-m:1 --filter "FullyQualifiedName~REQ_QUIC_CRT_0152"` reported 4/4 passing,
+SpecTrace core validation passed, Release build completed with 0 warnings and
+0 errors, full Release no-build test rerun reported 4,883/4,883 passing, and
+`git diff --check` exited 0.
+
 ## 2026-05-09 INT Resumption Runner Closure Note
 
 The `resumption` interop inventory cell is now supported/executed for the
@@ -43,8 +72,8 @@ This support claim stays limited to the runner's TLS session-resumption cell. It
 does not claim HTTP/3, 0-RTT, anti-replay, external ticket persistence, public
 API widening, or broader resumption support. `chacha20` remains blocked on
 runner/platform cipher-suite policy support. The next source-level unresolved
-runtime cell is `zerortt`, which requires server-side 0-RTT admission and
-anti-replay ownership.
+runtime cell is `zerortt`, which requires `early_data` ticket advertisement,
+server ZeroRtt packet opening, and early application-data delivery proof.
 
 ## 2026-05-08 CRT Server Resumption PSK Acceptance Closure Note
 

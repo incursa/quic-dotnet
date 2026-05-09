@@ -158,6 +158,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0047.json`](WI-QUIC-CRT-0047.json): canonical CRT server-side 0-RTT receive closed-gate work item
 - [`WI-QUIC-CRT-0048.json`](WI-QUIC-CRT-0048.json): canonical CRT server-side resumption ticket issuance work item
 - [`WI-QUIC-CRT-0049.json`](WI-QUIC-CRT-0049.json): canonical CRT server-side resumption PSK acceptance work item
+- [`WI-QUIC-CRT-0050.json`](WI-QUIC-CRT-0050.json): canonical CRT server-side 0-RTT admission anti-replay gate work item
 
 ## Notes
 
