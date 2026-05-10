@@ -516,6 +516,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             EndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
 
+            _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
             int bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
             if (bytesSent != sendDatagramEffect.Datagram.Length)
             {
@@ -665,6 +666,21 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         ReadOnlySpan<byte> clientSourceConnectionId,
         ReadOnlySpan<byte> serverSourceConnectionId)
     {
+        return TrySendInitialCloseResponse(
+            pathIdentity,
+            initialDestinationConnectionId,
+            clientSourceConnectionId,
+            serverSourceConnectionId,
+            QuicTransportErrorCode.ConnectionRefused);
+    }
+
+    private bool TrySendInitialCloseResponse(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> initialDestinationConnectionId,
+        ReadOnlySpan<byte> clientSourceConnectionId,
+        ReadOnlySpan<byte> serverSourceConnectionId,
+        QuicTransportErrorCode errorCode)
+    {
         if (!QuicInitialPacketProtection.TryCreate(
             QuicTlsRole.Server,
             initialDestinationConnectionId,
@@ -683,10 +699,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         Span<byte> closePayload = stackalloc byte[32];
         if (!QuicFrameCodec.TryFormatConnectionCloseFrame(
-            new QuicConnectionCloseFrame(
-                QuicTransportErrorCode.ConnectionRefused,
-                triggeringFrameType: 0,
-                []),
+            new QuicConnectionCloseFrame(errorCode, triggeringFrameType: 0, []),
             closePayload,
             out int closePayloadLength))
         {
@@ -768,6 +781,24 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 {
                     if (!TryValidateRetryBootstrapReplay(datagram.Span, pathIdentity))
                     {
+                        switch (retryBootstrapReplayValidationFailureCode)
+                        {
+                            case RetryBootstrapReplayValidationFailureTokenParse:
+                            case RetryBootstrapReplayValidationFailureTokenMismatch:
+                            case RetryBootstrapReplayValidationFailureTokenValidation:
+                            {
+                                byte[] invalidTokenCloseServerSourceConnectionId =
+                                    GenerateDistinctServerSourceConnectionId(initialDestinationConnectionId);
+                                _ = TrySendInitialCloseResponse(
+                                    pathIdentity,
+                                    initialDestinationConnectionId,
+                                    clientSourceConnectionId,
+                                    invalidTokenCloseServerSourceConnectionId,
+                                    QuicTransportErrorCode.InvalidToken);
+                                break;
+                            }
+                        }
+
                         return false;
                     }
 

@@ -230,6 +230,17 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
             Assert.False(callbackEntered.Task.IsCompleted);
         }
 
+        internal async ValueTask<byte[]> ReceiveDatagramAsync()
+        {
+            byte[] responseBuffer = new byte[MaximumUdpDatagramPayloadSize];
+            using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+            int bytesReceived = await clientSocket.ReceiveAsync(
+                responseBuffer.AsMemory(),
+                SocketFlags.None,
+                receiveTimeout.Token);
+            return responseBuffer.AsSpan(0, bytesReceived).ToArray();
+        }
+
         internal async Task WaitForNoAdditionalCallbacksAsync(int expectedCallbackCount)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(250));
