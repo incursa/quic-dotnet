@@ -9,6 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S10P1P2_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0010")]
     public void RecordAckElicitingPacketSent_AllowsDeferredIdleTimeoutAfterPeerActivity()
     {
         QuicIdleTimeoutState state = new(100);
@@ -29,6 +30,7 @@ public sealed class REQ_QUIC_RFC9000_S10P1P2_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0010")]
     public void RecordAckElicitingPacketSent_DoesNotKeepExtendingTheDeadlineForRepeatedLocalTraffic()
     {
         QuicIdleTimeoutState state = new(100);

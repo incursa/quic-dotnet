@@ -31,6 +31,7 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0010")]
     public void RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue()
     {
         QuicIdleTimeoutState state = new(ulong.MaxValue);
