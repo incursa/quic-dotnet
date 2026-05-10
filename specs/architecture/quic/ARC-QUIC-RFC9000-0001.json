@@ -13,6 +13,10 @@
     {
       "heading": "Related Artifacts",
       "content": "- SPEC-QUIC-RFC9000\n- WI-QUIC-RFC9000-0001\n- VER-QUIC-RFC9000-0001"
+    },
+    {
+      "heading": "Application Idle Timeout Guidance",
+      "content": "Application protocols that use QUIC SHOULD defer the idle timeout only when they have an explicit, ongoing reason to keep the connection open, such as active user-visible work, a pending request-response exchange, or an intentional keepalive policy.\nApplication protocols SHOULD NOT defer the idle timeout merely because the transport is alive or because the application has no current traffic.\nThe transport helper in REQ-QUIC-RFC9000-S10P1P2-0002 exposes the ability to defer an idle timeout after peer activity, but it does not decide whether that policy is appropriate for a given application protocol.\nThis guidance is application-owned and documentation-owned, not a transport-runtime behavior claim."
     }
   ],
   "artifact_id": "ARC-QUIC-RFC9000-0001",

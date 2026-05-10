@@ -15741,6 +15741,11 @@
         "upstream_refs": [
           "RFC 9000 §10.1.2 RFC9000-S10.1.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0001.cs::ArchitectureArtifact_DescribesWhenApplicationsShouldDeferIdleTimeout",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0001.cs::ArchitectureArtifact_DoesNotClaimTransportAutonomyForApplicationPolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0001.cs::ArchitectureArtifact_StaysBoundedToDocumentationOwnedGuidance"
         ]
       }
     },

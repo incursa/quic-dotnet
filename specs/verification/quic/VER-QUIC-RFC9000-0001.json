@@ -1888,6 +1888,10 @@
     {
       "heading": "2026-05-10 S7-0005 Distinct Handshake Key Shares",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7_0005\"` passed 2/2.\n- `REQ-QUIC-RFC9000-S7-0005` now has direct proof that two independently constructed client connections expose distinct handshake key shares, and that a single connection keeps its key share stable across repeated reads.\n- Regenerated coverage triage should mark `REQ-QUIC-RFC9000-S7-0005` trace_clean once refreshed.\n- This remains bounded to per-connection handshake key material distinctness and does not claim broader packet-protection or handshake-policy behavior."
+    },
+    {
+      "heading": "2026-05-10 S10P1P2 Application Idle Timeout Guidance Docs Surface",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P1P2_0001\"` passed 3/3.\n- `REQ-QUIC-RFC9000-S10P1P2-0001` now has direct proof that the canonical RFC 9000 architecture artifact includes bounded application idle-timeout guidance, that the guidance tells application protocols when deferring the idle timeout is appropriate, and that the guidance remains separate from the transport helper in `REQ-QUIC-RFC9000-S10P1P2-0002`.\n- Regenerated coverage triage should mark `REQ-QUIC-RFC9000-S10P1P2-0001` trace_clean once refreshed.\n- This remains bounded to a documentation-owned application-policy surface and does not claim new transport behavior."
     }
   ],
   "domain": "quic"
