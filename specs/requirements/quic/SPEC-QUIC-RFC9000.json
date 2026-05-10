@@ -8758,6 +8758,10 @@
         "upstream_refs": [
           "RFC 9000 §7 RFC9000-S7-B7-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0005.cs::TwoConnectionsExposeDistinctHandshakeKeyShares",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0005.cs::EachConnectionKeepsItsOwnHandshakeKeyShareStable"
         ]
       }
     },
