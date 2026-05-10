@@ -1,26 +1,23 @@
 # Current Repository Status
 
-Last verified: 2026-05-09 for CRT internal server-side 0-RTT opening proof,
-CRT server-side 0-RTT admission anti-replay gate proof,
-INT resumption runner proof with managed SSLKEYLOGFILE export,
-CRT server-side resumption PSK acceptance proof, CRT server NewSessionTicket issuance proof,
-INT non-HTTP/3 inventory dry-run proof,
-RFC 9000 S5 disable-active-migration proof topoff, S6 reserved-version ignore
-proof topoff, S2 concurrent-stream proof topoff, S2 stream-cancellation proof
-topoff, S13 ECN
-continuation-after-success proof
-topoff, S13 ECN disable-on-validation-failure proof topoff, S13 ECT(1)+CE
-too-small validation proof topoff, S13 ECT(0)+CE too-small validation proof
-topoff, S13 ECN validation-before-use proof topoff, S13 ECT(1) validation count
-topoff, S13 ECN packet-number-space separation, S13 ACK frame largest-packet
-delay boundary closure, S13 CRYPTO retransmission acknowledgment-boundary
-closure, S13 packet-number-space ACK separation, S13 multiple-packet
-ACK-decision closure, S13 max-ack-delay and non-ack inclusion closure, S13
-ACK-only feedback-loop edge proof, S13 periodic ACK-probe closure, RFC9001 tail
-proof closure, trace substrate repair, metadata xref burn-down, SpecTrace core
-validation, and regenerated QUIC requirement coverage triage. Earlier
-runtime/proof-tail and hosted executive-read evidence remains pinned to the
-individual dated closure notes below unless otherwise noted.
+Last verified: 2026-05-10 for RFC 9000 blocked-tail audit, S10P1P2 idle-timeout
+guidance, and regenerated QUIC coverage triage.
+
+## 2026-05-10 RFC 9000 Blocked-Tail Audit
+
+The current generated triage reports `trace_clean: 1704` and
+`uncovered_blocked: 67`.
+
+The first remaining blocked requirement is
+`REQ-QUIC-RFC9000-S17P2P5P3-0008`, the optional server abort-on-packet-number
+reset clause. The runtime still lacks a faithful server-side abort seam for that
+event.
+
+The rest of the blocked tail is still policy, registry, and deployment heavy.
+There are no unblocked RFC 9000 items left in the generated triage.
+
+Earlier runtime/proof-tail and hosted executive-read evidence remains pinned to
+the individual dated closure notes below unless otherwise noted.
 
 This page is an operator snapshot. It records the current repo state and the
 next recommended work lane, but it does not replace the canonical requirements,
