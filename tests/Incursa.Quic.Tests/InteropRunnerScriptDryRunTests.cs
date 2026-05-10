@@ -165,10 +165,11 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "notes: Requires first-flight key-share/HelloRetryRequest compatibility, full hosted/Linux zerortt runner proof, client-side 0-RTT request-stream proof, and harness classification",
+            "notes: Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification",
             output,
             StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("partial hosted stream proof alone is not support evidence", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("too much data used 1-RTT packets", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("partial hosted proof alone is not support evidence", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("zerortt -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));

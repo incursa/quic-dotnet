@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires first-flight key-share/HelloRetryRequest compatibility, full hosted/Linux zerortt runner proof, client-side 0-RTT request-stream proof, and harness classification; server-role dispatch or partial hosted stream proof alone is not support evidence.'
+            Notes = 'Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification; hosted run 25617834482 reached managed responses/download success but still failed because too much data used 1-RTT packets, so server-role dispatch or partial hosted proof alone is not support evidence.'
         }
 
         [pscustomobject]@{
