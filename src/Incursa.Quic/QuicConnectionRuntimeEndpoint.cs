@@ -438,7 +438,10 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             datagram.AsMemory(0, bytesWritten));
     }
 
-    public QuicConnectionIngressResult ReceiveDatagram(ReadOnlyMemory<byte> datagram, QuicConnectionPathIdentity pathIdentity)
+    public QuicConnectionIngressResult ReceiveDatagram(
+        ReadOnlyMemory<byte> datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        QuicEcnCounts? ecnCounts = null)
     {
         if (datagram.IsEmpty)
         {
@@ -460,7 +463,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         if (headerForm == QuicHeaderForm.Short)
         {
-            return ReceiveShortHeaderDatagram(datagram, pathIdentity, packet);
+            return ReceiveShortHeaderDatagram(datagram, pathIdentity, packet, ecnCounts);
         }
 
         if (QuicPacketParser.TryParseVersionNegotiation(packet, out _))
@@ -621,7 +624,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     private QuicConnectionIngressResult ReceiveShortHeaderDatagram(
         ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
-        ReadOnlySpan<byte> packet)
+        ReadOnlySpan<byte> packet,
+        QuicEcnCounts? ecnCounts)
     {
         if (packet.IsEmpty)
         {
@@ -645,7 +649,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                     return CreateDroppedIngressResult(routedHandle);
                 }
 
-                if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId))
+                if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId, ecnCounts))
                 {
                     return new QuicConnectionIngressResult(
                         QuicConnectionIngressDisposition.RoutedToConnection,
@@ -890,13 +894,15 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         QuicConnectionHandle handle,
         ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
-        ulong? routedLocallyIssuedConnectionId)
+        ulong? routedLocallyIssuedConnectionId,
+        QuicEcnCounts? ecnCounts = null)
     {
         return host.TryPostEvent(handle, new QuicConnectionPacketReceivedEvent(
             clock.Ticks,
             pathIdentity,
             datagram,
-            routedLocallyIssuedConnectionId));
+            routedLocallyIssuedConnectionId,
+            ecnCounts));
     }
 
     private bool TryDispatchStatelessReset(

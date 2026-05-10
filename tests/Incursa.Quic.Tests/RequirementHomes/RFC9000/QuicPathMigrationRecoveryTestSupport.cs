@@ -53,6 +53,29 @@ internal static class QuicPathMigrationRecoveryTestSupport
         return runtime;
     }
 
+    internal static QuicConnectionRuntime CreateServerRuntimeWithActivePath(
+        QuicConnectionPathIdentity activePath,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
+    {
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            tlsRole: QuicTlsRole.Server,
+            diagnosticsSink: diagnosticsSink);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 1),
+            nowTicks: 1).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                activePath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 2).StateChanged);
+
+        return runtime;
+    }
+
     internal static void DirtyRecoveryState(QuicConnectionRuntime runtime)
     {
         runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(

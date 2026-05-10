@@ -5,6 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0003")]
     [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse()
     {
@@ -72,6 +73,8 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]

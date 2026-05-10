@@ -13,6 +13,8 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0006
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation()
     {

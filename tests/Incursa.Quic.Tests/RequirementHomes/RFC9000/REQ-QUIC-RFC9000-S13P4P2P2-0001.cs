@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S13P4P2P2_0001
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_DisablesEcnOnValidationFailure()
@@ -32,6 +33,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P2_0001
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryValidateAcknowledgedEcnCounts_DisablesEcnWhenCountsAreMissingOrExceedSentCounts()

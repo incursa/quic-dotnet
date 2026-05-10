@@ -63,6 +63,10 @@ internal sealed class QuicConnectionSendRuntime
 
     internal QuicEcnValidationState EcnValidationState => ecnValidationState;
 
+    internal QuicEcnMarking CurrentEcnMarking => ecnValidationState.IsEcnEnabled
+        ? QuicEcnMarking.Ect0
+        : QuicEcnMarking.NotEct;
+
     public IReadOnlyDictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> SentPackets => sentPackets;
 
     public ulong? LossDetectionDeadlineMicros { get; private set; }
@@ -160,6 +164,7 @@ internal sealed class QuicConnectionSendRuntime
 
         packet = NormalizePacketProtectionLevel(packet);
         ValidateCryptoMetadata(packet);
+        ecnValidationState.RecordPacketSent(packet.PacketNumberSpace, CurrentEcnMarking);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         sentPackets[key] = packet;
         flowController.RecordPacketSent(

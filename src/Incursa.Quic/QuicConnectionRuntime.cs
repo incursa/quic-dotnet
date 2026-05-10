@@ -124,13 +124,18 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
     private long? pendingApplicationAckDelayDueTicks;
+    private ulong largestObservedInitialPacketNumber;
+    private ulong largestObservedHandshakePacketNumber;
     private bool hasObservedApplicationPacketNumber;
+    private bool hasObservedInitialPacketNumber;
+    private bool hasObservedHandshakePacketNumber;
     private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
 
     private sealed record BufferedEstablishmentHandshakePacket(
         QuicConnectionPathIdentity PathIdentity,
         byte[] SourceConnectionId,
-        byte[] Datagram);
+        byte[] Datagram,
+        QuicEcnCounts? EcnCounts);
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,

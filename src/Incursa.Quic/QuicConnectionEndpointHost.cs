@@ -201,6 +201,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
         try
         {
+            _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.NotEct);
             int bytesSent = socket.Send(reset.Datagram.Span, SocketFlags.None);
             if (bytesSent != reset.Datagram.Length)
             {
@@ -229,6 +230,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     {
         try
         {
+            _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
             int bytesSent = socket.Send(sendDatagramEffect.Datagram.Span, SocketFlags.None);
             if (bytesSent != sendDatagramEffect.Datagram.Length)
             {

@@ -58,7 +58,8 @@ internal sealed record QuicConnectionPacketReceivedEvent(
     long ObservedAtTicks,
     QuicConnectionPathIdentity PathIdentity,
     ReadOnlyMemory<byte> Datagram,
-    ulong? RoutedLocallyIssuedConnectionId = null)
+    ulong? RoutedLocallyIssuedConnectionId = null,
+    QuicEcnCounts? EcnCounts = null)
     : QuicConnectionEvent(QuicConnectionEventKind.PacketReceived, ObservedAtTicks);
 
 internal sealed record QuicConnectionTimerExpiredEvent(
@@ -179,7 +180,8 @@ internal abstract record QuicConnectionEffect(QuicConnectionEffectKind Kind);
 
 internal sealed record QuicConnectionSendDatagramEffect(
     QuicConnectionPathIdentity PathIdentity,
-    ReadOnlyMemory<byte> Datagram)
+    ReadOnlyMemory<byte> Datagram,
+    QuicEcnMarking EcnMarking = QuicEcnMarking.NotEct)
     : QuicConnectionEffect(QuicConnectionEffectKind.SendDatagram);
 
 internal sealed record QuicConnectionArmTimerEffect(
