@@ -30,6 +30,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int PreferredAddressIPv6BytesLength = 16;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
     private const ulong DefaultMaxAckDelayMicros = QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros;
+    private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
     // Hold slightly underfilled application writes long enough to coalesce a follow-up FIN
     // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
     private const int ApplicationSendDelayThresholdBytes = 32;

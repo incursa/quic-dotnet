@@ -225,6 +225,88 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public async Task WriteAsync_FollowedByCompleteWritesAsync_PreservesQueuedFinalStreamWhenCongestionBlocksImmediateFlush()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        Assert.True(runtime.ActivePath.HasValue);
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                runtime.ActivePath.Value.Identity,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 9);
+        outboundEffects.Clear();
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        if (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+        {
+            congestion.RegisterPacketSent(congestion.CongestionWindowBytes - congestion.BytesInFlightBytes);
+        }
+
+        Assert.False(congestion.CanSend(1));
+
+        byte[] request = Encoding.ASCII.GetBytes("GET /queued-final\r\n");
+        await stream.WriteAsync(request, 0, request.Length);
+
+        Assert.Contains(outboundEffects, effect =>
+            effect is QuicConnectionArmTimerEffect arm
+            && arm.TimerKind == QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        await stream.CompleteWritesAsync().AsTask();
+
+        Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+
+        congestion.Reset();
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            sendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool keyPhase));
+        Assert.False(keyPhase);
+
+        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(payload, out QuicStreamFrame requestFrame));
+        Assert.Equal((ulong)stream.Id, requestFrame.StreamId.Value);
+        Assert.Equal(0UL, requestFrame.Offset);
+        Assert.True(requestFrame.IsFin);
+        Assert.True(requestFrame.StreamData.SequenceEqual(request));
+
+        ReadOnlySpan<byte> tail = SkipPadding(payload[requestFrame.ConsumedLength..]);
+        Assert.True(tail.IsEmpty);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires()
     {
         QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();

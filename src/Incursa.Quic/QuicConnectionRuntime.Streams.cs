@@ -300,12 +300,18 @@ internal sealed partial class QuicConnectionRuntime
                     new InvalidOperationException("The connection runtime could not mark the queued stream write as final."));
             }
 
-            if (!FlushPendingApplicationSends(nowTicks, ref effects))
+            if (!FlushPendingApplicationSends(nowTicks, ref effects, out Exception? flushException))
             {
+                if (IsTransientCongestionExhaustion(flushException))
+                {
+                    completion.TrySetResult(null);
+                    return true;
+                }
+
                 return FailWriteAfterRollback(
                     completion,
                     sendStateBeforeWrite,
-                    new InvalidOperationException("The connection runtime could not flush queued stream writes before finishing the writable side."));
+                    flushException ?? new InvalidOperationException("The connection runtime could not flush queued stream writes before finishing the writable side."));
             }
 
             TryReleasePeerStreamCapacity(streamId, ref effects);
@@ -463,24 +469,34 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)
-        => FlushPendingApplicationSends(nowTicks, probePacket: false, ref effects);
+        => FlushPendingApplicationSends(nowTicks, ref effects, out _);
+
+    private bool FlushPendingApplicationSends(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects,
+        out Exception? exception)
+        => FlushPendingApplicationSends(nowTicks, probePacket: false, ref effects, out exception);
 
     private bool FlushPendingApplicationSends(
         long nowTicks,
         bool probePacket,
         ref List<QuicConnectionEffect>? effects)
-    {
-        _ = nowTicks;
+        => FlushPendingApplicationSends(nowTicks, probePacket, ref effects, out _);
 
+    private bool FlushPendingApplicationSends(
+        long nowTicks,
+        bool probePacket,
+        ref List<QuicConnectionEffect>? effects,
+        out Exception? exception)
+    {
         if (pendingApplicationSendRequests.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
+            exception = null;
             return false;
         }
 
         PendingApplicationSendRequest[] queuedWrites = pendingApplicationSendRequests.ToArray();
-        pendingApplicationSendRequests.Clear();
-        pendingApplicationSendDelayDueTicks = null;
 
         Array.Sort(queuedWrites, ComparePendingApplicationSendRequests);
 
@@ -511,12 +527,21 @@ internal sealed partial class QuicConnectionRuntime
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
             out byte[] protectedPacket,
-            out Exception? exception))
+            out exception))
         {
-            _ = exception;
+            if (IsTransientCongestionExhaustion(exception))
+            {
+                pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                    nowTicks,
+                    ConvertMicrosToTicks(ApplicationSendDelayMicros));
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            }
+
             return false;
         }
 
+        pendingApplicationSendRequests.Clear();
+        pendingApplicationSendDelayDueTicks = null;
         activePath = currentPath with
         {
             AmplificationState = updatedAmplificationState,
@@ -525,7 +550,17 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
+        exception = null;
         return true;
+    }
+
+    private static bool IsTransientCongestionExhaustion(Exception? exception)
+    {
+        return exception is InvalidOperationException invalidOperationException
+            && string.Equals(
+                invalidOperationException.Message,
+                CongestionControllerExhaustedMessage,
+                StringComparison.Ordinal);
     }
 
     private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref List<QuicConnectionEffect>? effects)
@@ -1281,7 +1316,7 @@ internal sealed partial class QuicConnectionRuntime
             isAckOnlyPacket: ackOnlyPacket,
             isProbePacket: probePacket))
         {
-            exception = new InvalidOperationException("The congestion controller cannot send another ordinary packet.");
+            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
             return false;
         }
 
@@ -1435,7 +1470,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicPacketNumberSpace.ApplicationData,
             (ulong)protectedPacket.Length))
         {
-            exception = new InvalidOperationException("The congestion controller cannot send another ordinary packet.");
+            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
             return false;
         }
 
