@@ -2,6 +2,7 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0016">The stateless reset token MUST be difficult to guess.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0009">In order to create a stateless reset token, an endpoint MAY randomly generate a secret for every connection that it creates.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0016")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0016

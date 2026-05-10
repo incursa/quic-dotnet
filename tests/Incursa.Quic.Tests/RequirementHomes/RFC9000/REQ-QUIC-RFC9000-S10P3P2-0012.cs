@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0012">An endpoint that uses this design MUST NOT provide a zero-length connection ID.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0004">A static-key token function MUST NOT provide a zero-length connection ID.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3P2-0012")]
 public sealed class REQ_QUIC_RFC9000_S10P3P2_0012
