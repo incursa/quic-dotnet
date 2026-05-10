@@ -7,6 +7,7 @@ internal sealed partial class QuicConnectionRuntime
 {
     private const int LocallyIssuedConnectionIdLength = 8;
     private const int MaximumConnectionIdGenerationAttempts = 8;
+    private const ulong PathValidationMaxChallengeSendCountBeforeAbandonment = 3UL;
 
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
@@ -19,6 +20,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
+        bool packetDiscarded = false;
         int payloadBytes = packetReceivedEvent.Datagram.Length;
 
         if (activePath is null)
@@ -36,13 +38,25 @@ internal sealed partial class QuicConnectionRuntime
                 payloadBytes,
                 nowTicks,
                 ShouldDeferTrustedPathReusePromotion(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram.Span),
-                ref effects);
+                ref effects,
+                out packetDiscarded);
         }
 
         if (idleTimeoutState is not null)
         {
             idleTimeoutState.RecordPeerPacketProcessed(GetElapsedMicros(nowTicks));
             stateChanged = true;
+        }
+
+        if (packetDiscarded)
+        {
+            if (stateChanged)
+            {
+                hasSuccessfullyProcessedAnotherPacket = true;
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            }
+
+            return stateChanged;
         }
 
         if (phase == QuicConnectionPhase.Closing)
@@ -301,7 +315,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             UpdatePeerAddressValidationFlag();
-            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, default, ref effects);
+            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, CreateNoViablePathCloseMetadata(), ref effects);
         }
 
         candidatePath = candidatePath with
@@ -361,12 +375,21 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             UpdatePeerAddressValidationFlag();
-            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, default, ref effects);
+            return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.Remote, CreateNoViablePathCloseMetadata(), ref effects);
         }
 
         UpdatePeerAddressValidationFlag();
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return stateChanged;
+    }
+
+    private static QuicConnectionCloseMetadata CreateNoViablePathCloseMetadata()
+    {
+        return new QuicConnectionCloseMetadata(
+            TransportErrorCode: QuicTransportErrorCode.NoViablePath,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: null,
+            ReasonPhrase: "The endpoint has no viable path to its peer.");
     }
 
     private bool HandlePathValidationTimerExpired(
@@ -382,6 +405,23 @@ internal sealed partial class QuicConnectionRuntime
                 || !candidatePath.Validation.ValidationDeadlineTicks.HasValue
                 || candidatePath.Validation.ValidationDeadlineTicks.Value > nowTicks)
             {
+                continue;
+            }
+
+            if (candidatePath.Validation.ChallengeSendCount >= PathValidationMaxChallengeSendCountBeforeAbandonment)
+            {
+                candidatePath = candidatePath with
+                {
+                    Validation = candidatePath.Validation with
+                    {
+                        IsAbandoned = true,
+                        ValidationDeadlineTicks = null,
+                    },
+                    LastActivityTicks = nowTicks,
+                };
+
+                candidatePaths[entry.Key] = candidatePath;
+                stateChanged = true;
                 continue;
             }
 

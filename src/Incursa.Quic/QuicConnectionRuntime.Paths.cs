@@ -121,12 +121,20 @@ internal sealed partial class QuicConnectionRuntime
         int payloadBytes,
         long nowTicks,
         bool deferTrustedPathReusePromotion,
-        ref List<QuicConnectionEffect>? effects)
+        ref List<QuicConnectionEffect>? effects,
+        out bool packetDiscarded)
     {
+        packetDiscarded = false;
         QuicConnectionPathClassification classification = ClassifyPathChange(pathIdentity);
         if (diagnosticsEnabled)
         {
             EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
+        }
+
+        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity))
+        {
+            packetDiscarded = true;
+            return false;
         }
 
         if (preferredAddressOldPathIdentity.HasValue
@@ -232,6 +240,16 @@ internal sealed partial class QuicConnectionRuntime
         UpdatePeerAddressValidationFlag();
 
         return stateChanged;
+    }
+
+    private bool ShouldDiscardUnexpectedServerAddressPacket(QuicConnectionPathIdentity pathIdentity)
+    {
+        return tlsState.Role == QuicTlsRole.Client
+            && phase == QuicConnectionPhase.Active
+            && peerHandshakeTranscriptCompleted
+            && !preferredAddressOldPathIdentity.HasValue
+            && !TryGetCandidatePath(pathIdentity, out _)
+            && !TryGetRecentlyValidatedPath(pathIdentity, out _);
     }
 
     private bool TryHandleTrustedPathReuse(
@@ -1063,6 +1081,15 @@ internal sealed partial class QuicConnectionRuntime
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: true);
+        largestObservedInitialPacketNumber = 0;
+        largestObservedHandshakePacketNumber = 0;
+        largestObservedApplicationPacketNumber = 0;
+        lowestObservedCurrentOneRttKeyPhasePacketNumber = 0;
+        observedCurrentOneRttKeyPhase = 0;
+        hasObservedInitialPacketNumber = false;
+        hasObservedHandshakePacketNumber = false;
+        hasObservedApplicationPacketNumber = false;
+        hasObservedCurrentOneRttKeyPhasePacketNumber = false;
         recoveryController.Reset();
     }
 

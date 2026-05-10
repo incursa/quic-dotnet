@@ -701,8 +701,13 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
     }
 
-    private static void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)
+    private void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)
     {
+        if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
+        {
+            effect = sendDatagramEffect with { EcnMarking = sendRuntime.CurrentEcnMarking };
+        }
+
         (effects ??= []).Add(effect);
     }
 

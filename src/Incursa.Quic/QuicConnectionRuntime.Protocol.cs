@@ -498,7 +498,29 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             QuicTlsEncryptionLevel.Initial,
             nowTicks,
+            out bool packetAckEliciting,
+            out bool packetProcessed,
             ref effects);
+        if (packetProcessed)
+        {
+            if (!TryExpandOpenedPacketNumber(
+                    openedPacket,
+                    payloadOffset,
+                    QuicPacketNumberSpace.Initial,
+                    out ulong packetNumber))
+            {
+                return false;
+            }
+
+            RecordIncomingPacket(
+                QuicPacketNumberSpace.Initial,
+                packetNumber,
+                packetAckEliciting,
+                nowTicks,
+                packetReceivedEvent.EcnCounts);
+            UpdateObservedPacketNumber(QuicPacketNumberSpace.Initial, packetNumber);
+        }
+
         if (processed
             && acceptedPeerInitialSourceConnectionId is not null)
         {
@@ -805,7 +827,29 @@ internal sealed partial class QuicConnectionRuntime
             payload,
             QuicTlsEncryptionLevel.Handshake,
             nowTicks,
+            out bool packetAckEliciting,
+            out bool packetProcessed,
             ref effects);
+        if (packetProcessed)
+        {
+            if (!TryExpandOpenedPacketNumber(
+                    openedPacket,
+                    payloadOffset,
+                    QuicPacketNumberSpace.Handshake,
+                    out ulong packetNumber))
+            {
+                return false;
+            }
+
+            RecordIncomingPacket(
+                QuicPacketNumberSpace.Handshake,
+                packetNumber,
+                packetAckEliciting,
+                nowTicks,
+                packetReceivedEvent.EcnCounts);
+            UpdateObservedPacketNumber(QuicPacketNumberSpace.Handshake, packetNumber);
+        }
+
         if (processed)
         {
             processed |= TryPublishTlsKeyDiscard(
@@ -858,7 +902,8 @@ internal sealed partial class QuicConnectionRuntime
         bufferedEstablishmentHandshakePackets.Add(new BufferedEstablishmentHandshakePacket(
             packetReceivedEvent.PathIdentity,
             sourceConnectionId.ToArray(),
-            packetReceivedEvent.Datagram.ToArray()));
+            packetReceivedEvent.Datagram.ToArray(),
+            packetReceivedEvent.EcnCounts));
 
         return true;
     }
@@ -900,7 +945,8 @@ internal sealed partial class QuicConnectionRuntime
                 new QuicConnectionPacketReceivedEvent(
                     nowTicks,
                     bufferedPacket.PathIdentity,
-                    bufferedPacket.Datagram),
+                    bufferedPacket.Datagram,
+                    EcnCounts: bufferedPacket.EcnCounts),
                 nowTicks,
                 allowDeferredBuffering: false,
                 ref effects);
@@ -913,8 +959,12 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> payload,
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
+        out bool packetAckEliciting,
+        out bool packetProcessed,
         ref List<QuicConnectionEffect>? effects)
     {
+        packetAckEliciting = false;
+        packetProcessed = false;
         bool processedCryptoFrame = false;
         bool progressedTranscript = false;
         bool replayedDuplicateInitialCrypto = false;
@@ -943,6 +993,7 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 payloadOffset += pingBytesConsumed;
+                packetAckEliciting = true;
                 continue;
             }
 
@@ -996,6 +1047,7 @@ internal sealed partial class QuicConnectionRuntime
                         closeMetadata),
                     nowTicks,
                     ref effects);
+                packetProcessed = true;
                 return stateChanged;
             }
 
@@ -1090,6 +1142,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
+        packetProcessed = true;
         return stateChanged || processedCryptoFrame;
     }
 
@@ -1866,16 +1919,14 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
-        sendRuntime.FlowController.RecordIncomingPacket(
+        RecordIncomingPacket(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
             packetAckEliciting,
-            GetElapsedMicros(nowTicks));
+            nowTicks,
+            packetReceivedEvent.EcnCounts);
 
-        largestObservedApplicationPacketNumber = hasObservedApplicationPacketNumber
-            ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
-            : packetNumber;
-        hasObservedApplicationPacketNumber = true;
+        UpdateObservedPacketNumber(QuicPacketNumberSpace.ApplicationData, packetNumber);
         if (!openedWithRetainedOldOpenMaterial
             && tlsState.KeyUpdateInstalled
             && tlsState.CurrentOneRttKeyPhase != 0
@@ -2094,16 +2145,14 @@ internal sealed partial class QuicConnectionRuntime
                 packetAckEliciting = true;
             }
 
-            sendRuntime.FlowController.RecordIncomingPacket(
+            RecordIncomingPacket(
                 QuicPacketNumberSpace.ApplicationData,
                 packetNumber,
                 packetAckEliciting,
-                GetElapsedMicros(nowTicks));
+                nowTicks,
+                packetReceivedEvent.EcnCounts);
 
-            largestObservedApplicationPacketNumber = hasObservedApplicationPacketNumber
-                ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
-                : packetNumber;
-            hasObservedApplicationPacketNumber = true;
+            UpdateObservedPacketNumber(QuicPacketNumberSpace.ApplicationData, packetNumber);
 
             if (TrySendPendingApplicationAck(nowTicks, ref effects))
             {
@@ -2135,7 +2184,26 @@ internal sealed partial class QuicConnectionRuntime
             && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt;
     }
 
-    private bool TryExpandOpenedApplicationPacketNumber(ReadOnlySpan<byte> openedPacket, int payloadOffset, out ulong packetNumber)
+    private void RecordIncomingPacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        bool ackEliciting,
+        long nowTicks,
+        QuicEcnCounts? ecnCounts = null)
+    {
+        sendRuntime.FlowController.RecordIncomingPacket(
+            packetNumberSpace,
+            packetNumber,
+            ackEliciting,
+            GetElapsedMicros(nowTicks),
+            ecnCounts: ecnCounts);
+    }
+
+    private bool TryExpandOpenedPacketNumber(
+        ReadOnlySpan<byte> openedPacket,
+        int payloadOffset,
+        QuicPacketNumberSpace packetNumberSpace,
+        out ulong packetNumber)
     {
         packetNumber = default;
 
@@ -2162,11 +2230,65 @@ internal sealed partial class QuicConnectionRuntime
             truncatedPacketNumber = (truncatedPacketNumber << BitsPerByte) | openedPacket[index];
         }
 
-        ulong expectedPacketNumber = hasObservedApplicationPacketNumber
-            ? largestObservedApplicationPacketNumber + 1
-            : 0;
+        ulong expectedPacketNumber = GetExpectedReceivedPacketNumber(packetNumberSpace);
         packetNumber = ExpandTruncatedPacketNumber(truncatedPacketNumber, packetNumberLength, expectedPacketNumber);
         return true;
+    }
+
+    private bool TryExpandOpenedApplicationPacketNumber(
+        ReadOnlySpan<byte> openedPacket,
+        int payloadOffset,
+        out ulong packetNumber)
+    {
+        return TryExpandOpenedPacketNumber(
+            openedPacket,
+            payloadOffset,
+            QuicPacketNumberSpace.ApplicationData,
+            out packetNumber);
+    }
+
+    private ulong GetExpectedReceivedPacketNumber(QuicPacketNumberSpace packetNumberSpace)
+    {
+        return packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => hasObservedInitialPacketNumber
+                ? largestObservedInitialPacketNumber + 1
+                : 0,
+            QuicPacketNumberSpace.Handshake => hasObservedHandshakePacketNumber
+                ? largestObservedHandshakePacketNumber + 1
+                : 0,
+            QuicPacketNumberSpace.ApplicationData => hasObservedApplicationPacketNumber
+                ? largestObservedApplicationPacketNumber + 1
+                : 0,
+            _ => throw new InvalidOperationException($"Unsupported packet number space {packetNumberSpace}."),
+        };
+    }
+
+    private void UpdateObservedPacketNumber(QuicPacketNumberSpace packetNumberSpace, ulong packetNumber)
+    {
+        switch (packetNumberSpace)
+        {
+            case QuicPacketNumberSpace.Initial:
+                largestObservedInitialPacketNumber = hasObservedInitialPacketNumber
+                    ? Math.Max(largestObservedInitialPacketNumber, packetNumber)
+                    : packetNumber;
+                hasObservedInitialPacketNumber = true;
+                break;
+            case QuicPacketNumberSpace.Handshake:
+                largestObservedHandshakePacketNumber = hasObservedHandshakePacketNumber
+                    ? Math.Max(largestObservedHandshakePacketNumber, packetNumber)
+                    : packetNumber;
+                hasObservedHandshakePacketNumber = true;
+                break;
+            case QuicPacketNumberSpace.ApplicationData:
+                largestObservedApplicationPacketNumber = hasObservedApplicationPacketNumber
+                    ? Math.Max(largestObservedApplicationPacketNumber, packetNumber)
+                    : packetNumber;
+                hasObservedApplicationPacketNumber = true;
+                break;
+            default:
+                throw new InvalidOperationException($"Unsupported packet number space {packetNumberSpace}.");
+        }
     }
 
     private static ulong ExpandTruncatedPacketNumber(
@@ -3909,13 +4031,22 @@ internal sealed partial class QuicConnectionRuntime
         switch (encryptionLevel)
         {
             case QuicTlsEncryptionLevel.Initial:
-                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial);
+                // Keep ACK history available after Initial keys are discarded so coalesced
+                // receive processing can still prove the recorded packet-number-space state.
+                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(
+                    QuicPacketNumberSpace.Initial,
+                    discardAckGenerationState: false);
                 stateChanged |= recoveryController.TryDiscardPacketNumberSpace(
                     QuicPacketNumberSpace.Initial,
                     resetProbeTimeoutBackoff: true);
                 break;
             case QuicTlsEncryptionLevel.Handshake:
-                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake);
+                // Keep ACK history available after Handshake keys are discarded for the same
+                // reason as Initial: the runtime still owns the receipt history even though it
+                // can no longer send more long-header packets in that space.
+                stateChanged |= sendRuntime.TryDiscardPacketNumberSpace(
+                    QuicPacketNumberSpace.Handshake,
+                    discardAckGenerationState: false);
                 stateChanged |= recoveryController.TryDiscardPacketNumberSpace(
                     QuicPacketNumberSpace.Handshake,
                     resetProbeTimeoutBackoff: true);
