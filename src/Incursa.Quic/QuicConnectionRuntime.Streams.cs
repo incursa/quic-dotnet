@@ -227,9 +227,18 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot))
+        if (!TryResolveOrOpenLocalWritableStreamSnapshot(
+                streamId,
+                out QuicConnectionStreamSnapshot snapshot,
+                out QuicTransportErrorCode openErrorCode))
         {
-            completion.TrySetException(new InvalidOperationException("The stream is not available on this connection."));
+            completion.TrySetException(openErrorCode != default
+                ? new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)openErrorCode,
+                    "The stream write could not be committed.")
+                : new InvalidOperationException("The stream is not available on this connection."));
             return false;
         }
 
@@ -386,6 +395,51 @@ internal sealed partial class QuicConnectionRuntime
 
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         completion.TrySetResult(null);
+        return true;
+    }
+
+    private bool TryResolveOrOpenLocalWritableStreamSnapshot(
+        ulong streamId,
+        out QuicConnectionStreamSnapshot snapshot,
+        out QuicTransportErrorCode errorCode)
+    {
+        if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
+        {
+            errorCode = default;
+            return true;
+        }
+
+        QuicStreamId quicStreamId = new(streamId);
+        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(
+                quicStreamId.IsBidirectional,
+                out QuicStreamId nextStreamId,
+                out _))
+        {
+            snapshot = default;
+            errorCode = QuicTransportErrorCode.StreamLimitError;
+            return false;
+        }
+
+        if (nextStreamId.Value != streamId)
+        {
+            snapshot = default;
+            errorCode = default;
+            return false;
+        }
+
+        if (!streamRegistry.Bookkeeping.TryOpenLocalStream(
+                quicStreamId.IsBidirectional,
+                out QuicStreamId committedStreamId,
+                out _)
+            || committedStreamId.Value != streamId
+            || !streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
+        {
+            snapshot = default;
+            errorCode = QuicTransportErrorCode.StreamStateError;
+            return false;
+        }
+
+        errorCode = default;
         return true;
     }
 
