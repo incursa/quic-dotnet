@@ -453,6 +453,8 @@ public sealed class REQ_QUIC_API_0005
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ClientBridge_StartHandshake_ProducesInitialCryptoForRuntimeStyleTransportParameters()
@@ -519,6 +521,8 @@ public sealed class REQ_QUIC_API_0005
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerRuntime_EmitsARealInitialResponseDatagramForTheSupportedLoopbackHandshake()
