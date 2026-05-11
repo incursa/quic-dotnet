@@ -43165,6 +43165,11 @@
         "upstream_refs": [
           "RFC 9000 §21.5.6 RFC9000-S21.5.6-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0002.cs::RequirementStatement_DescribesLoopbackHygieneGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0002.cs::RequirementStatement_DoesNotClaimRuntimeLoopbackBlocking",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0002.cs::RequirementStatement_StaysBoundedToLoopbackHygiene"
         ]
       }
     },
@@ -43191,6 +43196,11 @@
         "upstream_refs": [
           "RFC 9000 §21.5.6 RFC9000-S21.5.6-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0003.cs::RequirementStatement_DescribesAddressUseGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0003.cs::RequirementStatement_DoesNotClaimRuntimeAddressRefusal",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0003.cs::RequirementStatement_StaysBoundedToNetworkKnowledgeGuidance"
         ]
       }
     },

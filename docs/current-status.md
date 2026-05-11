@@ -8,13 +8,14 @@ permanent-registration policy proof, S21P11 deployment-policy proof, S21P7
 stream-fragmentation guidance proof, S21P6 Slowloris mitigation guidance proof,
 S21P9 packet-processing-cost guidance proof, S21P5 request-forgery guidance proof,
 S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration forgery
-countermeasures guidance proof, S21P5 port-and-CID hygiene guidance proof, and
-regenerated QUIC coverage triage.
+countermeasures guidance proof, S21P5 port-and-CID hygiene guidance proof,
+S21P5P6 loopback-and-address-use guidance proof, and regenerated QUIC coverage
+triage.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
-The current generated triage reports `trace_clean: 1742` and
-`uncovered_blocked: 29`.
+The current generated triage reports `trace_clean: 1744` and
+`uncovered_blocked: 27`.
 
 The Retry-bootstrap packet-number-reset abort slice is now closed for the
 bounded replay path.
@@ -49,6 +50,9 @@ now closed for `REQ-QUIC-RFC9000-S21P5-0003`.
 
 The port-hygiene and problematic-CID guidance proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P5P6-0005` and `REQ-QUIC-RFC9000-S21P5P6-0006`.
+
+The loopback-hygiene and address-use guidance proof surface is now closed for
+`REQ-QUIC-RFC9000-S21P5P6-0002` and `REQ-QUIC-RFC9000-S21P5P6-0003`.
 
 The transport-parameter registry policy slice is now closed for
 `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002`.
