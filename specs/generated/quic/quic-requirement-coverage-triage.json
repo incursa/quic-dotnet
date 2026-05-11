@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T21:03:40.7339256-06:00",
+  "generated_at": "2026-05-10T21:13:43.6757458-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,18 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T21:03:40.7305421-06:00",
+    "generated_at": "2026-05-10T21:13:43.6722153-06:00",
     "total_requirements": 1771,
     "by_state": {
+      "covered_but_missing_xrefs": 1,
       "trace_clean": 1744,
-      "uncovered_blocked": 27
+      "uncovered_blocked": 26
     },
     "by_work_queue_tag": {
-      "blocked": 27,
+      "blocked": 26,
       "clean": 1744,
-      "new_tests_needed": 27
+      "metadata_only": 1,
+      "new_tests_needed": 26
     },
     "by_rfc": [
       {
@@ -41,8 +43,9 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
+          "covered_but_missing_xrefs": 1,
           "trace_clean": 1416,
-          "uncovered_blocked": 27
+          "uncovered_blocked": 26
         }
       },
       {
@@ -217776,31 +217779,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "covered_but_missing_xrefs",
+      "primary_issue": "spec_metadata",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "metadata_only"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
+      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
       "spec_test_ref_count": 0,
       "spec_test_refs": null,
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 1,
+          "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -217808,7 +217808,96 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7_0011",
+          "member": "REQ_QUIC_RFC9000_S7_0011.FuzzApplicationProtocolOfferBoundary_PermutedOffersStayWithinTheSelectedProtocolSlice",
+          "method": "FuzzApplicationProtocolOfferBoundary_PermutedOffersStayWithinTheSelectedProtocolSlice",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7_0011",
+          "member": "REQ_QUIC_RFC9000_S7_0011.ServerRoleFailsWithNoApplicationProtocolWhenPeerOffersOnlyUnsupportedProtocols",
+          "method": "ServerRoleFailsWithNoApplicationProtocolWhenPeerOffersOnlyUnsupportedProtocols",
+          "line": 52,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7_0011",
+          "member": "REQ_QUIC_RFC9000_S7_0011.ServerRoleFailsWithNoApplicationProtocolWhenPeerOmitsAlpnBeforeServerHelloOrHandshakeKeys",
+          "method": "ServerRoleFailsWithNoApplicationProtocolWhenPeerOmitsAlpnBeforeServerHelloOrHandshakeKeys",
+          "line": 38,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7-0011.cs",
+          "class": "REQ_QUIC_RFC9000_S7_0011",
+          "member": "REQ_QUIC_RFC9000_S7_0011.ServerRoleSelectsTheFirstMutualConfiguredApplicationProtocolByLocalOrderAndEmitsItInEncryptedExtensions",
+          "method": "ServerRoleSelectsTheFirstMutualConfiguredApplicationProtocolByLocalOrderAndEmitsItInEncryptedExtensions",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S7-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7P2-0001",
