@@ -44701,6 +44701,9 @@
         "upstream_refs": [
           "RFC 9000 §22.4 RFC9000-S22.4-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForFrameTypes"
         ]
       }
     },
@@ -44727,6 +44730,9 @@
         "upstream_refs": [
           "RFC 9000 §22.4 RFC9000-S22.4-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0002.cs::RequirementStatement_UsesStricterPolicyForLowFrameTypeCodepoints"
         ]
       }
     },
@@ -44811,6 +44817,9 @@
         "upstream_refs": [
           "RFC 9000 §22.4 RFC9000-S22.4-B6-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0005.cs::RequirementStatement_DescribesHowEndpointsDetermineTheyCanSendFrameTypes"
         ]
       }
     },
