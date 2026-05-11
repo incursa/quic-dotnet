@@ -42,6 +42,7 @@
     "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
     "artifacts/interop-runner/20260509-001723585-both-quic-go/runner-report.json",
     "artifacts/interop-runner/server-zerortt-quic-go/20260509-114555424-server-nginx/runner.stderr.log",
     "artifacts/hosted-interop/25608915721-zerortt-server-proof/interop-runner-server-zerortt-quic-go-25608915721/20260509-184410715-server-nginx/runner-report.json",

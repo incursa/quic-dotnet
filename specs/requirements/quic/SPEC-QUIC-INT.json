@@ -554,7 +554,8 @@
           ".github/workflows/interop-runner-handshake.yml",
           "docs/design/quic-interop-prep-plan.md",
           "src/Incursa.Quic.InteropHarness/README.md",
-          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs"
         ]
       },
       "notes": [
