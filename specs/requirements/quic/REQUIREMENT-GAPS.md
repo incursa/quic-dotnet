@@ -120,7 +120,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
 
 - `9000-22.1.2-random-codepoint-selection-policy` remains open. `REQ-QUIC-RFC9000-S22P1P2-0001` through `REQ-QUIC-RFC9000-S22P1P2-0007` are registry-selection and allocation-policy clauses with no local codepoint allocation workflow surface in this repository slice, so keep them blocked until a dedicated registry-request or publication workflow exists.
 
-- `9000-22.1.3-codepoint-reclamation-policy` remains open. `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004` are codepoint-review and reclamation-policy clauses with no local codepoint maintenance workflow surface in this repository slice, so keep them blocked until a dedicated registry-maintenance workflow exists.
+- `9000-22.1.3-codepoint-reclamation-policy` is closed for the local codepoint-reclamation proof surface. `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004` now have canonical spec-file proof alongside the existing registry support surface. This closure does not claim a live codepoint-maintenance workflow or broader registry-maintenance automation.
 
 - `9000-22.1.4-permanent-registration-policy` remains open. `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008` are permanent-registration policy clauses with no local registry-maintenance workflow surface in this repository slice, so keep them blocked until a dedicated registry-maintenance workflow exists.
 
