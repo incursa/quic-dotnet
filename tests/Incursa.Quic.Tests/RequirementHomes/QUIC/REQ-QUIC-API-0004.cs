@@ -11,7 +11,9 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_API_0004
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void QuicStream_ExposesTheNarrowAbortAndCompletionSurface()
@@ -29,6 +31,16 @@ public sealed class REQ_QUIC_API_0004
         Assert.Contains("Type", propertyNames);
         Assert.Contains("WritesClosed", propertyNames);
 
+        System.Reflection.MethodInfo? readAtMethod = typeof(QuicStream).GetMethod(
+            "ReadAt",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        System.Reflection.MethodInfo? readAtAsyncMethod = typeof(QuicStream).GetMethod(
+            "ReadAtAsync",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+        Assert.Null(readAtMethod);
+        Assert.Null(readAtAsyncMethod);
+
         System.Reflection.MethodInfo? abortMethod = typeof(QuicStream).GetMethod(
             nameof(QuicStream.Abort),
             System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
@@ -40,6 +52,9 @@ public sealed class REQ_QUIC_API_0004
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task SupportedLoopbackStreamEntry_ReturnsRealQuicStreamFacades()
