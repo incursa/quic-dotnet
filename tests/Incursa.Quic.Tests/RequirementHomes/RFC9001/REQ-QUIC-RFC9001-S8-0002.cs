@@ -5,6 +5,9 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S7-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0003")]
     [Trait("Category", "Positive")]
     public void BridgeStateCommitsSnapshotsOnlyAfterPeerFinishedVerification()
     {
@@ -145,6 +148,9 @@ public sealed class REQ_QUIC_RFC9001_S8_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S7-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0003")]
     [Trait("Category", "Positive")]
     public void BridgeDriverRequiresPeerFinishedVerificationBeforeCommittingPeerTransportParameters()
     {
