@@ -14,6 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0007
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P1-0007">A server MAY send multiple Retry packets as it receives Initial or 0-RTT packets.</workbench-requirement>
