@@ -1896,6 +1896,10 @@
     {
       "heading": "2026-05-10 S17P2P5P3 Retry-Bootstrap Packet-Number Reset Abort",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0008\"` passed 2/2.\n- `REQ-QUIC-RFC9000-S17P2P5P3-0008` now has direct proof that `QuicListenerHost` records the first observed Initial packet number before issuing Retry and aborts a Retry-bootstrap replay candidate when the replayed Initial packet number does not advance across the Retry boundary.\n- Regenerated coverage triage should mark `REQ-QUIC-RFC9000-S17P2P5P3-0008` trace_clean once refreshed.\n- This remains bounded to the Retry-bootstrap replay seam and does not claim general packet-number reset detection for all server packet types, broader anti-replay policy, or hosted interop readiness."
+    },
+    {
+      "heading": "2026-05-10 S19P21 Permanent-Frame Registry Proof",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P21_0011\"` passed 1/1.\n- `REQ-QUIC-RFC9000-S19P21-0011` now has direct proof that the repo-local permanent-frame table centrally manages the RFC 9000 permanent frame-type assignments.\n- Regenerated coverage triage should mark `REQ-QUIC-RFC9000-S19P21-0011` trace_clean once refreshed.\n- This remains bounded to the permanent frame registry surface and does not claim extension-frame negotiation, congestion-control, ACK-generation, or flow-control behavior."
     }
   ],
   "domain": "quic"

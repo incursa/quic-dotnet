@@ -6,15 +6,16 @@ coverage triage.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
-The current generated triage reports `trace_clean: 1706` and
-`uncovered_blocked: 65`.
+The current generated triage reports `trace_clean: 1707` and
+`uncovered_blocked: 64`.
 
 The Retry-bootstrap packet-number-reset abort slice is now closed for the
 bounded replay path.
 
-The first remaining blocked requirement is `REQ-QUIC-RFC9000-S19P21-0004`, the
-frame-understanding extension clause. The rest of the blocked tail is still
-policy, registry, and deployment heavy.
+The local permanent-frame registry proof slice is now closed for
+`REQ-QUIC-RFC9000-S19P21-0011`. The first remaining blocked requirement is
+`REQ-QUIC-RFC9000-S19P21-0004`, the frame-understanding extension clause. The
+rest of the blocked tail is still policy, registry, and deployment heavy.
 
 There are no unblocked RFC 9000 items left in the generated triage.
 
