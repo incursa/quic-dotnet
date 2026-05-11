@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:40:42.1062397-06:00",
+  "generated_at": "2026-05-10T20:44:42.2755427-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T20:40:42.1030828-06:00",
+    "generated_at": "2026-05-10T20:44:42.2713488-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1737,
-      "uncovered_blocked": 34
+      "trace_clean": 1738,
+      "uncovered_blocked": 33
     },
     "by_work_queue_tag": {
-      "blocked": 34,
-      "clean": 1737,
-      "new_tests_needed": 34
+      "blocked": 33,
+      "clean": 1738,
+      "new_tests_needed": 33
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1409,
-          "uncovered_blocked": 34
+          "trace_clean": 1410,
+          "uncovered_blocked": 33
         }
       },
       {
@@ -168952,31 +168952,32 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_StaysBoundedToInfluenceAndAddressSelection"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -168984,7 +168985,140 @@
           "summary": "Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "method": "RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "method": "RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "method": "RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "line": 32,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "method": "RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "line": 32,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_StaysBoundedToInfluenceAndAddressSelection",
+          "method": "RequirementStatement_StaysBoundedToInfluenceAndAddressSelection",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_StaysBoundedToInfluenceAndAddressSelection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5_0001",
+          "member": "REQ_QUIC_RFC9000_S21P5_0001.RequirementStatement_StaysBoundedToInfluenceAndAddressSelection",
+          "method": "RequirementStatement_StaysBoundedToInfluenceAndAddressSelection",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S21P5-0002",

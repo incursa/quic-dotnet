@@ -43013,6 +43013,11 @@
         "upstream_refs": [
           "RFC 9000 §21.5 RFC9000-S21.5-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DescribesRequestForgeryInfluenceConditions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_DoesNotBroadenIntoRuntimeDeploymentPolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5-0001.cs::RequirementStatement_StaysBoundedToInfluenceAndAddressSelection"
         ]
       }
     },
