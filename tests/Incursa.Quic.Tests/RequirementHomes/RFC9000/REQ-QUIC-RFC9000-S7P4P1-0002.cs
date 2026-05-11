@@ -6,6 +6,8 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0007")]
     public void ZeroRttRememberedParametersExcludeProhibitedHandshakeValues()
     {
         QuicTransportParameters peerTransportParameters = CreatePeerTransportParametersWithEveryProhibitedValue();

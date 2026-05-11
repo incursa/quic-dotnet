@@ -6,6 +6,8 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0006")]
     public void DetachedTicketSnapshotRemembersProcessablePeerTransportParametersForZeroRtt()
     {
         QuicTransportParameters peerTransportParameters = new()
@@ -26,6 +28,7 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0004
 
         QuicDetachedResumptionTicketSnapshot snapshot = CreateSnapshot(peerTransportParameters);
 
+        Assert.Equal(new byte[] { 0xDE, 0xAD, 0xBE, 0xEF }, snapshot.TicketBytes.ToArray());
         QuicTransportParameters remembered = Assert.IsType<QuicTransportParameters>(snapshot.ZeroRttTransportParameters);
         Assert.Equal(peerTransportParameters.MaxIdleTimeout, remembered.MaxIdleTimeout);
         Assert.Equal(peerTransportParameters.MaxUdpPayloadSize, remembered.MaxUdpPayloadSize);
@@ -45,6 +48,7 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0006")]
     public void DetachedTicketSnapshotWithoutProcessablePeerTransportParametersDoesNotEnableZeroRttReadiness()
     {
         QuicDetachedResumptionTicketSnapshot snapshot = CreateSnapshot(new QuicTransportParameters
