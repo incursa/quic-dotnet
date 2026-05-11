@@ -350,7 +350,9 @@ function Get-RequirementGapMappings {
             Slug               = '9000-13-idle-and-close'
             Summary            = 'Close and draining lifecycle requirements remain blocked without connection close orchestration.'
             RequirementPrefixes = @('S10', 'S10P2', 'S10P2P1', 'S10P2P2', 'S10P2P3')
-            RequirementIds     = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S10P1P2-0001'
+            )
         },
         [pscustomobject]@{
             Slug               = '9000-14-stateless-reset'
@@ -359,10 +361,176 @@ function Get-RequirementGapMappings {
             RequirementIds     = @()
         },
         [pscustomobject]@{
+            Slug               = '9000-02-stream-creation-by-sending-data'
+            Summary            = 'Stream-creation by sending data remains blocked without a faithful data-first proof path.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S2-0002'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-05.0-0rtt-no-replay-protection'
+            Summary            = '0-RTT replay-attack requirements remain blocked without a faithful anti-replay seam.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S5-0006'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-08.1.2-invalid-retry-token-close'
+            Summary            = 'Retry-token validation requirements remain blocked without runtime INVALID_TOKEN emission.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S8P1P2-0002',
+                'REQ-QUIC-RFC9000-S8P1P2-0004'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-08.2.4-path-validation-abandonment-and-no-viable-path'
+            Summary            = 'Path-validation abandonment and NO_VIABLE_PATH signaling remain blocked without terminal path-validation state and runtime error emission.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S8P2P4-0001',
+                'REQ-QUIC-RFC9000-S8P2P4-0002',
+                'REQ-QUIC-RFC9000-S8P2P4-0003'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-09.6-unexpected-server-address-discard'
+            Summary            = 'Unexpected server-address discard requirements remain blocked without a discard-only new-address receive path.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S9P6-0001',
+                'REQ-QUIC-RFC9000-S9P6-0002'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-09.6.2-delayed-old-address-packets'
+            Summary            = 'Delayed old-address packet processing remains blocked without source-address tracking and path-probe orchestration.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S9P6P2-0005'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-09.7-ipv6-flow-label-generation'
+            Summary            = 'IPv6 flow-label requirements remain blocked without any runtime flow-label modeling or socket-option seam.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S9P7-0001',
+                'REQ-QUIC-RFC9000-S9P7-0002',
+                'REQ-QUIC-RFC9000-S9P7-0003',
+                'REQ-QUIC-RFC9000-S9P7-0004'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-17.2.5.3-packet-number-reset-abort'
+            Summary            = 'Optional server abort behavior for detected packet-number reset remains blocked without a source-level packet-number reset detection seam.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S17P2P5P3-0008'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-19.21-extension-frame-registry-and-negotiation'
+            Summary            = 'Section 19.21 extension-frame, negotiation, congestion-control, and registry-policy requirements remain deferred without a local extension-frame surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S19P21-0004',
+                'REQ-QUIC-RFC9000-S19P21-0005',
+                'REQ-QUIC-RFC9000-S19P21-0006',
+                'REQ-QUIC-RFC9000-S19P21-0007',
+                'REQ-QUIC-RFC9000-S19P21-0008',
+                'REQ-QUIC-RFC9000-S19P21-0009',
+                'REQ-QUIC-RFC9000-S19P21-0010',
+                'REQ-QUIC-RFC9000-S19P21-0011'
+            )
+        },
+        [pscustomobject]@{
             Slug               = '9001-02-security-and-registry'
             Summary            = 'RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration.'
             RequirementPrefixes = @('S6', 'S7', 'S8', 'S9', 'S10', 'SB', 'SBP1P1', 'SBP1P2', 'SBP2')
             RequirementIds     = @()
+        },
+        [pscustomobject]@{
+            Slug               = '9000-21-security-and-deployment-policy'
+            Summary            = 'Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S21P4-0001',
+                'REQ-QUIC-RFC9000-S21P5-0001',
+                'REQ-QUIC-RFC9000-S21P5-0002',
+                'REQ-QUIC-RFC9000-S21P5-0003',
+                'REQ-QUIC-RFC9000-S21P5P6-0002',
+                'REQ-QUIC-RFC9000-S21P5P6-0003',
+                'REQ-QUIC-RFC9000-S21P5P6-0005',
+                'REQ-QUIC-RFC9000-S21P5P6-0006',
+                'REQ-QUIC-RFC9000-S21P6-0001',
+                'REQ-QUIC-RFC9000-S21P7-0001',
+                'REQ-QUIC-RFC9000-S21P9-0001',
+                'REQ-QUIC-RFC9000-S21P9-0002',
+                'REQ-QUIC-RFC9000-S21P11-0001',
+                'REQ-QUIC-RFC9000-S21P11-0002'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-22.1.2-random-codepoint-selection-policy'
+            Summary            = 'Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S22P1P2-0001',
+                'REQ-QUIC-RFC9000-S22P1P2-0002',
+                'REQ-QUIC-RFC9000-S22P1P2-0003',
+                'REQ-QUIC-RFC9000-S22P1P2-0004',
+                'REQ-QUIC-RFC9000-S22P1P2-0005',
+                'REQ-QUIC-RFC9000-S22P1P2-0006',
+                'REQ-QUIC-RFC9000-S22P1P2-0007'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-22.1.3-codepoint-reclamation-policy'
+            Summary            = 'Section 22.1.3 codepoint-review requirements remain blocked without a codepoint maintenance workflow surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S22P1P3-0001',
+                'REQ-QUIC-RFC9000-S22P1P3-0002',
+                'REQ-QUIC-RFC9000-S22P1P3-0003',
+                'REQ-QUIC-RFC9000-S22P1P3-0004'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-22.1.4-permanent-registration-policy'
+            Summary            = 'Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S22P1P4-0001',
+                'REQ-QUIC-RFC9000-S22P1P4-0002',
+                'REQ-QUIC-RFC9000-S22P1P4-0003',
+                'REQ-QUIC-RFC9000-S22P1P4-0004',
+                'REQ-QUIC-RFC9000-S22P1P4-0005',
+                'REQ-QUIC-RFC9000-S22P1P4-0006',
+                'REQ-QUIC-RFC9000-S22P1P4-0007',
+                'REQ-QUIC-RFC9000-S22P1P4-0008'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-22.3-transport-parameter-registration-policy'
+            Summary            = 'Section 22.3 transport-parameter registry-policy requirements remain blocked without a registry-policy workflow surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S22P3-0001',
+                'REQ-QUIC-RFC9000-S22P3-0002'
+            )
+        },
+        [pscustomobject]@{
+            Slug               = '9000-22.4-frame-type-registration-policy'
+            Summary            = 'Section 22.4 frame-type registry-policy requirements remain blocked without a registry-policy workflow surface.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9000-S22P4-0001',
+                'REQ-QUIC-RFC9000-S22P4-0002',
+                'REQ-QUIC-RFC9000-S22P4-0005'
+            )
         },
         [pscustomobject]@{
             Slug               = '9002-06-key-discard-lifecycle'

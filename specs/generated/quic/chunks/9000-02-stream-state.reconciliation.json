@@ -281,8 +281,8 @@
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
-      "remaining_gap": "Design-level MAY clause; the current repo shape does not cleanly prove alternate stream-state representations.",
-      "notes": "Design-level MAY clause; the current repo shape does not cleanly prove alternate stream-state representations."
+      "remaining_gap": null,
+      "notes": "Helper-layer proof now shows the implementation-specific bidirectional state split keeps send and receive transitions independent."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S3P1-0001",
@@ -1334,7 +1334,6 @@
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S3-0003",
     "REQ-QUIC-RFC9000-S3P1-0004",
     "REQ-QUIC-RFC9000-S3P1-0005",
     "REQ-QUIC-RFC9000-S3P1-0006",

@@ -21,7 +21,7 @@
 ### S3
 
 - implemented and tested: `REQ-QUIC-RFC9000-S3-0001`, `REQ-QUIC-RFC9000-S3-0002`
-- partially implemented: `REQ-QUIC-RFC9000-S3-0003`
+- implemented and tested: `REQ-QUIC-RFC9000-S3-0003`
 
 ### S3P1
 
