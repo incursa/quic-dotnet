@@ -4,6 +4,8 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S7P4P1_0007
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt()
@@ -19,6 +21,8 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0007
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt()
@@ -34,6 +38,8 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0007
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0005")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt()
