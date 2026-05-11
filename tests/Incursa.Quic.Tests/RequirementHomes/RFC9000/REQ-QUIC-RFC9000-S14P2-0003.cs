@@ -9,6 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0003
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC9000-S14-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S14-0006")]
     [Trait("Category", "Positive")]
     public void CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize()
     {
@@ -22,6 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0005")]
     [Requirement("REQ-QUIC-RFC9000-S14-0006")]
     [Trait("Category", "Negative")]
     public void CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate()
@@ -33,6 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0005")]
     [Requirement("REQ-QUIC-RFC9000-S14-0006")]
     [Trait("Category", "Edge")]
     public void CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets()
