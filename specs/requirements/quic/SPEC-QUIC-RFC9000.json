@@ -43978,6 +43978,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0001.cs::RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests"
         ]
       }
     },
@@ -44004,6 +44007,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0002.cs::RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints"
         ]
       }
     },
@@ -44030,6 +44036,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0003.cs::RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction"
         ]
       }
     },
@@ -44056,6 +44065,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0004.cs::RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues"
         ]
       }
     },
@@ -44082,6 +44094,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0005.cs::RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive"
         ]
       }
     },
@@ -44108,6 +44123,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0006.cs::RequirementStatement_AllowsRequestedCodepointInRegistration"
         ]
       }
     },
@@ -44134,6 +44152,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.2 RFC9000-S22.1.2-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0007.cs::RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet"
         ]
       }
     },

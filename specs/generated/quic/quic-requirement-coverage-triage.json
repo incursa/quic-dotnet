@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:08:20.8645589-06:00",
+  "generated_at": "2026-05-10T20:12:34.4741873-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T20:08:20.8610963-06:00",
+    "generated_at": "2026-05-10T20:12:34.4710399-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1716,
-      "uncovered_blocked": 55
+      "trace_clean": 1723,
+      "uncovered_blocked": 48
     },
     "by_work_queue_tag": {
-      "blocked": 55,
-      "clean": 1716,
-      "new_tests_needed": 55
+      "blocked": 48,
+      "clean": 1723,
+      "new_tests_needed": 48
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1388,
-          "uncovered_blocked": 55
+          "trace_clean": 1395,
+          "uncovered_blocked": 48
         }
       },
       {
@@ -170897,31 +170897,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0001.cs::RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -170929,7 +170926,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0001",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0001.RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
+          "method": "RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0001.cs::RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0001",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0001.RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
+          "method": "RequirementStatement_UsesRandomSelectionPolicyForNewRegistryRequests",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0002",
@@ -170944,31 +170986,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0002.cs::RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -170976,7 +171015,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0002.RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
+          "method": "RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0002.cs::RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0002.RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
+          "method": "RequirementStatement_UsesContiguousRangePermissionForMultipleCodepoints",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0003",
@@ -170991,31 +171075,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0003.cs::RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171023,7 +171104,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0003",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0003.RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
+          "method": "RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0003.cs::RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0003",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0003.RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
+          "method": "RequirementStatement_ReservesFirstUnassignedCodepointForStandardsAction",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0004",
@@ -171038,31 +171164,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0004.cs::RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171070,7 +171193,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0004",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0004.RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
+          "method": "RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0004.cs::RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0004",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0004.RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
+          "method": "RequirementStatement_AllowsEarlyCodepointAssignmentForSelectedValues",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0005",
@@ -171085,31 +171253,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0005.cs::RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171117,7 +171282,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0005",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0005.RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
+          "method": "RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0005.cs::RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0005",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0005.RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
+          "method": "RequirementStatement_UsesLongerVarIntEncodingsUnlessSensitive",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0006",
@@ -171132,31 +171342,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0006.cs::RequirementStatement_AllowsRequestedCodepointInRegistration",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171164,7 +171371,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0006",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0006.RequirementStatement_AllowsRequestedCodepointInRegistration",
+          "method": "RequirementStatement_AllowsRequestedCodepointInRegistration",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0006.cs::RequirementStatement_AllowsRequestedCodepointInRegistration",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0006",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0006.RequirementStatement_AllowsRequestedCodepointInRegistration",
+          "method": "RequirementStatement_AllowsRequestedCodepointInRegistration",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0007",
@@ -171179,31 +171431,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0007.cs::RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171211,7 +171460,52 @@
           "summary": "Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0007",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0007.RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
+          "method": "RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0007.cs::RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P2-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P2_0007",
+          "member": "REQ_QUIC_RFC9000_S22P1P2_0007.RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
+          "method": "RequirementStatement_RequiresAllocationWhenPolicyRequirementsAreMet",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0001",

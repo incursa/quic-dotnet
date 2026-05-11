@@ -1912,6 +1912,10 @@
     {
       "heading": "2026-05-10 S22P1P3 Codepoint-Reclamation Policy Proof",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P3_0001|REQ_QUIC_RFC9000_S22P1P3_0002|REQ_QUIC_RFC9000_S22P1P3_0003|REQ_QUIC_RFC9000_S22P1P3_0004\"` passed 4/4.\n- `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004` now have direct canonical spec-file proof for the codepoint-reclamation policy clauses.\n- Regenerated coverage triage should mark those requirements trace_clean once refreshed.\n- This remains bounded to canonical policy wording and does not claim a live codepoint-maintenance workflow or broader registry-maintenance automation."
+    },
+    {
+      "heading": "2026-05-10 S22P1P2 Random-Codepoint Selection Policy Proof",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P2_0001|REQ_QUIC_RFC9000_S22P1P2_0002|REQ_QUIC_RFC9000_S22P1P2_0003|REQ_QUIC_RFC9000_S22P1P2_0004|REQ_QUIC_RFC9000_S22P1P2_0005|REQ_QUIC_RFC9000_S22P1P2_0006|REQ_QUIC_RFC9000_S22P1P2_0007\"` passed 7/7.\n- `REQ-QUIC-RFC9000-S22P1P2-0001` through `REQ-QUIC-RFC9000-S22P1P2-0007` now have direct canonical spec-file proof for the random-codepoint selection and allocation policy clauses.\n- Regenerated coverage triage should mark those requirements trace_clean once refreshed.\n- This remains bounded to canonical policy wording and does not claim a live codepoint-allocation workflow or broader registry-maintenance automation."
     }
   ],
   "domain": "quic"
