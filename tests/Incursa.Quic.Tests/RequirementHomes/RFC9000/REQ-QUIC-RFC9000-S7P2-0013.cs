@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S7P2_0013
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0008")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task EndpointCanChangeTheDestinationConnectionIdUsingANewConnectionIdFrame()

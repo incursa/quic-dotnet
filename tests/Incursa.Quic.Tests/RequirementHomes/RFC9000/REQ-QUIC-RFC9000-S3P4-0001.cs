@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S3P4_0001
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P4-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryOpenLocalStream_CreatesBidirectionalSendAndReceiveParts()

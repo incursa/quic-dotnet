@@ -35,6 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P1-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsReceiveOnlyPeerUnidirectionalStreamsWithoutEnteringSendState()
