@@ -111,12 +111,14 @@ internal static class QuicCoalescedPacketRuntimeTestSupport
             serverRuntime,
             pathIdentity,
             initialDestinationConnectionId,
+            clientSourceConnectionId,
+            serverSourceConnectionId,
             [.. initialPacket!, .. handshakePacket!],
             initialPacket!,
             handshakePacket!);
     }
 
-    private static byte[]? TryExtractFirstPacketBySpace(
+    internal static byte[]? TryExtractFirstPacketBySpace(
         IEnumerable<QuicConnectionEffect> effects,
         QuicPacketNumberSpace packetNumberSpace)
     {
@@ -146,6 +148,8 @@ internal static class QuicCoalescedPacketRuntimeTestSupport
         QuicConnectionRuntime ServerRuntime,
         QuicConnectionPathIdentity PathIdentity,
         byte[] InitialDestinationConnectionId,
+        byte[] ClientSourceConnectionId,
+        byte[] ServerSourceConnectionId,
         byte[] CoalescedDatagram,
         byte[] InitialPacket,
         byte[] HandshakePacket);
