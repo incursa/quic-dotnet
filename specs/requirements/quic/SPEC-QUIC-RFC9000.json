@@ -43420,6 +43420,9 @@
         "upstream_refs": [
           "RFC 9000 §21.11 RFC9000-S21.11-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs::RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection"
         ]
       }
     },
@@ -43446,6 +43449,9 @@
         "upstream_refs": [
           "RFC 9000 §21.11 RFC9000-S21.11-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs::RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection"
         ]
       }
     },

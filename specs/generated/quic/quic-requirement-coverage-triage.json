@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:16:15.1432676-06:00",
+  "generated_at": "2026-05-10T20:23:00.8821198-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T20:16:15.1388068-06:00",
+    "generated_at": "2026-05-10T20:23:00.8784744-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1731,
-      "uncovered_blocked": 40
+      "trace_clean": 1733,
+      "uncovered_blocked": 38
     },
     "by_work_queue_tag": {
-      "blocked": 40,
-      "clean": 1731,
-      "new_tests_needed": 40
+      "blocked": 38,
+      "clean": 1733,
+      "new_tests_needed": 38
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1403,
-          "uncovered_blocked": 40
+          "trace_clean": 1405,
+          "uncovered_blocked": 38
         }
       },
       {
@@ -167586,32 +167586,28 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs::RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 1,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -167619,7 +167615,74 @@
           "summary": "Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0001",
+          "member": "REQ_QUIC_RFC9000_S21P11_0001.RequirementStatement_DoesNotBroadenIntoFleetAutomationOrHostedRunnerBehavior",
+          "method": "RequirementStatement_DoesNotBroadenIntoFleetAutomationOrHostedRunnerBehavior",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0001",
+          "member": "REQ_QUIC_RFC9000_S21P11_0001.RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
+          "method": "RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs::RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0001",
+          "member": "REQ_QUIC_RFC9000_S21P11_0001.RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
+          "method": "RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
@@ -167634,33 +167697,28 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs::RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -167668,7 +167726,96 @@
           "summary": "Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0002",
+          "member": "REQ_QUIC_RFC9000_S21P11_0002.RequirementStatement_DoesNotPermitStatelessResetWhenSharedKeyOwnershipIsStillPossible",
+          "method": "RequirementStatement_DoesNotPermitStatelessResetWhenSharedKeyOwnershipIsStillPossible",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0002",
+          "member": "REQ_QUIC_RFC9000_S21P11_0002.RequirementStatement_KeepsTheInactiveConnectionAndSharedKeyBoundaryIntact",
+          "method": "RequirementStatement_KeepsTheInactiveConnectionAndSharedKeyBoundaryIntact",
+          "line": 56,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0002",
+          "member": "REQ_QUIC_RFC9000_S21P11_0002.RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
+          "method": "RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P11-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs::RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P11-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S21P11_0002",
+          "member": "REQ_QUIC_RFC9000_S21P11_0002.RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
+          "method": "RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P11-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S21P12-0001",
