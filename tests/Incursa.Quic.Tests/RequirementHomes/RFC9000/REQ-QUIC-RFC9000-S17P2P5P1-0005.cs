@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace Incursa.Quic.Tests;
@@ -13,6 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P1-0005">A server MAY send Retry packets in response to Initial and 0-RTT packets.</workbench-requirement>
@@ -73,6 +75,60 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0005
         Assert.NotEmpty(retryMetadata.RetrySourceConnectionId);
         Assert.NotEmpty(retryMetadata.RetryToken);
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0005")]
+    [Trait("Category", "Negative")]
+    public async Task ListenerHostCanOmitRetryPacketsForInitialDatagramsWhenRetryBootstrapIsDisabled()
+    {
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) =>
+            {
+                callbackEntered.TrySetResult(true);
+                return ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate));
+            },
+            listenBacklog: 1,
+            retryBootstrapEnabled: false);
+
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        clientSocket.Connect(listenEndPoint);
+
+        _ = listenerHost.RunAsync();
+        await Task.Yield();
+
+        byte[] initialDestinationConnectionId = QuicS17P2P2TestSupport.InitialDestinationConnectionId;
+        byte[] initialSourceConnectionId = QuicS17P2P2TestSupport.InitialSourceConnectionId;
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            initialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(initialDestinationConnectionId, initialSourceConnectionId);
+        byte[] cryptoPayload = QuicFrameTestData.BuildCryptoFrame(
+            new QuicCryptoFrame(0, QuicS12P3TestSupport.CreateSequentialBytes(0x60, 16)));
+
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out byte[] initialPacket));
+
+        int bytesSent = clientSocket.Send(initialPacket);
+        Assert.Equal(initialPacket.Length, bytesSent);
+
+        await callbackEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.False(listenerHost.RetryBootstrapIssued);
     }
 
     [Fact]
