@@ -43248,6 +43248,11 @@
         "upstream_refs": [
           "RFC 9000 §21.5.6 RFC9000-S21.5.6-B6-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DescribesPortHygieneGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_StaysBoundedToPreValidationPortHygiene"
         ]
       }
     },
@@ -43274,6 +43279,11 @@
         "upstream_refs": [
           "RFC 9000 §21.5.6 RFC9000-S21.5.6-B6-P5-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_StaysBoundedToProblematicCidHygiene"
         ]
       }
     },

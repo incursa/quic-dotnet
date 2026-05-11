@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:54:14.5976414-06:00",
+  "generated_at": "2026-05-10T20:59:19.5975426-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T20:54:14.5943549-06:00",
+    "generated_at": "2026-05-10T20:59:19.5938281-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1740,
-      "uncovered_blocked": 31
+      "trace_clean": 1742,
+      "uncovered_blocked": 29
     },
     "by_work_queue_tag": {
-      "blocked": 31,
-      "clean": 1740,
-      "new_tests_needed": 31
+      "blocked": 29,
+      "clean": 1742,
+      "new_tests_needed": 29
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1412,
-          "uncovered_blocked": 31
+          "trace_clean": 1414,
+          "uncovered_blocked": 29
         }
       },
       {
@@ -169989,24 +169989,27 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DescribesPortHygieneGuidance",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_StaysBoundedToPreValidationPortHygiene"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -170019,7 +170022,140 @@
           "summary": "Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_DescribesPortHygieneGuidance",
+          "method": "RequirementStatement_DescribesPortHygieneGuidance",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DescribesPortHygieneGuidance",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_DescribesPortHygieneGuidance",
+          "method": "RequirementStatement_DescribesPortHygieneGuidance",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "method": "RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "method": "RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_StaysBoundedToPreValidationPortHygiene",
+          "method": "RequirementStatement_StaysBoundedToPreValidationPortHygiene",
+          "line": 37,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_StaysBoundedToPreValidationPortHygiene",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0005",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0005.RequirementStatement_StaysBoundedToPreValidationPortHygiene",
+          "method": "RequirementStatement_StaysBoundedToPreValidationPortHygiene",
+          "line": 37,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
@@ -170034,24 +170170,27 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DescribesProblematicCidRetirementGuidance",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_StaysBoundedToProblematicCidHygiene"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -170064,7 +170203,140 @@
           "summary": "Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "method": "RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "method": "RequirementStatement_DescribesProblematicCidRetirementGuidance",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "method": "RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "method": "RequirementStatement_DoesNotClaimPublicPolicyAutomation",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_StaysBoundedToProblematicCidHygiene",
+          "method": "RequirementStatement_StaysBoundedToProblematicCidHygiene",
+          "line": 37,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs::RequirementStatement_StaysBoundedToProblematicCidHygiene",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S21P5P6_0006",
+          "member": "REQ_QUIC_RFC9000_S21P5P6_0006.RequirementStatement_StaysBoundedToProblematicCidHygiene",
+          "method": "RequirementStatement_StaysBoundedToProblematicCidHygiene",
+          "line": 37,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S21P5P6-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S21P6-0001",
