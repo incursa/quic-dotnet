@@ -76,6 +76,7 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReadStreamData_DoesNotExposeOutOfOrderTailBytesBeforeTheMissingPrefixArrives()
@@ -122,6 +123,7 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReadStreamData_PreservesByteOrderAcrossAPartialReadAtAFragmentBoundary()

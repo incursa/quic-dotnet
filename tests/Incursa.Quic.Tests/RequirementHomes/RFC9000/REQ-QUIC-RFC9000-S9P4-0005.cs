@@ -44,6 +44,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P5-0006")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0005")]
@@ -59,6 +60,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P5-0006")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S9P2-0005")]

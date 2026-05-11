@@ -4,6 +4,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S9P3_0001
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0008")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ValidatedMigrationRoutesLocalClosePacketsToTheMigratedAddress()
@@ -41,6 +42,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0001
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0008")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PathValidationMustCompleteBeforeLocalClosePacketsSwitchToTheMigratedAddress()

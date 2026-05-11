@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0005
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStreamFrame_StartsPeerInitiatedBidirectionalSendersInReady()
@@ -28,6 +29,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0005
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S3P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_DoesNotStartPeerInitiatedUnidirectionalSendersInReady()

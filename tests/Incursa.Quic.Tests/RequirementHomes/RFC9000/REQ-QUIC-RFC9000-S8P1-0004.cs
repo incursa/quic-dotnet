@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S8P1_0004
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
     [CoverageType(RequirementCoverageType.Edge)]
     public void TryGetVersion1InitialDatagramPaddingLength_UsesTheExactMinimumPayloadBoundary()
     {
@@ -19,6 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0004
     [InlineData(1187, 13)]
     [InlineData(1199, 1)]
     [InlineData(1200, 0)]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryGetVersion1InitialDatagramPaddingLength_ComputesTheRemainingPadding(
