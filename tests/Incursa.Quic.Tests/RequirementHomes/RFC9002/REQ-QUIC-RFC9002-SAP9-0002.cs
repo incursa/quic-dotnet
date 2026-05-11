@@ -7,6 +7,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_SAP9_0002
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TrySelectPtoTimeAndSpaceMicros_SelectsHandshakeWhenHandshakeKeysExist()
@@ -24,6 +25,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0002
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TrySelectPtoTimeAndSpaceMicros_FallsBackToInitialWhenHandshakeKeysAreUnavailable()
@@ -41,6 +43,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0002
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TrySelectPtoTimeAndSpaceMicros_UsesTheImmediateInitialBoundaryWhenItIsTheOnlyProbe()
