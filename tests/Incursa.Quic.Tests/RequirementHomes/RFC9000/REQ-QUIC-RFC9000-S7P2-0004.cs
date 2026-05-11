@@ -6,6 +6,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0006")]
     public async Task ClientHostGeneratesAnIndependentFirstInitialDestinationConnectionId()
     {
         var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -28,6 +29,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0006")]
     public async Task ClientHostDoesNotReuseFirstInitialDestinationConnectionIdsAcrossConnections()
     {
         var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -54,6 +56,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0006")]
     public async Task ClientHostKeepsTheUnpredictableInitialDestinationSeparateFromTheChosenSourceConnectionId()
     {
         var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();

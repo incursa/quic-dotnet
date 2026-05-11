@@ -26,6 +26,8 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0025
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
     public void TryParseTransportParameters_RejectsPreferredAddressWithZeroLengthConnectionId()
     {
         byte[] preferredAddressValue = QuicTransportParameterTestData.BuildPreferredAddressValue(
@@ -64,6 +66,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0025
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
     public void TryParseTransportParameters_RejectsPreferredAddressWhenServerSelectedZeroLengthConnectionId()
     {
         QuicPreferredAddress preferredAddress = QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress();

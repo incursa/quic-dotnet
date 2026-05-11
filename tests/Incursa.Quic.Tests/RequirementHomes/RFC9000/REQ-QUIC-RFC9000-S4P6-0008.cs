@@ -7,6 +7,8 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0008
     [InlineData(true, 0UL, 4UL)]
     [InlineData(false, 2UL, 6UL)]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit(
@@ -40,6 +42,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0008
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0008")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit()
