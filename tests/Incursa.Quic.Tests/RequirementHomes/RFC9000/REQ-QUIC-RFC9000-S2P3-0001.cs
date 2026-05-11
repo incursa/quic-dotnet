@@ -7,8 +7,10 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S2P3_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC9000-S2P3-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Positive")]
     [Trait("Category", "Negative")]
     public async Task LocalPriorityOnlyDoesNotChangeTheOpenedApplicationPayload()
     {

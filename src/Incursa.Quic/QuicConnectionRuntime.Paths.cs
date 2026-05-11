@@ -131,7 +131,7 @@ internal sealed partial class QuicConnectionRuntime
             EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
         }
 
-        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity))
+        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, classification))
         {
             packetDiscarded = true;
             return false;
@@ -242,12 +242,15 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool ShouldDiscardUnexpectedServerAddressPacket(QuicConnectionPathIdentity pathIdentity)
+    private bool ShouldDiscardUnexpectedServerAddressPacket(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicConnectionPathClassification classification)
     {
         return tlsState.Role == QuicTlsRole.Client
             && phase == QuicConnectionPhase.Active
             && peerHandshakeTranscriptCompleted
             && !preferredAddressOldPathIdentity.HasValue
+            && classification != QuicConnectionPathClassification.MigrationCandidate
             && !TryGetCandidatePath(pathIdentity, out _)
             && !TryGetRecentlyValidatedPath(pathIdentity, out _);
     }
