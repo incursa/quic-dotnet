@@ -43345,6 +43345,11 @@
         "upstream_refs": [
           "RFC 9000 §21.9 RFC9000-S21.9-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0001.cs::RequirementStatement_DescribesPacketProcessingCostGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0001.cs::RequirementStatement_DoesNotTurnGuidanceIntoMandatoryRuntimePolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0001.cs::RequirementStatement_StaysBoundedToProgressAwareAttackGuidance"
         ]
       }
     },
@@ -43371,6 +43376,11 @@
         "upstream_refs": [
           "RFC 9000 §21.9 RFC9000-S21.9-B5-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_DescribesAllowedResponsesToTheAttackCondition",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_DoesNotMakeTheResponseMandatory",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_StaysBoundedToEitherAllowedResponse"
         ]
       }
     },
