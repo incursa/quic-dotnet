@@ -43311,6 +43311,9 @@
         "upstream_refs": [
           "RFC 9000 §21.7 RFC9000-S21.7-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P7-0001.cs::RequirementStatement_DescribesStreamFragmentationMitigationsForDeployments"
         ]
       }
     },
