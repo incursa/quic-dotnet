@@ -110,6 +110,65 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0006
         Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ClosingRuntimeReusesTheSamePlaintextConnectionCloseDatagramForDifferentAttributedPackets()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+        QuicConnectionPathIdentity firstPath = new("203.0.113.60", RemotePort: 443);
+        QuicConnectionPathIdentity secondPath = new("203.0.113.61", RemotePort: 443);
+        byte[] receivedPayload = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 0,
+                firstPath,
+                receivedPayload),
+            nowTicks: 0).StateChanged);
+
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: 0x1c,
+            ReasonPhrase: null);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionLocalCloseRequestedEvent(
+                ObservedAtTicks: 1,
+                closeMetadata),
+            nowTicks: 1).StateChanged);
+
+        QuicConnectionTransitionResult firstResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                firstPath,
+                receivedPayload),
+            nowTicks: 2);
+
+        QuicConnectionTransitionResult secondResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 3,
+                secondPath,
+                receivedPayload),
+            nowTicks: 3);
+
+        byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(
+            new QuicConnectionCloseFrame(
+                QuicTransportErrorCode.ProtocolViolation,
+                triggeringFrameType: 0x1c,
+                []));
+
+        QuicConnectionSendDatagramEffect firstSend = SelectConnectionCloseDatagram(firstResult.Effects, expectedDatagram);
+        QuicConnectionSendDatagramEffect secondSend = SelectConnectionCloseDatagram(secondResult.Effects, expectedDatagram);
+
+        Assert.True(expectedDatagram.AsSpan().SequenceEqual(firstSend.Datagram.Span));
+        Assert.True(secondSend.Datagram.Span.SequenceEqual(expectedDatagram));
+        Assert.True(firstSend.Datagram.Span.SequenceEqual(secondSend.Datagram.Span));
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         byte[] localHandshakePrivateKey = new byte[32];
@@ -141,5 +200,15 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0006
 
         Assert.True(runtime.ActivePath.HasValue);
         return runtime;
+    }
+
+    private static QuicConnectionSendDatagramEffect SelectConnectionCloseDatagram(
+        IEnumerable<QuicConnectionEffect> effects,
+        byte[] expectedDatagram)
+    {
+        return Assert.IsType<QuicConnectionSendDatagramEffect>(
+            Assert.Single(
+                effects.OfType<QuicConnectionSendDatagramEffect>(),
+                effect => effect.Datagram.Span.SequenceEqual(expectedDatagram)));
     }
 }
