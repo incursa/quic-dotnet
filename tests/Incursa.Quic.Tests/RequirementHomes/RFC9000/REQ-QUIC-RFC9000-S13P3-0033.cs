@@ -36,6 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0033
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]
     public void ServerHandshakeDonePacketLossQueuesRepairUntilAcknowledged()
     {
