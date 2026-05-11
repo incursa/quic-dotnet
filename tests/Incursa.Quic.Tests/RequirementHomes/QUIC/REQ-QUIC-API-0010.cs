@@ -14,6 +14,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_API_0010
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task SupportedLoopbackWriteAndDisposeCompletion_DeliversBytesAndPeerEof()
@@ -35,6 +36,7 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -82,6 +84,7 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide()
@@ -261,8 +264,9 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Positive)]
-    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task RuntimeIngressReplay_DeliversBodyThenSurfacesDelayedPeerFinWithoutALengthField()
     {
         // Provenance:
@@ -273,6 +277,7 @@ public sealed class REQ_QUIC_API_0010
         //     packet 4 and later retransmissions 8/9/11/12 carried STREAM stream_id=0 offset=1024 length=0 fin=true.
         // quic-go is sending the standalone FIN-only response frame without a length field on that path, so the
         // managed runtime must surface EOF for the exact protected 1-RTT encoding that the live peer retransmits.
+        // The request is pinned to the runtime's default 32-byte bidirectional send-credit boundary.
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
             connectionReceiveLimit: 4096,
             localBidirectionalReceiveLimit: 2048);
@@ -534,6 +539,7 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task StreamOperationsAfterDispose_AreRejectedHonestly()
@@ -547,6 +553,7 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task StreamWritesAfterConnectionClose_AreRejectedWithTheTerminalConnectionOutcome()
