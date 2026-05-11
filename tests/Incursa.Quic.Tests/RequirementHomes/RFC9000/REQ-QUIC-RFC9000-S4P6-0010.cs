@@ -10,6 +10,8 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0010
     [InlineData(true, 0UL, 4UL)]
     [InlineData(false, 2UL, 6UL)]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit(
@@ -43,6 +45,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0010
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryApplyMaxStreamsFrame_IgnoresSmallerBidirectionalLimit()
@@ -62,6 +65,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0010
     [InlineData(true)]
     [InlineData(false)]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0007")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases(bool bidirectional)

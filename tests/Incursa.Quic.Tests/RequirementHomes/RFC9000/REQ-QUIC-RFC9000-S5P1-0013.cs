@@ -8,7 +8,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1_0013
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0013">A zero-length connection ID MAY be used when a connection ID is not needed to route to the correct endpoint.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P1-0013")]
-    [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0007")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void TryParseLongHeader_AllowsZeroLengthConnectionIds()
     {
         byte[] versionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(

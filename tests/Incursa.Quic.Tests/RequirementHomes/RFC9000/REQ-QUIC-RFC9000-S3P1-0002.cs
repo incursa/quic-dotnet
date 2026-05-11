@@ -39,6 +39,9 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0002
 
     [Property(Arbitrary = new[] { typeof(QuicConnectionStreamStatePropertyGenerators) })]
     [Requirement("REQ-QUIC-RFC9000-S3P1-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     [Trait("Category", "Property")]
     public void TryReserveSendCapacity_BuffersOutOfOrderFragmentsInReadyState(OrderedReceiveScenario scenario)
     {
@@ -119,6 +122,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("REQ-QUIC-RFC9000-S2P1-0001")]
     public void Fuzz_TryReserveSendCapacity_ReachesDataSentOnlyAfterOrderedFragments()
     {
         Random random = new(0x5150_2031);

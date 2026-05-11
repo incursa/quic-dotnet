@@ -2,6 +2,7 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0010">An endpoint MUST remember all stateless reset tokens associated with connection IDs and remote addresses for datagrams it has recently sent, including Stateless Reset Token field values from NEW_CONNECTION_ID frames and the server's transport parameters, and excluding tokens associated with connection IDs that are unused or retired.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0006">An endpoint MUST NOT check for any stateless reset tokens associated with connection IDs it has not used or for connection IDs that have been retired.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3P1-0010")]
 public sealed class REQ_QUIC_RFC9000_S10P3P1_0010
@@ -9,6 +10,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0006")]
     public void TryCommitLocalTransportParameters_ClonesTheServerStatelessResetTokenValue()
     {
         byte[] expectedStatelessResetToken = QuicStatelessResetRequirementTestData.CreateToken(0xA0);
@@ -35,6 +37,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0006")]
     public void ConnectionIdIssuedEvent_RegistersTheIssuedStatelessResetTokenForEmission()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);
@@ -80,6 +83,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0006")]
     public void ConnectionIdRetiredEvent_RemovesTheRetiredStatelessResetTokenFromEmission()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);

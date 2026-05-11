@@ -2,11 +2,13 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P3-0011">A receiver MUST discard a newly unprotected packet unless it is certain that it has not processed another packet with the same packet number from the same packet number space.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P10-0001">If duplicate packets are discarded by a receiver, an attacker will MUST race the duplicate packet against the original to be successful in this attack.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S12P3-0011")]
 public sealed class REQ_QUIC_RFC9000_S12P3_0011
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S21P10-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RecordIncomingPacket_MergesDuplicatePacketNumbersIntoASingleAckRange()
@@ -35,6 +37,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0011
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S21P10-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RecordIncomingPacket_KeepsMatchingPacketNumbersSeparatedByPacketNumberSpace()
@@ -70,6 +73,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0011
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S21P10-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void RecordIncomingPacket_HandlesTheLargestPacketNumberWithoutSplittingTheRange()
