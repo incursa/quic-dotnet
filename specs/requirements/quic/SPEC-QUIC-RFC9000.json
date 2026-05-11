@@ -8792,6 +8792,12 @@
         "upstream_refs": [
           "RFC 9000 §7 RFC9000-S7-B8-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0020.cs::BootstrapZeroRttPacketsCarryOnlyThePingProbePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0020.cs::BootstrapZeroRttPacketsDoNotMatchAnAckResponsePayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs::OpenOutboundStream_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0021.cs::OpenOutboundStream_WhenPeerSelectsNonZeroConnectionId_UsesNonZeroDestinationConnectionId"
         ]
       }
     },
@@ -12455,6 +12461,10 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
         ]
       }
     },
@@ -12642,6 +12652,10 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
         ]
       }
     },

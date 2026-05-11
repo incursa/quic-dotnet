@@ -10,12 +10,13 @@ S21P9 packet-processing-cost guidance proof, S21P5 request-forgery guidance proo
 S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration forgery
 countermeasures guidance proof, S21P5 port-and-CID hygiene guidance proof,
 S21P5P6 loopback-and-address-use guidance proof, S7-0011 application-protocol
-negotiation proof, and regenerated QUIC coverage triage.
+negotiation proof, S9-0009 disable-active-migration proof, S7-0006 handshake
+packet-protection proof, and regenerated QUIC coverage triage.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
-The current generated triage reports `trace_clean: 1745` and
-`uncovered_blocked: 26`.
+The current generated triage reports `trace_clean: 1748` and
+`uncovered_blocked: 23`.
 
 The Retry-bootstrap packet-number-reset abort slice is now closed for the
 bounded replay path.

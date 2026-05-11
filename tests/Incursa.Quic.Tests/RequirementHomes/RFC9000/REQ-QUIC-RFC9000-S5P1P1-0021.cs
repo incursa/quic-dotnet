@@ -17,6 +17,7 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0021
         new("203.0.113.220", RemotePort: 443);
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task OpenOutboundStream_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId()
@@ -32,6 +33,7 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0021
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S7-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task OpenOutboundStream_WhenPeerSelectsNonZeroConnectionId_UsesNonZeroDestinationConnectionId()
