@@ -5,6 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0005
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath()
@@ -51,6 +52,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0005
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2-0004")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath()
