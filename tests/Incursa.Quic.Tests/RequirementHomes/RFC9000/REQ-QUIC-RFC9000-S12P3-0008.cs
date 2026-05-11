@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -181,8 +183,85 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0008
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+        SetPrivateField(coordinator, "nextApplicationPacketNumber", QuicVariableLengthInteger.MaxValue);
+
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        byte[] applicationPayload = QuicS12P3TestSupport.CreatePingPayload();
+
+        Assert.False(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            applicationMaterial,
+            out _,
+            out _));
+        Assert.Equal(
+            QuicVariableLengthInteger.MaxValue,
+            GetPrivateField<ulong>(coordinator, "nextApplicationPacketNumber"));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryBuildProtectedApplicationDataPacket_UsesTheUintMaxValuePacketNumberBoundary()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+        SetPrivateField(coordinator, "nextApplicationPacketNumber", (ulong)uint.MaxValue - 1);
+
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        byte[] applicationPayload = QuicS12P3TestSupport.CreatePingPayload();
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            applicationMaterial,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal((ulong)uint.MaxValue - 1, packetNumber);
+        Assert.Equal(
+            (ulong)uint.MaxValue,
+            GetPrivateField<ulong>(coordinator, "nextApplicationPacketNumber"));
+        Assert.NotEmpty(protectedPacket);
+        QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+            coordinator,
+            protectedPacket,
+            applicationMaterial,
+            packetNumber);
+    }
+
     private static ulong ReadLongHeaderPacketNumber(byte[] openedPacket, int payloadOffset)
     {
         return QuicS17P1TestSupport.ReadPacketNumber(openedPacket.AsSpan(payloadOffset - sizeof(uint), sizeof(uint)));
+    }
+
+    private static T GetPrivateField<T>(
+        object target,
+        string fieldName)
+    {
+        FieldInfo field = target.GetType().GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        return (T)field.GetValue(target)!;
+    }
+
+    private static void SetPrivateField<T>(
+        object target,
+        string fieldName,
+        T value)
+    {
+        FieldInfo field = target.GetType().GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        field.SetValue(target, value);
     }
 }
