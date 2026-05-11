@@ -67,6 +67,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0026")]
     [CoverageType(RequirementCoverageType.Negative)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Negative")]
     public void ValidatedCandidatePathDoesNotRetransmitAfterTheTimerIsCleared()
     {
