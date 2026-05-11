@@ -11,36 +11,36 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 1705 |
+| trace_clean | 1706 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
 | covered_but_proof_too_broad | 0 |
 | partially_covered | 0 |
-| uncovered_blocked | 66 |
+| uncovered_blocked | 65 |
 | uncovered_unblocked | 0 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 1705 |
+| clean | 1706 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
 | restructure_needed | 0 |
-| new_tests_needed | 66 |
-| blocked | 66 |
+| new_tests_needed | 65 |
+| blocked | 65 |
 
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes:  requirements. Examples: .
 - Restructure-needed proof:  requirements. Examples: .
-- New proof or implementation work: 66 requirements. Examples: .
-- Blocked by recorded gap families: 66 requirements. Examples: REQ-QUIC-RFC9000-S17P2P5P3-0008, REQ-QUIC-RFC9000-S19P21-0004, REQ-QUIC-RFC9000-S19P21-0005, REQ-QUIC-RFC9000-S19P21-0006, REQ-QUIC-RFC9000-S19P21-0007, REQ-QUIC-RFC9000-S19P21-0008, REQ-QUIC-RFC9000-S19P21-0009, REQ-QUIC-RFC9000-S19P21-0010, REQ-QUIC-RFC9000-S19P21-0011, REQ-QUIC-RFC9000-S21P11-0001, REQ-QUIC-RFC9000-S21P11-0002, REQ-QUIC-RFC9000-S21P5-0001.
+- New proof or implementation work: 65 requirements. Examples: .
+- Blocked by recorded gap families: 65 requirements. Examples: REQ-QUIC-RFC9000-S19P21-0004, REQ-QUIC-RFC9000-S19P21-0005, REQ-QUIC-RFC9000-S19P21-0006, REQ-QUIC-RFC9000-S19P21-0007, REQ-QUIC-RFC9000-S19P21-0008, REQ-QUIC-RFC9000-S19P21-0009, REQ-QUIC-RFC9000-S19P21-0010, REQ-QUIC-RFC9000-S19P21-0011, REQ-QUIC-RFC9000-S21P11-0001, REQ-QUIC-RFC9000-S21P11-0002, REQ-QUIC-RFC9000-S21P5-0001, REQ-QUIC-RFC9000-S21P5-0002.
 
 ## RFC Breakdown
 
 | RFC | Total | trace_clean | missing_coverage_contract | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9000 | 1443 | 1377 | 0 | 0 | 0 | 0 | 66 | 0 |
+| RFC9000 | 1443 | 1378 | 0 | 0 | 0 | 0 | 65 | 0 |
 | RFC9001 | 96 | 96 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9002 | 224 | 224 | 0 | 0 | 0 | 0 | 0 | 0 |

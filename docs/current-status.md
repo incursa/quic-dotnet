@@ -1,19 +1,21 @@
 # Current Repository Status
 
-Last verified: 2026-05-10 for RFC 9000 blocked-tail audit, S10P1P2 idle-timeout
-guidance, and regenerated QUIC coverage triage.
+Last verified: 2026-05-10 for RFC 9000 blocked-tail audit, S17P2P5P3 Retry-bootstrap
+packet-number-reset abort, S10P1P2 idle-timeout guidance, and regenerated QUIC
+coverage triage.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
-The current generated triage reports `trace_clean: 1704` and
-`uncovered_blocked: 67`.
+The current generated triage reports `trace_clean: 1706` and
+`uncovered_blocked: 65`.
 
-The first remaining blocked requirement is
-`REQ-QUIC-RFC9000-S17P2P5P3-0008`, the optional server abort-on-packet-number
-reset clause. The runtime still lacks a faithful server-side abort seam for that
-event.
+The Retry-bootstrap packet-number-reset abort slice is now closed for the
+bounded replay path.
 
-The rest of the blocked tail is still policy, registry, and deployment heavy.
+The first remaining blocked requirement is `REQ-QUIC-RFC9000-S19P21-0004`, the
+frame-understanding extension clause. The rest of the blocked tail is still
+policy, registry, and deployment heavy.
+
 There are no unblocked RFC 9000 items left in the generated triage.
 
 Earlier runtime/proof-tail and hosted executive-read evidence remains pinned to
