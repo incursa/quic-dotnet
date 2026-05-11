@@ -140,6 +140,8 @@ public sealed class REQ_QUIC_API_0006
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S2-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ConnectionClose_FaultsPendingReadsClosedAndWritesClosedWithConnectionAborted()
