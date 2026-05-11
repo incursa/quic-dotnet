@@ -28,4 +28,21 @@ public sealed class REQ_QUIC_RFC9000_S5P1_0005
         Assert.True(sourceConnectionId.AsSpan().SequenceEqual(header.SourceConnectionId));
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0005")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseLongHeader_RejectsPacketsTruncatedAfterTheDestinationConnectionId()
+    {
+        byte[] packet = QuicHeaderTestData.BuildTruncatedLongHeader(
+            headerControlBits: 0x41,
+            version: 0x11223344,
+            destinationConnectionId: new byte[byte.MaxValue],
+            sourceConnectionId: [],
+            versionSpecificData: [],
+            truncateBy: 1);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
 }
