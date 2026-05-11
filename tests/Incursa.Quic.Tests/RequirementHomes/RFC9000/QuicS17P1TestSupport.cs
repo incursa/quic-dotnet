@@ -67,6 +67,13 @@ internal static class QuicS17P1TestSupport
         SetPrivatePacketNumber(coordinator, "nextPacketNumber", packetNumber);
     }
 
+    internal static void SetNextApplicationPacketNumber(
+        QuicHandshakeFlowCoordinator coordinator,
+        ulong packetNumber)
+    {
+        SetPrivatePacketNumber(coordinator, "nextApplicationPacketNumber", packetNumber);
+    }
+
     internal static void AssertOpenedApplicationPacketNumber(
         QuicHandshakeFlowCoordinator coordinator,
         ReadOnlySpan<byte> protectedPacket,
