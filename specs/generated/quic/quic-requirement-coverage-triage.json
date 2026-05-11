@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T19:55:11.8261049-06:00",
+  "generated_at": "2026-05-10T20:02:17.1197295-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T19:55:11.8230638-06:00",
+    "generated_at": "2026-05-10T20:02:17.1157015-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1710,
-      "uncovered_blocked": 61
+      "trace_clean": 1712,
+      "uncovered_blocked": 59
     },
     "by_work_queue_tag": {
-      "blocked": 61,
-      "clean": 1710,
-      "new_tests_needed": 61
+      "blocked": 59,
+      "clean": 1712,
+      "new_tests_needed": 59
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1382,
-          "uncovered_blocked": 61
+          "trace_clean": 1384,
+          "uncovered_blocked": 59
         }
       },
       {
@@ -172126,31 +172126,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172158,7 +172155,52 @@
           "summary": "Section 22.3 transport-parameter registry-policy requirements remain blocked without a registry-policy workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P3_0001",
+          "member": "REQ_QUIC_RFC9000_S22P3_0001.RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
+          "method": "RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P3_0001",
+          "member": "REQ_QUIC_RFC9000_S22P3_0001.RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
+          "method": "RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P3-0002",
@@ -172173,31 +172215,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0002.cs::RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172205,7 +172244,52 @@
           "summary": "Section 22.3 transport-parameter registry-policy requirements remain blocked without a registry-policy workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P3_0002",
+          "member": "REQ_QUIC_RFC9000_S22P3_0002.RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
+          "method": "RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0002.cs::RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P3_0002",
+          "member": "REQ_QUIC_RFC9000_S22P3_0002.RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
+          "method": "RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P3-0003",

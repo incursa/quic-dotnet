@@ -44591,6 +44591,9 @@
         "upstream_refs": [
           "RFC 9000 §22.3 RFC9000-S22.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForTransportParameters"
         ]
       }
     },
@@ -44617,6 +44620,9 @@
         "upstream_refs": [
           "RFC 9000 §22.3 RFC9000-S22.3-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P3-0002.cs::RequirementStatement_UsesStricterPolicyForLowTransportParameterCodepoints"
         ]
       }
     },

@@ -2,12 +2,13 @@
 
 Last verified: 2026-05-10 for RFC 9000 blocked-tail audit, S17P2P5P3 Retry-bootstrap
 packet-number-reset abort, S10P1P2 idle-timeout guidance, S22P4 frame-type registry
-policy proof, and regenerated QUIC coverage triage.
+policy proof, S22P3 transport-parameter registry policy proof, and regenerated QUIC
+coverage triage.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
-The current generated triage reports `trace_clean: 1710` and
-`uncovered_blocked: 61`.
+The current generated triage reports `trace_clean: 1712` and
+`uncovered_blocked: 59`.
 
 The Retry-bootstrap packet-number-reset abort slice is now closed for the
 bounded replay path.
@@ -18,6 +19,9 @@ closed for `REQ-QUIC-RFC9000-S22P4-0001`, `REQ-QUIC-RFC9000-S22P4-0002`, and
 `REQ-QUIC-RFC9000-S22P4-0005`. The first remaining blocked requirement is
 `REQ-QUIC-RFC9000-S19P21-0004`, the frame-understanding extension clause. The
 rest of the blocked tail is still policy, registry, and deployment heavy.
+
+The transport-parameter registry policy slice is now closed for
+`REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002`.
 
 There are no unblocked RFC 9000 items left in the generated triage.
 

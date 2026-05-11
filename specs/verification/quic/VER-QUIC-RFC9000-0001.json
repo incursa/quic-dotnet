@@ -1904,6 +1904,10 @@
     {
       "heading": "2026-05-10 S22P4 Frame-Registry Policy Proof",
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S22P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S22P4_0005\"` passed 3/3.\n- `REQ-QUIC-RFC9000-S22P4-0001`, `REQ-QUIC-RFC9000-S22P4-0002`, and `REQ-QUIC-RFC9000-S22P4-0005` now have direct canonical spec-file proof for the frame-type registry policy clauses.\n- Regenerated coverage triage should mark those requirements trace_clean once refreshed.\n- This remains bounded to canonical registry-policy wording and does not claim live IANA registry publication or broader registry-maintenance automation."
+    },
+    {
+      "heading": "2026-05-10 S22P3 Transport-Parameter Registry Policy Proof",
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P3_0001|REQ_QUIC_RFC9000_S22P3_0002\"` passed 2/2.\n- `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002` now have direct canonical spec-file proof for the transport-parameter registry policy clauses.\n- Regenerated coverage triage should mark those requirements trace_clean once refreshed.\n- This remains bounded to canonical registry-policy wording and does not claim live registry-policy automation or broader registry-maintenance behavior."
     }
   ],
   "domain": "quic"

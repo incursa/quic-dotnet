@@ -124,7 +124,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
 
 - `9000-22.1.4-permanent-registration-policy` remains open. `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008` are permanent-registration policy clauses with no local registry-maintenance workflow surface in this repository slice, so keep them blocked until a dedicated registry-maintenance workflow exists.
 
-- `9000-22.3-transport-parameter-registration-policy` remains open. `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002` are transport-parameter registry-policy clauses with no local codepoint-registration workflow surface in this repository slice, so keep them blocked until a dedicated registry-policy workflow exists.
+- `9000-22.3-transport-parameter-registration-policy` is closed for the local transport-parameter registry proof surface. `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002` now have canonical spec-file proof alongside the existing permanent-parameter registry support surface. This closure does not claim a live registry-policy workflow or broader registry-maintenance automation.
 
 - `9000-22.4-frame-type-registration-policy` is closed for the local frame-type registry proof surface. `REQ-QUIC-RFC9000-S22P4-0001`, `REQ-QUIC-RFC9000-S22P4-0002`, and `REQ-QUIC-RFC9000-S22P4-0005` now have canonical spec-file proof alongside the already-closed `REQ-QUIC-RFC9000-S22P4-0003`, `REQ-QUIC-RFC9000-S22P4-0004`, and `REQ-QUIC-RFC9000-S22P4-0006`. This closure does not claim a live IANA registry publishing workflow or broader registry-maintenance automation.
 
