@@ -43285,6 +43285,11 @@
         "upstream_refs": [
           "RFC 9000 §21.6 RFC9000-S21.6-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_DescribesSlowlorisMitigationsForDeployments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_DoesNotClaimTransportRuntimeAutonomyForDeploymentPolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_StaysBoundedToDeploymentMitigationExamples"
         ]
       }
     },
