@@ -4,6 +4,44 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S9P4_0001
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OldPathPacketsDoNotInfluenceTheNewPathsRecoveryStateAfterValidation()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.10", RemotePort: 443);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.11", RemotePort: 443);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+
+        QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
+
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                migratedPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 10);
+        Assert.True(QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            migratedPath,
+            observedAtTicks: 20).StateChanged);
+
+        QuicPathMigrationRecoverySnapshot afterValidation = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 30,
+                activePath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 30);
+
+        QuicPathMigrationRecoverySnapshot afterOldPathPacket = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+        Assert.Equal(afterValidation, afterOldPathPacket);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ValidatingANewPeerAddressResetsOldPathRecoveryState()
