@@ -5,6 +5,8 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S7-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0004")]
     [Trait("Category", "Positive")]
     public void HandshakePacketsUseLongHeadersToEstablishBothConnectionIds()
     {
@@ -31,6 +33,19 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0001
             serverSourceConnectionId,
             QuicS7P2ServerConnectionIdTestSupport.CreateScalar(0x51),
             clientInitialDatagrams);
+
+        Assert.True(QuicS7P2ServerConnectionIdTestSupport.ReceivePacket(
+            clientRuntime,
+            serverFlight.InitialPacket,
+            observedAtTicks: 1).StateChanged);
+        Assert.True(QuicS7P2ServerConnectionIdTestSupport.ReceivePacket(
+            clientRuntime,
+            serverFlight.HandshakePacket,
+            observedAtTicks: 2).StateChanged);
+        Assert.True(clientRuntime.TlsState.PeerCertificatePolicyAccepted);
+        Assert.True(clientRuntime.TlsState.PeerFinishedVerified);
+        Assert.True(clientRuntime.TlsState.HandshakeKeysAvailable);
+        Assert.True(clientRuntime.TlsState.OneRttKeysAvailable);
 
         QuicS7P2ServerConnectionIdTestSupport.AssertLongHeaderConnectionIds(
             clientInitialDatagrams[0].Datagram.Span,
