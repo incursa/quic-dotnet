@@ -22,6 +22,8 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0028")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0008")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ReceivedPathChallengeOnACandidatePathEmitsExactlyOnePathResponseDatagram()
@@ -88,6 +90,8 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0028")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0008")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [Trait("Category", "Edge")]
