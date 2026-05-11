@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:12:34.4741873-06:00",
+  "generated_at": "2026-05-10T20:16:15.1432676-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -18,16 +18,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-10T20:12:34.4710399-06:00",
+    "generated_at": "2026-05-10T20:16:15.1388068-06:00",
     "total_requirements": 1771,
     "by_state": {
-      "trace_clean": 1723,
-      "uncovered_blocked": 48
+      "trace_clean": 1731,
+      "uncovered_blocked": 40
     },
     "by_work_queue_tag": {
-      "blocked": 48,
-      "clean": 1723,
-      "new_tests_needed": 48
+      "blocked": 40,
+      "clean": 1731,
+      "new_tests_needed": 40
     },
     "by_rfc": [
       {
@@ -41,8 +41,8 @@
         "rfc": "RFC9000",
         "total": 1443,
         "by_state": {
-          "trace_clean": 1395,
-          "uncovered_blocked": 48
+          "trace_clean": 1403,
+          "uncovered_blocked": 40
         }
       },
       {
@@ -171876,31 +171876,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171908,7 +171905,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0001",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0001.RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
+          "method": "RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0001",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0001.RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
+          "method": "RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0002",
@@ -171923,31 +171965,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0002.cs::RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -171955,7 +171994,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0002",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0002.RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
+          "method": "RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0002.cs::RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0002",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0002.RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
+          "method": "RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0003",
@@ -171970,31 +172054,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0003.cs::RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172002,7 +172083,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0003",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0003.RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
+          "method": "RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0003.cs::RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0003",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0003.RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
+          "method": "RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0004",
@@ -172017,31 +172143,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0004.cs::RequirementStatement_AllowsRegistrySpecificPolicyRanges",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172049,7 +172172,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0004",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0004.RequirementStatement_AllowsRegistrySpecificPolicyRanges",
+          "method": "RequirementStatement_AllowsRegistrySpecificPolicyRanges",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0004.cs::RequirementStatement_AllowsRegistrySpecificPolicyRanges",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0004",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0004.RequirementStatement_AllowsRegistrySpecificPolicyRanges",
+          "method": "RequirementStatement_AllowsRegistrySpecificPolicyRanges",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0005",
@@ -172064,31 +172232,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0005.cs::RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172096,7 +172261,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0005",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0005.RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
+          "method": "RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0005.cs::RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0005",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0005.RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
+          "method": "RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0006",
@@ -172111,31 +172321,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0006.cs::RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172143,7 +172350,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0006",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0006.RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
+          "method": "RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0006.cs::RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0006",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0006.RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
+          "method": "RequirementStatement_MakesStandardsTrackRegistrationsPermanent",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0007",
@@ -172158,31 +172410,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0007.cs::RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172190,7 +172439,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0007",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0007.RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
+          "method": "RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0007.cs::RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0007",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0007.RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
+          "method": "RequirementStatement_AssignsDocumentRegistrationsPermanentStatus",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0008",
@@ -172205,31 +172499,28 @@
         "edge": "not_applicable",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0008.cs::RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -172237,7 +172528,52 @@
           "summary": "Section 22.1.4 permanent-registration requirements remain blocked without a codepoint maintenance workflow surface."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0008",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0008.RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
+          "method": "RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0008.cs::RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S22P1P4_0008",
+          "member": "REQ_QUIC_RFC9000_S22P1P4_0008.RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
+          "method": "RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S22P1P4-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S22P2-0001",

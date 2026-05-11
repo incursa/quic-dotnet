@@ -44297,6 +44297,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0001.cs::RequirementStatement_UsesSpecificationRequiredPolicyForPermanentRegistrations"
         ]
       }
     },
@@ -44323,6 +44326,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0002.cs::RequirementStatement_RequiresAccessibleSpecificationForPermanentRegistrations"
         ]
       }
     },
@@ -44349,6 +44355,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0003.cs::RequirementStatement_AllowsAdditionalConstraintsForPermanentRegistrations"
         ]
       }
     },
@@ -44375,6 +44384,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0004.cs::RequirementStatement_AllowsRegistrySpecificPolicyRanges"
         ]
       }
     },
@@ -44401,6 +44413,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0005.cs::RequirementStatement_PreventsPermanentRequirementsFromBlockingProvisionalRegistrations"
         ]
       }
     },
@@ -44427,6 +44442,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0006.cs::RequirementStatement_MakesStandardsTrackRegistrationsPermanent"
         ]
       }
     },
@@ -44453,6 +44471,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0007.cs::RequirementStatement_AssignsDocumentRegistrationsPermanentStatus"
         ]
       }
     },
@@ -44479,6 +44500,9 @@
         "upstream_refs": [
           "RFC 9000 §22.1.4 RFC9000-S22.1.4-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P4-0008.cs::RequirementStatement_RecordsChangeControllerAndContactForDocumentRegistrations"
         ]
       }
     },

@@ -122,7 +122,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
 
 - `9000-22.1.3-codepoint-reclamation-policy` is closed for the local codepoint-reclamation proof surface. `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004` now have canonical spec-file proof alongside the existing registry support surface. This closure does not claim a live codepoint-maintenance workflow or broader registry-maintenance automation.
 
-- `9000-22.1.4-permanent-registration-policy` remains open. `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008` are permanent-registration policy clauses with no local registry-maintenance workflow surface in this repository slice, so keep them blocked until a dedicated registry-maintenance workflow exists.
+- `9000-22.1.4-permanent-registration-policy` is closed for the local permanent-registration proof surface. `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008` now have canonical spec-file proof alongside the existing registry support surface. This closure does not claim a live registry-maintenance workflow or broader registry-maintenance automation.
 
 - `9000-22.3-transport-parameter-registration-policy` is closed for the local transport-parameter registry proof surface. `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002` now have canonical spec-file proof alongside the existing permanent-parameter registry support surface. This closure does not claim a live registry-policy workflow or broader registry-maintenance automation.
 
