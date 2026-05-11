@@ -16,6 +16,7 @@ public sealed class REQ_QUIC_RFC9000_S19P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0004")]
     public void TryFormatVersion1InitialDatagramPadding_RejectsNegativeLengthsAndTooSmallDestinations()
     {
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(-1, stackalloc byte[1], out _));
@@ -24,6 +25,7 @@ public sealed class REQ_QUIC_RFC9000_S19P1_0003
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0004")]
     public void TryGetVersion1InitialDatagramPaddingLength_ReturnsZeroAtTheMinimumSizeBoundary()
     {
         Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(1200, out int paddingLength));

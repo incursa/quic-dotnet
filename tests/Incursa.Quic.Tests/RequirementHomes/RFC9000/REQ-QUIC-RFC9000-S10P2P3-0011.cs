@@ -62,6 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0003")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -106,6 +107,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0009")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Negative)]
