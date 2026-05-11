@@ -163,6 +163,7 @@ public sealed class REQ_QUIC_CRT_0133
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0002")]
     public void BootstrapWithoutDormantMaterialStaysOnTheNonResumptionPath()
     {
         using QuicConnectionRuntime clientRuntime = new(

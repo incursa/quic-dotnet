@@ -50,6 +50,7 @@ public sealed class REQ_QUIC_CRT_0142
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0003")]
     public void ClientRuntimeDiscardsZeroRttMaterialWhenTheResumptionAttemptIsRejected()
     {
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
@@ -98,6 +99,7 @@ public sealed class REQ_QUIC_CRT_0142
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0003")]
     public void ClientRuntimeKeepsZeroRttMaterialWhenTheResumptionAttemptIsAccepted()
     {
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot =
