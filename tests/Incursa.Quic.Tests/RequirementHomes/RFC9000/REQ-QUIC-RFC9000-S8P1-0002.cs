@@ -7,6 +7,21 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S8P1_0002
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void CanSend_AllowsExactlyThreeTimesTheReceivedPayloadBeforeValidation()
+    {
+        QuicAntiAmplificationBudget budget = new();
+
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(100, uniquelyAttributedToSingleConnection: true));
+        Assert.Equal(300UL, budget.RemainingSendBudget);
+        Assert.True(budget.CanSend(300));
+        Assert.True(budget.TryConsumeSendBudget(300));
+        Assert.Equal(300UL, budget.SentPayloadBytes);
+        Assert.Equal(0UL, budget.RemainingSendBudget);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PeerHandshakeCompletion_ValidatesTheBootstrapClientPathAndRemovesTheAmplificationCap()
