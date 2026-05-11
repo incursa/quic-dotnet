@@ -4,6 +4,18 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_S7P5_0003
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryAddFrame_BuffersWhenCapacityIsExpanded()
+    {
+        QuicCryptoBuffer buffer = new(8192);
+
+        Assert.True(buffer.TryAddFrame(new QuicCryptoFrame(0, new byte[5000]), out QuicCryptoBufferResult result));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, result);
+        Assert.Equal(5000, buffer.BufferedBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded()
