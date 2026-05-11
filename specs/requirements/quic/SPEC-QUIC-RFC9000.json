@@ -1451,6 +1451,10 @@
         "upstream_refs": [
           "RFC 9000 §3 RFC9000-S3-B4-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0003.cs::TryReserveSendCapacity_AdvancesOnlyTheSendPartOfABidirectionalStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0003.cs::TryReceiveStreamFrame_AdvancesOnlyTheReceivePartOfABidirectionalStream"
         ]
       }
     },
