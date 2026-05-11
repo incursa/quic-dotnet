@@ -18,4 +18,24 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0001
 
         Assert.Equal(expected, QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CanConsiderPeerAddressValidated_ReturnsFalseWhenTheEndpointDidNotChooseTheConnectionId()
+    {
+        byte[] connectionId = Enumerable.Range(0, 8).Select(index => (byte)index).ToArray();
+
+        Assert.False(QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint: false));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void CanConsiderPeerAddressValidated_AllowsExactlySixtyFourBitsOfEntropyWhenChosenByTheEndpoint()
+    {
+        byte[] connectionId = Enumerable.Range(0, 8).Select(index => (byte)index).ToArray();
+
+        Assert.True(QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint: true));
+    }
 }
