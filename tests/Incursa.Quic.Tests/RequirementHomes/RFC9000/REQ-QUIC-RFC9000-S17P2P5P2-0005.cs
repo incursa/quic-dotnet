@@ -13,6 +13,8 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0005
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P2-0005">The client responds to a Retry packet with an Initial packet that MUST include the provided Retry token to continue connection establishment.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0003")]
     public void ClientIncludesTheRetryTokenWhenItReplaysInitialPackets()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -67,6 +69,8 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0005
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0003")]
     public void ClientDoesNotReplayInitialPacketsWhenTheRetryTokenIsEmpty()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -86,6 +90,8 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P2_0005
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S8P1P2-0003")]
     public void ClientReplaysInitialPacketsWithAMinimumLengthRetryToken()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();

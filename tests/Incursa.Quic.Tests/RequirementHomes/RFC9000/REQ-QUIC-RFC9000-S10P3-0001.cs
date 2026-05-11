@@ -5,6 +5,8 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0001">An endpoint MAY send a Stateless Reset in response to receiving a packet that it cannot associate with an active connection.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0004">Endpoints MAY skip this check if any packet from a datagram is successfully processed.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0005">However, the comparison MUST be performed when the first packet in an incoming datagram either cannot be associated with a connection or cannot be decrypted.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0001")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0001
@@ -12,6 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0005")]
     public async Task EndpointHostSendsStatelessResetForAnUnattributedPacket()
     {
         using Socket serverSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -65,6 +68,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0005")]
     public async Task ReceiveDatagram_DispatchesPotentialStatelessResetDatagramsIntoTheRuntime()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);
@@ -111,6 +115,8 @@ public sealed class REQ_QUIC_RFC9000_S10P3_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0005")]
     public void ReceiveDatagram_RoutesPotentialStatelessResetDatagramsWhenThePacketCanBeAssociatedWithAnActiveConnection()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);

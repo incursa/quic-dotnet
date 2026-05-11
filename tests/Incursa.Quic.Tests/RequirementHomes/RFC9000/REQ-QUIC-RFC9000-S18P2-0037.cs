@@ -40,6 +40,8 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0037
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0007")]
     public void TryFormatTransportParameters_ClientRejectsServerOnlyTransportParameterMixedWithAllowedParameters()
     {
         QuicTransportParameters parameters = new()
@@ -63,11 +65,15 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0037
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0004">This transport parameter MAY be sent by a server.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0005">This transport parameter MUST NOT be sent by a client.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P2-0037">A client MUST NOT include any server-only transport parameter: original_destination_connection_id, preferred_address, retry_source_connection_id, or stateless_reset_token.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P6P2-0006">The addresses that a server provides in the preferred_address transport parameter MUST be treated as valid only for the connection in which they are provided.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P6P2-0007">A client MUST NOT use these for other connections, including connections that are resumed from the current connection.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S18P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0004")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S18P2-0037")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatTransportParameters_RejectsServerOnlyParametersWhenSendingAsClient()
     {
