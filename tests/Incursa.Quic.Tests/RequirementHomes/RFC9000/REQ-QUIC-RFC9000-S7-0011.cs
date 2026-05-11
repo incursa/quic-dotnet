@@ -14,6 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S7_0011
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9000-S7-0009")]
     public void ServerRoleSelectsTheFirstMutualConfiguredApplicationProtocolByLocalOrderAndEmitsItInEncryptedExtensions()
     {
         QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver(
