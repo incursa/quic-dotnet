@@ -73,6 +73,33 @@ public sealed class REQ_QUIC_RFC9000_S7P5_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryAddFrame_BuffersAnExact4096ByteOutOfOrderCryptoPayload()
+    {
+        QuicCryptoBuffer buffer = new();
+        byte[] payload = Enumerable.Range(0, 4096).Select(static value => unchecked((byte)value)).ToArray();
+
+        Assert.True(buffer.TryAddFrame(
+            new QuicCryptoFrame(2048, payload.AsSpan(2048, 2048)),
+            out QuicCryptoBufferResult firstResult));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, firstResult);
+        Assert.Equal(2048, buffer.BufferedBytes);
+
+        Assert.True(buffer.TryAddFrame(
+            new QuicCryptoFrame(0, payload.AsSpan(0, 2048)),
+            out QuicCryptoBufferResult secondResult));
+        Assert.Equal(QuicCryptoBufferResult.Buffered, secondResult);
+        Assert.Equal(4096, buffer.BufferedBytes);
+
+        byte[] reconstructed = new byte[payload.Length];
+        Assert.True(buffer.TryDequeueContiguousData(reconstructed, out int bytesWritten));
+        Assert.Equal(payload.Length, bytesWritten);
+        Assert.True(payload.AsSpan().SequenceEqual(reconstructed));
+        Assert.Equal(0, buffer.BufferedBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAddFrame_DeduplicatesExactOverlapBeforeConsumption()
