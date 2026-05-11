@@ -105,6 +105,62 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0009
         Assert.Equal(path, runtime.ActivePath.Value.Identity);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void LocalCloseRequestedWithoutActivePathDefersTheCloseReplyUntilTheFirstAttributedPacket()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionCloseMetadata closeMetadata = new(
+            TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+            ApplicationErrorCode: null,
+            TriggeringFrameType: 0x1c,
+            ReasonPhrase: null);
+
+        QuicConnectionTransitionResult closeResult = runtime.Transition(
+            new QuicConnectionLocalCloseRequestedEvent(
+                ObservedAtTicks: 1,
+                closeMetadata),
+            nowTicks: 1);
+
+        Assert.True(closeResult.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+        Assert.False(runtime.CanSendOrdinaryPackets);
+        Assert.Null(runtime.ActivePath);
+        Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout));
+        Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.CloseLifetime));
+        Assert.DoesNotContain(closeResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+
+        QuicConnectionPathIdentity path = new("203.0.113.72", RemotePort: 443);
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                path,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 2);
+
+        QuicConnectionCloseFrame expectedClose = new(
+            QuicTransportErrorCode.ProtocolViolation,
+            triggeringFrameType: 0x1c,
+            []);
+        byte[] expectedDatagram = QuicFrameTestData.BuildConnectionCloseFrame(expectedClose);
+        QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+            Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(path, send.PathIdentity);
+        Assert.True(expectedDatagram.AsSpan().SequenceEqual(send.Datagram.Span));
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(path, runtime.ActivePath.Value.Identity);
+        Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+        Assert.False(runtime.CanSendOrdinaryPackets);
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);
