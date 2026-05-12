@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-12 for the INT major-peer interop matrix shape and
-dry-run proof. RFC 9000 blocked-tail coverage remains last verified on
+Last verified: 2026-05-12 for the INT major-peer interop matrix shape,
+dry-run proof, and live versionnegotiation runner proof. RFC 9000 blocked-tail
+coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
 transport-parameter registry policy proof, S22P1P3 codepoint reclamation policy
@@ -29,8 +30,10 @@ The matrix covers Incursa.Quic as local client and local server against the
 The profile intentionally excludes `http3`, `zerortt`, `chacha20`, `v2`,
 `rebind-port`, `rebind-addr`, `connectionmigration`, and the
 `versionnegotiation` cell. The first three are outside scope or
-prerequisite-blocked for this profile; `versionnegotiation` remains excluded
-until the helper and upstream harness support boundary is explicit.
+prerequisite-blocked for this profile; `versionnegotiation` now has explicit
+reserved-version runner dispatch and a successful live local runner proof under
+`artifacts/interop-runner/20260512-170806170-both-quic-go/`, but remains
+excluded from the major-peer-matrix profile by scope.
 
 Local proof for this slice is workflow shape, dry-run planning, and helper
 fallback behavior, not hosted runner success. In this session, the focused INT
@@ -42,6 +45,16 @@ existing baseline and is not claimed as passing here.
 
 The next proof step is to dispatch the manual hosted profile and attach the
 per-cell artifact bundles to `VER-QUIC-INT-0012`.
+
+Latest reruns still leave the `msquic` lane explicit-blocked rather than
+green: the local server `handshake` cell failed with `TLS alert 50` from
+`QuicListenerHost.UnwrapQueuedItem`, and the upstream
+`ghcr.io/microsoft/msquic/qns:main` client entrypoint still does not expose a
+supported way to verify against `/certs/ca.pem`. The failing bundles remain
+under `artifacts/interop-runner/20260512-103506944-server-nginx/` and
+`artifacts/interop-runner/20260512-103744122-server-nginx/`; the local
+trust-store wrapper and follow-up `SSL_CERT_FILE=/certs/ca.pem` rerun did not
+change the outcome.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 
@@ -251,8 +264,10 @@ verification artifact.
 `REQ-QUIC-INT-0018` remains the owning inventory/profile requirement for the
 non-HTTP/3 interop testcase list. The current helper inventory keeps
 `versionnegotiation`, `keyupdate`, and `resumption` in the supported/executed
-class, keeps `http3` out of scope, and classifies `chacha20`, `zerortt`, `v2`,
-`rebind-port`, `rebind-addr`, and `connectionmigration` as prerequisite-blocked.
+class, with `versionnegotiation` now backed by explicit reserved-version runner
+dispatch, keeps `http3` out of scope, and classifies `chacha20`, `zerortt`,
+`v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` as
+prerequisite-blocked.
 
 `chacha20` is not green on this runner: it remains blocked on end-to-end runner
 platform support for the required cipher-suite selection. The source-level
@@ -1609,10 +1624,13 @@ The current honest support boundary is narrow:
 - Narrow write/completion, abort, stream-capacity, retry replay, packet
   protection, recovery, and selected TLS/trust floors are implemented and
   traced.
-- Interop harness dispatch exists for `handshake`, `post-handshake-stream`,
-  `keyupdate`, `multiconnect`, `resumption`, `retry`, and `transfer`, with
-  local requirement-home and integration proof now green for the documented
-  supported cells.
+- Interop harness dispatch exists for `handshake`, `versionnegotiation`,
+  `post-handshake-stream`, `keyupdate`, `multiconnect`, `resumption`, `retry`,
+  and `transfer`, with local requirement-home, helper dry-run proof, and live
+  local runner proof green for the documented supported cells;
+  `versionnegotiation` now uses the reserved-version probe path instead of the
+  transfer-oriented handshake path, and the preserved runner bundle lives under
+  `artifacts/interop-runner/20260512-170806170-both-quic-go/`.
 - Internal repeated 1-RTT key-update lifecycle proof is closed for the bounded
   moving-window runtime model, including wide internal epoch identifiers, but
   this remains outside the public support promise.
@@ -1667,6 +1685,11 @@ The next useful lanes are:
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
   the server-role `handshake` cell against quic-go.
+- The next concrete zerortt proof gate is `REQ-QUIC-INT-0021`; keep it
+  prerequisite-blocked until the hosted Linux packet-analysis run succeeds.
+  The 2026-05-12 branch rerun on run `25768724412` confirmed the SDK pin
+  reaches the actual testcase but still times out in the client download phase
+  with `timeout: no recent network activity`.
 - Install Wireshark packet-analysis tools locally, or use the hosted workflow
   that installs them, before attempting additional non-DryRun local
   interop-runner cells.

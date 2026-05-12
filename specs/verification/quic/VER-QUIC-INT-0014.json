@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0014",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Zerortt Hosted Proof Gate Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home tests, helper dry-run planning, workflow review, artifact inspection, and hosted workflow dispatch when external evidence is required.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0014",
+    "WI-QUIC-INT-0014"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0021"
+  ],
+  "preconditions": [
+    "The manual hosted workflow retains the advisory zerortt-server-proof profile.",
+    "The repo-local interop helper can be executed in dry-run mode.",
+    "The preserved hosted artifact bundles for the earlier zerortt attempts remain available for inspection."
+  ],
+  "scope": "Verify that the repository keeps zerortt prerequisite-blocked until hosted Linux packet-analysis proof exists and that partial hosted evidence does not promote the inventory cell.",
+  "procedure": [
+    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0021|FullyQualifiedName~REQ_QUIC_INT_0017|FullyQualifiedName~REQ_QUIC_INT_0018\"` and confirm the classification-gate checks pass.",
+    "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation,zerortt,connectionmigration` and confirm zerortt remains prerequisite-blocked in the plan output.",
+    "Inspect `.github/workflows/interop-runner-handshake.yml`, `scripts/interop/README.md`, and `scripts/interop/Invoke-QuicInteropRunner.ps1` for the explicit `zerortt-server-proof` advisory profile and blocked-cell wording.",
+    "Inspect `specs/requirements/quic/REQUIREMENT-GAPS.md` and `docs/current-status.md` for the remaining-hosted-proof wording.",
+    "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=zerortt-server-proof` and inspect the preserved runner-report and packet-analysis logs."
+  ],
+  "expected_result": "The repository continues to classify zerortt as prerequisite-blocked until the hosted Linux proof succeeds, and partial hosted proof or server-only dispatch does not promote the inventory cell.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0021.cs",
+    "artifacts/hosted-interop/25617834482-zerortt-server-proof/interop-runner-server-zerortt-quic-go-25617834482/20260510-023822599-server-nginx/runner-report.json",
+    "artifacts/hosted-interop/25617834482-zerortt-server-proof/interop-runner-server-zerortt-quic-go-25617834482/20260510-023822599-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
+    "artifacts/hosted-interop/25617834482-zerortt-server-proof/interop-runner-server-zerortt-quic-go-25617834482/20260510-023822599-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt",
+    "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-report.json",
+    "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
+    "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt"
+  ],
+  "status_summary": "Planned for the next proof tail. The repository already has the advisory hosted Linux zerortt-server-proof profile and the helper inventory remains explicit about the remaining packet-analysis blocker. A 2026-05-12 branch rerun on run 25768724412 confirmed the SDK pin to mcr.microsoft.com/dotnet/sdk:10.0.201 clears the harness image build mismatch and reaches the actual zerortt testcase, but the client still exits with timeout: no recent network activity during file download before packet-analysis promotion can occur. Requirement-home and dry-run proof are expected to keep the cell prerequisite-blocked until a later hosted run produces packet-level 0-RTT success.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "`http3` remains out of scope. `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain separate prerequisite-blocked lanes."
+    }
+  ]
+}
