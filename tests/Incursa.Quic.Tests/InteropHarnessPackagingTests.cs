@@ -9,7 +9,7 @@ public sealed class InteropHarnessPackagingTests
     public void DockerfileRestoresPublishesAndStagesTheInteropHarness()
     {
         string dockerfile = ReadNormalizedText("src/Incursa.Quic.InteropHarness/Dockerfile").TrimEnd();
-        Assert.Contains("FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build", dockerfile, StringComparison.Ordinal);
+        Assert.Contains("FROM mcr.microsoft.com/dotnet/sdk:10.0.201 AS build", dockerfile, StringComparison.Ordinal);
         Assert.Contains("RUN dotnet restore Incursa.Quic.slnx", dockerfile, StringComparison.Ordinal);
         Assert.Contains("RUN dotnet publish src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj -c Release -o /app/publish --no-restore", dockerfile, StringComparison.Ordinal);
         Assert.Contains("FROM mcr.microsoft.com/dotnet/runtime:10.0", dockerfile, StringComparison.Ordinal);
@@ -20,6 +20,15 @@ public sealed class InteropHarnessPackagingTests
         Assert.Contains("RUN chmod +x /app/setup.sh", dockerfile, StringComparison.Ordinal);
         Assert.Contains("RUN chmod +x /app/run_endpoint.sh", dockerfile, StringComparison.Ordinal);
         Assert.Contains("ENTRYPOINT [\"/app/run_endpoint.sh\"]", dockerfile, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void InteropHelperShimRegistersVersionNegotiationWithTheUpstreamRunner()
+    {
+        string helper = ReadNormalizedText("scripts/interop/Invoke-QuicInteropRunner.ps1");
+        Assert.Contains("TestCaseVersionNegotiation", helper, StringComparison.Ordinal);
+        Assert.Contains("versionnegotiation", helper, StringComparison.Ordinal);
+        Assert.Contains("TESTCASES_QUIC", helper, StringComparison.Ordinal);
     }
 
     [Fact]
