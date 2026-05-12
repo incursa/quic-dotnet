@@ -25,6 +25,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-INT-0009.json`](VER-QUIC-INT-0009.json): canonical hosted interop-runner handshake corroboration verification source
 - [`VER-QUIC-INT-0010.json`](VER-QUIC-INT-0010.json): canonical hosted interop-runner supported-subset coverage verification source
 - [`VER-QUIC-INT-0011.json`](VER-QUIC-INT-0011.json): canonical non-HTTP/3 interop-testcase inventory verification source
+- [`VER-QUIC-INT-0012.json`](VER-QUIC-INT-0012.json): canonical major peer interop matrix verification source
 - [`VER-QUIC-RFC8999-0001.json`](VER-QUIC-RFC8999-0001.json): canonical RFC 8999 verification source
 - [`VER-QUIC-RFC9000-0001.json`](VER-QUIC-RFC9000-0001.json): canonical RFC 9000 verification source
 - [`VER-QUIC-RFC9000-0002.json`](VER-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission verification source

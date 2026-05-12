@@ -1,18 +1,47 @@
 # Current Repository Status
 
-Last verified: 2026-05-10 for RFC 9000 blocked-tail audit, S17P2P5P3 Retry-bootstrap
-packet-number-reset abort, S10P1P2 idle-timeout guidance, S22P4 frame-type registry
-policy proof, S22P3 transport-parameter registry policy proof, S22P1P3 codepoint
-reclamation policy proof, S22P1P2 codepoint-selection policy proof, S22P1P4
-permanent-registration policy proof, S21P11 deployment-policy proof, S21P7
-stream-fragmentation guidance proof, S21P6 Slowloris mitigation guidance proof,
-S21P9 packet-processing-cost guidance proof, S21P5 request-forgery guidance proof,
-S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration forgery
-countermeasures guidance proof, S21P5 port-and-CID hygiene guidance proof,
-S21P5P6 loopback-and-address-use guidance proof, S7-0009 application-protocol
-negotiation proof, S7-0011 application-protocol negotiation proof,
-S9-0009 disable-active-migration proof, S7-0006 handshake packet-protection
-proof, and regenerated QUIC coverage triage.
+Last verified: 2026-05-12 for the INT major-peer interop matrix shape and
+dry-run proof. RFC 9000 blocked-tail coverage remains last verified on
+2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
+idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
+transport-parameter registry policy proof, S22P1P3 codepoint reclamation policy
+proof, S22P1P2 codepoint-selection policy proof, S22P1P4 permanent-registration
+policy proof, S21P11 deployment-policy proof, S21P7 stream-fragmentation
+guidance proof, S21P6 Slowloris mitigation guidance proof, S21P9
+packet-processing-cost guidance proof, S21P5 request-forgery guidance proof,
+S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration
+forgery countermeasures guidance proof, S21P5 port-and-CID hygiene guidance
+proof, S21P5P6 loopback-and-address-use guidance proof, S7-0009
+application-protocol negotiation proof, S7-0011 application-protocol
+negotiation proof, S9-0009 disable-active-migration proof, S7-0006 handshake
+packet-protection proof, and regenerated QUIC coverage triage.
+
+## 2026-05-12 INT Major Peer Matrix Profile
+
+`REQ-QUIC-INT-0019` now owns the manual `major-peer-matrix` hosted workflow
+profile. The profile is opt-in and advisory; it does not run on ordinary push,
+pull request, build, test, package, or support-readiness gates.
+
+The matrix covers Incursa.Quic as local client and local server against the
+`quic-go` and `msquic` peer slots for the currently executable non-HTTP/3 cells:
+`handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`.
+
+The profile intentionally excludes `http3`, `zerortt`, `chacha20`, `v2`,
+`rebind-port`, `rebind-addr`, `connectionmigration`, and the
+`versionnegotiation` cell. The first three are outside scope or
+prerequisite-blocked for this profile; `versionnegotiation` remains excluded
+until the helper and upstream harness support boundary is explicit.
+
+Local proof for this slice is workflow shape, dry-run planning, and helper
+fallback behavior, not hosted runner success. In this session, the focused INT
+requirement-home and helper test filter passed, representative dry-runs
+resolved a local-client MsQuic matrix plan and a local-server quic-go matrix
+plan, and helper fallback classification remains testcase-specific for
+`keyupdate` and `resumption`. Repo-wide SpecTrace validation still fails on the
+existing baseline and is not claimed as passing here.
+
+The next proof step is to dispatch the manual hosted profile and attach the
+per-cell artifact bundles to `VER-QUIC-INT-0012`.
 
 ## 2026-05-10 RFC 9000 Blocked-Tail Audit
 

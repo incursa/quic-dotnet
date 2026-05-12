@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0012",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Major Peer Interop Matrix Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory hosted matrix profile that collects role-backed interop artifacts for the currently executable non-HTTP/3 major scenarios against quic-go and msquic.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0010",
+    "ARC-QUIC-INT-0011",
+    "WI-QUIC-INT-0012",
+    "VER-QUIC-INT-0012"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0019"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "artifacts/interop-runner"
+  ],
+  "design_summary": "The manual workflow keeps the default hosted-handshake profile unchanged and adds a separate `major-peer-matrix` profile. The profile fans out over Incursa.Quic as the local client and local server against `quic-go` and `msquic` peer slots for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the network simulator plus the selected peer implementation image and uploads each role/peer/testcase artifact bundle with `if: always()` so failed, advisory, and passing attempts remain attributable. Helper-side `FileNotFoundError` advisory classification stays testcase-specific and now includes keyupdate and resumption markers so upstream trace-analysis post-check failures do not hide preserved managed evidence or incomplete managed evidence.",
+  "alternatives_considered": [
+    "Run the major peer matrix on every push or pull request. Rejected because the runner is expensive, externally dependent, and still advisory rather than a support-readiness gate.",
+    "Fold blocked cells such as zerortt, chacha20, v2, rebind, and connectionmigration into the same profile. Rejected because those cells have named prerequisites and would make the profile look broader than the current support evidence.",
+    "Count versionnegotiation as role-backed peer proof immediately. Rejected until the helper/harness support boundary for that cell is explicit enough to avoid conflating inventory classification with executable role coverage."
+  ],
+  "edge_cases_and_constraints": [
+    "The profile must stay manual-only and advisory.",
+    "Every matrix cell must preserve a distinct artifact root so role, peer, and testcase results can be audited independently.",
+    "A green profile run must not be read as broad QUIC, HTTP/3, 0-RTT, ChaCha20, v2, rebinding, connection-migration, public API, or runner-registry readiness.",
+    "External runner, Docker, packet-analysis tools, and peer images can fail independently of the managed transport; preserved artifacts are part of the proof burden."
+  ],
+  "data_and_state_considerations": "Hosted major-matrix cells write transient artifacts under `artifacts/interop-runner/<cell>/` and upload them as GitHub Actions artifacts. The profile does not commit runner outputs, change the external runner checkout, or alter transport runtime state.",
+  "risks": [
+    "Peer-image drift can expose real interop failures or external-runner breakage after local helper planning is green.",
+    "The matrix size can increase hosted cost and duration.",
+    "Readers may overstate the result unless the advisory boundary and excluded cells remain visible."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Initial Cell Set",
+      "content": "The initial major peer matrix covers `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` with local client and local server roles against `quic-go` and `msquic`. `http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain under the blocked-cell inventory."
+    }
+  ]
+}

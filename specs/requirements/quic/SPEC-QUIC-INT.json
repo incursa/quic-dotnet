@@ -19,6 +19,8 @@
     "ARC-QUIC-INT-0008",
     "ARC-QUIC-INT-0009",
     "ARC-QUIC-INT-0010",
+    "ARC-QUIC-INT-0011",
+    "ARC-QUIC-INT-0012",
     "WI-QUIC-INT-0001",
     "WI-QUIC-INT-0002",
     "WI-QUIC-INT-0003",
@@ -30,6 +32,7 @@
     "WI-QUIC-INT-0009",
     "WI-QUIC-INT-0010",
     "WI-QUIC-INT-0011",
+    "WI-QUIC-INT-0012",
     "VER-QUIC-INT-0001",
     "VER-QUIC-INT-0002",
     "VER-QUIC-INT-0003",
@@ -40,10 +43,11 @@
     "VER-QUIC-INT-0008",
     "VER-QUIC-INT-0009",
     "VER-QUIC-INT-0010",
-    "VER-QUIC-INT-0011"
+    "VER-QUIC-INT-0011",
+    "VER-QUIC-INT-0012"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
   "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness owns process-facing adapter concerns, including runner environment parsing, mounted path mapping, role dispatch, process exit behavior, endpoint-host composition, local preflight planning, optional hosted corroboration, and inventory publication. Supported server-role dispatch paths derive responses from observed HTTP/0.9 request targets rather than relying on server-side `REQUESTS` values, and long-running supported paths avoid initiating application close before the peer closes or a bounded timeout expires. Library-owned protocol behavior remains traced through the CRT and RFC requirement families; this INT specification owns only the harness adapter, inventory, artifact, and runner-facing contracts. The non-HTTP/3 inventory/profile requirement records the required classification model and artifact-retention contract without turning current execution status into normative requirement text. HTTP/3 stays out of scope.",
   "open_questions": [
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
@@ -63,7 +67,7 @@
     },
     {
       "heading": "Hosted Corroboration",
-      "content": "The manual hosted workflow defaults to the narrow server-role `handshake` helper cell against a quic-go client slot and uploads the full artifact bundle regardless of result. It also offers an explicit `supported-subset` profile that fans out over already-supported helper cells for retry, transfer, and multiconnect evidence collection, plus an explicit `zerortt-server-proof` profile that targets only the server-role zerortt attempt on hosted Linux so the runner can produce evidence beyond the Windows long-filename setup blocker. These profiles are intentionally advisory and are not part of push, pull-request, or package gating."
+      "content": "The manual hosted workflow defaults to the narrow server-role `handshake` helper cell against a quic-go client slot and uploads the full artifact bundle regardless of result. It also offers an explicit `supported-subset` profile that fans out over already-supported helper cells for retry, transfer, and multiconnect evidence collection, an explicit `major-peer-matrix` profile that exercises the currently executable non-HTTP/3 role/peer cells against quic-go and msquic, and an explicit `zerortt-server-proof` profile that targets only the server-role zerortt attempt on hosted Linux so the runner can produce evidence beyond the Windows long-filename setup blocker. These profiles are intentionally advisory and are not part of push, pull-request, or package gating."
     },
     {
       "heading": "Documented Non-HTTP/3 Inventory",
@@ -381,7 +385,8 @@
         "The helper is intentionally local-only and may use the runner's image-replacement mechanism rather than adding an Incursa.Quic entry to the runner repository.",
         "Split-role runs should keep the opposite side on established implementations such as quic-go or msquic, while same-slot both-role runs remain supported for the local harness image.",
         "The helper records execution-report artifacts; it does not introduce new testcase support or any new protocol behavior.",
-        "Any advisory-only downgrade for the runner's post-check `FileNotFoundError` must remain testcase-specific and evidence-backed by preserved local logs; unsupported, unproven, or ambiguous runs still fail honestly."
+        "Any advisory-only downgrade for the runner's post-check `FileNotFoundError` must remain testcase-specific and evidence-backed by preserved local logs; unsupported, unproven, or ambiguous runs still fail honestly.",
+        "The helper's `keyupdate` and `resumption` FileNotFound downgrades require testcase-specific managed evidence markers, so the major peer matrix can preserve externally failed post-check bundles without hiding missing key-update initiation, missing resumed-connection proof, or incomplete endpoint exits."
       ]
     },
     {
@@ -562,6 +567,41 @@
         "The documented upstream non-HTTP/3 suite currently includes versionnegotiation, handshake, transfer, chacha20, keyupdate, retry, resumption, zerortt, multiconnect, v2, rebind-port, rebind-addr, and connectionmigration.",
         "`http3` remains out of scope for this slice.",
         "A testcase may be classified as intentionally unsupported or prerequisite-blocked while its underlying protocol slice is still red; that classification must be explicit rather than implied by a generic unsupported fallthrough."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0019",
+      "title": "Provide a manual major peer interop matrix profile",
+      "statement": "The repository MUST provide an explicit manually dispatched hosted-CI major peer matrix profile that exercises Incursa.Quic as the local client and as the local server against the `quic-go` and `msquic` peer implementation slots for the currently executable non-HTTP/3 external-runner cells `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`, uploads a distinct artifact bundle for every attempted role, peer, and testcase cell, keeps `http3` and prerequisite-blocked inventory cells out of this profile, and remains advisory, opt-in, outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0012"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0012"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0012"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0017",
+          "REQ-QUIC-INT-0018",
+          "SPEC-QUIC-CRT",
+          "SPEC-QUIC-RFC9001",
+          "SPEC-QUIC-RFC9002"
+        ],
+        "x_code_refs": [
+          ".github/workflows/interop-runner-handshake.yml",
+          "scripts/interop/Invoke-QuicInteropRunner.ps1",
+          "scripts/interop/README.md",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs"
+        ]
+      },
+      "notes": [
+        "This profile is an evidence-collection surface, not a broad interop-readiness gate.",
+        "`versionnegotiation` remains excluded from the role-backed major peer matrix until the helper/harness support boundary is made explicit for that cell.",
+        "`chacha20`, `zerortt`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`."
       ]
     }
   ]

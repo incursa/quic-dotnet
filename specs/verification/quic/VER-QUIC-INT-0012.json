@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0012",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Major Peer Interop Matrix Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Workflow review, requirement-home tests, helper dry-run plans, hosted workflow dispatch, artifact inspection, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0012",
+    "WI-QUIC-INT-0012"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0019"
+  ],
+  "preconditions": [
+    "The external `quic-interop-runner` checkout includes `quic-go` and `msquic` peer slots.",
+    "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
+    "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
+  ],
+  "scope": "Verify that the repository exposes a manual advisory profile for role-backed major non-HTTP/3 interop evidence against `quic-go` and `msquic`, without promoting blocked cells or changing ordinary CI gates.",
+  "procedure": [
+    "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `major-peer-matrix` profile is `workflow_dispatch` only.",
+    "Confirm the profile includes local client and local server matrix cells against `quic-go` and `msquic` for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`.",
+    "Confirm `http3`, `zerortt`, `chacha20`, `versionnegotiation`, `v2`, `rebind-port`, `rebind-addr`, `connectionmigration`, and `post-handshake-stream` are not part of the major peer matrix.",
+    "Confirm every matrix cell invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided role, local implementation slot, peer slot, testcase, timeout, and artifact root.",
+    "Confirm each cell uploads a distinct artifact bundle with `if: always()`.",
+    "Run helper failure-summary tests that prove `keyupdate` and `resumption` FileNotFound advisory downgrades require testcase-specific preserved-log markers and still fail when those markers are incomplete.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0017` and `REQ-QUIC-INT-0019`.",
+    "Run representative helper dry-run plans for quic-go and msquic client/server cells.",
+    "Run SpecTrace core validation.",
+    "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=major-peer-matrix` and inspect each uploaded `runner-report.json` plus selected output logs."
+  ],
+  "expected_result": "The repository configuration provides an opt-in major peer matrix that can collect per-cell artifacts for Incursa.Quic as client and server against quic-go and msquic for the currently executable major non-HTTP/3 scenarios, while keeping blocked cells and HTTP/3 out of scope.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/architecture/quic/ARC-QUIC-INT-0012.json",
+    "specs/work-items/quic/WI-QUIC-INT-0012.json",
+    "specs/verification/quic/VER-QUIC-INT-0012.json"
+  ],
+  "status_summary": "Planned for hosted execution. The repository now has the manual major peer matrix profile and local workflow-shape proof. Passing focused tests and representative helper dry-runs prove the configuration shape; hosted per-cell runner artifacts are still required before claiming the major peer matrix itself is green. Full SpecTrace core validation remains blocked by the current RFC9000 JSON parse/reference cascade and is not claimed as passing by this artifact.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "`http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain prerequisite-blocked under the non-HTTP/3 inventory. `versionnegotiation` is excluded from this role-backed profile until its executable harness/helper boundary is clarified."
+    }
+  ]
+}

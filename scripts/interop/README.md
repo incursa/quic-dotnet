@@ -52,6 +52,7 @@ Hosted corroboration:
 - `.github/workflows/interop-runner-handshake.yml` exposes manual `workflow_dispatch` advisory profiles.
 - The default `hosted-handshake` profile runs only the narrow server-role `handshake` cell against `quic-go`.
 - The explicit `supported-subset` profile runs the hosted handshake job and fans out the additional helper-supported cells: same-slot `retry`, split-role `transfer`, and client-role `multiconnect` mapped to the runner's `handshakeloss` testcase.
+- The explicit `major-peer-matrix` profile runs Incursa.Quic as the local client and as the local server against `quic-go` and `msquic` for the currently executable major non-HTTP/3 cells: `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`. Each role/peer/testcase cell gets its own artifact bundle. This profile is still advisory evidence collection; it excludes `http3`, `zerortt`, `chacha20`, `versionnegotiation`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration`.
 - The explicit `zerortt-server-proof` profile runs only the server-role `zerortt` attempt against a `quic-go` client on hosted Linux so the runner can get past the Windows long-filename setup blocker. This is advisory proof collection and does not classify the full `zerortt` inventory cell as supported; hosted run `25617834482` reached managed response/download success but still failed packet analysis, so a later hosted success is still required before inventory promotion.
 - The smaller `post-handshake-stream` proof remains local-harness coverage only; there is no hosted external-runner profile for it yet.
 - The workflow checks out this repository and `quic-interop-runner` separately, then runs this helper once per selected matrix cell.
@@ -60,10 +61,12 @@ Hosted corroboration:
 - The workflow installs the latest stable Docker Engine through `docker/setup-docker-action@v5` before the helper runs because the upstream runner compose file uses `interface_name`, which requires Docker Engine 28.1 or later.
 - The workflow installs `tshark` and `editcap` through Ubuntu packages so the runner can perform its packet trace post-check.
 - It pre-pulls the simulator and quic-go peer images before each timed runner cell so first-use Docker image downloads do not consume the runner testcase timeout.
+- The major peer matrix pre-pulls the selected peer image for each cell, including `ghcr.io/microsoft/msquic/qns:main` for `msquic`.
 - Hosted transfer cells pass a narrow runner timeout override because GitHub-hosted Docker startup is slower than the local cached-image path; local helper runs keep the upstream runner's default timeout unless `-RunnerTimeoutSeconds` is supplied.
 - It uploads a distinct per-cell `artifacts/interop-runner/<cell>/` bundle with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
 - The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
 - The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.
+- If the runner reaches managed success and then fails only its trace-analysis post-check with `FileNotFoundError`, the helper's advisory downgrade remains testcase-specific: `keyupdate` requires preserved key-update initiation plus managed download or response markers, and `resumption` requires preserved ticket/resumed-connection or first/resumed server-connection markers. Ambiguous, unsupported, blocked, or incomplete cells still fail.
 
 Plan-only mode:
 
@@ -77,6 +80,12 @@ Example:
 
 ```powershell
 pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun
+```
+
+Dispatch the major peer matrix after the branch containing the workflow change is on GitHub:
+
+```powershell
+gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=major-peer-matrix
 ```
 
 ## Artifact Layout

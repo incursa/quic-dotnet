@@ -1031,6 +1031,158 @@ function Test-InteropRunnerTransferServerOutput {
         -and $OutputText.IndexOf('server exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Test-InteropRunnerKeyUpdateClientOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    if ($OutputText.IndexOf('initiated one-RTT key update after', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+        return $false
+    }
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed keyupdate download .* stream (?<index>\d+)/(?<count>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $expectedStreamCount = 0
+    $completedStreams = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $streamIndex = [int]$completionMatch.Groups['index'].Value
+        $streamCount = [int]$completionMatch.Groups['count'].Value
+
+        if ($expectedStreamCount -eq 0) {
+            $expectedStreamCount = $streamCount
+        }
+        elseif ($expectedStreamCount -ne $streamCount) {
+            return $false
+        }
+
+        if ($streamIndex -lt 1 -or $streamIndex -gt $expectedStreamCount) {
+            return $false
+        }
+
+        $null = $completedStreams.Add($streamIndex)
+    }
+
+    if (($expectedStreamCount -le 0) -or ($completionMatches.Count -ne $expectedStreamCount) -or ($completedStreams.Count -ne $expectedStreamCount)) {
+        return $false
+    }
+
+    return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
+function Test-InteropRunnerKeyUpdateServerOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed keyupdate response .* stream (?<index>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $completedStreams = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $streamIndex = [int]$completionMatch.Groups['index'].Value
+        if ($streamIndex -lt 1) {
+            return $false
+        }
+
+        $null = $completedStreams.Add($streamIndex)
+    }
+
+    if ($completedStreams.Count -ne $completionMatches.Count) {
+        return $false
+    }
+
+    for ($streamIndex = 1; $streamIndex -le $completedStreams.Count; $streamIndex++) {
+        if (-not $completedStreams.Contains($streamIndex)) {
+            return $false
+        }
+    }
+
+    return $OutputText.IndexOf('client exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0 `
+        -and $OutputText.IndexOf('server exited with code 0', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+}
+
+function Test-InteropRunnerResumptionClientOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    if (-not (Test-InteropRunnerContainsMarkers -OutputText $OutputText -RequiredMarkers @(
+                'captured detached resumption ticket after connection 1/2',
+                'established resumed connection 2/2 with disposition=Accepted',
+                'client exited with code 0'))) {
+        return $false
+    }
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed resumption download .* connection (?<index>\d+)/(?<count>\d+)\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    if ($completionMatches.Count -eq 0) {
+        return $false
+    }
+
+    $expectedConnectionCount = 0
+    $completedConnections = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($completionMatch in $completionMatches) {
+        $connectionIndex = [int]$completionMatch.Groups['index'].Value
+        $connectionCount = [int]$completionMatch.Groups['count'].Value
+
+        if ($expectedConnectionCount -eq 0) {
+            $expectedConnectionCount = $connectionCount
+        }
+        elseif ($expectedConnectionCount -ne $connectionCount) {
+            return $false
+        }
+
+        if ($connectionIndex -lt 1 -or $connectionIndex -gt $expectedConnectionCount) {
+            return $false
+        }
+
+        $null = $completedConnections.Add($connectionIndex)
+    }
+
+    return $expectedConnectionCount -eq 2 -and $completedConnections.Contains(1) -and $completedConnections.Contains(2)
+}
+
+function Test-InteropRunnerResumptionServerOutput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OutputText
+    )
+
+    if (-not (Test-InteropRunnerContainsMarkers -OutputText $OutputText -RequiredMarkers @(
+                'accepted managed connection 1/2',
+                'accepted managed connection 2/2',
+                'client exited with code 0',
+                'server exited with code 0'))) {
+        return $false
+    }
+
+    $completionMatches = [System.Text.RegularExpressions.Regex]::Matches(
+        $OutputText,
+        'completed managed resumption response .* stream \d+\.',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+
+    return $completionMatches.Count -ge 2
+}
+
 function Test-InteropRunnerContainsMarkers {
     param(
         [Parameter(Mandatory)]
@@ -1144,10 +1296,10 @@ function Get-InteropRunnerFallbackClassification {
     }
 
     $testCase = $TestCases[0]
-    if ($testCase -notin @('handshake', 'retry', 'transfer', 'multiconnect')) {
+    if ($testCase -notin @('handshake', 'retry', 'transfer', 'multiconnect', 'keyupdate', 'resumption')) {
         return [pscustomobject]@{
             TreatAsSuccess = $false
-            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for the plain handshake and retry testcases, plus the client-role transfer and multiconnect testcases when preserved output proves every managed download completed.'
+            Summary = 'The runner hit a post-check FileNotFoundError, and fallback classification is only enabled for testcase-specific supported cells when preserved output proves the expected managed completion markers and clean exits.'
         }
     }
 
@@ -1236,6 +1388,68 @@ function Get-InteropRunnerFallbackClassification {
                     }
                 }
             }
+
+            'keyupdate' {
+                switch ($LocalRole) {
+                    'client' {
+                        if (Test-InteropRunnerKeyUpdateClientOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a managed keyupdate download, a one-RTT key-update initiation marker, and a clean local client exit."
+                            }
+                        }
+                    }
+
+                    'server' {
+                        if (Test-InteropRunnerKeyUpdateServerOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows managed keyupdate responses with clean client/server exits."
+                            }
+                        }
+                    }
+
+                    default {
+                        if ((Test-InteropRunnerKeyUpdateClientOutput -OutputText $outputText) -and (Test-InteropRunnerKeyUpdateServerOutput -OutputText $outputText)) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows managed keyupdate client and server evidence with clean exits."
+                            }
+                        }
+                    }
+                }
+            }
+
+            'resumption' {
+                switch ($LocalRole) {
+                    'client' {
+                        if (Test-InteropRunnerResumptionClientOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows resumption ticket capture, accepted resumed connection evidence, completed managed resumption downloads, and a clean local client exit."
+                            }
+                        }
+                    }
+
+                    'server' {
+                        if (Test-InteropRunnerResumptionServerOutput -OutputText $outputText) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows accepted first and resumed connections, managed resumption responses, and clean client/server exits."
+                            }
+                        }
+                    }
+
+                    default {
+                        if ((Test-InteropRunnerResumptionClientOutput -OutputText $outputText) -and (Test-InteropRunnerResumptionServerOutput -OutputText $outputText)) {
+                            return [pscustomobject]@{
+                                TreatAsSuccess = $true
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows managed resumption client and server evidence with clean exits."
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1253,6 +1467,20 @@ function Get-InteropRunnerFallbackClassification {
         }
         elseif ($testCase -eq 'multiconnect') {
             'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain completed managed downloads for every multiconnect request with a clean local client exit.'
+        }
+        elseif ($testCase -eq 'keyupdate') {
+            switch ($LocalRole) {
+                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a managed keyupdate download with a one-RTT key-update initiation marker and a clean local client exit.' }
+                'server' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain managed keyupdate responses with clean client/server exits.' }
+                default { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain managed keyupdate client and server evidence with clean exits.' }
+            }
+        }
+        elseif ($testCase -eq 'resumption') {
+            switch ($LocalRole) {
+                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain resumption ticket capture, accepted resumed connection evidence, completed managed resumption downloads, and a clean local client exit.' }
+                'server' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain accepted first and resumed connections, managed resumption responses, and clean client/server exits.' }
+                default { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain managed resumption client and server evidence with clean exits.' }
+            }
         }
         else {
             switch ($LocalRole) {

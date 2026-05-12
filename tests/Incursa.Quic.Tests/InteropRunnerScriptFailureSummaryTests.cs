@@ -474,6 +474,217 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundKeyUpdateClientSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-keyupdate-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "keyupdate");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("managed keyupdate download", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("one-RTT key-update initiation marker", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "keyupdate", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundKeyUpdateClientWithoutInitiationStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-keyupdate-client-incomplete");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "keyupdate");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "did not contain a managed keyupdate download with a one-RTT key-update initiation marker",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundKeyUpdateServerSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-keyupdate-server-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "keyupdate");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("managed keyupdate responses with clean client/server exits", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_nginx", "keyupdate", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundResumptionClientSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-resumption-client-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "resumption");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("resumption ticket capture", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("accepted resumed connection evidence", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "resumption", "output.txt")));
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundResumptionClientWithoutAcceptedResumeStillFails()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-resumption-client-incomplete");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "resumption");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "did not contain resumption ticket capture, accepted resumed connection evidence",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunnerExitNonZeroAfterFileNotFoundResumptionServerSuccessTreatsTheRunAsAdvisorySuccess()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("file-not-found-resumption-server-success");
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "resumption");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("accepted first and resumed connections", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("managed resumption responses", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_nginx", "resumption", "output.txt")));
+    }
+
+    [Fact]
     public async Task RunnerExitZeroAfterValidOutputsButMissingRunnerStderrLogReportsFailureSummary()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -942,6 +1153,12 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 findstr /c:"# fake-runner: file-not-found-transfer-incomplete" run.py >nul && set "mode=file-not-found-transfer-incomplete"
                 findstr /c:"# fake-runner: file-not-found-multiconnect-client-success" run.py >nul && set "mode=file-not-found-multiconnect-client-success"
                 findstr /c:"# fake-runner: file-not-found-multiconnect-incomplete" run.py >nul && set "mode=file-not-found-multiconnect-incomplete"
+                findstr /c:"# fake-runner: file-not-found-keyupdate-client-success" run.py >nul && set "mode=file-not-found-keyupdate-client-success"
+                findstr /c:"# fake-runner: file-not-found-keyupdate-client-incomplete" run.py >nul && set "mode=file-not-found-keyupdate-client-incomplete"
+                findstr /c:"# fake-runner: file-not-found-keyupdate-server-success" run.py >nul && set "mode=file-not-found-keyupdate-server-success"
+                findstr /c:"# fake-runner: file-not-found-resumption-client-success" run.py >nul && set "mode=file-not-found-resumption-client-success"
+                findstr /c:"# fake-runner: file-not-found-resumption-client-incomplete" run.py >nul && set "mode=file-not-found-resumption-client-incomplete"
+                findstr /c:"# fake-runner: file-not-found-resumption-server-success" run.py >nul && set "mode=file-not-found-resumption-server-success"
 
                 set "jsonPath="
                 set "logsDir="
@@ -1096,6 +1313,94 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                   exit /b 7
                 )
 
+                if /I "%mode%"=="file-not-found-keyupdate-client-success" (
+                  echo fake-runner sentinel file-not-found-keyupdate-client-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\keyupdate" md "%logsDir%\quic-go_chrome\keyupdate" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-keyupdate-client-success"}
+                  > "%logsDir%\quic-go_chrome\keyupdate\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=keyupdate, requestCount=1 initiated one-RTT key update after 1048576 bytes transferred.
+                    echo client ^| interop harness: role=client, testcase=keyupdate, requestCount=1 completed managed keyupdate download to /downloads/brisk-keyupdate from /brisk-keyupdate, bytes=1500000, stream 1/1.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-keyupdate-client-incomplete" (
+                  echo fake-runner sentinel file-not-found-keyupdate-client-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\keyupdate" md "%logsDir%\quic-go_chrome\keyupdate" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-keyupdate-client-incomplete"}
+                  > "%logsDir%\quic-go_chrome\keyupdate\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=keyupdate, requestCount=1 completed managed keyupdate download to /downloads/brisk-keyupdate from /brisk-keyupdate, bytes=1500000, stream 1/1.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-keyupdate-server-success" (
+                  echo fake-runner sentinel file-not-found-keyupdate-server-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\keyupdate" md "%logsDir%\quic-go_nginx\keyupdate" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-keyupdate-server-success"}
+                  > "%logsDir%\quic-go_nginx\keyupdate\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=keyupdate, requestCount=0 completed managed keyupdate response from /www/brisk-keyupdate for target=brisk-keyupdate, bytes=1500000, stream 1.
+                    echo client exited with code 0
+                    echo server exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-resumption-client-success" (
+                  echo fake-runner sentinel file-not-found-resumption-client-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\resumption" md "%logsDir%\quic-go_chrome\resumption" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-resumption-client-success"}
+                  > "%logsDir%\quic-go_chrome\resumption\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/first from /first, bytes=1024, connection 1/2.
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 captured detached resumption ticket after connection 1/2.
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 established resumed connection 2/2 with disposition=Accepted.
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/second from /second, bytes=1024, connection 2/2.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-resumption-client-incomplete" (
+                  echo fake-runner sentinel file-not-found-resumption-client-incomplete
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\resumption" md "%logsDir%\quic-go_chrome\resumption" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-resumption-client-incomplete"}
+                  > "%logsDir%\quic-go_chrome\resumption\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/first from /first, bytes=1024, connection 1/2.
+                    echo client ^| interop harness: role=client, testcase=resumption, requestCount=2 captured detached resumption ticket after connection 1/2.
+                    echo client exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="file-not-found-resumption-server-success" (
+                  echo fake-runner sentinel file-not-found-resumption-server-success
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_nginx\resumption" md "%logsDir%\quic-go_nginx\resumption" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"file-not-found-resumption-server-success"}
+                  > "%logsDir%\quic-go_nginx\resumption\output.txt" (
+                    echo server ^| interop harness: role=server, testcase=resumption, requestCount=2 accepted managed connection 1/2.
+                    echo server ^| interop harness: role=server, testcase=resumption, requestCount=2 completed managed resumption response from /www/first for target=first, bytes=1024, stream 1.
+                    echo server ^| interop harness: role=server, testcase=resumption, requestCount=2 accepted managed connection 2/2.
+                    echo server ^| interop harness: role=server, testcase=resumption, requestCount=2 completed managed resumption response from /www/second for target=second, bytes=1024, stream 1.
+                    echo client exited with code 0
+                    echo server exited with code 0
+                  )
+                  echo testcase.check^(^) threw FileNotFoundError: [WinError 2] The system cannot find the file specified 1>&2
+                  exit /b 7
+                )
+
                 echo fake-runner sentinel success
                 if defined jsonPath (
                   > "%jsonPath%" echo {"mode":"success"}
@@ -1128,6 +1433,18 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 mode=file-not-found-multiconnect-client-success
             elif grep -q '# fake-runner: file-not-found-multiconnect-incomplete' run.py; then
                 mode=file-not-found-multiconnect-incomplete
+            elif grep -q '# fake-runner: file-not-found-keyupdate-client-success' run.py; then
+                mode=file-not-found-keyupdate-client-success
+            elif grep -q '# fake-runner: file-not-found-keyupdate-client-incomplete' run.py; then
+                mode=file-not-found-keyupdate-client-incomplete
+            elif grep -q '# fake-runner: file-not-found-keyupdate-server-success' run.py; then
+                mode=file-not-found-keyupdate-server-success
+            elif grep -q '# fake-runner: file-not-found-resumption-client-success' run.py; then
+                mode=file-not-found-resumption-client-success
+            elif grep -q '# fake-runner: file-not-found-resumption-client-incomplete' run.py; then
+                mode=file-not-found-resumption-client-incomplete
+            elif grep -q '# fake-runner: file-not-found-resumption-server-success' run.py; then
+                mode=file-not-found-resumption-server-success
             fi
 
             json_path=
@@ -1294,6 +1611,106 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect, requestCount=3 completed managed multiconnect download to /downloads/zestful-aquamarine-hat from /zestful-aquamarine-hat, bytes=3145728, connection 2/3.'
                     printf '%s\n' 'client exited with code 0'
                 } > "$logs_dir/quic-go_chrome/handshakeloss/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-keyupdate-client-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-keyupdate-client-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/keyupdate"
+                printf '%s\n' '{"mode":"file-not-found-keyupdate-client-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=keyupdate, requestCount=1 initiated one-RTT key update after 1048576 bytes transferred.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=keyupdate, requestCount=1 completed managed keyupdate download to /downloads/brisk-keyupdate from /brisk-keyupdate, bytes=1500000, stream 1/1.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/keyupdate/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-keyupdate-client-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-keyupdate-client-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/keyupdate"
+                printf '%s\n' '{"mode":"file-not-found-keyupdate-client-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=keyupdate, requestCount=1 completed managed keyupdate download to /downloads/brisk-keyupdate from /brisk-keyupdate, bytes=1500000, stream 1/1.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/keyupdate/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-keyupdate-server-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-keyupdate-server-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/keyupdate"
+                printf '%s\n' '{"mode":"file-not-found-keyupdate-server-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=keyupdate, requestCount=0 completed managed keyupdate response from /www/brisk-keyupdate for target=brisk-keyupdate, bytes=1500000, stream 1.'
+                    printf '%s\n' 'client exited with code 0'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/keyupdate/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-resumption-client-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-resumption-client-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/resumption"
+                printf '%s\n' '{"mode":"file-not-found-resumption-client-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/first from /first, bytes=1024, connection 1/2.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 captured detached resumption ticket after connection 1/2.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 established resumed connection 2/2 with disposition=Accepted.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/second from /second, bytes=1024, connection 2/2.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/resumption/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-resumption-client-incomplete" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-resumption-client-incomplete'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/resumption"
+                printf '%s\n' '{"mode":"file-not-found-resumption-client-incomplete"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 completed managed resumption download to /downloads/first from /first, bytes=1024, connection 1/2.'
+                    printf '%s\n' 'client | interop harness: role=client, testcase=resumption, requestCount=2 captured detached resumption ticket after connection 1/2.'
+                    printf '%s\n' 'client exited with code 0'
+                } > "$logs_dir/quic-go_chrome/resumption/output.txt"
+                printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "file-not-found-resumption-server-success" ]; then
+                printf '%s\n' 'fake-runner sentinel file-not-found-resumption-server-success'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_nginx/resumption"
+                printf '%s\n' '{"mode":"file-not-found-resumption-server-success"}' > "$json_path"
+                {
+                    printf '%s\n' 'server | interop harness: role=server, testcase=resumption, requestCount=2 accepted managed connection 1/2.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=resumption, requestCount=2 completed managed resumption response from /www/first for target=first, bytes=1024, stream 1.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=resumption, requestCount=2 accepted managed connection 2/2.'
+                    printf '%s\n' 'server | interop harness: role=server, testcase=resumption, requestCount=2 completed managed resumption response from /www/second for target=second, bytes=1024, stream 1.'
+                    printf '%s\n' 'client exited with code 0'
+                    printf '%s\n' 'server exited with code 0'
+                } > "$logs_dir/quic-go_nginx/resumption/output.txt"
                 printf '%s\n' 'testcase.check() threw FileNotFoundError: [WinError 2] The system cannot find the file specified' >&2
                 exit 7
             fi

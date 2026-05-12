@@ -25,6 +25,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-INT-0009.json`](ARC-QUIC-INT-0009.json): canonical hosted interop-runner handshake corroboration design source
 - [`ARC-QUIC-INT-0010.json`](ARC-QUIC-INT-0010.json): canonical hosted interop-runner supported-subset coverage design source
 - [`ARC-QUIC-INT-0011.json`](ARC-QUIC-INT-0011.json): canonical non-HTTP/3 interop-testcase inventory design source
+- [`ARC-QUIC-INT-0012.json`](ARC-QUIC-INT-0012.json): canonical major peer interop matrix design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
 - [`ARC-QUIC-RFC9000-0001.json`](ARC-QUIC-RFC9000-0001.json): canonical RFC 9000 design source
 - [`ARC-QUIC-RFC9000-0002.json`](ARC-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission design source

@@ -17,6 +17,7 @@ public sealed class REQ_QUIC_INT_0017
         Assert.Contains("default: hosted-handshake", workflow, StringComparison.Ordinal);
         Assert.Contains("- hosted-handshake", workflow, StringComparison.Ordinal);
         Assert.Contains("- supported-subset", workflow, StringComparison.Ordinal);
+        Assert.Contains("- major-peer-matrix", workflow, StringComparison.Ordinal);
         Assert.Contains("- zerortt-server-proof", workflow, StringComparison.Ordinal);
     }
 
@@ -54,7 +55,7 @@ public sealed class REQ_QUIC_INT_0017
         string zerorttJob = ExtractWorkflowSection(
             workflow,
             "  zerortt-server-proof:",
-            null);
+            "\n  major-peer-matrix:");
 
         Assert.Contains("coverage_profile == 'zerortt-server-proof'", zerorttJob, StringComparison.Ordinal);
         Assert.Contains("Run server-zerortt-quic-go cell", zerorttJob, StringComparison.Ordinal);

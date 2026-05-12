@@ -16,6 +16,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-INT-0009.json`](WI-QUIC-INT-0009.json): canonical hosted interop-runner handshake corroboration work item
 - [`WI-QUIC-INT-0010.json`](WI-QUIC-INT-0010.json): canonical hosted interop-runner supported-subset coverage work item
 - [`WI-QUIC-INT-0011.json`](WI-QUIC-INT-0011.json): canonical non-HTTP/3 interop-testcase inventory work item
+- [`WI-QUIC-INT-0012.json`](WI-QUIC-INT-0012.json): canonical major peer interop matrix work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source
 - [`WI-QUIC-RFC9000-0001.json`](WI-QUIC-RFC9000-0001.json): canonical RFC 9000 work-item source
 - [`WI-QUIC-RFC9000-0002.json`](WI-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission work-item source
