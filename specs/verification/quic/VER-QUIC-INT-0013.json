@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0013",
+  "artifact_type": "verification",
+  "status": "complete",
+  "title": "QUIC Version Negotiation Runner Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home tests, helper dry-run planning, a local interop run, and artifact inspection.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0013",
+    "WI-QUIC-INT-0013"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0020"
+  ],
+  "preconditions": [
+    "The harness project builds locally.",
+    "The repo-local interop helper can be executed in dry-run mode.",
+    "The local machine can supply the harness certificate override used by the process-level requirement-home test."
+  ],
+  "scope": "Verify that the harness accepts versionnegotiation on both client and server roles, routes it through the reserved-version runner path from the documented root REQUESTS URL, and keeps the major-peer matrix unchanged.",
+  "procedure": [
+    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S15_0008\"` and confirm the positive and negative requirement-home tests pass.",
+    "Run `dotnet build benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` as supporting evidence for the slice.",
+    "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation` and confirm the helper plan classifies the testcase as supported/executed.",
+    "Run one real local interop invocation for `versionnegotiation` and confirm both harness roles complete with the expected reserved-version and version-negotiation markers.",
+    "Inspect the resulting stdout, stderr, and runner artifacts for source-backed proof that the testcase uses the reserved client version and the documented root request target."
+  ],
+  "expected_result": "The harness supports versionnegotiation on both roles through the reserved-version runner path, the helper inventory remains source-backed, and the major-peer matrix profile remains unchanged.",
+  "evidence": [
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "docs/current-status.md",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0020.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0008.cs",
+    "artifacts/interop-runner/20260512-170806170-both-quic-go/",
+    "artifacts/interop-runner/20260512-170806170-both-quic-go/runner-report.json",
+    "artifacts/interop-runner/20260512-170806170-both-quic-go/runner.stderr.log"
+  ],
+  "status_summary": "The slice is complete: the reserved-version runner contract is source-backed, the focused requirement-home tests passed, and the live local interop runner completed successfully with preserved evidence under artifacts/interop-runner/20260512-170806170-both-quic-go/.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "`versionnegotiation` is now source-backed as a harness testcase with live runner proof, but it remains outside the major peer matrix by profile choice. `http3`, `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain outside this verification."
+    }
+  ]
+}

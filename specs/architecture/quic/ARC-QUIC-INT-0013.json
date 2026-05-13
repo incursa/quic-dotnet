@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0013",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Version Negotiation Runner Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the reserved-version versionnegotiation runner path, including the client initial-version override and root-URL dispatch, without expanding the major peer matrix or any HTTP/3 lane.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0012",
+    "WI-QUIC-INT-0013",
+    "VER-QUIC-INT-0013"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0020"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "docs/current-status.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0020.cs"
+  ],
+  "design_summary": "The harness now recognizes versionnegotiation as a supported testcase on both client and server roles and routes it through a reserved-version probe path instead of the transfer-oriented handshake path. The client-side runtime accepts an internal supported-version override so its Initial packet can use a reserved version and elicit Version Negotiation, while the server-side listener treats the documented root URL as valid dispatch input and completes when the version-negotiation exchange is observed. The major-peer matrix is intentionally unchanged; this architecture is about the interop runner path only.",
+  "alternatives_considered": [
+    "Treat versionnegotiation as a new public transport API. Rejected because the change belongs in the internal harness and client bootstrap seam, not the public API surface.",
+    "Expose versionnegotiation through the major peer matrix immediately. Rejected because that profile is intentionally scoped to handshake, retry, transfer, keyupdate, and resumption.",
+    "Leave the helper inventory claim unbacked by source. Rejected because the inventory must not outpace the harness dispatch surface."
+  ],
+  "edge_cases_and_constraints": [
+    "The testcase must continue to reject unsupported or malformed runner input with the same exit-code semantics as the other supported harness cases.",
+    "The helper inventory should not be treated as support evidence without matching harness dispatch and a live runner proof bundle.",
+    "HTTP/3, 0-RTT, resumption, key update, and migration behavior remain governed by their own requirements."
+  ],
+  "data_and_state_considerations": "Versionnegotiation uses the same local harness environment parsing and per-cell artifact capture as the existing supported cells, but its client bootstrap must pass a reserved supported-version override into the internal runtime seam and its server-side proof path must not depend on transfer-path derivation. No upstream runner repository changes are required.",
+  "risks": [
+    "Log-text drift can create false negatives if the testcase name is not threaded through the dedicated version-negotiation path.",
+    "Readers may overread the supported/executed inventory cell as broader interop readiness."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only closes the explicit versionnegotiation runner boundary. It does not expand the supported major-peer matrix or any HTTP/3 lane."
+    }
+  ]
+}

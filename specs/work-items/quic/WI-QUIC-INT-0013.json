@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0013",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Version Negotiation Runner Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add explicit versionnegotiation runner support through a reserved unsupported client version and align the harness, core bootstrap seam, inventory, docs, and requirement-home coverage around that source-backed boundary.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0013",
+    "VER-QUIC-INT-0013"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0013"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0013"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0020"
+  ],
+  "planned_changes": "- Add dedicated `versionnegotiation` client and server dispatch branches in `InteropHarnessRunner` that accept the runner's root `REQUESTS` URL.\n- Thread a reserved unsupported QUIC version through the internal client bootstrap seam so the client Initial packet can elicit Version Negotiation.\n- Align the harness README, helper inventory note, and current-status notes with the runner-backed claim.\n- Add requirement-home coverage for the positive reserved-version proof, the negative request-validation path, and the packet-level version override seam.\n- Update the gap ledger so the runner-backed proof is not marked green until code, tests, and live runner evidence all agree.",
+  "out_of_scope": [
+    "HTTP/3 support",
+    "zerortt promotion",
+    "ChaCha20 promotion",
+    "QUIC v2 support",
+    "rebinding or connection-migration support",
+    "expanding the major peer matrix profile",
+    "public support-readiness claims"
+  ],
+  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0020` and `REQ-QUIC-RFC9000-S15-0008`, run `dotnet build benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` as supporting evidence, run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation` for the helper-side plan, run one real local interop invocation for `versionnegotiation`, and capture the resulting artifact paths for the verification record."
+}
