@@ -1687,9 +1687,13 @@ The next useful lanes are:
   the server-role `handshake` cell against quic-go.
 - The next concrete zerortt proof gate is `REQ-QUIC-INT-0021`; keep it
   prerequisite-blocked until the hosted Linux packet-analysis run succeeds.
-  The 2026-05-12 branch rerun on run `25768724412` confirmed the SDK pin
-  reaches the actual testcase but still times out in the client download phase
-  with `timeout: no recent network activity`.
+  The server harness now uses a zerortt-specific short request-gap timeout on
+  the resumed second connection so the proof can complete within the runner's
+  network-idle budget, and the focused requirement-home helper tests for that
+  timeout selection pass locally. The 2026-05-12 branch rerun on run
+  `25768724412` confirmed the SDK pin reaches the actual testcase but still
+  times out in the client download phase with `timeout: no recent network
+  activity`.
 - Install Wireshark packet-analysis tools locally, or use the hosted workflow
   that installs them, before attempting additional non-DryRun local
   interop-runner cells.

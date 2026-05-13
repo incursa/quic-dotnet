@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 
 namespace Incursa.Quic.InteropHarness;
 
@@ -23,7 +24,10 @@ internal static class InteropHarnessRunner
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan VersionNegotiationPostSendGracePeriod = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerOpenPlanPostResponseLingerTimeout = InteropRequestWaitTimeout;
+    private static readonly uint VersionNegotiationProbeVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);
 
     private sealed record SequentialTransferPlan(
         Uri RequestUri,
@@ -117,6 +121,7 @@ internal static class InteropHarnessRunner
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "versionnegotiation" => RunVersionNegotiationClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -142,6 +147,7 @@ internal static class InteropHarnessRunner
         return settings.TestCase switch
         {
             "handshake" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "versionnegotiation" => RunVersionNegotiationServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -181,7 +187,7 @@ internal static class InteropHarnessRunner
             IPEndPoint remoteEndPoint = firstPlan.RemoteEndPoint;
             WriteLineAndFlush(
                 stdout,
-                $"interop harness: role=client, testcase=handshake, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
+                $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}.");
 
             QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
 
@@ -195,7 +201,7 @@ internal static class InteropHarnessRunner
 
             WriteLineAndFlush(
                 stdout,
-                $"interop harness: role=client, testcase=handshake, requestCount={settings.Requests.Count} completed managed client bootstrap.");
+                $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed client bootstrap.");
 
             for (int index = 0; index < transferPlans.Count; index++)
             {
@@ -212,7 +218,7 @@ internal static class InteropHarnessRunner
 
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=client, testcase=handshake, requestCount={settings.Requests.Count} completed managed handshake download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
+                    $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed {settings.TestCase} download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, stream {index + 1}/{transferPlans.Count}.");
             }
 
             await connection.CloseAsync(0).ConfigureAwait(false);
@@ -220,7 +226,81 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=handshake failed: {ex.Message}");
+            WriteFailureDetails(stderr, "client", settings.TestCase, ex);
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunVersionNegotiationClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage))
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            ArgumentNullException.ThrowIfNull(requestUri);
+            IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=versionnegotiation, requestCount={settings.Requests.Count} connecting to {remoteEndPoint} with reserved version 0x{VersionNegotiationProbeVersion:X8}.");
+
+            QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, requestUri.Host);
+            clientOptions.HandshakeTimeout = InteropRequestWaitTimeout;
+
+            using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+
+            WriteDeterministicClientKeySelection(settings, stdout);
+
+            QuicConnection? connection = null;
+            try
+            {
+                connection = await ConnectWithQlogCaptureAsync(
+                    settings,
+                    qlogScope,
+                    clientOptions,
+                    supportedVersions: [VersionNegotiationProbeVersion]).ConfigureAwait(false);
+
+                WriteLineAndFlush(
+                    stderr,
+                    $"interop harness: role=client, testcase=versionnegotiation unexpectedly established a supported connection while using reserved version 0x{VersionNegotiationProbeVersion:X8}.");
+                return 1;
+            }
+            catch (QuicException ex) when (ex.QuicError == QuicError.VersionNegotiationError)
+            {
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase=versionnegotiation, requestCount={settings.Requests.Count} observed version negotiation using reserved version 0x{VersionNegotiationProbeVersion:X8} and aborted the connection attempt.");
+                return 0;
+            }
+            finally
+            {
+                if (connection is not null)
+                {
+                    await connection.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteFailureDetails(stderr, "client", "versionnegotiation", ex);
             return 1;
         }
     }
@@ -270,7 +350,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=post-handshake-stream failed: {ex.Message}");
+            WriteFailureDetails(stderr, "client", "post-handshake-stream", ex);
             return 1;
         }
     }
@@ -333,23 +413,23 @@ internal static class InteropHarnessRunner
                 await Task.Yield();
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=handshake, requestCount={settings.Requests.Count} listening on {listenEndPoint}.");
+                    $"interop harness: role=server, testcase={settings.TestCase}, requestCount={settings.Requests.Count} listening on {listenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
                 WriteLineAndFlush(
                     stdout,
-                    $"interop harness: role=server, testcase=handshake, requestCount={settings.Requests.Count} completed managed listener bootstrap.");
+                    $"interop harness: role=server, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed listener bootstrap.");
 
                 int servedRequestCount = await ServeHttp09RequestsAsync(
                     connection,
                     stdout,
-                    "handshake",
+                    settings.TestCase,
                     expectedRequestCount: settings.Requests.Count,
                     configuredRequestCount: settings.Requests.Count).ConfigureAwait(false);
 
                 if (servedRequestCount == 0)
                 {
-                    WriteLineAndFlush(stderr, "interop harness: role=server, testcase=handshake did not observe an HTTP/0.9 request stream.");
+                    WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={settings.TestCase} did not observe an HTTP/0.9 request stream.");
                     return 1;
                 }
 
@@ -358,7 +438,7 @@ internal static class InteropHarnessRunner
                     await LingerForPeerCloseAfterFinalResponseAsync(
                         connection,
                         stdout,
-                        "handshake",
+                        settings.TestCase,
                         settings.Requests.Count,
                         ServerKnownPlanPostResponseLingerTimeout).ConfigureAwait(false);
                 }
@@ -368,7 +448,98 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=handshake failed: {ex.Message}");
+            WriteFailureDetails(stderr, "server", settings.TestCase, ex);
+            return 1;
+        }
+    }
+
+    private static async Task<int> RunVersionNegotiationServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            if (!planner.TryGetDispatchRequestUri(out Uri? requestUri, out string? errorMessage, allowEmptyRequests: true))
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out string? tlsErrorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, tlsErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out string? certificateErrorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, certificateErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            {
+                IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri).ConfigureAwait(false);
+                QuicListenerOptions listenerOptions = new()
+                {
+                    ListenEndPoint = listenEndPoint,
+                    ApplicationProtocols = [InteropHarnessProtocols.QuicInterop],
+                    ListenBacklog = 1,
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedServerOptions(serverCertificate)),
+                };
+
+                VersionNegotiationSentObserver versionNegotiationObserver = new();
+                using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(
+                    settings,
+                    qlogScope,
+                    listenerOptions,
+                    diagnosticsSinkFactory: () => versionNegotiationObserver).ConfigureAwait(false);
+                await Task.Yield();
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=versionnegotiation, requestCount={settings.Requests.Count} listening on {listenEndPoint}.");
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=versionnegotiation, requestCount={settings.Requests.Count} waiting for reserved client version 0x{VersionNegotiationProbeVersion:X8}.");
+
+                if (!await WaitForVersionNegotiationSentAsync(versionNegotiationObserver, InteropRequestWaitTimeout).ConfigureAwait(false))
+                {
+                    WriteLineAndFlush(
+                        stderr,
+                        $"interop harness: role=server, testcase=versionnegotiation did not observe the reserved-version Version Negotiation response within {InteropRequestWaitTimeout}.");
+                    return 1;
+                }
+
+                // Keep the server alive briefly so the client's reserved-version Initial lands in the trace before compose aborts.
+                await Task.Delay(VersionNegotiationPostSendGracePeriod).ConfigureAwait(false);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=versionnegotiation, requestCount={settings.Requests.Count} completed managed listener bootstrap after sending version negotiation.");
+                return 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteFailureDetails(stderr, "server", "versionnegotiation", ex);
             return 1;
         }
     }
@@ -444,7 +615,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=post-handshake-stream failed: {ex.Message}");
+            WriteFailureDetails(stderr, "server", "post-handshake-stream", ex);
             return 1;
         }
     }
@@ -580,7 +751,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase=retry failed: {ex.Message}");
+            WriteFailureDetails(stderr, "client", "retry", ex);
             return 1;
         }
     }
@@ -735,7 +906,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=retry failed: {ex.Message}");
+            WriteFailureDetails(stderr, "server", "retry", ex);
             return 1;
         }
     }
@@ -812,7 +983,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stdout, $"interop harness: role=client, testcase=multiconnect failed: {ex.Message}");
+            WriteFailureDetails(stdout, "client", "multiconnect", ex);
             return 1;
         }
     }
@@ -999,8 +1170,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=client, testcase={settings.TestCase} failed: {ex.Message}");
-            WriteLineAndFlush(stderr, ex.ToString());
+            WriteFailureDetails(stderr, "client", settings.TestCase, ex);
             return 1;
         }
     }
@@ -1148,7 +1318,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase=multiconnect failed: {ex.Message}");
+            WriteFailureDetails(stderr, "server", "multiconnect", ex);
             return 1;
         }
     }
@@ -1306,7 +1476,8 @@ internal static class InteropHarnessRunner
                         stdout,
                         testCase,
                         expectedRequestCount: resumptionDispatchCounts.ResumedConnectionExpectedRequestCount,
-                        configuredRequestCount: resumptionDispatchCounts.ConfiguredRequestCount).ConfigureAwait(false);
+                        configuredRequestCount: resumptionDispatchCounts.ConfiguredRequestCount,
+                        requestWaitTimeout: GetServerRequestWaitTimeout(testCase, resumptionDispatchCounts.ConfiguredRequestCount)).ConfigureAwait(false);
 
                     if (resumedServedRequestCount == 0)
                     {
@@ -1358,7 +1529,7 @@ internal static class InteropHarnessRunner
         }
         catch (Exception ex)
         {
-            WriteLineAndFlush(stderr, $"interop harness: role=server, testcase={settings.TestCase} failed: {ex.Message}");
+            WriteFailureDetails(stderr, "server", settings.TestCase, ex);
             return 1;
         }
     }
@@ -1445,6 +1616,16 @@ internal static class InteropHarnessRunner
             ConfiguredRequestCount: dispatchPlan.ConfiguredRequestCount);
         errorMessage = null;
         return true;
+    }
+
+    internal static TimeSpan GetServerRequestWaitTimeout(string testCase, int configuredRequestCount)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(testCase);
+
+        return string.Equals(testCase, "zerortt", StringComparison.Ordinal)
+            && configuredRequestCount == 0
+            ? ServerZeroRttOpenPlanRequestGapTimeout
+            : InteropRequestWaitTimeout;
     }
 
     private static async Task<SequentialTransferPlanBuildResult> TryCreateSequentialTransferPlans(
@@ -1682,14 +1863,16 @@ internal static class InteropHarnessRunner
         TextWriter stdout,
         string testCase,
         int expectedRequestCount,
-        int configuredRequestCount)
+        int configuredRequestCount,
+        TimeSpan requestWaitTimeout = default)
     {
         int servedRequestCount = 0;
         int remainingExpectedRequests = expectedRequestCount > 0 ? expectedRequestCount : int.MaxValue;
+        TimeSpan effectiveRequestWaitTimeout = requestWaitTimeout == default ? InteropRequestWaitTimeout : requestWaitTimeout;
 
         while (servedRequestCount < remainingExpectedRequests)
         {
-            using CancellationTokenSource requestTimeout = new(InteropRequestWaitTimeout);
+            using CancellationTokenSource requestTimeout = new(effectiveRequestWaitTimeout);
 
             QuicStream stream;
             try
@@ -1989,6 +2172,25 @@ internal static class InteropHarnessRunner
         writer.Flush();
     }
 
+    private static void WriteFailureDetails(
+        TextWriter writer,
+        string roleName,
+        string testCase,
+        Exception exception)
+    {
+        WriteLineAndFlush(
+            writer,
+            $"interop harness: role={roleName}, testcase={testCase} failed: {exception.Message}");
+        WriteLineAndFlush(writer, exception.ToString());
+
+        if (exception is QuicException quicException)
+        {
+            WriteLineAndFlush(
+                writer,
+                $"interop harness: role={roleName}, testcase={testCase}, quic error={quicException.QuicError}, application error code={quicException.ApplicationErrorCode}.");
+        }
+    }
+
     private static void WriteQlogCaptureEnabled(
         TextWriter stdout,
         InteropHarnessEnvironment settings,
@@ -2031,6 +2233,7 @@ internal static class InteropHarnessRunner
     {
         return (settings.TestCase is
             "handshake" or
+            "versionnegotiation" or
             "post-handshake-stream" or
             "retry" or
             "multiconnect" or
@@ -2059,7 +2262,8 @@ internal static class InteropHarnessRunner
         InteropHarnessQlogCaptureScope? qlogScope,
         QuicClientConnectionOptions options,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        uint[]? supportedVersions = null)
     {
         return qlogScope is null
             ? QuicConnection.ConnectAsync(
@@ -2069,14 +2273,16 @@ internal static class InteropHarnessRunner
                 diagnosticsSink: null,
                 localHandshakePrivateKey: settings.LocalHandshakePrivateKey,
                 allowClientPeerInitialReplacementBeforeTranscript: AllowClientPeerInitialReplacementBeforeTranscript(settings),
-                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile))
+                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile),
+                supportedVersions: supportedVersions)
             : qlogScope.Capture.ConnectAsync(
                 options,
                 settings.LocalHandshakePrivateKey,
                 cancellationToken,
                 AllowClientPeerInitialReplacementBeforeTranscript(settings),
                 detachedResumptionTicketSnapshot,
-                InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
+                InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile),
+                supportedVersions);
     }
 
     private static bool AllowClientPeerInitialReplacementBeforeTranscript(InteropHarnessEnvironment settings)
@@ -2089,18 +2295,89 @@ internal static class InteropHarnessRunner
         InteropHarnessEnvironment settings,
         InteropHarnessQlogCaptureScope? qlogScope,
         QuicListenerOptions options,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null)
     {
-        return qlogScope is null
-            ? QuicListener.ListenAsync(
+        if (qlogScope is null)
+        {
+            return QuicListener.ListenAsync(
                 options,
                 cancellationToken,
-                diagnosticsSinkFactory: null,
-                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile))
-            : qlogScope.Capture.ListenAsync(
+                diagnosticsSinkFactory: diagnosticsSinkFactory,
+                tlsKeyLogSecretObserver: InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
+        }
+
+        if (diagnosticsSinkFactory is null)
+        {
+            return qlogScope.Capture.ListenAsync(
                 options,
                 cancellationToken,
                 InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
+        }
+
+        return QuicListener.ListenAsync(
+            options,
+            cancellationToken,
+            () => new CompositeDiagnosticsSink(
+                qlogScope.Capture.CreateServerDiagnosticsSinkFactory().Invoke(),
+                diagnosticsSinkFactory()),
+            InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
+    }
+
+    private static async Task<bool> WaitForVersionNegotiationSentAsync(
+        VersionNegotiationSentObserver observer,
+        TimeSpan timeout)
+    {
+        DateTime deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            if (observer.SawVersionNegotiationSent)
+            {
+                return true;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+        }
+
+        return observer.SawVersionNegotiationSent;
+    }
+
+    private sealed class VersionNegotiationSentObserver : IQuicDiagnosticsSink
+    {
+        private int sawVersionNegotiationSent;
+
+        public bool SawVersionNegotiationSent => Volatile.Read(ref sawVersionNegotiationSent) != 0;
+
+        public bool IsEnabled => true;
+
+        public void Emit(QuicDiagnosticEvent diagnosticEvent)
+        {
+            if (diagnosticEvent.Kind == QuicDiagnosticKind.VersionNegotiationSent)
+            {
+                Interlocked.Exchange(ref sawVersionNegotiationSent, 1);
+            }
+        }
+    }
+
+    private sealed class CompositeDiagnosticsSink : IQuicDiagnosticsSink
+    {
+        private readonly IQuicDiagnosticsSink primary;
+        private readonly IQuicDiagnosticsSink secondary;
+
+        public CompositeDiagnosticsSink(IQuicDiagnosticsSink primary, IQuicDiagnosticsSink secondary)
+        {
+            this.primary = primary ?? throw new ArgumentNullException(nameof(primary));
+            this.secondary = secondary ?? throw new ArgumentNullException(nameof(secondary));
+        }
+
+        public bool IsEnabled => primary.IsEnabled || secondary.IsEnabled;
+
+        public void Emit(QuicDiagnosticEvent diagnosticEvent)
+        {
+            primary.Emit(diagnosticEvent);
+            secondary.Emit(diagnosticEvent);
+        }
     }
 
     internal static bool TryGetDispatchRequestUri(

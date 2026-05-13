@@ -108,6 +108,26 @@ public sealed class REQ_QUIC_INT_0002
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ServerZeroRttOpenEndedSecondConnectionUsesAShortRequestGapTimeout()
+    {
+        Assert.Equal(
+            TimeSpan.FromSeconds(1),
+            InteropHarnessRunner.GetServerRequestWaitTimeout("zerortt", 0));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerZeroRttExplicitRequestCountStillUsesTheDefaultRequestGapTimeout()
+    {
+        Assert.Equal(
+            TimeSpan.FromSeconds(20),
+            InteropHarnessRunner.GetServerRequestWaitTimeout("zerortt", 2));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ServerZeroRttOptionsEnableResumptionTicketsAndEarlyData()
     {
         Assert.True(InteropHarnessEnvironment.TryCreate(

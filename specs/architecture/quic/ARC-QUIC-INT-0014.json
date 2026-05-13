@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0014",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Zerortt Hosted Proof Gate Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory hosted Linux zerortt proof lane that keeps the inventory cell prerequisite-blocked until packet-analysis evidence confirms 0-RTT request-stream data was sent and acted on.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0011",
+    "WI-QUIC-INT-0014",
+    "VER-QUIC-INT-0014"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0021"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0021.cs"
+  ],
+  "design_summary": "The existing server-role zerortt harness path already advertises the early-data and resumption prerequisites, and the manual hosted workflow already exposes the dedicated zerortt-server-proof profile on hosted Linux. The harness now also uses a zerortt-specific short request-gap timeout on the resumed second connection so the hosted proof can finish within the runner's network-idle budget. This architecture does not add a new transport branch; it explains the evidence-collection path that keeps the inventory cell blocked until the hosted Linux runner produces packet-analysis proof that 0-RTT request traffic was both sent and acted on. The supporting docs and helper inventory stay explicit so partial hosted success cannot be mistaken for support promotion.",
+  "alternatives_considered": [
+    "Promote zerortt on managed response/download success alone. Rejected because the current runner analysis still requires packet-level 0-RTT proof.",
+    "Move zerortt into the major peer matrix. Rejected because the cell is still prerequisite-blocked and the matrix is intentionally scoped to already executable cells.",
+    "Introduce a new transport runtime branch. Rejected because the harness and runtime support surface already exists; the remaining work is proof gating and evidence collection."
+  ],
+  "edge_cases_and_constraints": [
+    "The hosted Linux profile remains advisory and outside ordinary CI gates.",
+    "Windows long-filename runner setup failures stay blocked evidence, not support evidence.",
+    "Partial hosted proof, local runtime proof, or server-only dispatch must not upgrade the inventory cell.",
+    "HTTP/3 remains out of scope."
+  ],
+  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` and `artifacts/hosted-interop/...`, plus the existing gap ledger and current-status notes. No external runner repository changes are required.",
+  "risks": [
+    "Packet-analysis heuristics may still fail even when the server path and response/download flow are working.",
+    "Readers may overread the dedicated hosted profile as support promotion unless the prerequisite-blocked classification stays visible."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only formalizes the remaining zerortt proof gate. It does not change HTTP/3, broad 0-RTT policy, anti-replay, or migration semantics."
+    }
+  ]
+}

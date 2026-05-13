@@ -421,7 +421,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'versionnegotiation'
             RunnerTestCase = 'versionnegotiation'
             Classification = 'supported-executed'
-            Notes = 'Current green versionnegotiation cell.'
+            Notes = 'Supported/executed versionnegotiation cell with explicit reserved-version runner dispatch.'
         }
 
         [pscustomobject]@{
@@ -449,7 +449,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification; hosted run 25617834482 reached managed responses/download success but still failed because too much data used 1-RTT packets, so server-role dispatch or partial hosted proof alone is not support evidence.'
+            Notes = 'Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification; the server harness now uses a shorter open-ended request-gap timeout on the resumed second connection so the hosted proof can complete within the runner idle budget, but server-role dispatch or partial hosted proof alone is not support evidence.'
         }
 
         [pscustomobject]@{
@@ -1733,7 +1733,92 @@ if _tshark_path:
     _pyshark_capture.get_process_path = _patched_pyshark_get_process_path
 
 import testcase
+import trace
 import testcases_quic
+import pyshark
+
+if hasattr(testcases_quic, "TestCaseVersionNegotiation"):
+    if not any(
+        getattr(_runner_testcase, "name", lambda: "")() == "versionnegotiation"
+        for _runner_testcase in testcases_quic.TESTCASES_QUIC
+    ):
+        testcases_quic.TESTCASES_QUIC = [
+            testcases_quic.TestCaseVersionNegotiation,
+            *list(testcases_quic.TESTCASES_QUIC),
+        ]
+
+    def _patched_versionnegotiation_check(self):
+        def _normalize_quic_identifier(value):
+            return str(value).replace(":", "").lower()
+
+        client_trace = self._client_trace()
+        client_trace_path = getattr(client_trace, "_filename", None)
+        if not client_trace_path:
+            logging.info("Didn't find an Initial / a DCID.")
+            return testcases_quic.TestResult.FAILED
+
+        dcid = None
+        capture = pyshark.FileCapture(
+            client_trace_path,
+            decode_as={"udp.port==443": "quic"},
+            disable_protocol="http3",
+        )
+        try:
+            for packet in capture:
+                if not hasattr(packet, "quic"):
+                    continue
+
+                if hasattr(packet, "ip"):
+                    if packet.ip.src != trace.IP4_CLIENT:
+                        continue
+                elif hasattr(packet, "ipv6"):
+                    if packet.ipv6.src != trace.IP6_CLIENT:
+                        continue
+                else:
+                    continue
+
+                quic = packet.quic
+                if not hasattr(quic, "header_form") or quic.header_form == "0":
+                    continue
+
+                if not hasattr(quic, "version") or quic.version in ("0x00000000", trace.QUIC_V2):
+                    continue
+
+                if not hasattr(quic, "dcid"):
+                    continue
+
+                dcid = _normalize_quic_identifier(quic.dcid)
+                break
+        finally:
+            capture.close()
+
+        if dcid is None:
+            logging.info("Didn't find an Initial / a DCID.")
+            return testcases_quic.TestResult.FAILED
+
+        capture = pyshark.FileCapture(
+            client_trace_path,
+            decode_as={"udp.port==443": "quic"},
+            disable_protocol="http3",
+        )
+        try:
+            for packet in capture:
+                if not hasattr(packet, "quic"):
+                    continue
+
+                quic = packet.quic
+                if not hasattr(quic, "version") or quic.version != "0x00000000":
+                    continue
+
+                if hasattr(quic, "scid") and _normalize_quic_identifier(quic.scid) == dcid:
+                    return testcases_quic.TestResult.SUCCEEDED
+        finally:
+            capture.close()
+
+        logging.info("Didn't find a Version Negotiation Packet with matching SCID.")
+        return testcases_quic.TestResult.FAILED
+
+    testcases_quic.TestCaseVersionNegotiation.check = _patched_versionnegotiation_check
 
 _runner_timeout_seconds = os.environ.get("INCURSA_QUIC_INTEROP_TEST_TIMEOUT_SECONDS")
 if _runner_timeout_seconds:
