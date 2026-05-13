@@ -1,11 +1,10 @@
 <#
-Runs the current QUIC baseline surface:
-- congestion-control update paths
-- RTT estimation update paths
-- sender-adjacent stream-credit, stream-state, and send-priority paths
+Runs the public QUIC comparison surface:
+- loopback connection establishment
+- loopback bidirectional request/response stream transfer
 
 Use -Job Dry to validate the harness quickly or -Job Short for repeatable
-baseline measurements.
+comparison measurements.
 #>
 
 [CmdletBinding()]
@@ -19,13 +18,11 @@ param(
 
     [switch]$NoBuild,
 
-    [string]$ArtifactsRoot = ".artifacts\bdn\baseline",
+    [string]$ArtifactsRoot = ".artifacts\bdn\public-comparison",
 
     [string[]]$BenchmarkFilter = @(
-        "*QuicCongestionControlBenchmarks*",
-        "*QuicRttEstimatorBenchmarks*",
-        "*QuicConnectionStreamStateBenchmarks*",
-        "*QuicApplicationSendPriorityBenchmarks*"
+        "*QuicPublicApiLoopbackBenchmarks*",
+        "*QuicPublicApiStreamTransferBenchmarks*"
     )
 )
 
@@ -92,7 +89,7 @@ foreach ($filter in $BenchmarkFilter) {
     )
 
     Write-Host ""
-    Write-Host "Running baseline slice: $filter" -ForegroundColor Cyan
+    Write-Host "Running public comparison slice: $filter" -ForegroundColor Cyan
     Write-Host "Artifacts: $filterArtifactsRoot" -ForegroundColor Yellow
     Write-Host "Command: dotnet $($runArgs -join ' ')" -ForegroundColor Yellow
 

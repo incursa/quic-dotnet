@@ -35,6 +35,9 @@ public enum QuicPublicApiLoopbackImplementation
 public class QuicPublicApiLoopbackBenchmarks
 {
     private X509Certificate2? serverCertificate;
+    private X509Certificate2? trustAnchor;
+    private SslClientAuthenticationOptions? clientAuthenticationOptions;
+    private SslServerAuthenticationOptions? serverAuthenticationOptions;
 
     [ParamsSource(nameof(GetSupportedImplementations))]
     public QuicPublicApiLoopbackImplementation Implementation { get; set; }
@@ -66,11 +69,18 @@ public class QuicPublicApiLoopbackBenchmarks
     public void GlobalSetup()
     {
         serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        clientAuthenticationOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+        serverAuthenticationOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
     }
 
     [GlobalCleanup]
     public void GlobalCleanup()
     {
+        serverAuthenticationOptions = null;
+        clientAuthenticationOptions = null;
+        trustAnchor?.Dispose();
+        trustAnchor = null;
         serverCertificate?.Dispose();
         serverCertificate = null;
     }
@@ -78,29 +88,32 @@ public class QuicPublicApiLoopbackBenchmarks
     [Benchmark]
     public Task LoopbackConnectAcceptDispose()
     {
-        X509Certificate2 certificate = serverCertificate ?? throw new InvalidOperationException("The benchmark certificate has not been initialized.");
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
         return Implementation switch
         {
-            QuicPublicApiLoopbackImplementation.IncursaQuic => RunIncursaConnectAcceptDisposeAsync(certificate),
-            QuicPublicApiLoopbackImplementation.SystemNetQuic => RunSystemNetConnectAcceptDisposeAsync(certificate),
+            QuicPublicApiLoopbackImplementation.IncursaQuic => RunIncursaConnectAcceptDisposeAsync(clientOptions, serverOptions),
+            QuicPublicApiLoopbackImplementation.SystemNetQuic => RunSystemNetConnectAcceptDisposeAsync(clientOptions, serverOptions),
             _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
         };
     }
 
-    private static async Task RunIncursaConnectAcceptDisposeAsync(X509Certificate2 serverCertificate)
+    private static async Task RunIncursaConnectAcceptDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(10));
         IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
 
         await using IncursaListener listener = await IncursaListener.ListenAsync(
-            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverCertificate),
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
             cancellationSource.Token).ConfigureAwait(false);
 
         Task<IncursaClientConnection> acceptTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
         Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
             QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
                 new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-                serverCertificate),
+                clientAuthenticationOptions),
             cancellationSource.Token).AsTask();
 
         await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
@@ -109,20 +122,22 @@ public class QuicPublicApiLoopbackBenchmarks
         await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
     }
 
-    private static async Task RunSystemNetConnectAcceptDisposeAsync(X509Certificate2 serverCertificate)
+    private static async Task RunSystemNetConnectAcceptDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(10));
         IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
 
         await using SystemNetListener listener = await SystemNetListener.ListenAsync(
-            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverCertificate),
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
             cancellationSource.Token).ConfigureAwait(false);
 
         Task<SystemNetClientConnection> acceptTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
         Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
             QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
                 new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-                serverCertificate),
+                clientAuthenticationOptions),
             cancellationSource.Token).AsTask();
 
         await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
@@ -173,71 +188,81 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         return (IPEndPoint)socket.LocalEndPoint!;
     }
 
-    internal static IncursaListenerOptions CreateIncursaListenerOptions(IPEndPoint listenEndPoint, X509Certificate2 serverCertificate)
+    internal static IncursaListenerOptions CreateIncursaListenerOptions(
+        IPEndPoint listenEndPoint,
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         return new IncursaListenerOptions
         {
             ListenEndPoint = listenEndPoint,
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             ListenBacklog = 1,
-            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateIncursaServerOptions(serverCertificate)),
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateIncursaServerOptions(serverAuthenticationOptions)),
         };
     }
 
-    internal static SystemNetListenerOptions CreateSystemNetListenerOptions(IPEndPoint listenEndPoint, X509Certificate2 serverCertificate)
+    internal static SystemNetListenerOptions CreateSystemNetListenerOptions(
+        IPEndPoint listenEndPoint,
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         return new SystemNetListenerOptions
         {
             ListenEndPoint = listenEndPoint,
             ApplicationProtocols = [SslApplicationProtocol.Http3],
             ListenBacklog = 1,
-            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSystemNetServerOptions(serverCertificate)),
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(CreateSystemNetServerOptions(serverAuthenticationOptions)),
         };
     }
 
-    internal static IncursaClientConnectionOptions CreateIncursaClientOptions(IPEndPoint remoteEndPoint, X509Certificate2 serverCertificate)
+    internal static IncursaClientConnectionOptions CreateIncursaClientOptions(
+        IPEndPoint remoteEndPoint,
+        SslClientAuthenticationOptions clientAuthenticationOptions)
     {
         return new IncursaClientConnectionOptions
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
             RemoteEndPoint = remoteEndPoint,
-            ClientAuthenticationOptions = CreateClientAuthenticationOptions(serverCertificate),
+            ClientAuthenticationOptions = clientAuthenticationOptions,
         };
     }
 
-    internal static SystemNetClientConnectionOptions CreateSystemNetClientOptions(IPEndPoint remoteEndPoint, X509Certificate2 serverCertificate)
+    internal static SystemNetClientConnectionOptions CreateSystemNetClientOptions(
+        IPEndPoint remoteEndPoint,
+        SslClientAuthenticationOptions clientAuthenticationOptions)
     {
         return new SystemNetClientConnectionOptions
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
             RemoteEndPoint = remoteEndPoint,
-            ClientAuthenticationOptions = CreateClientAuthenticationOptions(serverCertificate),
+            ClientAuthenticationOptions = clientAuthenticationOptions,
         };
     }
 
-    private static IncursaServerConnectionOptions CreateIncursaServerOptions(X509Certificate2 serverCertificate)
+    private static IncursaServerConnectionOptions CreateIncursaServerOptions(
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         return new IncursaServerConnectionOptions
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
-            ServerAuthenticationOptions = CreateServerAuthenticationOptions(serverCertificate),
+            ServerAuthenticationOptions = serverAuthenticationOptions,
         };
     }
 
-    private static SystemNetServerConnectionOptions CreateSystemNetServerOptions(X509Certificate2 serverCertificate)
+    private static SystemNetServerConnectionOptions CreateSystemNetServerOptions(
+        SslServerAuthenticationOptions serverAuthenticationOptions)
     {
         return new SystemNetServerConnectionOptions
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
-            ServerAuthenticationOptions = CreateServerAuthenticationOptions(serverCertificate),
+            ServerAuthenticationOptions = serverAuthenticationOptions,
         };
     }
 
-    private static SslServerAuthenticationOptions CreateServerAuthenticationOptions(X509Certificate2 serverCertificate)
+    internal static SslServerAuthenticationOptions CreateServerAuthenticationOptions(X509Certificate2 serverCertificate)
     {
         return new SslServerAuthenticationOptions
         {
@@ -248,10 +273,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         };
     }
 
-    private static SslClientAuthenticationOptions CreateClientAuthenticationOptions(X509Certificate2 serverCertificate)
+    internal static SslClientAuthenticationOptions CreateClientAuthenticationOptions(X509Certificate2 trustAnchor)
     {
-        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
-
         return new SslClientAuthenticationOptions
         {
             AllowRenegotiation = false,

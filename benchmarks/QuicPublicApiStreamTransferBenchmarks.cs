@@ -39,6 +39,9 @@ public class QuicPublicApiStreamTransferBenchmarks
     private const int PayloadBytes = 1024;
 
     private X509Certificate2? serverCertificate;
+    private X509Certificate2? trustAnchor;
+    private SslClientAuthenticationOptions? clientAuthenticationOptions;
+    private SslServerAuthenticationOptions? serverAuthenticationOptions;
     private byte[]? requestPayload;
     private byte[]? responsePayload;
 
@@ -72,6 +75,9 @@ public class QuicPublicApiStreamTransferBenchmarks
     public void GlobalSetup()
     {
         serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        clientAuthenticationOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+        serverAuthenticationOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
         requestPayload = CreatePayload(PayloadBytes, 0x11);
         responsePayload = CreatePayload(PayloadBytes, 0x33);
     }
@@ -79,6 +85,10 @@ public class QuicPublicApiStreamTransferBenchmarks
     [GlobalCleanup]
     public void GlobalCleanup()
     {
+        serverAuthenticationOptions = null;
+        clientAuthenticationOptions = null;
+        trustAnchor?.Dispose();
+        trustAnchor = null;
         serverCertificate?.Dispose();
         serverCertificate = null;
         requestPayload = null;
@@ -88,20 +98,22 @@ public class QuicPublicApiStreamTransferBenchmarks
     [Benchmark]
     public Task LoopbackRequestResponseDispose()
     {
-        X509Certificate2 certificate = serverCertificate ?? throw new InvalidOperationException("The benchmark certificate has not been initialized.");
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
         byte[] request = requestPayload ?? throw new InvalidOperationException("The benchmark request payload has not been initialized.");
         byte[] response = responsePayload ?? throw new InvalidOperationException("The benchmark response payload has not been initialized.");
 
         return Implementation switch
         {
-            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaRequestResponseDisposeAsync(certificate, request, response),
-            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetRequestResponseDisposeAsync(certificate, request, response),
+            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaRequestResponseDisposeAsync(clientOptions, serverOptions, request, response),
+            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetRequestResponseDisposeAsync(clientOptions, serverOptions, request, response),
             _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
         };
     }
 
     private static async Task RunIncursaRequestResponseDisposeAsync(
-        X509Certificate2 serverCertificate,
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
         byte[] requestPayload,
         byte[] responsePayload)
     {
@@ -109,14 +121,14 @@ public class QuicPublicApiStreamTransferBenchmarks
         IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
 
         await using IncursaListener listener = await IncursaListener.ListenAsync(
-            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverCertificate),
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
             cancellationSource.Token).ConfigureAwait(false);
 
         Task<IncursaClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
         Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
             QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
                 new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-                serverCertificate),
+                clientAuthenticationOptions),
             cancellationSource.Token).AsTask();
 
         await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
@@ -163,7 +175,8 @@ public class QuicPublicApiStreamTransferBenchmarks
     }
 
     private static async Task RunSystemNetRequestResponseDisposeAsync(
-        X509Certificate2 serverCertificate,
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
         byte[] requestPayload,
         byte[] responsePayload)
     {
@@ -171,14 +184,14 @@ public class QuicPublicApiStreamTransferBenchmarks
         IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
 
         await using SystemNetListener listener = await SystemNetListener.ListenAsync(
-            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverCertificate),
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
             cancellationSource.Token).ConfigureAwait(false);
 
         Task<SystemNetClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
         Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
             QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
                 new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-                serverCertificate),
+                clientAuthenticationOptions),
             cancellationSource.Token).AsTask();
 
         await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);

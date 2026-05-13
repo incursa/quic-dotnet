@@ -5,8 +5,8 @@ Permanent BenchmarkDotNet suites for `Incursa.Quic`.
 ## Baseline Path
 
 The reusable baseline surface for current product-viability checks is the
-trio of hot paths that most directly affect congestion control, RTT
-estimation, and sender-adjacent stream state:
+set of hot paths that most directly affect congestion control, RTT estimation,
+sender-adjacent stream state, and send-priority ordering:
 
 - `QuicCongestionControlBenchmarks`
 - `QuicRttEstimatorBenchmarks`
@@ -22,7 +22,7 @@ Run them through the launcher:
 
 `Dry` validates the harness quickly. `Short` is the recommended repeatable
 baseline measurement for the current Incursa-only internal suites. It is not a
-public `System.Net.Quic` or MSQUIC comparison.
+public `System.Net.Quic` or direct MSQUIC comparison.
 
 ## Public Comparison
 
@@ -31,14 +31,12 @@ The benchmark project also carries a bounded public-facade comparison suite:
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
 
-Run it directly when the goal is a like-for-like local comparison between the
-Incursa public facade and `System.Net.Quic`:
+Run it through the launcher when the goal is a like-for-like local comparison
+between the Incursa public facade and `System.Net.Quic`:
 
 ```powershell
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiLoopbackBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter "*QuicPublicApiLoopbackBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiStreamTransferBenchmarks*"
-dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter "*QuicPublicApiStreamTransferBenchmarks*"
+.\scripts\benchmarks\Invoke-QuicPublicComparison.ps1 -Job Dry
+.\scripts\benchmarks\Invoke-QuicPublicComparison.ps1 -Job Short
 ```
 
 These suites are intentionally narrow. The current proven floor for
@@ -51,6 +49,19 @@ results must not be treated as equivalent to the repo's internal helper
 benchmarks or as full internet, HTTP/3, or interop-runner performance claims.
 The public stream-transfer comparison is traced under `REQ-QUIC-API-0016` and
 now has its own bounded benchmark suite.
+
+## Black-Box External Lane
+
+For public cross-implementation work, use an external client-driven benchmark
+such as [`h2load`](https://nghttp2.org/documentation/h2load.1.html) against an
+HTTP/3 endpoint. `h2load` has an `--h3` mode and reports connection, request,
+throughput, and allocation-adjacent transport statistics from the outside.
+
+There is no active QUIC-specific standard benchmark to anchor this lane on.
+The closest public protocolization attempt is the IETF QUIC Performance
+Internet-Draft, but it is expired and no longer active. Treat that draft as a
+historical reference only. Keep this lane separate from the repo-native BDN
+suites above.
 
 ## Other Suites
 
