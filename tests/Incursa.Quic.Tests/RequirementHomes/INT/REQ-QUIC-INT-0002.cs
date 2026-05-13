@@ -111,7 +111,7 @@ public sealed class REQ_QUIC_INT_0002
     public void ServerZeroRttOpenEndedSecondConnectionUsesAShortRequestGapTimeout()
     {
         Assert.Equal(
-            TimeSpan.FromSeconds(10),
+            TimeSpan.FromSeconds(4),
             InteropHarnessRunner.GetServerRequestWaitTimeout("zerortt", 0));
     }
 

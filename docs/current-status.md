@@ -1691,9 +1691,10 @@ The next useful lanes are:
   request-gap timeout so the proof can complete within the runner's
   network-idle budget, and the focused requirement-home helper tests for that
   timeout selection pass locally. The 2026-05-13 hosted rerun on run
-  `25774968295` reached 37 resumed request streams before the client hit
-  `timeout: no recent network activity`, so the gap was widened again instead
-  of promoting the cell. The 2026-05-12 branch rerun on run
+  `25775619454` widened the gap to 10 seconds but still stalled at 37 resumed
+  request streams before the client hit `timeout: no recent network activity`,
+  so the next tuning step is to keep the gap under the client idle window
+  instead of extending it further. The 2026-05-12 branch rerun on run
   `25768724412` confirmed the SDK pin reaches the actual testcase but still
   times out in the client download phase with `timeout: no recent network
   activity`.

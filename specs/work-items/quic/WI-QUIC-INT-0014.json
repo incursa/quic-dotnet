@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0021"
   ],
-  "planned_changes": "- Keep the existing zerortt runner path and advisory hosted Linux profile in place.\n- Widen the zerortt-specific request-gap timeout on the resumed second connection so the hosted proof can survive the runner's idle window.\n- Add focused requirement-home tests for the helper timeout selection and the zerortt classification gate.\n- Update the gap ledger and related trace notes so partial hosted proof, server-only dispatch, and internal runtime proof remain insufficient to promote the cell.\n- Preserve the current helper inventory notes, workflow profile, and README wording around the blocked cell.",
+  "planned_changes": "- Keep the existing zerortt runner path and advisory hosted Linux profile in place.\n- Tune the zerortt-specific request-gap timeout on the resumed second connection so the hosted proof stays inside the runner's idle window without starving the resumed file stream.\n- Add focused requirement-home tests for the helper timeout selection and the zerortt classification gate.\n- Update the gap ledger and related trace notes so partial hosted proof, server-only dispatch, and internal runtime proof remain insufficient to promote the cell.\n- Preserve the current helper inventory notes, workflow profile, and README wording around the blocked cell.",
   "out_of_scope": [
     "HTTP/3 support",
     "Chacha20 promotion",
