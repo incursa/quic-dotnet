@@ -36,7 +36,10 @@ helper inventory already classifies `connectionmigration` as
 supported/executed, but the live corroboration lane is still pending. The most
 recent local `migration-server-proof` rerun still shows the `quic-go` cell
 failing and keeps the `msquic` and `neqo` comparisons as the next
-GitHub-hosted trace targets.
+GitHub-hosted trace targets. The latest hosted run `25832312595` has now
+reached the proof cell for `neqo`, but it still fails with an initial-handshake
+idle timeout, while the `msquic` job trips an external runner-shim
+handshake-counting `AttributeError` before it can finish classifying the cell.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
