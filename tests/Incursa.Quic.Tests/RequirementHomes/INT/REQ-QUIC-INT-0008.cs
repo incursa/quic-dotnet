@@ -95,6 +95,106 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void EndpointHostRebindsItsSocketWhenActivePathPromotionRequiresANewLocalPort()
+    {
+        var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = InteropEndpointHostTestSupport.CreateRuntime();
+
+        try
+        {
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+
+            QuicConnectionPathIdentity initialPath = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
+
+            using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
+            Socket initialSocket = GetPrivateField<Socket>(host, "socket");
+            Assert.Same(serverSocket, initialSocket);
+
+            IPEndPoint promotedLocalEndPoint;
+            using (Socket portReservation = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+            {
+                portReservation.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+                promotedLocalEndPoint = (IPEndPoint)portReservation.LocalEndPoint!;
+            }
+
+            QuicConnectionPathIdentity promotedPath = new(
+                clientEndPoint.Address.ToString(),
+                promotedLocalEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                promotedLocalEndPoint.Port);
+
+            Assert.True(host.TryApplyEffect(new QuicConnectionPromoteActivePathEffect(promotedPath)));
+
+            Socket rebindingSocket = GetPrivateField<Socket>(host, "socket");
+            QuicConnectionPathIdentity reboundPath = GetPrivateField<QuicConnectionPathIdentity>(host, "peerPathIdentity");
+
+            Assert.NotSame(initialSocket, rebindingSocket);
+            Assert.Equal(promotedPath, reboundPath);
+            Assert.Equal(promotedLocalEndPoint, (IPEndPoint)rebindingSocket.LocalEndPoint!);
+            Assert.Equal(clientEndPoint, (IPEndPoint)rebindingSocket.RemoteEndPoint!);
+            Assert.Throws<ObjectDisposedException>(() => initialSocket.Send(new byte[] { 0x00 }, SocketFlags.None));
+        }
+        finally
+        {
+            serverSocket.Dispose();
+            clientSocket.Dispose();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task EndpointHostRejectsPathPromotionRebindingAfterDispose()
+    {
+        var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = InteropEndpointHostTestSupport.CreateRuntime();
+
+        try
+        {
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+
+            QuicConnectionPathIdentity initialPath = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
+
+            QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
+            await host.DisposeAsync();
+
+            IPEndPoint promotedLocalEndPoint;
+            using (Socket portReservation = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+            {
+                portReservation.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+                promotedLocalEndPoint = (IPEndPoint)portReservation.LocalEndPoint!;
+            }
+
+            QuicConnectionPathIdentity promotedPath = new(
+                clientEndPoint.Address.ToString(),
+                promotedLocalEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                promotedLocalEndPoint.Port);
+
+            Assert.False(host.TryApplyEffect(new QuicConnectionPromoteActivePathEffect(promotedPath)));
+        }
+        finally
+        {
+            serverSocket.Dispose();
+            clientSocket.Dispose();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task ClientHostOwnsHonestInitialDcidBootstrapStateBeforeConnect()
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(

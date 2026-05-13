@@ -56,9 +56,9 @@ successful live local runner proof under
 excluded from the major-peer-matrix profile by scope.
 
 `rebind-port`, `rebind-addr`, and `connectionmigration` stay outside this
-profile; `connectionmigration` remains prerequisite-blocked because the client
-host still owns a fixed connected UDP socket and does not yet have a
-migration-aware socket rebinding lifecycle, even though the runtime path-state
+profile; the client host now has the migration-aware socket rebinding lifecycle,
+so the remaining blocker is live runner corroboration and inventory promotion
+rather than missing socket rebinding logic, even though the runtime path-state
 ledger already models internal migration promotion.
 
 Local proof for this slice is workflow shape, dry-run planning, and helper
@@ -294,8 +294,9 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` as
 prerequisite-blocked.
 
-Those three migration cells are blocked on a client-host socket rebinding
-lifecycle, not on missing internal path-state promotion logic.
+Those three migration cells remain blocked on live runner corroboration and
+inventory promotion, not on missing internal path-state promotion logic or
+socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
