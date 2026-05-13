@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0015",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Connection Migration Hosted Proof Lane Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a dedicated hosted connectionmigration proof lane and keep the live corroboration step separate from the major peer matrix.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0015",
+    "VER-QUIC-INT-0015"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0015"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0015"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0022"
+  ],
+  "planned_changes": "- Added a dedicated `connectionmigration-server-proof` hosted workflow profile.\n- Kept the major-peer-matrix scope unchanged so the broader advisory profile still only covers currently executable cells.\n- Updated the interop harness README, current-status note, and gap ledger to point maintainers at the dedicated proof lane.\n- Added requirement-home proof for the hosted profile shape and preserved the helper's supported/executed connectionmigration classification.\n- Left the runtime migration seam unchanged; the work item is about hosted corroboration, not a new transport behavior branch.",
+  "out_of_scope": [
+    "HTTP/3 support",
+    "rebind-port or rebind-addr promotion",
+    "changing the runtime socket rebinding lifecycle",
+    "widening the major peer matrix",
+    "any claim that connectionmigration is already fully proven by hosted evidence"
+  ],
+  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0018` and `REQ-QUIC-INT-0022`, run representative helper dry-run plans for the server-role connectionmigration cells, run SpecTrace validation where the repo baseline allows it, and dispatch the manual `connectionmigration-server-proof` profile when hosted artifact evidence is needed."
+}

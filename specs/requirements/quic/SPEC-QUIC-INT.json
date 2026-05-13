@@ -47,7 +47,10 @@
     "VER-QUIC-INT-0012",
     "ARC-QUIC-INT-0013",
     "WI-QUIC-INT-0013",
-    "VER-QUIC-INT-0013"
+    "VER-QUIC-INT-0013",
+    "ARC-QUIC-INT-0015",
+    "WI-QUIC-INT-0015",
+    "VER-QUIC-INT-0015"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -686,6 +689,41 @@
       },
       "notes": [
         "This is a classification gate, not a protocol-support promise. The gate is now closed by the preserved hosted Linux proof bundle, and partial hosted proof, internal runtime proof, or server-only dispatch remains insufficient on its own."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0022",
+      "title": "Provide a hosted connectionmigration proof lane",
+      "statement": "The interop harness MUST provide a manual advisory hosted Linux `connectionmigration-server-proof` profile that exercises the server role against `quic-go` and `msquic` for `connectionmigration`, uploads a distinct artifact bundle for each cell, and remains outside ordinary push, pull-request, build, test, package, and support-readiness gates. The profile exists to refresh live corroboration for the already classified connectionmigration inventory cell and MUST NOT be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0015"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0015"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0015"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0018",
+          "REQ-QUIC-INT-0019",
+          "REQ-QUIC-INT-0021",
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          ".github/workflows/interop-runner-handshake.yml",
+          "scripts/interop/Invoke-QuicInteropRunner.ps1",
+          "scripts/interop/README.md",
+          "src/Incursa.Quic.InteropHarness/README.md",
+          "docs/current-status.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
+        ]
+      },
+      "notes": [
+        "This slice creates a dedicated hosted corroboration path for the connectionmigration lane.",
+        "It does not broaden the major-peer-matrix profile or change the underlying supported-executed helper inventory claim."
       ]
     }
   ]

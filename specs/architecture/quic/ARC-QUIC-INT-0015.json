@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0015",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Connection Migration Hosted Proof Lane Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory hosted Linux connectionmigration proof lane that refreshes live corroboration for the inventory cell by comparing server-role behavior against quic-go and msquic.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0014",
+    "WI-QUIC-INT-0015",
+    "VER-QUIC-INT-0015"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0022"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
+  ],
+  "design_summary": "The manual hosted workflow keeps the default hosted-handshake and major-peer-matrix profiles unchanged and adds a separate `connectionmigration-server-proof` profile. The profile fans out over Incursa.Quic as the local server against `quic-go` and `msquic` peer slots for `connectionmigration`, and each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the selected peer implementation image and uploads each cell bundle with `if: always()` so failed, advisory, and passing attempts remain attributable. The existing helper/runtime migration support stays the source of truth for the inventory claim; this architecture only explains the hosted evidence-collection lane that refreshes live corroboration without widening the broader major-peer-matrix scope.",
+  "alternatives_considered": [
+    "Fold connectionmigration into the major peer matrix. Rejected because that matrix is intentionally scoped to currently executable cells and would overstate the broader evidence surface.",
+    "Rely on the local migration proof only. Rejected because the gap ledger still requires hosted corroboration and the user explicitly asked to compare against the GitHub-hosted runner.",
+    "Change the runtime transport behavior first. Rejected because the runtime seam already exists; the remaining work is hosted proof and evidence collection."
+  ],
+  "edge_cases_and_constraints": [
+    "The hosted Linux profile remains advisory and outside ordinary CI gates.",
+    "Every matrix cell must preserve a distinct artifact root so role, peer, and testcase results can be audited independently.",
+    "Partial hosted proof, server-only dispatch, or local proof alone must not be treated as support evidence.",
+    "HTTP/3 remains out of scope."
+  ],
+  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` plus the existing gap ledger and current-status notes. The profile writes transient artifacts under `artifacts/interop-runner/<cell>/` and uploads them as GitHub Actions artifacts. No external runner repository changes are required.",
+  "risks": [
+    "Peer-image drift can expose real interop failures or external-runner breakage after local helper planning is green.",
+    "The matrix size can increase hosted cost and duration.",
+    "Readers may overread the dedicated hosted profile as support promotion unless the advisory boundary stays visible."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only formalizes the dedicated hosted proof lane for connectionmigration. It does not change HTTP/3, broad rebinding semantics, or the scope of the major-peer-matrix profile."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0015",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Connection Migration Hosted Proof Lane Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home tests, helper dry-run planning, workflow review, artifact inspection, and hosted workflow dispatch when external evidence is required.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0015",
+    "WI-QUIC-INT-0015"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0022"
+  ],
+  "preconditions": [
+    "The external `quic-interop-runner` checkout includes `quic-go` and `msquic` peer slots.",
+    "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
+    "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
+  ],
+  "scope": "Verify that the repository exposes a manual advisory hosted proof lane for server-role connectionmigration against quic-go and msquic, without promoting blocked cells or changing ordinary CI gates.",
+  "procedure": [
+    "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `connectionmigration-server-proof` profile is `workflow_dispatch` only.",
+    "Confirm the profile includes server-role matrix cells against `quic-go` and `msquic` for `connectionmigration`.",
+    "Confirm `major-peer-matrix` still excludes `connectionmigration`.",
+    "Confirm every matrix cell invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided role, local implementation slot, peer slot, testcase, timeout, and artifact root.",
+    "Confirm each cell uploads a distinct artifact bundle with `if: always()`.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0018` and `REQ-QUIC-INT-0022`.",
+    "Run representative helper dry-run plans for server-role quic-go and msquic connectionmigration cells.",
+    "Run SpecTrace core validation.",
+    "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof` and inspect each uploaded `runner-report.json` plus selected output logs."
+  ],
+  "expected_result": "The repository configuration provides an opt-in hosted proof lane that can collect per-cell artifacts for Incursa.Quic as the server role against quic-go and msquic for the connectionmigration cell, while keeping the major-peer-matrix profile and HTTP/3 out of scope.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/architecture/quic/ARC-QUIC-INT-0015.json",
+    "specs/work-items/quic/WI-QUIC-INT-0015.json"
+  ],
+  "status_summary": "Planned for hosted execution. The repository now has the dedicated connectionmigration proof lane and the helper inventory already classifies connectionmigration as supported/executed. The latest local migration proof still shows the quic-go cell failing, which keeps the msquic comparison as the next GitHub-hosted trace target. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
+  "supplemental_sections": [
+    {
+      "heading": "Deferred Coverage",
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a dedicated hosted proof lane, but the lane itself still needs live corroboration before any support claim changes."
+    }
+  ]
+}
