@@ -149,6 +149,69 @@ public sealed class REQ_QUIC_INT_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ConnectionMigrationPreferredAddressFactoryBuildsACompleteTransportParameter()
+    {
+        QuicPreferredAddress preferredAddress = InteropHarnessPreflightPlanner.CreateConnectionMigrationPreferredAddress(
+            IPAddress.Parse("192.0.2.10"),
+            IPAddress.Parse("2001:db8::10"),
+            443);
+
+        Assert.Equal(new byte[] { 192, 0, 2, 10 }, preferredAddress.IPv4Address);
+        Assert.Equal((ushort)443, preferredAddress.IPv4Port);
+        Assert.Equal(new byte[] { 0x20, 0x01, 0x0D, 0xB8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x10 }, preferredAddress.IPv6Address);
+        Assert.Equal((ushort)443, preferredAddress.IPv6Port);
+        Assert.Equal(Convert.FromHexString("20212223"), preferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), preferredAddress.StatelessResetToken);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ConnectionMigrationPreferredAddressFactoryCanBuildAnIpv4OnlyTransportParameter()
+    {
+        QuicPreferredAddress preferredAddress = InteropHarnessPreflightPlanner.CreateConnectionMigrationPreferredAddress(
+            IPAddress.Parse("192.0.2.10"),
+            443);
+
+        Assert.Equal(new byte[] { 192, 0, 2, 10 }, preferredAddress.IPv4Address);
+        Assert.Equal((ushort)443, preferredAddress.IPv4Port);
+        Assert.Equal(new byte[16], preferredAddress.IPv6Address);
+        Assert.Equal((ushort)0, preferredAddress.IPv6Port);
+        Assert.Equal(Convert.FromHexString("20212223"), preferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), preferredAddress.StatelessResetToken);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ConnectionMigrationServerOptionsAdvertiseTheDualStackPreferredAddress()
+    {
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "server",
+                testcase: "connectionmigration"),
+            out InteropHarnessEnvironment? environment,
+            out string? errorMessage));
+
+        Assert.NotNull(environment);
+        Assert.Null(errorMessage);
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        InteropHarnessPreflightPlanner planner = new(environment!, TextWriter.Null);
+        QuicServerConnectionOptions options = planner.CreateSupportedServerOptions(serverCertificate);
+
+        Assert.NotNull(options.PreferredAddress);
+        Assert.Equal(new byte[] { 193, 167, 100, 110 }, options.PreferredAddress!.IPv4Address);
+        Assert.Equal((ushort)443, options.PreferredAddress.IPv4Port);
+        Assert.Equal(IPAddress.Parse("fd00:cafe:cafe:100::110").GetAddressBytes(), options.PreferredAddress.IPv6Address);
+        Assert.Equal((ushort)443, options.PreferredAddress.IPv6Port);
+        Assert.Equal(Convert.FromHexString("20212223"), options.PreferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), options.PreferredAddress.StatelessResetToken);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientDispatchStillRejectsEmptyRequestsWithoutTheServerFallback()

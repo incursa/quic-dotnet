@@ -3829,6 +3829,22 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             ref effects);
 
+        if (tlsState.Role == QuicTlsRole.Server
+            && localTransportParameters.PreferredAddress is QuicPreferredAddress preferredAddress)
+        {
+            AppendEffect(
+                ref effects,
+                new QuicConnectionRegisterConnectionIdRouteEffect(
+                    PreferredAddressConnectionIdRouteKey,
+                    preferredAddress.ConnectionId));
+
+            AppendEffect(
+                ref effects,
+                new QuicConnectionRegisterStatelessResetTokenEffect(
+                    PreferredAddressConnectionIdRouteKey,
+                    preferredAddress.StatelessResetToken));
+        }
+
         ulong maxUdpPayloadSize = localTransportParameters.MaxUdpPayloadSize ?? QuicTransportParameters.DefaultMaxUdpPayloadSize;
         AppendEffect(ref effects, new QuicConnectionUpdateMaxUdpPayloadSizeEffect(maxUdpPayloadSize));
         return true;

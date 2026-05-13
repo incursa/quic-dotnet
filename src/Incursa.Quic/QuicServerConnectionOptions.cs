@@ -38,4 +38,9 @@ public sealed class QuicServerConnectionOptions : QuicConnectionOptions
     /// Gets or sets whether the internal managed server path may advertise and accept QUIC early data.
     /// </summary>
     internal bool EnableEarlyData { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred address transport parameter advertised by the internal managed server path.
+    /// </summary>
+    internal QuicPreferredAddress? PreferredAddress { get; set; }
 }

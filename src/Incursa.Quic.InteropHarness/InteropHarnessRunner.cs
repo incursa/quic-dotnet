@@ -128,6 +128,7 @@ internal static class InteropHarnessRunner
             "chacha20" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "connectionmigration" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "resumption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -157,6 +158,7 @@ internal static class InteropHarnessRunner
             "chacha20" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "connectionmigration" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -2249,6 +2251,7 @@ internal static class InteropHarnessRunner
             "chacha20" or
             "rebind-port" or
             "rebind-addr" or
+            "connectionmigration" or
             "keyupdate" or
             "resumption" or
             "transfer")

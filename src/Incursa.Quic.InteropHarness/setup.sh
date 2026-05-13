@@ -27,4 +27,10 @@ echo "Endpoint's IPv6 address is $ip_v6"
 ip -d route add fd00:cafe:cafe::/48 via "$gateway_v6"
 ip -d route del "$unneeded_route_v6/64"
 
+if [[ "${ROLE:-}" == "server" && "${TESTCASE:-}" == "connectionmigration" ]]; then
+    echo "Assigning connection-migration preferred addresses on the server endpoint."
+    ip addr replace 193.167.100.110/32 dev eth0
+    ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0
+fi
+
 mkdir -p /logs/qlog

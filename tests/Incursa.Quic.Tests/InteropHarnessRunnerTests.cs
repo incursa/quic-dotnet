@@ -235,6 +235,7 @@ public sealed class InteropHarnessRunnerTests
     [Theory]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
+    [InlineData("connectionmigration")]
     public void RebindClientDispatchUsesTheTransferBackedHarnessPathBeforeTransferValidationFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
@@ -266,6 +267,7 @@ public sealed class InteropHarnessRunnerTests
     [Theory]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
+    [InlineData("connectionmigration")]
     public void RebindServerDispatchUsesTheTransferBackedHarnessPathBeforeTlsMaterialFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));

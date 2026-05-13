@@ -13,6 +13,9 @@ namespace Incursa.Quic.InteropHarness;
 internal sealed class InteropHarnessPreflightPlanner
 {
     private const int DefaultHandshakePort = 443;
+    private static readonly IPAddress ConnectionMigrationPreferredAddressIpv4 = IPAddress.Parse("193.167.100.110");
+    private static readonly IPAddress ConnectionMigrationPreferredAddressIpv6 = IPAddress.Parse("fd00:cafe:cafe:100::110");
+    private const int PreferredAddressIpv6BytesLength = 16;
 
     private readonly InteropHarnessEnvironment settings;
     private readonly TextWriter stdout;
@@ -102,7 +105,7 @@ internal sealed class InteropHarnessPreflightPlanner
 
     internal QuicServerConnectionOptions CreateSupportedServerOptions(X509Certificate2 serverCertificate)
     {
-        return new QuicServerConnectionOptions
+        QuicServerConnectionOptions options = new()
         {
             SelectedCipherSuite = GetSupportedCipherSuite(),
             EnableResumptionTickets = settings.TestCase is "resumption" or "zerortt",
@@ -115,6 +118,13 @@ internal sealed class InteropHarnessPreflightPlanner
                 EncryptionPolicy = EncryptionPolicy.RequireEncryption,
             },
         };
+
+        if (settings.TestCase == "connectionmigration")
+        {
+            options.PreferredAddress = CreateConnectionMigrationPreferredAddress();
+        }
+
+        return options;
     }
 
     private QuicTlsCipherSuite GetSupportedCipherSuite()
@@ -122,6 +132,62 @@ internal sealed class InteropHarnessPreflightPlanner
         return settings.TestCase == "chacha20"
             ? QuicTlsCipherSuite.TlsChacha20Poly1305Sha256
             : QuicTlsCipherSuite.TlsAes128GcmSha256;
+    }
+
+    private QuicPreferredAddress CreateConnectionMigrationPreferredAddress()
+    {
+        // The interop runner's connection-migration lane uses the alternate `.110`
+        // server endpoint as the preferred address target, and the harness provisions
+        // both families so the client can pick whichever path it prefers.
+        return CreateConnectionMigrationPreferredAddress(
+            ConnectionMigrationPreferredAddressIpv4,
+            ConnectionMigrationPreferredAddressIpv6,
+            DefaultHandshakePort);
+    }
+
+    internal static QuicPreferredAddress CreateConnectionMigrationPreferredAddress(
+        IPAddress ipv4Address,
+        int port)
+    {
+        ArgumentNullException.ThrowIfNull(ipv4Address);
+
+        if (ipv4Address.AddressFamily != AddressFamily.InterNetwork)
+        {
+            throw new ArgumentException("The preferred IPv4 address must be an IPv4 address.", nameof(ipv4Address));
+        }
+
+        if (port <= 0 || port > ushort.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(port));
+        }
+
+        return new QuicPreferredAddress
+        {
+            IPv4Address = ipv4Address.GetAddressBytes(),
+            IPv4Port = (ushort)port,
+            IPv6Address = new byte[PreferredAddressIpv6BytesLength],
+            IPv6Port = 0,
+            ConnectionId = Convert.FromHexString("20212223"),
+            StatelessResetToken = Convert.FromHexString("303132333435363738393A3B3C3D3E3F"),
+        };
+    }
+
+    internal static QuicPreferredAddress CreateConnectionMigrationPreferredAddress(
+        IPAddress ipv4Address,
+        IPAddress ipv6Address,
+        int port)
+    {
+        ArgumentNullException.ThrowIfNull(ipv6Address);
+
+        if (ipv6Address.AddressFamily != AddressFamily.InterNetworkV6)
+        {
+            throw new ArgumentException("The preferred IPv6 address must be an IPv6 address.", nameof(ipv6Address));
+        }
+
+        QuicPreferredAddress preferredAddress = CreateConnectionMigrationPreferredAddress(ipv4Address, port);
+        preferredAddress.IPv6Address = ipv6Address.GetAddressBytes();
+        preferredAddress.IPv6Port = (ushort)port;
+        return preferredAddress;
     }
 
     internal static bool TryGetTransferPaths(

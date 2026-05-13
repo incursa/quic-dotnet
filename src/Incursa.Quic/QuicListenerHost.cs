@@ -1350,6 +1350,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialMaxStreamsBidi = (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams),
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
+            PreferredAddress = options.PreferredAddress,
             OriginalDestinationConnectionId = originalDestinationConnectionId.IsEmpty ? null : originalDestinationConnectionId.ToArray(),
             InitialSourceConnectionId = sourceConnectionId.ToArray(),
             RetrySourceConnectionId = retrySourceConnectionId.IsEmpty ? null : retrySourceConnectionId.ToArray(),
@@ -1555,6 +1556,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.ServerAuthenticationOptions = returnedOptions.ServerAuthenticationOptions;
         selectedOptions.EnableResumptionTickets = returnedOptions.EnableResumptionTickets;
         selectedOptions.EnableEarlyData = returnedOptions.EnableEarlyData;
+        selectedOptions.PreferredAddress = returnedOptions.PreferredAddress;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

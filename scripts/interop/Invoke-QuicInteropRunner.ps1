@@ -476,8 +476,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'connectionmigration'
             RunnerTestCase = 'connectionmigration'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires preferred-address and active-migration support.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed connectionmigration cell with preferred-address server dispatch; live runner proof is still being refreshed.'
         }
     )
 }

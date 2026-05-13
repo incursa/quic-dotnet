@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "v2,rebind-port,rebind-addr,connectionmigration",
+            "v2,rebind-port,rebind-addr",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -103,7 +103,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("chacha20 -> supported-executed (runner: chacha20)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("keyupdate -> supported-executed (runner: keyupdate)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("chacha20 -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("keyupdate -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
@@ -134,7 +134,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("resumption -> supported-executed (runner: resumption)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("resumption -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
@@ -168,7 +168,7 @@ public sealed class InteropRunnerScriptDryRunTests
             "notes: Supported/executed zerortt cell with buffered request-line reads and hosted Linux proof success.",
             output,
             StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("zerortt -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
@@ -198,7 +198,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("v2 -> prerequisite-blocked (runner: v2)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("v2 -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
@@ -229,10 +229,10 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("rebind-port -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("rebind-addr -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("connectionmigration -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("connectionmigration -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }
