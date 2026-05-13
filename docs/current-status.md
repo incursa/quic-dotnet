@@ -31,11 +31,12 @@ proof no longer needs to be treated as support evidence for this cell.
 
 `REQ-QUIC-INT-0022` now defines a dedicated advisory
 `connectionmigration-server-proof` hosted profile for the server-role
-`connectionmigration` cells against `quic-go` and `msquic`. The helper
-inventory already classifies `connectionmigration` as supported/executed, but
-the live corroboration lane is still pending. The most recent local
-`migration-server-proof` rerun still shows the `quic-go` cell failing and keeps
-the `msquic` comparison as the next GitHub-hosted trace target.
+`connectionmigration` cells against `quic-go`, `msquic`, and `neqo`. The
+helper inventory already classifies `connectionmigration` as
+supported/executed, but the live corroboration lane is still pending. The most
+recent local `migration-server-proof` rerun still shows the `quic-go` cell
+failing and keeps the `msquic` and `neqo` comparisons as the next
+GitHub-hosted trace targets.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 

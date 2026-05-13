@@ -19,6 +19,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-quic-go", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-msquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-neqo", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("-TestCases \"${{ matrix.testcases }}\"", workflow, StringComparison.Ordinal);
         Assert.Contains("if: always()", workflow, StringComparison.Ordinal);
 
@@ -27,10 +29,14 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("quic-go`, `msquic`, and `neqo", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("msquic` and `neqo` comparisons", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
+        Assert.Contains("quic-go`, `msquic`, and `neqo", spec, StringComparison.Ordinal);
     }
 
     [Fact]
