@@ -24,7 +24,7 @@ internal static class InteropHarnessRunner
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
-    private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan VersionNegotiationPostSendGracePeriod = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerOpenPlanPostResponseLingerTimeout = InteropRequestWaitTimeout;
     private static readonly uint VersionNegotiationProbeVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);
