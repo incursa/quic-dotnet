@@ -45,11 +45,18 @@
     "artifacts/hosted-interop/25617834482-zerortt-server-proof/interop-runner-server-zerortt-quic-go-25617834482/20260510-023822599-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt",
     "artifacts/interop-runner/20260512-203007324-both-quic-go/invocation.txt",
     "artifacts/interop-runner/20260512-203007324-both-quic-go/runner.stderr.log",
+    "artifacts/interop-runner/20260512-210027394-both-quic-go/invocation.txt",
+    "artifacts/interop-runner/20260512-210027394-both-quic-go/runner.stderr.log",
     "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-report.json",
     "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
-    "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt"
+    "artifacts/gh-run-25768724412/20260512-234119415-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt",
+    "artifacts/gh-run-25774968295/20260513-024315305-server-nginx/runner-report.json",
+    "artifacts/gh-run-25774968295/20260513-024315305-server-nginx/runner-report.md",
+    "artifacts/gh-run-25774968295/20260513-024315305-server-nginx/runner.stderr.log",
+    "artifacts/gh-run-25774968295/20260513-024315305-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
+    "artifacts/gh-run-25774968295/20260513-024315305-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt"
   ],
-  "status_summary": "Planned for the next proof tail. The repository already has the advisory hosted Linux zerortt-server-proof profile and the helper inventory remains explicit about the remaining packet-analysis blocker. The server harness now uses a zerortt-specific short request-gap timeout on the resumed second connection, and the focused requirement-home helper tests for that timeout selection pass locally. A 2026-05-12 branch rerun on run 25768724412 confirmed the SDK pin to mcr.microsoft.com/dotnet/sdk:10.0.201 clears the harness image build mismatch and reaches the actual zerortt testcase, but the client still exits with timeout: no recent network activity during file download before packet-analysis promotion can occur. Requirement-home and dry-run proof are expected to keep the cell prerequisite-blocked until a later hosted run produces packet-level 0-RTT success.",
+  "status_summary": "Planned for the next proof tail. The repository already has the advisory hosted Linux zerortt-server-proof profile and the helper inventory remains explicit about the remaining packet-analysis blocker. The server harness now uses a zerortt-specific request-gap timeout on the resumed second connection, and the focused requirement-home helper tests for that timeout selection pass locally. A 2026-05-12 branch rerun on run 25768724412 confirmed the SDK pin to mcr.microsoft.com/dotnet/sdk:10.0.201 clears the harness image build mismatch and reaches the actual zerortt testcase, but the client still exits with timeout: no recent network activity during file download before packet-analysis promotion can occur. A 2026-05-13 hosted rerun on run 25774968295 reached 37 resumed request streams before timing out on the client, which showed the prior 1-second gap was still too short and needs another widened proof pass before packet-analysis promotion can occur. Requirement-home and dry-run proof are expected to keep the cell prerequisite-blocked until a later hosted run produces packet-level 0-RTT success.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
