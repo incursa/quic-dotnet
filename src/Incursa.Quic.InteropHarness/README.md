@@ -12,6 +12,7 @@
 - `handshake`
 - `versionnegotiation`
 - `post-handshake-stream`
+- `chacha20`
 - `keyupdate`
 - `multiconnect`
 - `retry`
@@ -21,8 +22,8 @@
 Unsupported testcases return `127`.
 The repo-local interop helper now classifies the broader documented non-HTTP/3 inventory before a testcase reaches this runtime surface, but this project still only executes the supported cells above.
 `versionnegotiation` uses a reserved-version probe path in the harness and is explicitly dispatched here rather than being inferred from inventory plumbing.
-`chacha20` remains inventory-visible but prerequisite-blocked pending CipherSuitesPolicy support. `resumption` is now inventory-green for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof; it does not imply HTTP/3, 0-RTT, anti-replay, or broader resumption API support.
-`zerortt` remains inventory-visible but prerequisite-blocked pending full hosted/Linux runner success, client-side 0-RTT request-stream/packet-analysis proof, and harness classification. The former first-flight key-share/HelloRetryRequest blocker now has local CRT proof under `REQ-QUIC-CRT-0154`, and hosted reruns have progressed past that symptom, but hosted run `25617834482` still failed runner packet analysis after managed response/download success because too much traffic used 1-RTT packets (`0-RTT size: 10618`, `1-RTT size: 16499`). The server-role harness path now reads HTTP/0.9 request lines in buffered chunks instead of one byte at a time so the proof path does not amplify receive-credit chatter, but that dispatch path, bounded internal early-data runtime proof, local X25519 proof, and partial hosted proof are not enough to mark the inventory cell supported.
+`chacha20` is now inventory-green for the runner's ChaCha20-Poly1305 cell after a local quic-go/quic-go runner attempt succeeded under `artifacts/interop-runner/20260513-011027614-both-quic-go/runner-report.json`. `InteropHarnessRunner` routes it through the transfer-backed dispatch path, and the support claim stays limited to that checked runner cell; it does not imply HTTP/3, 0-RTT, anti-replay, or broader API support.
+`zerortt` is now supported/executed for the runner's dedicated hosted Linux proof lane. The former first-flight key-share/HelloRetryRequest blocker now has local CRT proof under `REQ-QUIC-CRT-0154`, the server-role harness path now reads HTTP/0.9 request lines in buffered chunks instead of one byte at a time so the proof path does not amplify receive-credit chatter, and hosted run `25777328991` completed successfully with packet-analysis proof (`0-RTT size: 10570`, `1-RTT size: 2379`). That lane stays advisory, but the inventory cell is now supported/executed and it does not imply HTTP/3, anti-replay, or broader 0-RTT/resumption API support.
 
 ## Build Locally
 

@@ -2,11 +2,11 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-INT-0014",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC Zerortt Hosted Proof Gate Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Keep zerortt prerequisite-blocked until the advisory hosted Linux proof produces packet-analysis evidence and the inventory gate can be promoted honestly.",
+  "summary": "Close the zerortt proof gate after the advisory hosted Linux run produces packet-analysis evidence and promote the inventory gate honestly.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0014",
@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0021"
   ],
-  "planned_changes": "- Keep the existing zerortt runner path and advisory hosted Linux profile in place.\n- Keep the zerortt-specific request-gap timeout on the resumed second connection at the best observed floor while buffering the HTTP/0.9 request-line read so the hosted proof stays inside the runner's idle window without amplifying receive-credit chatter.\n- Add focused requirement-home tests for the helper timeout selection, the request-line read buffering behavior, and the zerortt classification gate.\n- Update the gap ledger and related trace notes so partial hosted proof, server-only dispatch, and internal runtime proof remain insufficient to promote the cell.\n- Preserve the current helper inventory notes, workflow profile, and README wording around the blocked cell.",
+  "planned_changes": "- Buffered the HTTP/0.9 request-line read in the server-role zerortt path so the proof no longer amplifies receive-credit chatter.\n- Promoted the helper inventory to supported/executed after hosted Linux packet-analysis proof succeeded.\n- Added and updated requirement-home tests for the helper timeout selection, buffered request-line reads, and the zerortt classification gate.\n- Updated the gap ledger, current-status note, architecture, and verification artifacts so partial hosted proof, server-only dispatch, and internal runtime proof no longer control the cell.\n- Preserved the current helper inventory notes, workflow profile, and README wording around the closed gate.",
   "out_of_scope": [
     "HTTP/3 support",
     "Chacha20 promotion",
@@ -30,5 +30,5 @@
     "major peer matrix expansion",
     "any claim that zerortt is already supported/executed"
   ],
-  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0002` and `REQ-QUIC-INT-0021` together with the existing zerortt inventory tests, run a helper dry-run plan for `zerortt`, and when hosted evidence is needed dispatch the advisory `zerortt-server-proof` profile and inspect the preserved runner artifacts."
+  "verification_plan": "Completed: the focused requirement-home tests, helper dry-run plan, hosted `zerortt-server-proof` workflow dispatch, and artifact inspection all passed for the closed gate."
 }

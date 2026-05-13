@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Net.Security;
 using System.Text;
 
 namespace Incursa.Quic.Tests;
@@ -272,6 +273,84 @@ public sealed class InteropHarnessProcessObservabilityTests
                 {
                     TryDelete(destinationPath);
                 }
+            }
+        });
+    }
+
+    [Fact]
+    public async Task ChildProcessChacha20EmitsLifecycleMarkersInOrderAndKeepsStderrEmptyOnTheGreenPath()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        try
+        {
+            _ = new CipherSuitesPolicy([TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256]);
+        }
+        catch (PlatformNotSupportedException)
+        {
+            return;
+        }
+
+        await InteropHarnessTestSupport.WithHarnessCertificateAsync("localhost", async () =>
+        {
+            IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            string relativePath = $"chacha20-{Guid.NewGuid():N}.txt";
+            string requestPath = $"/{relativePath}";
+            string requests = $"https://localhost:{listenEndPoint.Port}{requestPath}";
+            string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
+            string sourceRoot = Path.GetFullPath(InteropHarnessEnvironment.WwwDirectory);
+            string destinationRoot = Path.GetFullPath(InteropHarnessEnvironment.DownloadsDirectory);
+            string sourcePath = Path.Combine(sourceRoot, relativePath);
+            string destinationPath = Path.Combine(destinationRoot, relativePath);
+            byte[] payload = Encoding.UTF8.GetBytes($"managed chacha20 proof {Guid.NewGuid():N}");
+
+            Directory.CreateDirectory(sourceRoot);
+            Directory.CreateDirectory(destinationRoot);
+            File.WriteAllBytes(sourcePath, payload);
+            TryDelete(destinationPath);
+
+            try
+            {
+                await using HarnessProcess serverProcess = HarnessProcess.Start("server", "chacha20", requests, harnessDll);
+                await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10));
+
+                await using HarnessProcess clientProcess = HarnessProcess.Start("client", "chacha20", requests, harnessDll);
+                await WaitForPairMarkersAsync(
+                    serverProcess,
+                    clientProcess,
+                    "completed managed chacha20 response",
+                    "completed managed chacha20 download",
+                    TimeSpan.FromSeconds(20));
+                await serverProcess.WaitForStdoutContainsAsync("stream 1", TimeSpan.FromSeconds(20));
+                await clientProcess.WaitForStdoutContainsAsync("stream 1/1", TimeSpan.FromSeconds(20));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(20));
+
+                Assert.Equal(0, serverProcess.Process.ExitCode);
+                Assert.Equal(0, clientProcess.Process.ExitCode);
+                Assert.Empty(serverProcess.Stderr);
+                Assert.Empty(clientProcess.Stderr);
+                Assert.True(File.Exists(destinationPath));
+                Assert.Equal(payload, File.ReadAllBytes(destinationPath));
+                Assert.Contains("role=server, testcase=chacha20", serverProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("role=client, testcase=chacha20", clientProcess.Stdout, StringComparison.OrdinalIgnoreCase);
+                AssertContainsInOrder(
+                    serverProcess.Stdout,
+                    "listening on",
+                    "completed managed listener bootstrap",
+                    "completed managed chacha20 response");
+                AssertContainsInOrder(
+                    clientProcess.Stdout,
+                    "connecting to",
+                    "completed managed client bootstrap",
+                    "completed managed chacha20 download");
+            }
+            finally
+            {
+                TryDelete(sourcePath);
+                TryDelete(destinationPath);
             }
         });
     }

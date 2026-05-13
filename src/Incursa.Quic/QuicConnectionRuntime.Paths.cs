@@ -120,6 +120,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         int payloadBytes,
         long nowTicks,
+        ReadOnlySpan<byte> datagram,
         bool deferTrustedPathReusePromotion,
         ref List<QuicConnectionEffect>? effects,
         out bool packetDiscarded)
@@ -131,7 +132,7 @@ internal sealed partial class QuicConnectionRuntime
             EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
         }
 
-        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, classification))
+        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, datagram))
         {
             packetDiscarded = true;
             return false;
@@ -244,13 +245,16 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool ShouldDiscardUnexpectedServerAddressPacket(
         QuicConnectionPathIdentity pathIdentity,
-        QuicConnectionPathClassification classification)
+        ReadOnlySpan<byte> datagram)
     {
         return tlsState.Role == QuicTlsRole.Client
             && phase == QuicConnectionPhase.Active
             && peerHandshakeTranscriptCompleted
+            && activePath.HasValue
+            && !string.Equals(activePath.Value.Identity.RemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal)
             && !preferredAddressOldPathIdentity.HasValue
-            && classification != QuicConnectionPathClassification.MigrationCandidate
+            && QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
+            && packetNumberSpace == QuicPacketNumberSpace.ApplicationData
             && !TryGetCandidatePath(pathIdentity, out _)
             && !TryGetRecentlyValidatedPath(pathIdentity, out _);
     }
@@ -668,6 +672,12 @@ internal sealed partial class QuicConnectionRuntime
         if (TryGetRecentlyValidatedPath(pathIdentity, out _))
         {
             return QuicConnectionPathClassification.PreferredAddressTransition;
+        }
+
+        if (activePath.HasValue
+            && string.Equals(activePath.Value.Identity.RemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal))
+        {
+            return QuicConnectionPathClassification.MigrationCandidate;
         }
 
         if (string.Equals(lastValidatedRemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal))

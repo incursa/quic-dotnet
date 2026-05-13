@@ -68,9 +68,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,keyupdate,resumption", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "chacha20,zerortt,v2,rebind-port,rebind-addr,connectionmigration",
+            "v2,rebind-port,rebind-addr,connectionmigration",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -101,10 +101,10 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("chacha20 -> prerequisite-blocked (runner: chacha20)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("chacha20 -> supported-executed (runner: chacha20)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("keyupdate -> supported-executed (runner: keyupdate)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("chacha20 -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("chacha20 -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("keyupdate -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
@@ -141,7 +141,7 @@ public sealed class InteropRunnerScriptDryRunTests
     }
 
     [Fact]
-    public async Task DryRunAcceptsZerorttAsBlockedAndKeepsTheGreenCellsExplicit()
+    public async Task DryRunAcceptsZerorttAsSupportedAndKeepsTheBlockedCellsExplicit()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -163,15 +163,13 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("zerortt -> supported-executed (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "notes: Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification",
+            "notes: Supported/executed zerortt cell with buffered request-line reads and hosted Linux proof success.",
             output,
             StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("too much data used 1-RTT packets", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("partial hosted proof alone is not support evidence", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> prerequisite-blocked (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("zerortt -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("zerortt -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }
@@ -207,7 +205,7 @@ public sealed class InteropRunnerScriptDryRunTests
     }
 
     [Fact]
-    public async Task DryRunAcceptsPathValidationCellsAsBlockedAndKeepsTheGreenCellsExplicit()
+    public async Task DryRunAcceptsPathValidationCellsAsBlockedAndKeepsTheBlockedCellExplicit()
     {
         using InteropRunnerScriptFixture fixture = new();
 

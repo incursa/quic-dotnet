@@ -1,7 +1,7 @@
 # Current Repository Status
 
-Last verified: 2026-05-12 for the INT major-peer interop matrix shape,
-dry-run proof, and live versionnegotiation runner proof. RFC 9000 blocked-tail
+Last verified: 2026-05-13 for the INT major-peer interop matrix shape,
+dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
 coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
@@ -17,6 +17,26 @@ application-protocol negotiation proof, S7-0011 application-protocol
 negotiation proof, S9-0009 disable-active-migration proof, S7-0006 handshake
 packet-protection proof, and regenerated QUIC coverage triage.
 
+## 2026-05-13 INT Zerortt Closure Note
+
+`REQ-QUIC-INT-0021` is now closed. The helper inventory classifies `zerortt`
+as supported/executed, the buffered HTTP/0.9 request-line reader closed the
+receive-credit chatter gap, and hosted run `25777328991` succeeded with
+packet-analysis evidence (`0-RTT size: 10570`, `1-RTT size: 2379`). The
+dedicated `zerortt-server-proof` profile remains advisory and the
+major-peer-matrix profile still excludes `zerortt` by scope, but partial hosted
+proof no longer needs to be treated as support evidence for this cell.
+
+## 2026-05-13 INT Chacha20 Closure Note
+
+`REQ-QUIC-INT-0018` now classifies `chacha20` as supported/executed. The helper
+inventory and the real local `quic-go`/`quic-go` runner report under
+`artifacts/interop-runner/20260513-011027614-both-quic-go/runner-report.json`
+agree that the testcase succeeded, and `InteropHarnessRunner` now routes the
+cell through the transfer-backed dispatch path. This stays bounded to the
+checked runner cell and does not imply HTTP/3, cross-peer matrix coverage, or
+broader API support.
+
 ## 2026-05-12 INT Major Peer Matrix Profile
 
 `REQ-QUIC-INT-0019` now owns the manual `major-peer-matrix` hosted workflow
@@ -29,11 +49,17 @@ The matrix covers Incursa.Quic as local client and local server against the
 
 The profile intentionally excludes `http3`, `zerortt`, `chacha20`, `v2`,
 `rebind-port`, `rebind-addr`, `connectionmigration`, and the
-`versionnegotiation` cell. The first three are outside scope or
-prerequisite-blocked for this profile; `versionnegotiation` now has explicit
-reserved-version runner dispatch and a successful live local runner proof under
+`versionnegotiation` cell. The first three are outside scope for this profile;
+`versionnegotiation` now has explicit reserved-version runner dispatch and a
+successful live local runner proof under
 `artifacts/interop-runner/20260512-170806170-both-quic-go/`, but remains
 excluded from the major-peer-matrix profile by scope.
+
+`rebind-port`, `rebind-addr`, and `connectionmigration` stay outside this
+profile; `connectionmigration` remains prerequisite-blocked because the client
+host still owns a fixed connected UDP socket and does not yet have a
+migration-aware socket rebinding lifecycle, even though the runtime path-state
+ledger already models internal migration promotion.
 
 Local proof for this slice is workflow shape, dry-run planning, and helper
 fallback behavior, not hosted runner success. In this session, the focused INT
@@ -141,8 +167,8 @@ ACK frames in 0-RTT with `PROTOCOL_VIOLATION` and without stream delivery. This
 is still not a `zerortt` interop promotion: public early-data APIs,
 `IsSupported` widening, HTTP/3, broad early-data frame-family support, external
 ticket persistence, and cluster-wide anti-replay remain out of scope. The
-`zerortt` inventory cell remains prerequisite-blocked until live runner proof
-and harness classification promote it.
+`zerortt` inventory cell remained prerequisite-blocked until live runner proof
+and harness classification later promoted it.
 
 Local verification passed: focused `REQ_QUIC_CRT_0153` reported 6/6 passing;
 the nearby `REQ_QUIC_CRT_0149` through `REQ_QUIC_CRT_0153` homes plus interop
@@ -193,8 +219,7 @@ report records testcase `resumption` with `result: succeeded`.
 
 This support claim stays limited to the runner's TLS session-resumption cell. It
 does not claim HTTP/3, 0-RTT, anti-replay, external ticket persistence, public
-API widening, or broader resumption support. `chacha20` remains blocked on
-runner/platform cipher-suite policy support. The next source-level unresolved
+API widening, or broader resumption support. The next source-level unresolved
 runtime cell is `zerortt`, which requires `early_data` ticket advertisement,
 server ZeroRtt packet opening, and early application-data delivery proof.
 
@@ -263,14 +288,20 @@ verification artifact.
 
 `REQ-QUIC-INT-0018` remains the owning inventory/profile requirement for the
 non-HTTP/3 interop testcase list. The current helper inventory keeps
-`versionnegotiation`, `keyupdate`, and `resumption` in the supported/executed
-class, with `versionnegotiation` now backed by explicit reserved-version runner
-dispatch, keeps `http3` out of scope, and classifies `chacha20`, `zerortt`,
+`versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, and `zerortt` in
+the supported/executed class, with `versionnegotiation` now backed by explicit
+reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` as
 prerequisite-blocked.
 
-`chacha20` is not green on this runner: it remains blocked on end-to-end runner
-platform support for the required cipher-suite selection. The source-level
+Those three migration cells are blocked on a client-host socket rebinding
+lifecycle, not on missing internal path-state promotion logic.
+
+`chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
+`chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
+runner proof succeeded under `artifacts/interop-runner/20260513-011027614-both-quic-go/runner-report.json`.
+Helper inventory visibility or preflight cipher selection alone was not support
+evidence; the local runner proof is what closed the lane. The source-level
 server resumption prerequisites named here are now closed under
 `REQ-QUIC-CRT-0151`, and a later 2026-05-08 runner attempt made the external
 `resumption` cell green with SSLKEYLOGFILE-backed proof. The next source-level
@@ -1685,7 +1716,7 @@ The next useful lanes are:
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
   the server-role `handshake` cell against quic-go.
-- The next concrete zerortt proof gate is `REQ-QUIC-INT-0021`; keep it prerequisite-blocked until the hosted Linux packet-analysis run succeeds. The server harness now uses a zerortt-specific resumed-connection request-gap timeout so the proof can complete within the runner's network-idle budget, and the focused requirement-home helper tests for that timeout selection pass locally. The request-line reader is now buffered instead of byte-by-byte so the proof path does not amplify receive-credit chatter, and the focused harness tests for that read behavior pass locally. The 2026-05-13 hosted rerun on run `25775619454` widened the gap to 10 seconds but still stalled at 37 resumed request streams before the client hit `timeout: no recent network activity`. A later 2026-05-13 hosted rerun on run `25775782880` narrowed the gap to 4 seconds but stalled earlier at 35 resumed request streams before the client hit the same timeout. The 2026-05-13 hosted rerun on run `25776094093` narrowed the gap to 3 seconds and reached 38 resumed request streams before the client hit the same timeout. The 2026-05-13 hosted rerun on run `25776217239` tightened the gap back to 2 seconds and completed the resumed file stream through stream 39, but runner post-analysis still failed with `0-RTT size: 10634`, `1-RTT size: 15263`, and `Client sent too much data in 1-RTT packets`. The newest 2026-05-13 hosted rerun on run `25776404145` tried 1 second, still served 39 resumed request streams, and regressed to `0-RTT size: 10618`, `1-RTT size: 19122`, and the same 1-RTT overage. The latest local rerun built the image successfully but still failed before runner outputs because the upstream runner raised `FileNotFoundError` while creating its server temp payload tree. The best observed request-gap remains 2 seconds, but the cell is still prerequisite-blocked and the next step now appears to be a hosted proof rerun against the buffered request-line reader rather than another shorter timeout. The 2026-05-12 branch rerun on run `25768724412` confirmed the SDK pin reaches the actual testcase but still times out in the client download phase with `timeout: no recent network activity`.
+- `REQ-QUIC-INT-0021` is now closed by hosted run `25777328991`; the earlier request-gap tuning and buffered request-line reader remain part of the historical proof trail, and the current helper inventory classifies `zerortt` as supported/executed with packet-analysis evidence (`0-RTT size: 10570`, `1-RTT size: 2379`).
 - Install Wireshark packet-analysis tools locally, or use the hosted workflow
   that installs them, before attempting additional non-DryRun local
   interop-runner cells.

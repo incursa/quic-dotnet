@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_INT_0007
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void ZerorttDoesNotExecuteKeylogExportWhilePrerequisiteBlocked()
+    public void ZerorttDoesNotExecuteKeylogExportForTheUnsupportedClientRole()
     {
         using TempDirectoryFixture fixture = new("interop-zerortt-unsupported");
         string keyLogPath = Path.Combine(fixture.RootDirectory, "sslkeys.log");

@@ -427,8 +427,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'chacha20'
             RunnerTestCase = 'chacha20'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires CipherSuitesPolicy support for ChaCha20 negotiation.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed chacha20 cell with runnable transfer-backed dispatch branches and local quic-go proof.'
         }
 
         [pscustomobject]@{
@@ -448,8 +448,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'zerortt'
             RunnerTestCase = 'zerortt'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification; the server harness now uses a shorter open-ended request-gap timeout on the resumed second connection so the hosted proof can complete within the runner idle budget, but server-role dispatch or partial hosted proof alone is not support evidence.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed zerortt cell with buffered request-line reads and hosted Linux proof success.'
         }
 
         [pscustomobject]@{
@@ -463,14 +463,14 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'rebind-port'
             RunnerTestCase = 'rebind-port'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires port-rebinding and post-handshake path-validation support.'
+            Notes = 'Requires client-host socket rebinding lifecycle support before inventory promotion.'
         }
 
         [pscustomobject]@{
             TestCase = 'rebind-addr'
             RunnerTestCase = 'rebind-addr'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires address-rebinding and post-handshake path-validation support.'
+            Notes = 'Requires client-host socket rebinding lifecycle support before inventory promotion.'
         }
 
         [pscustomobject]@{

@@ -125,6 +125,9 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "chacha20" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "resumption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -151,6 +154,9 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "chacha20" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -2240,6 +2246,9 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" or
             "retry" or
             "multiconnect" or
+            "chacha20" or
+            "rebind-port" or
+            "rebind-addr" or
             "keyupdate" or
             "resumption" or
             "transfer")

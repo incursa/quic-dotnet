@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_INT_0018
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndKeepsZerorttBlocked()
+    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndClassifiesZerorttAsSupportedWhileKeepingTheRebindCellsBlocked()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -28,7 +28,7 @@ public sealed class REQ_QUIC_INT_0018
             "-PeerImplementationSlots",
             "quic-go,msquic",
             "-TestCases",
-            "versionnegotiation,zerortt,connectionmigration");
+            "versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration");
 
         string output = result.CombinedOutput;
         string runRoot = GetPlanValue(output, "Run root");
@@ -40,24 +40,24 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Peer implementation slots"));
         Assert.Equal("chrome", GetPlanValue(output, "Runner client implementations"));
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Runner server implementations"));
-        Assert.Equal("versionnegotiation,zerortt,connectionmigration", GetPlanValue(output, "Test cases"));
-        Assert.Equal("versionnegotiation,zerortt,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal("versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,keyupdate,resumption", GetPlanValue(output, "Supported/executed"));
-        Assert.Equal("chacha20,zerortt,v2,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Prerequisite-blocked"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("v2,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
         Assert.StartsWith(Path.GetFullPath(fixture.ArtifactsRoot), runRoot, StringComparison.OrdinalIgnoreCase);
         Assert.EndsWith("client-chrome", runRoot, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("zerortt -> prerequisite-blocked (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(
-            "notes: Requires client-side 0-RTT request-stream/packet-analysis proof, full hosted/Linux zerortt runner success, and harness classification",
-            output,
-            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("zerortt -> supported-executed (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hosted Linux proof success", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Plan-only mode completed without Docker build, runner checkout validation, or runner launch.", output, StringComparison.OrdinalIgnoreCase);
         Assert.True(string.IsNullOrEmpty(result.Stderr));
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));

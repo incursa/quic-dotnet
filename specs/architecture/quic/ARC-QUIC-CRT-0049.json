@@ -37,7 +37,7 @@
     "The server consumes listener-local anti-replay state only after PSK binder validation and remembered transport-parameter acceptance.",
     "Replay, disabled server early data, missing remembered parameters, or rejected parameters do not publish server ZeroRtt open material.",
     "0-RTT runtime delivery is bounded to STREAM/PING/PADDING; forbidden ACK, CRYPTO, NEW_TOKEN, and HANDSHAKE_DONE frames are rejected.",
-    "The interop zerortt cell remains blocked until a live runner proof exists."
+    "The interop zerortt cell was blocked until a live runner proof existed."
   ],
   "alternatives_considered": [
     "Promote zerortt interop support after internal runtime delivery proof. Rejected because the external runner cell still needs live proof and harness classification.",

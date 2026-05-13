@@ -52,7 +52,7 @@
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain prerequisite-blocked under the non-HTTP/3 inventory. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain prerequisite-blocked under the non-HTTP/3 inventory. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope."
     }
   ]
 }

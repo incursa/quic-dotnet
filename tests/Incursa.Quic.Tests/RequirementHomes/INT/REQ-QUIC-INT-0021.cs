@@ -6,11 +6,12 @@ public sealed class REQ_QUIC_INT_0021
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ZerorttServerProofProfileIsExplicitAndAdvisory()
+    public void ZerorttServerProofProfilePromotesTheInventoryClassification()
     {
         string workflow = ReadRepositoryFile(".github/workflows/interop-runner-handshake.yml");
         string helper = ReadRepositoryFile("scripts/interop/Invoke-QuicInteropRunner.ps1");
         string readme = ReadRepositoryFile("scripts/interop/README.md");
+        string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-INT.json");
 
         Assert.Contains("coverage_profile == 'zerortt-server-proof'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run server-zerortt-quic-go cell", workflow, StringComparison.Ordinal);
@@ -19,10 +20,13 @@ public sealed class REQ_QUIC_INT_0021
         Assert.Contains("if: always()", workflow, StringComparison.Ordinal);
         Assert.Contains("TestCase = 'zerortt'", helper, StringComparison.Ordinal);
         Assert.Contains("RunnerTestCase = 'zerortt'", helper, StringComparison.Ordinal);
-        Assert.Contains("Classification = 'prerequisite-blocked'", helper, StringComparison.Ordinal);
-        Assert.Contains("full hosted/Linux zerortt runner success", helper, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("hosted Linux", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("still required before inventory promotion", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
+        Assert.Contains("buffered request-line reads", helper, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hosted Linux proof success", helper, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("The interop harness MUST classify `zerortt` as supported/executed", spec, StringComparison.Ordinal);
+        Assert.Contains("hosted Linux `zerortt-server-proof` profile", spec, StringComparison.Ordinal);
+        Assert.Contains("`zerortt` is now supported/executed", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hosted run `25777328991`", readme, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

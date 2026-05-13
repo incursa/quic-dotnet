@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-INT-0014",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC Zerortt Hosted Proof Gate Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -20,15 +20,15 @@
     "The repo-local interop helper can be executed in dry-run mode.",
     "The preserved hosted artifact bundles for the earlier zerortt attempts remain available for inspection."
   ],
-  "scope": "Verify that the repository keeps zerortt prerequisite-blocked until hosted Linux packet-analysis proof exists and that partial hosted evidence does not promote the inventory cell.",
+  "scope": "Verify that the repository classifies zerortt as supported/executed after hosted Linux packet-analysis proof exists and that partial hosted evidence does not promote the inventory cell.",
   "procedure": [
-    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~InteropHarnessRunnerTests|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0021|FullyQualifiedName~REQ_QUIC_INT_0017|FullyQualifiedName~REQ_QUIC_INT_0018\"` and confirm the classification-gate checks, the zerortt request-gap helper tests, and the buffered request-line read tests pass.",
-    "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation,zerortt,connectionmigration` and confirm zerortt remains prerequisite-blocked in the plan output.",
-    "Inspect `.github/workflows/interop-runner-handshake.yml`, `scripts/interop/README.md`, and `scripts/interop/Invoke-QuicInteropRunner.ps1` for the explicit `zerortt-server-proof` advisory profile and blocked-cell wording.",
-    "Inspect `specs/requirements/quic/REQUIREMENT-GAPS.md` and `docs/current-status.md` for the remaining-hosted-proof wording.",
+    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~InteropHarnessRunnerTests|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0018|FullyQualifiedName~REQ_QUIC_INT_0021\"` and confirm the classification-gate checks, the zerortt request-gap helper tests, and the buffered request-line read tests pass.",
+    "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation,zerortt,connectionmigration` and confirm zerortt is supported/executed in the plan output.",
+    "Inspect `.github/workflows/interop-runner-handshake.yml`, `scripts/interop/README.md`, and `scripts/interop/Invoke-QuicInteropRunner.ps1` for the explicit `zerortt-server-proof` advisory profile and supported-cell wording.",
+    "Inspect `specs/requirements/quic/REQUIREMENT-GAPS.md` and `docs/current-status.md` for the closure wording and preserved proof evidence.",
     "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=zerortt-server-proof` and inspect the preserved runner-report and packet-analysis logs."
   ],
-  "expected_result": "The repository continues to classify zerortt as prerequisite-blocked until the hosted Linux proof succeeds, and partial hosted proof or server-only dispatch does not promote the inventory cell.",
+  "expected_result": "The repository classifies zerortt as supported/executed after the hosted Linux proof succeeds, and partial hosted proof or server-only dispatch does not control the inventory cell.",
   "evidence": [
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
@@ -74,13 +74,18 @@
     "artifacts/gh-run-25776404145/interop-runner-server-zerortt-quic-go-25776404145/20260513-032844753-server-nginx/runner-report.md",
     "artifacts/gh-run-25776404145/interop-runner-server-zerortt-quic-go-25776404145/20260513-032844753-server-nginx/runner.stderr.log",
     "artifacts/gh-run-25776404145/interop-runner-server-zerortt-quic-go-25776404145/20260513-032844753-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
-    "artifacts/gh-run-25776404145/interop-runner-server-zerortt-quic-go-25776404145/20260513-032844753-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt"
+    "artifacts/gh-run-25776404145/interop-runner-server-zerortt-quic-go-25776404145/20260513-032844753-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt",
+    "artifacts/gh-run-25777328991/interop-runner-server-zerortt-quic-go-25777328991/20260513-035756893-server-nginx/runner-report.json",
+    "artifacts/gh-run-25777328991/interop-runner-server-zerortt-quic-go-25777328991/20260513-035756893-server-nginx/runner-report.md",
+    "artifacts/gh-run-25777328991/interop-runner-server-zerortt-quic-go-25777328991/20260513-035756893-server-nginx/runner.stderr.log",
+    "artifacts/gh-run-25777328991/interop-runner-server-zerortt-quic-go-25777328991/20260513-035756893-server-nginx/runner-logs/nginx_quic-go/zerortt/output.txt",
+    "artifacts/gh-run-25777328991/interop-runner-server-zerortt-quic-go-25777328991/20260513-035756893-server-nginx/runner-logs/nginx_quic-go/zerortt/client/log.txt"
   ],
-  "status_summary": "Planned for the next proof tail. The repository already has the advisory hosted Linux zerortt-server-proof profile and the helper inventory remains explicit about the remaining packet-analysis blocker. The server harness now uses a zerortt-specific request-gap timeout on the resumed second connection, the request-line reader now buffers instead of reading one byte at a time, and the focused requirement-home helper tests for both the timeout selection and buffered read behavior pass locally. A 2026-05-12 branch rerun on run 25768724412 confirmed the SDK pin to mcr.microsoft.com/dotnet/sdk:10.0.201 clears the harness image build mismatch and reaches the actual zerortt testcase, but the client still exits with timeout: no recent network activity during file download before packet-analysis promotion can occur. A 2026-05-13 hosted rerun on run 25775619454 widened the gap to 10 seconds but still stalled at 37 resumed request streams before the client hit `timeout: no recent network activity`. A later 2026-05-13 hosted rerun on run 25775782880 narrowed the gap to 4 seconds but stalled earlier at 35 resumed request streams before the client hit the same timeout. The 2026-05-13 hosted rerun on run 25776094093 narrowed the gap to 3 seconds and reached 38 resumed request streams before the client hit the same timeout. The 2026-05-13 hosted rerun on run 25776217239 tightened the gap back to 2 seconds and completed the resumed file stream through stream 39, but runner post-analysis still failed with `0-RTT size: 10634`, `1-RTT size: 15263`, and `Client sent too much data in 1-RTT packets`. The newest 2026-05-13 hosted rerun on run 25776404145 tried 1 second, still served 39 resumed request streams, and regressed to `0-RTT size: 10618`, `1-RTT size: 19122`, and the same 1-RTT overage. The latest local rerun built the image successfully but still failed before runner outputs because the upstream runner raised `FileNotFoundError` while creating its server temp payload tree. The best observed request-gap remains 2 seconds, but the cell is still prerequisite-blocked and the next step now appears to be a hosted proof rerun against the buffered request-line reader rather than another shorter timeout.",
+  "status_summary": "Complete. The buffered request-line reader, helper inventory promotion, requirement-home tests, dry-run output, and hosted run 25777328991 all agree that zerortt is supported/executed. The hosted proof bundle records `0-RTT size: 10570` and `1-RTT size: 2379`.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain separate prerequisite-blocked lanes."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain separate prerequisite-blocked lanes."
     }
   ]
 }

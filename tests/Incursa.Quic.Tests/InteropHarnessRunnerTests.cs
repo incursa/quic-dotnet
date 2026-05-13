@@ -176,6 +176,122 @@ public sealed class InteropHarnessRunnerTests
         }
     }
 
+    [Fact]
+    public void Chacha20ClientDispatchUsesTheSupportedHarnessPathBeforeTransferValidationFailures()
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, "sslkeylog-client.txt");
+        IDictionary environment = CreateEnvironment(
+            "client",
+            "chacha20",
+            "https://localhost:443/",
+            qlogDirectory,
+            sslKeyLogFile);
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=client, testcase=chacha20, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch." + Environment.NewLine,
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    public void Chacha20ServerDispatchUsesTheSupportedHarnessPathBeforeTlsMaterialFailures()
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, "sslkeylog-server.txt");
+        IDictionary environment = CreateEnvironment("server", "chacha20", qlogDir: qlogDirectory, sslKeyLogFile: sslKeyLogFile);
+
+        string certificatePath = Path.Combine(fixture.RootDirectory, $"missing-cert-{Guid.NewGuid():N}.pem");
+        string privateKeyPath = fixture.CreateFile("priv.key", "unused");
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr, certificatePath, privateKeyPath);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=server, testcase=chacha20, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            $"TLS certificate not found at '{certificatePath}'.{Environment.NewLine}",
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Theory]
+    [InlineData("rebind-port")]
+    [InlineData("rebind-addr")]
+    public void RebindClientDispatchUsesTheTransferBackedHarnessPathBeforeTransferValidationFailures(string testcase)
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, $"sslkeylog-{testcase}-client.txt");
+        IDictionary environment = CreateEnvironment(
+            "client",
+            testcase,
+            "https://localhost:443/",
+            qlogDirectory,
+            sslKeyLogFile);
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=client, testcase={testcase}, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch." + Environment.NewLine,
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Theory]
+    [InlineData("rebind-port")]
+    [InlineData("rebind-addr")]
+    public void RebindServerDispatchUsesTheTransferBackedHarnessPathBeforeTlsMaterialFailures(string testcase)
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, $"sslkeylog-{testcase}-server.txt");
+        IDictionary environment = CreateEnvironment("server", testcase, qlogDir: qlogDirectory, sslKeyLogFile: sslKeyLogFile);
+
+        string certificatePath = Path.Combine(fixture.RootDirectory, $"missing-cert-{Guid.NewGuid():N}.pem");
+        string privateKeyPath = fixture.CreateFile("priv.key", "unused");
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr, certificatePath, privateKeyPath);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=server, testcase={testcase}, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            $"TLS certificate not found at '{certificatePath}'.{Environment.NewLine}",
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
     [Theory]
     [InlineData("transfer", "https://localhost:443/", "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch.")]
     [InlineData("transfer", "https://localhost:443/one https://localhost:444/two", "REQUESTS entry 'https://localhost:444/two' must target the same host and port as the first request URL.")]
@@ -260,7 +376,8 @@ public sealed class InteropHarnessRunnerTests
         string? role,
         string testcase,
         string? requests = null,
-        string? qlogDir = null)
+        string? qlogDir = null,
+        string? sslKeyLogFile = null)
     {
         Hashtable environment = new(StringComparer.OrdinalIgnoreCase);
 
@@ -279,6 +396,11 @@ public sealed class InteropHarnessRunnerTests
         if (qlogDir is not null)
         {
             environment["QLOGDIR"] = qlogDir;
+        }
+
+        if (sslKeyLogFile is not null)
+        {
+            environment["SSLKEYLOGFILE"] = sslKeyLogFile;
         }
 
         return environment;

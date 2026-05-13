@@ -2,11 +2,11 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-INT-0014",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "QUIC Zerortt Hosted Proof Gate Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the advisory hosted Linux zerortt proof lane that keeps the inventory cell prerequisite-blocked until packet-analysis evidence confirms 0-RTT request-stream data was sent and acted on.",
+  "purpose": "Describe the advisory hosted Linux zerortt proof lane that closes the inventory gate after packet-analysis evidence confirms 0-RTT request-stream data was sent and acted on.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0011",
@@ -26,7 +26,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0021.cs"
   ],
-  "design_summary": "The existing server-role zerortt harness path already advertises the early-data and resumption prerequisites, and the manual hosted workflow already exposes the dedicated zerortt-server-proof profile on hosted Linux. The harness now also uses a zerortt-specific request-gap timeout on the resumed second connection and buffered HTTP/0.9 request-line reads so the hosted proof can finish within the runner's network-idle budget without amplifying receive-credit chatter. This architecture does not add a new transport branch; it explains the evidence-collection path that keeps the inventory cell blocked until the hosted Linux runner produces packet-analysis proof that 0-RTT request traffic was both sent and acted on. The supporting docs and helper inventory stay explicit so partial hosted success cannot be mistaken for support promotion.",
+  "design_summary": "The existing server-role zerortt harness path already advertises the early-data and resumption prerequisites, and the manual hosted workflow exposes the dedicated zerortt-server-proof profile on hosted Linux. The harness now uses a zerortt-specific request-gap timeout on the resumed second connection and buffered HTTP/0.9 request-line reads so the proof path stays within the runner's network-idle budget without amplifying receive-credit chatter. Hosted run `25777328991` closed the inventory gate with packet-analysis proof that 0-RTT request traffic was both sent and acted on. This architecture does not add a new transport branch; it explains the evidence-collection path that keeps the inventory cell honest while preserving the distinction between advisory proof and the broader major-peer-matrix scope.",
   "alternatives_considered": [
     "Promote zerortt on managed response/download success alone. Rejected because the current runner analysis still requires packet-level 0-RTT proof.",
     "Move zerortt into the major peer matrix. Rejected because the cell is still prerequisite-blocked and the matrix is intentionally scoped to already executable cells.",
@@ -38,7 +38,7 @@
     "Partial hosted proof, local runtime proof, or server-only dispatch must not upgrade the inventory cell.",
     "HTTP/3 remains out of scope."
   ],
-  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` and `artifacts/hosted-interop/...`, plus the existing gap ledger and current-status notes. No external runner repository changes are required.",
+  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` and `artifacts/hosted-interop/...`, plus the existing gap ledger and current-status notes. The successful hosted bundle under `artifacts/gh-run-25777328991/...` now serves as the closure evidence. No external runner repository changes are required.",
   "risks": [
     "Packet-analysis heuristics may still fail even when the server path and response/download flow are working.",
     "Readers may overread the dedicated hosted profile as support promotion unless the prerequisite-blocked classification stays visible."
@@ -46,7 +46,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design only formalizes the remaining zerortt proof gate. It does not change HTTP/3, broad 0-RTT policy, anti-replay, or migration semantics."
+      "content": "This design only formalizes the closed zerortt proof gate. It does not change HTTP/3, broad 0-RTT policy, anti-replay, or migration semantics."
     }
   ]
 }
