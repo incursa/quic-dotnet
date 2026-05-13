@@ -1685,19 +1685,7 @@ The next useful lanes are:
   when a fresh hosted artifact refresh is needed; current local proof covers
   the workflow shape and helper plans, while hosted evidence still covers only
   the server-role `handshake` cell against quic-go.
-- The next concrete zerortt proof gate is `REQ-QUIC-INT-0021`; keep it
-  prerequisite-blocked until the hosted Linux packet-analysis run succeeds.
-  The server harness now uses a zerortt-specific resumed-connection
-  request-gap timeout so the proof can complete within the runner's
-  network-idle budget, and the focused requirement-home helper tests for that
-  timeout selection pass locally. The 2026-05-13 hosted rerun on run
-  `25775619454` widened the gap to 10 seconds but still stalled at 37 resumed
-  request streams before the client hit `timeout: no recent network activity`,
-  so the next tuning step is to keep the gap under the client idle window
-  instead of extending it further. The 2026-05-12 branch rerun on run
-  `25768724412` confirmed the SDK pin reaches the actual testcase but still
-  times out in the client download phase with `timeout: no recent network
-  activity`.
+- The next concrete zerortt proof gate is `REQ-QUIC-INT-0021`; keep it prerequisite-blocked until the hosted Linux packet-analysis run succeeds. The server harness now uses a zerortt-specific resumed-connection request-gap timeout so the proof can complete within the runner's network-idle budget, and the focused requirement-home helper tests for that timeout selection pass locally. The 2026-05-13 hosted rerun on run `25775619454` widened the gap to 10 seconds but still stalled at 37 resumed request streams before the client hit `timeout: no recent network activity`. A later 2026-05-13 hosted rerun on run `25775782880` narrowed the gap to 4 seconds but stalled earlier at 35 resumed request streams before the client hit the same timeout, so the next tuning step is to see whether a shorter gap keeps the proof inside the runner idle window without starving the resumed file stream. The 2026-05-12 branch rerun on run `25768724412` confirmed the SDK pin reaches the actual testcase but still times out in the client download phase with `timeout: no recent network activity`.
 - Install Wireshark packet-analysis tools locally, or use the hosted workflow
   that installs them, before attempting additional non-DryRun local
   interop-runner cells.
