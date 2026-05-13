@@ -2028,14 +2028,17 @@ internal static class InteropHarnessRunner
         }
     }
 
-    private static async Task<string> ReadHttp09RequestTargetAsync(QuicStream stream)
+    internal static async Task<string> ReadHttp09RequestTargetAsync(Stream stream)
     {
         byte[] requestLineBuffer = new byte[MaxHttp09RequestLineBytes];
         int bytesRead = 0;
 
         while (bytesRead < requestLineBuffer.Length)
         {
-            int read = await stream.ReadAsync(requestLineBuffer, bytesRead, 1).ConfigureAwait(false);
+            int read = await stream.ReadAsync(
+                    requestLineBuffer.AsMemory(bytesRead, requestLineBuffer.Length - bytesRead),
+                    CancellationToken.None)
+                .ConfigureAwait(false);
             if (read == 0)
             {
                 break;

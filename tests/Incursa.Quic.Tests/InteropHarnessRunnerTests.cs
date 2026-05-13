@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using System.Text;
 using Incursa.Quic.InteropHarness;
 
 namespace Incursa.Quic.Tests;
@@ -26,6 +27,32 @@ public sealed class InteropHarnessRunnerTests
             stdout.ToString());
         Assert.Equal(string.Empty, stderr.ToString());
         Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    public async Task ReadHttp09RequestTargetUsesRemainingBufferCapacityAndParsesTheTarget()
+    {
+        RecordingStream stream = new(Encoding.ASCII.GetBytes("GET /zerortt-proof\r\n"), maximumBytesPerRead: 2);
+
+        string requestTarget = await InteropHarnessRunner.ReadHttp09RequestTargetAsync(stream);
+
+        Assert.Equal("/zerortt-proof", requestTarget);
+        Assert.NotEmpty(stream.RequestedReadLengths);
+        Assert.True(stream.RequestedReadLengths[0] > 1);
+        Assert.True(stream.RequestedReadLengths.Count > 1);
+    }
+
+    [Fact]
+    public async Task ReadHttp09RequestTargetRejectsTruncatedRequestLinesWithoutLineFeed()
+    {
+        RecordingStream stream = new(Encoding.ASCII.GetBytes("GET /zerortt-proof\r"), maximumBytesPerRead: 2);
+
+        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await InteropHarnessRunner.ReadHttp09RequestTargetAsync(stream));
+
+        Assert.Contains("did not terminate with LF", exception.Message, StringComparison.Ordinal);
+        Assert.NotEmpty(stream.RequestedReadLengths);
+        Assert.True(stream.RequestedReadLengths[0] > 1);
     }
 
     [Theory]
@@ -262,5 +289,75 @@ public sealed class InteropHarnessRunnerTests
         MissingCertificate,
         MissingPrivateKey,
         InvalidPem,
+    }
+
+    private sealed class RecordingStream : Stream
+    {
+        private readonly byte[] source;
+        private readonly int maximumBytesPerRead;
+        private int position;
+
+        public RecordingStream(byte[] source, int maximumBytesPerRead)
+        {
+            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            this.maximumBytesPerRead = maximumBytesPerRead < 1
+                ? throw new ArgumentOutOfRangeException(nameof(maximumBytesPerRead))
+                : maximumBytesPerRead;
+        }
+
+        public List<int> RequestedReadLengths { get; } = [];
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => false;
+
+        public override long Length => source.Length;
+
+        public override long Position
+        {
+            get => position;
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            RequestedReadLengths.Add(buffer.Length);
+
+            if (position >= source.Length)
+            {
+                return ValueTask.FromResult(0);
+            }
+
+            int count = Math.Min(buffer.Length, Math.Min(maximumBytesPerRead, source.Length - position));
+            source.AsSpan(position, count).CopyTo(buffer.Span);
+            position += count;
+            return ValueTask.FromResult(count);
+        }
     }
 }
