@@ -369,6 +369,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             detachedResumptionTicketSnapshot: settings.DetachedResumptionTicketSnapshot,
             diagnosticsSink: diagnosticsSink,
             enableRandomizedSpinBitSelection: true,
+            supportedVersions: settings.SupportedVersions,
             allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
             selectedCipherSuite: settings.SelectedCipherSuite,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);

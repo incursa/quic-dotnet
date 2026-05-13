@@ -44,13 +44,15 @@
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0012.json",
     "specs/work-items/quic/WI-QUIC-INT-0012.json",
-    "specs/verification/quic/VER-QUIC-INT-0012.json"
+    "specs/verification/quic/VER-QUIC-INT-0012.json",
+    "artifacts/interop-runner/20260512-103506944-server-nginx/",
+    "artifacts/interop-runner/20260512-103744122-server-nginx/"
   ],
-  "status_summary": "Planned for hosted execution. The repository now has the manual major peer matrix profile and local workflow-shape proof. Passing focused tests and representative helper dry-runs prove the configuration shape; hosted per-cell runner artifacts are still required before claiming the major peer matrix itself is green. Full SpecTrace core validation remains blocked by the current RFC9000 JSON parse/reference cascade and is not claimed as passing by this artifact.",
+  "status_summary": "Planned for hosted execution. The repository now has the manual major peer matrix profile and local workflow-shape proof. Passing focused tests and representative helper dry-runs prove the configuration shape; hosted per-cell runner artifacts are still required before claiming the major peer matrix itself is green. The latest local server-role msquic reruns still fail with TLS alert 50 and remain explicit blocked evidence rather than green, which keeps the matrix honest until the upstream qns trust/config gap is resolved. Full SpecTrace core validation remains blocked by the current RFC9000 JSON parse/reference cascade and is not claimed as passing by this artifact.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain prerequisite-blocked under the non-HTTP/3 inventory. `versionnegotiation` is excluded from this role-backed profile until its executable harness/helper boundary is clarified."
+      "content": "`http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain prerequisite-blocked under the non-HTTP/3 inventory. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope."
     }
   ]
 }

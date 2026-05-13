@@ -27,7 +27,7 @@
   "alternatives_considered": [
     "Run the major peer matrix on every push or pull request. Rejected because the runner is expensive, externally dependent, and still advisory rather than a support-readiness gate.",
     "Fold blocked cells such as zerortt, chacha20, v2, rebind, and connectionmigration into the same profile. Rejected because those cells have named prerequisites and would make the profile look broader than the current support evidence.",
-    "Count versionnegotiation as role-backed peer proof immediately. Rejected until the helper/harness support boundary for that cell is explicit enough to avoid conflating inventory classification with executable role coverage."
+    "Count versionnegotiation as role-backed peer proof immediately. Rejected because this profile is intentionally scoped to handshake, retry, transfer, keyupdate, and resumption, even though versionnegotiation now has explicit harness dispatch."
   ],
   "edge_cases_and_constraints": [
     "The profile must stay manual-only and advisory.",

@@ -27,6 +27,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private byte[] initialDestinationConnectionId;
     private byte[] destinationConnectionId;
     private byte[] sourceConnectionId;
+    private readonly uint initialPacketVersion;
     private readonly bool enableRandomizedSpinBitSelection;
     private ulong nextPacketNumber;
     private ulong nextApplicationPacketNumber;
@@ -34,11 +35,13 @@ internal sealed class QuicHandshakeFlowCoordinator
     public QuicHandshakeFlowCoordinator(
         ReadOnlyMemory<byte> initialDestinationConnectionId = default,
         ReadOnlyMemory<byte> sourceConnectionId = default,
-        bool enableRandomizedSpinBitSelection = false)
+        bool enableRandomizedSpinBitSelection = false,
+        uint initialPacketVersion = QuicVersionNegotiation.Version1)
     {
         this.initialDestinationConnectionId = initialDestinationConnectionId.ToArray();
         this.destinationConnectionId = initialDestinationConnectionId.ToArray();
         this.sourceConnectionId = sourceConnectionId.ToArray();
+        this.initialPacketVersion = initialPacketVersion;
         this.enableRandomizedSpinBitSelection = enableRandomizedSpinBitSelection;
     }
 
@@ -1386,7 +1389,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
                 plaintextPacket = BuildLongHeaderPacket(
                     headerControlBits,
-                    QuicVersionNegotiation.Version1,
+                    initialPacketVersion,
                     destinationConnectionId,
                     sourceConnectionId,
                     token: ReadOnlySpan<byte>.Empty,
@@ -1505,7 +1508,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
             plaintextPacket = BuildLongHeaderPacket(
                 headerControlBits,
-                QuicVersionNegotiation.Version1,
+                initialPacketVersion,
                 destinationConnectionId,
                 sourceConnectionId,
                 token,
@@ -1624,7 +1627,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
                 plaintextPacket = BuildLongHeaderPacket(
                     headerControlBits,
-                    QuicVersionNegotiation.Version1,
+                    initialPacketVersion,
                     destinationConnectionId,
                     sourceConnectionId,
                     token,

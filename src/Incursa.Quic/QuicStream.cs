@@ -7,7 +7,6 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicStream : Stream
 {
-    private static readonly TimeSpan PendingReadPollInterval = TimeSpan.FromMilliseconds(10);
     private const long MaximumErrorCodeValue = (1L << 62) - 1;
 
     private readonly QuicConnectionStreamState bookkeeping;
@@ -18,6 +17,7 @@ public sealed class QuicStream : Stream
     private readonly bool canWrite;
     private readonly TaskCompletionSource<object?> readsClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly TaskCompletionSource<object?> writesClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly SemaphoreSlim readGate = new(0, int.MaxValue);
     private readonly SemaphoreSlim writeGate = new(1, 1);
     private readonly long? runtimeObserverId;
     private Exception? readTerminalException;
@@ -142,14 +142,14 @@ public sealed class QuicStream : Stream
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
-        return ReadCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None, useAsyncWait: false).GetAwaiter().GetResult();
+        return ReadCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None).GetAwaiter().GetResult();
     }
 
     public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
-        return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken, useAsyncWait: true).ConfigureAwait(false);
+        return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
     public override void Write(byte[] buffer, int offset, int count)
@@ -368,12 +368,14 @@ public sealed class QuicStream : Stream
         {
             readsClosed.TrySetResult(null);
             writesClosed.TrySetResult(null);
+            readGate.Release();
+            readGate.Dispose();
             writeGate.Dispose();
             base.Dispose(disposing: true);
         }
     }
 
-    private async ValueTask<int> ReadCoreAsync(Memory<byte> buffer, CancellationToken cancellationToken, bool useAsyncWait)
+    private async ValueTask<int> ReadCoreAsync(Memory<byte> buffer, CancellationToken cancellationToken)
     {
         while (true)
         {
@@ -448,14 +450,7 @@ public sealed class QuicStream : Stream
                 throw new QuicException(QuicError.TransportError, null, (long)errorCode, "The stream could not be read.");
             }
 
-            if (useAsyncWait)
-            {
-                await Task.Delay(PendingReadPollInterval, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                cancellationToken.WaitHandle.WaitOne(PendingReadPollInterval);
-            }
+            await readGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -519,27 +514,32 @@ public sealed class QuicStream : Stream
         {
             case QuicStreamNotificationKind.ReadAborted:
                 readTerminalException ??= notification.Exception;
-                readsClosed.TrySetException(notification.Exception);
+                readsClosed.TrySetException(notification.Exception!);
+                readGate.Release();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.WriteAborted:
                 writeTerminalException ??= notification.Exception;
-                writesClosed.TrySetException(notification.Exception);
+                writesClosed.TrySetException(notification.Exception!);
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.ConnectionTerminated:
                 if (canRead && !readsClosed.Task.IsCompleted)
                 {
                     readTerminalException ??= notification.Exception;
-                    readsClosed.TrySetException(notification.Exception);
+                    readsClosed.TrySetException(notification.Exception!);
+                    readGate.Release();
                 }
 
                 if (canWrite && !writesClosed.Task.IsCompleted)
                 {
                     writeTerminalException ??= notification.Exception;
-                    writesClosed.TrySetException(notification.Exception);
+                    writesClosed.TrySetException(notification.Exception!);
                 }
 
+                break;
+            case QuicStreamNotificationKind.DataAvailable:
+                readGate.Release();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(notification));

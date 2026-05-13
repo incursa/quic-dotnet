@@ -1855,7 +1855,9 @@ internal sealed partial class QuicConnectionRuntime
                 Console.Error.WriteLine(
                     $"app-rx stream role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} offset={streamFrame.Offset} length={streamFrame.StreamDataLength} fin={streamFrame.IsFin}.");
             }
-            bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
+            bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                streamFrame.StreamId.Value,
+                out QuicConnectionStreamSnapshot previousStreamSnapshot);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
             {
                 return TryHandleApplicationDataFrameError(
@@ -1872,6 +1874,19 @@ internal sealed partial class QuicConnectionRuntime
             {
                 _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
             }
+
+                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                        streamFrame.StreamId.Value,
+                        out QuicConnectionStreamSnapshot updatedReadableSnapshot)
+                    && previousStreamSnapshot.BufferedReadableBytes == 0
+                    && (updatedReadableSnapshot.BufferedReadableBytes > 0
+                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
+                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
+                {
+                    NotifyStreamObservers(
+                        streamFrame.StreamId.Value,
+                        new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+                }
 
             if (!streamPreviouslyKnown)
             {
@@ -2115,7 +2130,9 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamFrame.StreamId.Value, out _);
+                bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                    streamFrame.StreamId.Value,
+                    out QuicConnectionStreamSnapshot previousStreamSnapshot);
                 if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
                 {
                     return TryHandleApplicationDataFrameError(
@@ -2132,6 +2149,19 @@ internal sealed partial class QuicConnectionRuntime
                     && updatedStreamSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd)
                 {
                     _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
+                }
+
+                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                        streamFrame.StreamId.Value,
+                        out QuicConnectionStreamSnapshot updatedReadableSnapshot)
+                    && previousStreamSnapshot.BufferedReadableBytes == 0
+                    && (updatedReadableSnapshot.BufferedReadableBytes > 0
+                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
+                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
+                {
+                    NotifyStreamObservers(
+                        streamFrame.StreamId.Value,
+                        new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
                 if (!streamPreviouslyKnown)

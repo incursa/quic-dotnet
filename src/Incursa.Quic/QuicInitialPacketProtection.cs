@@ -416,7 +416,7 @@ internal sealed class QuicInitialPacketProtection
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || version != 1)
+            || (version != QuicVersionNegotiation.Version1 && !QuicVersionNegotiation.IsReservedVersion(version)))
         {
             return false;
         }

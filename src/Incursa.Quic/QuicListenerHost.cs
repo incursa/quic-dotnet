@@ -570,7 +570,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             EndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
             int bytesSent = socket.SendTo(responseDatagram.AsSpan(0, bytesWritten), SocketFlags.None, remoteEndPoint);
-            return bytesSent == bytesWritten;
+            if (bytesSent != bytesWritten)
+            {
+                return false;
+            }
+
+            IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
+            diagnosticsSink?.Emit(QuicDiagnostics.VersionNegotiationSent(pathIdentity, responseDatagram.AsSpan(0, bytesWritten)));
+            return true;
         }
         catch
         {

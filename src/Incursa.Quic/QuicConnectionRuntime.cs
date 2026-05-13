@@ -169,7 +169,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         sendRuntime = new QuicConnectionSendRuntime();
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
-        handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator(enableRandomizedSpinBitSelection: enableRandomizedSpinBitSelection);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
         diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
@@ -177,6 +176,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ? (uint[])supportedVersions.Clone()
             : [QuicVersionNegotiation.Version1];
         versionProfile = new QuicConnectionVersionProfile(supportedVersionSnapshot);
+        handshakeFlowCoordinator = new QuicHandshakeFlowCoordinator(
+            enableRandomizedSpinBitSelection: enableRandomizedSpinBitSelection,
+            initialPacketVersion: versionProfile.SelectedVersion);
         if (detachedResumptionTicketSnapshot is not null && tlsRole != QuicTlsRole.Client)
         {
             throw new ArgumentException("Detached resumption ticket snapshots are only supported for the client role.", nameof(detachedResumptionTicketSnapshot));
@@ -791,7 +793,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             requestId,
             QuicConnectionStreamActionKind.Write,
             StreamId: streamId,
-            StreamData: buffer.ToArray())))
+            StreamData: buffer)))
         {
             pendingStreamActionRequests.TryRemove(requestId, out _);
             throw IsDisposed

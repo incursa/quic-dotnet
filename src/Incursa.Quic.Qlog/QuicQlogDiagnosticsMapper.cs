@@ -25,6 +25,7 @@ internal static class QuicQlogDiagnosticsMapper
             QuicDiagnosticKind.HandshakePacketOpenFailed => CreatePacketDropped(eventTime, diagnosticEvent, QlogQuicKnownValues.PacketTypeHandshake),
             QuicDiagnosticKind.RetryReceived => CreateRetryReceived(eventTime, diagnosticEvent),
             QuicDiagnosticKind.VersionNegotiationReceived => CreateVersionNegotiationReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.VersionNegotiationSent => CreateVersionNegotiationSent(eventTime, diagnosticEvent),
             QuicDiagnosticKind.InitialTranscriptAdvanced when diagnosticEvent.EncryptionLevel.HasValue => CreateKeyUpdated(
                 eventTime,
                 diagnosticEvent,
@@ -100,6 +101,15 @@ internal static class QuicQlogDiagnosticsMapper
     private static QlogEvent CreateVersionNegotiationReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
     {
         return CreatePacketReceived(
+            eventTime,
+            diagnosticEvent,
+            QlogQuicKnownValues.PacketTypeVersionNegotiation,
+            version: "00000000");
+    }
+
+    private static QlogEvent CreateVersionNegotiationSent(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        return CreatePacketSent(
             eventTime,
             diagnosticEvent,
             QlogQuicKnownValues.PacketTypeVersionNegotiation,

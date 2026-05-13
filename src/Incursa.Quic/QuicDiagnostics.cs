@@ -34,6 +34,7 @@ internal enum QuicDiagnosticKind
     VersionNegotiationReceived = 15,
     HandshakePacketReceived = 16,
     HandshakePacketSent = 17,
+    VersionNegotiationSent = 18,
 }
 
 /// <summary>
@@ -98,6 +99,7 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.runtime.handshake", "initial-packet-sent") => QuicDiagnosticKind.InitialPacketSent,
             ("connection.runtime.handshake", "retry-received") => QuicDiagnosticKind.RetryReceived,
             ("connection.runtime.handshake", "version-negotiation-received") => QuicDiagnosticKind.VersionNegotiationReceived,
+            ("connection.runtime.handshake", "version-negotiation-sent") => QuicDiagnosticKind.VersionNegotiationSent,
             ("connection.runtime.handshake", "handshake-packet-received") => QuicDiagnosticKind.HandshakePacketReceived,
             ("connection.runtime.handshake", "handshake-packet-sent") => QuicDiagnosticKind.HandshakePacketSent,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
@@ -219,6 +221,21 @@ internal static class QuicDiagnostics
             "Version Negotiation packet was received from the peer.",
             QuicDiagnosticSeverity.Trace)
         {
+            PacketBytes = packetBytes.ToArray(),
+        };
+    }
+
+    internal static QuicDiagnosticEvent VersionNegotiationSent(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packetBytes = default)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "version-negotiation-sent",
+            "Version Negotiation packet was sent to the peer.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
             PacketBytes = packetBytes.ToArray(),
         };
     }

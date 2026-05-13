@@ -49,14 +49,16 @@ public sealed class QuicConnection : IAsyncDisposable
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
         QuicClientAddressValidationToken? addressValidationToken = null,
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
-        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
+        uint[]? supportedVersions = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
             detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
             localHandshakePrivateKey: localHandshakePrivateKey,
-            addressValidationToken: addressValidationToken) with
+            addressValidationToken: addressValidationToken,
+            supportedVersions: supportedVersions) with
         {
             AllowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript,
         };

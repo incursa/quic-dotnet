@@ -15,7 +15,8 @@ internal static class QuicClientConnectionOptionsValidator
         QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot = null,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
         ReadOnlyMemory<byte> localHandshakePrivateKey = default,
-        QuicClientAddressValidationToken? addressValidationToken = null)
+        QuicClientAddressValidationToken? addressValidationToken = null,
+        uint[]? supportedVersions = null)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -126,7 +127,8 @@ internal static class QuicClientConnectionOptionsValidator
             detachedResumptionTicketSnapshot,
             localHandshakePrivateKey,
             initialAddressValidationToken,
-            options.SelectedCipherSuite);
+            options.SelectedCipherSuite,
+            supportedVersions is { Length: > 0 } ? (uint[])supportedVersions.Clone() : null);
     }
 
     private static QuicClientConnectionOptions CaptureOptions(
@@ -233,6 +235,7 @@ internal sealed record QuicClientConnectionSettings(
     ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
     ReadOnlyMemory<byte> InitialAddressValidationToken = default,
     QuicTlsCipherSuite? SelectedCipherSuite = null,
+    uint[]? SupportedVersions = null,
     bool AllowClientPeerInitialReplacementBeforeTranscript = false);
 
 #pragma warning restore CA1416

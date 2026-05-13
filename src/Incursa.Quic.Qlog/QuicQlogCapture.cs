@@ -60,13 +60,15 @@ public sealed class QuicQlogCapture
         CancellationToken cancellationToken = default,
         bool allowClientPeerInitialReplacementBeforeTranscript = false,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot = null,
-        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
+        uint[]? supportedVersions = null)
     {
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             options,
             nameof(options),
             detachedResumptionTicketSnapshot: detachedResumptionTicketSnapshot,
-            localHandshakePrivateKey: localHandshakePrivateKey) with
+            localHandshakePrivateKey: localHandshakePrivateKey,
+            supportedVersions: supportedVersions) with
         {
             AllowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript,
         };
