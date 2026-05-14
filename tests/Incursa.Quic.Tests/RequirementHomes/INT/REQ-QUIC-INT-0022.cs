@@ -18,10 +18,10 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof'", workflow, StringComparison.Ordinal);
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-aioquic", workflow, StringComparison.Ordinal);
-        Assert.Contains("implementation_slot: aioquic", workflow, StringComparison.Ordinal);
-        Assert.Contains("peer_slots: ngtcp2", workflow, StringComparison.Ordinal);
-        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-ngtcp2", workflow, StringComparison.Ordinal);
+        Assert.Contains("implementation_slot: ngtcp2", workflow, StringComparison.Ordinal);
+        Assert.Contains("peer_slots: msquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/microsoft/msquic/qns:main", workflow, StringComparison.Ordinal);
         Assert.DoesNotContain("server-connectionmigration-lsquic-lsquic", workflow, StringComparison.Ordinal);
         Assert.DoesNotContain("server-connectionmigration-lsquic-picoquic", workflow, StringComparison.Ordinal);
         Assert.DoesNotContain("server-connectionmigration-lsquic-ngtcp2", workflow, StringComparison.Ordinal);
@@ -47,25 +47,25 @@ public sealed class REQ_QUIC_INT_0022
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `ngtcp2`", readme, StringComparison.Ordinal);
-        Assert.Contains("using the `aioquic` slot", readme, StringComparison.Ordinal);
+        Assert.Contains("against `msquic`", readme, StringComparison.Ordinal);
+        Assert.Contains("using the `ngtcp2` slot", readme, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", harnessReadme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `ngtcp2`", harnessReadme, StringComparison.Ordinal);
-        Assert.Contains("using the `aioquic` slot", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("against `msquic`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("using the `ngtcp2` slot", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `ngtcp2`", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("using the `aioquic` slot", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("against `msquic`", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("using the `ngtcp2` slot", currentStatus, StringComparison.Ordinal);
         Assert.Contains("`quiche`, `lsquic`, `ngtcp2`, `quic-go`,", currentStatus, StringComparison.Ordinal);
         Assert.Contains("`msquic`, and `aioquic`", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof-blocked", spec, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `ngtcp2`", spec, StringComparison.Ordinal);
-        Assert.Contains("using the `aioquic` slot", spec, StringComparison.Ordinal);
+        Assert.Contains("against `msquic`", spec, StringComparison.Ordinal);
+        Assert.Contains("using the `ngtcp2` slot", spec, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", spec, StringComparison.Ordinal);
     }
 
