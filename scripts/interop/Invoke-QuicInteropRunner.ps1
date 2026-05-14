@@ -553,6 +553,11 @@ function Get-RunnerImplementationRole {
     )
 
     $slot = $RegistryData.PSObject.Properties[$SlotName]
+    if ($null -eq $slot -and $SlotName.EndsWith('-peer', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $baseSlotName = $SlotName.Substring(0, $SlotName.Length - 5)
+        $slot = $RegistryData.PSObject.Properties[$baseSlotName]
+    }
+
     if ($null -eq $slot) {
         return $null
     }

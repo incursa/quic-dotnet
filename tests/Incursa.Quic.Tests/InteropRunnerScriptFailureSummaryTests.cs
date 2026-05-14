@@ -130,6 +130,45 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterValidOutputsAcceptsPeerAliasSlotsAndRecordsThem()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-valid-outputs");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "neqo": { "role": "both" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "neqo",
+            "-PeerImplementationSlots",
+            "neqo-peer",
+            "-TestCases",
+            "connectionmigration");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Peer implementation slot 'neqo-peer' was not found", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("requires the local replacement slot 'neqo' to differ", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterFileNotFoundHandshakeServerSuccessTreatsTheRunAsAdvisorySuccess()
     {
         using InteropRunnerScriptFixture fixture = new();
