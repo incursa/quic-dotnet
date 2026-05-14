@@ -279,8 +279,8 @@ jobs:
           - cell: server-connectionmigration-lsquic
             local_role: server
             implementation_slot: lsquic
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
+            peer_slots: ngtcp2
+            peer_image: ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
