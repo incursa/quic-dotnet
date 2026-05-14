@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-picoquic
+          - cell: server-connectionmigration-lsquic
             local_role: server
             implementation_slot: nginx
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
+            peer_slots: lsquic
+            peer_image: litespeedtech/lsquic-qir:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -367,11 +367,11 @@ jobs:
             peer_image: cloudflare/quiche-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
-          - cell: server-connectionmigration-lsquic-blocked
+          - cell: server-connectionmigration-picoquic-blocked
             local_role: server
             implementation_slot: nginx
-            peer_slots: lsquic
-            peer_image: litespeedtech/lsquic-qir:latest
+            peer_slots: picoquic
+            peer_image: privateoctopus/picoquic:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
           - cell: server-connectionmigration-quic-go-blocked

@@ -30,14 +30,14 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile against `picoquic` plus a companion
+proof profile against `lsquic` plus a companion
 `connectionmigration-server-proof-blocked` profile that preserves the
-`quiche`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic`
+`quiche`, `picoquic`, `quic-go`, `msquic`, `neqo`, and `aioquic`
 comparisons. The helper inventory already classifies `connectionmigration` as
-supported/executed, but the latest hosted `quiche` attempt still timed out
-without receiving a reply, so the proof lane is being re-aimed at `picoquic`
-instead of claiming a green result too early. The blocked comparison lane stays
-advisory and remains separated from the major-peer matrix.
+supported/executed, but the latest hosted `picoquic` attempt still ended
+unsupported after zero handshakes, so the proof lane is being re-aimed at
+`lsquic` instead of claiming a green result too early. The blocked comparison
+lane stays advisory and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -303,12 +303,13 @@ non-HTTP/3 interop testcase list. The current helper inventory keeps
 `versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, and `zerortt` in
 the supported/executed class, with `versionnegotiation` now backed by explicit
 reserved-version runner dispatch, keeps `http3` out of scope, and classifies
-`v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` as
-prerequisite-blocked.
+`v2`, `rebind-port`, and `rebind-addr` as prerequisite-blocked while keeping
+`connectionmigration` in the supported/executed class.
 
-Those three migration cells remain blocked on live runner corroboration and
-inventory promotion, not on missing internal path-state promotion logic or
-socket rebinding support.
+Those two socket-rebind cells remain blocked on live runner corroboration and
+inventory promotion, while `connectionmigration` is awaiting a fresh green
+hosted proof run; none of them are blocked on missing internal path-state
+promotion logic or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
