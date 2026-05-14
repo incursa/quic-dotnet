@@ -20,20 +20,20 @@
     "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
     "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
   ],
-  "scope": "Verify that the repository exposes manual advisory hosted proof lanes for server-role connectionmigration against aioquic using the ngtcp2 slot, plus a blocked comparison lane for picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, without promoting blocked cells or changing ordinary CI gates.",
+  "scope": "Verify that the repository exposes manual advisory hosted proof lanes for server-role connectionmigration against ngtcp2 using the aioquic slot, plus a blocked comparison lane for picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, without promoting blocked cells or changing ordinary CI gates.",
   "procedure": [
     "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles are `workflow_dispatch` only.",
-    "Confirm the proof profile includes a server-role matrix cell against `aioquic` using the `ngtcp2` slot for `connectionmigration`.",
+    "Confirm the proof profile includes a server-role matrix cell against `ngtcp2` using the `aioquic` slot for `connectionmigration`.",
     "Confirm the blocked profile includes server-role matrix cells against `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic` for `connectionmigration`.",
     "Confirm `major-peer-matrix` still excludes `connectionmigration`.",
     "Confirm every matrix cell invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided role, local implementation slot, peer slot, testcase, timeout, and artifact root.",
     "Confirm each cell uploads a distinct artifact bundle with `if: always()`.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0018` and `REQ-QUIC-INT-0022`.",
-    "Run representative helper dry-run plans for the server-role aioquic connectionmigration cell using the `ngtcp2` slot, plus the blocked comparison peers.",
+    "Run representative helper dry-run plans for the server-role ngtcp2 connectionmigration cell using the `aioquic` slot, plus the blocked comparison peers.",
     "Run SpecTrace core validation.",
     "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof` and `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof-blocked` and inspect each uploaded `runner-report.json` plus selected output logs."
   ],
-  "expected_result": "The repository configuration provides opt-in hosted proof lanes that can collect per-cell artifacts for Incursa.Quic as the server role against aioquic using the ngtcp2 slot for the connectionmigration proof cells, while keeping a blocked comparison lane for picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, and keeping the major-peer-matrix profile and HTTP/3 out of scope.",
+  "expected_result": "The repository configuration provides opt-in hosted proof lanes that can collect per-cell artifacts for Incursa.Quic as the server role against ngtcp2 using the aioquic slot for the connectionmigration proof cells, while keeping a blocked comparison lane for picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, and keeping the major-peer-matrix profile and HTTP/3 out of scope.",
   "evidence": [
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
@@ -47,11 +47,11 @@
     "specs/architecture/quic/ARC-QUIC-INT-0015.json",
     "specs/work-items/quic/WI-QUIC-INT-0015.json"
   ],
-  "status_summary": "Planned for hosted execution. The repository now has split connectionmigration proof lanes and the helper inventory already classifies connectionmigration as supported/executed. The latest hosted ngtcp2/msquic attempt failed on an initial-handshake TLS alert 50, so the proof lane is being retargeted to the ngtcp2/aioquic pairing while the blocked comparison lane keeps picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic visible. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
+  "status_summary": "Planned for hosted execution. The repository now has split connectionmigration proof lanes and the helper inventory already classifies connectionmigration as supported/executed. The latest hosted ngtcp2/aioquic attempt failed on an immediate client exit, so the proof lane is being retargeted to the aioquic/ngtcp2 pairing while the blocked comparison lane keeps picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic visible. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has hosted proof lanes against aioquic using the ngtcp2 slot plus a blocked comparison lane against picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, and the proof lanes are being refreshed because the latest hosted ngtcp2/msquic attempt failed on an initial-handshake TLS alert 50 while the lane is being retargeted to the ngtcp2/aioquic pairing rather than claimed green."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has hosted proof lanes against ngtcp2 using the aioquic slot plus a blocked comparison lane against picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic, and the proof lanes are being refreshed because the latest hosted ngtcp2/aioquic attempt failed on an immediate client exit while the lane is being retargeted to the aioquic/ngtcp2 pairing rather than claimed green."
     }
   ]
 }
