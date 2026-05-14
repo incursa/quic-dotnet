@@ -18,21 +18,18 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof'", workflow, StringComparison.Ordinal);
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-lsquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-ngtcp2", workflow, StringComparison.Ordinal);
         Assert.Contains("implementation_slot: neqo", workflow, StringComparison.Ordinal);
-        Assert.Contains("peer_slots: lsquic", workflow, StringComparison.Ordinal);
-        Assert.Contains("litespeedtech/lsquic-qir:latest", workflow, StringComparison.Ordinal);
-        Assert.DoesNotContain("server-connectionmigration-lsquic-lsquic", workflow, StringComparison.Ordinal);
-        Assert.DoesNotContain("server-connectionmigration-lsquic-picoquic", workflow, StringComparison.Ordinal);
-        Assert.DoesNotContain("server-connectionmigration-lsquic-ngtcp2", workflow, StringComparison.Ordinal);
-        Assert.DoesNotContain("server-connectionmigration-lsquic-neqo", workflow, StringComparison.Ordinal);
+        Assert.Contains("peer_slots: ngtcp2", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c", workflow, StringComparison.Ordinal);
+        Assert.DoesNotContain("server-connectionmigration-ngtcp2-lsquic", workflow, StringComparison.Ordinal);
+        Assert.DoesNotContain("server-connectionmigration-ngtcp2-picoquic", workflow, StringComparison.Ordinal);
+        Assert.DoesNotContain("server-connectionmigration-ngtcp2-neqo", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-quiche-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("cloudflare/quiche-qns:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("litespeedtech/lsquic-qir:latest", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-ngtcp2-blocked", workflow, StringComparison.Ordinal);
-        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-quic-go-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-msquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-aioquic-blocked", workflow, StringComparison.Ordinal);
@@ -47,26 +44,26 @@ public sealed class REQ_QUIC_INT_0022
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `lsquic`", readme, StringComparison.Ordinal);
+        Assert.Contains("against `ngtcp2`", readme, StringComparison.Ordinal);
         Assert.Contains("using the `neqo` slot", readme, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", readme, StringComparison.Ordinal);
+        Assert.Contains("picoquic`, `quiche`, `lsquic`, `quic-go`, `msquic`, and `aioquic", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", harnessReadme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `lsquic`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("against `ngtcp2`", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("using the `neqo` slot", harnessReadme, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("picoquic`, `quiche`, `lsquic`, `quic-go`, `msquic`, and `aioquic", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `lsquic`", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("against `ngtcp2`", currentStatus, StringComparison.Ordinal);
         Assert.Contains("using the `neqo` slot", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("`quiche`, `lsquic`, `ngtcp2`, `quic-go`,", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("`quiche`, `lsquic`, `quic-go`,", currentStatus, StringComparison.Ordinal);
         Assert.Contains("`msquic`, and `aioquic`", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof-blocked", spec, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `lsquic`", spec, StringComparison.Ordinal);
+        Assert.Contains("against `ngtcp2`", spec, StringComparison.Ordinal);
         Assert.Contains("using the `neqo` slot", spec, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic", spec, StringComparison.Ordinal);
+        Assert.Contains("picoquic`, `quiche`, `lsquic`, `quic-go`, `msquic`, and `aioquic", spec, StringComparison.Ordinal);
     }
 
     [Fact]

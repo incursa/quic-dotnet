@@ -29,15 +29,7 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-13 INT Connection Migration Proof Lane
 
-`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile that exercises the server role against `lsquic` using the
-`neqo` slot, plus a companion `connectionmigration-server-proof-blocked`
-profile that preserves `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`,
-`msquic`, and `aioquic` comparisons. The latest hosted `neqo`/`picoquic`
-attempt came back `unsupported`, so the proof lane is being retargeted to the
-`neqo`/`lsquic` pairing rather than being claimed
-green too early. The blocked comparison lane stays advisory and remains
-separated from the major-peer matrix.
+`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role against `ngtcp2` using the `neqo` slot, plus a companion `connectionmigration-server-proof-blocked` profile that preserves `picoquic`, `quiche`, `lsquic`, `quic-go`, `msquic`, and `aioquic` comparisons while also keeping `ngtcp2` visible for side-by-side proof. The latest hosted `lsquic` attempt hit a send-credit timeout, so the proof lane is being retargeted to the `neqo`/`ngtcp2` pairing rather than being claimed green too early. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -308,8 +300,8 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
 inventory promotion, while `connectionmigration` is awaiting a fresh hosted
-proof run using the `neqo` slot against `lsquic`; none of them are blocked
-on missing internal path-state promotion logic or socket rebinding support.
+proof run using the `neqo` slot against `ngtcp2`; none of them are blocked on
+missing internal path-state promotion logic or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
