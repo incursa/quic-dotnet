@@ -6,7 +6,7 @@
   "title": "QUIC Connection Migration Hosted Proof Lane Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the advisory hosted Linux connectionmigration proof lane that refreshes live corroboration for the inventory cell by comparing server-role behavior against neqo while keeping picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic visible in a blocked comparison lane.",
+  "purpose": "Describe the advisory hosted Linux connectionmigration proof lane that refreshes live corroboration for the inventory cell by comparing server-role behavior against quiche while keeping picoquic, quiche, lsquic, ngtcp2, quic-go, msquic, and aioquic visible in a blocked comparison lane.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0014",
@@ -25,7 +25,7 @@
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
   ],
-  "design_summary": "The manual hosted workflow keeps the default hosted-handshake and major-peer-matrix profiles unchanged and adds a proof-oriented `connectionmigration-server-proof` profile plus a separate `connectionmigration-server-proof-blocked` profile. The proof profile runs Incursa.Quic as the local server against `neqo` for `connectionmigration`, while the blocked profile preserves `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic` comparison cells. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the selected peer implementation image and uploads each cell bundle with `if: always()` so failed, advisory, blocked, and passing attempts remain attributable. The existing helper/runtime migration support stays the source of truth for the inventory claim; this architecture only explains the hosted evidence-collection lanes that refresh live corroboration without widening the broader major-peer-matrix scope.",
+  "design_summary": "The manual hosted workflow keeps the default hosted-handshake and major-peer-matrix profiles unchanged and adds a proof-oriented `connectionmigration-server-proof` profile plus a separate `connectionmigration-server-proof-blocked` profile. The proof profile runs Incursa.Quic as the local server against `quiche` for `connectionmigration`, while the blocked profile preserves `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic` comparison cells. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the selected peer implementation image and uploads each cell bundle with `if: always()` so failed, advisory, blocked, and passing attempts remain attributable. The existing helper/runtime migration support stays the source of truth for the inventory claim; this architecture only explains the hosted evidence-collection lanes that refresh live corroboration without widening the broader major-peer-matrix scope.",
   "alternatives_considered": [
     "Fold connectionmigration into the major peer matrix. Rejected because that matrix is intentionally scoped to currently executable cells and would overstate the broader evidence surface.",
     "Rely on the local migration proof only. Rejected because the gap ledger still requires hosted corroboration and the user explicitly asked to compare against the GitHub-hosted runner.",

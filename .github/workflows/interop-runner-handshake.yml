@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-neqo
+            - cell: server-connectionmigration-neqo-quiche
               local_role: server
               implementation_slot: neqo
-              peer_slots: neqo
-              peer_image: ghcr.io/mozilla/neqo-qns:latest
+              peer_slots: quiche
+              peer_image: cloudflare/quiche-qns:latest
               testcases: connectionmigration
               runner_timeout_seconds: 240
     steps:
