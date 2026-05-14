@@ -61,6 +61,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", currentStatus, StringComparison.Ordinal);
         Assert.Contains("replacement-slot collision", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("single path in use", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("25867235353", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("TLS alert 50", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);

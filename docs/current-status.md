@@ -1,7 +1,8 @@
 # Current Repository Status
 
-Last verified: 2026-05-13 for the INT major-peer interop matrix shape,
-dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
+Last verified: 2026-05-14 for the INT connectionmigration proof-lane slot
+wiring and hosted TLS-alert blocker, and 2026-05-13 for the INT major-peer
+interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
 coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
@@ -29,7 +30,7 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-14 INT Connection Migration Proof Lane
 
-`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role by replacing the distinct local `nginx` slot while keeping `neqo-peer` as the reported peer alias, normalizing the actual runner client slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image. The companion `connectionmigration-server-proof-blocked` profile preserves `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. Hosted run `25864019585` cleared the alias lookup failure but exposed a replacement-slot collision: the runner used `-s neqo -c neqo -r neqo=incursa-quic-interop-harness:local`, so the later `single path in use` failure is not accepted as a real neqo-peer migration verdict. The lane remains advisory and open pending a fresh hosted proof with a distinct replacement slot. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
+`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role by replacing the distinct local `nginx` slot while keeping `neqo-peer` as the reported peer alias, normalizing the actual runner client slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image. The companion `connectionmigration-server-proof-blocked` profile preserves `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. Hosted run `25864019585` cleared the alias lookup failure but exposed a replacement-slot collision: the runner used `-s neqo -c neqo -r neqo=incursa-quic-interop-harness:local`, so the later `single path in use` failure is not accepted as a real neqo-peer migration verdict. Hosted run `25866825495` confirmed the distinct-slot runner shape (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`) but failed before transfer or migration with server-side `TLS alert 50`. After the ClientHello compatibility topoff, hosted run `25867235353` still failed at the same pre-transfer TLS alert (`interop harness: role=server, testcase=connectionmigration failed: TLS alert 50`), with the client receiving transport error 10. The lane remains advisory and open; the current blocker is managed server TLS/ClientHello interoperability with real neqo before `connectionmigration` can be exercised. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
