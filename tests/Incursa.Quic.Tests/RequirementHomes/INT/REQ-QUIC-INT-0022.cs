@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-neqo", workflow, StringComparison.Ordinal);
         Assert.Contains("implementation_slot: neqo", workflow, StringComparison.Ordinal);
-        Assert.Contains("peer_slots: neqo", workflow, StringComparison.Ordinal);
+        Assert.Contains("peer_slots: neqo-peer", workflow, StringComparison.Ordinal);
         Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", workflow, StringComparison.Ordinal);
         Assert.DoesNotContain("server-connectionmigration-picoquic", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-ngtcp2-blocked", workflow, StringComparison.Ordinal);

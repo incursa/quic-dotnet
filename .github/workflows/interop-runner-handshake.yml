@@ -36,6 +36,17 @@ jobs:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
+      - name: Add neqo peer alias
+        shell: pwsh
+        working-directory: quic-interop-runner
+        run: |
+          $registryPath = 'implementations_quic.json'
+          $registry = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
+          if (-not $registry.'neqo-peer') {
+            $registry | Add-Member -NotePropertyName 'neqo-peer' -NotePropertyValue $registry.neqo
+            $registry | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $registryPath -Encoding utf8
+          }
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -279,7 +290,7 @@ jobs:
           - cell: server-connectionmigration-neqo
             local_role: server
             implementation_slot: neqo
-            peer_slots: neqo
+            peer_slots: neqo-peer
             peer_image: ghcr.io/mozilla/neqo-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
