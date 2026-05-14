@@ -271,6 +271,33 @@ public sealed class REQ_QUIC_INT_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EndpointHostPreservesDualModeOnIpv6Sockets()
+    {
+        if (!Socket.OSSupportsIPv6)
+        {
+            return;
+        }
+
+        using Socket serverSocket = new(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+        serverSocket.Bind(new IPEndPoint(IPAddress.IPv6Loopback, 0));
+
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        QuicConnectionPathIdentity initialPath = new(
+            IPAddress.IPv6Loopback.ToString(),
+            IPAddress.IPv6Loopback.ToString(),
+            12345,
+            ((IPEndPoint)serverSocket.LocalEndPoint!).Port);
+
+        using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
+        Socket reboundSocket = GetPrivateField<Socket>(host, "socket");
+
+        Assert.Equal(AddressFamily.InterNetworkV6, reboundSocket.AddressFamily);
+        Assert.True(reboundSocket.DualMode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task EndpointHostRejectsPathPromotionRebindingAfterDispose()

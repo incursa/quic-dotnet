@@ -397,6 +397,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private static Socket CreateSocket(IPEndPoint localEndPoint)
     {
         Socket socket = new(localEndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+        if (socket.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            socket.DualMode = true;
+        }
+
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
 
         try
