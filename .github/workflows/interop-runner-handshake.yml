@@ -277,11 +277,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-lsquic
+          - cell: server-connectionmigration-neqo
             local_role: server
             implementation_slot: nginx
-            peer_slots: lsquic
-            peer_image: ghcr.io/incursa/quic-interop-lsquic:latest
+            peer_slots: neqo
+            peer_image: ghcr.io/incursa/quic-interop-neqo:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -324,22 +324,22 @@ jobs:
           tshark --version
           editcap --version
 
-      - name: Mirror lsquic OCI wrapper image
+      - name: Mirror neqo OCI wrapper image
         shell: bash
         run: |
           docker run --rm quay.io/skopeo/stable:latest \
             copy --all \
             --dest-creds "${{ github.actor }}:${{ github.token }}" \
             --format oci \
-            docker://litespeedtech/lsquic-qir:latest \
-            docker://ghcr.io/incursa/quic-interop-lsquic:latest
+            docker://ghcr.io/mozilla/neqo-qns:latest \
+            docker://ghcr.io/incursa/quic-interop-neqo:latest
 
       - name: Log in to GHCR
         shell: bash
         run: |
           echo "${{ github.token }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
-      - name: Override lsquic runner image
+      - name: Override neqo runner image
         shell: bash
         run: |
           python - <<'PY'
@@ -348,7 +348,7 @@ jobs:
 
           registry_path = Path("${{ github.workspace }}/quic-interop-runner/implementations_quic.json")
           registry = json.loads(registry_path.read_text())
-          registry["lsquic"]["image"] = "${{ matrix.peer_image }}"
+          registry["neqo"]["image"] = "${{ matrix.peer_image }}"
           registry_path.write_text(json.dumps(registry, indent=2) + "\n")
           PY
 

@@ -20,20 +20,20 @@
     "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
     "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
   ],
-  "scope": "Verify that the repository exposes manual advisory hosted proof lanes for server-role connectionmigration against lsquic, plus a blocked comparison lane for picoquic, lsquic, quic-go, msquic, and neqo, without promoting blocked cells or changing ordinary CI gates.",
+  "scope": "Verify that the repository exposes manual advisory hosted proof lanes for server-role connectionmigration against neqo, plus a blocked comparison lane for picoquic, lsquic, quic-go, msquic, and neqo, without promoting blocked cells or changing ordinary CI gates.",
   "procedure": [
     "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles are `workflow_dispatch` only.",
-    "Confirm the green profile includes a server-role matrix cell against `lsquic` for `connectionmigration`.",
+    "Confirm the green profile includes a server-role matrix cell against `neqo` for `connectionmigration`.",
     "Confirm the blocked profile includes server-role matrix cells against `picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo` for `connectionmigration`.",
     "Confirm `major-peer-matrix` still excludes `connectionmigration`.",
     "Confirm every matrix cell invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided role, local implementation slot, peer slot, testcase, timeout, and artifact root.",
     "Confirm each cell uploads a distinct artifact bundle with `if: always()`.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0018` and `REQ-QUIC-INT-0022`.",
-    "Run representative helper dry-run plans for server-role lsquic, picoquic, quic-go, msquic, and neqo connectionmigration cells.",
+    "Run representative helper dry-run plans for server-role neqo, picoquic, lsquic, quic-go, and msquic connectionmigration cells.",
     "Run SpecTrace core validation.",
     "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof` and `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof-blocked` and inspect each uploaded `runner-report.json` plus selected output logs."
   ],
-  "expected_result": "The repository configuration provides opt-in hosted proof lanes that can collect per-cell artifacts for Incursa.Quic as the server role against lsquic for the green connectionmigration cell, while keeping a blocked comparison lane for picoquic, lsquic, quic-go, msquic, and neqo, and keeping the major-peer-matrix profile and HTTP/3 out of scope.",
+  "expected_result": "The repository configuration provides opt-in hosted proof lanes that can collect per-cell artifacts for Incursa.Quic as the server role against neqo for the green connectionmigration cell, while keeping a blocked comparison lane for picoquic, lsquic, quic-go, msquic, and neqo, and keeping the major-peer-matrix profile and HTTP/3 out of scope.",
   "evidence": [
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
@@ -47,11 +47,11 @@
     "specs/architecture/quic/ARC-QUIC-INT-0015.json",
     "specs/work-items/quic/WI-QUIC-INT-0015.json"
   ],
-  "status_summary": "Planned for hosted execution. The repository now has split connectionmigration proof lanes and the helper inventory already classifies connectionmigration as supported/executed. The latest local migration proof still shows the quic-go cell failing and the earlier picoquic/lsquic attempt was blocked by image-signature validation, which is why the green lane now uses lsquic while the blocked comparison lane keeps picoquic, lsquic, quic-go, msquic, and neqo visible. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
+  "status_summary": "Planned for hosted execution. The repository now has split connectionmigration proof lanes and the helper inventory already classifies connectionmigration as supported/executed. The latest local migration proof still shows the quic-go cell failing and the earlier picoquic/lsquic attempt was blocked by image-signature validation, which is why the green lane now uses neqo while the blocked comparison lane keeps picoquic, lsquic, quic-go, msquic, and neqo visible. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a green hosted proof lane against `lsquic` plus a blocked comparison lane against `picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo`, but the green lane itself still needs live corroboration before any support claim changes."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a green hosted proof lane against `neqo` plus a blocked comparison lane against `picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo`, but the green lane itself still needs live corroboration before any support claim changes."
     }
   ]
 }

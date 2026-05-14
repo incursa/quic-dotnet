@@ -30,14 +30,14 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into
-a green `connectionmigration-server-proof` profile against `lsquic` and a
+a green `connectionmigration-server-proof` profile against `neqo` and a
 companion `connectionmigration-server-proof-blocked` profile that preserves the
 `picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo` comparisons. The helper
 inventory already classifies `connectionmigration` as supported/executed, but
 the green lane still needs hosted corroboration. The most recent local
 `migration-server-proof` rerun still shows the `quic-go` cell failing and the
 earlier `picoquic`/`lsquic` attempt was blocked by image-signature validation,
-which is why the green proof lane now uses `lsquic`. The latest hosted
+which is why the green proof lane now uses `neqo`. The latest hosted
 blocked-lane run `25832312595` reached `neqo`, but it still fails with an
 initial-handshake idle timeout, while the `msquic` job trips an external
 runner-shim handshake-counting `AttributeError` before it can finish
