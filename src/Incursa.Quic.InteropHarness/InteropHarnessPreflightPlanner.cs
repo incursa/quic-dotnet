@@ -15,6 +15,7 @@ namespace Incursa.Quic.InteropHarness;
         private const int DefaultHandshakePort = 443;
         private const int ConnectionMigrationPreferredAddressPort = 4443;
         private static readonly IPAddress ConnectionMigrationPreferredAddressIpv4 = IPAddress.Parse("193.167.100.110");
+        private static readonly IPAddress ConnectionMigrationPreferredAddressIpv6 = IPAddress.Parse("fd00:cafe:cafe:100::110");
         private const int PreferredAddressIpv6BytesLength = 16;
 
     private readonly InteropHarnessEnvironment settings;
@@ -137,11 +138,11 @@ namespace Incursa.Quic.InteropHarness;
     private QuicPreferredAddress CreateConnectionMigrationPreferredAddress()
     {
         // The interop runner's connection-migration lane uses the alternate `.110`
-        // server endpoint as the preferred address target. Keep the live hosted lane
-        // on the IPv4 path for now, but retain the dual-stack helper for canonical
-        // proof coverage and codec-level validation.
+        // server endpoint as the preferred address target. Advertise both address
+        // families so the peer can pick the path it is willing to migrate to.
         return CreateConnectionMigrationPreferredAddress(
             ConnectionMigrationPreferredAddressIpv4,
+            ConnectionMigrationPreferredAddressIpv6,
             ConnectionMigrationPreferredAddressPort);
     }
 
