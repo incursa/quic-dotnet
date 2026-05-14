@@ -35,6 +35,7 @@ internal enum QuicDiagnosticKind
     HandshakePacketReceived = 16,
     HandshakePacketSent = 17,
     VersionNegotiationSent = 18,
+    PeerHandshakeTranscriptCompleted = 19,
 }
 
 /// <summary>
@@ -102,6 +103,7 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.runtime.handshake", "version-negotiation-sent") => QuicDiagnosticKind.VersionNegotiationSent,
             ("connection.runtime.handshake", "handshake-packet-received") => QuicDiagnosticKind.HandshakePacketReceived,
             ("connection.runtime.handshake", "handshake-packet-sent") => QuicDiagnosticKind.HandshakePacketSent,
+            ("connection.runtime.handshake", "peer-handshake-transcript-completed") => QuicDiagnosticKind.PeerHandshakeTranscriptCompleted,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
             ("connection.runtime.path", "path-validation-timer-exhausted") => QuicDiagnosticKind.PathValidationTimerExpiredNoValidatedPathsRemain,
             ("connection.runtime.lifecycle", "accepted-stateless-reset") => QuicDiagnosticKind.AcceptedStatelessReset,
@@ -295,10 +297,19 @@ internal static class QuicDiagnostics
                 : "handshake-transcript-advanced",
             $"Handshake transcript advancement for {encryptionLevel} produced {transcriptUpdateCount} TLS updates.",
             QuicDiagnosticSeverity.Trace)
-        {
+            {
             EncryptionLevel = encryptionLevel,
             TranscriptUpdateCount = transcriptUpdateCount,
         };
+    }
+
+    internal static QuicDiagnosticEvent PeerHandshakeTranscriptCompleted()
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.handshake",
+            "peer-handshake-transcript-completed",
+            "Peer handshake transcript completed.",
+            QuicDiagnosticSeverity.Trace);
     }
 
     internal static QuicDiagnosticEvent PathValidationFailedNoValidatedPathsRemain(QuicConnectionPathIdentity pathIdentity)

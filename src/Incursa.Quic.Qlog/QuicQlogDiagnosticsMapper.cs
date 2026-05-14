@@ -36,6 +36,9 @@ internal static class QuicQlogDiagnosticsMapper
                 diagnosticEvent,
                 diagnosticEvent.EncryptionLevel.Value,
                 isServer),
+            QuicDiagnosticKind.PeerHandshakeTranscriptCompleted => CreateConnectionStateUpdated(
+                eventTime,
+                QlogQuicKnownValues.ConnectionStateHandshakeComplete),
             QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain => CreatePathValidationStateUpdated(
                 eventTime,
                 diagnosticEvent,
@@ -189,6 +192,17 @@ internal static class QuicQlogDiagnosticsMapper
         };
 
         payload.ExtensionData["processed"] = QlogValue.FromBoolean(processed);
+        return QlogQuicEvents.CreateConnectionStateUpdated(eventTime, payload);
+    }
+
+    private static QlogEvent CreateConnectionStateUpdated(double eventTime, string newState)
+    {
+        QuicConnectionStateUpdated payload = new()
+        {
+            Old = QlogQuicKnownValues.ConnectionStateHandshakeStarted,
+            New = newState,
+        };
+
         return QlogQuicEvents.CreateConnectionStateUpdated(eventTime, payload);
     }
 

@@ -52,6 +52,7 @@ internal sealed partial class QuicConnectionRuntime
             peerHandshakeTranscriptCompleted = true;
             stateChanged = true;
             bufferedEstablishmentHandshakePackets.Clear();
+            EmitDiagnostic(ref effects, QuicDiagnostics.PeerHandshakeTranscriptCompleted());
 
             if (phase == QuicConnectionPhase.Establishing)
             {
