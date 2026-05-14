@@ -1495,11 +1495,26 @@ internal sealed class QuicTlsTranscriptProgress
     private static bool TryParseClientHelloPskKeyExchangeModes(ReadOnlySpan<byte> extensionValue)
     {
         int index = 0;
-        return TryReadUInt8(extensionValue, ref index, out int modesLength)
-            && modesLength == 1
-            && TryReadUInt8(extensionValue, ref index, out int keyExchangeMode)
-            && keyExchangeMode == PskDheKeMode
-            && index == extensionValue.Length;
+        if (!TryReadUInt8(extensionValue, ref index, out int modesLength)
+            || modesLength == 0
+            || index + modesLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundPskDheKe = false;
+        int modesEnd = index + modesLength;
+        while (index < modesEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int keyExchangeMode))
+            {
+                return false;
+            }
+
+            foundPskDheKe |= keyExchangeMode == PskDheKeMode;
+        }
+
+        return foundPskDheKe && index == extensionValue.Length;
     }
 
     private static bool TryParseClientHelloPreSharedKey(ReadOnlySpan<byte> extensionValue)
