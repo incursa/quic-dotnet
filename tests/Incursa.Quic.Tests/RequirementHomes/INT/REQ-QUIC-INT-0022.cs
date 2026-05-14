@@ -18,14 +18,14 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof'", workflow, StringComparison.Ordinal);
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-picoquic", workflow, StringComparison.Ordinal);
-        Assert.Contains("Mirror picoquic OCI wrapper image", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-lsquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("Mirror lsquic OCI wrapper image", workflow, StringComparison.Ordinal);
         Assert.Contains("--format oci", workflow, StringComparison.Ordinal);
         Assert.Contains("Log in to GHCR", workflow, StringComparison.Ordinal);
         Assert.Contains("docker login ghcr.io", workflow, StringComparison.Ordinal);
-        Assert.Contains("Override picoquic runner image", workflow, StringComparison.Ordinal);
+        Assert.Contains("Override lsquic runner image", workflow, StringComparison.Ordinal);
         Assert.Contains("implementations_quic.json", workflow, StringComparison.Ordinal);
-        Assert.Contains("ghcr.io/incursa/quic-interop-picoquic:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/incursa/quic-interop-lsquic:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("privateoctopus/picoquic:latest", workflow, StringComparison.Ordinal);
@@ -43,20 +43,20 @@ public sealed class REQ_QUIC_INT_0022
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `picoquic`", readme, StringComparison.Ordinal);
+        Assert.Contains("against `lsquic`", readme, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", harnessReadme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `picoquic`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("against `lsquic`", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `picoquic`", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("against `lsquic`", currentStatus, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof-blocked", spec, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `picoquic`", spec, StringComparison.Ordinal);
+        Assert.Contains("against `lsquic`", spec, StringComparison.Ordinal);
         Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, and `neqo", spec, StringComparison.Ordinal);
     }
 
