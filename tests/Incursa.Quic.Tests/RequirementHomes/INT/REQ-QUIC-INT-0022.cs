@@ -23,6 +23,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("--format oci", workflow, StringComparison.Ordinal);
         Assert.Contains("Log in to GHCR", workflow, StringComparison.Ordinal);
         Assert.Contains("docker login ghcr.io", workflow, StringComparison.Ordinal);
+        Assert.Contains("Override ngtcp2 runner image", workflow, StringComparison.Ordinal);
+        Assert.Contains("implementations_quic.json", workflow, StringComparison.Ordinal);
         Assert.Contains("ghcr.io/incursa/quic-interop-ngtcp2:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);

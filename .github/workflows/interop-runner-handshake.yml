@@ -339,6 +339,19 @@ jobs:
         run: |
           echo "${{ github.token }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
+      - name: Override ngtcp2 runner image
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          registry_path = Path("${{ github.workspace }}/quic-interop-runner/implementations_quic.json")
+          registry = json.loads(registry_path.read_text())
+          registry["ngtcp2"]["image"] = "${{ matrix.peer_image }}"
+          registry_path.write_text(json.dumps(registry, indent=2) + "\n")
+          PY
+
       - name: Pre-pull runner peer images
         shell: bash
         run: |
