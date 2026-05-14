@@ -182,7 +182,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 try
                 {
-                    SocketReceiveFromResult receiveResult = await currentSocket.ReceiveFromAsync(
+                    SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
                         buffer.AsMemory(0, receiveBufferBytes),
                         SocketFlags.None,
                         remoteEndPoint,
@@ -194,7 +194,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     }
 
                     IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
-                    IPEndPoint localEndPoint = (IPEndPoint)currentSocket.LocalEndPoint!;
+                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                        (IPEndPoint)currentSocket.LocalEndPoint!,
+                        receiveResult.PacketInformation.Address);
                     QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
 
                     byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
@@ -403,6 +405,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         }
 
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
+        QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         try
         {

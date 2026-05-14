@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Sockets;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -132,6 +133,68 @@ public sealed class REQ_QUIC_CRT_0138
             await serverConnection1.DisposeAsync();
             await clientConnection2.DisposeAsync();
             await clientConnection1.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ListenerCaptureUsesTheConcreteDestinationAddressForWildcardBinds()
+    {
+        if (!Socket.OSSupportsIPv6)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+
+        int listenPort;
+        using (Socket portReservation = new(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp))
+        {
+            portReservation.Bind(new IPEndPoint(IPAddress.IPv6Loopback, 0));
+            listenPort = ((IPEndPoint)portReservation.LocalEndPoint!).Port;
+        }
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = new IPEndPoint(IPAddress.IPv6Any, listenPort),
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) =>
+                ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+        };
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.IPv6Loopback, listenPort));
+
+        QuicQlogCapture capture = new(title: "listener qlog capture");
+
+        await using QuicListener listener = await capture.ListenAsync(listenerOptions);
+        Task<QuicConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(clientOptions).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask).WaitAsync(TimeSpan.FromSeconds(5));
+
+        QuicConnection serverConnection = await acceptTask;
+        QuicConnection clientConnection = await connectTask;
+
+        try
+        {
+            Assert.Single(capture.File.Traces);
+            QlogTrace captureTrace = Assert.IsType<QlogTrace>(capture.File.Traces[0]);
+            Assert.Equal(QlogKnownValues.ServerVantagePoint, captureTrace.VantagePoint?.Type);
+
+            QlogEvent packetReceived = captureTrace.Events.First(
+                qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName);
+
+            Assert.NotNull(packetReceived.Tuple);
+            Assert.EndsWith($"|[::1]:{listenPort}", packetReceived.Tuple, StringComparison.Ordinal);
+            Assert.DoesNotContain("|[::]:", packetReceived.Tuple, StringComparison.Ordinal);
+        }
+        finally
+        {
+            await serverConnection.DisposeAsync();
+            await clientConnection.DisposeAsync();
         }
     }
 

@@ -300,6 +300,20 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public void PacketInformationResolverFallsBackToTheWildcardSocketAddressWhenThePacketAddressIsUnavailable()
+    {
+        IPEndPoint fallback = new(IPAddress.IPv6Any, 443);
+
+        IPEndPoint resolved = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+            fallback,
+            IPAddress.IPv6Any);
+
+        Assert.Same(fallback, resolved);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task EndpointHostRejectsPathPromotionRebindingAfterDispose()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();

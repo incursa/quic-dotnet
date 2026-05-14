@@ -114,6 +114,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             socket.DualMode = true;
         }
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
+        QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         socket.Bind(boundEndPoint);
     }
@@ -277,10 +278,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                SocketReceiveFromResult receiveResult;
+                SocketReceiveMessageFromResult receiveResult;
                 try
                 {
-                    receiveResult = await socket.ReceiveFromAsync(
+                    receiveResult = await socket.ReceiveMessageFromAsync(
                         buffer.AsMemory(),
                         SocketFlags.None,
                         remoteEndPoint,
@@ -314,7 +315,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 QuicConnectionPathIdentity pathIdentity;
                 try
                 {
-                    IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                        (IPEndPoint)socket.LocalEndPoint!,
+                        receiveResult.PacketInformation.Address);
                     pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
                 }
                 catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
