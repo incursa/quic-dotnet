@@ -304,6 +304,15 @@ public sealed class InteropHarnessPreflightPlannerTests
         Assert.Equal(443, listenEndPoint.Port);
     }
 
+    [Fact]
+    public async Task ResolveHandshakeListenEndPointAsyncUsesIpv6AnyForAnEmptyServerDispatch()
+    {
+        IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(null);
+
+        Assert.Equal(IPAddress.IPv6Any, listenEndPoint.Address);
+        Assert.Equal(443, listenEndPoint.Port);
+    }
+
     private static InteropHarnessPreflightPlanner CreatePlanner(
         string role,
         string testcase,

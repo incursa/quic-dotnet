@@ -311,7 +311,7 @@ internal sealed class InteropHarnessPreflightPlanner
     {
         if (requestUri is null)
         {
-            return new IPEndPoint(IPAddress.Any, DefaultHandshakePort);
+            return new IPEndPoint(IPAddress.IPv6Any, DefaultHandshakePort);
         }
 
         int port = requestUri.IsDefaultPort ? DefaultHandshakePort : requestUri.Port;
