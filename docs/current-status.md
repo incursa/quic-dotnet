@@ -30,16 +30,14 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile that keeps the `ngtcp2` slot and targets `quinn`, plus a
-companion `connectionmigration-server-proof-blocked` profile that preserves
-`picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic`
-comparisons. The latest hosted `neqo`-backed attempts with the earlier
-`lsquic` and `picoquic` candidates both failed on an initial-handshake `TLS
-alert 50`, and the earlier `picoquic`-backed quinn attempt timed out, and the
-later `neqo`-backed quinn attempt also timed out, so the proof lane is now
-retargeted to the supported ngtcp2/quinn pairing instead of being claimed green
-too early. The blocked comparison lane stays advisory and remains separated
-from the major-peer matrix.
+proof profile that exercises the server role against `msquic` using the
+`ngtcp2` slot, plus a companion `connectionmigration-server-proof-blocked`
+profile that preserves `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`,
+`msquic`, and `aioquic` comparisons. The latest hosted `ngtcp2`/`quinn`
+attempt timed out, so the proof lane is being retargeted to the
+`ngtcp2`/`msquic` pairing rather than being claimed green too early. The
+blocked comparison lane stays advisory and remains separated from the
+major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -309,10 +307,9 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 `connectionmigration` in the supported/executed class.
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
-inventory promotion, while `connectionmigration` is awaiting a fresh green
-hosted proof run using the `ngtcp2` slot against `quinn`; none of them are
-blocked on missing internal path-state promotion logic or socket rebinding
-support.
+inventory promotion, while `connectionmigration` is awaiting a fresh hosted
+proof run using the `ngtcp2` slot against `msquic`; none of them are blocked
+on missing internal path-state promotion logic or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
