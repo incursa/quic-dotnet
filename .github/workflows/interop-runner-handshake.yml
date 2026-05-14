@@ -300,7 +300,7 @@ jobs:
         include:
           - cell: server-connectionmigration-neqo
             local_role: server
-            implementation_slot: neqo
+            implementation_slot: nginx
             peer_slots: neqo-peer
             peer_image: ghcr.io/mozilla/neqo-qns:latest
             testcases: connectionmigration

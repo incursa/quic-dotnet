@@ -656,6 +656,28 @@ function Get-InteropRunnerExecutionPlan {
             $resolvedPeerImplementationSlots += Resolve-RunnerImplementationSlotName -SlotName $peerImplementationSlot
         }
     }
+
+    if ($LocalRole -ne 'both') {
+        $peerImplementationSlotList = @($PeerImplementationSlots)
+        $resolvedPeerImplementationSlotList = @($resolvedPeerImplementationSlots)
+        for ($slotIndex = 0; $slotIndex -lt $peerImplementationSlotList.Count; $slotIndex++) {
+            $peerImplementationSlot = [string]$peerImplementationSlotList[$slotIndex]
+            $resolvedPeerImplementationSlot = [string]$resolvedPeerImplementationSlotList[$slotIndex]
+            $resolvedSlotMatchesLocal = [string]::Equals(
+                $resolvedPeerImplementationSlot,
+                $ImplementationSlot,
+                [System.StringComparison]::OrdinalIgnoreCase)
+            $requestedSlotMatchesLocal = [string]::Equals(
+                $peerImplementationSlot,
+                $ImplementationSlot,
+                [System.StringComparison]::OrdinalIgnoreCase)
+
+            if ($resolvedSlotMatchesLocal -and -not $requestedSlotMatchesLocal) {
+                throw "LocalRole '$LocalRole' requires the local replacement slot '$ImplementationSlot' to differ from the resolved peer implementation slot '$resolvedPeerImplementationSlot' (peer slot '$peerImplementationSlot'). Use a distinct local replacement slot for split-role peer aliases."
+            }
+        }
+    }
+
     $runnerClientImplementations = @()
     $runnerServerImplementations = @()
 

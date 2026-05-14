@@ -138,6 +138,63 @@ public sealed class InteropRunnerScriptFailureSummaryTests
             Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
             """
             {
+              "nginx": { "role": "server" },
+              "neqo": { "role": "both" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "neqo-peer",
+            "-TestCases",
+            "connectionmigration");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Peer implementation slot 'neqo-peer' was not found", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("requires the local replacement slot 'nginx' to differ", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationText = File.ReadAllText(Path.Combine(runRoot, "invocation.txt"));
+        string[] runnerArgs = GetInvocationRunnerArgs(invocationText);
+        int serverIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-s", StringComparison.Ordinal));
+        int clientIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-c", StringComparison.Ordinal));
+        int replacementIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-r", StringComparison.Ordinal));
+
+        Assert.Equal("nginx", GetInvocationFieldValue(invocationText, "LocalImplementationSlot"));
+        Assert.Equal("neqo-peer", GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
+        Assert.True(serverIndex >= 0);
+        Assert.Equal("nginx", runnerArgs[serverIndex + 1]);
+        Assert.True(clientIndex >= 0);
+        Assert.Equal("neqo", runnerArgs[clientIndex + 1]);
+        Assert.True(replacementIndex >= 0);
+        Assert.Equal("nginx=incursa-quic-interop-harness:local", runnerArgs[replacementIndex + 1]);
+        Assert.DoesNotContain("neqo-peer", runnerArgs, StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public async Task SplitRolePeerAliasResolvingToLocalReplacementSlotIsRejectedBeforeBuildWorkBegins()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-valid-outputs");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
               "neqo": { "role": "both" }
             }
             """);
@@ -160,22 +217,13 @@ public sealed class InteropRunnerScriptFailureSummaryTests
 
         string output = result.CombinedOutput;
 
-        Assert.Equal(7, result.ExitCode);
-        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
-        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Peer implementation slot 'neqo-peer' was not found", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("requires the local replacement slot 'neqo' to differ", output, StringComparison.OrdinalIgnoreCase);
-
-        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
-        string invocationText = File.ReadAllText(Path.Combine(runRoot, "invocation.txt"));
-        string[] runnerArgs = GetInvocationRunnerArgs(invocationText);
-        int clientIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-c", StringComparison.Ordinal));
-
-        Assert.Equal("neqo-peer", GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
-        Assert.True(clientIndex >= 0);
-        Assert.Equal("neqo", runnerArgs[clientIndex + 1]);
-        Assert.DoesNotContain("neqo-peer", runnerArgs, StringComparer.Ordinal);
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains(
+            "requires the local replacement slot 'neqo' to differ from the resolved peer implementation slot 'neqo' (peer slot 'neqo-peer')",
+            result.ExceptionMessage,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Building Incursa.Quic.InteropHarness image...", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
     }
 
     [Fact]
