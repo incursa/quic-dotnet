@@ -29,7 +29,7 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-13 INT Connection Migration Proof Lane
 
-`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role against `ngtcp2` using the `neqo` slot, plus a companion `connectionmigration-server-proof-blocked` profile that preserves `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. The latest hosted `picoquic` attempt was rejected because the runner could not validate the image signature, so the proof lane is being retargeted to `ngtcp2` rather than being claimed green too early. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
+`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role against `neqo` using the `neqo` slot and the `ghcr.io/mozilla/neqo-qns:latest` peer image, plus a companion `connectionmigration-server-proof-blocked` profile that preserves `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. The latest hosted `ngtcp2` attempt was rejected because the runner could not validate the image signature on its manifest-list image, so the proof lane is being retargeted to `neqo` rather than being claimed green too early. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -300,7 +300,7 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
 inventory promotion, while `connectionmigration` is awaiting a fresh hosted
-proof run using the `neqo` slot against `ngtcp2`; none of them are blocked on
+proof run using the `neqo` slot against `neqo`; none of them are blocked on
 missing internal path-state promotion logic or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the

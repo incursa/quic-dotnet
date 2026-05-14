@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-ngtcp2
+          - cell: server-connectionmigration-neqo
             local_role: server
             implementation_slot: neqo
-            peer_slots: ngtcp2
-            peer_image: ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c
+            peer_slots: neqo
+            peer_image: ghcr.io/mozilla/neqo-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -360,6 +360,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - cell: server-connectionmigration-ngtcp2-blocked
+            local_role: server
+            implementation_slot: neqo
+            peer_slots: ngtcp2
+            peer_image: ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
           - cell: server-connectionmigration-quiche-blocked
             local_role: server
             implementation_slot: neqo
