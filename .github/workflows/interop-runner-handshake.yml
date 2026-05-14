@@ -279,8 +279,8 @@ jobs:
           - cell: server-connectionmigration-ngtcp2
             local_role: server
             implementation_slot: ngtcp2
-            peer_slots: msquic
-            peer_image: ghcr.io/microsoft/msquic/qns:main
+            peer_slots: aioquic
+            peer_image: aiortc/aioquic-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
