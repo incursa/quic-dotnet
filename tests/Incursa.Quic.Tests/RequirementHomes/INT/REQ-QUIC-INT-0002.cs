@@ -204,9 +204,9 @@ public sealed class REQ_QUIC_INT_0002
 
         Assert.NotNull(options.PreferredAddress);
         Assert.Equal(new byte[] { 193, 167, 100, 110 }, options.PreferredAddress!.IPv4Address);
-        Assert.Equal((ushort)443, options.PreferredAddress.IPv4Port);
+        Assert.Equal((ushort)4443, options.PreferredAddress.IPv4Port);
         Assert.Equal(IPAddress.Parse("fd00:cafe:cafe:100::110").GetAddressBytes(), options.PreferredAddress.IPv6Address);
-        Assert.Equal((ushort)443, options.PreferredAddress.IPv6Port);
+        Assert.Equal((ushort)4443, options.PreferredAddress.IPv6Port);
         Assert.Equal(Convert.FromHexString("2021222324252627"), options.PreferredAddress.ConnectionId);
         Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), options.PreferredAddress.StatelessResetToken);
     }

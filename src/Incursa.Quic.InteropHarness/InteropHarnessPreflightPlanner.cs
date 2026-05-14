@@ -13,6 +13,7 @@ namespace Incursa.Quic.InteropHarness;
 internal sealed class InteropHarnessPreflightPlanner
 {
     private const int DefaultHandshakePort = 443;
+    private const int ConnectionMigrationPreferredAddressPort = 4443;
     private static readonly IPAddress ConnectionMigrationPreferredAddressIpv4 = IPAddress.Parse("193.167.100.110");
     private static readonly IPAddress ConnectionMigrationPreferredAddressIpv6 = IPAddress.Parse("fd00:cafe:cafe:100::110");
     private const int PreferredAddressIpv6BytesLength = 16;
@@ -142,7 +143,7 @@ internal sealed class InteropHarnessPreflightPlanner
         return CreateConnectionMigrationPreferredAddress(
             ConnectionMigrationPreferredAddressIpv4,
             ConnectionMigrationPreferredAddressIpv6,
-            DefaultHandshakePort);
+            ConnectionMigrationPreferredAddressPort);
     }
 
     internal static QuicPreferredAddress CreateConnectionMigrationPreferredAddress(
