@@ -276,9 +276,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-neqo
+          - cell: server-connectionmigration-ngtcp2
             local_role: server
-            implementation_slot: neqo
+            implementation_slot: ngtcp2
             peer_slots: quinn
             peer_image: stammw/quinn-interop:latest
             testcases: connectionmigration
