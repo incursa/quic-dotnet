@@ -38,9 +38,9 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0005
     }
 
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void ValidatedMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId()
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ValidatedMigrationIsAllowedWhenThePeerRequestedZeroLengthConnectionId()
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.122", RemotePort: 443);
         QuicConnectionPathIdentity migratedPath = new("203.0.113.123", RemotePort: 443);
@@ -63,11 +63,12 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0005
 
         Assert.True(validationResult.StateChanged);
         Assert.True(runtime.ActivePath.HasValue);
-        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
-        Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
-        Assert.True(candidatePath.Validation.IsValidated);
-        Assert.False(candidatePath.Validation.IsAbandoned);
-        Assert.DoesNotContain(validationResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.Equal(migratedPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == migratedPath
+            && !promote.RestoreSavedState);
     }
 
     [Fact]

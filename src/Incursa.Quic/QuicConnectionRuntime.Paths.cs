@@ -404,7 +404,6 @@ internal sealed partial class QuicConnectionRuntime
         if (tlsState.Role != QuicTlsRole.Client
             || !HandshakeConfirmed
             || activePath is null
-            || PeerRequestedZeroLengthConnectionId()
             || MaximumCandidatePaths == 0
             || tlsState.PeerTransportParameters?.PreferredAddress is not QuicPreferredAddress preferredAddress
             || !TrySelectPreferredAddressPath(
@@ -1248,11 +1247,6 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
-        {
-            return false;
-        }
-
-        if (PeerRequestedZeroLengthConnectionId())
         {
             return false;
         }
