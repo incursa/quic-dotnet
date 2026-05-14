@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-neqo
+          - cell: server-connectionmigration-lsquic
             local_role: server
             implementation_slot: neqo
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
+            peer_slots: lsquic
+            peer_image: litespeedtech/lsquic-qir:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
