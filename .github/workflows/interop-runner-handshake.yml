@@ -272,6 +272,7 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -280,7 +281,7 @@ jobs:
             local_role: server
             implementation_slot: nginx
             peer_slots: ngtcp2
-            peer_image: ghcr.io/ngtcp2/ngtcp2-interop:latest
+            peer_image: ghcr.io/incursa/quic-interop-ngtcp2:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -322,6 +323,22 @@ jobs:
           python --version
           tshark --version
           editcap --version
+
+      - name: Build ngtcp2 wrapper image
+        shell: bash
+        run: |
+          cat > /tmp/Dockerfile.ngtcp2 <<'EOF'
+          FROM ghcr.io/ngtcp2/ngtcp2-interop:latest
+          EOF
+          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --provenance=false \
+            --sbom=false \
+            --output=type=registry,oci-mediatypes=true \
+            --tag ghcr.io/incursa/quic-interop-ngtcp2:latest \
+            -f /tmp/Dockerfile.ngtcp2 \
+            .
 
       - name: Pre-pull runner peer images
         shell: bash

@@ -19,7 +19,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-ngtcp2", workflow, StringComparison.Ordinal);
-        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("Build ngtcp2 wrapper image", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/incursa/quic-interop-ngtcp2:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("privateoctopus/picoquic:latest", workflow, StringComparison.Ordinal);
