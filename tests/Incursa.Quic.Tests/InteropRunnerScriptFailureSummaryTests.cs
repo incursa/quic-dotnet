@@ -166,6 +166,16 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Peer implementation slot 'neqo-peer' was not found", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("requires the local replacement slot 'neqo' to differ", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationText = File.ReadAllText(Path.Combine(runRoot, "invocation.txt"));
+        string[] runnerArgs = GetInvocationRunnerArgs(invocationText);
+        int clientIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-c", StringComparison.Ordinal));
+
+        Assert.Equal("neqo-peer", GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
+        Assert.True(clientIndex >= 0);
+        Assert.Equal("neqo", runnerArgs[clientIndex + 1]);
+        Assert.DoesNotContain("neqo-peer", runnerArgs, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -899,6 +909,54 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         string[] runRoots = Directory.GetDirectories(artifactsRoot);
         Assert.Single(runRoots);
         return runRoots[0];
+    }
+
+    private static string GetInvocationFieldValue(string invocationText, string fieldName)
+    {
+        string prefix = $"{fieldName}:";
+        foreach (string line in GetLines(invocationText))
+        {
+            if (line.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return line.Substring(prefix.Length).Trim();
+            }
+        }
+
+        throw new InvalidOperationException($"Invocation summary did not contain a '{fieldName}' field.");
+    }
+
+    private static string[] GetInvocationRunnerArgs(string invocationText)
+    {
+        string[] lines = GetLines(invocationText);
+        int runnerArgsIndex = Array.FindIndex(lines, line => string.Equals(line, "RunnerArgs:", StringComparison.Ordinal));
+        if (runnerArgsIndex < 0)
+        {
+            throw new InvalidOperationException("Invocation summary did not contain a RunnerArgs section.");
+        }
+
+        List<string> runnerArgs = new();
+        for (int index = runnerArgsIndex + 1; index < lines.Length; index++)
+        {
+            string line = lines[index];
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                break;
+            }
+
+            if (!line.StartsWith("  ", StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            runnerArgs.Add(line.Trim());
+        }
+
+        return runnerArgs.ToArray();
+    }
+
+    private static string[] GetLines(string text)
+    {
+        return text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
     }
 
     private static void AssertFailureSummary(

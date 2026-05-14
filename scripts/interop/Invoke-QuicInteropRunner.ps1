@@ -565,6 +565,19 @@ function Get-RunnerImplementationRole {
     return [string]$slot.Value.role
 }
 
+function Resolve-RunnerImplementationSlotName {
+    param(
+        [Parameter(Mandatory)]
+        [string]$SlotName
+    )
+
+    if ($SlotName.EndsWith('-peer', [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $SlotName.Substring(0, $SlotName.Length - 5)
+    }
+
+    return $SlotName
+}
+
 function Get-EffectivePath {
     param(
         [Parameter(Mandatory)]
@@ -612,22 +625,6 @@ function Get-InteropRunnerExecutionPlan {
         [string]$RunStamp
     )
 
-    $runnerClientImplementations = @()
-    $runnerServerImplementations = @()
-
-    if ($LocalRole -eq 'both') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-    elseif ($LocalRole -eq 'client') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($PeerImplementationSlots)
-    }
-    else {
-        $runnerClientImplementations = @($PeerImplementationSlots)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-
     $testCaseInventory = @(Get-InteropRunnerTestCaseInventory)
     $requestedTestCaseInventory = [System.Collections.Generic.List[object]]::new()
     foreach ($testCase in $TestCases) {
@@ -653,6 +650,27 @@ function Get-InteropRunnerExecutionPlan {
     $artifactTreeLog = Join-Path $runRoot 'artifact-tree.txt'
     $runnerShimPath = Join-Path $runRoot 'runner-shim.py'
     $dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$RunStamp"
+    $resolvedPeerImplementationSlots = @()
+    if ($null -ne $PeerImplementationSlots) {
+        foreach ($peerImplementationSlot in $PeerImplementationSlots) {
+            $resolvedPeerImplementationSlots += Resolve-RunnerImplementationSlotName -SlotName $peerImplementationSlot
+        }
+    }
+    $runnerClientImplementations = @()
+    $runnerServerImplementations = @()
+
+    if ($LocalRole -eq 'both') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+    elseif ($LocalRole -eq 'client') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($resolvedPeerImplementationSlots)
+    }
+    else {
+        $runnerClientImplementations = @($resolvedPeerImplementationSlots)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
 
     return [pscustomobject]@{
         RepoRoot = $RepoRootResolved
