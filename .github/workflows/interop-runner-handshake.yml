@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-quiche
+            - cell: server-connectionmigration-neqo-lsquic
               local_role: server
               implementation_slot: neqo
-              peer_slots: quiche
-              peer_image: cloudflare/quiche-qns:latest
+              peer_slots: lsquic
+              peer_image: litespeedtech/lsquic-qir:latest
               testcases: connectionmigration
               runner_timeout_seconds: 240
     steps:
