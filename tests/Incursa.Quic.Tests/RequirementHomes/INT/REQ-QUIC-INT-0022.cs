@@ -20,6 +20,7 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-ngtcp2", workflow, StringComparison.Ordinal);
         Assert.Contains("Mirror ngtcp2 OCI wrapper image", workflow, StringComparison.Ordinal);
+        Assert.Contains("--format oci", workflow, StringComparison.Ordinal);
         Assert.Contains("ghcr.io/incursa/quic-interop-ngtcp2:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);

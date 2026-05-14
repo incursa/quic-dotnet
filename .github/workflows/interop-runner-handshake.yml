@@ -330,7 +330,7 @@ jobs:
           docker run --rm quay.io/skopeo/stable:latest \
             copy --all \
             --dest-creds "${{ github.actor }}:${{ github.token }}" \
-            --dest-oci-mediatypes \
+            --format oci \
             docker://ghcr.io/ngtcp2/ngtcp2-interop:latest \
             docker://ghcr.io/incursa/quic-interop-ngtcp2:latest
 
