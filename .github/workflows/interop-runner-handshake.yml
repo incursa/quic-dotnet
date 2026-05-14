@@ -324,21 +324,15 @@ jobs:
           tshark --version
           editcap --version
 
-      - name: Build ngtcp2 wrapper image
+      - name: Mirror ngtcp2 OCI wrapper image
         shell: bash
         run: |
-          cat > /tmp/Dockerfile.ngtcp2 <<'EOF'
-          FROM ghcr.io/ngtcp2/ngtcp2-interop:latest
-          EOF
-          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --provenance=false \
-            --sbom=false \
-            --output=type=registry,oci-mediatypes=true \
-            --tag ghcr.io/incursa/quic-interop-ngtcp2:latest \
-            -f /tmp/Dockerfile.ngtcp2 \
-            .
+          docker run --rm quay.io/skopeo/stable:latest \
+            copy --all \
+            --dest-creds "${{ github.actor }}:${{ github.token }}" \
+            --dest-oci-mediatypes \
+            docker://ghcr.io/ngtcp2/ngtcp2-interop:latest \
+            docker://ghcr.io/incursa/quic-interop-ngtcp2:latest
 
       - name: Pre-pull runner peer images
         shell: bash
