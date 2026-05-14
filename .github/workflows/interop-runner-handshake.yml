@@ -284,6 +284,13 @@ jobs:
             peer_image: ghcr.io/incursa/quic-interop-neqo:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
+          - cell: server-connectionmigration-aioquic
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: aioquic
+            peer_image: aiortc/aioquic-qns:latest
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
         uses: actions/checkout@v6
@@ -325,6 +332,7 @@ jobs:
           editcap --version
 
       - name: Mirror neqo OCI wrapper image
+        if: ${{ matrix.peer_slots == 'neqo' }}
         shell: bash
         run: |
           docker run --rm quay.io/skopeo/stable:latest \
@@ -335,11 +343,13 @@ jobs:
             docker://ghcr.io/incursa/quic-interop-neqo:latest
 
       - name: Log in to GHCR
+        if: ${{ matrix.peer_slots == 'neqo' }}
         shell: bash
         run: |
           echo "${{ github.token }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
 
       - name: Override neqo runner image
+        if: ${{ matrix.peer_slots == 'neqo' }}
         shell: bash
         run: |
           python - <<'PY'
