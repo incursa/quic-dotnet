@@ -29,7 +29,7 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("litespeedtech/lsquic-qir:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-ngtcp2-blocked", workflow, StringComparison.Ordinal);
-        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-quic-go-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-msquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-aioquic-blocked", workflow, StringComparison.Ordinal);
