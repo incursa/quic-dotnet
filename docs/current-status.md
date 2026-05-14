@@ -30,14 +30,13 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile against `picoquic` plus a companion
-`connectionmigration-server-proof-blocked` profile that preserves `picoquic`,
-`quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic`
-comparisons. The latest hosted `picoquic` and `ngtcp2` attempts failed on
-image-signature validation, so the proof lane is being re-aimed back at the
-`lsquic` slot against `neqo` instead of claiming a green result too early. The
-blocked comparison lane stays advisory and remains separated from the
-major-peer matrix.
+proof profile that keeps the `lsquic` slot and adds a `picoquic` candidate
+against `neqo`, plus a companion `connectionmigration-server-proof-blocked`
+profile that preserves `picoquic`, `quiche`, `lsquic`, `ngtcp2`, `quic-go`,
+`msquic`, and `aioquic` comparisons. The latest hosted `lsquic` attempt failed
+on an initial-handshake `TLS alert 50`, so the proof lane is being broadened
+instead of claimed green too early. The blocked comparison lane stays advisory
+and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -308,8 +307,9 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
 inventory promotion, while `connectionmigration` is awaiting a fresh green
-hosted proof run using the `lsquic` slot against `neqo`; none of them are
-blocked on missing internal path-state promotion logic or socket rebinding support.
+hosted proof run using the `lsquic` slot and a `picoquic` candidate against
+`neqo`; none of them are blocked on missing internal path-state promotion logic
+or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`
