@@ -178,6 +178,31 @@ public sealed class REQ_QUIC_CRT_0112
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerRoleAcceptsClientHelloWithUnknownNonConflictingExtensionsAndTls13InSupportedVersionsList()
+    {
+        QuicTlsTransportBridgeDriver driver = new(QuicTlsRole.Server);
+        _ = driver.StartHandshake(CreateBootstrapLocalTransportParameters());
+
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Handshake,
+            CreateClientHelloTranscript(
+                CreateClientTransportParameters(),
+                supportedVersions: [0x7a7a, 0x0303, 0x0304],
+                extraExtensions:
+                [
+                    CreateClientHelloExtension(0x0a0a, [0x01, 0x02, 0x03, 0x04]),
+                ]));
+
+        Assert.True(updates.Count >= 5);
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
+        Assert.True(driver.State.HandshakeKeysAvailable);
+        Assert.False(driver.State.IsTerminal);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void HandshakeKeysStayUnavailableUntilTheSupportedClientHelloCompletes()
