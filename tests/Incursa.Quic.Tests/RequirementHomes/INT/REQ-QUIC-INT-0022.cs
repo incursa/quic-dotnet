@@ -18,11 +18,10 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof'", workflow, StringComparison.Ordinal);
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-quiche", workflow, StringComparison.Ordinal);
-        Assert.Contains("cloudflare/quiche-qns:latest", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-picoquic-blocked", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-picoquic", workflow, StringComparison.Ordinal);
         Assert.Contains("privateoctopus/picoquic:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-quiche-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("litespeedtech/lsquic-qir:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-quic-go-blocked", workflow, StringComparison.Ordinal);
         Assert.Contains("server-connectionmigration-msquic-blocked", workflow, StringComparison.Ordinal);
@@ -39,21 +38,21 @@ public sealed class REQ_QUIC_INT_0022
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `quiche`", readme, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", readme, StringComparison.Ordinal);
+        Assert.Contains("against `picoquic`", readme, StringComparison.Ordinal);
+        Assert.Contains("quiche`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", harnessReadme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `quiche`", harnessReadme, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("against `picoquic`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("quiche`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `quiche`", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("against `picoquic`", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("quiche`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof-blocked", spec, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("against `quiche`", spec, StringComparison.Ordinal);
-        Assert.Contains("picoquic`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", spec, StringComparison.Ordinal);
+        Assert.Contains("against `picoquic`", spec, StringComparison.Ordinal);
+        Assert.Contains("quiche`, `lsquic`, `quic-go`, `msquic`, `neqo`, and `aioquic", spec, StringComparison.Ordinal);
     }
 
     [Fact]
