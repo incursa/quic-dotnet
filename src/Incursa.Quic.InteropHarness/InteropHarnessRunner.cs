@@ -23,6 +23,7 @@ internal static class InteropHarnessRunner
     internal static readonly TimeSpan MulticonnectLossHandshakeBudget = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan ConnectionMigrationSendCreditRetryTimeout = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan VersionNegotiationPostSendGracePeriod = TimeSpan.FromSeconds(1);
@@ -1941,8 +1942,17 @@ internal static class InteropHarnessRunner
                         bufferSize: StreamCopyBufferSize,
                         useAsync: true);
 
-                    await CopyToQuicStreamWithRetryAsync(sourceStream, stream).ConfigureAwait(false);
-                    await CompleteQuicStreamWritesWithRetryAsync(stream).ConfigureAwait(false);
+                    TimeSpan? sendCreditRetryTimeout = testCase == "connectionmigration"
+                        ? ConnectionMigrationSendCreditRetryTimeout
+                        : null;
+
+                    await CopyToQuicStreamWithRetryAsync(
+                        sourceStream,
+                        stream,
+                        sendCreditRetryTimeout).ConfigureAwait(false);
+                    await CompleteQuicStreamWritesWithRetryAsync(
+                        stream,
+                        sendCreditRetryTimeout).ConfigureAwait(false);
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} completed managed {testCase} response from {sourcePath} for target={relativePath}, bytes={sourceInfo.Length}, stream {servedRequestCount + 1}.");
@@ -2100,7 +2110,10 @@ internal static class InteropHarnessRunner
         return Encoding.ASCII.GetBytes($"GET {requestTarget}\r\n");
     }
 
-    private static async Task CopyToQuicStreamWithRetryAsync(Stream sourceStream, QuicStream destinationStream)
+    private static async Task CopyToQuicStreamWithRetryAsync(
+        Stream sourceStream,
+        QuicStream destinationStream,
+        TimeSpan? sendCreditRetryTimeout = null)
     {
         byte[] buffer = new byte[QuicStreamBodyWriteChunkSize];
 
@@ -2112,24 +2125,36 @@ internal static class InteropHarnessRunner
                 break;
             }
 
-            await WriteQuicStreamChunkWithRetryAsync(destinationStream, buffer, bytesRead).ConfigureAwait(false);
+            await WriteQuicStreamChunkWithRetryAsync(
+                destinationStream,
+                buffer,
+                bytesRead,
+                sendCreditRetryTimeout).ConfigureAwait(false);
         }
     }
 
-    private static async Task WriteQuicStreamChunkWithRetryAsync(QuicStream stream, byte[] buffer, int count)
+    private static async Task WriteQuicStreamChunkWithRetryAsync(
+        QuicStream stream,
+        byte[] buffer,
+        int count,
+        TimeSpan? sendCreditRetryTimeout = null)
     {
         await RetryTransientSendCreditAsync(
             () => new ValueTask(stream.WriteAsync(buffer, 0, count)),
             "Timed out waiting for QUIC stream send credit.",
-            "Timed out waiting for QUIC stream flow-control credit.").ConfigureAwait(false);
+            "Timed out waiting for QUIC stream flow-control credit.",
+            sendCreditRetryTimeout ?? CongestionRetryTimeout).ConfigureAwait(false);
     }
 
-    private static async Task CompleteQuicStreamWritesWithRetryAsync(QuicStream stream)
+    private static async Task CompleteQuicStreamWritesWithRetryAsync(
+        QuicStream stream,
+        TimeSpan? sendCreditRetryTimeout = null)
     {
         await RetryTransientSendCreditAsync(
             () => stream.CompleteWritesAsync(),
             "Timed out waiting for QUIC stream FIN send credit.",
-            "Timed out waiting for QUIC stream FIN flow-control credit.").ConfigureAwait(false);
+            "Timed out waiting for QUIC stream FIN flow-control credit.",
+            sendCreditRetryTimeout ?? CongestionRetryTimeout).ConfigureAwait(false);
     }
 
     private static bool IsTransientCongestionExhaustion(InvalidOperationException exception)
