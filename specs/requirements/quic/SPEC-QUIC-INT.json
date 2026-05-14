@@ -694,7 +694,7 @@
     {
       "id": "REQ-QUIC-INT-0022",
       "title": "Provide a hosted connectionmigration proof lane",
-      "statement": "The interop harness MUST provide a manual advisory hosted Linux `connectionmigration-server-proof` profile that exercises the server role against `quic-go`, `msquic`, and `neqo` for `connectionmigration`, uploads a distinct artifact bundle for each cell, and remains outside ordinary push, pull-request, build, test, package, and support-readiness gates. The profile exists to refresh live corroboration for the already classified connectionmigration inventory cell and MUST NOT be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
+      "statement": "The interop harness MUST provide manual advisory hosted Linux `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles. The `connectionmigration-server-proof` profile exercises the server role against `picoquic` and `lsquic` for `connectionmigration`, and the blocked companion profile keeps `quic-go`, `msquic`, and `neqo` visible for comparison; both profiles upload distinct artifact bundles for each cell and remain outside ordinary push, pull-request, build, test, package, and support-readiness gates. The proof profile exists to refresh live corroboration for the already classified connectionmigration inventory cell and MUST NOT be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0015"
@@ -722,7 +722,7 @@
         ]
       },
       "notes": [
-        "This slice creates a dedicated hosted corroboration path for the connectionmigration lane.",
+        "This slice creates a dedicated hosted corroboration path for the connectionmigration lane and keeps the blocked comparison peers visible without widening the green proof lane.",
         "It does not broaden the major-peer-matrix profile or change the underlying supported-executed helper inventory claim."
       ]
     }

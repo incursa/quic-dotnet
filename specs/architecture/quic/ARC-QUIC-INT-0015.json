@@ -6,7 +6,7 @@
   "title": "QUIC Connection Migration Hosted Proof Lane Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the advisory hosted Linux connectionmigration proof lane that refreshes live corroboration for the inventory cell by comparing server-role behavior against quic-go, msquic, and neqo.",
+  "purpose": "Describe the advisory hosted Linux connectionmigration proof lane that refreshes live corroboration for the inventory cell by comparing server-role behavior against picoquic and lsquic while keeping quic-go, msquic, and neqo visible in a blocked comparison lane.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0014",
@@ -25,14 +25,14 @@
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
   ],
-  "design_summary": "The manual hosted workflow keeps the default hosted-handshake and major-peer-matrix profiles unchanged and adds a separate `connectionmigration-server-proof` profile. The profile fans out over Incursa.Quic as the local server against `quic-go`, `msquic`, and `neqo` peer slots for `connectionmigration`, and each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the selected peer implementation image and uploads each cell bundle with `if: always()` so failed, advisory, and passing attempts remain attributable. The existing helper/runtime migration support stays the source of truth for the inventory claim; this architecture only explains the hosted evidence-collection lane that refreshes live corroboration without widening the broader major-peer-matrix scope.",
+  "design_summary": "The manual hosted workflow keeps the default hosted-handshake and major-peer-matrix profiles unchanged and adds a green `connectionmigration-server-proof` profile plus a separate `connectionmigration-server-proof-blocked` profile. The green profile fans out over Incursa.Quic as the local server against `picoquic` and `lsquic` peer slots for `connectionmigration`, while the blocked profile preserves `quic-go`, `msquic`, and `neqo` comparison cells. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the selected peer implementation image and uploads each cell bundle with `if: always()` so failed, advisory, blocked, and passing attempts remain attributable. The existing helper/runtime migration support stays the source of truth for the inventory claim; this architecture only explains the hosted evidence-collection lanes that refresh live corroboration without widening the broader major-peer-matrix scope.",
   "alternatives_considered": [
     "Fold connectionmigration into the major peer matrix. Rejected because that matrix is intentionally scoped to currently executable cells and would overstate the broader evidence surface.",
     "Rely on the local migration proof only. Rejected because the gap ledger still requires hosted corroboration and the user explicitly asked to compare against the GitHub-hosted runner.",
     "Change the runtime transport behavior first. Rejected because the runtime seam already exists; the remaining work is hosted proof and evidence collection."
   ],
   "edge_cases_and_constraints": [
-    "The hosted Linux profile remains advisory and outside ordinary CI gates.",
+    "The hosted Linux profiles remain advisory and outside ordinary CI gates.",
     "Every matrix cell must preserve a distinct artifact root so role, peer, and testcase results can be audited independently.",
     "Partial hosted proof, server-only dispatch, or local proof alone must not be treated as support evidence.",
     "HTTP/3 remains out of scope."
@@ -46,7 +46,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design only formalizes the dedicated hosted proof lane for connectionmigration. It does not change HTTP/3, broad rebinding semantics, or the scope of the major-peer-matrix profile."
+      "content": "This design only formalizes the dedicated hosted proof lanes for connectionmigration. It does not change HTTP/3, broad rebinding semantics, or the scope of the major-peer-matrix profile."
     }
   ]
 }

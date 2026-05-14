@@ -29,17 +29,18 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-13 INT Connection Migration Proof Lane
 
-`REQ-QUIC-INT-0022` now defines a dedicated advisory
-`connectionmigration-server-proof` hosted profile for the server-role
-`connectionmigration` cells against `quic-go`, `msquic`, and `neqo`. The
-helper inventory already classifies `connectionmigration` as
-supported/executed, but the live corroboration lane is still pending. The most
-recent local `migration-server-proof` rerun still shows the `quic-go` cell
-failing and keeps the `msquic` and `neqo` comparisons as the next
-GitHub-hosted trace targets. The latest hosted run `25832312595` has now
-reached the proof cell for `neqo`, but it still fails with an initial-handshake
-idle timeout, while the `msquic` job trips an external runner-shim
-handshake-counting `AttributeError` before it can finish classifying the cell.
+`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into
+a green `connectionmigration-server-proof` profile against `picoquic` and
+`lsquic` and a companion `connectionmigration-server-proof-blocked` profile
+that preserves the `quic-go`, `msquic`, and `neqo` comparisons. The helper
+inventory already classifies `connectionmigration` as supported/executed, but
+the green lane still needs hosted corroboration. The most recent local
+`migration-server-proof` rerun still shows the `quic-go` cell failing, which is
+why the green proof lane now uses `picoquic` and `lsquic`. The latest hosted
+blocked-lane run `25832312595` reached `neqo`, but it still fails with an
+initial-handshake idle timeout, while the `msquic` job trips an external
+runner-shim handshake-counting `AttributeError` before it can finish
+classifying the cell.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
