@@ -279,8 +279,8 @@ jobs:
           - cell: server-connectionmigration-ngtcp2
             local_role: server
             implementation_slot: neqo
-            peer_slots: ngtcp2
-            peer_image: ghcr.io/ngtcp2/ngtcp2-interop@sha256:69a1a58f614232987550fe4ada4ca7875f95abccf47f773280b721a2b9d3bf8c
+            peer_slots: lsquic
+            peer_image: litespeedtech/lsquic-qir:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
