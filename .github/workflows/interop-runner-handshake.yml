@@ -276,13 +276,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-picoquic
-              local_role: server
-              implementation_slot: neqo
-              peer_slots: picoquic
-              peer_image: privateoctopus/picoquic:latest
-              testcases: connectionmigration
-              runner_timeout_seconds: 240
+          - cell: server-connectionmigration-neqo
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: neqo
+            peer_image: ghcr.io/mozilla/neqo-qns:latest
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
         uses: actions/checkout@v6
