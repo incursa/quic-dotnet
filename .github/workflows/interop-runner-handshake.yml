@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-quiche
+            - cell: server-connectionmigration-neqo-picoquic
               local_role: server
               implementation_slot: neqo
-              peer_slots: quiche
-              peer_image: cloudflare/quiche-qns:latest
+              peer_slots: picoquic
+              peer_image: privateoctopus/picoquic:latest
               testcases: connectionmigration
               runner_timeout_seconds: 240
     steps:
@@ -360,11 +360,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-picoquic-blocked
+          - cell: server-connectionmigration-quiche-blocked
             local_role: server
             implementation_slot: neqo
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
+            peer_slots: quiche
+            peer_image: cloudflare/quiche-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
           - cell: server-connectionmigration-lsquic-blocked

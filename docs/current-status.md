@@ -30,14 +30,14 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile against `quiche` plus a companion
-`connectionmigration-server-proof-blocked` profile that preserves `picoquic`,
+proof profile against `picoquic` plus a companion
+`connectionmigration-server-proof-blocked` profile that preserves `quiche`,
 `lsquic`, `ngtcp2`, `neqo`, `quic-go`, `msquic`, and `aioquic`
-comparisons. The latest hosted `neqo`/`ngtcp2` attempt failed because the
-runner logged an image-signature validation error for the `ngtcp2` digest, so
-the proof lane is now being re-aimed at `quiche` instead of claiming a green
-result too early. The blocked comparison lane stays advisory and remains
-separated from the major-peer matrix.
+comparisons. The latest hosted `neqo`/`quiche` attempt failed because the
+quiche client image started the transfer testcase instead of active migration
+and exited `255`, so the proof lane is now being re-aimed at `picoquic`
+instead of claiming a green result too early. The blocked comparison lane stays
+advisory and remains separated from the major-peer matrix.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
