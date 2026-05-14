@@ -278,9 +278,9 @@ jobs:
         include:
           - cell: server-connectionmigration-lsquic
             local_role: server
-            implementation_slot: nginx
-            peer_slots: lsquic
-            peer_image: litespeedtech/lsquic-qir:latest
+            implementation_slot: lsquic
+            peer_slots: neqo
+            peer_image: ghcr.io/mozilla/neqo-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
