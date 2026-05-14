@@ -30,12 +30,11 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile against `neqo` plus a companion
+proof profile against `picoquic` plus a companion
 `connectionmigration-server-proof-blocked` profile that preserves `picoquic`,
 `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic`
-comparisons. The latest hosted `neqo` attempt failed with TLS alert 50, while
-the current public matrix shows `lsquic_neqo` connectionmigration success, so
-the proof lane is now being re-aimed at the `lsquic` slot against `neqo`
+comparisons. The latest hosted `neqo` attempt failed with TLS alert 50, so the
+proof lane is now being re-aimed at the `lsquic` slot against `picoquic`
 instead of claiming a green result too early. The blocked comparison lane stays
 advisory and remains separated from the major-peer matrix.
 

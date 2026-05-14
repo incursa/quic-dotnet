@@ -279,8 +279,8 @@ jobs:
           - cell: server-connectionmigration-lsquic
             local_role: server
             implementation_slot: lsquic
-            peer_slots: neqo
-            peer_image: ghcr.io/mozilla/neqo-qns:latest
+            peer_slots: picoquic
+            peer_image: privateoctopus/picoquic:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
