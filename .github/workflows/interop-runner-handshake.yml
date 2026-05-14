@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-ngtcp2
+            - cell: server-connectionmigration-neqo-quiche
               local_role: server
               implementation_slot: neqo
-              peer_slots: ngtcp2
-              peer_image: ghcr.io/ngtcp2/ngtcp2-interop:latest
+              peer_slots: quiche
+              peer_image: cloudflare/quiche-qns:latest
               testcases: connectionmigration
               runner_timeout_seconds: 240
     steps:
@@ -374,11 +374,11 @@ jobs:
             peer_image: litespeedtech/lsquic-qir:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
-          - cell: server-connectionmigration-quiche-blocked
+          - cell: server-connectionmigration-ngtcp2-blocked
             local_role: server
             implementation_slot: neqo
-            peer_slots: quiche
-            peer_image: cloudflare/quiche-qns:latest
+            peer_slots: ngtcp2
+            peer_image: ghcr.io/ngtcp2/ngtcp2-interop:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
           - cell: server-connectionmigration-quic-go-blocked
