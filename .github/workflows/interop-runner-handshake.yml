@@ -272,23 +272,15 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: read
-      packages: write
     strategy:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-neqo
+          - cell: server-connectionmigration-quiche
             local_role: server
             implementation_slot: nginx
-            peer_slots: neqo
-            peer_image: ghcr.io/incursa/quic-interop-neqo:latest
-            testcases: connectionmigration
-            runner_timeout_seconds: 240
-          - cell: server-connectionmigration-aioquic
-            local_role: server
-            implementation_slot: nginx
-            peer_slots: aioquic
-            peer_image: aiortc/aioquic-qns:latest
+            peer_slots: quiche
+            peer_image: cloudflare/quiche-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -330,37 +322,6 @@ jobs:
           python --version
           tshark --version
           editcap --version
-
-      - name: Mirror neqo OCI wrapper image
-        if: ${{ matrix.peer_slots == 'neqo' }}
-        shell: bash
-        run: |
-          docker run --rm quay.io/skopeo/stable:latest \
-            copy --all \
-            --dest-creds "${{ github.actor }}:${{ github.token }}" \
-            --format oci \
-            docker://ghcr.io/mozilla/neqo-qns:latest \
-            docker://ghcr.io/incursa/quic-interop-neqo:latest
-
-      - name: Log in to GHCR
-        if: ${{ matrix.peer_slots == 'neqo' }}
-        shell: bash
-        run: |
-          echo "${{ github.token }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
-
-      - name: Override neqo runner image
-        if: ${{ matrix.peer_slots == 'neqo' }}
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          registry_path = Path("${{ github.workspace }}/quic-interop-runner/implementations_quic.json")
-          registry = json.loads(registry_path.read_text())
-          registry["neqo"]["image"] = "${{ matrix.peer_image }}"
-          registry_path.write_text(json.dumps(registry, indent=2) + "\n")
-          PY
 
       - name: Pre-pull runner peer images
         shell: bash
@@ -432,6 +393,13 @@ jobs:
             implementation_slot: nginx
             peer_slots: neqo
             peer_image: ghcr.io/mozilla/neqo-qns:latest
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
+          - cell: server-connectionmigration-aioquic-blocked
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: aioquic
+            peer_image: aiortc/aioquic-qns:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
 
