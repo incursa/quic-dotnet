@@ -276,11 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            - cell: server-connectionmigration-neqo-xquic
+            - cell: server-connectionmigration-neqo-picoquic
               local_role: server
               implementation_slot: neqo
-              peer_slots: xquic
-              peer_image: ghcr.io/alibaba/xquic/xquic-interop:latest
+              peer_slots: picoquic
+              peer_image: privateoctopus/picoquic:latest
               testcases: connectionmigration
               runner_timeout_seconds: 240
     steps:
@@ -360,13 +360,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-picoquic-blocked
-            local_role: server
-            implementation_slot: neqo
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
-            testcases: connectionmigration
-            runner_timeout_seconds: 240
           - cell: server-connectionmigration-ngtcp2-blocked
             local_role: server
             implementation_slot: neqo
