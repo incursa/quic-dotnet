@@ -7,6 +7,10 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-CRT-0112")]
 public sealed class REQ_QUIC_CRT_0112
 {
+    private static readonly byte[] QuicKeyLabel = System.Text.Encoding.ASCII.GetBytes("quic key");
+    private static readonly byte[] QuicIvLabel = System.Text.Encoding.ASCII.GetBytes("quic iv");
+    private static readonly byte[] QuicHpLabel = System.Text.Encoding.ASCII.GetBytes("quic hp");
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -474,6 +478,51 @@ public sealed class REQ_QUIC_CRT_0112
         Assert.True(driver.State.IsTerminal);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CapturedNeqoConnectionMigrationServerFirstFlightOpensWithPublishedSecrets()
+    {
+        byte[] originalInitialDestinationConnectionId = Convert.FromHexString("FA9C9302D36F956872087F0179AD05C356");
+        byte[] protectedInitialPacket = GetCapturedNeqoConnectionMigrationServerInitialPacket();
+
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            originalInitialDestinationConnectionId,
+            out QuicInitialPacketProtection initialProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedInitialPacket,
+            initialProtection,
+            requireZeroTokenLength: true,
+            out byte[] openedInitialPacket,
+            out int initialPayloadOffset,
+            out int initialPayloadLength));
+
+        byte[] serverHello = ExtractFirstCryptoFrameData(
+            openedInitialPacket.AsSpan(initialPayloadOffset, initialPayloadLength));
+        AssertCapturedX25519ServerHello(serverHello);
+
+        byte[] serverHandshakeTrafficSecret = Convert.FromHexString(
+            "EDA8ABD662F4DB9E08F6037E4F6100DC99F5268F7428372F0C074EF3328DAD41");
+        Assert.True(TryCreateHandshakePacketProtectionMaterial(
+            serverHandshakeTrafficSecret,
+            out QuicTlsPacketProtectionMaterial handshakeProtectionMaterial));
+
+        byte[] protectedHandshakePacket = GetCapturedNeqoConnectionMigrationServerHandshakePacket();
+        Assert.True(coordinator.TryOpenHandshakePacket(
+            protectedHandshakePacket,
+            handshakeProtectionMaterial,
+            out byte[] openedHandshakePacket,
+            out int handshakePayloadOffset,
+            out int handshakePayloadLength));
+
+        byte[] handshakeCrypto = ExtractFirstCryptoFrameData(
+            openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength));
+        Assert.NotEmpty(handshakeCrypto);
+    }
+
     internal static QuicTransportParameters CreateBootstrapLocalTransportParameters()
     {
         return new QuicTransportParameters
@@ -839,6 +888,12 @@ public sealed class REQ_QUIC_CRT_0112
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
             if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed))
             {
                 Assert.Fail($"The captured Initial payload contained an unexpected frame at offset {offset}: 0x{remaining[0]:X2}.");
@@ -996,6 +1051,234 @@ public sealed class REQ_QUIC_CRT_0112
         return $"0x{extensionType:X4}(len={extensionValue.Length})";
     }
 
+    private static byte[] ExtractFirstCryptoFrameData(ReadOnlySpan<byte> payload)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out _))
+            {
+                return cryptoFrame.CryptoData.ToArray();
+            }
+
+            Assert.Fail($"The captured payload contained an unexpected frame at offset {offset}: 0x{remaining[0]:X2}.");
+        }
+
+        Assert.Fail("The captured payload did not contain a CRYPTO frame.");
+        return [];
+    }
+
+    private static void AssertCapturedX25519ServerHello(ReadOnlySpan<byte> serverHello)
+    {
+        Assert.True(serverHello.Length >= 4);
+        Assert.Equal((byte)QuicTlsHandshakeMessageType.ServerHello, serverHello[0]);
+
+        int index = 1;
+        uint bodyLength = ReadUInt24(serverHello, ref index);
+        Assert.Equal(serverHello.Length - 4, checked((int)bodyLength));
+        Assert.Equal(0x0303, ReadUInt16(serverHello, ref index));
+
+        index += 32;
+        int sessionIdLength = serverHello[index++];
+        index += sessionIdLength;
+
+        Assert.Equal((ushort)QuicTlsCipherSuite.TlsAes128GcmSha256, ReadUInt16(serverHello, ref index));
+        Assert.Equal(0x00, serverHello[index++]);
+
+        int extensionsLength = ReadUInt16(serverHello, ref index);
+        int extensionsEnd = index + extensionsLength;
+        bool foundSupportedVersion = false;
+        bool foundKeyShare = false;
+        while (index < extensionsEnd)
+        {
+            ushort extensionType = ReadUInt16(serverHello, ref index);
+            int extensionLength = ReadUInt16(serverHello, ref index);
+            ReadOnlySpan<byte> extensionValue = serverHello.Slice(index, extensionLength);
+            index += extensionLength;
+
+            if (extensionType == 0x002B)
+            {
+                int extensionIndex = 0;
+                Assert.Equal(0x0304, ReadUInt16(extensionValue, ref extensionIndex));
+                Assert.Equal(extensionValue.Length, extensionIndex);
+                foundSupportedVersion = true;
+                continue;
+            }
+
+            if (extensionType == 0x0033)
+            {
+                int extensionIndex = 0;
+                Assert.Equal((ushort)QuicTlsNamedGroup.X25519, ReadUInt16(extensionValue, ref extensionIndex));
+                int keyShareLength = ReadUInt16(extensionValue, ref extensionIndex);
+                Assert.Equal(QuicTlsX25519.KeyLength, keyShareLength);
+                Assert.Equal(extensionValue.Length, extensionIndex + keyShareLength);
+                foundKeyShare = true;
+                continue;
+            }
+
+            Assert.Fail($"Unexpected captured ServerHello extension 0x{extensionType:X4}.");
+        }
+
+        Assert.Equal(extensionsEnd, index);
+        Assert.True(foundSupportedVersion);
+        Assert.True(foundKeyShare);
+    }
+
+    private static bool TryCreateHandshakePacketProtectionMaterial(
+        ReadOnlySpan<byte> trafficSecret,
+        out QuicTlsPacketProtectionMaterial material)
+    {
+        material = default;
+
+        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], 16);
+        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], 12);
+        byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], 16);
+        if (!QuicAeadUsageLimitCalculator.TryGetUsageLimits(
+            QuicAeadAlgorithm.Aes128Gcm,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            QuicAeadPacketSizeProfile.StrictlyLimitedToTwoPow11Bytes,
+            out QuicAeadUsageLimits usageLimits))
+        {
+            return false;
+        }
+
+        return QuicTlsPacketProtectionMaterial.TryCreate(
+            QuicTlsEncryptionLevel.Handshake,
+            QuicAeadAlgorithm.Aes128Gcm,
+            aeadKey,
+            aeadIv,
+            headerProtectionKey,
+            usageLimits,
+            out material);
+    }
+
+    private static byte[] HkdfExpandLabel(
+        ReadOnlySpan<byte> secret,
+        ReadOnlySpan<byte> label,
+        ReadOnlySpan<byte> context,
+        int length)
+    {
+        const int HkdfLengthFieldLength = sizeof(ushort);
+        const int HkdfLabelLengthFieldLength = 1;
+        const int HkdfContextLengthFieldLength = 1;
+        const int HkdfExpandCounterLength = 1;
+        const byte HkdfExpandCounterValue = 1;
+        byte[] hkdfLabelPrefix = System.Text.Encoding.ASCII.GetBytes("tls13 ");
+        int hkdfLabelLength = HkdfLengthFieldLength
+            + HkdfLabelLengthFieldLength
+            + hkdfLabelPrefix.Length
+            + label.Length
+            + HkdfContextLengthFieldLength
+            + context.Length;
+
+        byte[] hkdfLabel = new byte[hkdfLabelLength];
+        BinaryPrimitives.WriteUInt16BigEndian(hkdfLabel.AsSpan(0, HkdfLengthFieldLength), checked((ushort)length));
+        hkdfLabel[HkdfLengthFieldLength] = checked((byte)(hkdfLabelPrefix.Length + label.Length));
+
+        int index = HkdfLengthFieldLength + HkdfLabelLengthFieldLength;
+        hkdfLabelPrefix.CopyTo(hkdfLabel.AsSpan(index));
+        index += hkdfLabelPrefix.Length;
+
+        label.CopyTo(hkdfLabel.AsSpan(index));
+        index += label.Length;
+
+        hkdfLabel[index++] = checked((byte)context.Length);
+        if (!context.IsEmpty)
+        {
+            context.CopyTo(hkdfLabel.AsSpan(index));
+        }
+
+        byte[] expandInput = new byte[hkdfLabel.Length + HkdfExpandCounterLength];
+        hkdfLabel.CopyTo(expandInput);
+        expandInput[^1] = HkdfExpandCounterValue;
+
+        using HMACSHA256 hmac = new(secret.ToArray());
+        byte[] output = hmac.ComputeHash(expandInput);
+        if (output.Length == length)
+        {
+            return output;
+        }
+
+        byte[] truncated = new byte[length];
+        output.AsSpan(..length).CopyTo(truncated);
+        return truncated;
+    }
+
+    private static byte[] GetCapturedNeqoConnectionMigrationServerInitialPacket()
+    {
+        return Convert.FromHexString(
+            // Captured from hosted run 25868496912:
+            // runner-logs/nginx_neqo/connectionmigration/server/qlog/server-connectionmigration-578bcedf4a0543cc9bcd300bd49ba79f.qlog
+            "CD000000010008CF5BA02E6C46FAB900449E63F248BD090C6F235437F121861B5511D3A34635B2B773705AB7373722BA" +
+            "9927995C53EEB6093A77DBDCC14AE55191C897D8B9C91D41D154E29926BBDCA90A61E9A45E5A4DAC246021C089545B5D" +
+            "2F10CEBA29F8FAFABB980FAF92BE7352AB01816BAFE5C9369F7A8518A49E7E3C5F069F48D8912B3E82AF113F2BD13C4C" +
+            "B7E12F3D7B75903D2BDFB56A6F4755F5E08CC685DB99EF5A50BC4C62F835CBBB368F25169636B85A0A80ED04135BBD4A" +
+            "D7321407E51913086CB9A404897FDF814821B7E3B6466293880A0BAA9362BD628D75342DD2E2C922F003652C887C17D7" +
+            "9DE4FB7BD2627E72BE1614147F8BD60B11E9620BAEC85FDB368369393842A8EE4029EEC192A57432A44AF4CE29589FEF" +
+            "476AF27ED971E7E723CF161C420698AE59BB902A33CCE37D8AF85C3480303EE3CF4B1088EB8E49395A6BC987A9BADC50" +
+            "6D4E7249A0268A9CD4E4995B19FD432711D1F907131E52C70B246AFB65602575FC86849FCB205578FA0CE12C2919F670" +
+            "D34B78147D413A3695FF9D012CC79128946DF1C2D68DAD58E16AD7792AC9967355CBDF5B53AB3619253EDA008F36553C" +
+            "3F8E034C46471BFDB240AA450B865F1C19DE949AF645479C12DD068C70FEAE174DC63D07220B9A2D2CEE857BD91303B4" +
+            "B4AFE4B08E3B0A9623B0C82B906D74EB9F6A6507DA043A90374AE96EE7CA7D65CB7A19180CA745DA26D4F9903C31E317" +
+            "CDD5CEC53F6557BD4D90A5F49E1408099C16EC204A14D4BE0EC65C36F7EDEFEE42C40115BF2B7FB58875668A1EDF7B8F" +
+            "723965E8B8D393F190E02C8FC39519C959FDFDADD9CBC7B2AD6B691942889FFC4556EF32E7718BC606C2CFE1B22A9320" +
+            "A9F51E73A1B0C10BC96143E6135B386E89BD1133E04A407350EAC6B019DD5A742812B21499CDD84A644527E83C8215C7" +
+            "988937F11E5A1B5B5E4662B69B1E709D3F76B0B887B722A128448D06C359A3F51FD46339C2B859A785FB0A0BCEABA7D0" +
+            "ACD6B16329B232C3AB54A2D8F099873EBF43EDF50E3390B3FC7FC0A23F982EA97392E55DD43FB0A8EE6BD3EA5232E181" +
+            "8CE6611D9384219C3B4D6014D81C36A635214478FA4823BC770FCF3DBBBF13CA8C19FD610BA8758F755647C0ACE5BE17" +
+            "02374D22224BA3F27E1CD82843769DE11C2BEF3275955F3A4EF28A9F06041E502629AF39F83F51C31CBE5A67F63A3C33" +
+            "E36927718D7D3E7501686D0C3A9C2D09FA58AF103BFE92FA5C823FAEC6440BAF45B7A015785AC68AFFBEFFBC6E7C660A" +
+            "A8F13D6074B03F2214FAA39A4A468B9ABA9CB808B4EE616D8FC1FBC9A33E509EF4A5BEE3BB09C57A95CE4950A4F90B99" +
+            "9BCB1E924949EB799C9C5218B2264DA798A6B9679C68E4B2891D80DC08D413FC7790DCEA1C0CB4F5F38E94EED3A9AF7A" +
+            "68C1584A29C78F5915C86CEB7C07E431EB1AB4CD6E0FD021BB4E5C56A83F9DB0512A352558F3E5410A4CECD453A613D4" +
+            "BA7AB4D6D6539238109976E3C40E0466EE81AD13D4D7982432D96A200B1742776CCA48A258E388A4ECE4912559F783B2" +
+            "6711B8F0B713FB2E0631C41B47A4F3915A9F6C5CA2F405830C7419756C2C90C61437B655BD6D6958F34B3D757293F698" +
+            "5F33D1ED243FD25BC54BE3A8B10D9A4DD9C89211ED90485E9F59470993531855D6B479FD10BF55251280AAF59D90EC0E");
+    }
+
+    private static byte[] GetCapturedNeqoConnectionMigrationServerHandshakePacket()
+    {
+        return Convert.FromHexString(
+            // Captured from the same hosted run 25868496912 qlog as the server Initial packet above.
+            "E3000000010008CF5BA02E6C46FAB942F0F0F52C16D99D8B01BA70E682403A9B8482381786808A22F52C4033C7D0AA96" +
+            "AC85361E6030B02AF0800B07D419CCC32327CCDDEBC552BE57C0953A22CA872124F0982D8C6BE4C55783C64B94B46656" +
+            "5C221285F1E0E7083454C6C08FD7D0A44968440EBA497D4A3A3E53DC8099056BDC90F7BAC1CC7DFEBAEFB92915C169BB" +
+            "C86E2A401837DA5D2B780AD0C7451625797F525FF0965D40D21684886330B5489E828BC2E1A0EC8CC946BCA6CA4064DE" +
+            "9C11531234BBFDEBFD40D028C4449BCA3D57CE2A7E9B9CE41C2FEA83C04DB35ADEF74210272B6199171E8F48C7A4E6D6" +
+            "518A3E9022772A941AA6889E7A55C1B28FE0C2A3D80B56281525951E6AFA296562CE07DFDD1890DFE6FB16CC0B7A8516" +
+            "F22974CEB58C194BDEEC5E8C93EED2F4F1157B8AE87F47E03B962FA28E4018FAA8F24BD98954BD0541458CA0DF463D68" +
+            "9A21122053C329357D73C48BE98CCF7A7425D3EA37770D064CF02EF77EE6CE9F8950A52CD678756259B98954C94DC96F" +
+            "FC83D3FDC50484D6F58F32D042D8665D05ABC8ABFF436DCA005FC7F72C7038528453D8C615078D25ABD457359ACA3E57" +
+            "3EDE81DF615D24C49835E82D9BBB9D7A49ECDF1901C7E103373F11F8857A5A26CC9A816D6084FD057B569EF6BF94CF8F" +
+            "A68D7C87C4E3F4091E4957CB6A0B63DC16F78C81C306424F4EA5D848E217B70E5F2D784C6DE1BDFC141313BD41859DDE" +
+            "D05277006986B18E22F4C010F60CB96CA8CAFF83FB40A9178993C520E549CCEB6AEB839FD9CAA047EDBE5E6EBF8FDE26" +
+            "8DDE4214534F8A1D173E9F69A7EDAEF869C6C35F9A0EAF2C81312B96D549C6810014B2281142E0750A0C25B533B00D01" +
+            "3F00FBF7469226128A753DC662B29C5A7F079A6E5B6B3B1552BDC487DA85A4ACEF3C9C742028B870F22F49F08C28B308" +
+            "34FC01C5DACD4EBB8D3E425980E403AABC2F49B8FA1C0787F436F4CAFB73B2666B5B7DA79E47C77B246DEA07585480B1" +
+            "94EE9AE89B1EC5F1A5744B2131CC59DFE6B40F0308FE6E3872CB4C2A1F493682C523F99F29804AF259E8CD74F29359A9" +
+            "50");
+    }
+
     private static ushort ReadUInt16(byte[] source, ref int index)
     {
         ushort value = BinaryPrimitives.ReadUInt16BigEndian(source.AsSpan(index, 2));
@@ -1007,6 +1290,15 @@ public sealed class REQ_QUIC_CRT_0112
     {
         ushort value = BinaryPrimitives.ReadUInt16BigEndian(source.Slice(index, 2));
         index += 2;
+        return value;
+    }
+
+    private static uint ReadUInt24(ReadOnlySpan<byte> source, ref int index)
+    {
+        uint value = ((uint)source[index] << 16)
+            | ((uint)source[index + 1] << 8)
+            | source[index + 2];
+        index += 3;
         return value;
     }
 

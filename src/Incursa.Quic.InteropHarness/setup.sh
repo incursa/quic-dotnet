@@ -29,8 +29,10 @@ ip -d route del "$unneeded_route_v6/64"
 
 if [[ "${ROLE:-}" == "server" && "${TESTCASE:-}" == "connectionmigration" ]]; then
     echo "Assigning connection-migration preferred addresses on the server endpoint."
-    ip addr replace 193.167.100.110/32 dev eth0
-    ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0
+    # Keep the preferred address reachable for migration without letting the
+    # wildcard listener source the original-path first flight from it.
+    ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0
+    ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0
 fi
 
 mkdir -p /logs/qlog

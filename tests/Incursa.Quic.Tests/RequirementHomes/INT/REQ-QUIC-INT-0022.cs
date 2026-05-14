@@ -12,6 +12,7 @@ public sealed class REQ_QUIC_INT_0022
         string helper = ReadRepositoryFile("scripts/interop/Invoke-QuicInteropRunner.ps1");
         string readme = ReadRepositoryFile("scripts/interop/README.md");
         string harnessReadme = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/README.md");
+        string setupScript = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/setup.sh");
         string currentStatus = ReadRepositoryFile("docs/current-status.md");
         string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-INT.json");
 
@@ -40,6 +41,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
         Assert.Contains("Resolve-RunnerImplementationSlotName", helper, StringComparison.Ordinal);
         Assert.Contains("resolved peer implementation slot", helper, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
+        Assert.Contains("ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
@@ -52,6 +55,7 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("distinct local `nginx` slot", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("`neqo-peer` as the peer alias", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("actual runner client slot to `neqo`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("preferred_lft 0", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
@@ -63,6 +67,9 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("single path in use", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("25867235353", currentStatus, StringComparison.Ordinal);
         Assert.Contains("TLS alert 50", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("25868496912", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("fd00:cafe:cafe:100::110", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("preferred_lft 0", currentStatus, StringComparison.Ordinal);
         Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
