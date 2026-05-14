@@ -276,13 +276,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-neqo-quinn
-            local_role: server
-            implementation_slot: neqo
-            peer_slots: quinn
-            peer_image: stammw/quinn-interop:latest
-            testcases: connectionmigration
-            runner_timeout_seconds: 240
+            - cell: server-connectionmigration-neqo-xquic
+              local_role: server
+              implementation_slot: neqo
+              peer_slots: xquic
+              peer_image: ghcr.io/alibaba/xquic/xquic-interop:latest
+              testcases: connectionmigration
+              runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
         uses: actions/checkout@v6
