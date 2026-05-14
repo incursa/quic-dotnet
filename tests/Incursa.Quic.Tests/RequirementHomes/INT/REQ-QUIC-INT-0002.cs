@@ -55,7 +55,7 @@ public sealed class REQ_QUIC_INT_0002
         Assert.Null(errorMessage);
 
         IPEndPoint listenEndPoint = await InteropHarnessRunner.ResolveHandshakeListenEndPointAsync(requestUri);
-        Assert.Equal(IPAddress.Any, listenEndPoint.Address);
+        Assert.Equal(IPAddress.IPv6Any, listenEndPoint.Address);
         Assert.Equal(443, listenEndPoint.Port);
     }
 
@@ -162,7 +162,7 @@ public sealed class REQ_QUIC_INT_0002
         Assert.Equal((ushort)443, preferredAddress.IPv4Port);
         Assert.Equal(new byte[] { 0x20, 0x01, 0x0D, 0xB8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x10 }, preferredAddress.IPv6Address);
         Assert.Equal((ushort)443, preferredAddress.IPv6Port);
-        Assert.Equal(Convert.FromHexString("20212223"), preferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("2021222324252627"), preferredAddress.ConnectionId);
         Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), preferredAddress.StatelessResetToken);
     }
 
@@ -179,7 +179,7 @@ public sealed class REQ_QUIC_INT_0002
         Assert.Equal((ushort)443, preferredAddress.IPv4Port);
         Assert.Equal(new byte[16], preferredAddress.IPv6Address);
         Assert.Equal((ushort)0, preferredAddress.IPv6Port);
-        Assert.Equal(Convert.FromHexString("20212223"), preferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("2021222324252627"), preferredAddress.ConnectionId);
         Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), preferredAddress.StatelessResetToken);
     }
 
@@ -207,7 +207,7 @@ public sealed class REQ_QUIC_INT_0002
         Assert.Equal((ushort)443, options.PreferredAddress.IPv4Port);
         Assert.Equal(IPAddress.Parse("fd00:cafe:cafe:100::110").GetAddressBytes(), options.PreferredAddress.IPv6Address);
         Assert.Equal((ushort)443, options.PreferredAddress.IPv6Port);
-        Assert.Equal(Convert.FromHexString("20212223"), options.PreferredAddress.ConnectionId);
+        Assert.Equal(Convert.FromHexString("2021222324252627"), options.PreferredAddress.ConnectionId);
         Assert.Equal(Convert.FromHexString("303132333435363738393A3B3C3D3E3F"), options.PreferredAddress.StatelessResetToken);
     }
 

@@ -167,7 +167,8 @@ internal sealed class InteropHarnessPreflightPlanner
             IPv4Port = (ushort)port,
             IPv6Address = new byte[PreferredAddressIpv6BytesLength],
             IPv6Port = 0,
-            ConnectionId = Convert.FromHexString("20212223"),
+            // Keep the preferred-address CID aligned with the listener's routable CID length.
+            ConnectionId = Convert.FromHexString("2021222324252627"),
             StatelessResetToken = Convert.FromHexString("303132333435363738393A3B3C3D3E3F"),
         };
     }
