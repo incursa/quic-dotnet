@@ -276,18 +276,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - cell: server-connectionmigration-picoquic
+          - cell: server-connectionmigration-ngtcp2
             local_role: server
             implementation_slot: nginx
-            peer_slots: picoquic
-            peer_image: privateoctopus/picoquic:latest
-            testcases: connectionmigration
-            runner_timeout_seconds: 240
-          - cell: server-connectionmigration-lsquic
-            local_role: server
-            implementation_slot: nginx
-            peer_slots: lsquic
-            peer_image: litespeedtech/lsquic-qir:latest
+            peer_slots: ngtcp2
+            peer_image: ghcr.io/ngtcp2/ngtcp2-interop:latest
             testcases: connectionmigration
             runner_timeout_seconds: 240
     steps:
@@ -367,6 +360,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - cell: server-connectionmigration-picoquic-blocked
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: picoquic
+            peer_image: privateoctopus/picoquic:latest
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
+          - cell: server-connectionmigration-lsquic-blocked
+            local_role: server
+            implementation_slot: nginx
+            peer_slots: lsquic
+            peer_image: litespeedtech/lsquic-qir:latest
+            testcases: connectionmigration
+            runner_timeout_seconds: 240
           - cell: server-connectionmigration-quic-go-blocked
             local_role: server
             implementation_slot: nginx
