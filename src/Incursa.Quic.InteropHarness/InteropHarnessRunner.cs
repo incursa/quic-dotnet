@@ -24,6 +24,7 @@ internal static class InteropHarnessRunner
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ConnectionMigrationSendCreditRetryTimeout = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ConnectionMigrationSendCreditAttemptTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan VersionNegotiationPostSendGracePeriod = TimeSpan.FromSeconds(1);
@@ -1810,23 +1811,47 @@ internal static class InteropHarnessRunner
         return new FileInfo(transferPlan.DestinationPath).Length;
     }
 
-    internal static async Task<T> RetryTransientSendCreditAsync<T>(
+    internal static Task<T> RetryTransientSendCreditAsync<T>(
         Func<ValueTask<T>> operation,
         string congestionTimeoutMessage,
         string? flowControlTimeoutMessage = null,
         TimeSpan? retryTimeout = null)
     {
         ArgumentNullException.ThrowIfNull(operation);
+        return RetryTransientSendCreditAsync(
+            _ => operation(),
+            congestionTimeoutMessage,
+            flowControlTimeoutMessage,
+            retryTimeout,
+            operationAttemptTimeout: null);
+    }
+
+    internal static async Task<T> RetryTransientSendCreditAsync<T>(
+        Func<CancellationToken, ValueTask<T>> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null,
+        TimeSpan? retryTimeout = null,
+        TimeSpan? operationAttemptTimeout = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
         ArgumentException.ThrowIfNullOrWhiteSpace(congestionTimeoutMessage);
 
         TimeSpan effectiveRetryTimeout = retryTimeout ?? CongestionRetryTimeout;
+        TimeSpan effectiveAttemptTimeout = operationAttemptTimeout ?? TimeSpan.FromSeconds(5);
+        if (effectiveAttemptTimeout > effectiveRetryTimeout)
+        {
+            effectiveAttemptTimeout = effectiveRetryTimeout;
+        }
+
         long startedAt = Stopwatch.GetTimestamp();
 
         while (true)
         {
+            using CancellationTokenSource attemptTimeout = new(effectiveAttemptTimeout);
+
             try
             {
-                return await operation().ConfigureAwait(false);
+                return await operation(attemptTimeout.Token).ConfigureAwait(false);
             }
             catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
             {
@@ -1846,25 +1871,51 @@ internal static class InteropHarnessRunner
 
                 await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
             }
+            catch (OperationCanceledException ex) when (attemptTimeout.IsCancellationRequested)
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= effectiveRetryTimeout)
+                {
+                    throw new TimeoutException(congestionTimeoutMessage, ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
         }
     }
 
-    internal static async Task RetryTransientSendCreditAsync(
+    internal static Task RetryTransientSendCreditAsync(
         Func<ValueTask> operation,
         string congestionTimeoutMessage,
         string? flowControlTimeoutMessage = null,
         TimeSpan? retryTimeout = null)
     {
         ArgumentNullException.ThrowIfNull(operation);
+        return RetryTransientSendCreditAsync(
+            _ => operation(),
+            congestionTimeoutMessage,
+            flowControlTimeoutMessage,
+            retryTimeout,
+            operationAttemptTimeout: null);
+    }
+
+    internal static async Task RetryTransientSendCreditAsync(
+        Func<CancellationToken, ValueTask> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null,
+        TimeSpan? retryTimeout = null,
+        TimeSpan? operationAttemptTimeout = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
         await RetryTransientSendCreditAsync(
-            async () =>
+            async cancellationToken =>
             {
-                await operation().ConfigureAwait(false);
+                await operation(cancellationToken).ConfigureAwait(false);
                 return true;
             },
             congestionTimeoutMessage,
             flowControlTimeoutMessage,
-            retryTimeout).ConfigureAwait(false);
+            retryTimeout,
+            operationAttemptTimeout).ConfigureAwait(false);
     }
 
     private static async Task<int> ServeHttp09RequestsAsync(
@@ -1945,14 +1996,19 @@ internal static class InteropHarnessRunner
                     TimeSpan? sendCreditRetryTimeout = testCase == "connectionmigration"
                         ? ConnectionMigrationSendCreditRetryTimeout
                         : null;
+                    TimeSpan? sendCreditAttemptTimeout = testCase == "connectionmigration"
+                        ? ConnectionMigrationSendCreditAttemptTimeout
+                        : null;
 
                     await CopyToQuicStreamWithRetryAsync(
                         sourceStream,
                         stream,
-                        sendCreditRetryTimeout).ConfigureAwait(false);
+                        sendCreditRetryTimeout,
+                        sendCreditAttemptTimeout).ConfigureAwait(false);
                     await CompleteQuicStreamWritesWithRetryAsync(
                         stream,
-                        sendCreditRetryTimeout).ConfigureAwait(false);
+                        sendCreditRetryTimeout,
+                        sendCreditAttemptTimeout).ConfigureAwait(false);
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} completed managed {testCase} response from {sourcePath} for target={relativePath}, bytes={sourceInfo.Length}, stream {servedRequestCount + 1}.");
@@ -2113,7 +2169,8 @@ internal static class InteropHarnessRunner
     private static async Task CopyToQuicStreamWithRetryAsync(
         Stream sourceStream,
         QuicStream destinationStream,
-        TimeSpan? sendCreditRetryTimeout = null)
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         byte[] buffer = new byte[QuicStreamBodyWriteChunkSize];
 
@@ -2129,7 +2186,8 @@ internal static class InteropHarnessRunner
                 destinationStream,
                 buffer,
                 bytesRead,
-                sendCreditRetryTimeout).ConfigureAwait(false);
+                sendCreditRetryTimeout,
+                sendCreditAttemptTimeout).ConfigureAwait(false);
         }
     }
 
@@ -2137,24 +2195,28 @@ internal static class InteropHarnessRunner
         QuicStream stream,
         byte[] buffer,
         int count,
-        TimeSpan? sendCreditRetryTimeout = null)
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         await RetryTransientSendCreditAsync(
-            () => new ValueTask(stream.WriteAsync(buffer, 0, count)),
+            cancellationToken => new ValueTask(stream.WriteAsync(buffer, 0, count, cancellationToken)),
             "Timed out waiting for QUIC stream send credit.",
             "Timed out waiting for QUIC stream flow-control credit.",
-            sendCreditRetryTimeout ?? CongestionRetryTimeout).ConfigureAwait(false);
+            sendCreditRetryTimeout ?? CongestionRetryTimeout,
+            sendCreditAttemptTimeout).ConfigureAwait(false);
     }
 
     private static async Task CompleteQuicStreamWritesWithRetryAsync(
         QuicStream stream,
-        TimeSpan? sendCreditRetryTimeout = null)
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         await RetryTransientSendCreditAsync(
-            () => stream.CompleteWritesAsync(),
+            cancellationToken => stream.CompleteWritesAsync(cancellationToken),
             "Timed out waiting for QUIC stream FIN send credit.",
             "Timed out waiting for QUIC stream FIN flow-control credit.",
-            sendCreditRetryTimeout ?? CongestionRetryTimeout).ConfigureAwait(false);
+            sendCreditRetryTimeout ?? CongestionRetryTimeout,
+            sendCreditAttemptTimeout).ConfigureAwait(false);
     }
 
     private static bool IsTransientCongestionExhaustion(InvalidOperationException exception)

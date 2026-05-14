@@ -405,6 +405,35 @@ public sealed class REQ_QUIC_INT_0015
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task TransientSendCreditRetry_CancelsAndRetriesBlockedAttempts()
+    {
+        int attempts = 0;
+
+        static async ValueTask<string> WaitForCancellationAsync(CancellationToken cancellationToken)
+        {
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+            return "unreachable";
+        }
+
+        string result = await InteropHarnessRunner.RetryTransientSendCreditAsync(
+            cancellationToken =>
+            {
+                attempts++;
+                return attempts < 3
+                    ? WaitForCancellationAsync(cancellationToken)
+                    : ValueTask.FromResult("opened");
+            },
+            "Timed out waiting for QUIC stream send credit.",
+            retryTimeout: TimeSpan.FromSeconds(1),
+            operationAttemptTimeout: TimeSpan.FromMilliseconds(50));
+
+        Assert.Equal("opened", result);
+        Assert.Equal(3, attempts);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task TransientSendCreditRetry_DoesNotSwallowUnrelatedStreamOpenFailures()
