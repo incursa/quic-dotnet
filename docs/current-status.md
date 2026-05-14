@@ -30,12 +30,12 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-13 INT Connection Migration Proof Lane
 
 `REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a
-proof profile against `ngtcp2` plus a companion
+proof profile against `picoquic` plus a companion
 `connectionmigration-server-proof-blocked` profile that preserves `picoquic`,
 `quiche`, `lsquic`, `ngtcp2`, `quic-go`, `msquic`, and `aioquic`
 comparisons. The latest hosted `neqo` self-pair attempt was rejected by the helper because the peer slot
 must differ from the local implementation slot, so the proof lane is now being
-re-aimed at `ngtcp2` instead of claiming a green result too early.
+re-aimed at `picoquic` instead of claiming a green result too early.
 The blocked comparison lane stays advisory and remains separated from the
 major-peer matrix.
 
@@ -308,7 +308,7 @@ reserved-version runner dispatch, keeps `http3` out of scope, and classifies
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
 inventory promotion, while `connectionmigration` is awaiting a fresh green
-hosted proof run against `ngtcp2`; none of them are blocked on missing internal
+hosted proof run against `picoquic`; none of them are blocked on missing internal
 path-state promotion logic or socket rebinding support.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
