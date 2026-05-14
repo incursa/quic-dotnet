@@ -2036,8 +2036,9 @@ internal static class InteropHarnessRunner
 
         return expectedRequestCount == 0
             && servedRequestCount > 0
-            && exception.QuicError == QuicError.ConnectionAborted
-            && exception.ApplicationErrorCode == 0;
+            && (
+                (exception.QuicError == QuicError.ConnectionAborted && exception.ApplicationErrorCode == 0)
+                || (exception.QuicError == QuicError.TransportError && exception.TransportErrorCode == 0));
     }
 
     private static async Task LingerForPeerCloseAfterFinalResponseAsync(
