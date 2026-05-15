@@ -56,10 +56,12 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
         // Keep the socket open to migrated source endpoints. Outbound effects still use the
         // current path identity, but ingress must not be pinned to the original connected peer.
-        IPEndPoint localEndPoint = (IPEndPoint)this.socket.LocalEndPoint!;
-        Socket connectedSocket = this.socket;
-        connectedSocket.Dispose();
-        this.socket = CreateSocket(localEndPoint);
+        if (this.socket.LocalEndPoint is IPEndPoint localEndPoint)
+        {
+            Socket connectedSocket = this.socket;
+            connectedSocket.Dispose();
+            this.socket = CreateSocket(localEndPoint);
+        }
     }
 
     /// <summary>

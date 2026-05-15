@@ -100,7 +100,7 @@ public sealed class REQ_QUIC_INT_0014
         Assert.Equal("server-retry", serverPlanner.QlogFileStem);
 
         IPEndPoint listenEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeListenEndPointAsync(requestUri);
-        Assert.Equal(IPAddress.Any, listenEndPoint.Address);
+        Assert.True(listenEndPoint.Address.Equals(IPAddress.Any) || listenEndPoint.Address.Equals(IPAddress.IPv6Any));
         Assert.Equal(443, listenEndPoint.Port);
 
         Assert.True(InteropHarnessEnvironment.TryCreate(

@@ -185,6 +185,12 @@ internal sealed partial class QuicConnectionRuntime
             candidatePath = candidatePath with
             {
                 LastActivityTicks = nowTicks,
+                Validation = candidatePath.Validation with
+                {
+                    ChallengeSendCount = 0,
+                    ChallengeSentAtTicks = null,
+                    ValidationDeadlineTicks = null,
+                },
             };
             bool pathUpdated = true;
             if (candidatePath.AmplificationState.TryRegisterReceivedDatagramPayloadBytes(
@@ -247,16 +253,11 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> datagram)
     {
-        return tlsState.Role == QuicTlsRole.Client
-            && phase == QuicConnectionPhase.Active
-            && peerHandshakeTranscriptCompleted
-            && activePath.HasValue
-            && !string.Equals(activePath.Value.Identity.RemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal)
-            && !preferredAddressOldPathIdentity.HasValue
-            && QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
-            && packetNumberSpace == QuicPacketNumberSpace.ApplicationData
-            && !TryGetCandidatePath(pathIdentity, out _)
-            && !TryGetRecentlyValidatedPath(pathIdentity, out _);
+        _ = pathIdentity;
+        _ = datagram;
+        // Candidate discovery and path validation need to see these datagrams so the runtime can
+        // decide whether to stage or validate a new path.
+        return false;
     }
 
     private bool TryHandleTrustedPathReuse(
@@ -317,6 +318,24 @@ internal sealed partial class QuicConnectionRuntime
 
         UpdatePeerAddressValidationFlag();
         return true;
+    }
+
+    private bool HasAnotherValidatedCandidatePath(QuicConnectionPathIdentity pathIdentity)
+    {
+        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths)
+        {
+            if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(entry.Key, pathIdentity))
+            {
+                continue;
+            }
+
+            if (entry.Value.Validation.IsValidated && !entry.Value.Validation.IsAbandoned)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool ShouldDeferTrustedPathReusePromotion(
@@ -1241,7 +1260,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool CanPromoteActivePathMigration(QuicConnectionPathIdentity pathIdentity)
     {
-        if (!HandshakeConfirmed)
+        if (!peerHandshakeTranscriptCompleted)
         {
             return false;
         }

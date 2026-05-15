@@ -282,7 +282,13 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks);
         }
 
-        if (CanPromoteActivePathMigration(pathValidationSucceededEvent.PathIdentity)
+        bool hasAnotherValidatedCandidatePath = HasAnotherValidatedCandidatePath(pathValidationSucceededEvent.PathIdentity);
+
+        // Preferred addresses always promote on validation. Ordinary candidates only auto-promote
+        // when there is already another validated candidate to compare against; otherwise they stay
+        // staged until a later packet or outbound send chooses them.
+        if ((preferredAddressPathValidated || hasAnotherValidatedCandidatePath)
+            && CanPromoteActivePathMigration(pathValidationSucceededEvent.PathIdentity)
             && TryPromoteValidatedCandidatePath(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects))
         {
             stateChanged = true;
