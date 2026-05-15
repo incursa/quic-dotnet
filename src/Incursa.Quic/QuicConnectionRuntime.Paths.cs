@@ -132,15 +132,15 @@ internal sealed partial class QuicConnectionRuntime
             EmitDiagnostic(ref effects, QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
         }
 
-        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, datagram))
-        {
-            packetDiscarded = true;
-            return false;
-        }
-
         if (preferredAddressOldPathIdentity.HasValue
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(preferredAddressOldPathIdentity.Value, pathIdentity))
         {
+            return false;
+        }
+
+        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, datagram))
+        {
+            packetDiscarded = true;
             return false;
         }
 
@@ -253,11 +253,110 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> datagram)
     {
-        _ = pathIdentity;
-        _ = datagram;
-        // Candidate discovery and path validation need to see these datagrams so the runtime can
-        // decide whether to stage or validate a new path.
-        return false;
+        if (tlsState.Role != QuicTlsRole.Client)
+        {
+            return false;
+        }
+
+        if (TryGetCandidatePath(pathIdentity, out _)
+            || TryGetRecentlyValidatedPath(pathIdentity, out _))
+        {
+            return false;
+        }
+
+        if (!tlsState.OneRttOpenPacketProtectionMaterial.HasValue
+            && !tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+            && !tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
+            && !tlsState.RetainedOldOneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
+        // Keep bare discovery probes and path-validation probes visible so the runtime can stage
+        // or validate a candidate path, but discard actual 1-RTT application packets from a server
+        // address the client has not already started validating.
+        return (tlsState.OneRttOpenPacketProtectionMaterial.HasValue
+                && ShouldDiscardProtectedApplicationDataPacketFromUnexpectedServerAddress(datagram, tlsState.OneRttOpenPacketProtectionMaterial.Value))
+            || (tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+                && ShouldDiscardProtectedApplicationDataPacketFromUnexpectedServerAddress(datagram, tlsState.OneRttProtectPacketProtectionMaterial.Value))
+            || (tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
+                && ShouldDiscardProtectedApplicationDataPacketFromUnexpectedServerAddress(datagram, tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.Value))
+            || (tlsState.RetainedOldOneRttProtectPacketProtectionMaterial.HasValue
+                && ShouldDiscardProtectedApplicationDataPacketFromUnexpectedServerAddress(datagram, tlsState.RetainedOldOneRttProtectPacketProtectionMaterial.Value));
+    }
+
+    private bool ShouldDiscardProtectedApplicationDataPacketFromUnexpectedServerAddress(
+        ReadOnlySpan<byte> datagram,
+        QuicTlsPacketProtectionMaterial material)
+    {
+        QuicBufferLease openedPacket = default;
+        try
+        {
+            if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
+                datagram,
+                material,
+                out openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _))
+            {
+                return false;
+            }
+
+            return !ContainsOnlyPathValidationFrames(openedPacket.Span.Slice(payloadOffset, payloadLength));
+        }
+        finally
+        {
+            openedPacket.Dispose();
+        }
+    }
+
+    private static bool ContainsOnlyPathValidationFrames(ReadOnlySpan<byte> payload)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed)
+                && paddingBytesConsumed > 0)
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed)
+                && pingBytesConsumed > 0)
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
+                && ackBytesConsumed > 0)
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePathChallengeFrame(remaining, out _, out int pathChallengeBytesConsumed)
+                && pathChallengeBytesConsumed > 0)
+            {
+                offset += pathChallengeBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePathResponseFrame(remaining, out _, out int pathResponseBytesConsumed)
+                && pathResponseBytesConsumed > 0)
+            {
+                offset += pathResponseBytesConsumed;
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private bool TryHandleTrustedPathReuse(
@@ -318,24 +417,6 @@ internal sealed partial class QuicConnectionRuntime
 
         UpdatePeerAddressValidationFlag();
         return true;
-    }
-
-    private bool HasAnotherValidatedCandidatePath(QuicConnectionPathIdentity pathIdentity)
-    {
-        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths)
-        {
-            if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(entry.Key, pathIdentity))
-            {
-                continue;
-            }
-
-            if (entry.Value.Validation.IsValidated && !entry.Value.Validation.IsAbandoned)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private bool ShouldDeferTrustedPathReusePromotion(
@@ -1129,8 +1210,10 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity newPathIdentity)
     {
         return string.Equals(currentPathIdentity.RemoteAddress, newPathIdentity.RemoteAddress, StringComparison.Ordinal)
+            && string.Equals(currentPathIdentity.LocalAddress, newPathIdentity.LocalAddress, StringComparison.Ordinal)
             && currentPathIdentity.RemotePort.HasValue
             && newPathIdentity.RemotePort.HasValue
+            && currentPathIdentity.LocalPort == newPathIdentity.LocalPort
             && currentPathIdentity.RemotePort.Value != newPathIdentity.RemotePort.Value;
     }
 
@@ -1267,6 +1350,15 @@ internal sealed partial class QuicConnectionRuntime
 
         if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
         {
+            return false;
+        }
+
+        if (!HandshakeConfirmed
+            && activePath is not null
+            && string.Equals(activePath.Value.Identity.RemoteAddress, pathIdentity.RemoteAddress, StringComparison.Ordinal)
+            && !IsPreferredAddressPath(pathIdentity))
+        {
+            // Keep same-remote-address migrations on the old path until the client confirms the handshake.
             return false;
         }
 

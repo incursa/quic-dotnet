@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0003
         QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
         outboundEffects.Clear();
         Assert.True(runtime.ActivePath.HasValue);
-        Assert.Equal(new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443), runtime.ActivePath!.Value.Identity);
+        Assert.Equal(new QuicConnectionPathIdentity("203.0.113.11", RemotePort: 443), runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
 
         byte[] payload = Enumerable.Range(0, 32).Select(value => (byte)value).ToArray();

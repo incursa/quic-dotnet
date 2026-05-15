@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0004
             LocalAddress: "198.51.100.60",
             RemotePort: 8443,
             LocalPort: 61284);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);

@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0005
             LocalAddress: "198.51.100.71",
             RemotePort: 443,
             LocalPort: 61295);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
@@ -67,7 +67,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0005
             LocalAddress: "198.51.100.73",
             RemotePort: 443,
             LocalPort: 61297);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicEcnValidationState oldPathEcnState = runtime.SendRuntime.EcnValidationState;
         oldPathEcnState.RecordPacketSent(QuicPacketNumberSpace.ApplicationData, QuicEcnMarking.Ect0);
