@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
@@ -16,6 +17,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly int receiveBufferBytes;
     private readonly object socketGate = new();
     private readonly CancellationTokenSource shutdown = new();
+    private readonly uint flowLabelSeed;
 
     private Socket socket;
     private QuicConnectionPathIdentity peerPathIdentity;
@@ -50,6 +52,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.receiveBufferBytes = receiveBufferBytes;
+        flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
         // Keep the socket open to migrated source endpoints. Outbound effects still use the
         // current path identity, but ingress must not be pinned to the original connected peer.
@@ -293,8 +296,44 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             lock (socketGate)
             {
                 _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
+                IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
                 IPEndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
-                int bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                int bytesSent;
+                if (TryResolvePacketInformationSourceAddress(
+                    localEndPoint,
+                    socket.AddressFamily,
+                    sendDatagramEffect.PathIdentity,
+                    out IPAddress sourceAddress))
+                {
+                    bool usePacketInformationSender = socket.AddressFamily == AddressFamily.InterNetworkV6
+                        || !sourceAddress.Equals(localEndPoint.Address);
+                    uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
+                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
+                        : 0;
+
+                    if (!QuicSocketPacketInformationSender.TrySendTo(
+                        socket,
+                        sendDatagramEffect.Datagram.Span,
+                        remoteEndPoint,
+                        sourceAddress,
+                        flowLabel,
+                        out bytesSent)
+                        && usePacketInformationSender
+                        && OperatingSystem.IsLinux())
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    bytesSent = 0;
+                }
+
+                if (bytesSent == 0)
+                {
+                    bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                }
+
                 if (bytesSent != sendDatagramEffect.Datagram.Length)
                 {
                     throw new IOException("Failed to send the complete QUIC datagram.");
@@ -386,6 +425,46 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         }
 
         return fallback;
+    }
+
+    internal static bool TryResolvePacketInformationSourceAddress(
+        IPEndPoint socketLocalEndPoint,
+        AddressFamily socketAddressFamily,
+        QuicConnectionPathIdentity pathIdentity,
+        out IPAddress sourceAddress)
+    {
+        ArgumentNullException.ThrowIfNull(socketLocalEndPoint);
+
+        sourceAddress = IPAddress.None;
+        if (!IsWildcardAddress(socketLocalEndPoint.Address)
+            || pathIdentity.LocalAddress is not string localAddress
+            || pathIdentity.LocalPort != socketLocalEndPoint.Port
+            || !IPAddress.TryParse(localAddress, out IPAddress? parsedAddress)
+            || IsWildcardAddress(parsedAddress))
+        {
+            return false;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetworkV6
+            && parsedAddress.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetwork
+            && parsedAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsWildcardAddress(IPAddress address)
+    {
+        return address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any);
     }
 
     private static bool PathIdentityEquals(QuicConnectionPathIdentity left, QuicConnectionPathIdentity right)

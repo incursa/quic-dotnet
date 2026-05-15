@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T09:06:32.9535933-06:00",
+  "generated_at": "2026-05-14T22:04:54.5352909-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -17,34 +17,30 @@
       "Requirements without a canonical coverage object are reported as missing_coverage_contract instead of inferred clean or uncovered."
     ]
   },
-  "summary": {
-    "generated_at": "2026-05-12T09:06:32.9500700-06:00",
-    "total_requirements": 1771,
-    "by_state": {
-      "trace_clean": 1749,
-      "uncovered_blocked": 22
-    },
-    "by_work_queue_tag": {
-      "blocked": 22,
-      "clean": 1749,
-      "new_tests_needed": 22
-    },
-    "by_rfc": [
-      {
-        "rfc": "RFC8999",
-        "total": 8,
+    "summary": {
+      "generated_at": "2026-05-14T22:04:54.5310483-06:00",
+      "total_requirements": 1771,
+      "by_state": {
+      "trace_clean": 1771
+      },
+      "by_work_queue_tag": {
+      "clean": 1771
+      },
+      "by_rfc": [
+        {
+          "rfc": "RFC8999",
+          "total": 8,
         "by_state": {
           "trace_clean": 8
         }
       },
-      {
-        "rfc": "RFC9000",
-        "total": 1443,
-        "by_state": {
-          "trace_clean": 1421,
-          "uncovered_blocked": 22
-        }
-      },
+        {
+          "rfc": "RFC9000",
+          "total": 1443,
+          "by_state": {
+          "trace_clean": 1443
+          }
+        },
       {
         "rfc": "RFC9001",
         "total": 96,
@@ -61577,11 +61573,11 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 3,
           "negative": 2,
           "edge": 0,
           "fuzz": 0,
@@ -61592,6 +61588,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S15-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S15_0008",
+          "member": "REQ_QUIC_RFC9000_S15_0008.ManagedClientInitialPacket_UsesTheConfiguredReservedVersion",
+          "method": "ManagedClientInitialPacket_UsesTheConfiguredReservedVersion",
+          "line": 32,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S15-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S15-0008",
           "source": "requirement_attribute",
@@ -136038,33 +136056,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_DescribesFramePeerUnderstandingRequirement",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_DoesNotTurnFrameNegotiationGuidanceIntoRuntimePolicy",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_StaysBoundedToFutureExtensionFrameNegotiation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -136087,24 +136104,27 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_DescribesTransportParameterWillingnessSignal",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_DoesNotTurnWillingnessSignalIntoRuntimeCapability",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_StaysBoundedToTransportParameterSignaling"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -136132,24 +136152,27 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0006.cs::RequirementStatement_DescribesMultiFrameSupportSignal",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0006.cs::RequirementStatement_DoesNotRequireOneTransportParameterPerExtensionFrame",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0006.cs::RequirementStatement_StaysBoundedToSupportSignalForMultipleExtensionFrames"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -136177,31 +136200,32 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0007.cs::RequirementStatement_DescribesExtensionInteractionGuidance",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0007.cs::RequirementStatement_DoesNotTurnExtensionInteractionGuidanceIntoRuntimePolicy",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0007.cs::RequirementStatement_StaysBoundedToInteractionWithPreviousExtensions"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -136224,31 +136248,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0008.cs::RequirementStatement_DescribesCongestionControlledExtensionFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0008.cs::RequirementStatement_DoesNotNameASpecificCongestionController",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0008.cs::RequirementStatement_StaysBoundedToCongestionControl"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -136271,31 +136296,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0009.cs::RequirementStatement_DescribesAckGenerationForExtensionFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0009.cs::RequirementStatement_DoesNotTurnAckGenerationGuidanceIntoGeneralAckPolicy",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0009.cs::RequirementStatement_StaysBoundedToAckGenerationForExtensionFrames"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -136318,32 +136344,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0010.cs::RequirementStatement_DescribesExtensionFrameFlowControlExclusion",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0010.cs::RequirementStatement_DoesNotTreatExtensionFramesAsFlowControlledByDefault",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0010.cs::RequirementStatement_StaysBoundedToFlowControlExclusion"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -200064,32 +200090,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs::RequirementStatement_DescribesZeroRttReplayProtectionProhibition",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs::RequirementStatement_DoesNotTurnTheProhibitionIntoAnAntiReplayMechanism",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs::RequirementStatement_StaysBoundedToZeroRttReplayProtection"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -217719,31 +217745,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ServerRoleStagesPeerTransportParametersOnlyFromClientHello",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 3,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -217751,7 +217778,68 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs",
+          "class": "REQ_QUIC_CRT_0107",
+          "member": "REQ_QUIC_CRT_0107.ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions",
+          "method": "ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ServerRoleStagesPeerTransportParametersOnlyFromClientHello",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs",
+          "class": "REQ_QUIC_CRT_0107",
+          "member": "REQ_QUIC_CRT_0107.ServerRoleStagesPeerTransportParametersOnlyFromClientHello",
+          "method": "ServerRoleStagesPeerTransportParametersOnlyFromClientHello",
+          "line": 101,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
+          "class": "REQ_QUIC_CRT_0112",
+          "member": "REQ_QUIC_CRT_0112.ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys",
+          "method": "ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys",
+          "line": 71,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7-0008",
@@ -217766,31 +217854,32 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0004.cs::TryFormatTransportParameters_EncodesDisableActiveMigrationWhenServerDisallowsMigration",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs::ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter",
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::TransportParameterExtensionPlacementIsRejectedWhenItIsIllegalOrRepeated"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 1,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -217798,7 +217887,72 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::TransportParameterExtensionPlacementIsRejectedWhenItIsIllegalOrRepeated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs",
+          "class": "REQ_QUIC_CRT_0107",
+          "member": "REQ_QUIC_CRT_0107.TransportParameterExtensionPlacementIsRejectedWhenItIsIllegalOrRepeated",
+          "method": "TransportParameterExtensionPlacementIsRejectedWhenItIsIllegalOrRepeated",
+          "line": 178,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0004.cs::TryFormatTransportParameters_EncodesDisableActiveMigrationWhenServerDisallowsMigration",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P3_0004",
+          "member": "REQ_QUIC_RFC9000_S5P2P3_0004.TryFormatTransportParameters_EncodesDisableActiveMigrationWhenServerDisallowsMigration",
+          "method": "TryFormatTransportParameters_EncodesDisableActiveMigrationWhenServerDisallowsMigration",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P3-0004"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S7-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs::ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0006",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0006.ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter",
+          "method": "ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6P1-0006"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S7-0009",
@@ -234597,33 +234751,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -234635,7 +234788,146 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "method": "ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "method": "ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "method": "ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "line": 11,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "method": "ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "line": 11,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "method": "ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "line": 151,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "method": "ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "line": 151,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0002",
@@ -234748,24 +235040,27 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 1,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -234782,7 +235077,75 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P2_0001",
+          "member": "REQ_QUIC_RFC9000_S9P2_0001.RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "method": "RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P2-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "method": "ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001",
+            "REQ-QUIC-RFC9000-S9P6-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "method": "ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0004",
@@ -234982,31 +235345,33 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235018,7 +235383,96 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0001",
+          "member": "REQ_QUIC_RFC9000_S10_0001.ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "method": "ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0001",
+          "member": "REQ_QUIC_RFC9000_S10_0001.ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "method": "ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0002",
+          "member": "REQ_QUIC_RFC9000_S10_0002.ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "method": "ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0002",
+          "member": "REQ_QUIC_RFC9000_S10_0002.ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "method": "ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
@@ -235033,32 +235487,36 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 7,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0002.cs::PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 4,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235070,7 +235528,167 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0001",
+          "member": "REQ_QUIC_RFC9000_S10_0001.ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "method": "ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0001",
+          "member": "REQ_QUIC_RFC9000_S10_0001.ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "method": "ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0002",
+          "member": "REQ_QUIC_RFC9000_S10_0002.ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "method": "ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10_0002",
+          "member": "REQ_QUIC_RFC9000_S10_0002.ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "method": "ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P2_0001",
+          "member": "REQ_QUIC_RFC9000_S9P2_0001.ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
+          "method": "ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P2-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0002.cs::PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S9P4_0002",
+          "member": "REQ_QUIC_RFC9000_S9P4_0002.PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
+          "method": "PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
+          "line": 9,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P4-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs",
+          "class": "REQ_QUIC_RFC9000_S9P4_0005",
+          "member": "REQ_QUIC_RFC9000_S9P4_0005.PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState",
+          "method": "PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState",
+          "line": 71,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P2-0003",
+            "REQ-QUIC-RFC9000-S9P2-0004",
+            "REQ-QUIC-RFC9000-S9P2-0005",
+            "REQ-QUIC-RFC9000-S9P4-0003",
+            "REQ-QUIC-RFC9000-S9P4-0005",
+            "REQ-QUIC-RFC9000-S9P5-0006"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0007",
@@ -235085,32 +235703,32 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 1,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235122,7 +235740,75 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P2_0001",
+          "member": "REQ_QUIC_RFC9000_S9P2_0001.RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "method": "RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P2-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "method": "ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001",
+            "REQ-QUIC-RFC9000-S9P6-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "method": "ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
@@ -235137,33 +235823,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235175,7 +235860,146 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "method": "ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "method": "ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "line": 67,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "method": "ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "line": 11,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "method": "ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "line": 11,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "method": "ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "line": 151,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9_0001",
+          "member": "REQ_QUIC_RFC9000_S9_0001.ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "method": "ClientPromotesANewLocalAddressAfterHandshakeConfirmation",
+          "line": 151,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9-0001",
+            "REQ-QUIC-RFC9000-S9-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0009",
@@ -235519,33 +236343,32 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
-          "edge": 0,
+          "positive": 1,
+          "negative": 1,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235557,7 +236380,75 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P2_0001",
+          "member": "REQ_QUIC_RFC9000_S9P2_0001.RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "method": "RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData",
+          "line": 53,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P2-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "method": "ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001",
+            "REQ-QUIC-RFC9000-S9P6-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "method": "ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9-0012",
@@ -235572,32 +236463,31 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 1,
+          "negative": 1,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -235609,7 +236499,53 @@
           "summary": "RFC 9001 stateful handshake, key-update, and security clauses remain blocked without TLS orchestration."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "method": "ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001",
+            "REQ-QUIC-RFC9000-S9P6-0002"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "method": "ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P1-0001",
@@ -235634,13 +236570,13 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs::NewLocalAddressIsProbedBeforeTheConnectionMigrates",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 3,
           "negative": 0,
-          "edge": 0,
+          "edge": 1,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
@@ -235697,6 +236633,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P1_0001",
+          "member": "REQ_QUIC_RFC9000_S9P1_0001.ValidatedNewLocalAddressAtTheMaximumPortBoundaryIsProbedBeforeTheConnectionMigrates",
+          "method": "ValidatedNewLocalAddressAtTheMaximumPortBoundaryIsProbedBeforeTheConnectionMigrates",
+          "line": 99,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P1_0001",
+          "member": "REQ_QUIC_RFC9000_S9P1_0001.ValidatedNewLocalPortIsProbedBeforeTheConnectionMigrates",
+          "method": "ValidatedNewLocalPortIsProbedBeforeTheConnectionMigrates",
+          "line": 61,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -241672,7 +242652,7 @@
           "class": "REQ_QUIC_RFC9000_S9P5_0005",
           "member": "REQ_QUIC_RFC9000_S9P5_0005.ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
           "method": "ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
-          "line": 77,
+          "line": 78,
           "kinds": [
             "edge"
           ],
@@ -241695,7 +242675,7 @@
           "class": "REQ_QUIC_RFC9000_S9P5_0005",
           "member": "REQ_QUIC_RFC9000_S9P5_0005.ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
           "method": "ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
-          "line": 77,
+          "line": 78,
           "kinds": [
             "edge"
           ],
@@ -242416,7 +243396,7 @@
           "class": "REQ_QUIC_RFC9000_S9P5_0005",
           "member": "REQ_QUIC_RFC9000_S9P5_0005.ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
           "method": "ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
-          "line": 77,
+          "line": 78,
           "kinds": [
             "edge"
           ],
@@ -242439,7 +243419,7 @@
           "class": "REQ_QUIC_RFC9000_S9P5_0005",
           "member": "REQ_QUIC_RFC9000_S9P5_0005.ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
           "method": "ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId",
-          "line": 77,
+          "line": 78,
           "kinds": [
             "edge"
           ],
@@ -242782,12 +243762,12 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
-          "negative": 2,
+          "negative": 3,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -242844,6 +243824,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S9P6-0001",
             "REQ-QUIC-RFC9000-S9P6-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6_0001",
+          "member": "REQ_QUIC_RFC9000_S9P6_0001.ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "method": "ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "line": 46,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P6-0001"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -244514,7 +245516,7 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0008",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0008.ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused",
           "method": "ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused",
-          "line": 113,
+          "line": 110,
           "kinds": [
             "edge"
           ],
@@ -244536,7 +245538,7 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0008",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0008.ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused",
           "method": "ClientChoosesIpv6WhenTheIpv4PreferredAddressFamilyIsUnused",
-          "line": 113,
+          "line": 110,
           "kinds": [
             "edge"
           ],
@@ -244602,7 +245604,7 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0008",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0008.ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation",
           "method": "ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation",
-          "line": 97,
+          "line": 94,
           "kinds": [
             "negative"
           ],
@@ -244624,7 +245626,7 @@
           "class": "REQ_QUIC_RFC9000_S9P6P1_0008",
           "member": "REQ_QUIC_RFC9000_S9P6P1_0008.ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation",
           "method": "ClientDoesNotChooseThePreferredAddressBeforeHandshakeConfirmation",
-          "line": 97,
+          "line": 94,
           "kinds": [
             "negative"
           ],
@@ -247302,31 +248304,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0001.cs::Ipv6DatagramSendingResolvesAFlowLabel",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -247334,7 +248333,52 @@
           "summary": "IPv6 flow-label requirements remain blocked without any runtime flow-label modeling or socket-option seam."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0001",
+          "member": "REQ_QUIC_RFC9000_S9P7_0001.Ipv6DatagramSendingResolvesAFlowLabel",
+          "method": "Ipv6DatagramSendingResolvesAFlowLabel",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0001.cs::Ipv6DatagramSendingResolvesAFlowLabel",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0001",
+          "member": "REQ_QUIC_RFC9000_S9P7_0001.Ipv6DatagramSendingResolvesAFlowLabel",
+          "method": "Ipv6DatagramSendingResolvesAFlowLabel",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P7-0002",
@@ -247349,31 +248393,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0002.cs::DistinctIpv6PathsProduceDistinctFlowLabels",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -247381,7 +248422,52 @@
           "summary": "IPv6 flow-label requirements remain blocked without any runtime flow-label modeling or socket-option seam."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0002",
+          "member": "REQ_QUIC_RFC9000_S9P7_0002.DistinctIpv6PathsProduceDistinctFlowLabels",
+          "method": "DistinctIpv6PathsProduceDistinctFlowLabels",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0002.cs::DistinctIpv6PathsProduceDistinctFlowLabels",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0002",
+          "member": "REQ_QUIC_RFC9000_S9P7_0002.DistinctIpv6PathsProduceDistinctFlowLabels",
+          "method": "DistinctIpv6PathsProduceDistinctFlowLabels",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P7-0003",
@@ -247396,31 +248482,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0003.cs::AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -247428,7 +248511,52 @@
           "summary": "IPv6 flow-label requirements remain blocked without any runtime flow-label modeling or socket-option seam."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0003",
+          "member": "REQ_QUIC_RFC9000_S9P7_0003.AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
+          "method": "AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0003.cs::AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0003",
+          "member": "REQ_QUIC_RFC9000_S9P7_0003.AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
+          "method": "AlternateIpv6SendMetadataAlsoResolvesAFlowLabel",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-S9P7-0004",
@@ -247443,31 +248571,28 @@
         "edge": "optional",
         "fuzz": "not_applicable"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0004.cs::ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -247475,7 +248600,52 @@
           "summary": "IPv6 flow-label requirements remain blocked without any runtime flow-label modeling or socket-option seam."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0004",
+          "member": "REQ_QUIC_RFC9000_S9P7_0004.ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
+          "method": "ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P7-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0004.cs::ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0004.cs",
+          "class": "REQ_QUIC_RFC9000_S9P7_0004",
+          "member": "REQ_QUIC_RFC9000_S9P7_0004.ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
+          "method": "ChangingTheConnectionSeedChangesTheIpv6FlowLabel",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P7-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9001-S10-0001",

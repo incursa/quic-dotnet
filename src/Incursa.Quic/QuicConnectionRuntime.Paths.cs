@@ -1241,12 +1241,17 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool CanPromoteActivePathMigration(QuicConnectionPathIdentity pathIdentity)
     {
-        if (!peerHandshakeTranscriptCompleted)
+        if (!HandshakeConfirmed)
         {
             return false;
         }
 
         if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
+        {
+            return false;
+        }
+
+        if (PeerRequestedZeroLengthConnectionId())
         {
             return false;
         }

@@ -12,8 +12,6 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0009
     [Trait("Category", "Positive")]
     public void ClientUsesThePreferredAddressConnectionIdAfterPreferredAddressValidationSucceeds(bool useIpv6)
     {
-        byte[] initialDestinationConnectionId = [0x10, 0x11, 0x12, 0x13];
-        byte[] initialSourceConnectionId = [0x14, 0x15, 0x16, 0x17];
         byte[] preferredConnectionId = [0x20, 0x21, 0x22, 0x23];
         byte[] statelessResetToken =
         [
@@ -33,30 +31,17 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0009
         ushort preferredIpv4Port = 9444;
         ushort preferredIpv6Port = 9554;
 
-        QuicTransportParameters peerTransportParameters = new()
-        {
-            InitialSourceConnectionId = initialSourceConnectionId,
-            PreferredAddress = new QuicPreferredAddress
-            {
-                IPv4Address = preferredIpv4Address,
-                IPv4Port = preferredIpv4Port,
-                IPv6Address = preferredIpv6Address,
-                IPv6Port = preferredIpv6Port,
-                ConnectionId = preferredConnectionId,
-                StatelessResetToken = statelessResetToken,
-            },
-        };
-
         byte[] preferredAddressBytes = useIpv6 ? preferredIpv6Address : preferredIpv4Address;
         ushort preferredAddressPort = useIpv6 ? preferredIpv6Port : preferredIpv4Port;
 
         QuicConnectionPathIdentity activePath = new("203.0.113.10", RemotePort: 443);
-        using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(initialDestinationConnectionId));
-        Assert.True(runtime.TrySetHandshakeSourceConnectionId(initialSourceConnectionId));
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
-            runtime,
-            peerTransportParameters);
+        using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateConfirmedClientRuntime(
+            activePath,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress(
+                ipv4Address: preferredIpv4Address,
+                ipv4Port: preferredIpv4Port,
+                ipv6Address: preferredIpv6Address,
+                ipv6Port: preferredIpv6Port));
 
         QuicConnectionPathIdentity preferredPath = new(
             new IPAddress(preferredAddressBytes).ToString(),

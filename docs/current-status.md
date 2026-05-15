@@ -1,9 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-14 for the INT connectionmigration proof-lane slot
-wiring, captured neqo qlog replay, and preferred-address source-address
-blocker, and 2026-05-13 for the INT major-peer
-interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
+Last verified: 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
 coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
@@ -16,8 +13,13 @@ S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration
 forgery countermeasures guidance proof, S21P5 port-and-CID hygiene guidance
 proof, S21P5P6 loopback-and-address-use guidance proof, S7-0009
 application-protocol negotiation proof, S7-0011 application-protocol
-negotiation proof, S9-0009 disable-active-migration proof, S7-0006 handshake
-packet-protection proof, and regenerated QUIC coverage triage.
+ negotiation proof, S9-0009 disable-active-migration proof, S9-0001/S9-0008
+ migration-before-handshake proof, 2026-05-14 RFC 9000 S9 leaf-tail closure for
+ S9-0003/S9-0005/S9-0006/S9-0007/S9-0011/S9-0012, 2026-05-14 RFC 9000 S9.7
+ IPv6 flow-label closure for S9P7-0001/S9P7-0002/S9P7-0003/S9P7-0004, S7-0006
+ handshake packet-protection proof, and 2026-05-14 for the RFC 9000 S7-0007 and
+ S7-0008 transport-parameter handshake closures. Regenerated QUIC coverage
+ triage now marks the four S9.7 requirements trace_clean.
 
 ## 2026-05-13 INT Zerortt Closure Note
 
@@ -31,7 +33,11 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-14 INT Connection Migration Proof Lane
 
-`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role by replacing the distinct local `nginx` slot while keeping `neqo-peer` as the reported peer alias, normalizing the actual runner client slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image. The companion `connectionmigration-server-proof-blocked` profile preserves `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. Hosted run `25864019585` cleared the alias lookup failure but exposed a replacement-slot collision: the runner used `-s neqo -c neqo -r neqo=incursa-quic-interop-harness:local`, so the later `single path in use` failure is not accepted as a real neqo-peer migration verdict. Hosted run `25866825495` confirmed the distinct-slot runner shape (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`) but failed before transfer or migration with server-side `TLS alert 50`. After the ClientHello compatibility topoff, hosted run `25867235353` still failed at the same pre-transfer TLS alert (`interop harness: role=server, testcase=connectionmigration failed: TLS alert 50`), with the client receiving transport error 10. Hosted run `25868496912` kept the correct runner invocation (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`) and moved past the TLS alert: the captured server qlog opens with the published Initial and Handshake secrets, and local requirement-home replay proves the ServerHello uses TLS 1.3, `TLS_AES_128_GCM_SHA256`, and `x25519`. The remaining hosted failure is source-address shaped: the pcaps show the first server flight sourced from the configured preferred migration address `fd00:cafe:cafe:100::110` while the client connected to the original server address `fd00:cafe:cafe:100::100`, after which neqo times out in `WaitInitial`. The harness setup now adds the preferred migration address with `preferred_lft 0` so wildcard listeners keep it reachable for migration without selecting it for the original-path first flight. The lane remains advisory and open until a fresh hosted `connectionmigration-server-proof` run proves the fix. The blocked comparison lane stays advisory and remains separated from the major-peer matrix.
+`REQ-QUIC-INT-0022` now splits the hosted `connectionmigration` evidence into a proof profile that exercises the server role by replacing the distinct local `nginx` slot while keeping `neqo-peer` as the reported peer alias, normalizing the actual runner client slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image. The companion `connectionmigration-server-proof-blocked` profile preserves `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` comparisons. Hosted run `25864019585` cleared the alias lookup failure but exposed a replacement-slot collision: the runner used `-s neqo -c neqo -r neqo=incursa-quic-interop-harness:local`, so the later `single path in use` failure is not accepted as a real neqo-peer migration verdict. Hosted run `25866825495` confirmed the distinct-slot runner shape (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`) but failed before transfer or migration with server-side `TLS alert 50`. After the ClientHello compatibility topoff, hosted run `25867235353` still failed at the same pre-transfer TLS alert (`interop harness: role=server, testcase=connectionmigration failed: TLS alert 50`), with the client receiving transport error 10. Hosted run `25868496912` kept the correct runner invocation (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`) and moved past the TLS alert: the captured server qlog opens with the published Initial and Handshake secrets, and local requirement-home replay proves the ServerHello uses TLS 1.3, `TLS_AES_128_GCM_SHA256`, and `x25519`. The remaining hosted failure is source-address shaped: the pcaps show the first server flight sourced from the configured preferred migration address `fd00:cafe:cafe:100::110` while the client connected to the original server address `fd00:cafe:cafe:100::100`, after which neqo times out in `WaitInitial`. The harness setup now adds the preferred migration address with `preferred_lft 0` so wildcard listeners keep it reachable for migration without selecting it for the original-path first flight. Hosted run `25882671754` then exercised the blocked comparison lane across `ngtcp2`, `quiche`, `lsquic`, `quic-go`, `msquic`, and `aioquic`; the inspected peers failed with different issues instead of the earlier `AckedUnsentPacket` signature, including quic-go's zero-length-DCID CID-retirement rejection, msquic's packet-layer `KeyError`, and ngtcp2's transfer-size mismatch. The lane remains advisory and open until a fresh hosted `connectionmigration-server-proof` run proves the fix. The blocked comparison lane stays advisory and remains separated from the major-peer matrix. The next pilot is a peer-characterization matrix that records peer, role, testcase, outcome class, failure class, and artifact-root data so mixed failures stay interpretable instead of being flattened to green/red. A test-side matrix projector now preserves that row shape for mixed evidence without changing runtime behavior, and a generated seed report now captures the current pilot rows.
+
+## 2026-05-14 RFC9000 S19P21 and S5 Trace Closure
+
+`REQ-QUIC-RFC9000-S19P21-0004` through `REQ-QUIC-RFC9000-S19P21-0010` and `REQ-QUIC-RFC9000-S5-0006` are now `trace_clean`. The requirement-home tests now cover the extension-frame understanding, transport-parameter willingness, multi-frame support, extension interaction guidance, congestion-controlled extension frames, ACK generation, flow-control exclusion, and 0-RTT replay-protection prohibition proofs. Focused `dotnet test` for the eight RFC9000 homes passed 24/24, and the derived RFC 9000 coverage summary now reports 1,771 `trace_clean` requirements with zero blocked and zero partially covered cells.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -1748,3 +1754,7 @@ When starting a new protocol slice, follow
 [`specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md),
 and use the owning `SPEC-...`, `ARC-...`, `WI-...`, and `VER-...` artifacts
 before editing code.
+
+## 2026-05-15 INT Major Peer Evidence
+
+The advisory major-peer inventory has now been promoted into the dedicated evidence report `interop-major-peer-matrix-evidence-25904716076`. That completed hosted `major-peer-matrix` run covered the full `REQ-QUIC-INT-0019` cell set with mixed advisory results: 11 cells passed and 9 failed. The inspected failures still split across peers instead of converging on one Incursa-side symptom, including quic-go keyupdate timing out while waiting for response bytes or EOF, msquic client-handshake failing with `TLS alert 50`, and msquic server-resumption aborting with `The connection terminated`. The matrix remains advisory characterization evidence rather than support evidence.

@@ -216,6 +216,48 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void EndpointHostSelectsPacketInformationSourceAddressForConcreteIpv6PathOnWildcardSocket()
+    {
+        IPEndPoint socketLocalEndPoint = new(IPAddress.IPv6Any, 443);
+        IPAddress preferredLocalAddress = IPAddress.Parse("fd00:cafe:cafe:100::110");
+        QuicConnectionPathIdentity preferredPath = new(
+            "fd00:cafe:cafe::100",
+            preferredLocalAddress.ToString(),
+            41714,
+            socketLocalEndPoint.Port);
+
+        Assert.True(QuicConnectionEndpointHost.TryResolvePacketInformationSourceAddress(
+            socketLocalEndPoint,
+            AddressFamily.InterNetworkV6,
+            preferredPath,
+            out IPAddress sourceAddress));
+        Assert.Equal(preferredLocalAddress, sourceAddress);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointHostSkipsPacketInformationSourceAddressWhenSocketAlreadyHasConcreteBinding()
+    {
+        IPAddress preferredLocalAddress = IPAddress.Parse("fd00:cafe:cafe:100::110");
+        IPEndPoint socketLocalEndPoint = new(preferredLocalAddress, 443);
+        QuicConnectionPathIdentity preferredPath = new(
+            "fd00:cafe:cafe::100",
+            preferredLocalAddress.ToString(),
+            41714,
+            socketLocalEndPoint.Port);
+
+        Assert.False(QuicConnectionEndpointHost.TryResolvePacketInformationSourceAddress(
+            socketLocalEndPoint,
+            AddressFamily.InterNetworkV6,
+            preferredPath,
+            out IPAddress sourceAddress));
+        Assert.Equal(IPAddress.None, sourceAddress);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EndpointHostRebindsItsSocketWhenActivePathPromotionRequiresANewLocalPort()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
@@ -496,6 +538,67 @@ public sealed class REQ_QUIC_INT_0008
             out QuicLongHeaderPacket responseHeader));
         Assert.Equal(1u, responseHeader.Version);
         Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ListenerHostSelectsThePromotedLocalAddressAsTheDatagramSourceOnLinux()
+    {
+        if (!OperatingSystem.IsLinux() || !Socket.OSSupportsIPv4)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+
+        IPEndPoint listenEndPoint = new(IPAddress.Loopback, 0);
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) => ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            listenBacklog: 1);
+
+        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
+        IPEndPoint listenerEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
+        IPEndPoint promotedLocalEndPoint = new(IPAddress.Parse("127.0.0.2"), listenerEndPoint.Port);
+        QuicConnectionPathIdentity promotedPath = new(
+            clientEndPoint.Address.ToString(),
+            promotedLocalEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            listenerEndPoint.Port);
+
+        byte[] datagram = [0x13, 0x37, 0xAA, 0x55];
+        byte[] receiveBuffer = new byte[datagram.Length];
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+        ValueTask<SocketReceiveMessageFromResult> receiveTask = clientSocket.ReceiveMessageFromAsync(
+            receiveBuffer.AsMemory(),
+            SocketFlags.None,
+            new IPEndPoint(IPAddress.Any, 0),
+            receiveTimeout.Token);
+
+        MethodInfo? observeEffectMethod = typeof(QuicListenerHost).GetMethod(
+            "ObserveEffect",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(observeEffectMethod);
+
+        observeEffectMethod!.Invoke(
+            listenerHost,
+            new object[]
+            {
+                default(QuicConnectionHandle),
+                0,
+                new QuicConnectionSendDatagramEffect(promotedPath, datagram),
+            });
+
+        SocketReceiveMessageFromResult receiveResult = await receiveTask;
+        Assert.Equal(datagram.Length, receiveResult.ReceivedBytes);
+        Assert.Equal(datagram, receiveBuffer);
+        Assert.IsType<IPEndPoint>(receiveResult.RemoteEndPoint);
+        Assert.Equal(promotedLocalEndPoint.Address, ((IPEndPoint)receiveResult.RemoteEndPoint).Address);
     }
 
     [Fact]

@@ -29,7 +29,7 @@ internal static class QuicS9P6P1PreferredAddressTestSupport
         QuicConnectionPathIdentity activePath,
         QuicPreferredAddress? preferredAddress = null)
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePathBeforeHandshakeConfirmation(activePath);
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(InitialDestinationConnectionId));
         Assert.True(runtime.TrySetHandshakeSourceConnectionId(InitialSourceConnectionId));
         QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
@@ -41,6 +41,15 @@ internal static class QuicS9P6P1PreferredAddressTestSupport
         Assert.False(runtime.HandshakeConfirmed);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        return runtime;
+    }
+
+    internal static QuicConnectionRuntime CreateConfirmedClientRuntime(
+        QuicConnectionPathIdentity activePath,
+        QuicPreferredAddress? preferredAddress = null)
+    {
+        QuicConnectionRuntime runtime = CreateClientRuntime(activePath, preferredAddress);
+        ConfirmHandshake(runtime, observedAtTicks: 3);
         return runtime;
     }
 

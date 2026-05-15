@@ -52,7 +52,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0001
     [Trait("Category", "Edge")]
     public void RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData()
     {
-        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
         QuicConnectionPathIdentity firstValidatedPath = new(
             RemoteAddress: "203.0.113.31",
             LocalAddress: "198.51.100.31",

@@ -184,13 +184,9 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0010
 
     private static QuicConnectionRuntime CreateRuntime()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(OriginalPath);
-        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(InitialDestinationConnectionId));
-        Assert.True(runtime.TrySetHandshakeSourceConnectionId(InitialSourceConnectionId));
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
-            runtime,
-            CreatePeerTransportParameters());
-        return runtime;
+        return QuicS9P6P1PreferredAddressTestSupport.CreateConfirmedClientRuntime(
+            OriginalPath,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
     }
 
     private static QuicConnectionPathIdentity CreatePreferredPath()
@@ -198,23 +194,6 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0010
         return new QuicConnectionPathIdentity(
             new IPAddress(PreferredIpv4Address).ToString(),
             RemotePort: 9444);
-    }
-
-    private static QuicTransportParameters CreatePeerTransportParameters()
-    {
-        return new QuicTransportParameters
-        {
-            InitialSourceConnectionId = InitialSourceConnectionId,
-            PreferredAddress = new QuicPreferredAddress
-            {
-                IPv4Address = PreferredIpv4Address,
-                IPv4Port = 9444,
-                IPv6Address = PreferredIpv6Address,
-                IPv6Port = 9554,
-                ConnectionId = PreferredConnectionId,
-                StatelessResetToken = PreferredStatelessResetToken,
-            },
-        };
     }
 
     private static QuicConnectionTransitionResult ReceiveNewConnectionIdFrame(
