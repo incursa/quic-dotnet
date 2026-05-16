@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0016",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Advisory Peer Characterization Matrix Pilot Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add an advisory peer-characterization matrix overlay that records peer, role, testcase, outcome class, failure class, and artifact root for mixed interop results, seeded by connectionmigration, expanded into the major-peer matrix inventory, and preserved as a completed major-peer evidence report, without changing runtime behavior or CI gates.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0012",
+    "ARC-QUIC-INT-0015",
+    "ARC-QUIC-INT-0016",
+    "VER-QUIC-INT-0012",
+    "VER-QUIC-INT-0015",
+    "VER-QUIC-INT-0016"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0016"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0016"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0019",
+    "REQ-QUIC-INT-0022"
+  ],
+  "planned_changes": "- Add a matrix interpretation layer that captures each interop cell's peer slot, local role, testcase, outcome class, failure class, and artifact root instead of flattening mixed outcomes to green/red.\n- Seed the first rows from the current connectionmigration proof and blocked comparison bundles, then reuse the same classification shape for the currently executable non-HTTP/3 major-peer matrix cells.\n- Emit a generated advisory seed report under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md` so the pilot has a repo-native overlay surface.\n- Emit a generated advisory major-peer inventory report under `specs/generated/quic/interop-major-peer-matrix-inventory.json` and `.md` so the current `REQ-QUIC-INT-0019` cell set is explicit and reviewable.\n- Emit a generated advisory major-peer evidence report under `specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json` and `.md` so the completed hosted run is preserved with per-cell failure classes.\n- Keep the current helper dispatch shapes, peer aliases, and ordinary CI gates unchanged.\n- Update current-status and gap notes so the pilot is recorded as advisory analysis rather than support promotion.\n- Add or adjust focused tests around `InteropRunnerScriptFailureSummaryTests.cs` and the existing requirement-home tests so the matrix rows remain traceable to `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`.\n- Keep the external runner repository untouched for the pilot; the matrix should be derived from repo-local helper output and preserved artifact bundles.",
+  "out_of_scope": [
+    "changing QUIC transport semantics",
+    "changing helper execution semantics",
+    "treating mixed peer failures as green/red support proof",
+    "HTTP/3 expansion",
+    "making the matrix blocking in CI",
+    "rewriting the external runner repository",
+    "solving the underlying NEQO-specific failure first"
+  ],
+  "verification_plan": "Review the current proof bundles and dry-run plans, confirm the report surface can enumerate peer, role, testcase, outcome class, failure class, and artifact-root rows, run focused helper and requirement-home tests for `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`, verify the generated seed report files, the generated major-peer inventory report files, and the completed major-peer evidence report files, and dispatch a fresh hosted comparison run only after the matrix layer exists so the heterogeneous outcomes remain classifiable."
+}

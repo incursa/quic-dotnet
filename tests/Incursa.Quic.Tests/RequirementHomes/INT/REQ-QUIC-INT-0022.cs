@@ -12,25 +12,72 @@ public sealed class REQ_QUIC_INT_0022
         string helper = ReadRepositoryFile("scripts/interop/Invoke-QuicInteropRunner.ps1");
         string readme = ReadRepositoryFile("scripts/interop/README.md");
         string harnessReadme = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/README.md");
+        string setupScript = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/setup.sh");
         string currentStatus = ReadRepositoryFile("docs/current-status.md");
         string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-INT.json");
 
         Assert.Contains("coverage_profile == 'connectionmigration-server-proof'", workflow, StringComparison.Ordinal);
+        Assert.Contains("coverage_profile == 'connectionmigration-server-proof-blocked'", workflow, StringComparison.Ordinal);
         Assert.Contains("Run connectionmigration proof cell", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-quic-go", workflow, StringComparison.Ordinal);
-        Assert.Contains("server-connectionmigration-msquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-neqo", workflow, StringComparison.Ordinal);
+        Assert.Contains("implementation_slot: nginx", workflow, StringComparison.Ordinal);
+        Assert.Contains("peer_slots: neqo-peer", workflow, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", workflow, StringComparison.Ordinal);
+        Assert.DoesNotContain("server-connectionmigration-picoquic", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-ngtcp2-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-quiche-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("cloudflare/quiche-qns:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-lsquic-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("litespeedtech/lsquic-qir:latest", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-quic-go-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-msquic-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("server-connectionmigration-aioquic-blocked", workflow, StringComparison.Ordinal);
+        Assert.Contains("aiortc/aioquic-qns:latest", workflow, StringComparison.Ordinal);
         Assert.Contains("-TestCases \"${{ matrix.testcases }}\"", workflow, StringComparison.Ordinal);
         Assert.Contains("if: always()", workflow, StringComparison.Ordinal);
 
         Assert.Contains("TestCase = 'connectionmigration'", helper, StringComparison.Ordinal);
         Assert.Contains("RunnerTestCase = 'connectionmigration'", helper, StringComparison.Ordinal);
         Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
+        Assert.Contains("Resolve-RunnerImplementationSlotName", helper, StringComparison.Ordinal);
+        Assert.Contains("resolved peer implementation slot", helper, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
+        Assert.Contains("ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
 
         Assert.Contains("connectionmigration-server-proof", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration-server-proof-blocked", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("distinct local `nginx` slot", readme, StringComparison.Ordinal);
+        Assert.Contains("`neqo-peer` as the peer alias", readme, StringComparison.Ordinal);
+        Assert.Contains("actual runner client slot to `neqo`", readme, StringComparison.Ordinal);
+        Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", readme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", harnessReadme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration-server-proof-blocked", harnessReadme, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("distinct local `nginx` slot", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("`neqo-peer` as the peer alias", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("actual runner client slot to `neqo`", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("preferred_lft 0", harnessReadme, StringComparison.Ordinal);
+        Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", harnessReadme, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration-server-proof-blocked", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("distinct local `nginx` slot", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("`neqo-peer` as the reported peer alias", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("actual runner client slot to `neqo`", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("ghcr.io/mozilla/neqo-qns:latest", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("replacement-slot collision", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("single path in use", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("25867235353", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("TLS alert 50", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("25868496912", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("fd00:cafe:cafe:100::110", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("preferred_lft 0", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", currentStatus, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0022", spec, StringComparison.Ordinal);
         Assert.Contains("connectionmigration-server-proof", spec, StringComparison.Ordinal);
+        Assert.Contains("connectionmigration-server-proof-blocked", spec, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("against `neqo` by replacing a distinct local server slot", spec, StringComparison.Ordinal);
+        Assert.Contains("`neqo-peer` as the reported peer alias", spec, StringComparison.Ordinal);
+        Assert.Contains("normalizing the actual runner peer slot to `neqo`", spec, StringComparison.Ordinal);
+        Assert.Contains("ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic", spec, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -46,8 +46,11 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0003
         QuicPreferredAddress preferredAddress = parsedTransportParameters.PreferredAddress!;
 
         QuicConnectionPathIdentity activePath = new("203.0.113.42", "192.0.2.120", 443, 61254);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, parsedTransportParameters);
+        QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            activePath,
+            parsedTransportParameters.PreferredAddress);
+
+        QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 19);
 
         QuicConnectionPathIdentity originalValidationPath = new("203.0.113.42", "192.0.2.121", 443, 61255);
         QuicConnectionPathIdentity preferredValidationPath = new(

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0016",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Advisory Peer Characterization Matrix Pilot Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory peer-characterization matrix overlay that classifies mixed interop outcomes by peer, role, testcase, outcome class, failure class, and artifact root while keeping the existing major-peer matrix and connectionmigration proof lanes separate from protocol/runtime semantics.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0012",
+    "ARC-QUIC-INT-0015",
+    "WI-QUIC-INT-0016",
+    "VER-QUIC-INT-0016"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0019",
+    "REQ-QUIC-INT-0022"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "scripts/spec-trace/Generate-QuicPeerCharacterizationMatrix.ps1",
+    "scripts/spec-trace/Generate-QuicMajorPeerMatrixInventory.ps1",
+    "scripts/spec-trace/Generate-QuicMajorPeerMatrixEvidence.ps1",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs",
+    "specs/generated/quic/interop-peer-characterization-matrix-pilot.json",
+    "specs/generated/quic/interop-peer-characterization-matrix-pilot.md",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.json",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.md",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
+    "artifacts/interop-runner",
+    "artifacts/hosted-interop"
+  ],
+  "design_summary": "The existing major-peer matrix and connectionmigration proof lanes stay unchanged. The new matrix overlay consumes the cell-level outputs those lanes already produce and classifies each row by peer slot, local role, testcase, outcome class, failure class, and artifact root. The pilot seeds from the connectionmigration bundles because they already show heterogeneous peer failures, then generalizes to the currently executable non-HTTP/3 major-peer cells as a separate advisory report surface. A generated major-peer inventory report now projects the 20 workflow-owned `REQ-QUIC-INT-0019` cells as planned advisory rows so attention planning stays explicit, and a completed hosted major-peer evidence report now captures the live per-cell outcome classes from run `25904716076`. The overlay is strictly observational: it does not change transport semantics, the helper's supported/executed classification, or ordinary CI gates, and it keeps mixed failures visible instead of collapsing them into a single green/red verdict.",
+  "alternatives_considered": [
+    "Flatten every mixed result into a single green/red support verdict. Rejected because the current proof bundles already show different failure classes for different peers, which would hide the actual diagnostic signal.",
+    "Treat the current connectionmigration evidence as a NEQO-only bug and stop the matrix work. Rejected because the same lane already exposes peer, runner, and source-address variation that should be characterized before drawing support conclusions.",
+    "Push the characterization logic into runtime transport code. Rejected because the matrix is a reporting and analysis concern, not a protocol-semantic change.",
+    "Make the matrix a blocking CI gate. Rejected because the existing hosted profiles are advisory and opt-in, and the matrix should stay a characterization aid rather than a release blocker."
+  ],
+  "edge_cases_and_constraints": [
+    "Every cell must keep a distinct artifact root so role, peer, testcase, and failure-class evidence can be audited independently.",
+    "Peer-specific failures, Incursa-side gaps, and harness assumptions must remain distinguishable even when two peers fail on the same testcase.",
+    "Role asymmetry is expected, so the matrix must preserve both local client and local server rows instead of collapsing them into one peer result.",
+    "The advisory matrix stays outside ordinary CI and does not promote HTTP/3, migration, or any other peer cell by itself.",
+    "HTTP/3 remains out of scope."
+  ],
+  "data_and_state_considerations": "The overlay reads preserved runner-report, invocation, stderr, qlog, and pcap bundles under `artifacts/interop-runner/...`, `artifacts/hosted-interop/...`, and `artifacts/tmp-major-peer-evidence-25904716076/...`, plus the current-status and gap-ledger notes that explain which cells are advisory. The seed report lives under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md`, the major-peer inventory report lives under `specs/generated/quic/interop-major-peer-matrix-inventory.json` and `.md`, and the completed major-peer evidence report lives under `specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json` and `.md`; no external runner repository changes are required for either advisory shape.",
+  "risks": [
+    "Peer-image drift or runner drift can blur whether a failure belongs to the peer, the harness, or Incursa.Quic if the matrix does not capture the artifact root and role explicitly.",
+    "The advisory matrix can grow expensive if every peer and testcase is added without a diagnostic filter.",
+    "Readers may overread the matrix as support promotion unless the advisory boundary stays visible."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only formalizes the advisory characterization overlay. It does not promote connectionmigration, widen major-peer-matrix scope, or claim new peer support."
+    }
+  ]
+}

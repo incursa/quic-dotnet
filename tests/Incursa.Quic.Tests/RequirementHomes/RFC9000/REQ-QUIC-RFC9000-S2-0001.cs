@@ -29,10 +29,17 @@ public sealed class REQ_QUIC_RFC9000_S2_0001
 
         byte[] expected = [0x11, 0x22, 0x33, 0x44, 0x55];
         byte[] receiveBuffer = new byte[expected.Length];
-        int bytesRead = await pair.ServerStream.ReadAsync(
-            receiveBuffer,
-            0,
-            receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        int bytesRead = 0;
+        while (bytesRead < receiveBuffer.Length)
+        {
+            int count = await pair.ServerStream.ReadAsync(
+                receiveBuffer,
+                bytesRead,
+                receiveBuffer.Length - bytesRead).WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.True(count > 0, "Expected the loopback stream to keep delivering bytes until the full payload was read.");
+            bytesRead += count;
+        }
 
         Assert.Equal(expected.Length, bytesRead);
         Assert.True(expected.AsSpan().SequenceEqual(receiveBuffer));

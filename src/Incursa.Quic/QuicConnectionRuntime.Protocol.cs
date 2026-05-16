@@ -52,6 +52,7 @@ internal sealed partial class QuicConnectionRuntime
             peerHandshakeTranscriptCompleted = true;
             stateChanged = true;
             bufferedEstablishmentHandshakePackets.Clear();
+            EmitDiagnostic(ref effects, QuicDiagnostics.PeerHandshakeTranscriptCompleted());
 
             if (phase == QuicConnectionPhase.Establishing)
             {
@@ -3828,6 +3829,22 @@ internal sealed partial class QuicConnectionRuntime
                     localTransportParameters.MaxIdleTimeout)),
             nowTicks,
             ref effects);
+
+        if (tlsState.Role == QuicTlsRole.Server
+            && localTransportParameters.PreferredAddress is QuicPreferredAddress preferredAddress)
+        {
+            AppendEffect(
+                ref effects,
+                new QuicConnectionRegisterConnectionIdRouteEffect(
+                    PreferredAddressConnectionIdRouteKey,
+                    preferredAddress.ConnectionId));
+
+            AppendEffect(
+                ref effects,
+                new QuicConnectionRegisterStatelessResetTokenEffect(
+                    PreferredAddressConnectionIdRouteKey,
+                    preferredAddress.StatelessResetToken));
+        }
 
         ulong maxUdpPayloadSize = localTransportParameters.MaxUdpPayloadSize ?? QuicTransportParameters.DefaultMaxUdpPayloadSize;
         AppendEffect(ref effects, new QuicConnectionUpdateMaxUdpPayloadSizeEffect(maxUdpPayloadSize));

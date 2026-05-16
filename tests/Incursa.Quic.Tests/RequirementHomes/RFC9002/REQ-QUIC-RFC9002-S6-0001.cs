@@ -180,6 +180,8 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
         ReadOnlySpan<byte> payload,
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
+        out bool packetAckEliciting,
+        out bool packetProcessed,
         ref List<QuicConnectionEffect>? effects);
 
     private static bool TryProcessHandshakePacketPayload(
@@ -194,7 +196,7 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
             BindingFlags.Instance | BindingFlags.NonPublic)!;
         ProcessHandshakePacketPayloadDelegate handler =
             method.CreateDelegate<ProcessHandshakePacketPayloadDelegate>();
-        return handler(runtime, payload, encryptionLevel, nowTicks, ref effects);
+        return handler(runtime, payload, encryptionLevel, nowTicks, out _, out _, ref effects);
     }
 
     private static byte[] BuildAckAndCryptoPayload(

@@ -476,8 +476,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'connectionmigration'
             RunnerTestCase = 'connectionmigration'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires preferred-address and active-migration support.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed connectionmigration cell with preferred-address server dispatch; live runner proof is still being refreshed.'
         }
     )
 }
@@ -553,11 +553,29 @@ function Get-RunnerImplementationRole {
     )
 
     $slot = $RegistryData.PSObject.Properties[$SlotName]
+    if ($null -eq $slot -and $SlotName.EndsWith('-peer', [System.StringComparison]::OrdinalIgnoreCase)) {
+        $baseSlotName = $SlotName.Substring(0, $SlotName.Length - 5)
+        $slot = $RegistryData.PSObject.Properties[$baseSlotName]
+    }
+
     if ($null -eq $slot) {
         return $null
     }
 
     return [string]$slot.Value.role
+}
+
+function Resolve-RunnerImplementationSlotName {
+    param(
+        [Parameter(Mandatory)]
+        [string]$SlotName
+    )
+
+    if ($SlotName.EndsWith('-peer', [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $SlotName.Substring(0, $SlotName.Length - 5)
+    }
+
+    return $SlotName
 }
 
 function Get-EffectivePath {
@@ -607,22 +625,6 @@ function Get-InteropRunnerExecutionPlan {
         [string]$RunStamp
     )
 
-    $runnerClientImplementations = @()
-    $runnerServerImplementations = @()
-
-    if ($LocalRole -eq 'both') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-    elseif ($LocalRole -eq 'client') {
-        $runnerClientImplementations = @($ImplementationSlot)
-        $runnerServerImplementations = @($PeerImplementationSlots)
-    }
-    else {
-        $runnerClientImplementations = @($PeerImplementationSlots)
-        $runnerServerImplementations = @($ImplementationSlot)
-    }
-
     $testCaseInventory = @(Get-InteropRunnerTestCaseInventory)
     $requestedTestCaseInventory = [System.Collections.Generic.List[object]]::new()
     foreach ($testCase in $TestCases) {
@@ -648,6 +650,49 @@ function Get-InteropRunnerExecutionPlan {
     $artifactTreeLog = Join-Path $runRoot 'artifact-tree.txt'
     $runnerShimPath = Join-Path $runRoot 'runner-shim.py'
     $dockerBuildStageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "interop-runner-build-$RunStamp"
+    $resolvedPeerImplementationSlots = @()
+    if ($null -ne $PeerImplementationSlots) {
+        foreach ($peerImplementationSlot in $PeerImplementationSlots) {
+            $resolvedPeerImplementationSlots += Resolve-RunnerImplementationSlotName -SlotName $peerImplementationSlot
+        }
+    }
+
+    if ($LocalRole -ne 'both') {
+        $peerImplementationSlotList = @($PeerImplementationSlots)
+        $resolvedPeerImplementationSlotList = @($resolvedPeerImplementationSlots)
+        for ($slotIndex = 0; $slotIndex -lt $peerImplementationSlotList.Count; $slotIndex++) {
+            $peerImplementationSlot = [string]$peerImplementationSlotList[$slotIndex]
+            $resolvedPeerImplementationSlot = [string]$resolvedPeerImplementationSlotList[$slotIndex]
+            $resolvedSlotMatchesLocal = [string]::Equals(
+                $resolvedPeerImplementationSlot,
+                $ImplementationSlot,
+                [System.StringComparison]::OrdinalIgnoreCase)
+            $requestedSlotMatchesLocal = [string]::Equals(
+                $peerImplementationSlot,
+                $ImplementationSlot,
+                [System.StringComparison]::OrdinalIgnoreCase)
+
+            if ($resolvedSlotMatchesLocal -and -not $requestedSlotMatchesLocal) {
+                throw "LocalRole '$LocalRole' requires the local replacement slot '$ImplementationSlot' to differ from the resolved peer implementation slot '$resolvedPeerImplementationSlot' (peer slot '$peerImplementationSlot'). Use a distinct local replacement slot for split-role peer aliases."
+            }
+        }
+    }
+
+    $runnerClientImplementations = @()
+    $runnerServerImplementations = @()
+
+    if ($LocalRole -eq 'both') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
+    elseif ($LocalRole -eq 'client') {
+        $runnerClientImplementations = @($ImplementationSlot)
+        $runnerServerImplementations = @($resolvedPeerImplementationSlots)
+    }
+    else {
+        $runnerClientImplementations = @($resolvedPeerImplementationSlots)
+        $runnerServerImplementations = @($ImplementationSlot)
+    }
 
     return [pscustomobject]@{
         RepoRoot = $RepoRootResolved

@@ -1,0 +1,230 @@
+{
+  "report_id": "interop-major-peer-matrix-inventory",
+  "advisory": true,
+  "source_profile": "major-peer-matrix",
+  "source_requirement": "REQ-QUIC-INT-0019",
+  "summary": "Advisory inventory for the currently executable non-HTTP/3 major-peer matrix cells.",
+  "cell_count": 20,
+  "cells": [
+    {
+      "cell_id": "client-handshake-quic-go",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "handshake",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-handshake-quic-go"
+    },
+    {
+      "cell_id": "server-handshake-quic-go",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "handshake",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-handshake-quic-go"
+    },
+    {
+      "cell_id": "client-retry-quic-go",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "retry",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-retry-quic-go"
+    },
+    {
+      "cell_id": "server-retry-quic-go",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "retry",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-retry-quic-go"
+    },
+    {
+      "cell_id": "client-transfer-quic-go",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "transfer",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-transfer-quic-go"
+    },
+    {
+      "cell_id": "server-transfer-quic-go",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "transfer",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-transfer-quic-go"
+    },
+    {
+      "cell_id": "client-keyupdate-quic-go",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "keyupdate",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-keyupdate-quic-go"
+    },
+    {
+      "cell_id": "server-keyupdate-quic-go",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "keyupdate",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-keyupdate-quic-go"
+    },
+    {
+      "cell_id": "client-resumption-quic-go",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "resumption",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-resumption-quic-go"
+    },
+    {
+      "cell_id": "server-resumption-quic-go",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "quic-go",
+      "peer_image": "martenseemann/quic-go-interop:latest",
+      "testcase": "resumption",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-resumption-quic-go"
+    },
+    {
+      "cell_id": "client-handshake-msquic",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "handshake",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-handshake-msquic"
+    },
+    {
+      "cell_id": "server-handshake-msquic",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "handshake",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-handshake-msquic"
+    },
+    {
+      "cell_id": "client-retry-msquic",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "retry",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-retry-msquic"
+    },
+    {
+      "cell_id": "server-retry-msquic",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "retry",
+      "runner_timeout_seconds": 0,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-retry-msquic"
+    },
+    {
+      "cell_id": "client-transfer-msquic",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "transfer",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-transfer-msquic"
+    },
+    {
+      "cell_id": "server-transfer-msquic",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "transfer",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-transfer-msquic"
+    },
+    {
+      "cell_id": "client-keyupdate-msquic",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "keyupdate",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-keyupdate-msquic"
+    },
+    {
+      "cell_id": "server-keyupdate-msquic",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "keyupdate",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-keyupdate-msquic"
+    },
+    {
+      "cell_id": "client-resumption-msquic",
+      "local_role": "client",
+      "implementation_slot": "chrome",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "resumption",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/client-resumption-msquic"
+    },
+    {
+      "cell_id": "server-resumption-msquic",
+      "local_role": "server",
+      "implementation_slot": "nginx",
+      "peer_slot": "msquic",
+      "peer_image": "ghcr.io/microsoft/msquic/qns:main",
+      "testcase": "resumption",
+      "runner_timeout_seconds": 180,
+      "execution_state": "planned",
+      "target_artifact_root": "artifacts/interop-runner/server-resumption-msquic"
+    }
+  ]
+}

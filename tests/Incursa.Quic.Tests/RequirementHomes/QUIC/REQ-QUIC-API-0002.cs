@@ -138,6 +138,42 @@ public sealed class REQ_QUIC_API_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenAsync_PropagatesPreferredAddressReturnedByTheCallback()
+    {
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            PreferredAddress = new QuicPreferredAddress
+            {
+                IPv4Address = [192, 0, 2, 1],
+                IPv4Port = 443,
+                IPv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x06],
+                IPv6Port = 8443,
+                ConnectionId = [0x10, 0x11],
+                StatelessResetToken = [0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F],
+            },
+        };
+
+        MethodInfo? applyReturnedOptions = typeof(QuicListenerHost).GetMethod(
+            "ApplyReturnedOptions",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.NotNull(applyReturnedOptions);
+
+        applyReturnedOptions!.Invoke(null, [selectedOptions, returnedOptions]);
+
+        Assert.NotNull(selectedOptions.PreferredAddress);
+        Assert.True(returnedOptions.PreferredAddress!.IPv4Address.AsSpan().SequenceEqual(selectedOptions.PreferredAddress!.IPv4Address));
+        Assert.Equal(returnedOptions.PreferredAddress.IPv4Port, selectedOptions.PreferredAddress.IPv4Port);
+        Assert.True(returnedOptions.PreferredAddress.IPv6Address.AsSpan().SequenceEqual(selectedOptions.PreferredAddress.IPv6Address));
+        Assert.Equal(returnedOptions.PreferredAddress.IPv6Port, selectedOptions.PreferredAddress.IPv6Port);
+        Assert.True(returnedOptions.PreferredAddress.ConnectionId.AsSpan().SequenceEqual(selectedOptions.PreferredAddress.ConnectionId));
+        Assert.True(returnedOptions.PreferredAddress.StatelessResetToken.AsSpan().SequenceEqual(selectedOptions.PreferredAddress.StatelessResetToken));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ConnectAsync_RejectsNullOptions()

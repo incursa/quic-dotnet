@@ -167,6 +167,13 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         Assert.Equal(validatedPath, runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.ActivePath.Value.IsValidated);
         Assert.True(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
+        Assert.False(runtime.CandidatePaths.ContainsKey(validatedPath));
+        Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(validatedPath));
+        Assert.Equal(validatedPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == validatedPath
+            && !promote.RestoreSavedState);
 
         return runtime;
     }

@@ -17,7 +17,7 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void EndpointHostShellBridgesTheLibraryRuntimeThroughAConnectedUdpSocketAndRoutesInboundHandshakeDatagrams()
+    public void EndpointHostShellBridgesTheLibraryRuntimeThroughAUdpSocketAndRoutesInboundHandshakeDatagrams()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
         using QuicConnectionRuntimeEndpoint endpoint = new(1);
@@ -95,6 +95,169 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task EndpointHostRoutesMigratedHandshakeDatagramsFromANewSourceEndpoint()
+    {
+        var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
+        using Socket migratedClientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        migratedClientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = InteropEndpointHostTestSupport.CreateRuntime();
+
+        try
+        {
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+
+            byte[] routeConnectionId =
+            [
+                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            ];
+            Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 0UL));
+
+            QuicTlsPacketProtectionMaterial material = InteropEndpointHostTestSupport.CreateHandshakeMaterial();
+            QuicConnectionPathIdentity pathIdentity = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
+
+            Assert.True(endpoint.Host.TryPostEvent(handle, new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: material))));
+
+            ConcurrentQueue<QuicConnectionIngressResult> ingressResults = new();
+            using ManualResetEventSlim ingressSeen = new(false);
+
+            using QuicConnectionEndpointHost host = new(
+                endpoint,
+                serverSocket,
+                pathIdentity,
+                ingressObserver: ingressResult =>
+                {
+                    ingressResults.Enqueue(ingressResult);
+                    ingressSeen.Set();
+                });
+
+            _ = host.RunAsync();
+
+            byte[] serverHelloPacket = InteropEndpointHostTestSupport.BuildProtectedHandshakePacket(
+                material,
+                InteropEndpointHostTestSupport.CreateServerHelloTranscript(),
+                routeConnectionId);
+
+            int bytesSent = migratedClientSocket.SendTo(serverHelloPacket, SocketFlags.None, serverEndPoint);
+            Assert.Equal(serverHelloPacket.Length, bytesSent);
+
+            Assert.True(ingressSeen.Wait(TimeSpan.FromSeconds(5)));
+            Assert.NotEmpty(ingressResults);
+            QuicConnectionIngressResult ingressResult = ingressResults.First();
+            Assert.True(ingressResult.RoutedToConnection);
+            Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, ingressResult.Disposition);
+            Assert.Equal(QuicConnectionEndpointHandlingKind.None, ingressResult.HandlingKind);
+            Assert.Equal(handle, ingressResult.Handle);
+        }
+        finally
+        {
+            serverSocket.Dispose();
+            clientSocket.Dispose();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EndpointHostKeepsItsSocketWhenActivePathPromotionOnlyChangesTheLocalAddress()
+    {
+        var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = InteropEndpointHostTestSupport.CreateRuntime();
+
+        try
+        {
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+
+            QuicConnectionPathIdentity initialPath = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
+
+            using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
+            Socket initialSocket = GetPrivateField<Socket>(host, "socket");
+
+            IPEndPoint promotedLocalEndPoint = new(IPAddress.Parse("127.0.0.2"), serverEndPoint.Port);
+            QuicConnectionPathIdentity promotedPath = new(
+                clientEndPoint.Address.ToString(),
+                promotedLocalEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                promotedLocalEndPoint.Port);
+
+            Assert.True(host.TryApplyEffect(new QuicConnectionPromoteActivePathEffect(promotedPath)));
+
+            Socket reboundSocket = GetPrivateField<Socket>(host, "socket");
+            QuicConnectionPathIdentity reboundPath = GetPrivateField<QuicConnectionPathIdentity>(host, "peerPathIdentity");
+
+            Assert.Same(initialSocket, reboundSocket);
+            Assert.Equal(promotedPath, reboundPath);
+            Assert.Equal(initialSocket.LocalEndPoint, reboundSocket.LocalEndPoint);
+            Assert.Null(reboundSocket.RemoteEndPoint);
+        }
+        finally
+        {
+            serverSocket.Dispose();
+            clientSocket.Dispose();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EndpointHostSelectsPacketInformationSourceAddressForConcreteIpv6PathOnWildcardSocket()
+    {
+        IPEndPoint socketLocalEndPoint = new(IPAddress.IPv6Any, 443);
+        IPAddress preferredLocalAddress = IPAddress.Parse("fd00:cafe:cafe:100::110");
+        QuicConnectionPathIdentity preferredPath = new(
+            "fd00:cafe:cafe::100",
+            preferredLocalAddress.ToString(),
+            41714,
+            socketLocalEndPoint.Port);
+
+        Assert.True(QuicConnectionEndpointHost.TryResolvePacketInformationSourceAddress(
+            socketLocalEndPoint,
+            AddressFamily.InterNetworkV6,
+            preferredPath,
+            out IPAddress sourceAddress));
+        Assert.Equal(preferredLocalAddress, sourceAddress);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointHostSkipsPacketInformationSourceAddressWhenSocketAlreadyHasConcreteBinding()
+    {
+        IPAddress preferredLocalAddress = IPAddress.Parse("fd00:cafe:cafe:100::110");
+        IPEndPoint socketLocalEndPoint = new(preferredLocalAddress, 443);
+        QuicConnectionPathIdentity preferredPath = new(
+            "fd00:cafe:cafe::100",
+            preferredLocalAddress.ToString(),
+            41714,
+            socketLocalEndPoint.Port);
+
+        Assert.False(QuicConnectionEndpointHost.TryResolvePacketInformationSourceAddress(
+            socketLocalEndPoint,
+            AddressFamily.InterNetworkV6,
+            preferredPath,
+            out IPAddress sourceAddress));
+        Assert.Equal(IPAddress.None, sourceAddress);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EndpointHostRebindsItsSocketWhenActivePathPromotionRequiresANewLocalPort()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
@@ -114,7 +277,9 @@ public sealed class REQ_QUIC_INT_0008
 
             using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
             Socket initialSocket = GetPrivateField<Socket>(host, "socket");
-            Assert.Same(serverSocket, initialSocket);
+            Assert.NotSame(serverSocket, initialSocket);
+            Assert.Equal(serverEndPoint, (IPEndPoint)initialSocket.LocalEndPoint!);
+            Assert.Null(initialSocket.RemoteEndPoint);
 
             IPEndPoint promotedLocalEndPoint;
             using (Socket portReservation = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
@@ -137,7 +302,7 @@ public sealed class REQ_QUIC_INT_0008
             Assert.NotSame(initialSocket, rebindingSocket);
             Assert.Equal(promotedPath, reboundPath);
             Assert.Equal(promotedLocalEndPoint, (IPEndPoint)rebindingSocket.LocalEndPoint!);
-            Assert.Equal(clientEndPoint, (IPEndPoint)rebindingSocket.RemoteEndPoint!);
+            Assert.Null(rebindingSocket.RemoteEndPoint);
             Assert.Throws<ObjectDisposedException>(() => initialSocket.Send(new byte[] { 0x00 }, SocketFlags.None));
         }
         finally
@@ -145,6 +310,47 @@ public sealed class REQ_QUIC_INT_0008
             serverSocket.Dispose();
             clientSocket.Dispose();
         }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EndpointHostPreservesDualModeOnIpv6Sockets()
+    {
+        if (!Socket.OSSupportsIPv6)
+        {
+            return;
+        }
+
+        using Socket serverSocket = new(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+        serverSocket.Bind(new IPEndPoint(IPAddress.IPv6Any, 0));
+
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        QuicConnectionPathIdentity initialPath = new(
+            IPAddress.IPv6Loopback.ToString(),
+            IPAddress.IPv6Any.ToString(),
+            12345,
+            ((IPEndPoint)serverSocket.LocalEndPoint!).Port);
+
+        using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
+        Socket reboundSocket = GetPrivateField<Socket>(host, "socket");
+
+        Assert.Equal(AddressFamily.InterNetworkV6, reboundSocket.AddressFamily);
+        Assert.True(reboundSocket.DualMode);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PacketInformationResolverFallsBackToTheWildcardSocketAddressWhenThePacketAddressIsUnavailable()
+    {
+        IPEndPoint fallback = new(IPAddress.IPv6Any, 443);
+
+        IPEndPoint resolved = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+            fallback,
+            IPAddress.IPv6Any);
+
+        Assert.Same(fallback, resolved);
     }
 
     [Fact]
@@ -332,6 +538,68 @@ public sealed class REQ_QUIC_INT_0008
             out QuicLongHeaderPacket responseHeader));
         Assert.Equal(1u, responseHeader.Version);
         Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ListenerHostSelectsThePromotedLocalAddressAsTheDatagramSourceOnLinux()
+    {
+        if (!OperatingSystem.IsLinux() || !Socket.OSSupportsIPv4)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
+
+        IPEndPoint listenEndPoint = new(IPAddress.Loopback, 0);
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) => ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            listenBacklog: 1);
+
+        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
+        IPEndPoint listenerEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
+        IPEndPoint promotedLocalEndPoint = new(IPAddress.Parse("127.0.0.2"), listenerEndPoint.Port);
+        QuicConnectionPathIdentity promotedPath = new(
+            clientEndPoint.Address.ToString(),
+            promotedLocalEndPoint.Address.ToString(),
+            clientEndPoint.Port,
+            listenerEndPoint.Port);
+
+        byte[] datagram = [0x13, 0x37, 0xAA, 0x55];
+        byte[] receiveBuffer = new byte[datagram.Length];
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+        ValueTask<SocketReceiveMessageFromResult> receiveTask = clientSocket.ReceiveMessageFromAsync(
+            receiveBuffer.AsMemory(),
+            SocketFlags.None,
+            new IPEndPoint(IPAddress.Any, 0),
+            receiveTimeout.Token);
+
+        MethodInfo? sendDatagramMethod = typeof(QuicListenerHost).GetMethod(
+            "SendDatagram",
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            binder: null,
+            types: [typeof(QuicConnectionSendDatagramEffect)],
+            modifiers: null);
+        Assert.NotNull(sendDatagramMethod);
+
+        sendDatagramMethod!.Invoke(
+            listenerHost,
+            new object[]
+            {
+                new QuicConnectionSendDatagramEffect(promotedPath, datagram),
+            });
+
+        SocketReceiveMessageFromResult receiveResult = await receiveTask;
+        Assert.Equal(datagram.Length, receiveResult.ReceivedBytes);
+        Assert.Equal(datagram, receiveBuffer);
+        Assert.IsType<IPEndPoint>(receiveResult.RemoteEndPoint);
+        Assert.Equal(promotedLocalEndPoint.Address, ((IPEndPoint)receiveResult.RemoteEndPoint).Address);
     }
 
     [Fact]

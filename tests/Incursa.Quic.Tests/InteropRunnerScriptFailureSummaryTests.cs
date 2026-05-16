@@ -130,6 +130,103 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroAfterValidOutputsAcceptsPeerAliasSlotsAndRecordsThem()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-valid-outputs");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "nginx": { "role": "server" },
+              "neqo": { "role": "both" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "nginx",
+            "-PeerImplementationSlots",
+            "neqo-peer",
+            "-TestCases",
+            "connectionmigration");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Peer implementation slot 'neqo-peer' was not found", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("requires the local replacement slot 'nginx' to differ", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        string invocationText = File.ReadAllText(Path.Combine(runRoot, "invocation.txt"));
+        string[] runnerArgs = GetInvocationRunnerArgs(invocationText);
+        int serverIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-s", StringComparison.Ordinal));
+        int clientIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-c", StringComparison.Ordinal));
+        int replacementIndex = Array.FindIndex(runnerArgs, arg => string.Equals(arg, "-r", StringComparison.Ordinal));
+
+        Assert.Equal("nginx", GetInvocationFieldValue(invocationText, "LocalImplementationSlot"));
+        Assert.Equal("neqo-peer", GetInvocationFieldValue(invocationText, "PeerImplementationSlots"));
+        Assert.True(serverIndex >= 0);
+        Assert.Equal("nginx", runnerArgs[serverIndex + 1]);
+        Assert.True(clientIndex >= 0);
+        Assert.Equal("neqo", runnerArgs[clientIndex + 1]);
+        Assert.True(replacementIndex >= 0);
+        Assert.Equal("nginx=incursa-quic-interop-harness:local", runnerArgs[replacementIndex + 1]);
+        Assert.DoesNotContain("neqo-peer", runnerArgs, StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public async Task SplitRolePeerAliasResolvingToLocalReplacementSlotIsRejectedBeforeBuildWorkBegins()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-valid-outputs");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "neqo": { "role": "both" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "server",
+            "-ImplementationSlot",
+            "neqo",
+            "-PeerImplementationSlots",
+            "neqo-peer",
+            "-TestCases",
+            "connectionmigration");
+
+        string output = result.CombinedOutput;
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains(
+            "requires the local replacement slot 'neqo' to differ from the resolved peer implementation slot 'neqo' (peer slot 'neqo-peer')",
+            result.ExceptionMessage,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Building Incursa.Quic.InteropHarness image...", output, StringComparison.OrdinalIgnoreCase);
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterFileNotFoundHandshakeServerSuccessTreatsTheRunAsAdvisorySuccess()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -860,6 +957,54 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         string[] runRoots = Directory.GetDirectories(artifactsRoot);
         Assert.Single(runRoots);
         return runRoots[0];
+    }
+
+    private static string GetInvocationFieldValue(string invocationText, string fieldName)
+    {
+        string prefix = $"{fieldName}:";
+        foreach (string line in GetLines(invocationText))
+        {
+            if (line.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return line.Substring(prefix.Length).Trim();
+            }
+        }
+
+        throw new InvalidOperationException($"Invocation summary did not contain a '{fieldName}' field.");
+    }
+
+    private static string[] GetInvocationRunnerArgs(string invocationText)
+    {
+        string[] lines = GetLines(invocationText);
+        int runnerArgsIndex = Array.FindIndex(lines, line => string.Equals(line, "RunnerArgs:", StringComparison.Ordinal));
+        if (runnerArgsIndex < 0)
+        {
+            throw new InvalidOperationException("Invocation summary did not contain a RunnerArgs section.");
+        }
+
+        List<string> runnerArgs = new();
+        for (int index = runnerArgsIndex + 1; index < lines.Length; index++)
+        {
+            string line = lines[index];
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                break;
+            }
+
+            if (!line.StartsWith("  ", StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            runnerArgs.Add(line.Trim());
+        }
+
+        return runnerArgs.ToArray();
+    }
+
+    private static string[] GetLines(string text)
+    {
+        return text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
     }
 
     private static void AssertFailureSummary(

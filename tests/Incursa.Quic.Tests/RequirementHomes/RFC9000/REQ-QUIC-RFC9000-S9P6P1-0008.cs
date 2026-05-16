@@ -49,24 +49,21 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0008
         Assert.Equal(statelessResetToken, preferredAddress.StatelessResetToken);
 
         QuicConnectionPathIdentity activePath = new("203.0.113.10", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, parsedTransportParameters);
+        QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            activePath,
+            parsedTransportParameters.PreferredAddress);
+        Assert.False(runtime.HandshakeConfirmed);
 
         QuicConnectionPathIdentity preferredPath = new(
             new IPAddress(preferredAddress.IPv4Address).ToString(),
             RemotePort: preferredAddress.IPv4Port);
-        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+        QuicConnectionTransitionResult handshakeResult = QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(
+            runtime,
+            observedAtTicks: 20);
 
-        QuicConnectionTransitionResult receiveResult = runtime.Transition(
-            new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 20,
-                preferredPath,
-                datagram),
-            nowTicks: 20);
-
-        Assert.True(receiveResult.StateChanged);
-        Assert.Contains(receiveResult.Effects, effect =>
+        Assert.True(handshakeResult.StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.Contains(handshakeResult.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect sendDatagramEffect
             && sendDatagramEffect.PathIdentity == preferredPath);
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));

@@ -16,41 +16,45 @@
     "REQ-QUIC-INT-0022"
   ],
   "preconditions": [
-    "The external `quic-interop-runner` checkout includes `quic-go` and `msquic` peer slots.",
+    "The external `quic-interop-runner` checkout includes `ngtcp2`, `quiche`, `aioquic`, `picoquic`, `lsquic`, `quic-go`, `msquic`, `quinn`, and `neqo` peer slots.",
     "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
     "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
   ],
-  "scope": "Verify that the repository exposes a manual advisory hosted proof lane for server-role connectionmigration against quic-go and msquic, without promoting blocked cells or changing ordinary CI gates.",
+  "scope": "Verify that the repository exposes manual advisory hosted proof lanes for server-role connectionmigration against neqo using a distinct local nginx replacement slot, the neqo-peer helper alias, the normalized neqo runner peer slot, and the OCI-indexed neqo-qns image, plus a blocked comparison lane for ngtcp2, lsquic, quiche, quic-go, msquic, and aioquic, without promoting blocked cells or changing ordinary CI gates. The current proof also verifies that the harness keeps the configured preferred migration address reachable without letting it become the original-path first-flight source address.",
   "procedure": [
-    "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `connectionmigration-server-proof` profile is `workflow_dispatch` only.",
-    "Confirm the profile includes server-role matrix cells against `quic-go` and `msquic` for `connectionmigration`.",
+    "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles are `workflow_dispatch` only.",
+    "Confirm the proof profile includes a server-role matrix cell that replaces the local `nginx` slot, records `neqo-peer` as the peer alias, and invokes the runner against the normalized `neqo` client slot for `connectionmigration`.",
+    "Confirm the blocked profile includes server-role matrix cells against `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` for `connectionmigration`.",
     "Confirm `major-peer-matrix` still excludes `connectionmigration`.",
     "Confirm every matrix cell invokes `scripts/interop/Invoke-QuicInteropRunner.ps1` with matrix-provided role, local implementation slot, peer slot, testcase, timeout, and artifact root.",
     "Confirm each cell uploads a distinct artifact bundle with `if: always()`.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0018` and `REQ-QUIC-INT-0022`.",
-    "Run representative helper dry-run plans for server-role quic-go and msquic connectionmigration cells.",
+    "Run the captured neqo connectionmigration qlog replay in `REQ-QUIC-CRT-0112` to prove the hosted server first flight opens with the published Initial and Handshake secrets.",
+    "Run representative helper dry-run plans for the server-role neqo connectionmigration cell using the local `nginx` replacement slot, plus the blocked comparison peers.",
     "Run SpecTrace core validation.",
-    "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof` and inspect each uploaded `runner-report.json` plus selected output logs."
+    "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof` and `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=connectionmigration-server-proof-blocked` and inspect each uploaded `runner-report.json` plus selected output logs."
   ],
-  "expected_result": "The repository configuration provides an opt-in hosted proof lane that can collect per-cell artifacts for Incursa.Quic as the server role against quic-go and msquic for the connectionmigration cell, while keeping the major-peer-matrix profile and HTTP/3 out of scope.",
+  "expected_result": "The repository configuration provides opt-in hosted proof lanes that can collect per-cell artifacts for Incursa.Quic as the server role against neqo using a distinct local nginx replacement slot, the neqo-peer helper alias, the normalized neqo runner peer slot, and the OCI-indexed neqo-qns image for the connectionmigration proof cells, while keeping a blocked comparison lane for ngtcp2, lsquic, quiche, quic-go, msquic, and aioquic, and keeping the major-peer-matrix profile and HTTP/3 out of scope.",
   "evidence": [
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
     "src/Incursa.Quic.InteropHarness/README.md",
+    "src/Incursa.Quic.InteropHarness/setup.sh",
     "docs/current-status.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0015.json",
     "specs/work-items/quic/WI-QUIC-INT-0015.json"
   ],
-  "status_summary": "Planned for hosted execution. The repository now has the dedicated connectionmigration proof lane and the helper inventory already classifies connectionmigration as supported/executed. The latest local migration proof still shows the quic-go cell failing, which keeps the msquic comparison as the next GitHub-hosted trace target. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
+  "status_summary": "Planned/open for hosted execution. The repository now has split connectionmigration proof lanes and the helper inventory already classifies connectionmigration as supported/executed. Hosted run `25864019585` cleared the alias lookup failure but exposed a replacement-slot collision because the runner invoked `-s neqo -c neqo -r neqo=incursa-quic-interop-harness:local`; the later single-path failure is therefore not accepted as a real neqo-peer migration verdict. The proof lane now uses a distinct local `nginx` replacement slot while preserving `neqo-peer` for helper reporting and normalizing the actual runner peer slot to `neqo`. Hosted runs `25866825495` and `25867235353` confirm that runner shape (`-s nginx -c neqo -r nginx=incursa-quic-interop-harness:local`), but failed before transfer or migration with server-side `TLS alert 50`. Hosted run `25868496912` moved past that failure: the captured server Initial and Handshake first flight opens locally with the published secrets, and direct ServerHello replay confirms TLS 1.3, `TLS_AES_128_GCM_SHA256`, and `x25519`. The remaining failure is source-address shaped because the pcaps show the first server flight sourced from preferred migration address `fd00:cafe:cafe:100::110` instead of original server address `fd00:cafe:cafe:100::100`; the harness setup now applies `preferred_lft 0` to the preferred migration address before the next hosted proof run. No migration verdict is claimed. Full SpecTrace core validation remains blocked by the current baseline and is not claimed as passing by this artifact.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a dedicated hosted proof lane, but the lane itself still needs live corroboration before any support claim changes."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has hosted proof lanes against neqo using a distinct local `nginx` replacement slot plus a blocked comparison lane against ngtcp2, lsquic, quiche, quic-go, msquic, and aioquic. Hosted run `25864019585` is retained only as collision evidence because it replaced the normalized `neqo` slot on both sides. Hosted runs `25866825495` and `25867235353` prove the distinct-slot runner invocation but failed before transfer or migration with server-side `TLS alert 50`. Hosted run `25868496912` proves the server first flight is cryptographically usable but exposes a preferred-address source-selection blocker, so the lane remains open until the `preferred_lft 0` setup fix passes a fresh hosted proof run."
     }
   ]
 }

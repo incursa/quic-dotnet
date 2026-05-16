@@ -30,6 +30,7 @@ public sealed class REQ_QUIC_CRT_0136
         clientSink.Emit(QuicDiagnostics.InitialPacketProcessingResult(false));
         clientSink.Emit(QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Initial, 2));
         clientSink.Emit(QuicDiagnostics.TranscriptAdvanced(QuicTlsEncryptionLevel.Handshake, 5));
+        clientSink.Emit(QuicDiagnostics.PeerHandshakeTranscriptCompleted());
 
         QuicConnectionPathClassification classification = QuicConnectionPathClassification.MigrationCandidate;
         clientSink.Emit(QuicDiagnostics.AddressChangeClassified(pathIdentity, classification));
@@ -54,6 +55,7 @@ public sealed class REQ_QUIC_CRT_0136
                 QlogQuicKnownValues.ConnectionStateUpdatedEventName,
                 QlogQuicKnownValues.KeyUpdatedEventName,
                 QlogQuicKnownValues.KeyUpdatedEventName,
+                QlogQuicKnownValues.ConnectionStateUpdatedEventName,
                 QlogQuicKnownValues.MigrationStateUpdatedEventName,
                 QlogQuicKnownValues.MigrationStateUpdatedEventName,
                 QlogQuicKnownValues.MigrationStateUpdatedEventName,
@@ -90,7 +92,11 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.Equal(QlogQuicKnownValues.KeyLifecycleTriggerTls, ReadString(handshakeKeyUpdated.Data["trigger"]));
         Assert.Equal(5L, ReadNumber(handshakeKeyUpdated.Data["transcript_update_count"]));
 
-        QlogEvent migrationStarted = clientSink.Trace.Events[6];
+        QlogEvent peerHandshakeCompleted = clientSink.Trace.Events[6];
+        Assert.Equal(QlogQuicKnownValues.ConnectionStateHandshakeStarted, ReadString(peerHandshakeCompleted.Data["old"]));
+        Assert.Equal(QlogQuicKnownValues.ConnectionStateHandshakeComplete, ReadString(peerHandshakeCompleted.Data["new"]));
+
+        QlogEvent migrationStarted = clientSink.Trace.Events[7];
         Assert.Equal(QlogQuicKnownValues.MigrationStateStarted, ReadString(migrationStarted.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", migrationStarted.Tuple);
         Assert.Equal("203.0.113.10", ReadObjectString(migrationStarted.Data["tuple_remote"], "ip_v4"));
@@ -98,18 +104,18 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.Equal("198.51.100.3", ReadObjectString(migrationStarted.Data["tuple_local"], "ip_v4"));
         Assert.Equal(61234L, ReadObjectNumber(migrationStarted.Data["tuple_local"], "port_v4"));
 
-        QlogEvent pathValidationFailed = clientSink.Trace.Events[7];
+        QlogEvent pathValidationFailed = clientSink.Trace.Events[8];
         Assert.Equal(QlogQuicKnownValues.MigrationStateAbandoned, ReadString(pathValidationFailed.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", pathValidationFailed.Tuple);
 
-        QlogEvent pathValidationExpired = clientSink.Trace.Events[8];
+        QlogEvent pathValidationExpired = clientSink.Trace.Events[9];
         Assert.Equal(QlogQuicKnownValues.MigrationStateProbingAbandoned, ReadString(pathValidationExpired.Data["new"]));
 
-        QlogEvent budgetExhausted = clientSink.Trace.Events[9];
+        QlogEvent budgetExhausted = clientSink.Trace.Events[10];
         Assert.Equal(QlogQuicKnownValues.MigrationStateAbandoned, ReadString(budgetExhausted.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", budgetExhausted.Tuple);
 
-        QlogEvent statelessReset = clientSink.Trace.Events[10];
+        QlogEvent statelessReset = clientSink.Trace.Events[11];
         Assert.Equal(QlogQuicKnownValues.RemoteInitiator, ReadString(statelessReset.Data["initiator"]));
         Assert.Equal(QlogQuicKnownValues.CloseTriggerStatelessReset, ReadString(statelessReset.Data["trigger"]));
         Assert.Equal(42L, ReadNumber(statelessReset.Data["connection_id"]));

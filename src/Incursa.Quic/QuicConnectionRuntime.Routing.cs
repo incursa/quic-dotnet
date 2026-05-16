@@ -462,7 +462,22 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (phase is QuicConnectionPhase.Closing or QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        if (phase == QuicConnectionPhase.Closing)
+        {
+            if (localCloseEffectsPending
+                && terminalState is QuicConnectionTerminalState terminalStateValue
+                && terminalStateValue.Origin == QuicConnectionCloseOrigin.Local)
+            {
+                localCloseEffectsPending = false;
+                AppendTerminalEffects(ref effects, emitClosePacket: true);
+                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                return true;
+            }
+
+            return false;
+        }
+
+        if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
         {
             return false;
         }
@@ -481,6 +496,32 @@ internal sealed partial class QuicConnectionRuntime
 
         AppendTerminalEffects(ref effects, emitClosePacket: true);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        return true;
+    }
+
+    internal bool ProjectLocalCloseRequested(
+        QuicConnectionLocalCloseRequestedEvent localCloseRequestedEvent,
+        long nowTicks)
+    {
+        if (phase is QuicConnectionPhase.Closing or QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
+        {
+            return false;
+        }
+
+        List<QuicConnectionEffect>? effects = null;
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
+        }
+
+        EnterTerminalPhase(
+            QuicConnectionPhase.Closing,
+            QuicConnectionCloseOrigin.Local,
+            localCloseRequestedEvent.Close,
+            nowTicks,
+            preserveTerminalEndTicks: false);
+
+        localCloseEffectsPending = true;
         return true;
     }
 

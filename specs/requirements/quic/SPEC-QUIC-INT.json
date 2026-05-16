@@ -50,7 +50,8 @@
     "VER-QUIC-INT-0013",
     "ARC-QUIC-INT-0015",
     "WI-QUIC-INT-0015",
-    "VER-QUIC-INT-0015"
+    "VER-QUIC-INT-0015",
+    "ARC-QUIC-INT-0016"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -603,12 +604,18 @@
           ".github/workflows/interop-runner-handshake.yml",
           "scripts/interop/Invoke-QuicInteropRunner.ps1",
           "scripts/interop/README.md",
+          "scripts/spec-trace/Generate-QuicMajorPeerMatrixInventory.ps1",
+          "scripts/spec-trace/Generate-QuicMajorPeerMatrixEvidence.ps1",
+          "specs/generated/quic/interop-major-peer-matrix-inventory.json",
+          "specs/generated/quic/interop-major-peer-matrix-inventory.md",
+          "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+          "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
           "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs"
         ]
       },
       "notes": [
-        "This profile is an evidence-collection surface, not a broad interop-readiness gate.",
+        "This profile is an evidence-collection surface, not a broad interop-readiness gate. The completed run `25904716076` now has a dedicated evidence report that preserves its mixed peer-specific pass and failure classes.",
         "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope.",
         "`v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` is now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
@@ -654,7 +661,7 @@
     {
       "id": "REQ-QUIC-INT-0021",
       "title": "Classify zerortt as supported/executed after hosted Linux proof succeeds",
-      "statement": "The interop harness MUST classify `zerortt` as supported/executed only when the advisory hosted Linux `zerortt-server-proof` profile completes end to end with packet-analysis evidence that 0-RTT request-stream data was sent and acted on, and the harness MUST not classify `zerortt` as supported/executed based on server-role dispatch, managed resumption tickets, internal early-data admission, local first-flight X25519 proof, managed response/download success, or any partial hosted proof alone.",
+      "statement": "The interop harness MUST classify `zerortt` as supported/executed only when the advisory hosted Linux `zerortt-server-proof` profile completes end to end with packet-analysis evidence that 0-RTT request-stream data was sent and acted on, and not classify `zerortt` as supported/executed based on server-role dispatch, managed resumption tickets, internal early-data admission, local first-flight X25519 proof, managed response/download success, or any partial hosted proof alone.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0014"
@@ -694,7 +701,7 @@
     {
       "id": "REQ-QUIC-INT-0022",
       "title": "Provide a hosted connectionmigration proof lane",
-      "statement": "The interop harness MUST provide a manual advisory hosted Linux `connectionmigration-server-proof` profile that exercises the server role against `quic-go` and `msquic` for `connectionmigration`, uploads a distinct artifact bundle for each cell, and remains outside ordinary push, pull-request, build, test, package, and support-readiness gates. The profile exists to refresh live corroboration for the already classified connectionmigration inventory cell and MUST NOT be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
+      "statement": "The interop harness MUST provide manual advisory hosted Linux `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles. The `connectionmigration-server-proof` profile exercises the server role against `neqo` by replacing a distinct local server slot, preserving `neqo-peer` as the reported peer alias, normalizing the actual runner peer slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image for `connectionmigration`; the blocked companion profile keeps `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` visible for comparison. Both profiles upload distinct artifact bundles for each cell and stay outside ordinary push, pull-request, build, test, package, and support-readiness gates. The proof profile exists to refresh live corroboration for the already classified connectionmigration inventory cell and is not intended to be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0015"
@@ -722,7 +729,7 @@
         ]
       },
       "notes": [
-        "This slice creates a dedicated hosted corroboration path for the connectionmigration lane.",
+        "This slice creates a dedicated hosted corroboration path for the connectionmigration lane and keeps the blocked comparison peers visible without widening the green proof lane.",
         "It does not broaden the major-peer-matrix profile or change the underlying supported-executed helper inventory claim."
       ]
     }

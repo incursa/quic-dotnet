@@ -10,7 +10,7 @@ public sealed class REQ_QUIC_CRT_0070
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.60", "198.51.100.60", 443, 61234);
         QuicConnectionPathIdentity freshPath = new("203.0.113.61", "198.51.100.61", 443, 61235);
-        using QuicConnectionRuntime freshRuntime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        using QuicConnectionRuntime freshRuntime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(freshRuntime);
 
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(freshRuntime);
@@ -25,7 +25,7 @@ public sealed class REQ_QUIC_CRT_0070
             && !promote.RestoreSavedState);
 
         QuicConnectionPathIdentity portOnlyPath = activePath with { RemotePort = 4433 };
-        using QuicConnectionRuntime portOnlyRuntime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        using QuicConnectionRuntime portOnlyRuntime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(portOnlyRuntime);
         QuicPathMigrationRecoverySnapshot beforePortOnlyPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(portOnlyRuntime);
 

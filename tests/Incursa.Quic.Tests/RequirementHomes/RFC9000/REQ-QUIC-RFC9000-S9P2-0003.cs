@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0003
             LocalAddress: "198.51.100.52",
             RemotePort: 443,
             LocalPort: 61277);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
         runtime.SendRuntime.FlowController.CongestionControlState.UpdateMaxDatagramSize(
@@ -76,7 +76,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0003
             LocalAddress: "198.51.100.51",
             RemotePort: 443,
             LocalPort: 61275);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoverySnapshot baseline = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);

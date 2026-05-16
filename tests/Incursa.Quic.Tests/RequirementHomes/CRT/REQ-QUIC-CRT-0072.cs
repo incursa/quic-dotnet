@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_CRT_0072
         Assert.True(failureResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Equal(lastValidatedPath, runtime.ActivePath!.Value.Identity);
-        Assert.Equal(lastValidatedPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.Equal("203.0.113.11", runtime.LastValidatedRemoteAddress);
         Assert.True(runtime.CandidatePaths.TryGetValue(failedPath, out candidatePath));
         Assert.True(candidatePath.Validation.IsAbandoned);
         Assert.Null(candidatePath.Validation.ValidationDeadlineTicks);

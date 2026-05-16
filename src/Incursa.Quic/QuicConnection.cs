@@ -122,13 +122,16 @@ public sealed class QuicConnection : IAsyncDisposable
             return ValueTask.CompletedTask;
         }
 
-        runtime.Transition(new QuicConnectionLocalCloseRequestedEvent(
+        QuicConnectionLocalCloseRequestedEvent closeEvent = new(
             runtime.Clock.Ticks,
             new QuicConnectionCloseMetadata(
                 TransportErrorCode: null,
                 ApplicationErrorCode: (ulong)errorCode,
                 TriggeringFrameType: null,
-                ReasonPhrase: null)));
+                ReasonPhrase: null));
+
+        runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
+        _ = runtime.TryPostLocalApiEvent(closeEvent);
 
         return ValueTask.CompletedTask;
     }
@@ -146,13 +149,16 @@ public sealed class QuicConnection : IAsyncDisposable
         if (runtime.TerminalState is null && options.DefaultCloseErrorCode >= 0)
         {
             ValidateErrorCode(options.DefaultCloseErrorCode);
-            runtime.Transition(new QuicConnectionLocalCloseRequestedEvent(
+            QuicConnectionLocalCloseRequestedEvent closeEvent = new(
                 runtime.Clock.Ticks,
                 new QuicConnectionCloseMetadata(
                     TransportErrorCode: null,
                     ApplicationErrorCode: (ulong)options.DefaultCloseErrorCode,
                     TriggeringFrameType: null,
-                    ReasonPhrase: null)));
+                    ReasonPhrase: null));
+
+            runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
+            _ = runtime.TryPostLocalApiEvent(closeEvent);
         }
 
         if (lifetimeOwner is not null)

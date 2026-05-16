@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0016",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Advisory Peer Characterization Matrix Pilot Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home tests, helper dry-run planning, artifact inspection, and hosted workflow dispatch when external evidence is required.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0016",
+    "WI-QUIC-INT-0016"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0019",
+    "REQ-QUIC-INT-0022"
+  ],
+  "preconditions": [
+    "The major-peer-matrix and connectionmigration workflow profiles remain advisory and available.",
+    "Captured connectionmigration and comparison bundles remain available for inspection.",
+    "The repo-local helper can run in dry-run mode and enumerate per-cell rows.",
+    "The generated peer-characterization seed report is present in the repository.",
+    "The generated major-peer matrix inventory report is present in the repository.",
+    "The generated major-peer matrix evidence report is present in the repository."
+  ],
+  "scope": "Verify that the repository can characterize mixed peer outcomes by peer, role, testcase, outcome class, failure class, and artifact root without collapsing them into a single green/red verdict, using the current major-peer matrix and connectionmigration lanes as the pilot surfaces.",
+  "procedure": [
+    "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and the interop workflow/helper docs to confirm the matrix remains advisory.",
+    "Inspect the preserved connectionmigration proof bundles and the blocked comparison bundle to confirm heterogeneous failure classes stay visible.",
+    "Run helper dry-run or summary tests that validate `neqo-peer` reporting while the actual runner slot remains normalized to `neqo`.",
+    "Confirm the matrix report shape carries peer, role, testcase, outcome class, failure class, and artifact root per cell.",
+    "Inspect the generated advisory seed report under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md`.",
+    "Inspect the generated advisory major-peer inventory report under `specs/generated/quic/interop-major-peer-matrix-inventory.json` and `.md`.",
+    "Inspect the generated advisory major-peer evidence report under `specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json` and `.md`.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`.",
+    "When external evidence is required, dispatch a hosted comparison run and inspect the preserved runner-report, qlog, and stderr logs."
+  ],
+  "expected_result": "The repository can describe and verify a peer-characterization matrix that preserves mixed interop outcomes for investigation instead of flattening them to green/red.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "scripts/spec-trace/Generate-QuicPeerCharacterizationMatrix.ps1",
+    "scripts/spec-trace/Generate-QuicMajorPeerMatrixInventory.ps1",
+    "scripts/spec-trace/Generate-QuicMajorPeerMatrixEvidence.ps1",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/architecture/quic/ARC-QUIC-INT-0016.json",
+    "specs/work-items/quic/WI-QUIC-INT-0016.json",
+    "specs/generated/quic/interop-peer-characterization-matrix-pilot.json",
+    "specs/generated/quic/interop-peer-characterization-matrix-pilot.md",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.json",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.md",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
+  ],
+  "status_summary": "Planned. The matrix pilot is now seeded so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory seed report, a generated major-peer inventory report, a generated major-peer evidence report, and a test-side row projector, but broader matrix refresh work is still advisory.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This verification only covers the advisory characterization overlay. It does not claim new peer support, and it does not turn the matrix into a blocking CI gate."
+    }
+  ]
+}

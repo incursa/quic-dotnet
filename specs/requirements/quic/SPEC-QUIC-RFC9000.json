@@ -42,9 +42,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2-0001.cs::LoopbackStream_PreservesApplicationWriteOrderAcrossChunkedWrites",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0003.cs::TryReadStreamData_DoesNotExposeOutOfOrderTailBytesBeforeTheMissingPrefixArrives",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0003.cs::TryReadStreamData_PreservesByteOrderAcrossAPartialReadAtAFragmentBoundary"
-        ],
-        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P2-0003.cs::TryReadStreamData_PreservesByteOrderAcrossAPartialReadAtAFragmentBoundary",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::TryCommitLocalTransportParameters_ClonesTheServerStatelessResetTokenValue",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdIssuedEvent_RegistersTheIssuedStatelessResetTokenForEmission",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs::ConnectionIdRetiredEvent_RemovesTheRetiredStatelessResetTokenFromEmission"
@@ -4991,12 +4989,12 @@
         "verified_by": [
           "VER-QUIC-RFC9000-0001"
         ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0006.cs::ConnectionClose_FaultsPendingReadsClosedAndWritesClosedWithConnectionAborted"
-        ],
         "upstream_refs": [
           "RFC 9000 §5 RFC9000-S5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0006.cs::ConnectionClose_FaultsPendingReadsClosedAndWritesClosedWithConnectionAborted"
         ]
       }
     },
@@ -5145,6 +5143,9 @@
         "upstream_refs": [
           "RFC 9000 §5 RFC9000-S5-B4-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs"
         ]
       }
     },
@@ -8824,6 +8825,11 @@
         "upstream_refs": [
           "RFC 9000 §7 RFC9000-S7-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ServerRoleStagesPeerTransportParametersOnlyFromClientHello",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::ClientRoleConsumesAnOrderedHandshakeTranscriptAndStagesPeerTransportParametersFromEncryptedExtensions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs::ServerRoleDriverAcceptsSupportedClientHelloConstructsServerHelloAndPublishesHandshakeKeys"
         ]
       }
     },
@@ -8850,6 +8856,11 @@
         "upstream_refs": [
           "RFC 9000 §7 RFC9000-S7-B9-P0-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P3-0004.cs::TryFormatTransportParameters_EncodesDisableActiveMigrationWhenServerDisallowsMigration",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0006.cs::ServerEncryptedExtensionsCarriesPreferredAddressTransportParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs::TransportParameterExtensionPlacementIsRejectedWhenItIsIllegalOrRepeated"
         ]
       }
     },
@@ -12438,6 +12449,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation"
         ]
       }
     },
@@ -12494,6 +12510,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
         ]
       }
     },
@@ -12551,6 +12572,12 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B6-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState"
         ]
       }
     },
@@ -12577,6 +12604,15 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B6-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0002.cs::PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState"
         ]
       }
     },
@@ -12603,6 +12639,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B7-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
         ]
       }
     },
@@ -12629,6 +12670,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDoesNotPromoteANewLocalAddressBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientDelaysPromotingAPrevalidatedPathUntilAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9-0001.cs::ClientPromotesANewLocalAddressAfterHandshakeConfirmation"
         ]
       }
     },
@@ -12716,6 +12762,11 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B7-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData"
         ]
       }
     },
@@ -12742,6 +12793,10 @@
         "upstream_refs": [
           "RFC 9000 §9 RFC9000-S9-B7-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientDiscardsPacketsFromAnUnexpectedServerAddressWhenMigrationHasNotBeenInitiated",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6-0001.cs::ClientStillDiscardsPacketsFromANewServerAddressAfterTheCurrentPathIsValidated"
         ]
       }
     },
@@ -15358,6 +15413,9 @@
         "upstream_refs": [
           "RFC 9000 §9.7 RFC9000-S9.7-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0001.cs::Ipv6DatagramSendingResolvesAFlowLabel"
         ]
       }
     },
@@ -15384,6 +15442,9 @@
         "upstream_refs": [
           "RFC 9000 §9.7 RFC9000-S9.7-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0002.cs::DistinctIpv6PathsProduceDistinctFlowLabels"
         ]
       }
     },
@@ -15410,6 +15471,9 @@
         "upstream_refs": [
           "RFC 9000 §9.7 RFC9000-S9.7-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0003.cs::AlternateIpv6SendMetadataAlsoResolvesAFlowLabel"
         ]
       }
     },
@@ -15436,6 +15500,9 @@
         "upstream_refs": [
           "RFC 9000 §9.7 RFC9000-S9.7-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P7-0004.cs::ChangingTheConnectionSeedChangesTheIpv6FlowLabel"
         ]
       }
     },
@@ -42375,6 +42442,11 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B3-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_DescribesFramePeerUnderstandingRequirement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_DoesNotTurnFrameNegotiationGuidanceIntoRuntimePolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0004.cs::RequirementStatement_StaysBoundedToFutureExtensionFrameNegotiation"
         ]
       }
     },
@@ -42401,6 +42473,11 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B3-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_DescribesTransportParameterWillingnessSignal",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_DoesNotTurnWillingnessSignalIntoRuntimeCapability",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0005.cs::RequirementStatement_StaysBoundedToTransportParameterSignaling"
         ]
       }
     },
@@ -42427,6 +42504,9 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B3-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0006.cs"
         ]
       }
     },
@@ -42453,6 +42533,9 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0007.cs"
         ]
       }
     },
@@ -42479,6 +42562,9 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0008.cs"
         ]
       }
     },
@@ -42505,6 +42591,9 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B5-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0009.cs"
         ]
       }
     },
@@ -42531,6 +42620,9 @@
         "upstream_refs": [
           "RFC 9000 §19.21 RFC9000-S19.21-B5-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0010.cs"
         ]
       }
     },

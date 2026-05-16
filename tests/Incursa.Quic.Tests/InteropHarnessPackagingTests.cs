@@ -42,6 +42,16 @@ public sealed class InteropHarnessPackagingTests
         Assert.EndsWith("exec dotnet \"$SCRIPT_DIR/Incursa.Quic.InteropHarness.dll\" \"$@\"", script, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void SetupScriptClaimsTheConnectionMigrationPreferredAddressOnTheServer()
+    {
+        string script = ReadNormalizedText("src/Incursa.Quic.InteropHarness/setup.sh").TrimEnd();
+
+        Assert.Contains("if [[ \"${ROLE:-}\" == \"server\" && \"${TESTCASE:-}\" == \"connectionmigration\" ]]; then", script, StringComparison.Ordinal);
+        Assert.Contains("ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0", script, StringComparison.Ordinal);
+        Assert.Contains("ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0", script, StringComparison.Ordinal);
+    }
+
     private static string ReadNormalizedText(string relativePath)
     {
         string filePath = Path.Combine(FindRepoRoot(), relativePath);

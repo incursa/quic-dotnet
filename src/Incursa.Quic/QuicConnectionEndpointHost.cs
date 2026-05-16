@@ -1,10 +1,11 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
 /// <summary>
-/// Bridges one runtime-owned connection endpoint through a real connected UDP socket.
+/// Bridges one runtime-owned connection endpoint through a real UDP socket.
 /// </summary>
 internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 {
@@ -16,6 +17,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly int receiveBufferBytes;
     private readonly object socketGate = new();
     private readonly CancellationTokenSource shutdown = new();
+    private readonly uint flowLabelSeed;
 
     private Socket socket;
     private QuicConnectionPathIdentity peerPathIdentity;
@@ -50,6 +52,16 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.receiveBufferBytes = receiveBufferBytes;
+        flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
+
+        // Keep the socket open to migrated source endpoints. Outbound effects still use the
+        // current path identity, but ingress must not be pinned to the original connected peer.
+        if (this.socket.LocalEndPoint is IPEndPoint localEndPoint)
+        {
+            Socket connectedSocket = this.socket;
+            connectedSocket.Dispose();
+            this.socket = CreateSocket(localEndPoint);
+        }
     }
 
     /// <summary>
@@ -168,15 +180,42 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                GetSocketBinding(out Socket currentSocket, out QuicConnectionPathIdentity currentPathIdentity);
+                GetSocketBinding(out Socket currentSocket);
+                EndPoint remoteEndPoint = currentSocket.AddressFamily == AddressFamily.InterNetworkV6
+                    ? new IPEndPoint(IPAddress.IPv6Any, 0)
+                    : new IPEndPoint(IPAddress.Any, 0);
 
-                int bytesReceived;
                 try
                 {
-                    bytesReceived = await currentSocket.ReceiveAsync(
+                    SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
                         buffer.AsMemory(0, receiveBufferBytes),
                         SocketFlags.None,
+                        remoteEndPoint,
                         cancellationToken).ConfigureAwait(false);
+
+                    if (receiveResult.ReceivedBytes <= 0)
+                    {
+                        continue;
+                    }
+
+                    IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
+                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                        (IPEndPoint)currentSocket.LocalEndPoint!,
+                        receiveResult.PacketInformation.Address);
+                    QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
+
+                    byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
+                    QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, currentPathIdentity);
+                    if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
+                        and not QuicConnectionIngressDisposition.EndpointHandling
+                        and not QuicConnectionIngressDisposition.Dropped)
+                    {
+                        SendStatelessResetResponse(currentSocket, datagram, currentPathIdentity);
+                    }
+
+                    ingressDatagramObserver?.Invoke(datagram, ingressResult);
+                    ingressObserver?.Invoke(ingressResult);
+                    continue;
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -194,27 +233,14 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 {
                     break;
                 }
+                catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+                {
+                    continue;
+                }
                 catch (SocketException)
                 {
                     continue;
                 }
-
-                if (bytesReceived <= 0)
-                {
-                    continue;
-                }
-
-                byte[] datagram = buffer.AsSpan(0, bytesReceived).ToArray();
-                QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, currentPathIdentity);
-                if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
-                    and not QuicConnectionIngressDisposition.EndpointHandling
-                    and not QuicConnectionIngressDisposition.Dropped)
-                {
-                    SendStatelessResetResponse(currentSocket, datagram, currentPathIdentity);
-                }
-
-                ingressDatagramObserver?.Invoke(datagram, ingressResult);
-                ingressObserver?.Invoke(ingressResult);
             }
         }
         finally
@@ -243,7 +269,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             lock (socketGate)
             {
                 _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.NotEct);
-                int bytesSent = socket.Send(reset.Datagram.Span, SocketFlags.None);
+                IPEndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
+                int bytesSent = socket.SendTo(reset.Datagram.Span, SocketFlags.None, remoteEndPoint);
                 if (bytesSent != reset.Datagram.Length)
                 {
                     throw new IOException("Failed to send the complete QUIC Stateless Reset datagram.");
@@ -271,7 +298,44 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             lock (socketGate)
             {
                 _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
-                int bytesSent = socket.Send(sendDatagramEffect.Datagram.Span, SocketFlags.None);
+                IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                IPEndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
+                int bytesSent;
+                if (TryResolvePacketInformationSourceAddress(
+                    localEndPoint,
+                    socket.AddressFamily,
+                    sendDatagramEffect.PathIdentity,
+                    out IPAddress sourceAddress))
+                {
+                    bool usePacketInformationSender = socket.AddressFamily == AddressFamily.InterNetworkV6
+                        || !sourceAddress.Equals(localEndPoint.Address);
+                    uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
+                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
+                        : 0;
+
+                    if (!QuicSocketPacketInformationSender.TrySendTo(
+                        socket,
+                        sendDatagramEffect.Datagram.Span,
+                        remoteEndPoint,
+                        sourceAddress,
+                        flowLabel,
+                        out bytesSent)
+                        && usePacketInformationSender
+                        && OperatingSystem.IsLinux())
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    bytesSent = 0;
+                }
+
+                if (bytesSent == 0)
+                {
+                    bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                }
+
                 if (bytesSent != sendDatagramEffect.Datagram.Length)
                 {
                     throw new IOException("Failed to send the complete QUIC datagram.");
@@ -307,8 +371,6 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             }
 
             IPEndPoint currentLocalEndPoint = (IPEndPoint)socket.LocalEndPoint!;
-            IPEndPoint currentRemoteEndPoint = (IPEndPoint)socket.RemoteEndPoint!;
-            IPEndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity, currentRemoteEndPoint);
             IPEndPoint? localEndPoint = CreateLocalEndPoint(pathIdentity, currentLocalEndPoint);
 
             if (PathIdentityEquals(peerPathIdentity, pathIdentity))
@@ -316,38 +378,45 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 return true;
             }
 
-            if (localEndPoint is null || AreEndPointsEqual(currentLocalEndPoint, localEndPoint))
+            // Address-only promotions keep the existing bound socket alive so ingress does not
+            // stall while the peer is still draining the original path. Rebind only when the
+            // promoted path requires a different local port.
+            if (localEndPoint is null || currentLocalEndPoint.Port == localEndPoint.Port)
             {
-                socket.Connect(remoteEndPoint);
                 peerPathIdentity = pathIdentity;
                 return true;
             }
 
             Socket previousSocket = socket;
-            socket = CreateSocket(remoteEndPoint, localEndPoint);
+            socket = CreateSocket(localEndPoint);
             peerPathIdentity = pathIdentity;
             previousSocket.Dispose();
             return true;
         }
     }
 
-    private void GetSocketBinding(out Socket currentSocket, out QuicConnectionPathIdentity currentPathIdentity)
+    private void GetSocketBinding(out Socket currentSocket)
     {
         lock (socketGate)
         {
             currentSocket = socket;
-            currentPathIdentity = peerPathIdentity;
         }
     }
 
-    private static IPEndPoint CreateRemoteEndPoint(QuicConnectionPathIdentity pathIdentity, IPEndPoint fallback)
+    private static IPEndPoint CreateRemoteEndPoint(QuicConnectionPathIdentity pathIdentity)
     {
-        if (pathIdentity.RemotePort is int remotePort)
-        {
-            return new IPEndPoint(IPAddress.Parse(pathIdentity.RemoteAddress), remotePort);
-        }
+        return new IPEndPoint(
+            IPAddress.Parse(pathIdentity.RemoteAddress),
+            pathIdentity.RemotePort ?? throw new InvalidOperationException("The endpoint path is missing a remote port."));
+    }
 
-        return fallback;
+    private static QuicConnectionPathIdentity CreatePathIdentity(IPEndPoint remoteEndPoint, IPEndPoint localEndPoint)
+    {
+        return new QuicConnectionPathIdentity(
+            remoteEndPoint.Address.ToString(),
+            localEndPoint.Address.ToString(),
+            remoteEndPoint.Port,
+            localEndPoint.Port);
     }
 
     private static IPEndPoint? CreateLocalEndPoint(QuicConnectionPathIdentity pathIdentity, IPEndPoint fallback)
@@ -360,6 +429,46 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         return fallback;
     }
 
+    internal static bool TryResolvePacketInformationSourceAddress(
+        IPEndPoint socketLocalEndPoint,
+        AddressFamily socketAddressFamily,
+        QuicConnectionPathIdentity pathIdentity,
+        out IPAddress sourceAddress)
+    {
+        ArgumentNullException.ThrowIfNull(socketLocalEndPoint);
+
+        sourceAddress = IPAddress.None;
+        if (!IsWildcardAddress(socketLocalEndPoint.Address)
+            || pathIdentity.LocalAddress is not string localAddress
+            || pathIdentity.LocalPort != socketLocalEndPoint.Port
+            || !IPAddress.TryParse(localAddress, out IPAddress? parsedAddress)
+            || IsWildcardAddress(parsedAddress))
+        {
+            return false;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetworkV6
+            && parsedAddress.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetwork
+            && parsedAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsWildcardAddress(IPAddress address)
+    {
+        return address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any);
+    }
+
     private static bool PathIdentityEquals(QuicConnectionPathIdentity left, QuicConnectionPathIdentity right)
     {
         return string.Equals(left.RemoteAddress, right.RemoteAddress, StringComparison.Ordinal)
@@ -368,24 +477,20 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             && left.LocalPort == right.LocalPort;
     }
 
-    private static bool AreEndPointsEqual(IPEndPoint left, IPEndPoint right)
+    private static Socket CreateSocket(IPEndPoint localEndPoint)
     {
-        return left.Address.Equals(right.Address) && left.Port == right.Port;
-    }
+        Socket socket = new(localEndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+        if (socket.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            socket.DualMode = true;
+        }
 
-    private static Socket CreateSocket(IPEndPoint remoteEndPoint, IPEndPoint? localEndPoint = null)
-    {
-        Socket socket = new(remoteEndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
+        QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         try
         {
-            if (localEndPoint is not null)
-            {
-                socket.Bind(localEndPoint);
-            }
-
-            socket.Connect(remoteEndPoint);
+            socket.Bind(localEndPoint);
             return socket;
         }
         catch

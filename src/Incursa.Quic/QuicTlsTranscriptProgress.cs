@@ -1122,7 +1122,9 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else
             {
-                return false;
+                // Peers can send GREASE or optional TLS extensions that are outside the
+                // managed subset. They are ignored unless they conflict with required
+                // extension placement or duplicate-type rules checked above.
             }
         }
 
@@ -1179,15 +1181,26 @@ internal sealed class QuicTlsTranscriptProgress
     {
         int index = 0;
         if (!TryReadUInt8(extensionValue, ref index, out int versionsLength)
-            || versionsLength != UInt16Length
+            || versionsLength == 0
+            || (versionsLength & 1) != 0
             || index + versionsLength != extensionValue.Length)
         {
             return false;
         }
 
-        return TryReadUInt16(extensionValue, ref index, out ushort version)
-            && version == Tls13Version
-            && index == extensionValue.Length;
+        int versionsEnd = index + versionsLength;
+        bool foundTls13 = false;
+        while (index < versionsEnd)
+        {
+            if (!TryReadUInt16(extensionValue, ref index, out ushort version))
+            {
+                return false;
+            }
+
+            foundTls13 |= version == Tls13Version;
+        }
+
+        return foundTls13 && index == extensionValue.Length;
     }
 
     private static bool TryParseClientHelloSignatureAlgorithms(ReadOnlySpan<byte> extensionValue)
@@ -1482,11 +1495,26 @@ internal sealed class QuicTlsTranscriptProgress
     private static bool TryParseClientHelloPskKeyExchangeModes(ReadOnlySpan<byte> extensionValue)
     {
         int index = 0;
-        return TryReadUInt8(extensionValue, ref index, out int modesLength)
-            && modesLength == 1
-            && TryReadUInt8(extensionValue, ref index, out int keyExchangeMode)
-            && keyExchangeMode == PskDheKeMode
-            && index == extensionValue.Length;
+        if (!TryReadUInt8(extensionValue, ref index, out int modesLength)
+            || modesLength == 0
+            || index + modesLength != extensionValue.Length)
+        {
+            return false;
+        }
+
+        bool foundPskDheKe = false;
+        int modesEnd = index + modesLength;
+        while (index < modesEnd)
+        {
+            if (!TryReadUInt8(extensionValue, ref index, out int keyExchangeMode))
+            {
+                return false;
+            }
+
+            foundPskDheKe |= keyExchangeMode == PskDheKeMode;
+        }
+
+        return foundPskDheKe && index == extensionValue.Length;
     }
 
     private static bool TryParseClientHelloPreSharedKey(ReadOnlySpan<byte> extensionValue)

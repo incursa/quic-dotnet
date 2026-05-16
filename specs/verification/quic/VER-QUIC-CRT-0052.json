@@ -6,7 +6,7 @@
   "title": "QUIC server first-flight x25519 key-share compatibility verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Focused requirement-home tests with captured quic-go positive proof and deterministic negative coverage for malformed, duplicate, and unadvertised x25519 key shares, followed by SpecTrace, build, full-suite, and diff validation.",
+  "verification_method": "Focused requirement-home tests with captured quic-go and neqo positive proof plus deterministic negative coverage for malformed, duplicate, and unadvertised x25519 key shares, followed by SpecTrace, build, full-suite, and diff validation.",
   "scope": "Verify that the server accepts an advertised usable first-flight x25519 ClientHello key share without HelloRetryRequest, constructs an x25519 ServerHello and Handshake key material, ignores unsupported hybrid entries, and keeps malformed, duplicate, unadvertised, and fallback HRR behavior bounded.",
   "preconditions": [
     "The peer ClientHello is otherwise within the managed TLS 1.3 server subset.",
@@ -19,6 +19,7 @@
     "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0154.cs",
+    "artifacts/tmp-run-25867235353/interop-runner-server-connectionmigration-neqo-25867235353/20260514-145749396-server-nginx/runner-logs/nginx_neqo/connectionmigration/server/qlog/server-connectionmigration-783fb13af0504e149bb8a94e65d0368b.qlog",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_CRT_0154|FullyQualifiedName~REQ_QUIC_CRT_0147\"",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
@@ -29,13 +30,14 @@
   "procedure": [
     "Run the focused REQ-QUIC-CRT-0154 and REQ-QUIC-CRT-0147 requirement-home tests.",
     "Confirm the captured quic-go first ClientHello with hybrid plus x25519 key shares accepts x25519 without emitting HelloRetryRequest.",
+    "Confirm the captured neqo connectionmigration first ClientHello with hybrid, x25519, GREASE, and multi-mode psk_key_exchange_modes accepts x25519 without emitting HelloRetryRequest or fatal alert.",
     "Confirm the repo-local x25519 helper matches the RFC 7748 Diffie-Hellman test vector.",
     "Confirm the server publishes Initial ServerHello CRYPTO data selecting x25519 and publishes Handshake packet-protection material.",
     "Confirm malformed, duplicate, and unadvertised x25519 key shares fail deterministically.",
     "Confirm the secp256r1 HelloRetryRequest fallback remains available when no usable first-flight supported share exists and secp256r1 was advertised.",
     "Run SpecTrace core validation, Release build, full Release tests, and diff whitespace checks."
   ],
-  "expected_result": "Advertised usable first-flight x25519 is accepted without HelloRetryRequest and reaches the existing server Handshake key-publication floor. Unsupported hybrid groups are not selected. Malformed, duplicate, and unadvertised x25519 key shares fail closed. The secp256r1 HRR fallback remains bounded. Public API, IsSupported, HTTP/3, anti-replay, and interop support classification remain unchanged.",
+  "expected_result": "Advertised usable first-flight x25519 is accepted without HelloRetryRequest and reaches the existing server Handshake key-publication floor for the captured quic-go and neqo ClientHello fixtures. Unsupported hybrid and GREASE groups are not selected. Malformed, duplicate, and unadvertised x25519 key shares fail closed. The secp256r1 HRR fallback remains bounded. Public API, IsSupported, HTTP/3, anti-replay, and interop support classification remain unchanged.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "SPEC-QUIC-INT",
@@ -46,10 +48,10 @@
   "supplemental_sections": [
     {
       "heading": "Acceptance Criteria",
-      "content": "- Captured quic-go first-flight ClientHello selects x25519 without HRR.\n- The repo-local x25519 helper matches the RFC 7748 Diffie-Hellman test vector.\n- x25519 ServerHello CRYPTO data and Handshake key material are published.\n- Malformed, duplicate, and unadvertised x25519 key shares fail closed.\n- secp256r1 HRR fallback remains available for eligible first ClientHello attempts without a usable supported key share.\n- Public API, IsSupported, HTTP/3, and interop classification remain unchanged."
+      "content": "- Captured quic-go first-flight ClientHello selects x25519 without HRR.\n- Captured neqo connectionmigration first-flight ClientHello selects x25519 without HRR or fatal alert.\n- The repo-local x25519 helper matches the RFC 7748 Diffie-Hellman test vector.\n- x25519 ServerHello CRYPTO data and Handshake key material are published.\n- Malformed, duplicate, and unadvertised x25519 key shares fail closed.\n- secp256r1 HRR fallback remains available for eligible first ClientHello attempts without a usable supported key share.\n- Public API, IsSupported, HTTP/3, and interop classification remain unchanged."
     }
   ],
-  "status_summary": "Passed locally for the bounded server first-flight x25519 compatibility slice. The focused filter `FullyQualifiedName~REQ_QUIC_CRT_0154|FullyQualifiedName~REQ_QUIC_CRT_0147|FullyQualifiedName~REQ_QUIC_CRT_0112` passed 32/32 on 2026-05-09 after the cross-platform RFC 7748 helper follow-up, the surrounding CRT regression filter passed 79/79 after preserving legacy P-256 ClientHello fixture behavior, SpecTrace core validated 535 JSON artifacts, `dotnet build Incursa.Quic.slnx -c Release` passed with 0 warnings and 0 errors, `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` passed 4900/4900, and `git diff --check` exited 0. The hosted CI run for commit bbfde64d exposed that Ubuntu does not support `ECDiffieHellman.Create(curve25519)`, so the follow-up replaced that platform dependency with a repo-local RFC 7748 helper and added the RFC 7748 Diffie-Hellman vector to REQ-QUIC-CRT-0154 coverage. Public API, IsSupported, HTTP/3, anti-replay, hybrid groups, general group negotiation, and interop zerortt promotion remain out of scope until separate proof.",
+  "status_summary": "Passed locally for the bounded server first-flight x25519 compatibility slice. The focused filter `FullyQualifiedName~REQ_QUIC_CRT_0154|FullyQualifiedName~REQ_QUIC_CRT_0147|FullyQualifiedName~REQ_QUIC_CRT_0112` passed 32/32 on 2026-05-09 after the cross-platform RFC 7748 helper follow-up, the surrounding CRT regression filter passed 79/79 after preserving legacy P-256 ClientHello fixture behavior, SpecTrace core validated 535 JSON artifacts, `dotnet build Incursa.Quic.slnx -c Release` passed with 0 warnings and 0 errors, `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1` passed 4900/4900, and `git diff --check` exited 0. The hosted CI run for commit bbfde64d exposed that Ubuntu does not support `ECDiffieHellman.Create(curve25519)`, so the follow-up replaced that platform dependency with a repo-local RFC 7748 helper and added the RFC 7748 Diffie-Hellman vector to REQ-QUIC-CRT-0154 coverage. On 2026-05-14, the captured neqo connectionmigration ClientHello from hosted run 25867235353 was added as a local replay after accepting psk_key_exchange_modes lists that include psk_dhe_ke under REQ-QUIC-CRT-0112. Public API, IsSupported, HTTP/3, anti-replay, hybrid groups, general group negotiation, and interop promotion remain out of scope until separate proof.",
   "verifies": [
     "REQ-QUIC-CRT-0154"
   ]

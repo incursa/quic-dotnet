@@ -44,6 +44,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly bool retryBootstrapEnabled;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
+    private readonly uint flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
     private CancellationTokenSource? listenerCancellationSource;
     private Task? runningTask;
@@ -114,6 +115,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             socket.DualMode = true;
         }
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
+        QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         socket.Bind(boundEndPoint);
     }
@@ -277,10 +279,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                SocketReceiveFromResult receiveResult;
+                SocketReceiveMessageFromResult receiveResult;
                 try
                 {
-                    receiveResult = await socket.ReceiveFromAsync(
+                    receiveResult = await socket.ReceiveMessageFromAsync(
                         buffer.AsMemory(),
                         SocketFlags.None,
                         remoteEndPoint,
@@ -314,7 +316,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 QuicConnectionPathIdentity pathIdentity;
                 try
                 {
-                    IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                        (IPEndPoint)socket.LocalEndPoint!,
+                        receiveResult.PacketInformation.Address);
                     pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
                 }
                 catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
@@ -498,7 +502,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             && state.Runtime.PeerHandshakeTranscriptCompleted
             && state.TryMarkAccepted())
         {
-            connections.TryRemove(handle, out _);
             _ = QueueAcceptedConnectionAsync(state.Connection);
         }
     }
@@ -510,22 +513,74 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
         {
-            SendDatagram(sendDatagramEffect);
+            SendDatagram(handle, sendDatagramEffect);
         }
+    }
+
+    private void SendDatagram(QuicConnectionHandle handle, QuicConnectionSendDatagramEffect sendDatagramEffect)
+    {
+        if (!connections.TryGetValue(handle, out PendingConnectionState? state))
+        {
+            return;
+        }
+
+        SendDatagram(state.FlowLabelSeed, sendDatagramEffect);
     }
 
     private void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
     {
+        SendDatagram(flowLabelSeed, sendDatagramEffect);
+    }
+
+    private void SendDatagram(uint flowLabelSeed, QuicConnectionSendDatagramEffect sendDatagramEffect)
+    {
         try
         {
-            EndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
+            IPEndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
 
             _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
-            int bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+            int bytesSent;
+            IPEndPoint socketLocalEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+            if (TryResolvePacketInformationSourceAddress(
+                socketLocalEndPoint,
+                socket.AddressFamily,
+                sendDatagramEffect.PathIdentity,
+                out IPAddress sourceAddress)
+                && (socket.AddressFamily == AddressFamily.InterNetworkV6
+                    || !sourceAddress.Equals(socketLocalEndPoint.Address)))
+            {
+                if (OperatingSystem.IsLinux())
+                {
+                    uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
+                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
+                        : 0;
+
+                    if (!QuicSocketPacketInformationSender.TrySendTo(
+                        socket,
+                        sendDatagramEffect.Datagram.Span,
+                        remoteEndPoint,
+                        sourceAddress,
+                        flowLabel,
+                        out bytesSent))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                }
+            }
+            else
+            {
+                bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+            }
+
             if (bytesSent != sendDatagramEffect.Datagram.Length)
             {
                 throw new IOException("Failed to send the complete QUIC datagram.");
             }
+
         }
         catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
         {
@@ -540,6 +595,45 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             // A shared UDP listener cannot reliably map these ICMP errors back to a live managed
             // connection. Keep the endpoint alive so unrelated sequential accepts can finish.
         }
+    }
+
+    private static bool TryResolvePacketInformationSourceAddress(
+        IPEndPoint socketLocalEndPoint,
+        AddressFamily socketAddressFamily,
+        QuicConnectionPathIdentity pathIdentity,
+        out IPAddress sourceAddress)
+    {
+        ArgumentNullException.ThrowIfNull(socketLocalEndPoint);
+
+        sourceAddress = IPAddress.None;
+        if (pathIdentity.LocalAddress is not string localAddress
+            || pathIdentity.LocalPort != socketLocalEndPoint.Port
+            || !IPAddress.TryParse(localAddress, out IPAddress? parsedAddress)
+            || IsWildcardAddress(parsedAddress))
+        {
+            return false;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetworkV6
+            && parsedAddress.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        if (socketAddressFamily == AddressFamily.InterNetwork
+            && parsedAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            sourceAddress = parsedAddress;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsWildcardAddress(IPAddress address)
+    {
+        return address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any);
     }
 
     private bool TrySendVersionNegotiationResponse(ReadOnlySpan<byte> datagram, QuicConnectionPathIdentity pathIdentity)
@@ -625,7 +719,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
     }
 
-    private static EndPoint CreateRemoteEndPoint(QuicConnectionPathIdentity pathIdentity)
+    private static IPEndPoint CreateRemoteEndPoint(QuicConnectionPathIdentity pathIdentity)
     {
         return new IPEndPoint(
             IPAddress.Parse(pathIdentity.RemoteAddress),
@@ -999,56 +1093,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
     }
 
-    private void ObserveRetryBootstrapInitialPacketNumber(ulong packetNumber)
-    {
-        if (retryBootstrapObservedInitialPacketNumberSet == 0)
-        {
-            retryBootstrapLargestObservedInitialPacketNumber = packetNumber;
-            retryBootstrapObservedInitialPacketNumberSet = 1;
-            return;
-        }
-
-        retryBootstrapLargestObservedInitialPacketNumber = Math.Max(
-            retryBootstrapLargestObservedInitialPacketNumber,
-            packetNumber);
-    }
-
-    private static bool TryReadOpenedInitialPacketNumber(
-        ReadOnlySpan<byte> openedPacket,
-        int payloadOffset,
-        out ulong packetNumber)
-    {
-        packetNumber = default;
-
-        if (openedPacket.Length == 0
-            || payloadOffset <= 0
-            || payloadOffset > openedPacket.Length)
-        {
-            return false;
-        }
-
-        int packetNumberLength = (openedPacket[0] & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
-        if (packetNumberLength < 1 || packetNumberLength > sizeof(uint))
-        {
-            return false;
-        }
-
-        int packetNumberOffset = payloadOffset - packetNumberLength;
-        if (packetNumberOffset < 1 || packetNumberOffset + packetNumberLength > openedPacket.Length)
-        {
-            return false;
-        }
-
-        ulong value = 0;
-        for (int index = 0; index < packetNumberLength; index++)
-        {
-            value = (value << BitsPerByte) | openedPacket[packetNumberOffset + index];
-        }
-
-        packetNumber = value;
-        return true;
-    }
-
     private static bool TryValidateInitialCryptoPayload(ReadOnlySpan<byte> payload)
     {
         bool sawCryptoFrame = false;
@@ -1274,6 +1318,56 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return true;
     }
 
+    private void ObserveRetryBootstrapInitialPacketNumber(ulong packetNumber)
+    {
+        if (retryBootstrapObservedInitialPacketNumberSet == 0)
+        {
+            retryBootstrapLargestObservedInitialPacketNumber = packetNumber;
+            retryBootstrapObservedInitialPacketNumberSet = 1;
+            return;
+        }
+
+        retryBootstrapLargestObservedInitialPacketNumber = Math.Max(
+            retryBootstrapLargestObservedInitialPacketNumber,
+            packetNumber);
+    }
+
+    private static bool TryReadOpenedInitialPacketNumber(
+        ReadOnlySpan<byte> openedPacket,
+        int payloadOffset,
+        out ulong packetNumber)
+    {
+        packetNumber = default;
+
+        if (openedPacket.Length == 0
+            || payloadOffset <= 0
+            || payloadOffset > openedPacket.Length)
+        {
+            return false;
+        }
+
+        int packetNumberLength = (openedPacket[0] & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        if (packetNumberLength < 1 || packetNumberLength > sizeof(uint))
+        {
+            return false;
+        }
+
+        int packetNumberOffset = payloadOffset - packetNumberLength;
+        if (packetNumberOffset < 1 || packetNumberOffset + packetNumberLength > openedPacket.Length)
+        {
+            return false;
+        }
+
+        ulong value = 0;
+        for (int index = 0; index < packetNumberLength; index++)
+        {
+            value = (value << BitsPerByte) | openedPacket[packetNumberOffset + index];
+        }
+
+        packetNumber = value;
+        return true;
+    }
+
     private static bool HasSameRemoteEndpoint(
         QuicConnectionPathIdentity candidate,
         QuicConnectionPathIdentity expected)
@@ -1350,6 +1444,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialMaxStreamsBidi = (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams),
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
+            PreferredAddress = options.PreferredAddress,
             OriginalDestinationConnectionId = originalDestinationConnectionId.IsEmpty ? null : originalDestinationConnectionId.ToArray(),
             InitialSourceConnectionId = sourceConnectionId.ToArray(),
             RetrySourceConnectionId = retrySourceConnectionId.IsEmpty ? null : retrySourceConnectionId.ToArray(),
@@ -1492,6 +1587,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             Handle = handle;
             Runtime = runtime;
             Connection = connection;
+            FlowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
         }
 
         public QuicConnectionHandle Handle { get; }
@@ -1499,6 +1595,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         public QuicConnectionRuntime Runtime { get; }
 
         public QuicConnection Connection { get; }
+
+        public uint FlowLabelSeed { get; }
 
         public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
 
@@ -1555,6 +1653,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.ServerAuthenticationOptions = returnedOptions.ServerAuthenticationOptions;
         selectedOptions.EnableResumptionTickets = returnedOptions.EnableResumptionTickets;
         selectedOptions.EnableEarlyData = returnedOptions.EnableEarlyData;
+        selectedOptions.PreferredAddress = returnedOptions.PreferredAddress;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

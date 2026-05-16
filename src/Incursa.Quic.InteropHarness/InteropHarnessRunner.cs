@@ -23,6 +23,8 @@ internal static class InteropHarnessRunner
     internal static readonly TimeSpan MulticonnectLossHandshakeBudget = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan ConnectionMigrationSendCreditRetryTimeout = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ConnectionMigrationSendCreditAttemptTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan ServerKnownPlanPostResponseLingerTimeout = TimeSpan.FromSeconds(1);
     private static readonly TimeSpan ServerZeroRttOpenPlanRequestGapTimeout = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan VersionNegotiationPostSendGracePeriod = TimeSpan.FromSeconds(1);
@@ -128,6 +130,7 @@ internal static class InteropHarnessRunner
             "chacha20" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "connectionmigration" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "resumption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -157,6 +160,7 @@ internal static class InteropHarnessRunner
             "chacha20" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "connectionmigration" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -713,6 +717,9 @@ internal static class InteropHarnessRunner
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} validated the replayed Initial packet (retryToken={host.RetryTokenFromRetryHex}, replayToken={host.RetryBootstrapReplayPacketTokenHex}) and is waiting for managed client bootstrap completion.");
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} observed exactly one Retry transition and completed managed client bootstrap.");
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
@@ -1033,6 +1040,9 @@ internal static class InteropHarnessRunner
             }
             WriteDeterministicClientKeySelection(settings, stdout);
             await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed client bootstrap.");
             string testCase = settings.TestCase;
             if (testCase == "resumption")
             {
@@ -1507,6 +1517,9 @@ internal static class InteropHarnessRunner
                     $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} completed managed listener bootstrap.");
                 int servedRequestCount = await ServeHttp09RequestsAsync(
                     connection,
                     stdout,
@@ -1807,23 +1820,47 @@ internal static class InteropHarnessRunner
         return new FileInfo(transferPlan.DestinationPath).Length;
     }
 
-    internal static async Task<T> RetryTransientSendCreditAsync<T>(
+    internal static Task<T> RetryTransientSendCreditAsync<T>(
         Func<ValueTask<T>> operation,
         string congestionTimeoutMessage,
         string? flowControlTimeoutMessage = null,
         TimeSpan? retryTimeout = null)
     {
         ArgumentNullException.ThrowIfNull(operation);
+        return RetryTransientSendCreditAsync(
+            _ => operation(),
+            congestionTimeoutMessage,
+            flowControlTimeoutMessage,
+            retryTimeout,
+            operationAttemptTimeout: null);
+    }
+
+    internal static async Task<T> RetryTransientSendCreditAsync<T>(
+        Func<CancellationToken, ValueTask<T>> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null,
+        TimeSpan? retryTimeout = null,
+        TimeSpan? operationAttemptTimeout = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
         ArgumentException.ThrowIfNullOrWhiteSpace(congestionTimeoutMessage);
 
         TimeSpan effectiveRetryTimeout = retryTimeout ?? CongestionRetryTimeout;
+        TimeSpan effectiveAttemptTimeout = operationAttemptTimeout ?? TimeSpan.FromSeconds(5);
+        if (effectiveAttemptTimeout > effectiveRetryTimeout)
+        {
+            effectiveAttemptTimeout = effectiveRetryTimeout;
+        }
+
         long startedAt = Stopwatch.GetTimestamp();
 
         while (true)
         {
+            using CancellationTokenSource attemptTimeout = new(effectiveAttemptTimeout);
+
             try
             {
-                return await operation().ConfigureAwait(false);
+                return await operation(attemptTimeout.Token).ConfigureAwait(false);
             }
             catch (InvalidOperationException ex) when (IsTransientCongestionExhaustion(ex))
             {
@@ -1843,25 +1880,51 @@ internal static class InteropHarnessRunner
 
                 await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
             }
+            catch (OperationCanceledException ex) when (attemptTimeout.IsCancellationRequested)
+            {
+                if (Stopwatch.GetElapsedTime(startedAt) >= effectiveRetryTimeout)
+                {
+                    throw new TimeoutException(congestionTimeoutMessage, ex);
+                }
+
+                await Task.Delay(CongestionRetryDelay).ConfigureAwait(false);
+            }
         }
     }
 
-    internal static async Task RetryTransientSendCreditAsync(
+    internal static Task RetryTransientSendCreditAsync(
         Func<ValueTask> operation,
         string congestionTimeoutMessage,
         string? flowControlTimeoutMessage = null,
         TimeSpan? retryTimeout = null)
     {
         ArgumentNullException.ThrowIfNull(operation);
+        return RetryTransientSendCreditAsync(
+            _ => operation(),
+            congestionTimeoutMessage,
+            flowControlTimeoutMessage,
+            retryTimeout,
+            operationAttemptTimeout: null);
+    }
+
+    internal static async Task RetryTransientSendCreditAsync(
+        Func<CancellationToken, ValueTask> operation,
+        string congestionTimeoutMessage,
+        string? flowControlTimeoutMessage = null,
+        TimeSpan? retryTimeout = null,
+        TimeSpan? operationAttemptTimeout = null)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
         await RetryTransientSendCreditAsync(
-            async () =>
+            async cancellationToken =>
             {
-                await operation().ConfigureAwait(false);
+                await operation(cancellationToken).ConfigureAwait(false);
                 return true;
             },
             congestionTimeoutMessage,
             flowControlTimeoutMessage,
-            retryTimeout).ConfigureAwait(false);
+            retryTimeout,
+            operationAttemptTimeout).ConfigureAwait(false);
     }
 
     private static async Task<int> ServeHttp09RequestsAsync(
@@ -1939,8 +2002,22 @@ internal static class InteropHarnessRunner
                         bufferSize: StreamCopyBufferSize,
                         useAsync: true);
 
-                    await CopyToQuicStreamWithRetryAsync(sourceStream, stream).ConfigureAwait(false);
-                    await CompleteQuicStreamWritesWithRetryAsync(stream).ConfigureAwait(false);
+                    TimeSpan? sendCreditRetryTimeout = testCase == "connectionmigration"
+                        ? ConnectionMigrationSendCreditRetryTimeout
+                        : null;
+                    TimeSpan? sendCreditAttemptTimeout = testCase == "connectionmigration"
+                        ? ConnectionMigrationSendCreditAttemptTimeout
+                        : null;
+
+                    await CopyToQuicStreamWithRetryAsync(
+                        sourceStream,
+                        stream,
+                        sendCreditRetryTimeout,
+                        sendCreditAttemptTimeout).ConfigureAwait(false);
+                    await CompleteQuicStreamWritesWithRetryAsync(
+                        stream,
+                        sendCreditRetryTimeout,
+                        sendCreditAttemptTimeout).ConfigureAwait(false);
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} completed managed {testCase} response from {sourcePath} for target={relativePath}, bytes={sourceInfo.Length}, stream {servedRequestCount + 1}.");
@@ -1968,8 +2045,9 @@ internal static class InteropHarnessRunner
 
         return expectedRequestCount == 0
             && servedRequestCount > 0
-            && exception.QuicError == QuicError.ConnectionAborted
-            && exception.ApplicationErrorCode == 0;
+            && (
+                (exception.QuicError == QuicError.ConnectionAborted && exception.ApplicationErrorCode == 0)
+                || (exception.QuicError == QuicError.TransportError && exception.TransportErrorCode == 0));
     }
 
     private static async Task LingerForPeerCloseAfterFinalResponseAsync(
@@ -2098,7 +2176,11 @@ internal static class InteropHarnessRunner
         return Encoding.ASCII.GetBytes($"GET {requestTarget}\r\n");
     }
 
-    private static async Task CopyToQuicStreamWithRetryAsync(Stream sourceStream, QuicStream destinationStream)
+    private static async Task CopyToQuicStreamWithRetryAsync(
+        Stream sourceStream,
+        QuicStream destinationStream,
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         byte[] buffer = new byte[QuicStreamBodyWriteChunkSize];
 
@@ -2110,24 +2192,41 @@ internal static class InteropHarnessRunner
                 break;
             }
 
-            await WriteQuicStreamChunkWithRetryAsync(destinationStream, buffer, bytesRead).ConfigureAwait(false);
+            await WriteQuicStreamChunkWithRetryAsync(
+                destinationStream,
+                buffer,
+                bytesRead,
+                sendCreditRetryTimeout,
+                sendCreditAttemptTimeout).ConfigureAwait(false);
         }
     }
 
-    private static async Task WriteQuicStreamChunkWithRetryAsync(QuicStream stream, byte[] buffer, int count)
+    private static async Task WriteQuicStreamChunkWithRetryAsync(
+        QuicStream stream,
+        byte[] buffer,
+        int count,
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         await RetryTransientSendCreditAsync(
-            () => new ValueTask(stream.WriteAsync(buffer, 0, count)),
+            cancellationToken => new ValueTask(stream.WriteAsync(buffer, 0, count, cancellationToken)),
             "Timed out waiting for QUIC stream send credit.",
-            "Timed out waiting for QUIC stream flow-control credit.").ConfigureAwait(false);
+            "Timed out waiting for QUIC stream flow-control credit.",
+            sendCreditRetryTimeout ?? CongestionRetryTimeout,
+            sendCreditAttemptTimeout).ConfigureAwait(false);
     }
 
-    private static async Task CompleteQuicStreamWritesWithRetryAsync(QuicStream stream)
+    private static async Task CompleteQuicStreamWritesWithRetryAsync(
+        QuicStream stream,
+        TimeSpan? sendCreditRetryTimeout = null,
+        TimeSpan? sendCreditAttemptTimeout = null)
     {
         await RetryTransientSendCreditAsync(
-            () => stream.CompleteWritesAsync(),
+            cancellationToken => stream.CompleteWritesAsync(cancellationToken),
             "Timed out waiting for QUIC stream FIN send credit.",
-            "Timed out waiting for QUIC stream FIN flow-control credit.").ConfigureAwait(false);
+            "Timed out waiting for QUIC stream FIN flow-control credit.",
+            sendCreditRetryTimeout ?? CongestionRetryTimeout,
+            sendCreditAttemptTimeout).ConfigureAwait(false);
     }
 
     private static bool IsTransientCongestionExhaustion(InvalidOperationException exception)
@@ -2249,6 +2348,7 @@ internal static class InteropHarnessRunner
             "chacha20" or
             "rebind-port" or
             "rebind-addr" or
+            "connectionmigration" or
             "keyupdate" or
             "resumption" or
             "transfer")

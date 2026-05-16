@@ -55,6 +55,50 @@ public sealed class REQ_QUIC_CRT_0154
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void CapturedNeqoConnectionMigrationClientHelloAcceptsX25519WithoutHelloRetryRequest()
+    {
+        byte[] capturedClientHello = REQ_QUIC_CRT_0112.CreateCapturedNeqoConnectionMigrationClientHelloTranscript();
+        Assert.Contains(
+            "0x0033(keyshare=",
+            REQ_QUIC_CRT_0112.DescribeClientHello(capturedClientHello));
+
+        QuicTlsTransportBridgeDriver driver = CreateStartedServerDriver();
+        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+            QuicTlsEncryptionLevel.Initial,
+            capturedClientHello);
+
+        Assert.True(
+            updates.Count >= 5,
+            $"{REQ_QUIC_CRT_0112.DescribeClientHello(capturedClientHello)} || {DescribeUpdates(updates, driver)}");
+        Assert.Equal(QuicTlsUpdateKind.TranscriptProgressed, updates[0].Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.ClientHello, updates[0].HandshakeMessageType);
+        Assert.Equal(QuicTlsTranscriptPhase.PeerTransportParametersStaged, updates[0].TranscriptPhase);
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, updates[0].SelectedCipherSuite);
+        Assert.Equal(QuicTlsTranscriptHashAlgorithm.Sha256, updates[0].TranscriptHashAlgorithm);
+        Assert.NotNull(updates[0].TransportParameters);
+        Assert.Equal(QuicTlsUpdateKind.CryptoDataAvailable, updates[1].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.Initial, updates[1].EncryptionLevel);
+        Assert.Equal(0UL, updates[1].CryptoDataOffset);
+        Assert.Equal(QuicTlsUpdateKind.HandshakeOpenPacketProtectionMaterialAvailable, updates[2].Kind);
+        Assert.Equal(QuicTlsUpdateKind.HandshakeProtectPacketProtectionMaterialAvailable, updates[3].Kind);
+        Assert.Equal(QuicTlsUpdateKind.KeysAvailable, updates[4].Kind);
+        Assert.Equal(QuicTlsEncryptionLevel.Handshake, updates[4].EncryptionLevel);
+        Assert.True(driver.State.HandshakeKeysAvailable);
+        Assert.True(driver.State.TryGetHandshakeOpenPacketProtectionMaterial(out _));
+        Assert.True(driver.State.TryGetHandshakeProtectPacketProtectionMaterial(out _));
+        Assert.False(driver.State.IsTerminal);
+
+        ServerHelloDescription serverHello = ParseServerHello(updates[1].CryptoData.Span);
+        Assert.False(serverHello.Random.AsSpan().SequenceEqual(HelloRetryRequestRandom));
+        Assert.Equal(QuicTlsCipherSuite.TlsAes128GcmSha256, serverHello.CipherSuite);
+        Assert.Equal(0x0304, serverHello.SupportedVersion);
+        Assert.Equal(QuicTlsNamedGroup.X25519, serverHello.SelectedGroup);
+        Assert.Equal(32, serverHello.KeyShare.Length);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ManagedX25519MatchesRfc7748DiffieHellmanTestVector()
     {
         byte[] alicePrivateKey = Convert.FromHexString(

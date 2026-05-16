@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_INT_0018
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndClassifiesZerorttAsSupportedWhileKeepingTheRebindCellsBlocked()
+    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndClassifiesZerorttAndConnectionMigrationAsSupportedWhileKeepingTheRebindCellsBlocked()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -45,8 +45,8 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt", GetPlanValue(output, "Supported/executed"));
-        Assert.Equal("v2,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Prerequisite-blocked"));
+        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("v2,rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
         Assert.StartsWith(Path.GetFullPath(fixture.ArtifactsRoot), runRoot, StringComparison.OrdinalIgnoreCase);
@@ -54,6 +54,7 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("zerortt -> supported-executed (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);

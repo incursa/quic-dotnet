@@ -235,6 +235,7 @@ public sealed class InteropHarnessRunnerTests
     [Theory]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
+    [InlineData("connectionmigration")]
     public void RebindClientDispatchUsesTheTransferBackedHarnessPathBeforeTransferValidationFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
@@ -266,6 +267,7 @@ public sealed class InteropHarnessRunnerTests
     [Theory]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
+    [InlineData("connectionmigration")]
     public void RebindServerDispatchUsesTheTransferBackedHarnessPathBeforeTlsMaterialFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
@@ -332,18 +334,23 @@ public sealed class InteropHarnessRunnerTests
     }
 
     [Fact]
-    public void ServerRequestLoopTreatsRemoteApplicationCloseNoErrorAsCompletionOnlyAfterAnEmptyRequestServerHasServedARequest()
+    public void ServerRequestLoopTreatsRemoteNoErrorCloseAsCompletionOnlyAfterAnEmptyRequestServerHasServedARequest()
     {
         // Provenance:
         // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-132744806-server-nginx
         // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-134139006-server-nginx
-        //   the live server-role handshake completed the response and then the peer sent
-        //   APPLICATION_CLOSE 0x0. The helper should only treat that as completion for the
-        //   empty-REQUESTS server lane after at least one request was already served.
+        //   the live server-role handshake completed the response and then the peer sent a
+        //   clean close. The helper should only treat that as completion for the empty-REQUESTS
+        //   server lane after at least one request was already served.
         QuicException cleanRemoteClose = new(QuicError.ConnectionAborted, 0, "The connection terminated.");
+        QuicException cleanTransportClose = new(QuicError.TransportError, null, 0, "The connection terminated.");
 
         Assert.True(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
             cleanRemoteClose,
+            expectedRequestCount: 0,
+            servedRequestCount: 1));
+        Assert.True(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(
+            cleanTransportClose,
             expectedRequestCount: 0,
             servedRequestCount: 1));
         Assert.False(InteropHarnessRunner.ShouldTreatServerCloseAsRequestLoopCompletion(

@@ -16,6 +16,16 @@ internal readonly record struct QuicPathMigrationRecoverySnapshot(
 
 internal static class QuicPathMigrationRecoveryTestSupport
 {
+    private static readonly byte[] ConfirmedClientHandshakeDestinationConnectionId =
+    [
+        0x10, 0x11, 0x12, 0x13,
+    ];
+
+    private static readonly byte[] ConfirmedClientHandshakeSourceConnectionId =
+    [
+        0x14, 0x15, 0x16, 0x17,
+    ];
+
     internal static QuicConnectionCloseMetadata CreateConnectionCloseMetadata()
     {
         return new QuicConnectionCloseMetadata(
@@ -34,6 +44,36 @@ internal static class QuicPathMigrationRecoveryTestSupport
     }
 
     internal static QuicConnectionRuntime CreateRuntimeWithActivePath(
+        QuicConnectionPathIdentity activePath,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
+    {
+        return CreateRuntimeWithActivePathBeforeHandshakeConfirmation(activePath, diagnosticsSink);
+    }
+
+    internal static QuicConnectionRuntime CreateRuntimeWithConfirmedHandshakeAndActivePath(
+        QuicConnectionPathIdentity activePath,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePathBeforeHandshakeConfirmation(
+            activePath,
+            diagnosticsSink);
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ConfirmedClientHandshakeDestinationConnectionId));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(ConfirmedClientHandshakeSourceConnectionId));
+        CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
+            runtime,
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = ConfirmedClientHandshakeSourceConnectionId.ToArray(),
+            });
+
+        Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 3).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+
+        return runtime;
+    }
+
+    internal static QuicConnectionRuntime CreateRuntimeWithActivePathBeforeHandshakeConfirmation(
         QuicConnectionPathIdentity activePath,
         IQuicDiagnosticsSink? diagnosticsSink = null)
     {

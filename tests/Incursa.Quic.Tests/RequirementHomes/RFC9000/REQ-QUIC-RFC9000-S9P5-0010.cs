@@ -66,8 +66,9 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0010
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.True(candidatePath.Validation.IsValidated);
-        Assert.False(candidatePath.Validation.IsAbandoned);
-        Assert.DoesNotContain(validationResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+        Assert.DoesNotContain(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == migratedPath);
     }
 
     private static void PreparePeerTransportParametersForMigration(

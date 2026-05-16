@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.40", RemotePort: 443);
         QuicConnectionPathIdentity portOnlyPath = new("203.0.113.40", RemotePort: 8443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
@@ -79,7 +79,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity portOnlyPath)
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];

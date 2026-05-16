@@ -196,7 +196,9 @@ public sealed class REQ_QUIC_INT_0015
         Assert.True(result.Success);
         Assert.NotNull(result.Plan);
         Assert.Null(result.ErrorMessage);
-        Assert.Equal(IPAddress.Any, result.Plan!.ListenEndPoint.Address);
+        Assert.True(
+            result.Plan!.ListenEndPoint.Address.Equals(IPAddress.Any)
+            || result.Plan.ListenEndPoint.Address.Equals(IPAddress.IPv6Any));
         Assert.Equal(443, result.Plan.ListenEndPoint.Port);
         Assert.Equal(0, result.Plan.ExpectedConnectionCount);
         Assert.Equal(0, result.Plan.ConfiguredConnectionCount);
@@ -399,6 +401,35 @@ public sealed class REQ_QUIC_INT_0015
                     : ValueTask.FromResult("opened");
             },
             "Timed out waiting for QUIC stream open send credit.");
+
+        Assert.Equal("opened", result);
+        Assert.Equal(3, attempts);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task TransientSendCreditRetry_CancelsAndRetriesBlockedAttempts()
+    {
+        int attempts = 0;
+
+        static async ValueTask<string> WaitForCancellationAsync(CancellationToken cancellationToken)
+        {
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+            return "unreachable";
+        }
+
+        string result = await InteropHarnessRunner.RetryTransientSendCreditAsync(
+            cancellationToken =>
+            {
+                attempts++;
+                return attempts < 3
+                    ? WaitForCancellationAsync(cancellationToken)
+                    : ValueTask.FromResult("opened");
+            },
+            "Timed out waiting for QUIC stream send credit.",
+            retryTimeout: TimeSpan.FromSeconds(1),
+            operationAttemptTimeout: TimeSpan.FromMilliseconds(50));
 
         Assert.Equal("opened", result);
         Assert.Equal(3, attempts);
