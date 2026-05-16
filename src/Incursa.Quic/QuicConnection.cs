@@ -130,10 +130,8 @@ public sealed class QuicConnection : IAsyncDisposable
                 TriggeringFrameType: null,
                 ReasonPhrase: null));
 
-        if (!runtime.TryPostLocalApiEvent(closeEvent))
-        {
-            runtime.Transition(closeEvent);
-        }
+        runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
+        _ = runtime.TryPostLocalApiEvent(closeEvent);
 
         return ValueTask.CompletedTask;
     }
@@ -159,10 +157,8 @@ public sealed class QuicConnection : IAsyncDisposable
                     TriggeringFrameType: null,
                     ReasonPhrase: null));
 
-            if (!runtime.TryPostLocalApiEvent(closeEvent))
-            {
-                runtime.Transition(closeEvent);
-            }
+            runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
+            _ = runtime.TryPostLocalApiEvent(closeEvent);
         }
 
         if (lifetimeOwner is not null)

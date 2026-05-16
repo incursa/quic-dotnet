@@ -12,6 +12,7 @@ namespace Incursa.Quic;
 internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 {
     private static readonly uint[] ListenerSupportedVersions = [QuicVersionNegotiation.Version1];
+    private const int BitsPerByte = 8;
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
     private const int RetryBootstrapReplayValidationFailureParseHeader = 2;
@@ -23,6 +24,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailurePayload = 8;
     private const int RetryBootstrapReplayValidationFailureSourceEndpointMismatch = 9;
     private const int RetryBootstrapReplayValidationFailureTokenValidation = 10;
+    private const int RetryBootstrapReplayValidationFailurePacketNumberReset = 11;
     private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
     private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
@@ -52,9 +54,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private int retryBootstrapReplayValidated;
     private int retryBootstrapReplayAdmitted;
     private int retryBootstrapReplayValidationFailureCode;
+    private int retryBootstrapObservedInitialPacketNumberSet;
     private int newTokenValidationAttempted;
     private int newTokenValidationSucceeded;
     private int newTokenValidationFailureCode;
+    private ulong retryBootstrapLargestObservedInitialPacketNumber;
     private byte[]? retryBootstrapOriginalDestinationConnectionId;
     private byte[]? retryBootstrapSourceConnectionId;
     private byte[]? retryBootstrapToken;
@@ -876,6 +880,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return false;
             }
 
+            if (!TryReadOpenedInitialPacketNumber(openedPacket, payloadOffset, out ulong openedInitialPacketNumber))
+            {
+                return false;
+            }
+
             if (retryBootstrapEnabled)
             {
                 if (isRetryBootstrapReplayCandidate)
@@ -903,6 +912,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         return false;
                     }
 
+                    if (retryBootstrapObservedInitialPacketNumberSet != 0
+                        && openedInitialPacketNumber <= retryBootstrapLargestObservedInitialPacketNumber)
+                    {
+                        Interlocked.Exchange(
+                            ref retryBootstrapReplayValidationFailureCode,
+                            RetryBootstrapReplayValidationFailurePacketNumberReset);
+                        TrySendProtocolViolationCloseResponse(pathIdentity);
+                        return false;
+                    }
+
                     Interlocked.Exchange(ref retryBootstrapReplayValidated, 1);
                 }
                 else if (initialToken.Length > 0)
@@ -923,6 +942,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             return false;
                         }
 
+                        ObserveRetryBootstrapInitialPacketNumber(openedInitialPacketNumber);
+
                         return false;
                     }
                 }
@@ -935,6 +956,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     {
                         return false;
                     }
+
+                    ObserveRetryBootstrapInitialPacketNumber(openedInitialPacketNumber);
 
                     return false;
                 }
@@ -1292,6 +1315,56 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
 
         Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, 0);
+        return true;
+    }
+
+    private void ObserveRetryBootstrapInitialPacketNumber(ulong packetNumber)
+    {
+        if (retryBootstrapObservedInitialPacketNumberSet == 0)
+        {
+            retryBootstrapLargestObservedInitialPacketNumber = packetNumber;
+            retryBootstrapObservedInitialPacketNumberSet = 1;
+            return;
+        }
+
+        retryBootstrapLargestObservedInitialPacketNumber = Math.Max(
+            retryBootstrapLargestObservedInitialPacketNumber,
+            packetNumber);
+    }
+
+    private static bool TryReadOpenedInitialPacketNumber(
+        ReadOnlySpan<byte> openedPacket,
+        int payloadOffset,
+        out ulong packetNumber)
+    {
+        packetNumber = default;
+
+        if (openedPacket.Length == 0
+            || payloadOffset <= 0
+            || payloadOffset > openedPacket.Length)
+        {
+            return false;
+        }
+
+        int packetNumberLength = (openedPacket[0] & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
+        if (packetNumberLength < 1 || packetNumberLength > sizeof(uint))
+        {
+            return false;
+        }
+
+        int packetNumberOffset = payloadOffset - packetNumberLength;
+        if (packetNumberOffset < 1 || packetNumberOffset + packetNumberLength > openedPacket.Length)
+        {
+            return false;
+        }
+
+        ulong value = 0;
+        for (int index = 0; index < packetNumberLength; index++)
+        {
+            value = (value << BitsPerByte) | openedPacket[packetNumberOffset + index];
+        }
+
+        packetNumber = value;
         return true;
     }
 

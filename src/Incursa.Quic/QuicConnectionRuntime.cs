@@ -91,6 +91,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool retryBootstrapPendingReplay;
     private bool zeroRttPacketSent;
     private bool handshakeDonePacketSent;
+    private bool localCloseEffectsPending;
     private bool hasSuccessfullyProcessedAnotherPacket;
     private ulong highestConnectionIdIssuedToPeer;
     private ulong totalIssuedConnectionIdCount;

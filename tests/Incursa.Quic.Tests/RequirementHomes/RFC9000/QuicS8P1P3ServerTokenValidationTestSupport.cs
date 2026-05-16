@@ -27,6 +27,7 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
         private readonly Socket clientSocket;
         private readonly IPEndPoint listenEndPoint;
         private readonly byte[] cryptoPayload;
+        private readonly QuicHandshakeFlowCoordinator coordinator;
         private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
         private readonly TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private int callbackCount;
@@ -56,6 +57,9 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
             clientSocket.Connect(listenEndPoint);
             cryptoPayload = QuicFrameTestData.BuildCryptoFrame(
                 new QuicCryptoFrame(0, QuicS12P3TestSupport.CreateSequentialBytes(0x60, 16)));
+            coordinator = new QuicHandshakeFlowCoordinator(
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialSourceConnectionId);
         }
 
         internal QuicListenerHost ListenerHost { get; }
@@ -263,9 +267,6 @@ internal static class QuicS8P1P3ServerTokenValidationTestSupport
                 destinationConnectionId,
                 out QuicInitialPacketProtection clientProtection));
 
-            QuicHandshakeFlowCoordinator coordinator = new(
-                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
-                QuicS17P2P2TestSupport.InitialSourceConnectionId);
             Assert.True(coordinator.TryBuildProtectedInitialPacket(
                 cryptoPayload,
                 cryptoPayloadOffset: 0,
