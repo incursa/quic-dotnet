@@ -1511,6 +1511,9 @@ internal static class InteropHarnessRunner
                     $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} listening on {dispatchPlan.ListenEndPoint}.");
 
                 await using QuicConnection connection = await acceptTask.ConfigureAwait(false);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase={testCase}, requestCount={dispatchPlan.ConfiguredRequestCount} completed managed listener bootstrap.");
                 int servedRequestCount = await ServeHttp09RequestsAsync(
                     connection,
                     stdout,

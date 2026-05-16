@@ -580,17 +580,18 @@ public sealed class REQ_QUIC_INT_0008
             new IPEndPoint(IPAddress.Any, 0),
             receiveTimeout.Token);
 
-        MethodInfo? observeEffectMethod = typeof(QuicListenerHost).GetMethod(
-            "ObserveEffect",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(observeEffectMethod);
+        MethodInfo? sendDatagramMethod = typeof(QuicListenerHost).GetMethod(
+            "SendDatagram",
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            binder: null,
+            types: [typeof(QuicConnectionSendDatagramEffect)],
+            modifiers: null);
+        Assert.NotNull(sendDatagramMethod);
 
-        observeEffectMethod!.Invoke(
+        sendDatagramMethod!.Invoke(
             listenerHost,
             new object[]
             {
-                default(QuicConnectionHandle),
-                0,
                 new QuicConnectionSendDatagramEffect(promotedPath, datagram),
             });
 

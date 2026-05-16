@@ -491,6 +491,10 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         try
         {
             socket.Bind(localEndPoint);
+            if (socket.AddressFamily == AddressFamily.InterNetworkV6 && OperatingSystem.IsLinux())
+            {
+                socket.DualMode = true;
+            }
             return socket;
         }
         catch
