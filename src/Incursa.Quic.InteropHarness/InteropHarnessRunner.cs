@@ -717,6 +717,9 @@ internal static class InteropHarnessRunner
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} validated the replayed Initial packet (retryToken={host.RetryTokenFromRetryHex}, replayToken={host.RetryBootstrapReplayPacketTokenHex}) and is waiting for managed client bootstrap completion.");
+                    WriteLineAndFlush(
+                        stdout,
+                        $"interop harness: role=client, testcase=retry, requestCount={settings.Requests.Count} observed exactly one Retry transition and completed managed client bootstrap.");
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
@@ -1037,6 +1040,9 @@ internal static class InteropHarnessRunner
             }
             WriteDeterministicClientKeySelection(settings, stdout);
             await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed client bootstrap.");
             string testCase = settings.TestCase;
             if (testCase == "resumption")
             {
