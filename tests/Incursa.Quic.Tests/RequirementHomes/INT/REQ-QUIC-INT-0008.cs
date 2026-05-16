@@ -323,12 +323,12 @@ public sealed class REQ_QUIC_INT_0008
         }
 
         using Socket serverSocket = new(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
-        serverSocket.Bind(new IPEndPoint(IPAddress.IPv6Loopback, 0));
+        serverSocket.Bind(new IPEndPoint(IPAddress.IPv6Any, 0));
 
         using QuicConnectionRuntimeEndpoint endpoint = new(1);
         QuicConnectionPathIdentity initialPath = new(
             IPAddress.IPv6Loopback.ToString(),
-            IPAddress.IPv6Loopback.ToString(),
+            IPAddress.IPv6Any.ToString(),
             12345,
             ((IPEndPoint)serverSocket.LocalEndPoint!).Port);
 

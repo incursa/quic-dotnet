@@ -118,12 +118,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         socket.Bind(boundEndPoint);
-        if (socket.AddressFamily == AddressFamily.InterNetworkV6
-            && boundEndPoint.Address.Equals(IPAddress.IPv6Any)
-            && OperatingSystem.IsLinux())
-        {
-            socket.DualMode = true;
-        }
     }
 
     internal bool RetryBootstrapIssued => Volatile.Read(ref retryBootstrapIssued) != 0;
