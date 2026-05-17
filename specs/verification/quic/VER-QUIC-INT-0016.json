@@ -20,7 +20,7 @@
     "The major-peer-matrix and connectionmigration workflow profiles remain advisory and available.",
     "Captured connectionmigration and comparison bundles remain available for inspection.",
     "The repo-local helper can run in dry-run mode and enumerate per-cell rows.",
-    "The generated peer-characterization seed report is present in the repository.",
+    "The generated peer-characterization pilot report is present in the repository.",
     "The generated major-peer matrix inventory report is present in the repository.",
     "The generated major-peer matrix evidence report is present in the repository."
   ],
@@ -30,7 +30,7 @@
     "Inspect the preserved connectionmigration proof bundles and the blocked comparison bundle to confirm heterogeneous failure classes stay visible.",
     "Run helper dry-run or summary tests that validate `neqo-peer` reporting while the actual runner slot remains normalized to `neqo`.",
     "Confirm the matrix report shape carries peer, role, testcase, outcome class, failure class, and artifact root per cell.",
-    "Inspect the generated advisory seed report under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md`.",
+    "Inspect the generated advisory pilot report under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md`.",
     "Inspect the generated advisory major-peer inventory report under `specs/generated/quic/interop-major-peer-matrix-inventory.json` and `.md`.",
     "Inspect the generated advisory major-peer evidence report under `specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json` and `.md`.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`.",
@@ -58,7 +58,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
   ],
-  "status_summary": "Planned. The matrix pilot is now seeded so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory seed report, a generated major-peer inventory report, a generated major-peer evidence report, and a test-side row projector, but broader matrix refresh work is still advisory.",
+  "status_summary": "Planned. The matrix pilot now combines the seeded connectionmigration rows with the current major-peer evidence so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory pilot report, a generated major-peer inventory report, a generated major-peer evidence report, and a test-side row projector, but broader matrix refresh work is still advisory.",
   "supplemental_sections": [
     {
       "heading": "Scope",

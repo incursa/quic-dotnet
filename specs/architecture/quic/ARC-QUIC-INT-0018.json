@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0018",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Advisory msquic Peer-Blocked Evidence Classification Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory classification lane that keeps the preserved msquic major-peer failures tagged as peer-side blocked evidence while the quic-go client download-liveness slice remains the only local candidate.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0017",
+    "WI-QUIC-INT-0017",
+    "VER-QUIC-INT-0017"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0024"
+  ],
+  "key_components": [
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0024.cs"
+  ],
+  "design_summary": "The major-peer evidence already splits msquic failures into peer-tls-alert-50 and peer-connection-terminated classes. This architecture formalizes that cluster as blocked evidence rather than a local transport bug, keeps it separate from the quic-go download-liveness candidate, and preserves the advisory boundary so the matrix remains a reporting surface rather than support proof.",
+  "alternatives_considered": [
+    "Treat the msquic TLS alert cluster as a local Incursa transport defect. Rejected because the preserved evidence still points at peer-side handshake and termination noise.",
+    "Fold the msquic rows into the quic-go download-liveness candidate. Rejected because the failure classes are different and should remain distinguishable."
+  ],
+  "edge_cases_and_constraints": [
+    "Preserve the peer-side outcome classes from the current evidence run.",
+    "Do not recast the cluster as support evidence without new host or peer data.",
+    "Keep the lane advisory and outside ordinary gating.",
+    "Keep the lane separate from the local quic-go candidate."
+  ],
+  "data_and_state_considerations": "The slice relies on the preserved major-peer evidence report and current repo-local trace notes. It does not require runtime changes to stay formalized.",
+  "risks": [
+    "Readers may overread the blocked classification as a fix if the advisory boundary is not kept explicit.",
+    "The line between peer-side blocked evidence and local candidate work can blur if the lane is reused for runtime debugging."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only formalizes the blocked classification lane. It does not assert msquic support or change the major-peer matrix profile."
+    }
+  ]
+}

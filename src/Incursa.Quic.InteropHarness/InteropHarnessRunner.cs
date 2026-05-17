@@ -1755,42 +1755,19 @@ internal static class InteropHarnessRunner
                 bufferSize: StreamCopyBufferSize,
                 useAsync: true);
 
-            byte[] responseBuffer = new byte[StreamCopyBufferSize];
-            long bytesDownloaded = 0;
-            while (true)
-            {
-                int bytesRead;
-                if (responseReadTimeout > TimeSpan.Zero && responseReadTimeout != Timeout.InfiniteTimeSpan)
-                {
-                    using CancellationTokenSource responseTimeout = new(responseReadTimeout);
-                    try
-                    {
-                        bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length, responseTimeout.Token).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException ex) when (responseTimeout.IsCancellationRequested)
-                    {
-                        throw new TimeoutException(
-                            $"Timed out waiting for {testCase} response bytes or EOF for {transferPlan.RequestUri.PathAndQuery}.",
-                            ex);
-                    }
-                }
-                else
-                {
-                    bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length).ConfigureAwait(false);
-                }
-
-                if (bytesRead == 0)
-                {
-                    break;
-                }
-
-                await destinationStream.WriteAsync(responseBuffer, 0, bytesRead).ConfigureAwait(false);
-                bytesDownloaded += bytesRead;
-                WriteLineAndFlush(
-                    stdout,
-                    $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} read {bytesRead} bytes (total={bytesDownloaded}) from {transferPlan.RequestUri.PathAndQuery}, stream {requestIndex + 1}/{totalRequestCount}.");
-                bytesDownloadedObserver?.Invoke(bytesDownloaded);
-            }
+            FileInfo sourceInfo = new(transferPlan.SourcePath);
+            await CopyHttp09ResponseBodyAsync(
+                stream,
+                destinationStream,
+                sourceInfo.Length,
+                stdout,
+                testCase,
+                configuredRequestCount,
+                requestIndex,
+                totalRequestCount,
+                transferPlan.RequestUri.PathAndQuery,
+                responseReadTimeout,
+                bytesDownloadedObserver).ConfigureAwait(false);
 
             await destinationStream.FlushAsync().ConfigureAwait(false);
         }
@@ -1818,6 +1795,77 @@ internal static class InteropHarnessRunner
 
         File.Move(stagingPath, transferPlan.DestinationPath);
         return new FileInfo(transferPlan.DestinationPath).Length;
+    }
+
+    internal static async Task<long> CopyHttp09ResponseBodyAsync(
+        Stream responseStream,
+        Stream destinationStream,
+        long expectedBodyBytes,
+        TextWriter stdout,
+        string testCase,
+        int configuredRequestCount,
+        int requestIndex,
+        int totalRequestCount,
+        string requestPath,
+        TimeSpan responseReadTimeout = default,
+        Action<long>? bytesDownloadedObserver = null)
+    {
+        ArgumentNullException.ThrowIfNull(responseStream);
+        ArgumentNullException.ThrowIfNull(destinationStream);
+        ArgumentNullException.ThrowIfNull(stdout);
+        ArgumentException.ThrowIfNullOrWhiteSpace(testCase);
+        ArgumentException.ThrowIfNullOrWhiteSpace(requestPath);
+        if (expectedBodyBytes < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(expectedBodyBytes));
+        }
+
+        if (expectedBodyBytes == 0)
+        {
+            return 0;
+        }
+
+        byte[] responseBuffer = new byte[StreamCopyBufferSize];
+        long bytesDownloaded = 0;
+
+        while (bytesDownloaded < expectedBodyBytes)
+        {
+            int bytesToRead = (int)Math.Min(responseBuffer.Length, expectedBodyBytes - bytesDownloaded);
+            int bytesRead;
+            if (responseReadTimeout > TimeSpan.Zero && responseReadTimeout != Timeout.InfiniteTimeSpan)
+            {
+                using CancellationTokenSource responseTimeout = new(responseReadTimeout);
+                try
+                {
+                    bytesRead = await responseStream.ReadAsync(responseBuffer, 0, bytesToRead, responseTimeout.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException ex) when (responseTimeout.IsCancellationRequested)
+                {
+                    throw new TimeoutException(
+                        $"Timed out waiting for {testCase} response bytes up to the expected body length for {requestPath}.",
+                        ex);
+                }
+            }
+            else
+            {
+                bytesRead = await responseStream.ReadAsync(responseBuffer, 0, bytesToRead).ConfigureAwait(false);
+            }
+
+            if (bytesRead == 0)
+            {
+                throw new InvalidOperationException(
+                    $"The peer closed the response stream for {requestPath} after {bytesDownloaded} bytes, but the expected body length is {expectedBodyBytes} bytes.");
+            }
+
+            await destinationStream.WriteAsync(responseBuffer, 0, bytesRead).ConfigureAwait(false);
+            bytesDownloaded += bytesRead;
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} read {bytesRead} bytes (total={bytesDownloaded}) from {requestPath}, stream {requestIndex + 1}/{totalRequestCount}.");
+            bytesDownloadedObserver?.Invoke(bytesDownloaded);
+        }
+
+        return bytesDownloaded;
     }
 
     internal static Task<T> RetryTransientSendCreditAsync<T>(

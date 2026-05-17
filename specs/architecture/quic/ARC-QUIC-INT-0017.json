@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0017",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC quic-go Client Download-Liveness Completion Boundary Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded completion contract that keeps the quic-go client transfer/keyupdate drain path visible as the remaining local candidate while completing downloads against the known mounted source-length body and leaving msquic TLS-alert-50 cells outside the candidate set.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0016",
+    "WI-QUIC-INT-0016",
+    "VER-QUIC-INT-0016"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0023"
+  ],
+  "key_components": [
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0023.cs"
+  ],
+  "design_summary": "The existing peer-characterization surface already shows that the remaining Incursa-side candidate is the quic-go client transfer/keyupdate drain path. This architecture formalizes that candidate as a trace-first slice, preserves the msquic TLS-alert-50 cells as peer-side noise, and keeps the work bounded to download completion on the mounted source-length body. It does not widen into a generic keepalive policy or broader server-role behavior.",
+  "alternatives_considered": [
+    "Jump directly to a runtime keepalive implementation. Rejected because the current request is to formalize the slice first, not to change transport behavior before the proof boundary is stable.",
+    "Reclassify the msquic TLS-alert-50 cells as a local Incursa bug. Rejected because the preserved major-peer evidence still looks peer-side and the current slice should not overstate local responsibility."
+  ],
+  "edge_cases_and_constraints": [
+    "The quic-go candidate must remain bounded to client transfer and keyupdate drain behavior.",
+    "Peer-specific TLS-alert-50 cells must remain distinguishable from the local candidate set.",
+    "The slice must stay bounded to the known mounted source-length completion boundary and must not be read as a generic keepalive policy.",
+    "No server-role or public API widening should be introduced as part of this formalization."
+  ],
+  "data_and_state_considerations": "The slice reads repo-local status and gap notes plus the preserved major-peer evidence narrative. The completion helper can be verified locally without a new runner bundle, while the major-peer evidence remains the motivation for the boundary.",
+  "risks": [
+    "Readers may overread the slice as a generic keepalive policy if the source-length boundary is not kept explicit.",
+    "The quic-go drain candidate could drift into broader runtime work before the bounded download completion contract is verified."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This design only formalizes the bounded download completion candidate. It does not promote support for msquic or widen the major-peer matrix profile."
+    }
+  ]
+}

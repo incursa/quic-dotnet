@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0017",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC quic-go Client Download-Liveness Completion Boundary Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Formalize the quic-go client download-liveness candidate as a trace-first slice, keeping the transfer/keyupdate drain path separate from the msquic TLS-alert-50 cells and completing downloads against the mounted source-length body.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0017",
+    "VER-QUIC-INT-0017"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0017"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0017"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0023"
+  ],
+  "planned_changes": "- Update the current INT requirement so the quic-go client transfer/keyupdate drain candidate completes downloads against the mounted source-length body.\n- Update the gap ledger and current-status note so the completion boundary is clearly traced.\n- Add requirement-home tests that assert the source-length completion boundary and the exclusion of msquic TLS-alert-50 cells from the local candidate set.\n- Keep the slice bounded to the client download path and do not widen it into generic keepalive or server-role behavior.\n- Preserve the work as a trace-first harness/runtime boundary, not a broad API rewrite.",
+  "out_of_scope": [
+    "changing QUIC transport semantics",
+    "adding a generic runtime keepalive policy in this slice",
+    "promoting msquic TLS-alert-50 cells into the local candidate set",
+    "widening the major-peer matrix profile",
+    "changing ordinary CI gates"
+  ],
+  "verification_plan": "Inspect the updated spec, gap ledger, and current-status note; confirm the new requirement-home tests pin the source-length completion boundary; and run the focused REQ-QUIC-INT-0023 requirement-home test slice."
+}

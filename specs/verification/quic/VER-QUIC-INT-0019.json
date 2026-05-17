@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0019",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Connectionmigration Source-Address Blocker Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Requirement-home tests and setup-script inspection.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0019",
+    "WI-QUIC-INT-0019"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0025"
+  ],
+  "preconditions": [
+    "The connectionmigration proof lane remains advisory.",
+    "The preferred migration address setup remains present in the startup script.",
+    "The current-status and gap-ledger notes are present."
+  ],
+  "scope": "Verify that the repository keeps the connectionmigration source-address blocker explicit while preserving the preferred-address setup and avoiding support claims.",
+  "procedure": [
+    "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
+    "Inspect `src/Incursa.Quic.InteropHarness/setup.sh` and `src/Incursa.Quic.InteropHarness/README.md` for the preferred-address setup.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0025`.",
+    "Confirm the blocker note remains advisory and separate from any runtime support claim."
+  ],
+  "expected_result": "The repository can classify the connectionmigration source-address issue as an explicit advisory blocker while preserving the preferred-address setup and keeping support claims bounded.",
+  "evidence": [
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "src/Incursa.Quic.InteropHarness/setup.sh",
+    "src/Incursa.Quic.InteropHarness/README.md",
+    "specs/architecture/quic/ARC-QUIC-INT-0019.json",
+    "specs/work-items/quic/WI-QUIC-INT-0019.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs"
+  ],
+  "status_summary": "Planned. The slice is advisory classification only and does not change runtime transport behavior.",
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "This verification only covers the blocker lane. It does not claim a source-address fix or rebind support."
+    }
+  ]
+}

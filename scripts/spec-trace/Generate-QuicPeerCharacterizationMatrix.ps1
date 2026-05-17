@@ -1,12 +1,19 @@
 [CmdletBinding()]
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
+    [long]$SourceRunId = 25904716076,
+    [string]$EvidenceRoot = "",
     [string]$OutputJsonPath = "",
     [string]$OutputMarkdownPath = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($EvidenceRoot))
+{
+    $EvidenceRoot = Join-Path $RepoRoot "artifacts\tmp-major-peer-evidence-$SourceRunId"
+}
 
 if ([string]::IsNullOrWhiteSpace($OutputJsonPath))
 {
@@ -63,6 +70,37 @@ function Get-PeerCharacterizationSeedRows {
     )
 }
 
+function Get-RepoRelativePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    return [System.IO.Path]::GetRelativePath($RepoRoot, (Resolve-Path -LiteralPath $Path).Path).Replace('\', '/')
+}
+
+function Get-MajorPeerEvidenceRows {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $report = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    foreach ($row in $report.rows)
+    {
+        [pscustomobject]@{
+            peer_slot     = $row.peer_slot
+            local_role    = $row.local_role
+            testcase      = $row.testcase
+            outcome_class = $row.outcome_class
+            failure_class = $row.failure_class
+            artifact_root = $row.artifact_root
+            source_run_id = $report.source_runs[0].run_id
+            source_bundle = $report.source_profile
+        }
+    }
+}
+
 function Format-MarkdownCell {
     param(
         [AllowNull()]
@@ -77,7 +115,17 @@ function Format-MarkdownCell {
     return ([string]$Value).Replace('|', '\|')
 }
 
-$rows = @(Get-PeerCharacterizationSeedRows)
+$seedRows = @(Get-PeerCharacterizationSeedRows)
+$majorPeerEvidencePath = Join-Path $RepoRoot "specs\generated\quic\interop-major-peer-matrix-evidence-$SourceRunId.json"
+if (-not (Test-Path -LiteralPath $majorPeerEvidencePath))
+{
+    throw "Major-peer evidence report '$majorPeerEvidencePath' does not exist."
+}
+
+$rows = @(
+    $seedRows
+    Get-MajorPeerEvidenceRows -Path $majorPeerEvidencePath
+)
 $sourceRuns = @(
     [pscustomobject]@{
         run_id       = 25891504134
@@ -89,12 +137,17 @@ $sourceRuns = @(
         bundle       = 'connectionmigration-server-proof-blocked'
         artifact_root = 'artifacts/tmp-run-25882671754'
     }
+    [pscustomobject]@{
+        run_id       = $SourceRunId
+        bundle       = 'major-peer-matrix'
+        artifact_root = Get-RepoRelativePath -Path $EvidenceRoot
+    }
 )
 
 $report = [pscustomobject]@{
     report_id      = 'interop-peer-characterization-matrix-pilot'
     advisory       = $true
-    summary        = 'Seed report for mixed connectionmigration evidence and the blocked peer comparison lane.'
+    summary        = 'Refreshed advisory report for mixed connectionmigration and major-peer evidence.'
     source_runs    = $sourceRuns
     row_count      = $rows.Count
     rows           = $rows
@@ -104,12 +157,13 @@ $reportJson = $report | ConvertTo-Json -Depth 8
 $markdownLines = [System.Collections.Generic.List[string]]::new()
 $markdownLines.Add('# Interop Peer Characterization Matrix Pilot')
 $markdownLines.Add('')
-$markdownLines.Add('Advisory seed report. Derived from preserved hosted bundles and intentionally not a support verdict.')
+$markdownLines.Add('Advisory report. Derived from preserved hosted bundles and the completed major-peer evidence, and intentionally not a support verdict.')
 $markdownLines.Add('')
 $markdownLines.Add('## Sources')
 $markdownLines.Add('')
 $markdownLines.Add('- `25891504134`: `connectionmigration-server-proof`')
 $markdownLines.Add('- `25882671754`: `connectionmigration-server-proof-blocked`')
+$markdownLines.Add('- `' + $SourceRunId + '`: `major-peer-matrix`')
 $markdownLines.Add('')
 $markdownLines.Add('| peer | role | testcase | outcome class | failure class | artifact root |')
 $markdownLines.Add('| --- | --- | --- | --- | --- | --- |')

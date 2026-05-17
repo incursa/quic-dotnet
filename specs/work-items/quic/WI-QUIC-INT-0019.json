@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0019",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Connectionmigration Source-Address Blocker Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Formalize the connectionmigration source-address blocker as a separate advisory lane while preserving the preferred-address setup and keeping runtime behavior unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0019",
+    "VER-QUIC-INT-0019"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0019"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0019"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0025"
+  ],
+  "planned_changes": "- Preserve the current connectionmigration proof lane as advisory and explicit about the source-address blocker.\n- Keep the preferred migration address configured with `preferred_lft 0`.\n- Add requirement-home tests that assert the source-address blocker is documented and separated from runtime support claims.\n- Do not change runtime transport behavior.\n- Keep this lane distinct from the peer-characterization matrix work.",
+  "out_of_scope": [
+    "changing QUIC transport semantics",
+    "making the lane blocking in CI",
+    "claiming server-side path promotion",
+    "adding rebind support",
+    "rewriting the external runner repository"
+  ],
+  "verification_plan": "Inspect the updated spec, gap ledger, and current-status note; confirm the new requirement-home tests pin the blocker classification; and verify the preferred-address setup remains explicit."
+}

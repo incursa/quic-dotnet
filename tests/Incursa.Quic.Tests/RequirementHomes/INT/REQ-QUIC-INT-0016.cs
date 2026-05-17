@@ -233,11 +233,18 @@ public sealed class REQ_QUIC_INT_0016
                     """)
             ]);
 
+        IReadOnlyList<InteropPeerCharacterizationRow> majorPeerRows = ReadMajorPeerEvidenceRows();
+        expectedRows = [..expectedRows, ..majorPeerRows];
+
         using JsonDocument reportDocument = JsonDocument.Parse(reportJson);
         JsonElement root = reportDocument.RootElement;
         Assert.Equal("interop-peer-characterization-matrix-pilot", root.GetProperty("report_id").GetString());
         Assert.True(root.GetProperty("advisory").GetBoolean());
-        Assert.Equal(4, root.GetProperty("row_count").GetInt32());
+        Assert.Equal(24, root.GetProperty("row_count").GetInt32());
+
+        JsonElement sourceRuns = root.GetProperty("source_runs");
+        Assert.Equal(3, sourceRuns.GetArrayLength());
+        Assert.Equal("major-peer-matrix", sourceRuns[2].GetProperty("bundle").GetString());
 
         JsonElement rows = root.GetProperty("rows");
         Assert.Equal(expectedRows.Count, rows.GetArrayLength());
@@ -258,6 +265,8 @@ public sealed class REQ_QUIC_INT_0016
         Assert.Contains("| quic-go | server | connectionmigration | failed | peer-zero-length-dcid-cid-retirement | artifacts/tmp-run-25882671754/interop-runner-server-connectionmigration-quic-go-blocked-25882671754/20260514-200548260-server-neqo |", reportMarkdown, StringComparison.Ordinal);
         Assert.Contains("| msquic | server | connectionmigration | failed | peer-packet-layer-missing | artifacts/tmp-run-25882671754/interop-runner-server-connectionmigration-msquic-blocked-25882671754/20260514-200543902-server-neqo |", reportMarkdown, StringComparison.Ordinal);
         Assert.Contains("| ngtcp2 | server | connectionmigration | failed | peer-transfer-size-mismatch | artifacts/tmp-run-25882671754/interop-runner-server-connectionmigration-ngtcp2-blocked-25882671754/20260514-200540179-server-neqo |", reportMarkdown, StringComparison.Ordinal);
+        Assert.Contains("| quic-go | client | transfer | failed | peer-transfer-response-timeout |", reportMarkdown, StringComparison.Ordinal);
+        Assert.Contains("| msquic | client | handshake | failed | peer-tls-alert-50 |", reportMarkdown, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -304,6 +313,28 @@ public sealed class REQ_QUIC_INT_0016
         }
 
         throw new InvalidOperationException($"Unable to locate '{relativePath}' under '{repoRoot}'.");
+    }
+
+    private static IReadOnlyList<InteropPeerCharacterizationRow> ReadMajorPeerEvidenceRows()
+    {
+        string reportJson = ReadRepositoryFile("specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json");
+        using JsonDocument reportDocument = JsonDocument.Parse(reportJson);
+        JsonElement rows = reportDocument.RootElement.GetProperty("rows");
+
+        List<InteropPeerCharacterizationRow> result = new(rows.GetArrayLength());
+        foreach (JsonElement row in rows.EnumerateArray())
+        {
+            result.Add(
+                new InteropPeerCharacterizationRow(
+                    row.GetProperty("peer_slot").GetString() ?? string.Empty,
+                    row.GetProperty("local_role").GetString() ?? string.Empty,
+                    row.GetProperty("testcase").GetString() ?? string.Empty,
+                    row.GetProperty("outcome_class").GetString() ?? string.Empty,
+                    row.GetProperty("failure_class").GetString() ?? string.Empty,
+                    row.GetProperty("artifact_root").GetString() ?? string.Empty));
+        }
+
+        return result;
     }
 
     private static string FindRepoRoot()

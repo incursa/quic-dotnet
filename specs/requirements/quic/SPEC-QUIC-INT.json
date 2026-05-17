@@ -51,7 +51,18 @@
     "ARC-QUIC-INT-0015",
     "WI-QUIC-INT-0015",
     "VER-QUIC-INT-0015",
-    "ARC-QUIC-INT-0016"
+    "ARC-QUIC-INT-0016",
+    "WI-QUIC-INT-0016",
+    "VER-QUIC-INT-0016",
+    "ARC-QUIC-INT-0017",
+    "WI-QUIC-INT-0017",
+    "VER-QUIC-INT-0017",
+    "ARC-QUIC-INT-0018",
+    "WI-QUIC-INT-0018",
+    "VER-QUIC-INT-0018",
+    "ARC-QUIC-INT-0019",
+    "WI-QUIC-INT-0019",
+    "VER-QUIC-INT-0019"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -731,6 +742,106 @@
       "notes": [
         "This slice creates a dedicated hosted corroboration path for the connectionmigration lane and keeps the blocked comparison peers visible without widening the green proof lane.",
         "It does not broaden the major-peer-matrix profile or change the underlying supported-executed helper inventory claim."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0023",
+      "title": "Formalize the quic-go client download-liveness slice",
+      "statement": "The repository MUST keep the remaining Incursa-side major-peer candidate bounded to the `quic-go` client `transfer` and `keyupdate` drain path, complete the download when the known mounted source-length body has been transferred instead of waiting for peer EOF, and keep the `msquic` `TLS alert 50` / termination cells outside that local candidate set. This slice MUST preserve the bounded client download-liveness contract and MUST NOT widen into a generic keepalive policy, server-role behavior, or a broad public API rewrite.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0017"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0017"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0017"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0019",
+          "REQ-QUIC-INT-0022"
+        ],
+        "x_code_refs": [
+          "docs/current-status.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0017.json",
+          "specs/work-items/quic/WI-QUIC-INT-0017.json",
+          "specs/verification/quic/VER-QUIC-INT-0017.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0023.cs"
+        ]
+      },
+      "notes": [
+        "This slice formalizes the bounded client download completion boundary for the current quic-go candidate.",
+        "It does not widen into server-role behavior, a generic keepalive policy, or broader msquic support."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0024",
+      "title": "Classify the msquic major-peer failures as peer-side blocked evidence",
+      "statement": "The repository MUST keep the `msquic` major-peer evidence cluster classified as peer-side blocked evidence when the preserved major-peer run records `peer-tls-alert-50` or `peer-connection-terminated` outcomes across the `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` cells. This slice MUST preserve the advisory outcome classes, MUST not recast the cluster as an Incursa-side transport defect without new evidence, and MUST remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0018"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0019",
+          "REQ-QUIC-INT-0023"
+        ],
+        "x_code_refs": [
+          "docs/current-status.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+          "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0018.json",
+          "specs/work-items/quic/WI-QUIC-INT-0018.json",
+          "specs/verification/quic/VER-QUIC-INT-0018.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0024.cs"
+        ]
+      },
+      "notes": [
+        "This formalizes the peer-side blocked lane only. It does not claim a local transport bug or a fix for msquic.",
+        "The quic-go client download-liveness slice remains the only local candidate in the major-peer evidence set."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0025",
+      "title": "Classify the connectionmigration source-address blocker as a distinct hosted proof lane",
+      "statement": "The repository MUST keep the hosted `connectionmigration-server-proof` lane classified as a source-address blocked advisory until a fresh proof run shows the first server flight sourced from the original server address instead of the preferred migration address. The lane MUST preserve the `preferred_lft 0` setup for the preferred migration address so the address remains reachable without becoming the kernel-preferred source for the original-path first flight, and the lane MUST remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0019"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0022",
+          "REQ-QUIC-INT-0024"
+        ],
+        "x_code_refs": [
+          "docs/current-status.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic.InteropHarness/setup.sh",
+          "src/Incursa.Quic.InteropHarness/README.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0019.json",
+          "specs/work-items/quic/WI-QUIC-INT-0019.json",
+          "specs/verification/quic/VER-QUIC-INT-0019.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs"
+        ]
+      },
+      "notes": [
+        "This formalizes the hosted blocker only. It does not claim server-side path promotion or rebind support.",
+        "The preferred migration address stays configured with `preferred_lft 0` so the lane remains reachable for migration without hijacking the original-path first flight."
       ]
     }
   ]
