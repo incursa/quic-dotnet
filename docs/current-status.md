@@ -1,25 +1,12 @@
 # Current Repository Status
 
-Last verified: 2026-05-19 local for the INT all-upstream client/server handshake matrix, 2026-05-18 local / 2026-05-19 UTC for the INT network-simulator baseline evidence, 2026-05-16 for the INT quic-go download-liveness completion boundary note, the INT msquic peer-blocked evidence lane, and the INT connectionmigration source-address blocker note, 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
-coverage remains last verified on
-2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
-idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
-transport-parameter registry policy proof, S22P1P3 codepoint reclamation policy
-proof, S22P1P2 codepoint-selection policy proof, S22P1P4 permanent-registration
-policy proof, S21P11 deployment-policy proof, S21P7 stream-fragmentation
-guidance proof, S21P6 Slowloris mitigation guidance proof, S21P9
-packet-processing-cost guidance proof, S21P5 request-forgery guidance proof,
-S21P5 ingress-filtering deployment guidance proof, S21P5 server-migration
-forgery countermeasures guidance proof, S21P5 port-and-CID hygiene guidance
-proof, S21P5P6 loopback-and-address-use guidance proof, S7-0009
-application-protocol negotiation proof, S7-0011 application-protocol
- negotiation proof, S9-0009 disable-active-migration proof, S9-0001/S9-0008
- migration-before-handshake proof, 2026-05-14 RFC 9000 S9 leaf-tail closure for
- S9-0003/S9-0005/S9-0006/S9-0007/S9-0011/S9-0012, 2026-05-14 RFC 9000 S9.7
- IPv6 flow-label closure for S9P7-0001/S9P7-0002/S9P7-0003/S9P7-0004, S7-0006
- handshake packet-protection proof, and 2026-05-14 for the RFC 9000 S7-0007 and
- S7-0008 transport-parameter handshake closures. Regenerated QUIC coverage
- triage now marks the four S9.7 requirements trace_clean.
+Last verified: 2026-05-19 local QUIC-protocol audit. HTTP/3 is intentionally out of scope. SpecTrace core validation passed for 568 JSON artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,217/5,217, and a deterministic local quic-go handshake fixture refresh passed through the interop runner. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration source-address proof remains open, `SIM-QUIC-LOSS-0001` deterministic simulator loss evidence remains open, and broader non-HTTP/3 all-upstream testcase coverage remains advisory outside the currently green handshake matrix.
+
+## 2026-05-19 QUIC Protocol Audit
+
+The RFC protocol trace floor is clean for QUIC transport, TLS mapping, and recovery: RFC 8999 is 8/8 `trace_clean`, RFC 9000 is 1,443/1,443 `trace_clean`, RFC 9001 is 96/96 `trace_clean`, and RFC 9002 is 224/224 `trace_clean`. Local executable proof passed `pwsh -NoProfile -File scripts\Validate-SpecTraceJson.ps1 -Profiles core`, `dotnet build Incursa.Quic.slnx -c Release --no-restore`, and `dotnet test Incursa.Quic.slnx -c Release --no-build -m:1`.
+
+The audit found stale test evidence rather than a runtime regression. The captured quic-go replay fixture still pointed at the pre-SNI deterministic transcript, so the full suite initially failed nine tests after the client-side server-name interop work. A deterministic single-cell quic-go runner refresh under `.artifacts/interop-runner/deterministic-fixture-refresh/20260519-103533285-client-chrome` produced the current transcript and key log; the replay fixture now matches that evidence. The multiconnect honest-failure test also now asserts the current timeout wording for the response-stream FIN path.
 
 ## 2026-05-13 INT Zerortt Closure Note
 

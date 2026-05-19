@@ -14,13 +14,11 @@ public sealed class QuicCapturedInteropReplayTests
     private static readonly string[] CapturedQuicGoServerHandshakeTrafficSecrets =
     [
         // Captured from:
-        // C:\src\incursa\quic-dotnet.local\interop-evidence\debug-deterministic-refresh\20260420-133311751-client-chrome\
+        // C:\src\incursa\quic-dotnet\.artifacts\interop-runner\deterministic-fixture-refresh\20260519-103533285-client-chrome\
         //   runner-logs\quic-go_chrome\handshake\server\keys.log
         //
-        // The preserved server log contains two deterministic handshake attempts for the same client_random.
-        // The replayed server Initial flight must line up with one of these emitted secrets.
-        "A99BF54108AEB69E8EEFD54BB0152EBCDEFF9DC01764B8A4D4DCBCD58D348525",
-        "6ED1E010470329261635D5456FCE94B2F70F4596831A668AC61AF02BFBA9B854",
+        // The replayed server Initial flight must line up with the emitted server handshake secret.
+        "51ED29176EBA64166CABC2EEEA0271E2D67D49529AA10FEE634C967A4C191AF0",
     ];
     private static readonly byte[] CapturedManagedClientCurrentTrafficSecret = Convert.FromHexString(
         // Captured from:

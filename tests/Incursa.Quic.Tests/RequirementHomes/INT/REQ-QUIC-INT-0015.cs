@@ -308,7 +308,7 @@ public sealed class REQ_QUIC_INT_0015
 
             Assert.Equal(1, exitCode);
             Assert.Contains("sent HTTP/0.9 request line", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Timed out waiting for multiconnect response bytes or EOF", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Timed out waiting for multiconnect response stream FIN", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("completed managed multiconnect download", clientStdout.ToString(), StringComparison.OrdinalIgnoreCase);
             Assert.Empty(clientStderr.ToString());
             Assert.False(File.Exists(destinationPath));
