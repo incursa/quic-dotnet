@@ -259,6 +259,7 @@ internal sealed partial class QuicConnectionRuntime
                 IsAbandoned = false,
                 ValidationDeadlineTicks = null,
                 ChallengeSentAtTicks = candidatePath.Validation.ChallengeSentAtTicks ?? nowTicks,
+                PreviousChallengePayload = ReadOnlyMemory<byte>.Empty,
             },
             AmplificationState = candidatePath.AmplificationState.MarkAddressValidated(),
             LastActivityTicks = nowTicks,

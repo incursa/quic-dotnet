@@ -26,7 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
         QuicConnectionSendDatagramEffect firstSend = Assert.Single(
             firstResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
 
-        byte[] firstChallengeData = GetPathChallengeData(firstSend.Datagram.Span);
+        byte[] firstChallengeData = GetPathChallengeData(runtime, firstSend.Datagram.Span);
 
         Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
@@ -48,7 +48,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
         QuicConnectionSendDatagramEffect retrySend = Assert.Single(
             retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
 
-        byte[] retryChallengeData = GetPathChallengeData(retrySend.Datagram.Span);
+        byte[] retryChallengeData = GetPathChallengeData(runtime, retrySend.Datagram.Span);
 
         Assert.Equal(migratedPath, retrySend.PathIdentity);
         Assert.False(firstChallengeData.AsSpan().SequenceEqual(retryChallengeData));
@@ -183,7 +183,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
 
             QuicConnectionSendDatagramEffect firstSend = Assert.Single(
                 firstResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
-            byte[] firstChallengeData = GetPathChallengeData(firstSend.Datagram.Span);
+            byte[] firstChallengeData = GetPathChallengeData(runtime, firstSend.Datagram.Span);
 
             Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
             Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
@@ -199,7 +199,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
 
             QuicConnectionSendDatagramEffect retrySend = Assert.Single(
                 retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
-            byte[] retryChallengeData = GetPathChallengeData(retrySend.Datagram.Span);
+            byte[] retryChallengeData = GetPathChallengeData(runtime, retrySend.Datagram.Span);
 
             Assert.Equal(migratedPath, retrySend.PathIdentity);
             Assert.False(firstChallengeData.AsSpan().SequenceEqual(retryChallengeData));
@@ -211,15 +211,17 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
         }
     }
 
-    private static byte[] GetPathChallengeData(ReadOnlySpan<byte> datagram)
+    private static byte[] GetPathChallengeData(QuicConnectionRuntime runtime, ReadOnlySpan<byte> datagram)
     {
-        Assert.True(QuicFrameCodec.TryParsePathChallengeFrame(
+        Assert.True(QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+            runtime,
             datagram,
             out QuicPathChallengeFrame parsedChallenge,
-            out int bytesConsumed));
+            out int bytesConsumed,
+            out ReadOnlyMemory<byte> payload));
         Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
 
-        ReadOnlySpan<byte> remainingPayload = datagram[bytesConsumed..];
+        ReadOnlySpan<byte> remainingPayload = payload.Span[bytesConsumed..];
         Assert.True(remainingPayload.SequenceEqual(new byte[remainingPayload.Length]));
         return parsedChallenge.Data.ToArray();
     }

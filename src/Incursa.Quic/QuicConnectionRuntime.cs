@@ -28,7 +28,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int DefaultCloseFrameOverheadBytes = 32;
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
-    private const ulong PreferredAddressConnectionIdRouteKey = ulong.MaxValue - 1;
+    private const ulong PreferredAddressConnectionIdSequence = 1;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
     private const ulong DefaultMaxAckDelayMicros = QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros;
     private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";

@@ -88,13 +88,19 @@ internal static class QuicS9P6P1PreferredAddressTestSupport
     }
 
     internal static void AssertPathChallengeSent(
+        QuicConnectionRuntime runtime,
         QuicConnectionTransitionResult result,
         QuicConnectionPathIdentity pathIdentity)
     {
         Assert.Contains(result.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect send
             && send.PathIdentity == pathIdentity
-            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+            && QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+                runtime,
+                send.Datagram.Span,
+                out _,
+                out _,
+                out _));
     }
 
     internal static void AssertNoPathChallengeSent(

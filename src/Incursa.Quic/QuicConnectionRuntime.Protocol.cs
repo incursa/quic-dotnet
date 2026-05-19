@@ -1816,7 +1816,8 @@ internal sealed partial class QuicConnectionRuntime
                     continue;
                 }
 
-                if (!candidatePath.Validation.ChallengePayload.Span.SequenceEqual(pathResponseFrame.Data))
+                if (!candidatePath.Validation.ChallengePayload.Span.SequenceEqual(pathResponseFrame.Data)
+                    && !candidatePath.Validation.PreviousChallengePayload.Span.SequenceEqual(pathResponseFrame.Data))
                 {
                     return HandleFatalTlsSignal(
                         nowTicks,
@@ -2708,50 +2709,102 @@ internal sealed partial class QuicConnectionRuntime
             if (!TryBuildPathValidationDatagram(
                 responseFrameBuffer[..responseFrameBytesWritten],
                 currentPath.AmplificationState,
-                out byte[] responseDatagram))
+                out byte[] responsePayload))
             {
                 return false;
             }
 
-            if (!currentPath.AmplificationState.TryConsumeSendBudget(
-                responseDatagram.Length,
-                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            if (!TryProtectAndAccountApplicationPayloadOnPath(
+                    pathIdentity,
+                    responsePayload,
+                    "The connection runtime could not protect the path response packet.",
+                    "The connection cannot send the path response packet.",
+                    ref effects,
+                    out QuicConnectionPathIdentity sendPathIdentity,
+                    out byte[] protectedPacket,
+                    out _))
             {
                 return false;
             }
 
+            currentPath = activePath.Value;
             activePath = currentPath with
             {
                 LastActivityTicks = nowTicks,
-                AmplificationState = updatedAmplificationState,
             };
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(sendPathIdentity, protectedPacket));
             return true;
         }
         else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
+            ReadOnlySpan<byte> responseFramePayload = responseFrameBuffer[..responseFrameBytesWritten];
+            byte[]? candidatePathChallengePayload = null;
+            if (candidatePath.Validation.ChallengePayload.Length != QuicPathValidation.PathChallengeDataLength)
+            {
+                Span<byte> generatedChallengePayload = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
+                if (QuicPathValidation.TryGeneratePathChallengeData(generatedChallengePayload, out int generatedChallengeBytesWritten))
+                {
+                    candidatePath = candidatePath with
+                    {
+                        Validation = candidatePath.Validation with
+                        {
+                            Generation = QuicConnectionTimerDeadlineState.IncrementCounter(candidatePath.Validation.Generation),
+                            ChallengeSendCount = candidatePath.Validation.ChallengeSendCount + 1,
+                            ChallengeSentAtTicks = nowTicks,
+                            ValidationDeadlineTicks = SaturatingAdd(nowTicks, ConvertMicrosToTicks(currentProbeTimeoutMicros)),
+                            ChallengePayload = generatedChallengePayload[..generatedChallengeBytesWritten].ToArray(),
+                            PreviousChallengePayload = ReadOnlyMemory<byte>.Empty,
+                        },
+                    };
+                    candidatePaths[pathIdentity] = candidatePath;
+                }
+            }
+
+            if (candidatePath.Validation.ChallengePayload.Length == QuicPathValidation.PathChallengeDataLength)
+            {
+                Span<byte> challengeFrameBuffer = stackalloc byte[16];
+                if (QuicFrameCodec.TryFormatPathChallengeFrame(
+                        new QuicPathChallengeFrame(candidatePath.Validation.ChallengePayload.Span),
+                        challengeFrameBuffer,
+                        out int challengeFrameBytesWritten))
+                {
+                    candidatePathChallengePayload =
+                    [
+                        .. challengeFrameBuffer[..challengeFrameBytesWritten],
+                        .. responseFramePayload,
+                    ];
+                    responseFramePayload = candidatePathChallengePayload;
+                }
+            }
+
             if (!TryBuildPathValidationDatagram(
-                responseFrameBuffer[..responseFrameBytesWritten],
+                responseFramePayload,
                 candidatePath.AmplificationState,
-                out byte[] responseDatagram))
+                out byte[] responsePayload))
             {
                 return false;
             }
 
-            if (!candidatePath.AmplificationState.TryConsumeSendBudget(
-                responseDatagram.Length,
-                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            if (!TryProtectAndAccountApplicationPayloadOnPath(
+                    pathIdentity,
+                    responsePayload,
+                    "The connection runtime could not protect the path response packet.",
+                    "The connection cannot send the path response packet.",
+                    ref effects,
+                    out QuicConnectionPathIdentity sendPathIdentity,
+                    out byte[] protectedPacket,
+                    out _))
             {
                 return false;
             }
 
+            candidatePath = candidatePaths[pathIdentity];
             candidatePath = candidatePath with
             {
                 LastActivityTicks = nowTicks,
-                AmplificationState = updatedAmplificationState,
             };
             candidatePaths[pathIdentity] = candidatePath;
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, responseDatagram));
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(sendPathIdentity, protectedPacket));
             return true;
         }
         else
@@ -2812,7 +2865,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (CurrentPeerDestinationConnectionId.IsEmpty)
+        if (LocallySelectedZeroLengthConnectionId())
         {
             return HandleFatalTlsSignal(
                 nowTicks,
@@ -3815,21 +3868,58 @@ internal sealed partial class QuicConnectionRuntime
         if (tlsState.Role == QuicTlsRole.Server
             && localTransportParameters.PreferredAddress is QuicPreferredAddress preferredAddress)
         {
-            AppendEffect(
-                ref effects,
-                new QuicConnectionRegisterConnectionIdRouteEffect(
-                    PreferredAddressConnectionIdRouteKey,
-                    preferredAddress.ConnectionId));
-
-            AppendEffect(
-                ref effects,
-                new QuicConnectionRegisterStatelessResetTokenEffect(
-                    PreferredAddressConnectionIdRouteKey,
-                    preferredAddress.StatelessResetToken));
+            _ = TryRegisterPreferredAddressConnectionId(preferredAddress, ref effects);
         }
 
         ulong maxUdpPayloadSize = localTransportParameters.MaxUdpPayloadSize ?? QuicTransportParameters.DefaultMaxUdpPayloadSize;
         AppendEffect(ref effects, new QuicConnectionUpdateMaxUdpPayloadSizeEffect(maxUdpPayloadSize));
+        return true;
+    }
+
+    private bool TryRegisterPreferredAddressConnectionId(
+        QuicPreferredAddress preferredAddress,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (preferredAddress.ConnectionId is null
+            || preferredAddress.StatelessResetToken is null
+            || preferredAddress.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
+            || !QuicConnectionIdKey.TryCreate(preferredAddress.ConnectionId, out _)
+            || LocallySelectedZeroLengthConnectionId()
+            || !CanIssueAnotherConnectionId()
+            || statelessResetTokensByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence)
+            || issuedConnectionIdBytesByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence))
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> preferredConnectionId = preferredAddress.ConnectionId;
+        foreach (byte[] activeConnectionIdBytes in issuedConnectionIdBytesByConnectionId.Values)
+        {
+            if (activeConnectionIdBytes.AsSpan().SequenceEqual(preferredConnectionId))
+            {
+                return false;
+            }
+        }
+
+        ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
+        if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit())
+        {
+            return false;
+        }
+
+        byte[] connectionIdBytes = preferredConnectionId.ToArray();
+        byte[] token = preferredAddress.StatelessResetToken.ToArray();
+        statelessResetTokensByConnectionId.Add(PreferredAddressConnectionIdSequence, token);
+        issuedConnectionIdBytesByConnectionId.Add(PreferredAddressConnectionIdSequence, connectionIdBytes);
+        if (highestConnectionIdIssuedToPeer < PreferredAddressConnectionIdSequence)
+        {
+            highestConnectionIdIssuedToPeer = PreferredAddressConnectionIdSequence;
+        }
+
+        totalIssuedConnectionIdCount++;
+
+        AppendEffect(ref effects, new QuicConnectionRegisterConnectionIdRouteEffect(PreferredAddressConnectionIdSequence, connectionIdBytes));
+        AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(PreferredAddressConnectionIdSequence, token));
         return true;
     }
 

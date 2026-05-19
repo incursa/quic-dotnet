@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0001
 
         QuicConnectionTransitionResult firstResult =
             QuicS8P2PathValidationTestSupport.StartCandidatePath(runtime, candidatePath, observedAtTicks: 20);
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(firstResult, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(firstResult, candidatePath, runtime: runtime);
 
         Assert.True(runtime.CandidatePaths.TryGetValue(
             candidatePath,
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0001
                 firstGeneration),
             nowTicks: firstDeadlineTicks);
 
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath, runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(
             candidatePath,
             out QuicConnectionCandidatePathRecord retryCandidate));

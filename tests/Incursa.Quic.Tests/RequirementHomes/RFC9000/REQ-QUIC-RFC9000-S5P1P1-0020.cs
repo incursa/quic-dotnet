@@ -114,6 +114,62 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0020
                 && token.ConnectionId == 2UL);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void RetireConnectionIdFrame_WhenPeerRequestedZeroLengthDestinationConnectionId_RetiresLocalPreferredAddressConnectionId()
+    {
+        using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithActivePath(ActivePath);
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ReadOnlySpan<byte>.Empty));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId(LocalSourceConnectionId));
+
+        QuicPreferredAddress preferredAddress = QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress();
+        QuicConnectionTransitionResult localParametersCommitted = CommitLocalTransportParameters(
+            runtime,
+            LocalSourceConnectionId,
+            preferredAddress);
+
+        Assert.Contains(
+            localParametersCommitted.Effects,
+            effect => effect is QuicConnectionRegisterConnectionIdRouteEffect route
+                && route.ConnectionId == 1UL
+                && route.ConnectionIdBytes.Span.SequenceEqual(preferredAddress.ConnectionId));
+        Assert.Contains(
+            localParametersCommitted.Effects,
+            effect => effect is QuicConnectionRegisterStatelessResetTokenEffect token
+                && token.ConnectionId == 1UL
+                && token.Token.Span.SequenceEqual(preferredAddress.StatelessResetToken));
+
+        QuicTransportParameters peerTransportParameters = QuicPostHandshakeTicketTestSupport.CreatePeerTransportParameters();
+        peerTransportParameters.InitialSourceConnectionId = [];
+        peerTransportParameters.ActiveConnectionIdLimit = 2UL;
+        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
+            runtime,
+            peerTransportParameters);
+
+        byte[] retirePreferredAddressConnectionIdPayload =
+            QuicFrameTestData.BuildRetireConnectionIdFrame(new QuicRetireConnectionIdFrame(1UL));
+
+        QuicConnectionTransitionResult result = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+            runtime,
+            ActivePath,
+            LocalSourceConnectionId,
+            retirePreferredAddressConnectionIdPayload,
+            observedAtTicks: 5);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Contains(
+            result.Effects,
+            effect => effect is QuicConnectionRetireConnectionIdRouteEffect route
+                && route.ConnectionId == 1UL
+                && route.ConnectionIdBytes.Span.SequenceEqual(preferredAddress.ConnectionId));
+        Assert.Contains(
+            result.Effects,
+            effect => effect is QuicConnectionRetireStatelessResetTokenEffect token
+                && token.ConnectionId == 1UL);
+    }
+
     private static QuicConnectionRuntime CreateActiveRuntimeWithOneRttProtection()
     {
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(ActivePath);
@@ -130,27 +186,32 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0020
         return runtime;
     }
 
-    private static void CommitLocalTransportParameters(
+    private static QuicConnectionTransitionResult CommitLocalTransportParameters(
         QuicConnectionRuntime runtime,
-        ReadOnlySpan<byte> initialSourceConnectionId)
+        ReadOnlySpan<byte> initialSourceConnectionId,
+        QuicPreferredAddress? preferredAddress = null)
     {
         QuicTransportParameters localTransportParameters = new()
         {
             MaxIdleTimeout = 15,
             InitialSourceConnectionId = initialSourceConnectionId.ToArray(),
+            PreferredAddress = preferredAddress,
         };
 
-        Assert.True(runtime.Transition(
+        QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(
                 ObservedAtTicks: 0,
                 new QuicTlsStateUpdate(
                     QuicTlsUpdateKind.LocalTransportParametersReady,
                     TransportParameters: localTransportParameters)),
-            nowTicks: 0).StateChanged);
+            nowTicks: 0);
+
+        Assert.True(result.StateChanged);
         Assert.NotNull(runtime.TlsState.LocalTransportParameters);
         Assert.Equal(
             initialSourceConnectionId.ToArray(),
             runtime.TlsState.LocalTransportParameters!.InitialSourceConnectionId);
+        return result;
     }
 
     private static byte[] BuildOneRttPacket(

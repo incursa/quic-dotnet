@@ -28,7 +28,8 @@ public sealed class REQ_QUIC_CRT_0062
             ChallengeSendCount: 2,
             ChallengeSentAtTicks: 100,
             ValidationDeadlineTicks: 200,
-            ChallengePayload: new byte[QuicPathValidation.PathChallengeDataLength]);
+            ChallengePayload: new byte[QuicPathValidation.PathChallengeDataLength],
+            PreviousChallengePayload: ReadOnlyMemory<byte>.Empty);
 
         QuicConnectionActivePathRecord activePath = new(
             Identity: identity,

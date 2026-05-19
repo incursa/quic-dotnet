@@ -42,16 +42,12 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0002
                 protectedPacket),
             nowTicks: 9);
 
-        QuicConnectionSendDatagramEffect send = Assert.Single(
-            result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
-            effect => QuicFrameCodec.TryParsePathResponseFrame(effect.Datagram.Span, out _, out _));
-        Assert.Equal(activePath, send.PathIdentity);
-        Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
-            send.Datagram.Span,
-            out QuicPathResponseFrame parsedResponse,
-            out int bytesConsumed));
-        Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
-        Assert.True(challengeData.AsSpan().SequenceEqual(parsedResponse.Data));
+        QuicConnectionSendDatagramEffect send =
+            QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                runtime,
+                result,
+                activePath,
+                challengeData);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
@@ -80,16 +76,12 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0002
                     protectedPacket),
                 nowTicks: 30 + iteration);
 
-            QuicConnectionSendDatagramEffect send = Assert.Single(
-                result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
-                effect => QuicFrameCodec.TryParsePathResponseFrame(effect.Datagram.Span, out _, out _));
-            Assert.Equal(activePath, send.PathIdentity);
-            Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
-                send.Datagram.Span,
-                out QuicPathResponseFrame parsedResponse,
-                out int bytesConsumed));
-            Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
-            Assert.True(challengeData.AsSpan().SequenceEqual(parsedResponse.Data));
+            QuicConnectionSendDatagramEffect send =
+                QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                    runtime,
+                    result,
+                    activePath,
+                    challengeData);
             Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
             Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
         }

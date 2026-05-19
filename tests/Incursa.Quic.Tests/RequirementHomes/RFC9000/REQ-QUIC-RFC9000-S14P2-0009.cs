@@ -80,7 +80,8 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0009
                 ChallengeSendCount: 2,
                 ChallengeSentAtTicks: 100,
                 ValidationDeadlineTicks: null,
-                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+                ChallengePayload: ReadOnlyMemory<byte>.Empty,
+                PreviousChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: recovery)
         {
             AmplificationState = new QuicConnectionPathAmplificationState(

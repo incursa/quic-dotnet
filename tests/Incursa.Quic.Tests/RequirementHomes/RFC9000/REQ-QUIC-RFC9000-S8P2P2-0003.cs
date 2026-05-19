@@ -26,6 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0003
 
         QuicConnectionSendDatagramEffect response =
             QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                runtime,
                 result,
                 activePath,
                 challengeData);

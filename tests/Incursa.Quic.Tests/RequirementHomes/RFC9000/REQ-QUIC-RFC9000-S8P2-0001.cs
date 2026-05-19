@@ -27,6 +27,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2_0001
 
         Assert.True(challengeResult.StateChanged);
         QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+            challengeRuntime,
             challengeResult,
             activePath,
             challengeData);

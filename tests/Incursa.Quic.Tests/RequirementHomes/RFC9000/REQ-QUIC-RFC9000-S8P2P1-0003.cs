@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0003
             nowTicks: candidate.Validation.ValidationDeadlineTicks.Value);
 
         Assert.True(retryResult.StateChanged);
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath, runtime: runtime);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0003
                 generation),
             nowTicks: exactDeadlineTicks);
 
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath, runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(
             candidatePath,
             out QuicConnectionCandidatePathRecord retriedCandidate));

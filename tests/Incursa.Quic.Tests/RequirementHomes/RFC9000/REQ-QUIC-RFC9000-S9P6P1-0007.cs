@@ -30,6 +30,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0007
 
         QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, expectedPreferredPath);
         Assert.DoesNotContain(runtime.CandidatePaths.Keys, path => path != expectedPreferredPath);
-        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(result, expectedPreferredPath);
+        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(runtime, result, expectedPreferredPath);
     }
 }
+

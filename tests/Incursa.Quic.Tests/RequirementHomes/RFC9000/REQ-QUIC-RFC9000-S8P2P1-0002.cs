@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0002
         QuicConnectionTransitionResult result =
             QuicS8P2PathValidationTestSupport.StartCandidatePath(runtime, candidatePath, observedAtTicks: 20);
 
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(result, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(result, candidatePath, runtime: runtime);
     }
 
     [Fact]
@@ -42,6 +42,6 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0002
                 runtime.TimerState.GetGeneration(QuicConnectionTimerKind.PathValidation)),
             nowTicks: candidate.Validation.ValidationDeadlineTicks.Value);
 
-        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(retryResult, candidatePath, runtime: runtime);
     }
 }

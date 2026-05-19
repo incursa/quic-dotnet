@@ -221,7 +221,8 @@ internal readonly record struct QuicConnectionPathValidationState(
     ulong ChallengeSendCount,
     long? ChallengeSentAtTicks,
     long? ValidationDeadlineTicks,
-    ReadOnlyMemory<byte> ChallengePayload);
+    ReadOnlyMemory<byte> ChallengePayload,
+    ReadOnlyMemory<byte> PreviousChallengePayload);
 
 internal readonly record struct QuicConnectionPathSpinBitState(
     bool StoredValue,

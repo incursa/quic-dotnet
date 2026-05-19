@@ -59,6 +59,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0005
                 observedAtTicks: 20);
 
         QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+            runtime,
             result,
             activePath,
             challengeData,

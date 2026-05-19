@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0002
         Assert.True(result.StateChanged);
         Assert.Equal(QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path, runtime.ActivePath!.Value.Identity);
         QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, preferredPath);
-        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(result, preferredPath);
+        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(runtime, result, preferredPath);
     }
 
     [Fact]
@@ -57,6 +57,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0002
         Assert.True(result.StateChanged);
         Assert.Equal(QuicS9P6P1PreferredAddressTestSupport.OriginalIpv6Path, runtime.ActivePath!.Value.Identity);
         QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, preferredPath);
-        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(result, preferredPath);
+        QuicS9P6P1PreferredAddressTestSupport.AssertPathChallengeSent(runtime, result, preferredPath);
     }
 }
+

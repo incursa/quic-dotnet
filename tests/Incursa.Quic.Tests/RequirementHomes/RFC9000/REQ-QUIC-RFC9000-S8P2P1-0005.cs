@@ -53,6 +53,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0005
         QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
             result,
             candidatePath,
-            expectMinimumSize: true);
+            expectMinimumSize: true,
+            runtime: runtime);
     }
 }

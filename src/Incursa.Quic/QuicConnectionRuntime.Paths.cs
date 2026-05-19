@@ -237,12 +237,6 @@ internal sealed partial class QuicConnectionRuntime
             LastActivityTicks = nowTicks,
         };
 
-        if (!candidatePath.Validation.ValidationDeadlineTicks.HasValue
-            || candidatePath.Validation.ValidationDeadlineTicks.Value <= nowTicks)
-        {
-            stateChanged |= TrySendPathValidationChallenge(pathIdentity, nowTicks, ref candidatePath, ref effects);
-        }
-
         candidatePaths[pathIdentity] = candidatePath;
         UpdatePeerAddressValidationFlag();
 
@@ -388,7 +382,8 @@ internal sealed partial class QuicConnectionRuntime
             ChallengeSendCount: 0,
             ChallengeSentAtTicks: null,
             ValidationDeadlineTicks: null,
-            ChallengePayload: ReadOnlyMemory<byte>.Empty),
+            ChallengePayload: ReadOnlyMemory<byte>.Empty,
+            PreviousChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: recentlyValidatedPath.SavedRecoverySnapshot)
         {
             AmplificationState = updatedAmplificationState.MarkAddressValidated(),
@@ -465,7 +460,8 @@ internal sealed partial class QuicConnectionRuntime
                 ChallengeSendCount: 0,
                 ChallengeSentAtTicks: null,
                 ValidationDeadlineTicks: null,
-                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+                ChallengePayload: ReadOnlyMemory<byte>.Empty,
+                PreviousChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: recentlyValidatedPath?.SavedRecoverySnapshot)
         {
             AmplificationState = amplificationState,
@@ -550,7 +546,8 @@ internal sealed partial class QuicConnectionRuntime
                 ChallengeSendCount: 0,
                 ChallengeSentAtTicks: null,
                 ValidationDeadlineTicks: null,
-                ChallengePayload: ReadOnlyMemory<byte>.Empty),
+                ChallengePayload: ReadOnlyMemory<byte>.Empty,
+                PreviousChallengePayload: ReadOnlyMemory<byte>.Empty),
             SavedRecoverySnapshot: null)
         {
             // The client is initiating validation to a server-advertised address; keep path
@@ -559,6 +556,7 @@ internal sealed partial class QuicConnectionRuntime
             MaximumDatagramSizeState = QuicConnectionPathMaximumDatagramSizeState.CreateInitial(),
         };
 
+        candidatePaths[preferredPathIdentity] = candidatePath;
         bool stateChanged = TrySendPathValidationChallenge(
             preferredPathIdentity,
             nowTicks,
@@ -599,19 +597,47 @@ internal sealed partial class QuicConnectionRuntime
         if (!TryBuildPathValidationDatagram(
             challengeFrameBuffer[..challengeFrameBytesWritten],
             candidatePath.AmplificationState,
-            out byte[] datagram))
+            out byte[] challengeDatagramPayload))
         {
             return false;
         }
 
-        if (!candidatePath.AmplificationState.TryConsumeSendBudget(datagram.Length, out QuicConnectionPathAmplificationState updatedAmplificationState))
+        byte[] datagram = challengeDatagramPayload;
+        if (tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            if (!TryProtectAndAccountApplicationPayloadOnPath(
+                    pathIdentity,
+                    challengeDatagramPayload,
+                    "The connection runtime could not protect the path challenge packet.",
+                    "The connection cannot send the path challenge packet.",
+                    ref effects,
+                    out QuicConnectionPathIdentity sendPathIdentity,
+                    out byte[] protectedPacket,
+                    out _))
+            {
+                return false;
+            }
+
+            pathIdentity = sendPathIdentity;
+            datagram = protectedPacket;
+            candidatePath = candidatePaths[pathIdentity];
+        }
+        else if (candidatePath.AmplificationState.TryConsumeSendBudget(
+            datagram.Length,
+            out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            candidatePath = candidatePath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+        }
+        else
         {
             return false;
         }
 
         candidatePath = candidatePath with
         {
-            AmplificationState = updatedAmplificationState,
             Validation = candidatePath.Validation with
             {
                 Generation = QuicConnectionTimerDeadlineState.IncrementCounter(candidatePath.Validation.Generation),
@@ -619,6 +645,9 @@ internal sealed partial class QuicConnectionRuntime
                 ChallengeSentAtTicks = nowTicks,
                 ValidationDeadlineTicks = SaturatingAdd(nowTicks, ConvertMicrosToTicks(currentProbeTimeoutMicros)),
                 ChallengePayload = challengePayload[..challengePayloadBytesWritten].ToArray(),
+                PreviousChallengePayload = candidatePath.Validation.ChallengePayload.Length == QuicPathValidation.PathChallengeDataLength
+                    ? candidatePath.Validation.ChallengePayload.ToArray()
+                    : ReadOnlyMemory<byte>.Empty,
             },
         };
 

@@ -46,7 +46,8 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0009
             nowTicks: 20);
 
         Assert.True(result.StateChanged);
-        QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+        QuicConnectionSendDatagramEffect response = QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+            runtime,
             result,
             PreferredPath,
             challengeData,
@@ -55,6 +56,13 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0009
         Assert.Equal(OriginalPath, runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.CandidatePaths.TryGetValue(PreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
+        Assert.True(QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+            runtime,
+            response.Datagram.Span,
+            out QuicPathChallengeFrame pathChallenge,
+            out _,
+            out _));
+        Assert.True(candidatePath.Validation.ChallengePayload.Span.SequenceEqual(pathChallenge.Data));
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 
