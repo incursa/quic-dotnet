@@ -68,7 +68,10 @@
     "VER-QUIC-INT-0020",
     "ARC-QUIC-INT-0021",
     "WI-QUIC-INT-0021",
-    "VER-QUIC-INT-0021"
+    "VER-QUIC-INT-0021",
+    "ARC-QUIC-INT-0022",
+    "WI-QUIC-INT-0022",
+    "VER-QUIC-INT-0022"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -946,6 +949,44 @@
         "Client-role all-upstream cells may receive a runner-generated response body whose source file is mounted only into the peer server container; the harness uses the known source-length completion boundary when that local source file is available and otherwise reads the response until peer FIN under the existing response timeout.",
         "The local helper accepts `-PeerImplementationSlots all` for role-aware local planning, but the hosted profile keeps this first all-upstream surface handshake-only.",
         "This profile is evidence collection and peer characterization, not a broad interop-readiness or protocol-correctness claim for every testcase."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0028",
+      "title": "Open ngtcp2 short-header response packets with reconstructed packet numbers",
+      "statement": "When running as a managed client against an upstream server that has already sent 1-RTT packets with high packet numbers, the receive path MUST reconstruct truncated short-header packet numbers from the current Application Data receive packet-number expectation before building the AEAD nonce, authenticate and process a one-byte truncated 1-RTT response packet whose full packet number is recoverable from prior received packets, preserve the normal peer FIN response-read completion path, and keep this as a bounded packet-opening correction rather than a broad support-readiness claim for every upstream implementation or testcase.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0022"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0027",
+          "REQ-QUIC-RFC9000-S17P1-0004",
+          "SPEC-QUIC-RFC9000"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+          "src/Incursa.Quic/QuicPacketNumberEncoding.cs",
+          "tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0022.json",
+          "specs/work-items/quic/WI-QUIC-INT-0022.json",
+          "specs/verification/quic/VER-QUIC-INT-0022.json"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs::CapturedNgtcp2ServerResponsePacketNeedsExpandedPacketNumberForTheAeadNonce"
+        ]
+      },
+      "notes": [
+        "The representative packet is the ngtcp2 server response from local run `.artifacts/interop-runner/ngtcp2-app-rx-debug3/20260519-002720755-client-chrome`, where server packet number 399463276 was truncated to one byte on the wire.",
+        "The proof remains bounded to packet opening and response liveness for the representative ngtcp2 handshake cell."
       ]
     }
   ]

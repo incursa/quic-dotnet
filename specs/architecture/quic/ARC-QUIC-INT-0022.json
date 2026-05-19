@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0022",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC ngtcp2 Response Packet-Number Opening Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded receive-path correction that lets the managed client open ngtcp2 1-RTT response packets with one-byte truncated high packet numbers.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-RFC9000",
+    "WI-QUIC-INT-0022",
+    "VER-QUIC-INT-0022"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0028"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicPacketNumberEncoding.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "tests/Incursa.Quic.Tests/QuicCapturedInteropReplayTests.cs"
+  ],
+  "design_summary": "The short-header 1-RTT opener now accepts the expected Application Data packet number from the connection runtime. After header protection is removed and the truncated packet-number bytes are available, the opener reconstructs the full packet number using the RFC 9000 packet-number expansion rule before building the AEAD nonce. The opened packet still exposes the header bytes and payload layout as before, while the runtime continues to expand and record the packet number for acknowledgment, spin-bit, key-update, and stream processing state.",
+  "data_and_state_considerations": "The connection runtime already tracks the largest observed Application Data packet number. Passing `largest + 1` into the opener keeps reconstruction tied to the packet-number space state that will later record the authenticated packet. Locally generated and replayed packets that use four-byte packet numbers can pass an expected value of zero because their truncated value already carries the full value.",
+  "edge_cases_and_constraints": [
+    "The correction targets received 1-RTT short-header packets whose full packet number is recoverable from prior Application Data packets.",
+    "The opener still rejects packets that fail header protection validation, reserved-bit checks, Key Phase expectations, AEAD authentication, or downstream frame validation.",
+    "The change does not implement adaptive packet-number length selection for local sends.",
+    "The change does not claim every upstream implementation or testcase passes."
+  ],
+  "risks": [
+    "Using an expected packet number from the wrong packet-number space would authenticate the wrong nonce candidate or fail open; runtime call sites therefore pass the Application Data receive expectation only for inbound 1-RTT packets.",
+    "Peer first-flight 1-RTT packets with shortened high packet numbers still require enough receive history to reconstruct the full value."
+  ]
+}

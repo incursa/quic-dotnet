@@ -120,6 +120,7 @@ internal sealed partial class QuicConnectionRuntime
             if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetReceivedEvent.Datagram.Span,
                     tlsState.OneRttOpenPacketProtectionMaterial.Value,
+                    GetExpectedReceivedPacketNumber(QuicPacketNumberSpace.ApplicationData),
                     out openedPacket,
                     out int payloadOffset,
                     out int payloadLength,
@@ -1298,6 +1299,7 @@ internal sealed partial class QuicConnectionRuntime
             if (!probeSelectionCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetBytes.Span,
                     tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                    expectedPacketNumber: 0,
                     out openedPacket,
                     out int payloadOffset,
                     out int payloadLength,

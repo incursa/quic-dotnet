@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0022",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC ngtcp2 Response Packet-Number Opening Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Fix the managed client receive path so ngtcp2 response packets with one-byte truncated high 1-RTT packet numbers open with the reconstructed packet number in the AEAD nonce.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0022",
+    "VER-QUIC-INT-0022"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0022"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0022"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0028"
+  ],
+  "planned_changes": "- Add a shared packet-number expansion helper.\n- Pass the Application Data expected receive packet number into inbound 1-RTT packet opening.\n- Build the receive AEAD nonce from the reconstructed packet number after header protection is removed.\n- Preserve existing four-byte local replay and retransmission opening call sites.\n- Add captured ngtcp2 packet replay proof and rerun the local ngtcp2 handshake cell.",
+  "completion_notes": "Completed with a focused packet-opening fix, captured ngtcp2 response-packet regression coverage, and local ngtcp2 handshake interop rerun evidence.",
+  "out_of_scope": [
+    "adaptive packet-number length selection for local sends",
+    "broad every-upstream support promotion",
+    "non-handshake testcase expansion",
+    "HTTP/3 behavior"
+  ],
+  "verification_plan": "Run the captured interop replay tests, rerun the local Incursa client versus ngtcp2 server handshake cell, validate SpecTrace JSON, and check the diff for whitespace errors."
+}

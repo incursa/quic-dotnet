@@ -17,6 +17,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private const int LongHeaderConnectionIdLengthFieldsLength = 1 + 1;
     private const int HeaderProtectionMaskLength = QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const byte SpinBitSelectionMask = 0x0F;
+    private const int BitsPerByte = 8;
     private const int LongHeaderFormLength = 1;
     private const int LongHeaderVersionLength = sizeof(uint);
     private const int LongHeaderFixedPrefixLength = LongHeaderFormLength + LongHeaderVersionLength;
@@ -653,11 +654,73 @@ internal sealed class QuicHandshakeFlowCoordinator
     }
 
     /// <summary>
+    /// Opens a protected 1-RTT short-header packet using the expected packet number to reconstruct truncated packet numbers before AEAD opening.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            expectedPacketNumber,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out _);
+    }
+
+    /// <summary>
     /// Opens a protected 1-RTT short-header packet, returns the unprotected packet bytes plus payload layout, and reports the observed Key Phase bit.
     /// </summary>
     public bool TryOpenProtectedApplicationDataPacket(
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            expectedPacketNumber: null,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out keyPhase);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet, returns the unprotected packet bytes plus payload layout, and reports the observed Key Phase bit.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            (ulong?)expectedPacketNumber,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out keyPhase);
+    }
+
+    private bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong? expectedPacketNumber,
         out byte[] openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -685,6 +748,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     material,
                     sourceConnectionIdLength,
                     packetNumberLength,
+                    expectedPacketNumber,
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
@@ -707,6 +771,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 material,
                 destinationConnectionIdLength,
                 packetNumberLength,
+                expectedPacketNumber,
                 out openedPacket,
                 out payloadOffset,
                 out payloadLength,
@@ -722,6 +787,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     internal bool TryOpenProtectedApplicationDataPacketLease(
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
         out QuicBufferLease openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -749,6 +815,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     material,
                     sourceConnectionIdLength,
                     packetNumberLength,
+                    expectedPacketNumber,
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
@@ -771,6 +838,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 material,
                 destinationConnectionIdLength,
                 packetNumberLength,
+                expectedPacketNumber,
                 out openedPacket,
                 out payloadOffset,
                 out payloadLength,
@@ -2034,9 +2102,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
         BuildNonce(
             material.AeadIvBytes,
-            plaintextPacket,
-            packetNumberOffset,
-            packetNumberLength,
+            ReadPacketNumber(plaintextPacket, packetNumberOffset, packetNumberLength),
             nonce);
 
         if (!TryEncryptPacketPayload(
@@ -2093,9 +2159,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
             BuildNonce(
                 material.AeadIvBytes,
-                plaintextPacket,
-                packetNumberOffset,
-                packetNumberLength,
+                ReadPacketNumber(plaintextPacket, packetNumberOffset, packetNumberLength),
                 nonce);
 
         if (!TryEncryptPacketPayload(
@@ -2137,6 +2201,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicTlsPacketProtectionMaterial material,
         int connectionIdLength,
         int packetNumberLength,
+        ulong? expectedPacketNumber,
         out byte[] openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -2199,12 +2264,19 @@ internal sealed class QuicHandshakeFlowCoordinator
             openedPacketBuffer[packetNumberOffset + i] = (byte)(protectedPacket[packetNumberOffset + i] ^ mask[1 + i]);
         }
 
+        ulong packetNumber = ReadPacketNumber(openedPacketBuffer, packetNumberOffset, packetNumberLength);
+        if (expectedPacketNumber.HasValue)
+        {
+            packetNumber = QuicPacketNumberEncoding.ExpandTruncatedPacketNumber(
+                packetNumber,
+                packetNumberLength,
+                expectedPacketNumber.Value);
+        }
+
         Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
         BuildNonce(
             material.AeadIvBytes,
-            openedPacketBuffer,
-            packetNumberOffset,
-            packetNumberLength,
+            packetNumber,
             nonce);
 
         if (!TryDecryptPacketPayload(
@@ -2231,6 +2303,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         QuicTlsPacketProtectionMaterial material,
         int connectionIdLength,
         int packetNumberLength,
+        ulong? expectedPacketNumber,
         out QuicBufferLease openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -2297,12 +2370,19 @@ internal sealed class QuicHandshakeFlowCoordinator
                 openedPacketBuffer[packetNumberOffset + i] = (byte)(protectedPacket[packetNumberOffset + i] ^ mask[1 + i]);
             }
 
+            ulong packetNumber = ReadPacketNumber(openedPacketBuffer, packetNumberOffset, packetNumberLength);
+            if (expectedPacketNumber.HasValue)
+            {
+                packetNumber = QuicPacketNumberEncoding.ExpandTruncatedPacketNumber(
+                    packetNumber,
+                    packetNumberLength,
+                    expectedPacketNumber.Value);
+            }
+
             Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
             BuildNonce(
                 material.AeadIvBytes,
-                openedPacketBuffer,
-                packetNumberOffset,
-                packetNumberLength,
+                packetNumber,
                 nonce);
 
             if (!TryDecryptPacketPayload(
@@ -2420,9 +2500,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
             BuildNonce(
                 material.AeadIvBytes,
-                openedPacketBuffer,
-                packetNumberOffset,
-                packetNumberLength,
+                ReadPacketNumber(openedPacketBuffer, packetNumberOffset, packetNumberLength),
                 nonce);
 
             if (!TryDecryptPacketPayload(
@@ -2503,18 +2581,31 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     private static void BuildNonce(
         ReadOnlySpan<byte> iv,
-        ReadOnlySpan<byte> packet,
-        int packetNumberOffset,
-        int packetNumberLength,
+        ulong packetNumber,
         Span<byte> nonce)
     {
         iv.CopyTo(nonce);
 
-        int nonceOffset = nonce.Length - packetNumberLength;
+        int packetNumberOffset = nonce.Length - sizeof(ulong);
+        for (int i = 0; i < sizeof(ulong); i++)
+        {
+            int shift = (sizeof(ulong) - 1 - i) * BitsPerByte;
+            nonce[packetNumberOffset + i] ^= (byte)(packetNumber >> shift);
+        }
+    }
+
+    private static ulong ReadPacketNumber(
+        ReadOnlySpan<byte> packet,
+        int packetNumberOffset,
+        int packetNumberLength)
+    {
+        ulong packetNumber = 0;
         for (int i = 0; i < packetNumberLength; i++)
         {
-            nonce[nonceOffset + i] ^= packet[packetNumberOffset + i];
+            packetNumber = (packetNumber << BitsPerByte) | packet[packetNumberOffset + i];
         }
+
+        return packetNumber;
     }
 
     private static bool TryValidatePacketProtectionMaterial(QuicTlsPacketProtectionMaterial material)

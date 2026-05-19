@@ -295,6 +295,7 @@ internal sealed partial class QuicConnectionRuntime
             if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                 datagram,
                 material,
+                GetExpectedReceivedPacketNumber(QuicPacketNumberSpace.ApplicationData),
                 out openedPacket,
                 out int payloadOffset,
                 out int payloadLength,

@@ -2942,6 +2942,7 @@ internal sealed partial class QuicConnectionRuntime
                 if (!retransmissionOpenCoordinator.TryOpenProtectedApplicationDataPacketLease(
                         retransmission.PacketBytes.Span,
                         tlsState.OneRttProtectPacketProtectionMaterial.Value,
+                        expectedPacketNumber: 0,
                         out openedPacket,
                         out int payloadOffset,
                         out int payloadLength,

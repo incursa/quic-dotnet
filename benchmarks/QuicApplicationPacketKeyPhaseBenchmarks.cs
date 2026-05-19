@@ -243,6 +243,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             return packetCoordinator.TryOpenProtectedApplicationDataPacketLease(
                 protectedPacket,
                 installedOpenPacketProtectionMaterial,
+                expectedPacketNumber: 0,
                 out openedPacket,
                 out _,
                 out _,
@@ -268,6 +269,7 @@ public class QuicApplicationPacketKeyPhaseBenchmarks
             return packetCoordinator.TryOpenProtectedApplicationDataPacketLease(
                 repeatedRetainedPhaseOneProtectedPacket,
                 repeatedRetainedPhaseOneOpenPacketProtectionMaterial,
+                expectedPacketNumber: 0,
                 out openedPacket,
                 out _,
                 out _,
