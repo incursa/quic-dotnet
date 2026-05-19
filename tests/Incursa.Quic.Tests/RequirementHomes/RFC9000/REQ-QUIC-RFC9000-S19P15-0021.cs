@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0021
             out bool destinationConnectionIdChanged,
             out ulong[] retiredSequenceNumbers));
         Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
-        Assert.True(destinationConnectionIdChanged);
+        Assert.False(destinationConnectionIdChanged);
         Assert.Empty(retiredSequenceNumbers);
 
         Assert.True(state.TryAcceptNewConnectionId(
@@ -47,9 +47,9 @@ public sealed class REQ_QUIC_RFC9000_S19P15_0021
             out destinationConnectionIdChanged,
             out retiredSequenceNumbers));
         Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
-        Assert.True(destinationConnectionIdChanged);
+        Assert.False(destinationConnectionIdChanged);
         Assert.Empty(retiredSequenceNumbers);
         Assert.Equal(2, state.ActiveConnectionIdCount);
-        Assert.Equal(0x05UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.Equal(0x04UL, state.CurrentDestinationConnectionIdSequence);
     }
 }

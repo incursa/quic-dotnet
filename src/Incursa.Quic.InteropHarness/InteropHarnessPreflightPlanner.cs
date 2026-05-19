@@ -13,6 +13,7 @@ namespace Incursa.Quic.InteropHarness;
     internal sealed class InteropHarnessPreflightPlanner
     {
         private const int DefaultHandshakePort = 443;
+        private const int InteropHarnessReceiveWindowBytes = 16 * 1024 * 1024;
         private const int ConnectionMigrationPreferredAddressPort = 443;
         private static readonly IPAddress ConnectionMigrationPreferredAddressIpv4 = IPAddress.Parse("193.167.100.110");
         private static readonly IPAddress ConnectionMigrationPreferredAddressIpv6 = IPAddress.Parse("fd00:cafe:cafe:100::110");
@@ -82,6 +83,7 @@ namespace Incursa.Quic.InteropHarness;
         {
             RemoteEndPoint = remoteEndPoint,
             SelectedCipherSuite = GetSupportedCipherSuite(),
+            InitialReceiveWindowSizes = CreateInteropReceiveWindowSizes(),
             ClientAuthenticationOptions = new SslClientAuthenticationOptions
             {
                 AllowRenegotiation = false,
@@ -101,6 +103,17 @@ namespace Incursa.Quic.InteropHarness;
                     ? new CipherSuitesPolicy([TlsCipherSuite.TLS_CHACHA20_POLY1305_SHA256])
                     : null,
             },
+        };
+    }
+
+    private static QuicReceiveWindowSizes CreateInteropReceiveWindowSizes()
+    {
+        return new QuicReceiveWindowSizes
+        {
+            Connection = InteropHarnessReceiveWindowBytes,
+            LocallyInitiatedBidirectionalStream = InteropHarnessReceiveWindowBytes,
+            RemotelyInitiatedBidirectionalStream = InteropHarnessReceiveWindowBytes,
+            UnidirectionalStream = InteropHarnessReceiveWindowBytes,
         };
     }
 

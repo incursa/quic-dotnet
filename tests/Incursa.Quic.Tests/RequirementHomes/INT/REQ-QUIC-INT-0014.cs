@@ -454,6 +454,35 @@ public sealed class REQ_QUIC_INT_0014
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task ClientOptionsAdvertiseTransferSizedReceiveWindows()
+    {
+        Assert.True(InteropHarnessEnvironment.TryCreate(
+            InteropHarnessTestSupport.CreateEnvironment(
+                role: "client",
+                testcase: "transfer",
+                requests: "https://localhost:4242/index.html"),
+            out InteropHarnessEnvironment? clientSettings,
+            out string? errorMessage));
+        Assert.NotNull(clientSettings);
+        Assert.Null(errorMessage);
+
+        InteropHarnessPreflightPlanner planner = new(clientSettings!, TextWriter.Null);
+        Assert.True(planner.TryGetDispatchRequestUri(out Uri? requestUri, out errorMessage));
+        Assert.NotNull(requestUri);
+
+        IPEndPoint remoteEndPoint = await InteropHarnessPreflightPlanner.ResolveHandshakeRemoteEndPointAsync(requestUri);
+        QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, requestUri!.Host);
+
+        Assert.NotNull(clientOptions.InitialReceiveWindowSizes);
+        Assert.Equal(16 * 1024 * 1024, clientOptions.InitialReceiveWindowSizes.Connection);
+        Assert.Equal(16 * 1024 * 1024, clientOptions.InitialReceiveWindowSizes.LocallyInitiatedBidirectionalStream);
+        Assert.Equal(16 * 1024 * 1024, clientOptions.InitialReceiveWindowSizes.RemotelyInitiatedBidirectionalStream);
+        Assert.Equal(16 * 1024 * 1024, clientOptions.InitialReceiveWindowSizes.UnidirectionalStream);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task MalformedTransferRequestsFailBeforeTransportSuccessIsClaimed()

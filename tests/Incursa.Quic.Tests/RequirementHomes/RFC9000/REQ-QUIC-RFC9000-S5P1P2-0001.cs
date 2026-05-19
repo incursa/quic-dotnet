@@ -10,34 +10,62 @@ public sealed class REQ_QUIC_RFC9000_S5P1P2_0001
     [Requirement("REQ-QUIC-RFC9000-S5P1P2-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task NewConnectionIdFrame_SwitchesOutboundPeerDestinationConnectionIdDuringTheConnection()
+    public void NewConnectionIdFrame_CanSwitchOutboundPeerDestinationConnectionIdDuringPathSelection()
     {
-        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
-        byte[] originalDestinationConnectionId = runtime.CurrentPeerDestinationConnectionId.ToArray();
+        QuicConnectionPeerConnectionIdState state = new();
+        QuicConnectionPathIdentity originalPath = new(
+            RemoteAddress: "203.0.113.10",
+            LocalAddress: "198.51.100.20",
+            RemotePort: 443,
+            LocalPort: 5000);
+        QuicConnectionPathIdentity migratedPath = new(
+            RemoteAddress: "203.0.113.10",
+            LocalAddress: "198.51.100.21",
+            RemotePort: 443,
+            LocalPort: 5001);
+        byte[] originalDestinationConnectionId = [0x41, 0x42, 0x43, 0x44];
         byte[] switchedDestinationConnectionId = [0x51, 0x52, 0x53, 0x54];
 
-        QuicConnectionTransitionResult newConnectionIdResult = QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
-            runtime,
-            sequenceNumber: 1,
-            retirePriorTo: 0,
-            switchedDestinationConnectionId,
-            observedAtTicks: 10,
-            statelessResetTokenStart: 0x90);
+        Assert.True(state.TryAcceptNewConnectionId(
+            new QuicNewConnectionIdFrame(
+                1UL,
+                0UL,
+                switchedDestinationConnectionId,
+                QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken(0x90)),
+            requiresZeroLengthDestinationConnectionId: false,
+            activeConnectionIdLimit: 3UL,
+            originalDestinationConnectionId,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged,
+            out ulong[] retiredSequenceNumbers));
 
-        Assert.True(newConnectionIdResult.StateChanged);
-        Assert.Equal(switchedDestinationConnectionId, runtime.CurrentPeerDestinationConnectionId.ToArray());
-        Assert.NotEqual(originalDestinationConnectionId, runtime.CurrentPeerDestinationConnectionId.ToArray());
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+        Assert.Empty(retiredSequenceNumbers);
+        Assert.Equal(originalDestinationConnectionId, state.CurrentDestinationConnectionId.ToArray());
 
-        QuicConnectionSendDatagramEffect send =
-            await QuicPeerConnectionIdSelectionTestSupport.OpenOutboundStreamAndCaptureSingleSendAsync(runtime);
+        Assert.True(state.TryUseDestinationConnectionIdOnPath(
+            originalPath,
+            activeConnectionIdLimit: 3UL,
+            retireInactivePathConnectionIds: false,
+            out errorCode,
+            out destinationConnectionIdChanged,
+            out retiredSequenceNumbers));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+        Assert.Empty(retiredSequenceNumbers);
+        Assert.Equal(originalDestinationConnectionId, state.CurrentDestinationConnectionId.ToArray());
 
-        QuicPeerConnectionIdSelectionTestSupport.AssertApplicationDataDatagramOpensWithDestination(
-            runtime,
-            send.Datagram,
-            switchedDestinationConnectionId);
-        QuicPeerConnectionIdSelectionTestSupport.AssertApplicationDataDatagramDoesNotOpenWithDestination(
-            runtime,
-            send.Datagram,
-            originalDestinationConnectionId);
+        Assert.True(state.TryUseDestinationConnectionIdOnPath(
+            migratedPath,
+            activeConnectionIdLimit: 3UL,
+            retireInactivePathConnectionIds: false,
+            out errorCode,
+            out destinationConnectionIdChanged,
+            out retiredSequenceNumbers));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.True(destinationConnectionIdChanged);
+        Assert.Empty(retiredSequenceNumbers);
+        Assert.Equal(switchedDestinationConnectionId, state.CurrentDestinationConnectionId.ToArray());
     }
 }

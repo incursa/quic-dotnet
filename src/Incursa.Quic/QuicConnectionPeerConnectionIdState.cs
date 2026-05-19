@@ -1,8 +1,8 @@
 namespace Incursa.Quic;
 
 /// <summary>
-/// Tracks the peer's advertised connection IDs and the latest destination connection ID accepted
-/// for packet routing.
+/// Tracks the peer's advertised connection IDs and the destination connection ID selected for
+/// outbound packets.
 /// </summary>
 internal sealed class QuicConnectionPeerConnectionIdState
 {
@@ -27,7 +27,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
     private const ulong PreferredAddressConnectionIdSequence = 1;
 
     /// <summary>
-    /// Gets the current destination connection ID chosen from the highest accepted sequence number.
+    /// Gets the current destination connection ID selected for outbound packets.
     /// </summary>
     internal ReadOnlyMemory<byte> CurrentDestinationConnectionId => currentDestinationConnectionId;
 
@@ -367,6 +367,17 @@ internal sealed class QuicConnectionPeerConnectionIdState
         return true;
     }
 
+    internal void BindCurrentDestinationConnectionIdToPath(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (!currentDestinationConnectionIdSequence.HasValue
+            || !connectionIdsBySequence.ContainsKey(currentDestinationConnectionIdSequence.Value))
+        {
+            return;
+        }
+
+        pathBySequence[currentDestinationConnectionIdSequence.Value] = pathIdentity;
+    }
+
     /// <summary>
     /// Clears all peer connection ID state.
     /// </summary>
@@ -430,12 +441,11 @@ internal sealed class QuicConnectionPeerConnectionIdState
         }
 
         if (currentDestinationConnectionIdSequence.HasValue
-            && pathBySequence.ContainsKey(currentDestinationConnectionIdSequence.Value)
             && connectionIdsBySequence.TryGetValue(
                 currentDestinationConnectionIdSequence.Value,
-                out QuicConnectionPeerConnectionIdRecord currentBoundRecord))
+                out QuicConnectionPeerConnectionIdRecord currentRecord))
         {
-            currentDestinationConnectionId = currentBoundRecord.ConnectionIdBytes.ToArray();
+            currentDestinationConnectionId = currentRecord.ConnectionIdBytes.ToArray();
             return;
         }
 

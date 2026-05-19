@@ -93,7 +93,7 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0014
             out bool destinationConnectionIdChanged,
             out ulong[] retiredSequenceNumbers));
         Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
-        Assert.True(destinationConnectionIdChanged);
+        Assert.False(destinationConnectionIdChanged);
         Assert.Empty(retiredSequenceNumbers);
 
         Assert.True(state.TryAcceptNewConnectionId(

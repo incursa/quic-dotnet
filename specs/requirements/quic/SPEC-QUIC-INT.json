@@ -419,7 +419,7 @@
     {
       "id": "REQ-QUIC-INT-0014",
       "title": "Separate local preflight planning from localhost smoke execution",
-      "statement": "The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, and transfer-path mapping as independently testable harness behavior, and must support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice must not weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.",
+      "statement": "The interop harness MUST expose repo-local preflight decisions for request parsing, qlog selection, endpoint resolution, transfer-path mapping, and transfer-sized client receive-window selection as independently testable harness behavior, and must support a localhost smoke lane in which the managed client and managed server can be exercised directly with matching certificate names while preserving the existing hostname and certificate-validation rules. This slice must not weaken hostname or certificate validation for IP-literal hosts or require changes to the external `quic-interop-runner` repository.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0007"

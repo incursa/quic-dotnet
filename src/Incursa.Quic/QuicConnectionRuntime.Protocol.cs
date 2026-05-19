@@ -2821,8 +2821,15 @@ internal sealed partial class QuicConnectionRuntime
     {
         stateChanged = false;
 
+        ReadOnlyMemory<byte> currentPeerDestinationConnectionId = CurrentPeerDestinationConnectionId;
         ReadOnlySpan<byte> peerInitialSourceConnectionIdForSequencing =
             GetPeerInitialSourceConnectionIdForSequencing();
+        if (peerInitialSourceConnectionIdForSequencing.IsEmpty
+            && !currentPeerDestinationConnectionId.IsEmpty)
+        {
+            peerInitialSourceConnectionIdForSequencing = currentPeerDestinationConnectionId.Span;
+        }
+
         if (!peerConnectionIdState.TryAcceptNewConnectionId(
             newConnectionIdFrame,
             PeerRequestedZeroLengthConnectionId(),
@@ -2838,6 +2845,11 @@ internal sealed partial class QuicConnectionRuntime
                 "The peer sent an invalid NEW_CONNECTION_ID frame.",
                 ref effects);
             return false;
+        }
+
+        if (ActivePath.HasValue)
+        {
+            peerConnectionIdState.BindCurrentDestinationConnectionIdToPath(ActivePath.Value.Identity);
         }
 
         if (destinationConnectionIdChanged

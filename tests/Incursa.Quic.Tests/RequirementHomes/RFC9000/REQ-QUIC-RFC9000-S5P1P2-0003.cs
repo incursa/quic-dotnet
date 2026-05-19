@@ -28,10 +28,11 @@ public sealed class REQ_QUIC_RFC9000_S5P1P2_0003
             out ulong[] retiredSequenceNumbers));
 
         Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
-        Assert.True(destinationConnectionIdChanged);
+        Assert.False(destinationConnectionIdChanged);
         Assert.Empty(retiredSequenceNumbers);
         Assert.Equal(2, state.ActiveConnectionIdCount);
-        Assert.Equal(1UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.Equal(0UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.Equal([0x01, 0x02, 0x03], state.CurrentDestinationConnectionId.ToArray());
 
         Assert.True(state.TryAcceptNewConnectionId(
             new QuicNewConnectionIdFrame(

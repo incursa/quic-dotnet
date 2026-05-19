@@ -150,7 +150,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0010
             observedAtTicks: 25);
 
         Assert.True(newConnectionIdResult.StateChanged);
-        Assert.True(runtime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(PeerIssuedConnectionId));
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(InitialDestinationConnectionId));
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,

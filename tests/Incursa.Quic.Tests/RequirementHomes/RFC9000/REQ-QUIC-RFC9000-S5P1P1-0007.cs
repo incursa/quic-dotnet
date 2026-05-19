@@ -27,10 +27,10 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0007
             out ulong[] retiredSequenceNumbers));
 
         Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
-        Assert.True(destinationConnectionIdChanged);
+        Assert.False(destinationConnectionIdChanged);
         Assert.Empty(retiredSequenceNumbers);
-        Assert.Equal(1UL, state.CurrentDestinationConnectionIdSequence);
-        Assert.Equal(firstClientSelectedDestinationConnectionId, state.CurrentDestinationConnectionId.ToArray());
+        Assert.Equal(0UL, state.CurrentDestinationConnectionIdSequence);
+        Assert.Equal(peerInitialSourceConnectionId, state.CurrentDestinationConnectionId.ToArray());
     }
 
     [Fact]

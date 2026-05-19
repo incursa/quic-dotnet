@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_S5P1P2_0002
             statelessResetTokenStart: 0xA0);
 
         Assert.True(newConnectionIdResult.StateChanged);
-        Assert.Equal(consumedDestinationConnectionId, runtime.CurrentPeerDestinationConnectionId.ToArray());
+        Assert.Equal(originalDestinationConnectionId, runtime.CurrentPeerDestinationConnectionId.ToArray());
 
         byte[] migrationPacket = QuicConnectionIdLifecycleTestSupport.BuildOneRttPacket(
             runtime,
@@ -52,7 +52,12 @@ public sealed class REQ_QUIC_RFC9000_S5P1P2_0002
             migrationResult.Effects,
             effect => effect is QuicConnectionSendDatagramEffect send
                 && send.PathIdentity == migratedPath
-                && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+                && QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+                    runtime,
+                    send.Datagram.Span,
+                    out _,
+                    out _,
+                    out _));
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
