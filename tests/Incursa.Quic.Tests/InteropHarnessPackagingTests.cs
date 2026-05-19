@@ -32,6 +32,18 @@ public sealed class InteropHarnessPackagingTests
     }
 
     [Fact]
+    public void InteropHelperShimPatchesPreferredAddressPathAnalysis()
+    {
+        string helper = ReadNormalizedText("scripts/interop/Invoke-QuicInteropRunner.ps1");
+
+        Assert.Contains("_patched_testcase_inject_keylog_if_possible", helper, StringComparison.Ordinal);
+        Assert.Contains("fd00:cafe:cafe:100::110", helper, StringComparison.Ordinal);
+        Assert.Contains("trace.TraceAnalyzer._get_direction_filter = _patched_trace_direction_filter", helper, StringComparison.Ordinal);
+        Assert.Contains("testcases_quic.TestCasePortRebinding.check = _patched_port_rebinding_check", helper, StringComparison.Ordinal);
+        Assert.Contains("is_new_path = cur not in paths", helper, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void RunEndpointScriptUsesAStableShellContract()
     {
         string script = ReadNormalizedText("src/Incursa.Quic.InteropHarness/run_endpoint.sh").TrimEnd();

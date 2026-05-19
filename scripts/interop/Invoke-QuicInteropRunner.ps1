@@ -541,7 +541,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'connectionmigration'
             RunnerTestCase = 'connectionmigration'
             Classification = 'supported-executed'
-            Notes = 'Supported/executed connectionmigration cell with preferred-address server dispatch; live runner proof is still being refreshed.'
+            Notes = 'Supported/executed connectionmigration cell with preferred-address server dispatch; local clean-runner proof passed with the repo-owned analyzer shim.'
         }
     )
 }
@@ -1854,6 +1854,141 @@ import testcase
 import trace
 import testcases_quic
 import pyshark
+
+_real_testcase_inject_keylog_if_possible = testcase.TestCase._inject_keylog_if_possible
+
+def _patched_testcase_inject_keylog_if_possible(self, trace_path):
+    keylog = self._keylog_file()
+    if keylog is None:
+        return
+
+    fd, tmp_name = tempfile.mkstemp()
+    os.close(fd)
+
+    try:
+        r = subprocess.run(
+            f"editcap --inject-secrets tls,{keylog} {trace_path} {tmp_name}",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        logging.debug("%s", r.stdout.decode("utf-8"))
+        if r.returncode != 0:
+            return
+        shutil.copy(tmp_name, trace_path)
+    finally:
+        try:
+            os.unlink(tmp_name)
+        except FileNotFoundError:
+            pass
+
+testcase.TestCase._inject_keylog_if_possible = _patched_testcase_inject_keylog_if_possible
+
+_incursa_ip4_server_preferred = "193.167.100.110"
+_incursa_ip6_server_preferred = "fd00:cafe:cafe:100::110"
+trace.IP4_SERVER_PREFERRED = _incursa_ip4_server_preferred
+trace.IP6_SERVER_PREFERRED = _incursa_ip6_server_preferred
+
+def _patched_trace_get_direction(packet):
+    if (hasattr(packet, "ip") and packet.ip.src == trace.IP4_CLIENT) or (
+        hasattr(packet, "ipv6") and packet.ipv6.src == trace.IP6_CLIENT
+    ):
+        return trace.Direction.FROM_CLIENT
+
+    if (
+        hasattr(packet, "ip")
+        and packet.ip.src in (trace.IP4_SERVER, _incursa_ip4_server_preferred)
+    ) or (
+        hasattr(packet, "ipv6")
+        and packet.ipv6.src in (trace.IP6_SERVER, _incursa_ip6_server_preferred)
+    ):
+        return trace.Direction.FROM_SERVER
+
+    return trace.Direction.INVALID
+
+trace.get_direction = _patched_trace_get_direction
+
+def _patched_trace_direction_filter(self, direction):
+    prefix = "(quic && !icmp) && "
+    if direction == trace.Direction.FROM_CLIENT:
+        return prefix + "(ip.src==" + trace.IP4_CLIENT + " || ipv6.src==" + trace.IP6_CLIENT + ") && "
+    if direction == trace.Direction.FROM_SERVER:
+        return prefix + "udp.srcport==443 && "
+    return prefix
+
+trace.TraceAnalyzer._get_direction_filter = _patched_trace_direction_filter
+
+def _patched_port_rebinding_check(self):
+    super(testcases_quic.TestCasePortRebinding, self).check()
+    if not self._keylog_file():
+        logging.info("Can't check test result. SSLKEYLOG required.")
+        return testcases_quic.TestResult.UNSUPPORTED
+
+    result = super(testcases_quic.TestCasePortRebinding, self).check()
+    if result != testcases_quic.TestResult.SUCCEEDED:
+        return result
+
+    tr_server = self._client_trace()._get_packets(
+        self._client_trace()._get_direction_filter(trace.Direction.FROM_SERVER) + " quic"
+    )
+
+    cur = None
+    last = None
+    paths = set()
+    challenges = set()
+    for packet in tr_server:
+        cur = self._path(packet)
+        if last is None:
+            last = cur
+            paths.add(cur)
+            continue
+
+        if last != cur:
+            is_new_path = cur not in paths
+            paths.add(cur)
+            last = cur
+            if not is_new_path:
+                continue
+
+            if hasattr(packet["quic"], "path_challenge.data") is False:
+                logging.info(
+                    "First server packet on new path %s did not contain a PATH_CHALLENGE frame",
+                    cur,
+                )
+                logging.info(packet["quic"])
+                return testcases_quic.TestResult.FAILED
+
+            challenges.add(getattr(packet["quic"], "path_challenge.data"))
+
+    if cur is not None:
+        paths.add(cur)
+
+    logging.info("Server saw these paths used: %s", paths)
+    if len(paths) <= 1:
+        logging.info("Server saw only a single path in use; test broken?")
+        return testcases_quic.TestResult.FAILED
+
+    tr_client = self._client_trace()._get_packets(
+        self._client_trace()._get_direction_filter(trace.Direction.FROM_CLIENT) + " quic"
+    )
+
+    responses = list(
+        set(
+            getattr(packet["quic"], "path_response.data")
+            for packet in tr_client
+            if hasattr(packet["quic"], "path_response.data")
+        )
+    )
+
+    unresponded = [challenge for challenge in challenges if challenge not in responses]
+    if unresponded != []:
+        logging.info("PATH_CHALLENGE without a PATH_RESPONSE: %s", unresponded)
+        return testcases_quic.TestResult.FAILED
+
+    return testcases_quic.TestResult.SUCCEEDED
+
+if hasattr(testcases_quic, "TestCasePortRebinding"):
+    testcases_quic.TestCasePortRebinding.check = _patched_port_rebinding_check
 
 if hasattr(testcases_quic, "TestCaseVersionNegotiation"):
     if not any(

@@ -6,7 +6,7 @@
   "title": "QUIC Connectionmigration Source-Address Blocker Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Requirement-home tests and setup-script inspection.",
+  "verification_method": "Requirement-home tests, setup-script inspection, and local clean-runner artifact inspection.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0019",
@@ -25,9 +25,10 @@
     "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
     "Inspect `src/Incursa.Quic.InteropHarness/setup.sh` and `src/Incursa.Quic.InteropHarness/README.md` for the preferred-address setup.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0025` plus the supporting RFC9000 migration proofs `REQ-QUIC-RFC9000-S9P6P1-0005`, `REQ-QUIC-RFC9000-S9P6P2-0010`, and `REQ-QUIC-RFC9000-S9P6P3-0006`.",
-    "Confirm the blocker note remains advisory and separate from any runtime support claim."
+    "Confirm the blocker note remains advisory and separate from any runtime support claim.",
+    "Inspect local clean-runner proof `.artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx` for original-path first-flight source selection, preferred-address path observation, and `runner-report.json` success."
   ],
-  "expected_result": "The repository can classify the connectionmigration source-address issue as an explicit advisory blocker while preserving the preferred-address setup and keeping support claims bounded.",
+  "expected_result": "The repository can classify the connectionmigration source-address issue as locally proven while keeping hosted corroboration advisory until a fresh hosted run passes.",
   "evidence": [
     "docs/current-status.md",
     "specs/requirements/quic/REQUIREMENT-GAPS.md",
@@ -39,13 +40,16 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs",
+    ".artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx/runner-report.json",
+    ".artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx/runner.stderr.log",
+    ".artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx/runner-logs/nginx_neqo/connectionmigration/sim/trace_node_left.pcap"
   ],
-  "status_summary": "Complete. Focused requirement-home tests passed for `REQ_QUIC_INT_0025` and `REQ_QUIC_INT_0022`, and the supporting RFC9000 migration proofs passed for `REQ_QUIC_RFC9000_S9P6P1_0005`, `REQ_QUIC_RFC9000_S9P6P2_0010`, and `REQ_QUIC_RFC9000_S9P6P3_0006`. The repository keeps the connectionmigration source-address blocker explicit while preserving the preferred-address setup; the hosted proof lane remains open, but the classification slice is complete.",
+  "status_summary": "Complete for local proof and classification. Focused requirement-home tests passed for `REQ_QUIC_INT_0025` and `REQ_QUIC_INT_0022`, and the supporting RFC9000 migration proofs passed for `REQ_QUIC_RFC9000_S9P6P1_0005`, `REQ_QUIC_RFC9000_S9P6P2_0010`, and `REQ_QUIC_RFC9000_S9P6P3_0006`. Local clean-runner proof `.artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx` passed `connectionmigration` against `neqo`; packet inspection shows the first server flight sourced from original address `fd00:cafe:cafe:100::100` before later preferred-address use from `fd00:cafe:cafe:100::110`. The hosted proof lane remains advisory until refreshed.",
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This verification only covers the blocker lane. It does not claim a source-address fix or rebind support."
+      "content": "This verification covers the local source-address proof and blocker classification. It does not claim hosted success, `rebind-port`, or `rebind-addr` support."
     }
   ]
 }

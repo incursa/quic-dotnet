@@ -6,7 +6,7 @@
   "title": "QUIC Connectionmigration Source-Address Blocker Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the advisory connectionmigration blocker lane that keeps the first-server-flight source-address issue explicit while preserving the current preferred-address setup.",
+  "purpose": "Describe the connectionmigration source-address proof lane that keeps local proof, hosted corroboration, and preferred-address setup boundaries explicit.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0015",
@@ -26,9 +26,9 @@
     "src/Incursa.Quic.InteropHarness/README.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs"
   ],
-  "design_summary": "The connectionmigration lane is already advisory and the preferred migration address is deliberately kept reachable with preferred_lft 0. The remaining blocker is source-address selection for the first server flight, so this architecture formalizes the blocker as a distinct proof lane rather than widening the runtime transport contract.",
+  "design_summary": "The connectionmigration lane keeps the preferred migration address reachable with preferred_lft 0 while preserving original-path first-flight source selection. Local clean-runner proof now shows the original address first flight and later preferred-address path use, while hosted corroboration remains advisory until refreshed. This architecture keeps that evidence boundary distinct rather than widening the runtime transport contract.",
   "alternatives_considered": [
-    "Claim the lane as fully fixed after the preferred-address setup change. Rejected because the preserved hosted proof still shows the first server flight sourced from the preferred migration address.",
+    "Claim hosted readiness from the local clean-runner proof. Rejected because the hosted proof lane still needs a fresh artifact run.",
     "Fold the blocker back into the generic connectionmigration proof lane. Rejected because the source-address issue deserves its own explicit advisory boundary."
   ],
   "edge_cases_and_constraints": [
@@ -37,7 +37,7 @@
     "Keep the lane advisory and outside ordinary gates.",
     "Keep the blocker separate from the peer-characterization matrix work."
   ],
-  "data_and_state_considerations": "The blocker is evidenced by the preserved hosted proof notes and the current setup script. No new runner repository changes are required to classify the blocker.",
+  "data_and_state_considerations": "The source-address proof is evidenced by the preserved hosted failure notes, the current setup script, and the local clean-runner artifact bundle. The repo-owned runner shim supplies analyzer compatibility so no persistent upstream runner checkout mutation is required.",
   "risks": [
     "Readers may overread the blocker lane as a runtime fix if the advisory boundary is not kept explicit.",
     "The source-address issue could get conflated with broader connectionmigration support if the proof lane is not kept distinct."
@@ -45,7 +45,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design only formalizes the source-address blocker. It does not claim original-path first-flight success, server-side path promotion, or rebind support."
+      "content": "This design formalizes local source-address proof and hosted-corroboration boundaries. It does not claim hosted success, `rebind-port`, or `rebind-addr` support."
     }
   ]
 }
