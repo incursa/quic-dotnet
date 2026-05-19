@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0021",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC All-Upstream Handshake Matrix Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Workflow-shape review, local helper dry-run tests, requirement-home tests, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0021",
+    "WI-QUIC-INT-0021"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0027"
+  ],
+  "preconditions": [
+    "The upstream runner checkout contains `implementations_quic.json`.",
+    "Each registry entry used by the hosted matrix declares a role and image.",
+    "The profile remains manually dispatched.",
+    "Handshake is the only testcase in the first all-upstream profile.",
+    "The helper local replacement slots remain `chrome` for local client mode and `nginx` for local server mode.",
+    "Client-role cells may receive runner-generated response bodies whose source files are mounted only into the peer server container."
+  ],
+  "scope": "Verify that the repository can plan and host an advisory all-upstream handshake matrix across role-compatible peer slots without claiming broad testcase coverage or upstream registry participation.",
+  "procedure": [
+    "Review `.github/workflows/interop-runner-handshake.yml` to confirm `all-implementation-matrix` is a workflow-dispatch-only profile and uses a preparation job to derive the matrix from the upstream registry.",
+    "Confirm the generated cells use local client mode for upstream `both` and `server` roles and local server mode for upstream `both` and `client` roles.",
+    "Confirm every generated hosted cell runs only the `handshake` testcase and uploads an artifact bundle with `if: always()`.",
+    "Run the helper dry-run tests to confirm `-PeerImplementationSlots all` expands role-compatible peers and rejects mixed explicit/all input.",
+    "Run the requirement-home copy test to confirm client-role downloads can read until peer FIN when the local source length is unavailable.",
+    "Run the `REQ-QUIC-INT-0027` requirement-home tests to confirm the canonical artifacts, workflow profile, helper, and documentation keep the advisory handshake-only boundary explicit.",
+    "Run core SpecTrace JSON validation."
+  ],
+  "expected_result": "The repository exposes a manual all-upstream handshake matrix that can run Incursa.Quic as client and server against every role-compatible upstream implementation slot while preserving advisory per-cell artifacts and avoiding every-testcase or support-readiness claims.",
+  "evidence": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "docs/current-status.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/architecture/quic/ARC-QUIC-INT-0021.json",
+    "specs/work-items/quic/WI-QUIC-INT-0021.json",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs"
+  ],
+  "status_summary": "Passed for the local repository surface. Focused helper and requirement-home tests prove the role-aware `all` expansion, workflow/profile trace links, and handshake-only advisory boundary. Hosted all-upstream execution remains manual follow-up evidence and is not required for this workflow-surface verification.",
+  "supplemental_sections": [
+    {
+      "heading": "Advisory Boundary",
+      "content": "Passing local plan tests or a future hosted handshake matrix does not prove every QUIC testcase, every peer feature, migration support, HTTP/3 support, or support readiness."
+    }
+  ]
+}

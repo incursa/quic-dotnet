@@ -1756,18 +1756,38 @@ internal static class InteropHarnessRunner
                 useAsync: true);
 
             FileInfo sourceInfo = new(transferPlan.SourcePath);
-            await CopyHttp09ResponseBodyAsync(
-                stream,
-                destinationStream,
-                sourceInfo.Length,
-                stdout,
-                testCase,
-                configuredRequestCount,
-                requestIndex,
-                totalRequestCount,
-                transferPlan.RequestUri.PathAndQuery,
-                responseReadTimeout,
-                bytesDownloadedObserver).ConfigureAwait(false);
+            if (sourceInfo.Exists)
+            {
+                await CopyHttp09ResponseBodyAsync(
+                    stream,
+                    destinationStream,
+                    sourceInfo.Length,
+                    stdout,
+                    testCase,
+                    configuredRequestCount,
+                    requestIndex,
+                    totalRequestCount,
+                    transferPlan.RequestUri.PathAndQuery,
+                    responseReadTimeout,
+                    bytesDownloadedObserver).ConfigureAwait(false);
+            }
+            else
+            {
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} source length unavailable for {transferPlan.RequestUri.PathAndQuery}; reading response until peer FIN.");
+                await CopyHttp09ResponseBodyUntilEndAsync(
+                    stream,
+                    destinationStream,
+                    stdout,
+                    testCase,
+                    configuredRequestCount,
+                    requestIndex,
+                    totalRequestCount,
+                    transferPlan.RequestUri.PathAndQuery,
+                    responseReadTimeout,
+                    bytesDownloadedObserver).ConfigureAwait(false);
+            }
 
             await destinationStream.FlushAsync().ConfigureAwait(false);
         }
@@ -1795,6 +1815,63 @@ internal static class InteropHarnessRunner
 
         File.Move(stagingPath, transferPlan.DestinationPath);
         return new FileInfo(transferPlan.DestinationPath).Length;
+    }
+
+    internal static async Task<long> CopyHttp09ResponseBodyUntilEndAsync(
+        Stream responseStream,
+        Stream destinationStream,
+        TextWriter stdout,
+        string testCase,
+        int configuredRequestCount,
+        int requestIndex,
+        int totalRequestCount,
+        string requestPath,
+        TimeSpan responseReadTimeout = default,
+        Action<long>? bytesDownloadedObserver = null)
+    {
+        ArgumentNullException.ThrowIfNull(responseStream);
+        ArgumentNullException.ThrowIfNull(destinationStream);
+        ArgumentNullException.ThrowIfNull(stdout);
+        ArgumentException.ThrowIfNullOrWhiteSpace(testCase);
+        ArgumentException.ThrowIfNullOrWhiteSpace(requestPath);
+
+        byte[] responseBuffer = new byte[StreamCopyBufferSize];
+        long bytesDownloaded = 0;
+
+        while (true)
+        {
+            int bytesRead;
+            if (responseReadTimeout > TimeSpan.Zero && responseReadTimeout != Timeout.InfiniteTimeSpan)
+            {
+                using CancellationTokenSource responseTimeout = new(responseReadTimeout);
+                try
+                {
+                    bytesRead = await responseStream.ReadAsync(responseBuffer, 0, responseBuffer.Length, responseTimeout.Token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException ex) when (responseTimeout.IsCancellationRequested)
+                {
+                    throw new TimeoutException(
+                        $"Timed out waiting for {testCase} response stream FIN for {requestPath} after reading {bytesDownloaded} bytes.",
+                        ex);
+                }
+            }
+            else
+            {
+                bytesRead = await responseStream.ReadAsync(responseBuffer, 0, responseBuffer.Length).ConfigureAwait(false);
+            }
+
+            if (bytesRead == 0)
+            {
+                return bytesDownloaded;
+            }
+
+            await destinationStream.WriteAsync(responseBuffer, 0, bytesRead).ConfigureAwait(false);
+            bytesDownloaded += bytesRead;
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase={testCase}, requestCount={configuredRequestCount} read {bytesRead} bytes (total={bytesDownloaded}) from {requestPath}, stream {requestIndex + 1}/{totalRequestCount}.");
+            bytesDownloadedObserver?.Invoke(bytesDownloaded);
+        }
     }
 
     internal static async Task<long> CopyHttp09ResponseBodyAsync(

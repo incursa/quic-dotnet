@@ -1656,6 +1656,13 @@ internal sealed class QuicTlsTranscriptProgress
                     return false;
                 }
             }
+            else if (extensionType == SupportedGroupsExtensionType)
+            {
+                if (!TryParseClientHelloSupportedGroups(extensionValue, out _))
+                {
+                    return false;
+                }
+            }
             else
             {
                 return false;

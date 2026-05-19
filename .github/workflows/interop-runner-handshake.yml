@@ -12,6 +12,7 @@ on:
           - hosted-handshake
           - supported-subset
           - major-peer-matrix
+          - all-implementation-matrix
           - zerortt-server-proof
           - connectionmigration-server-proof
           - connectionmigration-server-proof-blocked
@@ -702,6 +703,148 @@ jobs:
             -ArtifactsRoot "${{ github.workspace }}/quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}"
 
       - name: Upload major peer matrix artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
+          path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
+          if-no-files-found: warn
+
+  prepare-all-implementation-matrix:
+    if: ${{ github.event.inputs.coverage_profile == 'all-implementation-matrix' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout quic-interop-runner
+        uses: actions/checkout@v6
+        with:
+          repository: quic-interop/quic-interop-runner
+          path: quic-interop-runner
+
+      - name: Build role-compatible matrix from upstream registry
+        id: matrix
+        shell: pwsh
+        working-directory: quic-interop-runner
+        run: |
+          $registry = Get-Content -LiteralPath implementations_quic.json -Raw | ConvertFrom-Json
+          $cells = [System.Collections.Generic.List[object]]::new()
+
+          foreach ($property in $registry.PSObject.Properties) {
+            $slot = [string]$property.Name
+            $role = [string]$property.Value.role
+            $image = [string]$property.Value.image
+
+            if ([string]::IsNullOrWhiteSpace($image)) {
+              throw "Implementation '$slot' does not declare an image in implementations_quic.json."
+            }
+
+            if ($role -eq 'both' -or $role -eq 'server') {
+              $cells.Add([ordered]@{
+                cell = "client-$slot"
+                local_role = 'client'
+                implementation_slot = 'chrome'
+                peer_slots = $slot
+                peer_image = $image
+                testcases = 'handshake'
+                runner_timeout_seconds = 0
+              })
+            }
+
+            if ($role -eq 'both' -or $role -eq 'client') {
+              $cells.Add([ordered]@{
+                cell = "server-$slot"
+                local_role = 'server'
+                implementation_slot = 'nginx'
+                peer_slots = $slot
+                peer_image = $image
+                testcases = 'handshake'
+                runner_timeout_seconds = 0
+              })
+            }
+          }
+
+          if ($cells.Count -eq 0) {
+            throw 'No role-compatible interop runner cells were generated.'
+          }
+
+          $matrix = [ordered]@{ include = @($cells) } | ConvertTo-Json -Depth 8 -Compress
+          "matrix=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+  all-implementation-matrix:
+    if: ${{ github.event.inputs.coverage_profile == 'all-implementation-matrix' }}
+    needs: prepare-all-implementation-matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare-all-implementation-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Checkout quic-dotnet
+        uses: actions/checkout@v6
+        with:
+          path: quic-dotnet
+
+      - name: Checkout quic-interop-runner
+        uses: actions/checkout@v6
+        with:
+          repository: quic-interop/quic-interop-runner
+          path: quic-interop-runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+        with:
+          version: latest
+
+      - name: Install runner packet-analysis tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tshark
+
+      - name: Install runner Python dependencies
+        shell: pwsh
+        run: python -m pip install -r quic-interop-runner/requirements.txt
+
+      - name: Show runner prerequisites
+        shell: pwsh
+        run: |
+          docker --version
+          python --version
+          tshark --version
+          editcap --version
+
+      - name: Pre-pull runner peer images
+        shell: bash
+        run: |
+          docker pull martenseemann/quic-network-simulator
+          docker pull "${{ matrix.peer_image }}"
+
+      - name: Run all-implementation matrix cell
+        working-directory: quic-dotnet
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
+            -RunnerRoot "${{ github.workspace }}/quic-interop-runner" `
+            -LocalRole "${{ matrix.local_role }}" `
+            -ImplementationSlot "${{ matrix.implementation_slot }}" `
+            -PeerImplementationSlots "${{ matrix.peer_slots }}" `
+            -TestCases "${{ matrix.testcases }}" `
+            -RunnerTimeoutSeconds "${{ matrix.runner_timeout_seconds }}" `
+            -ArtifactsRoot "${{ github.workspace }}/quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}"
+
+      - name: Upload all-implementation matrix artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:

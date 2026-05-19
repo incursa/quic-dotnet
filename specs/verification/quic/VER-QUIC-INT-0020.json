@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0020",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC Simulator-Backed Correctness Scenario Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Scenario-registry review, classification review, requirement mapping, focused helper tests, simulator evidence inspection, and later manual simulator execution.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-RFC9002",
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-INT-0020",
+    "WI-QUIC-INT-0020"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0026"
+  ],
+  "preconditions": [
+    "The simulator-backed scenario registry has stable scenario identifiers.",
+    "Each scenario is classified as correctness, advisory-interop, or performance-only.",
+    "Each correctness scenario maps to at least one existing QUIC protocol requirement ID.",
+    "Each advisory or performance-only scenario has an accounting anchor and an explicit no-correctness-promotion rule unless separate mapped requirements are added.",
+    "Each scenario records the upstream simulator profile, upstream source reference or pinned commit/path, and exact parameters, including deterministic seeds or droplist material when applicable.",
+    "Performance-only scenarios are marked separately from correctness scenarios.",
+    "Evidence roots preserve the logs and packet artifacts needed to audit the result."
+  ],
+  "scope": "Verify that the repository can track simulator-backed network-condition scenarios as bounded correctness evidence and distinguish them from advisory interop characterization or performance-only measurements.",
+  "procedure": [
+    "Review `docs/network-simulator-correctness-plan.md` to confirm every scenario has an id, classification, simulator profile, upstream source reference, exact parameters, local role, peer shape, mapped requirements or accounting anchor, expected observables, evidence requirements, status, and promotion rule.",
+    "Review `SPEC-QUIC-INT` to confirm `REQ-QUIC-INT-0026` keeps simulator settings as evidence inputs, requirement statements as normative claims, and verification artifacts as proof records.",
+    "Review `ARC-QUIC-INT-0020` and `WI-QUIC-INT-0020` to confirm the design and delivery plan avoid runtime changes in the planning slice.",
+    "Confirm correctness rows name existing RFC, CRT, or INT requirement IDs and that advisory interop and performance-only rows cannot promote protocol correctness from simulator execution alone.",
+    "Run the focused network-simulator helper tests to confirm `SIM-QUIC-BASE-0001` and `SIM-QUIC-LOSS-0001` expose stable plan output, reject missing droplists for deterministic-loss proof, preserve the minimum evidence bundle without launching Docker by default, preserve preflight or docker-compose failure evidence, and stage Incursa.Quic endpoint contexts plus compose overrides when execution is explicitly requested.",
+    "For each future implemented scenario, inspect the preserved artifact root for simulator stdout, endpoint logs, qlog when available, packet captures when available, runner report when applicable, the exact simulator profile string, and the upstream simulator source reference used to interpret it.",
+    "Promote only scenarios whose observed behavior satisfies the linked requirement-specific expected result.",
+    "Keep failing, flaky, blocked, infrastructure-failed, and performance-only outcomes distinct in any generated summary."
+  ],
+  "expected_result": "The repository can decide which simulator-backed scenarios are correctness, advisory-interop, or performance-only; can track whether they are planned, implemented, passing, failing, blocked, flaky, or performance-only; and can promote only bounded requirement-backed passing correctness scenarios to proof evidence.",
+  "evidence": [
+    "docs/network-simulator-correctness-plan.md",
+    "specs/requirements/quic/SPEC-QUIC-INT.json",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/architecture/quic/ARC-QUIC-INT-0020.json",
+    "specs/work-items/quic/WI-QUIC-INT-0020.json",
+    "scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1",
+    "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0026.cs",
+    "benchmarks/README.md",
+    "artifacts/network-simulator"
+  ],
+  "status_summary": "Passed on 2026-05-17 for the first simulator-backed scenario accounting helper surface, then locally exercised the baseline `SIM-QUIC-BASE-0001` simple-p2p execution path on 2026-05-19 UTC under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`. Core SpecTrace JSON validation passed for 562 artifacts with `pwsh -NoProfile -File scripts\\Validate-SpecTraceJson.ps1 -Profiles core -JsonReportPath .artifacts\\spec-trace-current-status-check-after-force-recreate.json`. Focused helper and requirement-home tests passed 9/9 with `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~NetworkSimulatorScenarioScriptTests|FullyQualifiedName~REQ_QUIC_INT_0026\"`. This verifies plan output, deterministic droplist validation, minimum evidence-bundle preservation without Docker launch by default, preflight failure evidence, docker-compose nonzero-exit evidence, endpoint staging, compose override generation, and non-promotion accounting. The live baseline run built staged Incursa.Quic client/server endpoints, ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, completed the managed transfer, and downloaded 10,250 bytes to `/downloads/10000.txt`; the helper still records `promotion_result: not-promoted` until linked verification review accepts the preserved runtime evidence. Deterministic loss execution for `SIM-QUIC-LOSS-0001` remains open. This does not claim qlog/pcap proof, hosted workflow coverage, rebind/migration support, or broad simulator-matrix promotion.",
+  "supplemental_sections": [
+    {
+      "heading": "Promotion Rule",
+      "content": "A simulator-backed scenario may be counted as proof only for the linked requirements named by the scenario and only after the evidence bundle records the expected observable result under the exact simulator profile. Advisory interop and performance-only scenarios must remain non-promoting unless a future trace slice adds mapped protocol requirements and proof criteria."
+    },
+    {
+      "heading": "Failure Classification",
+      "content": "Simulator infrastructure failures, peer failures, Incursa-side behavior failures, missing evidence, and performance-only measurements must remain separate outcomes."
+    }
+  ]
+}

@@ -11,8 +11,10 @@ interop handshake plus supported-subset profile evidence.
 
 - [Quickstart](quickstart.md)
 - [Current repository status](current-status.md)
+- [All-implementation handshake interop report](interop-all-implementation-handshake-local-report.md)
 - [Packaging](packaging.md)
 - [Requirements workflow](requirements-workflow.md)
+- [Network simulator correctness plan](network-simulator-correctness-plan.md)
 - [SpecTrace prep](spec-trace-prep.md)
 - [Testing docs](testing/README.md)
 - [Public API design note](design/quic-public-api.md)

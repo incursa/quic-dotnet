@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-16 for the INT quic-go download-liveness completion boundary note, the INT msquic peer-blocked evidence lane, and the INT connectionmigration source-address blocker note, 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
+Last verified: 2026-05-18 local / 2026-05-19 UTC for the INT network-simulator baseline evidence, 2026-05-16 for the INT quic-go download-liveness completion boundary note, the INT msquic peer-blocked evidence lane, and the INT connectionmigration source-address blocker note, 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
 coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
@@ -46,6 +46,11 @@ proof no longer needs to be treated as support evidence for this cell.
 ## 2026-05-16 INT Connectionmigration Source-Address Blocker
 
 `REQ-QUIC-INT-0025` now formalizes the remaining connectionmigration blocker as a source-address advisory. The current hosted proof still sends the first server flight from the preferred migration address instead of the original server address, so the proof lane remains open as a distinct blocked advisory until a fresh hosted run proves original-path first-flight source selection. The preferred migration address stays configured with `preferred_lft 0`, and this formalization does not claim server-side path promotion or rebind support.
+Focused requirement-home tests for `REQ-QUIC-INT-0025` and the supporting `REQ-QUIC-RFC9000-S9P6P1-0005`, `REQ-QUIC-RFC9000-S9P6P2-0010`, and `REQ-QUIC-RFC9000-S9P6P3-0006` migration proofs passed, so the blocker-classification slice is verified while the hosted proof lane remains open.
+
+## 2026-05-18 INT Network Simulator Baseline
+
+`REQ-QUIC-INT-0026` now owns the simulator-backed scenario accounting surface. The first live local `SIM-QUIC-BASE-0001` simple-p2p run passed under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`: staged Incursa.Quic client/server endpoints ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, the server served `/www/10000.txt`, and the client downloaded 10,250 bytes to `/downloads/10000.txt`. The helper now mounts `/www` into both staged endpoints because the client-side transfer completion boundary checks the known source length, and simulator `-Execute` runs use `--force-recreate` to avoid stale QNS containers. This is baseline simulator evidence only; deterministic loss for `SIM-QUIC-LOSS-0001`, qlog/pcap proof promotion, hosted simulator workflow coverage, and broad simulator-matrix claims remain open.
 
 ## 2026-05-14 RFC9000 S19P21 and S5 Trace Closure
 
@@ -62,6 +67,23 @@ agree that the testcase succeeded, and `InteropHarnessRunner` now routes the
 cell through the transfer-backed dispatch path. This stays bounded to the
 checked runner cell and does not imply HTTP/3, cross-peer matrix coverage, or
 broader API support.
+
+## 2026-05-19 INT All-Upstream Handshake Matrix Profile
+
+`REQ-QUIC-INT-0027` now owns the manual `all-implementation-matrix` hosted
+workflow profile. The profile derives role-compatible cells from the upstream
+`quic-interop-runner` `implementations_quic.json` registry at dispatch time,
+runs Incursa.Quic as local client against every server-capable upstream slot,
+and runs Incursa.Quic as local server against every client-capable upstream
+slot.
+
+This first all-upstream slice is handshake-only and advisory. It does not widen
+the existing `REQ-QUIC-INT-0019` `quic-go`/`msquic` major-peer matrix, does not
+add Incursa.Quic to the upstream registry, does not run every testcase, and does
+not claim broad support readiness. Local client-role cells now retain the
+known source-length completion boundary when the source file is mounted locally
+and otherwise read until peer FIN for upstream-runner generated response bodies
+that exist only in the peer server container.
 
 ## 2026-05-12 INT Major Peer Matrix Profile
 

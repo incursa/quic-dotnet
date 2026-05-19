@@ -387,6 +387,70 @@ function Normalize-StringList {
     return $normalizedValues.ToArray()
 }
 
+function Resolve-InteropRunnerPeerImplementationSlots {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RunnerRootPath,
+
+        [Parameter(Mandatory)]
+        [string]$LocalRole,
+
+        [Parameter(Mandatory)]
+        [string]$ImplementationSlot,
+
+        [AllowEmptyCollection()]
+        [Parameter(Mandatory)]
+        [string[]]$PeerImplementationSlots
+    )
+
+    $peerSlots = @($PeerImplementationSlots)
+    $allPeerSlots = @($peerSlots | Where-Object {
+        [string]::Equals($_, 'all', [System.StringComparison]::OrdinalIgnoreCase) -or
+        [string]::Equals($_, 'all-compatible', [System.StringComparison]::OrdinalIgnoreCase)
+    })
+
+    if ($allPeerSlots.Count -eq 0) {
+        return $peerSlots
+    }
+
+    if ($allPeerSlots.Count -ne $peerSlots.Count) {
+        throw "PeerImplementationSlots cannot mix explicit implementation slots with 'all'. Use either explicit slots or 'all'."
+    }
+
+    if ($LocalRole -eq 'both') {
+        throw "PeerImplementationSlots 'all' requires LocalRole 'client' or 'server' so the peer role can be resolved."
+    }
+
+    $registry = Get-RunnerImplementationRegistry -RunnerRootPath $RunnerRootPath
+    $compatiblePeerRoles = switch ($LocalRole) {
+        'client' { @('both', 'server') }
+        'server' { @('both', 'client') }
+    }
+
+    $resolvedSlots = [System.Collections.Generic.List[string]]::new()
+    foreach ($property in $registry.Data.PSObject.Properties) {
+        $slotName = [string]$property.Name
+        if ($slotName.EndsWith('-peer', [System.StringComparison]::OrdinalIgnoreCase)) {
+            continue
+        }
+
+        if ([string]::Equals($slotName, $ImplementationSlot, [System.StringComparison]::OrdinalIgnoreCase)) {
+            continue
+        }
+
+        $role = [string]$property.Value.role
+        if ($role -in $compatiblePeerRoles) {
+            $resolvedSlots.Add($slotName)
+        }
+    }
+
+    if ($resolvedSlots.Count -eq 0) {
+        throw "PeerImplementationSlots 'all' did not find any role-compatible peer implementations in '$($registry.Path)'."
+    }
+
+    return $resolvedSlots.ToArray()
+}
+
 function Get-InteropRunnerTestCaseInventory {
     @(
         [pscustomobject]@{
@@ -1619,6 +1683,11 @@ if ([string]::IsNullOrWhiteSpace($ImplementationSlot)) {
 
 $runnerRootResolved = Get-EffectivePath -Path $RunnerRoot
 $artifactRootResolved = Get-EffectivePath -Path $ArtifactsRoot
+$PeerImplementationSlots = Resolve-InteropRunnerPeerImplementationSlots `
+    -RunnerRootPath $runnerRootResolved `
+    -LocalRole $LocalRole `
+    -ImplementationSlot $ImplementationSlot `
+    -PeerImplementationSlots $PeerImplementationSlots
 $runStamp = Get-Date -Format 'yyyyMMdd-HHmmssfff'
 $executionPlan = Get-InteropRunnerExecutionPlan `
     -RepoRootResolved $repoRootResolved `

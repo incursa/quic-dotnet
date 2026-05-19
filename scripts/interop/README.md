@@ -2,6 +2,63 @@
 
 This folder holds local-only helpers for exercising the QUIC interop harness against a local checkout of [`quic-interop-runner`](https://github.com/quic-interop/quic-interop-runner).
 
+## `Invoke-QuicNetworkSimulatorScenario.ps1`
+
+This wrapper is the first manual evidence helper for the simulator-backed correctness model in `REQ-QUIC-INT-0026`.
+It is intentionally narrower than the interop-runner wrapper:
+
+- Supported scenario ids: `SIM-QUIC-BASE-0001` and `SIM-QUIC-LOSS-0001`.
+- Baseline profile: `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`.
+- Deterministic-loss profile: `droplist --delay=15ms --bandwidth=10Mbps --queue=25 --drops_to_client=<ip-packet-indexes> --drops_to_server=<ip-packet-indexes>`.
+- Droplist indexes are upstream bottleneck-link IP packet indexes, not QUIC packet numbers.
+- Execution model: upstream `docker compose up --build --force-recreate` with `CLIENT`, `SERVER`, `CLIENT_PARAMS`, `SERVER_PARAMS`, and `SCENARIO`.
+- Artifact root: `artifacts/network-simulator/<scenario-id>/<run-id>/`.
+- Evidence bundle: `scenario-summary.json`, `invocation.txt`, `simulator.stdout.log`, `simulator.stderr.log`, and `artifact-tree.txt`.
+- Promotion status stays `not-promoted` until linked verification records requirement-specific runtime evidence for the expected observable behavior.
+
+Plan-only mode does not require a simulator checkout:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 -DryRun
+```
+
+Preserve the baseline compose plan against a local [`quic-network-simulator`](https://github.com/quic-interop/quic-network-simulator) checkout without launching Docker:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 `
+  -SimulatorRoot <path-to-quic-network-simulator>
+```
+
+Preserve the deterministic droplist compose plan with explicit upstream packet indexes:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 `
+  -ScenarioId SIM-QUIC-LOSS-0001 `
+  -SimulatorRoot <path-to-quic-network-simulator> `
+  -DropsToClient 4,8 `
+  -DropsToServer 6
+```
+
+Launch Docker with helper-staged Incursa.Quic endpoints:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 `
+  -SimulatorRoot <path-to-quic-network-simulator> `
+  -Execute
+```
+
+Or launch Docker with explicit simulator endpoint directories for both sides:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 `
+  -SimulatorRoot <path-to-quic-network-simulator> `
+  -Client <client-endpoint-directory> `
+  -Server <server-endpoint-directory> `
+  -Execute
+```
+
+The helper preserves invocation evidence by default and requires `-Execute` before running Docker. When explicit endpoint directories are omitted, it stages Incursa.Quic client/server Docker contexts, a compose override, `/www`, `/downloads`, and `/certs` under the run artifact root. It does not add runtime transport behavior, hosted workflow dispatch, qlog/pcap analysis, or broad simulator-matrix promotion.
+
 ## `Invoke-QuicInteropRunner.ps1`
 
 This wrapper:
@@ -43,7 +100,7 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 - `client` mode defaults to the runner's `chrome` slot and runs the local image against peer server slots such as `quic-go` and `msquic`.
 - `server` mode defaults to the runner's `nginx` slot and runs the local image against peer client slots such as `quic-go` and `msquic`.
 
-Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots.
+Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots. In split-role mode, `-PeerImplementationSlots all` expands from the runner's `implementations_quic.json`: local client mode selects every server-capable peer, and local server mode selects every client-capable peer.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
 The current supported/executed cells are `handshake`, `transfer`, `retry`, `multiconnect`, `versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, and `zerortt`; the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked. `versionnegotiation` is now backed by explicit reserved-version dispatch in the harness. `chacha20` is now supported/executed after a local quic-go/quic-go runner run completed successfully, and the harness routes it through the runnable transfer-backed dispatch path. `zerortt` is now supported/executed after the hosted Linux `zerortt-server-proof` run completed successfully with buffered request-line reads and packet-analysis proof; `resumption` is green only for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof. Neither cell implies HTTP/3, 0-RTT, anti-replay, or broader API support.
 
@@ -53,6 +110,8 @@ Hosted corroboration:
 - The default `hosted-handshake` profile runs only the narrow server-role `handshake` cell against `quic-go`.
 - The explicit `supported-subset` profile runs the hosted handshake job and fans out the additional helper-supported cells: same-slot `retry`, split-role `transfer`, and client-role `multiconnect` mapped to the runner's `handshakeloss` testcase.
 - The explicit `major-peer-matrix` profile runs Incursa.Quic as the local client and as the local server against `quic-go` and `msquic` for the currently executable major non-HTTP/3 cells: `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`. Each role/peer/testcase cell gets its own artifact bundle. This profile is still advisory evidence collection; it excludes `http3`, `zerortt`, `versionnegotiation`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration`. The three migration cells stay excluded until live runner proof is refreshed; the harness now has the migration-aware socket rebinding lifecycle, but this profile remains conservative until those cells have runner evidence. `chacha20` is green in the inventory but has not yet been expanded into this peer-matrix coverage slice.
+- The explicit `all-implementation-matrix` profile reads the upstream runner's `implementations_quic.json` at dispatch time and runs handshake-only role-compatible cells: Incursa.Quic as local client against every server-capable upstream slot, and Incursa.Quic as local server against every client-capable upstream slot. This profile is advisory evidence collection and does not add Incursa.Quic to the upstream registry, run every testcase, or claim broad support readiness.
+- Client-role cells use the known source-length completion boundary when the requested response body is mounted locally and otherwise read until the peer sends FIN. This keeps the quic-go download-liveness guard while allowing upstream-runner generated files that exist only in the peer server container.
 - The explicit `zerortt-server-proof` profile runs only the server-role `zerortt` attempt against a `quic-go` client on hosted Linux so the runner can get past the Windows long-filename setup blocker. This is advisory proof collection for the now supported/executed `zerortt` inventory cell; hosted run `25777328991` completed successfully with `0-RTT size: 10570` and `1-RTT size: 2379`, and the server helper now reads HTTP/0.9 request lines in buffered chunks rather than one byte at a time, which reduces the receive-credit and ACK chatter inside the proof path.
 - The explicit `connectionmigration-server-proof` profile runs the server-role `connectionmigration` attempt by replacing the distinct local `nginx` slot while reporting `neqo-peer` as the peer alias, normalizing the actual runner client slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image so live corroboration can be refreshed without widening the major-peer matrix. It remains advisory proof collection for the inventory cell and does not imply `rebind-port`, `rebind-addr`, or `v2` support.
 - The companion `connectionmigration-server-proof-blocked` profile keeps `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` visible as a blocked comparison lane. It remains advisory evidence collection and does not imply `rebind-port`, `rebind-addr`, or `v2` support.
@@ -88,6 +147,19 @@ Dispatch the major peer matrix after the branch containing the workflow change i
 
 ```powershell
 gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=major-peer-matrix
+```
+
+Plan the all-upstream handshake peer sets locally:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole client -ImplementationSlot chrome -PeerImplementationSlots all -TestCases handshake
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun -LocalRole server -ImplementationSlot nginx -PeerImplementationSlots all -TestCases handshake
+```
+
+Dispatch the all-upstream handshake matrix after the branch containing the workflow change is on GitHub:
+
+```powershell
+gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=all-implementation-matrix
 ```
 
 ## Artifact Layout

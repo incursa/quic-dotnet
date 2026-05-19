@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0021",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC All-Upstream Handshake Matrix Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the advisory all-upstream interop-runner handshake matrix without widening the existing major-peer testcase matrix or support claims.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0012",
+    "ARC-QUIC-INT-0016",
+    "WI-QUIC-INT-0021",
+    "VER-QUIC-INT-0021"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0027"
+  ],
+  "key_components": [
+    ".github/workflows/interop-runner-handshake.yml",
+    "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "scripts/interop/README.md",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs"
+  ],
+  "design_summary": "The all-upstream profile builds its hosted matrix from the upstream runner's `implementations_quic.json` at dispatch time. Entries with role `both` or `server` become local-client handshake cells, and entries with role `both` or `client` become local-server handshake cells. The local helper also accepts `-PeerImplementationSlots all` in split-role mode so maintainers can plan the same role-compatible peer sets locally. Client-role cells use the existing known source-length completion boundary when the requested file is mounted locally, and otherwise read the response until peer FIN because runner-generated response bodies are mounted into the peer server container, not necessarily the local client container. The first profile is intentionally handshake-only to establish broad peer discovery and artifact retention before expanding into transfer, retry, keyupdate, resumption, migration, or HTTP/3-adjacent work.",
+  "alternatives_considered": [
+    "Widen the existing `major-peer-matrix` requirement to every upstream slot. Rejected because that requirement intentionally owns a narrow `quic-go` and `msquic` testcase matrix with preserved historical evidence.",
+    "Run every currently supported non-HTTP/3 testcase against every upstream implementation immediately. Rejected because the first missing surface is full registry coverage, and testcase expansion should follow after handshake results classify peer compatibility and infrastructure failures.",
+    "Add Incursa.Quic to the upstream runner registry for this local proof. Rejected because the request can be satisfied through the existing local replacement-slot model without mutating the upstream checkout or publishing an image."
+  ],
+  "edge_cases_and_constraints": [
+    "The hosted profile must remain manual and advisory.",
+    "The matrix must derive peer slots from the checked-out upstream registry instead of hardcoding the current list.",
+    "Client-only upstream slots must only be peers when Incursa.Quic runs as server.",
+    "Server-only upstream slots must only be peers when Incursa.Quic runs as client.",
+    "The profile must upload one artifact bundle per role and peer cell.",
+    "Client-role cells must tolerate upstream-runner generated source files that are not mounted into the local client container.",
+    "Handshake-only evidence must not be described as every-testcase proof or support readiness."
+  ],
+  "data_and_state_considerations": "The workflow generator emits a GitHub Actions matrix from the upstream registry fields `role` and `image`. Each runner cell stores artifacts under `artifacts/interop-runner/<cell>/`, preserving the helper invocation, runner JSON and Markdown output, stderr, testcase inventory, and runner logs when available.",
+  "risks": [
+    "Upstream registry changes can add images that are slow, temporarily unavailable, or incompatible with hosted runners.",
+    "A wide peer set can produce mixed failures that need characterization rather than runtime changes.",
+    "Readers may overread handshake-only corroboration as broad QUIC or testcase coverage if the advisory boundary is weakened."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Matrix Size",
+      "content": "With the current upstream registry shape, the profile generates one local-client cell for every server-capable peer and one local-server cell for every client-capable peer. The exact count is intentionally derived at dispatch time rather than stored as a normative constant."
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-INT-0019",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Connectionmigration Source-Address Blocker Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -24,7 +24,7 @@
   "procedure": [
     "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
     "Inspect `src/Incursa.Quic.InteropHarness/setup.sh` and `src/Incursa.Quic.InteropHarness/README.md` for the preferred-address setup.",
-    "Run the focused requirement-home tests for `REQ-QUIC-INT-0025`.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0025` plus the supporting RFC9000 migration proofs `REQ-QUIC-RFC9000-S9P6P1-0005`, `REQ-QUIC-RFC9000-S9P6P2-0010`, and `REQ-QUIC-RFC9000-S9P6P3-0006`.",
     "Confirm the blocker note remains advisory and separate from any runtime support claim."
   ],
   "expected_result": "The repository can classify the connectionmigration source-address issue as an explicit advisory blocker while preserving the preferred-address setup and keeping support claims bounded.",
@@ -36,9 +36,12 @@
     "src/Incursa.Quic.InteropHarness/README.md",
     "specs/architecture/quic/ARC-QUIC-INT-0019.json",
     "specs/work-items/quic/WI-QUIC-INT-0019.json",
-    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs"
   ],
-  "status_summary": "Planned. The slice is advisory classification only and does not change runtime transport behavior.",
+  "status_summary": "Complete. Focused requirement-home tests passed for `REQ_QUIC_INT_0025` and `REQ_QUIC_INT_0022`, and the supporting RFC9000 migration proofs passed for `REQ_QUIC_RFC9000_S9P6P1_0005`, `REQ_QUIC_RFC9000_S9P6P2_0010`, and `REQ_QUIC_RFC9000_S9P6P3_0006`. The repository keeps the connectionmigration source-address blocker explicit while preserving the preferred-address setup; the hosted proof lane remains open, but the classification slice is complete.",
   "supplemental_sections": [
     {
       "heading": "Scope",

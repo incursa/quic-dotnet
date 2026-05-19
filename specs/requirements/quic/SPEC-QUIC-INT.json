@@ -62,7 +62,13 @@
     "VER-QUIC-INT-0018",
     "ARC-QUIC-INT-0019",
     "WI-QUIC-INT-0019",
-    "VER-QUIC-INT-0019"
+    "VER-QUIC-INT-0019",
+    "ARC-QUIC-INT-0020",
+    "WI-QUIC-INT-0020",
+    "VER-QUIC-INT-0020",
+    "ARC-QUIC-INT-0021",
+    "WI-QUIC-INT-0021",
+    "VER-QUIC-INT-0021"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -502,6 +508,7 @@
         ],
         "x_code_refs": [
           ".github/workflows/interop-runner-handshake.yml",
+          "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
           "scripts/interop/Invoke-QuicInteropRunner.ps1",
           "scripts/interop/README.md",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0016.cs"
@@ -747,7 +754,7 @@
     {
       "id": "REQ-QUIC-INT-0023",
       "title": "Formalize the quic-go client download-liveness slice",
-      "statement": "The repository MUST keep the remaining Incursa-side major-peer candidate bounded to the `quic-go` client `transfer` and `keyupdate` drain path, complete the download when the known mounted source-length body has been transferred instead of waiting for peer EOF, and keep the `msquic` `TLS alert 50` / termination cells outside that local candidate set. This slice MUST preserve the bounded client download-liveness contract and MUST NOT widen into a generic keepalive policy, server-role behavior, or a broad public API rewrite.",
+      "statement": "The repository MUST keep the remaining Incursa-side major-peer candidate bounded to the `quic-go` client `transfer` and `keyupdate` drain path, complete the download when the known mounted source-length body has been transferred instead of waiting for peer EOF, preserve the bounded client download-liveness contract, keep the `msquic` `TLS alert 50` / termination cells outside that local candidate set, and avoid widening into a generic keepalive policy, server-role behavior, or a broad public API rewrite.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0017"
@@ -779,7 +786,7 @@
     {
       "id": "REQ-QUIC-INT-0024",
       "title": "Classify the msquic major-peer failures as peer-side blocked evidence",
-      "statement": "The repository MUST keep the `msquic` major-peer evidence cluster classified as peer-side blocked evidence when the preserved major-peer run records `peer-tls-alert-50` or `peer-connection-terminated` outcomes across the `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` cells. This slice MUST preserve the advisory outcome classes, MUST not recast the cluster as an Incursa-side transport defect without new evidence, and MUST remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "statement": "The repository MUST keep the `msquic` major-peer evidence cluster classified as peer-side blocked evidence when the preserved major-peer run records `peer-tls-alert-50` or `peer-connection-terminated` outcomes across the `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` cells, preserve the advisory outcome classes, avoid recasting the cluster as an Incursa-side transport defect without new evidence, and remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0018"
@@ -813,7 +820,7 @@
     {
       "id": "REQ-QUIC-INT-0025",
       "title": "Classify the connectionmigration source-address blocker as a distinct hosted proof lane",
-      "statement": "The repository MUST keep the hosted `connectionmigration-server-proof` lane classified as a source-address blocked advisory until a fresh proof run shows the first server flight sourced from the original server address instead of the preferred migration address. The lane MUST preserve the `preferred_lft 0` setup for the preferred migration address so the address remains reachable without becoming the kernel-preferred source for the original-path first flight, and the lane MUST remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "statement": "The repository MUST keep the hosted `connectionmigration-server-proof` lane classified as a source-address blocked advisory until a fresh proof run shows the first server flight sourced from the original server address instead of the preferred migration address, preserve the `preferred_lft 0` setup for the preferred migration address so the address remains reachable without becoming the kernel-preferred source for the original-path first flight, and remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0019"
@@ -842,6 +849,103 @@
       "notes": [
         "This formalizes the hosted blocker only. It does not claim server-side path promotion or rebind support.",
         "The preferred migration address stays configured with `preferred_lft 0` so the lane remains reachable for migration without hijacking the original-path first flight."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0026",
+      "title": "Track simulator-backed correctness scenarios separately from support promotion",
+      "statement": "The repository MUST define a simulator-backed scenario model that records each planned network-condition scenario with a stable scenario identifier, explicit classification as correctness, advisory-interop, or performance-only, the upstream simulator profile and source reference, exact parameters, the local role and peer shape, the requirement IDs being exercised or the accounting-only requirement anchor, the expected observable behavior, the required evidence bundle, the promotion status, separation from broad support claims until linked verification records passing evidence for the bounded requirement set, and separation between simulator settings as evidence inputs, requirement statements as normative claims, and verification artifacts as proof records.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0020"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0020"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0020"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0019",
+          "REQ-QUIC-INT-0022",
+          "REQ-QUIC-INT-0025",
+          "SPEC-QUIC-RFC9000",
+          "SPEC-QUIC-RFC9002",
+          "SPEC-QUIC-CRT"
+        ],
+        "x_code_refs": [
+          "docs/network-simulator-correctness-plan.md",
+          "scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1",
+          "specs/architecture/quic/ARC-QUIC-INT-0020.json",
+          "specs/work-items/quic/WI-QUIC-INT-0020.json",
+          "specs/verification/quic/VER-QUIC-INT-0020.json",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0026.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::DryRunPrintsBaselineScenarioPlanWithoutCreatingArtifacts",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::DryRunPrintsDroplistScenarioPlanWithMappedRecoveryRequirements",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::LossScenarioRequiresAnExplicitDroplist",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::EvidenceOnlyPathPreservesMinimumScenarioEvidenceBundle",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::MissingSimulatorComposeFilePreservesPreflightFailureEvidence",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::SimulatorNonZeroExitPreservesFailureEvidence",
+          "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs::ExecuteWithoutExplicitEndpointsStagesIncursaEndpointContextsAndComposeOverride",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0026.cs::SimulatorScenarioAccountingIsTraceLinkedAcrossCanonicalArtifacts",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0026.cs::SimulatorScenarioAccountingDoesNotPromoteAdvisoryOrPerformanceRows"
+        ]
+      },
+      "notes": [
+        "The upstream simulator supplies network conditions such as point-to-point delay, bandwidth, queue size, packet drop or corruption rates, droplists, blackhole windows, rebinding, and cross-traffic. The correctness claim still belongs to the linked requirement and verification evidence.",
+        "Advisory interop and performance-only scenarios can be tracked by the model, but they do not promote protocol correctness unless a separate mapped requirement set and passing evidence say so.",
+        "This slice tracks the scenario model plus the first narrow helper and test surface. It does not change runtime transport behavior, workflow dispatch, or broad support claims."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0027",
+      "title": "Provide a manual all-upstream implementation handshake matrix profile",
+      "statement": "The repository MUST provide an explicit manually dispatched hosted-CI all-implementation handshake matrix profile that reads the upstream QUIC interop-runner implementation registry at dispatch time, runs Incursa.Quic as the local client against every upstream server-capable implementation slot, runs Incursa.Quic as the local server against every upstream client-capable implementation slot, uses the `handshake` testcase only, uploads a distinct artifact bundle for every attempted role and peer cell, and remains advisory, opt-in, outside ordinary push, pull-request, build, test, package, upstream-runner-registry, and support-readiness gates.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0021"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0018",
+          "REQ-QUIC-INT-0019",
+          "REQ-QUIC-INT-0026",
+          "SPEC-QUIC-CRT",
+          "SPEC-QUIC-RFC9001"
+        ],
+        "x_code_refs": [
+          ".github/workflows/interop-runner-handshake.yml",
+          "scripts/interop/Invoke-QuicInteropRunner.ps1",
+          "scripts/interop/README.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0021.json",
+          "specs/work-items/quic/WI-QUIC-INT-0021.json",
+          "specs/verification/quic/VER-QUIC-INT-0021.json",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs::DryRunExpandsAllPeerImplementationsByLocalRole",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs::DryRunRejectsAllPeerImplementationsWhenMixedWithExplicitSlots",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs::AllImplementationHandshakeMatrixIsTraceLinkedAndManualOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs::AllImplementationHandshakeMatrixDoesNotClaimEveryTestcaseOrUpstreamRegistryParticipation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs::ClientRoleHandshakeCanDownloadWhenTheLocalSourceLengthIsUnavailable"
+        ]
+      },
+      "notes": [
+        "The upstream registry source is `implementations_quic.json` from `quic-interop/quic-interop-runner`; role compatibility derives from each entry's `role` field.",
+        "Client-role all-upstream cells may receive a runner-generated response body whose source file is mounted only into the peer server container; the harness uses the known source-length completion boundary when that local source file is available and otherwise reads the response until peer FIN under the existing response timeout.",
+        "The local helper accepts `-PeerImplementationSlots all` for role-aware local planning, but the hosted profile keeps this first all-upstream surface handshake-only.",
+        "This profile is evidence collection and peer characterization, not a broad interop-readiness or protocol-correctness claim for every testcase."
       ]
     }
   ]

@@ -79,6 +79,60 @@ public sealed class InteropRunnerScriptDryRunTests
     }
 
     [Fact]
+    public async Task DryRunExpandsAllPeerImplementationsByLocalRole()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult clientResult = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "all",
+                "handshake"));
+
+        ScriptRunResult serverResult = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "server",
+                "nginx",
+                "all",
+                "handshake"));
+
+        Assert.Equal(0, clientResult.ExitCode);
+        Assert.True(string.IsNullOrEmpty(clientResult.ExceptionMessage));
+        Assert.Equal("quic-go,msquic,nginx,haproxy", GetPlanValue(clientResult.CombinedOutput, "Peer implementation slots"));
+        Assert.Equal("chrome", GetPlanValue(clientResult.CombinedOutput, "Runner client implementations"));
+        Assert.Equal("quic-go,msquic,nginx,haproxy", GetPlanValue(clientResult.CombinedOutput, "Runner server implementations"));
+
+        Assert.Equal(0, serverResult.ExitCode);
+        Assert.True(string.IsNullOrEmpty(serverResult.ExceptionMessage));
+        Assert.Equal("chrome,quic-go,msquic", GetPlanValue(serverResult.CombinedOutput, "Peer implementation slots"));
+        Assert.Equal("chrome,quic-go,msquic", GetPlanValue(serverResult.CombinedOutput, "Runner client implementations"));
+        Assert.Equal("nginx", GetPlanValue(serverResult.CombinedOutput, "Runner server implementations"));
+    }
+
+    [Fact]
+    public async Task DryRunRejectsAllPeerImplementationsWhenMixedWithExplicitSlots()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "all,quic-go",
+                "handshake"));
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains(
+            "PeerImplementationSlots cannot mix explicit implementation slots with 'all'.",
+            result.CombinedOutput,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task DryRunAcceptsDocumentedInventoryCellsAndKeepsThemExplicit()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -364,6 +418,18 @@ public sealed class InteropRunnerScriptDryRunTests
             Directory.CreateDirectory(RepoRoot);
             Directory.CreateDirectory(RunnerRoot);
             Directory.CreateDirectory(toolRoot);
+
+            File.WriteAllText(
+                Path.Combine(RunnerRoot, "implementations_quic.json"),
+                """
+                {
+                  "chrome": { "role": "client" },
+                  "quic-go": { "role": "both" },
+                  "msquic": { "role": "both" },
+                  "nginx": { "role": "server" },
+                  "haproxy": { "role": "server" }
+                }
+                """);
 
             CreateCommandStubs(toolRoot, DockerSentinelPath);
             powerShellExecutable = ResolvePowerShellExecutable();

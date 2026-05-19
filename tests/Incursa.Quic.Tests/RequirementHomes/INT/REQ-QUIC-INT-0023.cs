@@ -23,8 +23,8 @@ public sealed class REQ_QUIC_INT_0023
         Assert.Contains("WI-QUIC-INT-0017", spec, StringComparison.Ordinal);
         Assert.Contains("VER-QUIC-INT-0017", spec, StringComparison.Ordinal);
         Assert.Contains("interop-quic-go-client-download-liveness", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("formalized as `REQ-QUIC-INT-0023`", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("quic-go` client `transfer` and `keyupdate`", gapLedger, StringComparison.Ordinal);
+        Assert.Contains("closed as `REQ-QUIC-INT-0023`", gapLedger, StringComparison.Ordinal);
+        Assert.Contains("quic-go client `transfer` and `keyupdate`", gapLedger, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0023", currentStatus, StringComparison.Ordinal);
         Assert.Contains("quic-go client `transfer`/`keyupdate` drain path", currentStatus, StringComparison.Ordinal);
         Assert.Contains("known mounted source-length body", currentStatus, StringComparison.OrdinalIgnoreCase);

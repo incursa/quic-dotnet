@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0020",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Simulator-Backed Correctness Scenario Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define how the repository tracks simulator-backed network-condition scenarios as requirement-linked correctness evidence without turning the simulator itself into a support oracle.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "SPEC-QUIC-RFC9000",
+    "SPEC-QUIC-RFC9002",
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-INT-0020",
+    "VER-QUIC-INT-0020"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0026"
+  ],
+  "key_components": [
+    "docs/network-simulator-correctness-plan.md",
+    "scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "specs/verification/quic/VER-QUIC-INT-0020.json",
+    "tests/Incursa.Quic.Tests/NetworkSimulatorScenarioScriptTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0026.cs",
+    "benchmarks/README.md",
+    "artifacts/network-simulator"
+  ],
+  "design_summary": "The simulator-backed lane is a scenario registry and evidence model layered over existing QUIC requirements. Each scenario records a stable scenario id, classification, upstream simulator profile, upstream source reference, concrete simulator parameters, local role, peer shape, mapped requirement ids or accounting-only anchor, expected observable result, evidence bundle, status, and promotion rule. Correctness scenarios must point back to RFC, CRT, or INT requirements; advisory interop scenarios remain characterization surfaces until separate verification promotes a bounded requirement claim; performance-only scenarios remain separate and route through benchmark reporting. The first helper surface is intentionally narrow: it can plan and evidence only `SIM-QUIC-BASE-0001` and `SIM-QUIC-LOSS-0001` while preserving simulator invocation metadata under `artifacts/network-simulator`. Passing a simulator run promotes only the bounded mapped requirement claim, not broad implementation support.",
+  "alternatives_considered": [
+    "Treat every successful simulator run as broad support proof. Rejected because the simulator creates network conditions but does not define the protocol assertion being proven.",
+    "Create one requirement per raw network parameter value such as 10 percent loss or 50 ms delay. Rejected because the normative behavior is the QUIC rule; parameter values belong in verification scenarios unless a product support tier intentionally adopts them as guarantees.",
+    "Keep simulator planning only in free-form docs. Rejected because scenario status and promotion rules need stable requirement, work-item, and verification links.",
+    "Make the first simulator lane a blocking CI gate. Rejected until setup cost, image drift, evidence stability, and failure classification are understood."
+  ],
+  "edge_cases_and_constraints": [
+    "A scenario classification must be correctness, advisory-interop, or performance-only.",
+    "A scenario status can be planned, implemented, passing, failing, blocked, flaky, or performance-only.",
+    "Scenario evidence must preserve logs, runner reports when applicable, qlog, packet captures, simulator stdout, and the exact simulator profile parameters.",
+    "Scenario evidence must preserve the upstream simulator source reference or pinned commit/path used to interpret the profile parameters.",
+    "A performance-only result must not be used as correctness proof unless it also checks the mapped protocol behavior.",
+    "Interop peer failures, simulator infrastructure failures, and Incursa-side failures must remain distinguishable.",
+    "Simulator settings are evidence inputs, requirement statements are the normative claims, and verification artifacts are the proof record.",
+    "The first implementation should be manual and advisory until evidence stability is demonstrated.",
+    "The first helper surface must not introduce runtime transport changes, hosted workflow dispatch, or broad scenario matrix expansion."
+  ],
+  "data_and_state_considerations": "Scenario definitions are planned in documentation and canonical verification artifacts. Execution evidence should be written under `artifacts/network-simulator/<scenario-id>/<run-id>/` or an equivalent uploaded artifact root. The first helper writes a scenario summary, invocation log, simulator stdout/stderr, artifact tree, optional staged endpoint Docker contexts, and optional docker-compose override file before any later qlog/pcap analysis is claimed. Generated summaries can later be added under `specs/generated/quic/` once the scenario schema is implemented.",
+  "risks": [
+    "Readers may confuse a network-condition scenario with a formal support tier if promotion language is too broad.",
+    "Simulator image or upstream scenario drift can change results without source changes in this repository.",
+    "Random drop and corruption profiles can introduce flakiness unless deterministic droplist or repeated-run policy is defined for proof-grade cases.",
+    "Large matrices can become expensive before the first few scenarios prove diagnostic value."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scenario Fields",
+      "content": "Each scenario should carry `scenario_id`, `classification`, `upstream_profile`, `upstream_reference`, `parameters`, `local_role`, `peer_shape`, `mapped_requirements`, `expected_observables`, `evidence_required`, `status`, and `promotion_rule`. Correctness rows require mapped protocol requirements before promotion. Advisory and performance-only rows may use `REQ-QUIC-INT-0026` as the accounting anchor, but their promotion rule must say that no protocol correctness claim is promoted."
+    },
+    {
+      "heading": "Initial Scenario Families",
+      "content": "The initial planning families are baseline point-to-point transfer, deterministic packet loss, bounded blackhole/PTO recovery, deterministic reordering, corruption discard behavior, rebind or migration characterization, and TCP or UDP cross-traffic. The first implementation wave should stop at baseline point-to-point and deterministic packet loss until evidence stability is demonstrated. Helper-owned endpoint staging may prepare Incursa.Quic client/server build contexts, mounted source/download/certificate roots, and compose overrides for those two scenarios only. Only the scenarios mapped to explicit requirements count as correctness proof."
+    }
+  ]
+}

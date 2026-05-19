@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0021",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC All-Upstream Handshake Matrix Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the first manual all-upstream implementation interop profile by deriving role-compatible handshake cells from the upstream runner registry and preserving one artifact bundle per role and peer.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0021",
+    "VER-QUIC-INT-0021"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0021"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0021"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0027"
+  ],
+  "planned_changes": "- Add `all-implementation-matrix` as a manual workflow-dispatch coverage profile.\n- Generate its matrix from the checked-out upstream `implementations_quic.json` instead of hardcoding the current registry.\n- Run Incursa.Quic as local client against every server-capable upstream implementation slot and as local server against every client-capable upstream implementation slot.\n- Keep the first all-upstream profile handshake-only and advisory.\n- Add role-aware local helper expansion for `-PeerImplementationSlots all` so maintainers can dry-run the peer sets locally.\n- Let client-role cells use the known source-length completion boundary when available and otherwise read until peer FIN when the upstream runner mounts the generated source file only into the peer server container.\n- Document the local planning commands and hosted workflow dispatch command.\n- Add focused tests that prove role-aware expansion and the advisory trace boundary.",
+  "completion_notes": "Implemented the first all-upstream implementation handshake matrix surface. The hosted profile now creates role-compatible handshake cells from the upstream runner registry at dispatch time, pre-pulls each selected peer image, runs the existing helper with the appropriate local replacement slot, and uploads per-cell artifacts. The local helper expands `-PeerImplementationSlots all` in split-role mode and rejects mixed explicit/all input. Client-role downloads retain the known source-length completion boundary when the source file is locally mounted and fall back to reading until peer FIN when the upstream runner generated the response body only for the peer server container. This work does not mutate the upstream runner checkout, add Incursa.Quic to the upstream registry, run every testcase, or claim support readiness.",
+  "out_of_scope": [
+    "runtime transport changes",
+    "automatic push or pull-request gating",
+    "upstream registry participation",
+    "every-testcase matrix expansion",
+    "HTTP/3 coverage",
+    "support-readiness promotion",
+    "changing the external runner repository"
+  ],
+  "verification_plan": "Run focused helper dry-run tests, requirement-home tests for `REQ-QUIC-INT-0027`, and core SpecTrace JSON validation. Hosted proof remains a manual follow-up that will preserve per-cell artifacts after dispatch."
+}
