@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-19 local QUIC-protocol audit. HTTP/3 is intentionally out of scope. SpecTrace core validation passed for 568 JSON artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,217/5,217, and a deterministic local quic-go handshake fixture refresh passed through the interop runner. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration source-address proof remains open, `SIM-QUIC-LOSS-0001` deterministic simulator loss evidence remains open, and broader non-HTTP/3 all-upstream testcase coverage remains advisory outside the currently green handshake matrix.
+Last verified: 2026-05-19 local QUIC-protocol audit plus local all-upstream client-role QUIC testcase refresh. HTTP/3 is intentionally out of scope. SpecTrace core validation passed for 568 JSON artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,217/5,217 before the focused ACK-threshold topoff, and the current focused ACK/stream/key-update/interoperability tests passed. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration source-address proof remains open, `SIM-QUIC-LOSS-0001` deterministic simulator loss evidence remains open, xquic remains the only failed local client-role all-upstream `transfer`/`keyupdate`/`chacha20` peer cluster, and broader non-HTTP/3 server-role all-upstream testcase coverage remains advisory outside the currently green handshake matrix.
 
 ## 2026-05-19 QUIC Protocol Audit
 
@@ -88,6 +88,40 @@ or ACK in admission validation, the managed client ClientHello carries the
 configured SNI target for peers that require it, and the client transcript
 parser accepts zero-length `server_name` acknowledgement data in peer
 EncryptedExtensions while still rejecting malformed or unknown extensions.
+
+## 2026-05-19 INT All-Upstream Client Non-HTTP/3 Refresh
+
+The local client-role non-HTTP/3 sweep for `transfer`, `keyupdate`, and
+`chacha20` now has current all-upstream evidence under
+`.artifacts/interop-runner/all-upstream-streamdata-keyupdate-local/client/20260519-121832639-client-chrome`.
+The run reports green `transfer` and `keyupdate` cells for 15 of 16 upstream
+server-capable peers, green `chacha20` cells for 14 of 16 peers, and
+`chacha20` as unknown/unsupported for `mvfst` and `go-x-net`. The only failed
+peer cluster is `xquic`, where all three cells time out after the local client
+reads 35,400 bytes. A focused rerun after the ACK-threshold topoff still times
+out under
+`.artifacts/interop-runner/debug-client-transfer-xquic-after-ack-threshold/20260519-140609871-client-chrome`.
+Preserved xquic server logs show the peer sends STREAM data until its
+congestion window fills around 45 KB while recording only early client ACKs,
+but the paired packet capture shows the simulator captured later
+client-to-server datagrams with zero interface drops. The residual candidate is
+therefore an xquic-specific ingress or packet-opening liveness edge rather than
+the generic stream-read wake-up bug or a generic local ACK-cadence silence.
+
+The generic stream-data failure was local and is now covered by focused tests:
+out-of-order STREAM data can be buffered without waking ordered readers, and a
+later gap-filling retransmission now wakes the pending ordered read. The
+receiver ACK scheduler also re-arms the two-packet delayed-ACK threshold after
+a prior ACK while still delaying after only one new ack-eliciting packet. The
+representative live reruns prove the fix across quic-go `transfer`, quic-go
+`chacha20`, and quic-go `keyupdate`; the `keyupdate` rerun also proves the
+harness now treats an already-observed one-RTT key update as valid cell evidence
+without loosening the runtime's repeated-update guard.
+
+This refresh is still advisory evidence. It does not promote HTTP/3, migration,
+server-role non-handshake coverage, or support readiness, and it keeps the
+xquic residual as a follow-up investigation rather than hiding it behind the
+mostly green matrix.
 
 ## 2026-05-12 INT Major Peer Matrix Profile
 

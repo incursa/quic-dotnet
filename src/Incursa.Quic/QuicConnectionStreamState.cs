@@ -891,6 +891,7 @@ internal sealed class QuicConnectionStreamState
                 state.AccountedBytes,
                 state.ReadOffset,
                 state.BufferedReadableBytes,
+                HasContiguousReadableBytes(state),
                 state.ReceiveAbortErrorCode,
                 state.HasReceiveAbortErrorCode,
                 state.SendAbortErrorCode,
@@ -1300,6 +1301,13 @@ internal sealed class QuicConnectionStreamState
 
         state.BufferedSegments.Clear();
         state.BufferedSegments.AddRange(updated);
+    }
+
+    private static bool HasContiguousReadableBytes(StreamState state)
+    {
+        return state.BufferedSegments.Count > 0
+            && state.BufferedSegments[0].Offset <= state.ReadOffset
+            && state.BufferedSegments[0].End > state.ReadOffset;
     }
 
     private sealed class StreamState(

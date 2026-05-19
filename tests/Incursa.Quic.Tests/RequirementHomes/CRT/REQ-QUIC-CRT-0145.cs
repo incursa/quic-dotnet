@@ -25,6 +25,7 @@ public sealed class REQ_QUIC_CRT_0145
     {
         using QuicConnectionRuntime runtime = CreateFinishedClientRuntime();
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId(KeyPhaseDestinationConnectionId));
+        Assert.False(runtime.HasObservedOneRttKeyUpdate);
 
         QuicTlsPacketProtectionMaterial priorProtectMaterial = runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
         QuicConnectionTransitionResult result = InstallFirstObservedKeyPhaseTransition(runtime);
@@ -35,6 +36,7 @@ public sealed class REQ_QUIC_CRT_0145
         Assert.True(runtime.TlsState.OneRttKeysAvailable);
         Assert.True(runtime.TlsState.KeyUpdateInstalled);
         Assert.Equal(1UL, runtime.TlsState.CurrentOneRttKeyPhase);
+        Assert.True(runtime.HasObservedOneRttKeyUpdate);
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
         Assert.False(priorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));

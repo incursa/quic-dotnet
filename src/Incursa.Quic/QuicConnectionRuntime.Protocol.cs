@@ -1883,8 +1883,8 @@ internal sealed partial class QuicConnectionRuntime
                 if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                         streamFrame.StreamId.Value,
                         out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && previousStreamSnapshot.BufferedReadableBytes == 0
-                    && (updatedReadableSnapshot.BufferedReadableBytes > 0
+                    && !previousStreamSnapshot.HasContiguousReadableBytes
+                    && (updatedReadableSnapshot.HasContiguousReadableBytes
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
                 {
@@ -2159,8 +2159,8 @@ internal sealed partial class QuicConnectionRuntime
                 if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                         streamFrame.StreamId.Value,
                         out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && previousStreamSnapshot.BufferedReadableBytes == 0
-                    && (updatedReadableSnapshot.BufferedReadableBytes > 0
+                    && !previousStreamSnapshot.HasContiguousReadableBytes
+                    && (updatedReadableSnapshot.HasContiguousReadableBytes
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
                 {

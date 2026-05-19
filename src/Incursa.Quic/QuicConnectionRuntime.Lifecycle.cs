@@ -372,6 +372,10 @@ internal sealed partial class QuicConnectionRuntime
         return tlsBridgeDriver.TryInstallOneRttKeyUpdate();
     }
 
+    internal bool HasObservedOneRttKeyUpdate =>
+        tlsState.KeyUpdateInstalled
+        && tlsState.CurrentOneRttKeyPhase != 0;
+
     private static QuicConnectionCloseMetadata CreatePeerConnectionCloseReplyMetadata()
     {
         return new QuicConnectionCloseMetadata(

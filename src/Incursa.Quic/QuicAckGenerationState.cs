@@ -120,19 +120,18 @@ internal sealed class QuicAckGenerationState
             return true;
         }
 
-        if (!TryGetAckElicitingStats(
+        if (!TryGetAckElicitingStatsAfterLastAckTrigger(
                 state,
-                out ulong largestAckElicitingPacketNumber,
-                out ulong largestAckElicitingReceivedAtMicros,
+                out _,
+                out ulong earliestUnacknowledgedAckElicitingReceivedAtMicros,
                 out int ackElicitingPacketCount))
         {
             return false;
         }
 
-        if (state.LastAckFrameTriggerPacketNumber.HasValue
-            && largestAckElicitingPacketNumber <= state.LastAckFrameTriggerPacketNumber.Value)
+        if (ackElicitingPacketCount >= minimumAckElicitingPacketsBeforeDelayedAck)
         {
-            return false;
+            return true;
         }
 
         if (state.LastAckFrameSentAtMicros.HasValue
@@ -141,8 +140,7 @@ internal sealed class QuicAckGenerationState
             return false;
         }
 
-        return ackElicitingPacketCount >= minimumAckElicitingPacketsBeforeDelayedAck
-            || GetElapsedMicros(nowMicros, largestAckElicitingReceivedAtMicros) >= maxAckDelayMicros;
+        return GetElapsedMicros(nowMicros, earliestUnacknowledgedAckElicitingReceivedAtMicros) >= maxAckDelayMicros;
     }
 
     /// <summary>
@@ -160,18 +158,41 @@ internal sealed class QuicAckGenerationState
             return true;
         }
 
-        if (!TryGetAckElicitingStats(state, out ulong largestAckElicitingPacketNumber, out _, out int ackElicitingPacketCount))
+        return TryGetAckElicitingStatsAfterLastAckTrigger(state, out _, out _, out int ackElicitingPacketCount)
+            && ackElicitingPacketCount > 0;
+    }
+
+    private static bool TryGetAckElicitingStatsAfterLastAckTrigger(
+        SpaceState state,
+        out ulong largestAckElicitingPacketNumber,
+        out ulong earliestAckElicitingReceivedAtMicros,
+        out int ackElicitingPacketCount)
+    {
+        largestAckElicitingPacketNumber = default;
+        earliestAckElicitingReceivedAtMicros = default;
+        ackElicitingPacketCount = 0;
+
+        bool found = false;
+        foreach (KeyValuePair<ulong, PacketReceipt> entry in state.Receipts)
         {
-            return false;
+            if (!entry.Value.AckEliciting
+                || (state.LastAckFrameTriggerPacketNumber.HasValue
+                    && entry.Key <= state.LastAckFrameTriggerPacketNumber.Value))
+            {
+                continue;
+            }
+
+            if (!found)
+            {
+                earliestAckElicitingReceivedAtMicros = entry.Value.ReceivedAtMicros;
+                found = true;
+            }
+
+            ackElicitingPacketCount++;
+            largestAckElicitingPacketNumber = entry.Key;
         }
 
-        if (state.LastAckFrameTriggerPacketNumber.HasValue
-            && largestAckElicitingPacketNumber <= state.LastAckFrameTriggerPacketNumber.Value)
-        {
-            return false;
-        }
-
-        return ackElicitingPacketCount > 0;
+        return found;
     }
 
     /// <summary>

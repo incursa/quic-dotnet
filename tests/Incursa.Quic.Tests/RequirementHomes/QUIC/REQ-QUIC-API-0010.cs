@@ -264,6 +264,92 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RuntimeIngressReplay_GapFillingRetransmissionWakesPendingOrderedRead()
+    {
+        // Provenance:
+        // C:\src\incursa\quic-dotnet\.artifacts\interop-runner\all-upstream-nonhandshake-local\client\20260519-104925879-client-chrome
+        //   runner-logs\quic-go_chrome\transfer\server\log.txt:
+        //     packets 34-37 were declared lost after later stream data had already been received and ACKed.
+        //   runner-logs\quic-go_chrome\transfer\output.txt:
+        //     the client read through offset 34015 and then timed out despite quic-go retransmitting the gap.
+        // A pending ordered stream read must be woken when retransmitted data fills the gap at the current read offset,
+        // even when later out-of-order bytes were already buffered.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            localBidirectionalReceiveLimit: 4096);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream requestStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, requestStream.Id);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] tail = [0x33, 0x44];
+        byte[] tailPayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: tail,
+            offset: 2);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            tailPayload,
+            minimumPacketNumberExclusive: 5,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out _,
+            out byte[] tailPacket));
+
+        QuicConnectionTransitionResult tailResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath.Value.Identity,
+                tailPacket),
+            nowTicks: 10);
+        Assert.True(tailResult.StateChanged, DescribeStream(requestStream));
+        Assert.Contains("HasContiguousReadableBytes=False", DescribeStream(requestStream), StringComparison.Ordinal);
+
+        byte[] responseBuffer = new byte[4];
+        Task<int> pendingRead = requestStream.ReadAsync(responseBuffer, 0, responseBuffer.Length);
+        await Task.Delay(150);
+        Assert.False(
+            pendingRead.IsCompleted,
+            $"The read should still be waiting while only the out-of-order tail is buffered. {DescribeStream(requestStream)}");
+
+        byte[] head = [0x11, 0x22];
+        byte[] headPayload = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: (ulong)requestStream.Id,
+            streamData: head,
+            offset: 0);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            headPayload,
+            minimumPacketNumberExclusive: 9,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out _,
+            out byte[] headPacket));
+
+        QuicConnectionTransitionResult headResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                runtime.ActivePath.Value.Identity,
+                headPacket),
+            nowTicks: 11);
+        Assert.True(headResult.StateChanged, DescribeStream(requestStream));
+
+        Assert.Equal(4, await pendingRead.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.True(new byte[] { 0x11, 0x22, 0x33, 0x44 }.AsSpan().SequenceEqual(responseBuffer));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
@@ -761,6 +847,7 @@ public sealed class REQ_QUIC_API_0010
                 $"UniqueBytesSent={snapshot.UniqueBytesSent}",
                 $"UniqueBytesReceived={snapshot.UniqueBytesReceived}",
                 $"BufferedReadableBytes={snapshot.BufferedReadableBytes}",
+                $"HasContiguousReadableBytes={snapshot.HasContiguousReadableBytes}",
                 $"HasFinalSize={snapshot.HasFinalSize}",
                 $"FinalSize={snapshot.FinalSize}",
                 $"ReadOffset={snapshot.ReadOffset}",

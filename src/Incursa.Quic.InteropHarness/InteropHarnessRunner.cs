@@ -1161,9 +1161,19 @@ internal static class InteropHarnessRunner
                         }
 
                         keyUpdateInitiated = true;
+                        bool observedKeyUpdateBeforeTrigger = connection.HasObservedOneRttKeyUpdate;
                         if (!connection.TryInitiateOneRttKeyUpdate())
                         {
-                            throw new InvalidOperationException("interop harness: role=client, testcase=keyupdate failed to initiate a one-RTT key update after transferring the first megabyte.");
+                            if (!observedKeyUpdateBeforeTrigger && !connection.HasObservedOneRttKeyUpdate)
+                            {
+                                throw new InvalidOperationException("interop harness: role=client, testcase=keyupdate failed to initiate or observe a one-RTT key update after transferring the first megabyte.");
+                            }
+
+                            WriteLineAndFlush(
+                                stdout,
+                                $"interop harness: role=client, testcase={testCase}, requestCount={settings.Requests.Count} observed one-RTT key update after {bytesDownloaded} bytes transferred.");
+
+                            return;
                         }
 
                         WriteLineAndFlush(

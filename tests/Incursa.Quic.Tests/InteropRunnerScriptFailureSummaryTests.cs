@@ -599,7 +599,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.Contains("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Advisory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("managed keyupdate download", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("one-RTT key-update initiation marker", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("one-RTT key-update initiation/observation marker", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
 
         string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
@@ -634,7 +634,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
         Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
-            "did not contain a managed keyupdate download with a one-RTT key-update initiation marker",
+            "did not contain a managed keyupdate download with a one-RTT key-update initiation/observation marker",
             output,
             StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);

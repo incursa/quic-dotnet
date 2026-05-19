@@ -32,6 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0002
         Assert.Equal(4UL, sizeKnownSnapshot.FinalSize);
         Assert.Equal(2UL, sizeKnownSnapshot.UniqueBytesReceived);
         Assert.Equal(2, sizeKnownSnapshot.BufferedReadableBytes);
+        Assert.False(sizeKnownSnapshot.HasContiguousReadableBytes);
 
         Assert.False(state.TryReadStreamData(
             5,
@@ -49,6 +50,8 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0002
 
         Assert.True(state.TryReceiveStreamFrame(headFrame, out errorCode));
         Assert.Equal(default, errorCode);
+        Assert.True(state.TryGetStreamSnapshot(5, out QuicConnectionStreamSnapshot contiguousSnapshot));
+        Assert.True(contiguousSnapshot.HasContiguousReadableBytes);
 
         Span<byte> destination = stackalloc byte[4];
         Assert.True(state.TryReadStreamData(

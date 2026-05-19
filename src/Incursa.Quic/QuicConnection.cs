@@ -93,6 +93,15 @@ public sealed class QuicConnection : IAsyncDisposable
         return runtime.TryInitiateOneRttKeyUpdate();
     }
 
+    internal bool HasObservedOneRttKeyUpdate
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+            return runtime.HasObservedOneRttKeyUpdate;
+        }
+    }
+
     internal bool TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);

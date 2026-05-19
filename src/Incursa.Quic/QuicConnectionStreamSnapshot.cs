@@ -15,7 +15,8 @@ namespace Incursa.Quic;
 /// <param name="UniqueBytesReceived">The number of unique bytes received on the stream.</param>
 /// <param name="AccountedBytesReceived">The number of received bytes already counted toward buffered/readable state.</param>
 /// <param name="ReadOffset">The current application read offset.</param>
-/// <param name="BufferedReadableBytes">The number of bytes currently buffered and readable by the application.</param>
+/// <param name="BufferedReadableBytes">The number of bytes currently buffered for the application.</param>
+/// <param name="HasContiguousReadableBytes">Indicates whether buffered data starts at the current read offset.</param>
 /// <param name="ReceiveAbortErrorCode">The receive-side application error code, when present.</param>
 /// <param name="HasReceiveAbortErrorCode">Indicates whether <paramref name="ReceiveAbortErrorCode" /> is valid.</param>
 /// <param name="SendAbortErrorCode">The send-side application error code, when present.</param>
@@ -34,6 +35,7 @@ internal readonly record struct QuicConnectionStreamSnapshot(
     ulong AccountedBytesReceived,
     ulong ReadOffset,
     int BufferedReadableBytes,
+    bool HasContiguousReadableBytes,
     ulong ReceiveAbortErrorCode,
     bool HasReceiveAbortErrorCode,
     ulong SendAbortErrorCode,

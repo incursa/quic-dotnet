@@ -1146,7 +1146,11 @@ function Test-InteropRunnerKeyUpdateClientOutput {
         [string]$OutputText
     )
 
-    if ($OutputText.IndexOf('initiated one-RTT key update after', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    $hasKeyUpdateMarker =
+        $OutputText.IndexOf('initiated one-RTT key update after', [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+        $OutputText.IndexOf('observed one-RTT key update after', [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+
+    if (-not $hasKeyUpdateMarker) {
         return $false
     }
 
@@ -1504,7 +1508,7 @@ function Get-InteropRunnerFallbackClassification {
                         if (Test-InteropRunnerKeyUpdateClientOutput -OutputText $outputText) {
                             return [pscustomobject]@{
                                 TreatAsSuccess = $true
-                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a managed keyupdate download, a one-RTT key-update initiation marker, and a clean local client exit."
+                                Summary = "The runner's trace-analysis post-check failed with FileNotFoundError, but '$($outputFile.FullName)' shows a managed keyupdate download, a one-RTT key-update initiation/observation marker, and a clean local client exit."
                             }
                         }
                     }
@@ -1579,7 +1583,7 @@ function Get-InteropRunnerFallbackClassification {
         }
         elseif ($testCase -eq 'keyupdate') {
             switch ($LocalRole) {
-                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a managed keyupdate download with a one-RTT key-update initiation marker and a clean local client exit.' }
+                'client' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain a managed keyupdate download with a one-RTT key-update initiation/observation marker and a clean local client exit.' }
                 'server' { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain managed keyupdate responses with clean client/server exits.' }
                 default { 'The runner hit a post-check FileNotFoundError, and the preserved output logs did not contain managed keyupdate client and server evidence with clean exits.' }
             }

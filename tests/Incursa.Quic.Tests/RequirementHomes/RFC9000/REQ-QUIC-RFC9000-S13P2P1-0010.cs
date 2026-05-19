@@ -84,6 +84,98 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P1-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ShouldIncludeAckFrameWithOutgoingPacket_RearmsPacketCountThresholdAfterPriorAck()
+    {
+        QuicAckGenerationState tracker = new();
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            ackEliciting: true,
+            receivedAtMicros: 1_005);
+
+        Assert.True(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 1_010,
+            maxAckDelayMicros: 25_000));
+
+        tracker.MarkAckFrameSent(
+            QuicPacketNumberSpace.ApplicationData,
+            sentAtMicros: 1_010,
+            ackOnlyPacket: true);
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            ackEliciting: true,
+            receivedAtMicros: 1_020);
+
+        Assert.False(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 1_020,
+            maxAckDelayMicros: 25_000));
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            ackEliciting: true,
+            receivedAtMicros: 1_030);
+
+        Assert.True(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 1_030,
+            maxAckDelayMicros: 25_000));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P1-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ShouldIncludeAckFrameWithOutgoingPacket_WaitsForDelayAfterOneNewAckElicitingPacket()
+    {
+        QuicAckGenerationState tracker = new();
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            ackEliciting: true,
+            receivedAtMicros: 1_005);
+
+        tracker.MarkAckFrameSent(
+            QuicPacketNumberSpace.ApplicationData,
+            sentAtMicros: 1_010,
+            ackOnlyPacket: true);
+
+        tracker.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            ackEliciting: true,
+            receivedAtMicros: 1_020);
+
+        Assert.False(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 1_100,
+            maxAckDelayMicros: 25_000));
+        Assert.True(tracker.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 26_020,
+            maxAckDelayMicros: 25_000));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task WriteAsync_DoesNotInventAckFrameWhenThereIsNoPendingAck()
