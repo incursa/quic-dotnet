@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-18 local / 2026-05-19 UTC for the INT network-simulator baseline evidence, 2026-05-16 for the INT quic-go download-liveness completion boundary note, the INT msquic peer-blocked evidence lane, and the INT connectionmigration source-address blocker note, 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
+Last verified: 2026-05-19 local for the INT all-upstream client/server handshake matrix, 2026-05-18 local / 2026-05-19 UTC for the INT network-simulator baseline evidence, 2026-05-16 for the INT quic-go download-liveness completion boundary note, the INT msquic peer-blocked evidence lane, and the INT connectionmigration source-address blocker note, 2026-05-15 for the INT major-peer matrix completion note, 2026-05-14 for the INT connectionmigration proof-lane slot wiring, captured neqo qlog replay, and preferred-address source-address blocker, and 2026-05-13 for the INT interop matrix shape, dry-run proof, live versionnegotiation runner proof, and hosted zerortt proof. RFC 9000 blocked-tail
 coverage remains last verified on
 2026-05-10 for S17P2P5P3 Retry-bootstrap packet-number-reset abort, S10P1P2
 idle-timeout guidance, S22P4 frame-type registry policy proof, S22P3
@@ -84,6 +84,23 @@ not claim broad support readiness. Local client-role cells now retain the
 known source-length completion boundary when the source file is mounted locally
 and otherwise read until peer FIN for upstream-runner generated response bodies
 that exist only in the peer server container.
+
+Local May 19, 2026 refresh evidence now proves the handshake profile across the
+current upstream implementation registry. Incursa.Quic as local client passed
+all 16 upstream server-capable `handshake` cells under
+`.artifacts/interop-runner/all-upstream-refresh-client-after-servername-ee/20260519-095835514-client-chrome`.
+Incursa.Quic as local server passed all 14 supported upstream client-capable
+`handshake` cells under
+`.artifacts/interop-runner/all-upstream-refresh-server-after-admission/20260519-092739413-server-nginx`;
+the upstream Chrome client row is `unsupported`, not a local failure.
+
+The fixes proven by those runs are narrow: listener pre-acceptance now admits
+only the first Initial packet from a coalesced datagram before handing the full
+datagram to the runtime, the listener accepts Initial CRYPTO preceded by PING
+or ACK in admission validation, the managed client ClientHello carries the
+configured SNI target for peers that require it, and the client transcript
+parser accepts zero-length `server_name` acknowledgement data in peer
+EncryptedExtensions while still rejecting malformed or unknown extensions.
 
 ## 2026-05-12 INT Major Peer Matrix Profile
 

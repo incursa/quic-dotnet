@@ -6,7 +6,7 @@
   "title": "QUIC All-Upstream Handshake Matrix Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Workflow-shape review, local helper dry-run tests, requirement-home tests, and SpecTrace validation.",
+  "verification_method": "Workflow-shape review, local helper dry-run tests, requirement-home tests, live local all-upstream handshake runner sweeps, and SpecTrace validation.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0021",
@@ -31,6 +31,7 @@
     "Run the helper dry-run tests to confirm `-PeerImplementationSlots all` expands role-compatible peers and rejects mixed explicit/all input.",
     "Run the requirement-home copy test to confirm client-role downloads can read until peer FIN when the local source length is unavailable.",
     "Run the `REQ-QUIC-INT-0027` requirement-home tests to confirm the canonical artifacts, workflow profile, helper, and documentation keep the advisory handshake-only boundary explicit.",
+    "Run local quic-interop-runner client-role and server-role all-upstream handshake sweeps against the current upstream implementation registry.",
     "Run core SpecTrace JSON validation."
   ],
   "expected_result": "The repository exposes a manual all-upstream handshake matrix that can run Incursa.Quic as client and server against every role-compatible upstream implementation slot while preserving advisory per-cell artifacts and avoiding every-testcase or support-readiness claims.",
@@ -45,9 +46,11 @@
     "specs/architecture/quic/ARC-QUIC-INT-0021.json",
     "specs/work-items/quic/WI-QUIC-INT-0021.json",
     "tests/Incursa.Quic.Tests/InteropRunnerScriptDryRunTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0027.cs",
+    ".artifacts/interop-runner/all-upstream-refresh-client-after-servername-ee/20260519-095835514-client-chrome/runner-report.json",
+    ".artifacts/interop-runner/all-upstream-refresh-server-after-admission/20260519-092739413-server-nginx/runner-report.json"
   ],
-  "status_summary": "Passed for the local repository surface. Focused helper and requirement-home tests prove the role-aware `all` expansion, workflow/profile trace links, and handshake-only advisory boundary. Hosted all-upstream execution remains manual follow-up evidence and is not required for this workflow-surface verification.",
+  "status_summary": "Passed for the local repository surface and the May 19, 2026 local all-upstream handshake refresh. Focused helper and requirement-home tests prove the role-aware `all` expansion, workflow/profile trace links, and handshake-only advisory boundary. The local client-role sweep under `.artifacts/interop-runner/all-upstream-refresh-client-after-servername-ee/20260519-095835514-client-chrome` passed all 16 upstream server-capable handshake cells. The local server-role sweep under `.artifacts/interop-runner/all-upstream-refresh-server-after-admission/20260519-092739413-server-nginx` passed all 14 supported upstream client-capable handshake cells, with the upstream Chrome client row reported as unsupported rather than failed. Hosted all-upstream execution remains manual follow-up evidence and is not required for this workflow-surface verification.",
   "supplemental_sections": [
     {
       "heading": "Advisory Boundary",

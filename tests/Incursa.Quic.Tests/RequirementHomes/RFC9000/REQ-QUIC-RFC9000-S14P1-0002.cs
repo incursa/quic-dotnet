@@ -33,6 +33,30 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TrySliceFirstPacketForAdmission_IsolatesInitialPacketBeforeInvalidTrailingPacket()
+    {
+        byte[] initialVersionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(
+            token: [],
+            packetNumber: [0x01],
+            protectedPayload: [0xB1, 0xB2]);
+        byte[] initialPacket = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 1,
+            destinationConnectionId: [0x10, 0x11, 0x12, 0x13],
+            sourceConnectionId: [0x20, 0x21],
+            initialVersionSpecificData);
+        byte[] invalidTrailingPacket = QuicHeaderTestData.BuildShortHeader(0x18, [0x30, 0x31, 0x32]);
+        byte[] datagram = [.. initialPacket, .. invalidTrailingPacket];
+
+        Assert.True(QuicListenerPreAcceptanceIngressPolicy.TrySliceFirstPacketForAdmission(
+            datagram,
+            out ReadOnlyMemory<byte> firstPacket));
+        Assert.True(initialPacket.AsSpan().SequenceEqual(firstPacket.Span));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseShortHeader_RejectsTheInvalidCoalescedPacketOnItsOwn()

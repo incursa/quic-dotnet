@@ -59,6 +59,27 @@ public sealed class REQ_QUIC_CRT_0108
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ManagedClientHelloCarriesConfiguredServerName()
+    {
+        QuicTlsKeySchedule schedule = new(
+            CreateScalar(0x11),
+            applicationProtocols: [SslApplicationProtocol.Http3]);
+
+        Assert.True(schedule.TryCreateClientHello(
+            CreateBootstrapLocalTransportParameters(),
+            targetHost: "server4",
+            out byte[] clientHelloTranscript));
+
+        QuicResumptionClientHelloTestSupport.ParsedClientHello parsedClientHello =
+            QuicResumptionClientHelloTestSupport.ParseClientHello(clientHelloTranscript);
+
+        Assert.True(parsedClientHello.HasServerName);
+        Assert.Equal("server4", parsedClientHello.ServerName);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DeterministicLocalHandshakeKeyProducesStableClientHelloTranscript()
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);

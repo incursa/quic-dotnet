@@ -1663,6 +1663,13 @@ internal sealed class QuicTlsTranscriptProgress
                     return false;
                 }
             }
+            else if (extensionType == ServerNameExtensionType)
+            {
+                if (extensionLength != 0)
+                {
+                    return false;
+                }
+            }
             else
             {
                 return false;

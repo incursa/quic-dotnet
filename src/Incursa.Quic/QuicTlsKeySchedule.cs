@@ -1,6 +1,8 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics;
+using System.Globalization;
+using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -47,6 +49,7 @@ internal sealed class QuicTlsKeySchedule
     private const int MaximumSessionIdLength = 32;
     private const ushort TlsLegacyVersion = 0x0303;
     private const ushort Tls13Version = 0x0304;
+    private const ushort ServerNameExtensionType = 0x0000;
     private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
     private const ushort SignatureAlgorithmsExtensionType = 0x000d;
     private const ushort SupportedGroupsExtensionType = 0x000a;
@@ -95,6 +98,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
+    private static readonly IdnMapping s_idnMapping = new();
     /// <summary>
     /// Gets the RFC 9001 Appendix B usage limits used for supported packet-protection materials.
     /// </summary>
@@ -338,13 +342,33 @@ internal sealed class QuicTlsKeySchedule
     /// Creates the supported client Initial ClientHello transcript bytes for the current key share and transport parameters.
     /// </summary>
     internal bool TryCreateClientHello(QuicTransportParameters localTransportParameters, out byte[] clientHelloBytes)
-        => TryCreateClientHello(localTransportParameters, detachedResumptionTicketSnapshot: null, nowTicks: 0, out clientHelloBytes);
+        => TryCreateClientHello(localTransportParameters, targetHost: null, out clientHelloBytes);
+
+    /// <summary>
+    /// Creates the supported client Initial ClientHello transcript bytes for the current key share, target host, and transport parameters.
+    /// </summary>
+    internal bool TryCreateClientHello(
+        QuicTransportParameters localTransportParameters,
+        string? targetHost,
+        out byte[] clientHelloBytes)
+        => TryCreateClientHello(localTransportParameters, targetHost, detachedResumptionTicketSnapshot: null, nowTicks: 0, out clientHelloBytes);
 
     /// <summary>
     /// Creates the supported client Initial ClientHello transcript bytes for the current key share and transport parameters.
     /// </summary>
     internal bool TryCreateClientHello(
         QuicTransportParameters localTransportParameters,
+        QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
+        long nowTicks,
+        out byte[] clientHelloBytes)
+        => TryCreateClientHello(localTransportParameters, targetHost: null, detachedResumptionTicketSnapshot, nowTicks, out clientHelloBytes);
+
+    /// <summary>
+    /// Creates the supported client Initial ClientHello transcript bytes for the current key share, target host, and transport parameters.
+    /// </summary>
+    internal bool TryCreateClientHello(
+        QuicTransportParameters localTransportParameters,
+        string? targetHost,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
         long nowTicks,
         out byte[] clientHelloBytes)
@@ -366,13 +390,20 @@ internal sealed class QuicTlsKeySchedule
             return false;
         }
 
+        if (!TryCreateClientHelloServerNameBytes(targetHost, out byte[] serverNameBytes))
+        {
+            return false;
+        }
+
+        int serverNameExtensionLength = GetClientHelloServerNameExtensionLength(serverNameBytes);
         int supportedVersionsExtensionLength = 2 + 2 + 1 + 2;
         int applicationProtocolsExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(applicationProtocols);
         int signatureAlgorithmsExtensionLength = 2 + 2 + 2 + 2;
         int supportedGroupsExtensionLength = 2 + 2 + 2 + 2;
         int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
         int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
-        int baseExtensionsLength = supportedVersionsExtensionLength
+        int baseExtensionsLength = serverNameExtensionLength
+            + supportedVersionsExtensionLength
             + applicationProtocolsExtensionLength
             + signatureAlgorithmsExtensionLength
             + supportedGroupsExtensionLength
@@ -384,6 +415,7 @@ internal sealed class QuicTlsKeySchedule
         if (CanAttemptResumption(detachedResumptionTicketSnapshot)
             && TryCreateResumptionClientHello(
                 transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
+                serverNameBytes,
                 baseExtensionsLength,
                 detachedResumptionTicketSnapshot!,
                 nowTicks,
@@ -396,6 +428,7 @@ internal sealed class QuicTlsKeySchedule
         resumptionAttemptPending = false;
         return TryCreateInitialClientHello(
             transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
+            serverNameBytes,
             baseExtensionsLength,
             out clientHelloBytes);
     }
@@ -1849,19 +1882,21 @@ internal sealed class QuicTlsKeySchedule
 
     private bool TryCreateInitialClientHello(
         ReadOnlySpan<byte> transportParametersEncoded,
+        ReadOnlySpan<byte> serverNameBytes,
         int baseExtensionsLength,
         out byte[] clientHelloBytes)
     {
         int extensionsLength = baseExtensionsLength;
         byte[] body = new byte[43 + extensionsLength];
         WriteClientHelloPrefix(body, extensionsLength, out int index);
-        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded);
+        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded, serverNameBytes);
         clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
         return true;
     }
 
     private bool TryCreateResumptionClientHello(
         ReadOnlySpan<byte> transportParametersEncoded,
+        ReadOnlySpan<byte> serverNameBytes,
         int baseExtensionsLength,
         QuicDetachedResumptionTicketSnapshot detachedResumptionTicketSnapshot,
         long nowTicks,
@@ -1898,7 +1933,7 @@ internal sealed class QuicTlsKeySchedule
 
         byte[] body = new byte[43 + extensionsLength];
         WriteClientHelloPrefix(body, extensionsLength, out int index);
-        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded);
+        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded, serverNameBytes);
 
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PskKeyExchangeModesExtensionType);
         index += UInt16Length;
@@ -3365,8 +3400,11 @@ internal sealed class QuicTlsKeySchedule
     private void WriteClientHelloBaseExtensions(
         byte[] body,
         ref int index,
-        ReadOnlySpan<byte> transportParametersEncoded)
+        ReadOnlySpan<byte> transportParametersEncoded,
+        ReadOnlySpan<byte> serverNameBytes)
     {
+        WriteClientHelloServerNameExtension(body, ref index, serverNameBytes);
+
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
         index += UInt16Length;
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionBodyLength);
@@ -3416,6 +3454,65 @@ internal sealed class QuicTlsKeySchedule
         index += UInt16Length;
         transportParametersEncoded.CopyTo(body.AsSpan(index, transportParametersEncoded.Length));
         index += transportParametersEncoded.Length;
+    }
+
+    private static bool TryCreateClientHelloServerNameBytes(string? targetHost, out byte[] serverNameBytes)
+    {
+        serverNameBytes = [];
+        if (string.IsNullOrWhiteSpace(targetHost))
+        {
+            return true;
+        }
+
+        string normalizedTargetHost = targetHost.TrimEnd('.');
+        if (IPAddress.TryParse(normalizedTargetHost, out _))
+        {
+            return true;
+        }
+
+        try
+        {
+            normalizedTargetHost = s_idnMapping.GetAscii(normalizedTargetHost);
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+
+        serverNameBytes = Encoding.ASCII.GetBytes(normalizedTargetHost);
+        return serverNameBytes.Length > 0
+            && serverNameBytes.Length <= ushort.MaxValue;
+    }
+
+    private static int GetClientHelloServerNameExtensionLength(ReadOnlySpan<byte> serverNameBytes)
+    {
+        if (serverNameBytes.IsEmpty)
+        {
+            return 0;
+        }
+
+        return checked(UInt16Length + UInt16Length + UInt16Length + 1 + UInt16Length + serverNameBytes.Length);
+    }
+
+    private static void WriteClientHelloServerNameExtension(byte[] body, ref int index, ReadOnlySpan<byte> serverNameBytes)
+    {
+        if (serverNameBytes.IsEmpty)
+        {
+            return;
+        }
+
+        int serverNameEntryLength = 1 + UInt16Length + serverNameBytes.Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), ServerNameExtensionType);
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + serverNameEntryLength)));
+        index += UInt16Length;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)serverNameEntryLength));
+        index += UInt16Length;
+        body[index++] = 0;
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)serverNameBytes.Length));
+        index += UInt16Length;
+        serverNameBytes.CopyTo(body.AsSpan(index, serverNameBytes.Length));
+        index += serverNameBytes.Length;
     }
 
     private void WriteClientHelloApplicationProtocolNegotiationExtension(byte[] body, ref int index)

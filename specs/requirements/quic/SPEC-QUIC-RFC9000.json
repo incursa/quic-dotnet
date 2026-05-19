@@ -25499,6 +25499,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseLongHeader_AllowsAValidInitialPacketToBeCoalescedWithAnInvalidTrailingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TrySliceFirstPacketForAdmission_IsolatesInitialPacketBeforeInvalidTrailingPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0002.cs::TryParseShortHeader_RejectsTheInvalidCoalescedPacketOnItsOwn"
         ]
       }

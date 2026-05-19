@@ -46,6 +46,40 @@ public sealed class REQ_QUIC_RFC9001_S5_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryOpenInitialPacket_OpensCapturedPicoquicClientInitial()
+    {
+        byte[] protectedPacket = Convert.FromHexString(
+            "cf000000010859fd06c1af891c1508c2c37b869b4ed3e9004140b66c7a3008f2665aaa81d3efd723b600c3ff549dd05665104119b2342130e3d628a31c4ecb9e620c7af7bc17698032196dffc3090ee911c6725b4a4121cdf4510506a2a862741f3ec9d436d9605f10d245463350480c400cce65814ffddf98e05eed0143f347a9d8edf55b067e604ce20273ce935f0f5c5eb908ab3d17e0163e56ecc93266bae3cd7746909becc22c783d22bcc27afa75545caead446d6391d5f43706072a53381667bc23d44fbac19dbaf5d88990a328972113b924d5a39a3feee332df0954e25cf6bd25648e47205923e9a3dc4d17570985127df0d48157bd84284e7b897e87ef386b9f1e3753e3e26c16e49e9ac7778a20321636965dff4de0383fd24303e37f187b69d27df61653ecc882b67f6b1c903daf203a3b03f13eba4a511f75e088e06565ee4e4ee35503de7c925cad3c858e1fd0cf3f55246648");
+
+        Assert.True(QuicPacketParser.TryGetPacketLength(protectedPacket, out int packetLength));
+        Assert.Equal(protectedPacket.Length, packetLength);
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            [0x59, 0xFD, 0x06, 0xC1, 0xAF, 0x89, 0x1C, 0x15],
+            out QuicInitialPacketProtection protection));
+
+        QuicHandshakeFlowCoordinator coordinator = new();
+        Assert.True(coordinator.TryOpenInitialPacket(
+            protectedPacket,
+            protection,
+            out byte[] recoveredPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.Equal(330, recoveredPacket.Length);
+        ReadOnlySpan<byte> payload = recoveredPacket.AsSpan(payloadOffset, payloadLength);
+        Assert.True(QuicFrameCodec.TryParsePingFrame(payload, out int pingBytesConsumed));
+        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+            payload[pingBytesConsumed..],
+            out QuicCryptoFrame cryptoFrame,
+            out int bytesConsumed));
+        Assert.Equal(0UL, cryptoFrame.Offset);
+        Assert.Equal(payloadLength, pingBytesConsumed + bytesConsumed);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryProtectInitialPacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample()

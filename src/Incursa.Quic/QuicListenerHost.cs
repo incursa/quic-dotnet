@@ -366,8 +366,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.AdmitInitial
-                    && TryReadInitialAdmissionFields(
+                    && QuicListenerPreAcceptanceIngressPolicy.TrySliceFirstPacketForAdmission(
                         datagram,
+                        out ReadOnlyMemory<byte> initialPacket)
+                    && TryReadInitialAdmissionFields(
+                        initialPacket.Span,
                         out byte[] initialDestinationConnectionId,
                         out byte[] clientSourceConnectionId,
                         out byte[] initialToken))
@@ -375,7 +378,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     try
                     {
                         if (await TryAdmitIncomingInitialConnectionAsync(
-                            datagram,
+                            initialPacket,
                             pathIdentity,
                             initialDestinationConnectionId,
                             clientSourceConnectionId,
@@ -419,7 +422,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     }
 
     private static bool TryReadInitialAdmissionFields(
-        byte[] datagram,
+        ReadOnlySpan<byte> datagram,
         out byte[] initialDestinationConnectionId,
         out byte[] clientSourceConnectionId,
         out byte[] initialToken)
@@ -1109,6 +1112,28 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                if (pingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += pingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += ackBytesConsumed;
                 continue;
             }
 

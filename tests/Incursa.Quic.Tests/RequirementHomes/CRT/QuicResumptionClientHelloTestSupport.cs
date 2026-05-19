@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using Xunit;
 
 namespace Incursa.Quic.Tests;
@@ -12,6 +13,7 @@ internal static class QuicResumptionClientHelloTestSupport
     private const int HandshakeHeaderLength = 4;
     private const int UInt16Length = sizeof(ushort);
     private const int UInt32Length = sizeof(uint);
+    private const ushort ServerNameExtensionType = 0x0000;
     private const ushort ApplicationLayerProtocolNegotiationExtensionType = 0x0010;
     private const ushort SignatureAlgorithmsExtensionType = 0x000d;
     private const ushort SupportedGroupsExtensionType = 0x000a;
@@ -91,6 +93,8 @@ internal static class QuicResumptionClientHelloTestSupport
         bool hasEarlyData = false;
         bool hasApplicationLayerProtocolNegotiation = false;
         bool applicationProtocolsContainHttp3 = false;
+        bool hasServerName = false;
+        string serverName = string.Empty;
         bool hasSignatureAlgorithms = false;
         bool signatureAlgorithmsContainEcdsaSecp256r1Sha256 = false;
         bool hasSupportedGroups = false;
@@ -117,6 +121,22 @@ internal static class QuicResumptionClientHelloTestSupport
                 Assert.Equal(2, extensionValue.Length);
                 Assert.Equal(1, extensionValue[0]);
                 Assert.Equal(PskDheKeMode, extensionValue[1]);
+            }
+            else if (extensionType == ServerNameExtensionType)
+            {
+                hasServerName = true;
+
+                int extensionIndex = 0;
+                ushort serverNameListLength = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                extensionIndex += UInt16Length;
+                Assert.Equal(serverNameListLength, extensionValue.Length - UInt16Length);
+                Assert.Equal(0, extensionValue[extensionIndex++]);
+
+                ushort serverNameLength = BinaryPrimitives.ReadUInt16BigEndian(extensionValue.Slice(extensionIndex, UInt16Length));
+                extensionIndex += UInt16Length;
+                serverName = Encoding.ASCII.GetString(extensionValue.Slice(extensionIndex, serverNameLength));
+                extensionIndex += serverNameLength;
+                Assert.Equal(extensionValue.Length, extensionIndex);
             }
             else if (extensionType == SignatureAlgorithmsExtensionType)
             {
@@ -223,6 +243,8 @@ internal static class QuicResumptionClientHelloTestSupport
             hasEarlyData,
             hasApplicationLayerProtocolNegotiation,
             applicationProtocolsContainHttp3,
+            hasServerName,
+            serverName,
             hasSignatureAlgorithms,
             signatureAlgorithmsContainEcdsaSecp256r1Sha256,
             hasSupportedGroups,
@@ -363,6 +385,8 @@ internal static class QuicResumptionClientHelloTestSupport
         bool HasEarlyData,
         bool HasApplicationLayerProtocolNegotiation,
         bool ApplicationProtocolsContainHttp3,
+        bool HasServerName,
+        string ServerName,
         bool HasSignatureAlgorithms,
         bool SignatureAlgorithmsContainEcdsaSecp256r1Sha256,
         bool HasSupportedGroups,

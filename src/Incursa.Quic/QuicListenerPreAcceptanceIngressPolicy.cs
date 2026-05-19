@@ -12,6 +12,23 @@ internal enum QuicListenerPreAcceptanceDatagramAction
 
 internal static class QuicListenerPreAcceptanceIngressPolicy
 {
+    public static bool TrySliceFirstPacketForAdmission(
+        ReadOnlyMemory<byte> datagram,
+        out ReadOnlyMemory<byte> firstPacket)
+    {
+        firstPacket = default;
+
+        if (!QuicPacketParser.TryGetPacketLength(datagram.Span, out int packetLength)
+            || packetLength <= 0
+            || packetLength > datagram.Length)
+        {
+            return false;
+        }
+
+        firstPacket = datagram[..packetLength];
+        return true;
+    }
+
     public static QuicListenerPreAcceptanceDatagramAction ClassifyUnroutedDatagram(
         ReadOnlySpan<byte> datagram,
         ReadOnlySpan<uint> supportedVersions,

@@ -164,6 +164,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             && keySchedule is not null
             && keySchedule.TryCreateClientHello(
                 localTransportParameters,
+                clientAuthenticationOptions?.TargetHost,
                 detachedResumptionTicketSnapshot,
                 nowTicks,
                 out byte[] clientHelloBytes))

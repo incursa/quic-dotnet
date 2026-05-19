@@ -6,6 +6,7 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-CRT-0107")]
 public sealed class REQ_QUIC_CRT_0107
 {
+    private const ushort ServerNameExtensionType = 0x0000;
     private const ushort SupportedGroupsExtensionType = 0x000A;
 
     [Fact]
@@ -157,6 +158,29 @@ public sealed class REQ_QUIC_CRT_0107
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientRoleAcceptsEmptyServerNameEncryptedExtensionsAlongsideTransportParameters()
+    {
+        QuicTlsTranscriptProgress progress = new(QuicTlsRole.Client);
+        byte[] serverHello = CreateServerHelloTranscript(QuicTlsCipherSuite.TlsAes128GcmSha256);
+        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(
+            CreateServerTransportParameters(),
+            includeServerNameExtension: true);
+
+        progress.AppendCryptoBytes(0, serverHello);
+        Assert.Equal(QuicTlsTranscriptStepKind.Progressed, progress.Advance(QuicTlsRole.Client).Kind);
+
+        progress.AppendCryptoBytes(progress.IngressCursor, encryptedExtensions);
+        QuicTlsTranscriptStep step = progress.Advance(QuicTlsRole.Client);
+
+        Assert.Equal(QuicTlsTranscriptStepKind.PeerTransportParametersStaged, step.Kind);
+        Assert.Equal(QuicTlsHandshakeMessageType.EncryptedExtensions, step.HandshakeMessageType);
+        Assert.NotNull(step.TransportParameters);
+        Assert.False(progress.IsTerminalFailure);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UnexpectedHandshakeMessageOrderIsRejectedDeterministically()
@@ -256,6 +280,29 @@ public sealed class REQ_QUIC_CRT_0107
         byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(
             CreateServerTransportParameters(),
             includeMalformedSupportedGroupsExtension: true);
+
+        progress.AppendCryptoBytes(0, serverHello);
+        Assert.Equal(QuicTlsTranscriptStepKind.Progressed, progress.Advance(QuicTlsRole.Client).Kind);
+
+        progress.AppendCryptoBytes(progress.IngressCursor, encryptedExtensions);
+        QuicTlsTranscriptStep step = progress.Advance(QuicTlsRole.Client);
+
+        Assert.Equal(QuicTlsTranscriptStepKind.Fatal, step.Kind);
+        Assert.Equal((ushort)0x0032, step.AlertDescription);
+        Assert.Equal(QuicTlsTranscriptPhase.Failed, progress.Phase);
+        Assert.True(progress.IsTerminalFailure);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void MalformedServerNameEncryptedExtensionsAreRejectedDeterministically()
+    {
+        QuicTlsTranscriptProgress progress = new(QuicTlsRole.Client);
+        byte[] serverHello = CreateServerHelloTranscript(QuicTlsCipherSuite.TlsAes128GcmSha256);
+        byte[] encryptedExtensions = CreateEncryptedExtensionsTranscript(
+            CreateServerTransportParameters(),
+            includeMalformedServerNameExtension: true);
 
         progress.AppendCryptoBytes(0, serverHello);
         Assert.Equal(QuicTlsTranscriptStepKind.Progressed, progress.Advance(QuicTlsRole.Client).Kind);
@@ -586,6 +633,8 @@ public sealed class REQ_QUIC_CRT_0107
         QuicTransportParameters transportParameters,
         bool duplicateTransportParametersExtension = false,
         bool includeUnknownExtension = false,
+        bool includeServerNameExtension = false,
+        bool includeMalformedServerNameExtension = false,
         bool includeSupportedGroupsExtension = false,
         bool includeMalformedSupportedGroupsExtension = false)
     {
@@ -594,6 +643,12 @@ public sealed class REQ_QUIC_CRT_0107
             QuicTransportParameterRole.Server);
         byte[] unknownExtension = includeUnknownExtension
             ? CreateUnknownExtension(0x1234, new byte[] { 0xAB })
+            : Array.Empty<byte>();
+        byte[] serverNameExtension = includeServerNameExtension
+            ? CreateUnknownExtension(ServerNameExtensionType, [])
+            : Array.Empty<byte>();
+        byte[] malformedServerNameExtension = includeMalformedServerNameExtension
+            ? CreateUnknownExtension(ServerNameExtensionType, [0x00])
             : Array.Empty<byte>();
         byte[] supportedGroupsExtension = includeSupportedGroupsExtension
             ? CreateSupportedGroupsExtension()
@@ -606,6 +661,8 @@ public sealed class REQ_QUIC_CRT_0107
             ? transportParametersExtension.Length * 2
             : transportParametersExtension.Length;
         extensionsLength += unknownExtension.Length;
+        extensionsLength += serverNameExtension.Length;
+        extensionsLength += malformedServerNameExtension.Length;
         extensionsLength += supportedGroupsExtension.Length;
         extensionsLength += malformedSupportedGroupsExtension.Length;
 
@@ -626,6 +683,18 @@ public sealed class REQ_QUIC_CRT_0107
         {
             unknownExtension.CopyTo(body.AsSpan(index));
             index += unknownExtension.Length;
+        }
+
+        if (includeServerNameExtension)
+        {
+            serverNameExtension.CopyTo(body.AsSpan(index));
+            index += serverNameExtension.Length;
+        }
+
+        if (includeMalformedServerNameExtension)
+        {
+            malformedServerNameExtension.CopyTo(body.AsSpan(index));
+            index += malformedServerNameExtension.Length;
         }
 
         if (includeSupportedGroupsExtension)

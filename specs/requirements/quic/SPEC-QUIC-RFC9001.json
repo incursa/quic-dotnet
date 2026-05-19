@@ -1026,6 +1026,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryProtectInitialPacket_AndTryOpenInitialPacket_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryOpenInitialPacket_OpensCapturedPicoquicClientInitial",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::TryProtectInitialPacket_RejectsPacketsThatCannotProvideAHeaderProtectionSample",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S5-0008.cs::Fuzz_InitialPacketProtection_RoundTripsRandomValidInputs"
         ]
