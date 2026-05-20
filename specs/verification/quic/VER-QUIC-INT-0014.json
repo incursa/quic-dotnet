@@ -25,7 +25,7 @@
     "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~InteropHarnessRunnerTests|FullyQualifiedName~REQ_QUIC_INT_0002|FullyQualifiedName~REQ_QUIC_INT_0018|FullyQualifiedName~REQ_QUIC_INT_0021\"` and confirm the classification-gate checks, the zerortt request-gap helper tests, and the buffered request-line read tests pass.",
     "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation,zerortt,connectionmigration` and confirm zerortt is supported/executed in the plan output.",
     "Inspect `.github/workflows/interop-runner-handshake.yml`, `scripts/interop/README.md`, and `scripts/interop/Invoke-QuicInteropRunner.ps1` for the explicit `zerortt-server-proof` advisory profile and supported-cell wording.",
-    "Inspect `specs/requirements/quic/REQUIREMENT-GAPS.md` and `docs/current-status.md` for the closure wording and preserved proof evidence.",
+    "Inspect `docs/current-status.md` and the owning INT artifacts for the closure wording and preserved proof evidence.",
     "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=zerortt-server-proof` and inspect the preserved runner-report and packet-analysis logs."
   ],
   "expected_result": "The repository classifies zerortt as supported/executed after the hosted Linux proof succeeds, and partial hosted proof or server-only dispatch does not control the inventory cell.",
@@ -35,7 +35,6 @@
     "scripts/interop/README.md",
     "src/Incursa.Quic.InteropHarness/README.md",
     "docs/current-status.md",
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0017.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",

@@ -41,7 +41,6 @@
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
     "docs/current-status.md",
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0021.json",
     "specs/work-items/quic/WI-QUIC-INT-0021.json",

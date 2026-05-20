@@ -16,13 +16,13 @@
     "REQ-QUIC-INT-0024"
   ],
   "preconditions": [
-    "The updated current-status note and gap ledger are present.",
+    "The updated current-status note is present.",
     "The preserved major-peer evidence report is present.",
     "The new requirement-home test file is present."
   ],
   "scope": "Verify that the repository can formalize the msquic major-peer failures as peer-side blocked evidence without turning them into local transport support evidence.",
   "procedure": [
-    "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the slice is formalized.",
+    "Review `docs/current-status.md` and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the slice is formalized.",
     "Inspect the preserved major-peer evidence report for the peer-side outcome classes and msquic rows.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0024`.",
     "Confirm the current-status note still keeps the blocked cluster advisory and separate from the quic-go local candidate."
@@ -30,7 +30,6 @@
   "expected_result": "The repository can keep the msquic major-peer failures classified as peer-side blocked evidence while leaving the local candidate set unchanged.",
   "evidence": [
     "docs/current-status.md",
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
     "specs/architecture/quic/ARC-QUIC-INT-0018.json",

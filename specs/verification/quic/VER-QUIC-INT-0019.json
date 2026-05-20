@@ -18,11 +18,11 @@
   "preconditions": [
     "The connectionmigration proof lane remains bounded to the dedicated hosted profile.",
     "The preferred migration address setup remains present in the startup script.",
-    "The current-status and gap-ledger notes are present."
+    "The current-status, spec, and verification notes are present."
   ],
   "scope": "Verify that the repository closes the bounded connectionmigration source-address proof while preserving the preferred-address setup and avoiding rebind, QUIC v2, HTTP/3, or broad support claims.",
   "procedure": [
-    "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
+    "Review `docs/current-status.md` and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
     "Inspect `src/Incursa.Quic.InteropHarness/setup.sh` and `src/Incursa.Quic.InteropHarness/README.md` for the preferred-address setup.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0025` plus the supporting RFC9000 migration proofs `REQ-QUIC-RFC9000-S9P6P1-0005`, `REQ-QUIC-RFC9000-S9P6P2-0010`, and `REQ-QUIC-RFC9000-S9P6P3-0006`.",
     "Confirm the blocker note remains bounded and separate from rebind, QUIC v2, HTTP/3, or broad support claims.",
@@ -32,7 +32,6 @@
   "expected_result": "The repository can classify the connectionmigration source-address issue as locally and hosted-proven for the bounded `connectionmigration` profile while keeping `rebind-port`, `rebind-addr`, QUIC v2, HTTP/3, and broad support-readiness out of scope.",
   "evidence": [
     "docs/current-status.md",
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "src/Incursa.Quic.InteropHarness/setup.sh",
     "src/Incursa.Quic.InteropHarness/README.md",

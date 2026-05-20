@@ -16,13 +16,13 @@
     "REQ-QUIC-INT-0023"
   ],
   "preconditions": [
-    "The updated current-status note and gap ledger are present.",
+    "The updated current-status note is present.",
     "The new requirement-home test file is present.",
     "The advisory major-peer evidence narrative is available in the repository."
   ],
   "scope": "Verify that the repository can formalize the quic-go client download-liveness candidate as a bounded source-length completion contract without turning the msquic TLS-alert-50 cells into local transport support evidence.",
   "procedure": [
-    "Review `docs/current-status.md`, `specs/requirements/quic/REQUIREMENT-GAPS.md`, and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the slice is now formalized.",
+    "Review `docs/current-status.md` and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the slice is formalized.",
     "Inspect the new architecture and work-item artifacts for the same source-length completion boundary.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0023`.",
     "Confirm the current-status note keeps the slice bounded and does not widen it into a generic keepalive or server-role behavior."
@@ -30,7 +30,6 @@
   "expected_result": "The repository can identify the quic-go client download-liveness candidate as a formal bounded completion slice while keeping the msquic TLS-alert-50 cells outside the local candidate set.",
   "evidence": [
     "docs/current-status.md",
-    "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "specs/requirements/quic/SPEC-QUIC-INT.json",
     "specs/architecture/quic/ARC-QUIC-INT-0017.json",
     "specs/work-items/quic/WI-QUIC-INT-0017.json",

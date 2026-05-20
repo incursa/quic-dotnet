@@ -1132,7 +1132,7 @@ function Get-OpenGapIds {
             continue
         }
 
-        if ($line -match '^## Closed Gaps') {
+        if ($state -eq "open" -and $line -match '^## ' -and $line -notmatch '^## Open Gaps') {
             break
         }
 
