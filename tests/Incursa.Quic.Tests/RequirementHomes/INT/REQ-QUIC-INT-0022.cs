@@ -41,6 +41,9 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
         Assert.Contains("Resolve-RunnerImplementationSlotName", helper, StringComparison.Ordinal);
         Assert.Contains("resolved peer implementation slot", helper, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("def _packet_has_decrypted_quic_frames", helper, StringComparison.Ordinal);
+        Assert.Contains("Skipping undecryptable QUIC packet on new path", helper, StringComparison.Ordinal);
+        Assert.Contains("First decryptable server packet on new path", helper, StringComparison.Ordinal);
         Assert.Contains("ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
         Assert.Contains("ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
 
