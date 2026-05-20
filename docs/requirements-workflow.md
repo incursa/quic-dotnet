@@ -15,6 +15,7 @@ This guide captures the expected order for RFC-derived QUIC work in `Incursa.Qui
 5. Add verification artifacts before implementation reaches review.
 6. Implement code, tests, fuzzing, and benchmarks in the same slice when they affect the same behavior.
 7. Revisit gaps whenever implementation uncovers new edge cases.
+8. Remove a gap-ledger entry once the owning requirement, architecture, work item, and verification artifacts carry the closed evidence.
 
 ## Quality Expectations
 

@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0024"
   ],
-  "planned_changes": "- Add a new INT requirement for the msquic peer-side blocked evidence cluster.\n- Update the gap ledger and current-status note so the blocked classification is explicit and advisory.\n- Add requirement-home tests that assert the msquic TLS-alert-50 and termination classes remain peer-side evidence in the major-peer report.\n- Keep runtime and helper behavior unchanged.\n- Preserve the quic-go liveness slice as the only local candidate.",
+  "planned_changes": "- Add a new INT requirement for the msquic peer-side blocked evidence cluster.\n- Update the current-status and verification notes so the blocked classification is explicit and advisory.\n- Add requirement-home tests that assert the msquic TLS-alert-50 and termination classes remain peer-side evidence in the major-peer report.\n- Keep runtime and helper behavior unchanged.\n- Preserve the quic-go liveness slice as the only local candidate.",
   "out_of_scope": [
     "changing QUIC transport semantics",
     "treating msquic TLS alerts as a local bug without new evidence",
@@ -29,5 +29,5 @@
     "changing ordinary CI gates",
     "modifying the external runner repository"
   ],
-  "verification_plan": "Inspect the updated spec, gap ledger, and current-status note; confirm the new requirement-home tests pin the blocked classification; and run the focused REQ-QUIC-INT-0024 requirement-home test slice."
+  "verification_plan": "Inspect the updated spec, verification artifact, and current-status note; confirm the requirement-home tests pin the blocked classification; and run the focused REQ-QUIC-INT-0024 requirement-home test slice."
 }

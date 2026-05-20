@@ -38,7 +38,7 @@
     "Partial hosted proof, local runtime proof, or server-only dispatch must not upgrade the inventory cell.",
     "HTTP/3 remains out of scope."
   ],
-  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` and `artifacts/hosted-interop/...`, plus the existing gap ledger and current-status notes. The successful hosted bundle under `artifacts/gh-run-25777328991/...` now serves as the closure evidence. No external runner repository changes are required.",
+  "data_and_state_considerations": "The proof lane relies on preserved runner artifacts under `artifacts/interop-runner/...` and `artifacts/hosted-interop/...`, plus the current-status notes. The successful hosted bundle under `artifacts/gh-run-25777328991/...` now serves as the closure evidence. No external runner repository changes are required.",
   "risks": [
     "Packet-analysis heuristics may still fail even when the server path and response/download flow are working.",
     "Readers may overread the dedicated hosted profile as support promotion unless the prerequisite-blocked classification stays visible."

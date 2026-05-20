@@ -25,10 +25,7 @@ public sealed class REQ_QUIC_INT_0024
         Assert.Contains("peer-connection-terminated", spec, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0024", currentStatus, StringComparison.Ordinal);
         Assert.Contains("peer-side blocked evidence", currentStatus, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("REQ-QUIC-INT-0024", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("peer-side blocked cluster", gapLedger, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("peer-tls-alert-50", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("peer-connection-terminated", gapLedger, StringComparison.Ordinal);
+        Assert.DoesNotContain("interop-msquic-peer-blocked-evidence", gapLedger, StringComparison.Ordinal);
         Assert.Contains("msquic Peer-Blocked Evidence Classification Architecture", architecture, StringComparison.Ordinal);
         Assert.Contains("peer-side blocked evidence", architecture, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("msquic peer-side blocked evidence", workItem, StringComparison.OrdinalIgnoreCase);

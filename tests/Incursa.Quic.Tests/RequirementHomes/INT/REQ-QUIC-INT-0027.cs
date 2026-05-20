@@ -40,7 +40,7 @@ public sealed class REQ_QUIC_INT_0027
         Assert.Contains("CopyHttp09ResponseBodyUntilEndAsync", harness, StringComparison.Ordinal);
         Assert.Contains("local client mode selects every server-capable peer", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("local server mode selects every client-capable peer", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("interop-all-upstream-implementation-handshake-matrix", gapLedger, StringComparison.Ordinal);
+        Assert.DoesNotContain("interop-all-upstream-implementation-handshake-matrix", gapLedger, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0027", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0027", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0027", verification, StringComparison.Ordinal);
@@ -60,9 +60,9 @@ public sealed class REQ_QUIC_INT_0027
 
         Assert.Contains("uses the `handshake` testcase only", spec, StringComparison.Ordinal);
         Assert.Contains("outside ordinary push, pull-request, build, test, package, upstream-runner-registry, and support-readiness gates", spec, StringComparison.Ordinal);
-        Assert.Contains("does not run every interop testcase", gapLedger, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("does not add this repository to the upstream registry", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("interop-all-upstream-implementation-handshake-matrix", gapLedger, StringComparison.Ordinal);
         Assert.Contains("does not add Incursa.Quic to the upstream registry", readme, StringComparison.Ordinal);
+        Assert.Contains("run every testcase", readme, StringComparison.Ordinal);
         Assert.Contains("claim broad support readiness", readme, StringComparison.Ordinal);
         Assert.Contains("Rejected because the request can be satisfied through the existing local replacement-slot model", architecture, StringComparison.Ordinal);
         Assert.Contains("Passing local plan tests or a future hosted handshake matrix does not prove every QUIC testcase", verification, StringComparison.Ordinal);
