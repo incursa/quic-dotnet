@@ -26,18 +26,18 @@
     "src/Incursa.Quic.InteropHarness/README.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs"
   ],
-  "design_summary": "The connectionmigration lane keeps the preferred migration address reachable with preferred_lft 0 while preserving original-path first-flight source selection. Local clean-runner proof now shows the original address first flight and later preferred-address path use, while hosted corroboration remains advisory until refreshed. This architecture keeps that evidence boundary distinct rather than widening the runtime transport contract.",
+  "design_summary": "The connectionmigration lane keeps the preferred migration address reachable with preferred_lft 0 while preserving original-path first-flight source selection. Local clean-runner proof showed the original address first flight and later preferred-address path use, and hosted run `26174181713` now corroborates the bounded connectionmigration lane with `connectionmigration` succeeded, completed transfer, original and preferred server paths observed, qlog-backed PATH_CHALLENGE/PATH_RESPONSE evidence, and active-migration DCID change. This architecture keeps that evidence boundary distinct rather than widening the runtime transport contract.",
   "alternatives_considered": [
-    "Claim hosted readiness from the local clean-runner proof. Rejected because the hosted proof lane still needs a fresh artifact run.",
+    "Claim hosted readiness from the local clean-runner proof alone. Rejected because the hosted proof lane needed its own artifact run before closure.",
     "Fold the blocker back into the generic connectionmigration proof lane. Rejected because the source-address issue deserves its own explicit advisory boundary."
   ],
   "edge_cases_and_constraints": [
     "Keep the preferred migration address reachable without making it the original-path first-flight source.",
-    "Do not claim server-side path promotion or rebind support.",
-    "Keep the lane advisory and outside ordinary gates.",
+    "Do not claim rebind support, QUIC v2, HTTP/3, or broad support-readiness.",
+    "Keep the lane outside ordinary gates.",
     "Keep the blocker separate from the peer-characterization matrix work."
   ],
-  "data_and_state_considerations": "The source-address proof is evidenced by the preserved hosted failure notes, the current setup script, and the local clean-runner artifact bundle. The repo-owned runner shim supplies analyzer compatibility so no persistent upstream runner checkout mutation is required.",
+  "data_and_state_considerations": "The source-address proof is evidenced by the preserved hosted failure notes, the current setup script, the local clean-runner artifact bundle, and hosted run `26174181713` under `.artifacts/gh-run-26174181713/interop-runner-server-connectionmigration-neqo-26174181713/20260520-155738932-server-nginx`. The repo-owned runner shim supplies analyzer compatibility so no persistent upstream runner checkout mutation is required.",
   "risks": [
     "Readers may overread the blocker lane as a runtime fix if the advisory boundary is not kept explicit.",
     "The source-address issue could get conflated with broader connectionmigration support if the proof lane is not kept distinct."
@@ -45,7 +45,7 @@
   "supplemental_sections": [
     {
       "heading": "Scope",
-      "content": "This design formalizes local source-address proof and hosted-corroboration boundaries. It does not claim hosted success, `rebind-port`, or `rebind-addr` support."
+      "content": "This design formalizes the local and hosted source-address proof boundaries. It does not claim `rebind-port`, `rebind-addr`, QUIC v2, or HTTP/3 support."
     }
   ]
 }
