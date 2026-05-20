@@ -85,7 +85,7 @@
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain separate prerequisite-blocked lanes."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain separate prerequisite-blocked lanes. `connectionmigration` now has a dedicated hosted proof lane and remains outside this verification scope."
     }
   ]
 }
