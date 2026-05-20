@@ -1981,8 +1981,14 @@ def _packet_has_decrypted_quic_frames(packet):
     return any(hasattr(quic, marker) for marker in frame_markers)
 
 def _iter_qlog_events(self, vantage_point):
-    case_log_dir = os.path.dirname(self._sim_log_dir.name)
-    qlog_root = os.path.join(case_log_dir, vantage_point, "qlog")
+    if vantage_point == "client":
+        qlog_parent = os.path.dirname(self._client_keylog_file)
+    elif vantage_point == "server":
+        qlog_parent = os.path.dirname(self._server_keylog_file)
+    else:
+        qlog_parent = os.path.dirname(self._sim_log_dir.name)
+
+    qlog_root = os.path.join(qlog_parent, "qlog")
     if not os.path.isdir(qlog_root):
         logging.info("No %s qlog directory was available at %s", vantage_point, qlog_root)
         return
