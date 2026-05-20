@@ -63,6 +63,9 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("dedicated live runner proof and inventory promotion for NAT port rebinding", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("dedicated live runner proof and inventory promotion for NAT address rebinding", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Requires client-host socket rebinding lifecycle support before inventory promotion", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("hosted Linux proof success", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Plan-only mode completed without Docker build, runner checkout validation, or runner launch.", output, StringComparison.OrdinalIgnoreCase);

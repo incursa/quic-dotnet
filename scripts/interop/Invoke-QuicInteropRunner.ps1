@@ -569,14 +569,14 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'rebind-port'
             RunnerTestCase = 'rebind-port'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires client-host socket rebinding lifecycle support before inventory promotion.'
+            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT port rebinding; the internal path-state and endpoint-host socket rebinding prerequisites are already covered by the migration proof lane.'
         }
 
         [pscustomobject]@{
             TestCase = 'rebind-addr'
             RunnerTestCase = 'rebind-addr'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires client-host socket rebinding lifecycle support before inventory promotion.'
+            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT address rebinding; the internal path-state and endpoint-host socket rebinding prerequisites are already covered by the migration proof lane.'
         }
 
         [pscustomobject]@{
@@ -1960,6 +1960,25 @@ def _patched_trace_direction_filter(self, direction):
 
 trace.TraceAnalyzer._get_direction_filter = _patched_trace_direction_filter
 
+def _packet_has_decrypted_quic_frames(packet):
+    try:
+        quic = packet["quic"]
+    except Exception:
+        return False
+
+    frame_markers = (
+        "ack.ack_delay",
+        "connection_close.error_code",
+        "crypto.offset",
+        "padding",
+        "path_challenge.data",
+        "path_response.data",
+        "ping",
+        "stream.stream_id",
+    )
+
+    return any(hasattr(quic, marker) for marker in frame_markers)
+
 def _patched_port_rebinding_check(self):
     super(testcases_quic.TestCasePortRebinding, self).check()
     if not self._keylog_file():
@@ -1978,6 +1997,7 @@ def _patched_port_rebinding_check(self):
     last = None
     paths = set()
     challenges = set()
+    paths_awaiting_decryptable_validation_packet = set()
     for packet in tr_server:
         cur = self._path(packet)
         if last is None:
@@ -1992,9 +2012,20 @@ def _patched_port_rebinding_check(self):
             if not is_new_path:
                 continue
 
+            paths_awaiting_decryptable_validation_packet.add(cur)
+
+        if cur in paths_awaiting_decryptable_validation_packet:
+            if not _packet_has_decrypted_quic_frames(packet):
+                logging.info(
+                    "Skipping undecryptable QUIC packet on new path %s while waiting for path-validation frame evidence",
+                    cur,
+                )
+                continue
+
+            paths_awaiting_decryptable_validation_packet.remove(cur)
             if hasattr(packet["quic"], "path_challenge.data") is False:
                 logging.info(
-                    "First server packet on new path %s did not contain a PATH_CHALLENGE frame",
+                    "First decryptable server packet on new path %s did not contain a PATH_CHALLENGE frame",
                     cur,
                 )
                 logging.info(packet["quic"])
@@ -2004,6 +2035,13 @@ def _patched_port_rebinding_check(self):
 
     if cur is not None:
         paths.add(cur)
+
+    if paths_awaiting_decryptable_validation_packet:
+        logging.info(
+            "No decryptable server packet was available for new paths: %s",
+            paths_awaiting_decryptable_validation_packet,
+        )
+        return testcases_quic.TestResult.FAILED
 
     logging.info("Server saw these paths used: %s", paths)
     if len(paths) <= 1:
