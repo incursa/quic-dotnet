@@ -215,17 +215,20 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
         QuicConnectionPathIdentity validatedPath = QuicS9P3TokenEmissionTestSupport.ValidatedPath;
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
-        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
-            runtime,
-            packetNumber: 13,
-            receivedAtMicros: 19);
-
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 20,
                 validatedPath,
                 datagram),
             nowTicks: 20).StateChanged);
+        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+            runtime,
+            packetNumber: 13,
+            receivedAtMicros: 29);
+        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+            runtime,
+            packetNumber: 14,
+            receivedAtMicros: 29);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
@@ -238,7 +241,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
         ReadOnlySpan<byte> payload = payloadBytes;
 
         Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed));
-        Assert.Equal(13UL, ackFrame.LargestAcknowledged);
+        Assert.Equal(14UL, ackFrame.LargestAcknowledged);
 
         ReadOnlySpan<byte> tokenPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
         Assert.True(QuicFrameCodec.TryParseNewTokenFrame(tokenPayload, out QuicNewTokenFrame newTokenFrame, out int tokenBytesConsumed));

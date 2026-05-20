@@ -14,14 +14,15 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0003
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
-        QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        runtime.Transition(
+        Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 10,
                 portOnlyPath,
                 new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
-            nowTicks: 10);
+            nowTicks: 10).StateChanged);
+        QuicPathMigrationRecoverySnapshot afterValidationProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
@@ -30,10 +31,10 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0003
 
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        Assert.Equal(dirty.CongestionWindowBytes, afterPromotion.CongestionWindowBytes);
-        Assert.Equal(dirty.SlowStartThresholdBytes, afterPromotion.SlowStartThresholdBytes);
-        Assert.Equal(dirty.BytesInFlightBytes, afterPromotion.BytesInFlightBytes);
-        Assert.Equal(dirty.RecoveryStartTimeMicros, afterPromotion.RecoveryStartTimeMicros);
+        Assert.Equal(afterValidationProbe.CongestionWindowBytes, afterPromotion.CongestionWindowBytes);
+        Assert.Equal(afterValidationProbe.SlowStartThresholdBytes, afterPromotion.SlowStartThresholdBytes);
+        Assert.Equal(afterValidationProbe.BytesInFlightBytes, afterPromotion.BytesInFlightBytes);
+        Assert.Equal(afterValidationProbe.RecoveryStartTimeMicros, afterPromotion.RecoveryStartTimeMicros);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
         Assert.Contains(validationResult.Effects, effect =>

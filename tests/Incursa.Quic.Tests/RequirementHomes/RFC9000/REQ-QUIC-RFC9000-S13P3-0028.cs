@@ -72,19 +72,13 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0028
 
         Assert.True(result.StateChanged);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
-        Assert.Equal(ChallengePath, sendEffect.PathIdentity);
-        Assert.Equal(sentPacketCountBefore, runtime.SendRuntime.SentPackets.Count);
+        _ = QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+            runtime,
+            result,
+            ChallengePath,
+            challengeData);
+        Assert.Equal(sentPacketCountBefore + 1, runtime.SendRuntime.SentPackets.Count);
         Assert.Equal(pendingRetransmissionsBefore, runtime.SendRuntime.PendingRetransmissionCount);
-
-        Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
-            sendEffect.Datagram.Span,
-            out QuicPathResponseFrame parsedResponse,
-            out int bytesConsumed));
-        Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
-        Assert.True(challengeData.AsSpan().SequenceEqual(parsedResponse.Data));
-        Assert.Equal(1, QuicS8P2PathValidationTestSupport.CountPathResponseFrames(sendEffect.Datagram.Span));
-        QuicS8P2PathValidationTestSupport.AssertPaddingOnly(sendEffect.Datagram.Span[bytesConsumed..]);
     }
 
     [Fact]

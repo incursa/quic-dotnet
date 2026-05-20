@@ -21,7 +21,6 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0004
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
-        QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -29,6 +28,8 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0004
                 portOnlyPath,
                 new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
             nowTicks: 20).StateChanged);
+        QuicPathMigrationRecoverySnapshot afterValidationProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
@@ -37,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S9P2_0004
 
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        Assert.Equal(dirty, afterPromotion);
+        Assert.Equal(afterValidationProbe, afterPromotion);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
         Assert.Contains(validationResult.Effects, effect =>

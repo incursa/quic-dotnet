@@ -7,7 +7,8 @@ internal static class QuicS19P16RetireConnectionIdTestSupport
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> destinationConnectionId,
         ReadOnlySpan<byte> payload,
-        long observedAtTicks)
+        long observedAtTicks,
+        ulong? routedLocallyIssuedConnectionId = null)
     {
         Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
 
@@ -25,7 +26,8 @@ internal static class QuicS19P16RetireConnectionIdTestSupport
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: observedAtTicks,
                 pathIdentity,
-                protectedPacket),
+                protectedPacket,
+                RoutedLocallyIssuedConnectionId: routedLocallyIssuedConnectionId),
             nowTicks: observedAtTicks);
     }
 }

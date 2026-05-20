@@ -25,10 +25,10 @@ public sealed class REQ_QUIC_RFC9000_S21P5P3_0001
         Assert.True(receiveResult.StateChanged);
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
-        Assert.Contains(receiveResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == preferredPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            receiveResult,
+            preferredPath,
+            runtime: runtime);
 
         QuicConnectionTransitionResult validationResult = QuicS9P6P1PreferredAddressTestSupport.ValidatePreferredPath(
             runtime,
@@ -86,14 +86,19 @@ public sealed class REQ_QUIC_RFC9000_S21P5P3_0001
         Assert.True(receiveResult.StateChanged);
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
-        Assert.Contains(receiveResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == preferredPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            receiveResult,
+            preferredPath,
+            runtime: runtime);
         Assert.DoesNotContain(receiveResult.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect sendDatagramEffect
             && sendDatagramEffect.PathIdentity == preferredPath
-            && !QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+            && !QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+                runtime,
+                sendDatagramEffect.Datagram.Span,
+                out _,
+                out _,
+                out _));
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path, runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(

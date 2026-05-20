@@ -1447,7 +1447,8 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionPathIdentity sendPathIdentity,
         out byte[] protectedPacket,
-        out Exception? exception)
+        out Exception? exception,
+        bool retransmittable = true)
     {
         sendPathIdentity = default;
         protectedPacket = [];
@@ -1567,7 +1568,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        TrackApplicationPacket(packetNumber, protectedPacket, plaintextPayload: payload);
+        TrackApplicationPacket(
+            packetNumber,
+            protectedPacket,
+            retransmittable: retransmittable,
+            plaintextPayload: payload);
         if (piggybackedAckFrame is not null)
         {
             sendRuntime.FlowController.MarkAckFrameSent(
