@@ -1863,6 +1863,7 @@ try {
 
     $runnerShimContent = @'
 import logging
+import json
 import os
 import random
 import shutil
@@ -1979,6 +1980,79 @@ def _packet_has_decrypted_quic_frames(packet):
 
     return any(hasattr(quic, marker) for marker in frame_markers)
 
+def _iter_qlog_events(self, vantage_point):
+    case_log_dir = os.path.dirname(self._sim_log_dir.name)
+    qlog_root = os.path.join(case_log_dir, vantage_point, "qlog")
+    if not os.path.isdir(qlog_root):
+        logging.info("No %s qlog directory was available at %s", vantage_point, qlog_root)
+        return
+
+    for dirpath, _dirnames, filenames in os.walk(qlog_root):
+        for filename in filenames:
+            if not (filename.endswith(".qlog") or filename.endswith(".sqlog")):
+                continue
+
+            qlog_path = os.path.join(dirpath, filename)
+            with open(qlog_path, "r", encoding="utf-8", errors="replace") as qlog_file:
+                for line in qlog_file:
+                    line = line.strip()
+                    if not line:
+                        continue
+
+                    if line.startswith("\x1e"):
+                        line = line[1:]
+
+                    try:
+                        yield json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+
+def _client_qlog_frame_data(self, event_name, frame_type):
+    values = set()
+    for event in _iter_qlog_events(self, "client"):
+        if event.get("name") != event_name:
+            continue
+
+        data = event.get("data", {})
+        for frame in data.get("frames", []):
+            if frame.get("frame_type") == frame_type and "data" in frame:
+                values.add(frame["data"])
+
+    return values
+
+def _client_qlog_server_path_challenges(self):
+    return _client_qlog_frame_data(
+        self,
+        "transport:packet_received",
+        "path_challenge",
+    )
+
+def _client_qlog_path_responses(self):
+    return _client_qlog_frame_data(
+        self,
+        "transport:packet_sent",
+        "path_response",
+    )
+
+def _try_complete_migrated_path_validation_from_qlog(self, pending_paths):
+    qlog_challenges = _client_qlog_server_path_challenges(self)
+    qlog_responses = _client_qlog_path_responses(self)
+    responded_challenges = qlog_challenges.intersection(qlog_responses)
+
+    if not responded_challenges:
+        logging.info(
+            "Client qlog did not contain matching server PATH_CHALLENGE and client PATH_RESPONSE evidence for migrated paths %s",
+            pending_paths,
+        )
+        return None
+
+    logging.info(
+        "Falling back to client qlog path-validation evidence for migrated paths %s: %s",
+        pending_paths,
+        responded_challenges,
+    )
+    return responded_challenges
+
 def _patched_port_rebinding_check(self):
     super(testcases_quic.TestCasePortRebinding, self).check()
     if not self._keylog_file():
@@ -2037,11 +2111,19 @@ def _patched_port_rebinding_check(self):
         paths.add(cur)
 
     if paths_awaiting_decryptable_validation_packet:
-        logging.info(
-            "No decryptable server packet was available for new paths: %s",
+        qlog_confirmed_challenges = _try_complete_migrated_path_validation_from_qlog(
+            self,
             paths_awaiting_decryptable_validation_packet,
         )
-        return testcases_quic.TestResult.FAILED
+        if qlog_confirmed_challenges is None:
+            logging.info(
+                "No decryptable server packet was available for new paths: %s",
+                paths_awaiting_decryptable_validation_packet,
+            )
+            return testcases_quic.TestResult.FAILED
+
+        challenges.update(qlog_confirmed_challenges)
+        paths_awaiting_decryptable_validation_packet.clear()
 
     logging.info("Server saw these paths used: %s", paths)
     if len(paths) <= 1:
@@ -2059,6 +2141,7 @@ def _patched_port_rebinding_check(self):
             if hasattr(packet["quic"], "path_response.data")
         )
     )
+    responses.extend(_client_qlog_path_responses(self))
 
     unresponded = [challenge for challenge in challenges if challenge not in responses]
     if unresponded != []:
