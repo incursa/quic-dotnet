@@ -301,6 +301,17 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         stateChanged |= TryFlushHandshakePackets(ref effects);
         stateChanged |= TryFlushHandshakeDonePacket(ref effects);
+        if (TryFlushPendingRetransmissions(
+                QuicPacketNumberSpace.ApplicationData,
+                nowTicks,
+                probePacket: false,
+                ref effects))
+        {
+            stateChanged = true;
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+
+        stateChanged |= TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
         return stateChanged;
     }
 

@@ -67,6 +67,45 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0004
             new QuicConnectionPathIdentity("203.0.113.185", "198.51.100.184", RemotePort: ushort.MaxValue, LocalPort: 61234));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task PeerAddressRebindingWithoutAnUnusedPeerConnectionIdCanReuseTheCurrentAddressPairConnectionId()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        QuicConnectionPathIdentity originalPath = runtime.ActivePath!.Value.Identity;
+        QuicConnectionPathIdentity reboundPath = new(
+            "203.0.113.244",
+            originalPath.LocalAddress,
+            RemotePort: 443,
+            originalPath.LocalPort);
+        byte[] originalPairConnectionId = [0x95, 0x96, 0x97, 0x98];
+
+        await REQ_QUIC_RFC9000_S5P1P2_0006.BindPeerConnectionIdToCurrentPath(runtime, originalPairConnectionId);
+
+        QuicConnectionTransitionResult validationResult =
+            REQ_QUIC_RFC9000_S5P1P2_0006.ValidateMigratedPath(runtime, reboundPath);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(reboundPath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(runtime.CandidatePaths.Keys, path => path.Equals(reboundPath));
+        Assert.Contains(
+            validationResult.Effects,
+            effect => effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == reboundPath);
+
+        QuicConnectionSendDatagramEffect sendAfterPeerRebinding =
+            await QuicPeerConnectionIdSelectionTestSupport.OpenOutboundStreamAndCaptureSingleSendAsync(runtime);
+
+        Assert.Equal(reboundPath, sendAfterPeerRebinding.PathIdentity);
+        QuicPeerConnectionIdSelectionTestSupport.AssertApplicationDataDatagramOpensWithDestination(
+            runtime,
+            sendAfterPeerRebinding.Datagram,
+            originalPairConnectionId);
+    }
+
     private static void AssertValidatedMigrationPromotesWithSameLocalAddress(
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity migratedPath)

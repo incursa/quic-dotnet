@@ -95,9 +95,9 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0026
                 migratedPath),
             nowTicks: validationClearedAtTicks).StateChanged);
 
-        Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord validatedPath));
-        Assert.True(validatedPath.Validation.IsValidated);
-        Assert.Null(validatedPath.Validation.ValidationDeadlineTicks);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(migratedPath));
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation));
 
         QuicConnectionTransitionResult timerResult = runtime.Transition(

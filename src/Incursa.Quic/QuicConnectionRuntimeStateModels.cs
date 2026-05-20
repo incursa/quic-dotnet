@@ -287,6 +287,10 @@ internal readonly record struct QuicConnectionCandidatePathRecord(
     public QuicConnectionPathMaximumDatagramSizeState MaximumDatagramSizeState { get; init; } = QuicConnectionPathMaximumDatagramSizeState.CreateInitial();
 
     public QuicConnectionPathSpinBitState SpinBitState { get; init; } = QuicConnectionPathSpinBitState.CreateInitial();
+
+    public bool HasHighestNonProbingPacketNumber { get; init; }
+
+    public ulong HighestNonProbingPacketNumber { get; init; }
 }
 
 internal readonly record struct QuicConnectionValidatedPathRecord(

@@ -40,10 +40,10 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0010
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void ValidatedMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId()
+    public void ValidatedLocalMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId()
     {
-        QuicConnectionPathIdentity activePath = new("203.0.113.122", RemotePort: 443);
-        QuicConnectionPathIdentity migratedPath = new("203.0.113.123", RemotePort: 443);
+        QuicConnectionPathIdentity activePath = new("203.0.113.122", "198.51.100.122", RemotePort: 443, LocalPort: 61234);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.123", "198.51.100.123", RemotePort: 443, LocalPort: 61234);
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
 
         PreparePeerTransportParametersForMigration(runtime, []);

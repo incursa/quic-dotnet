@@ -6,7 +6,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void RecentlyValidatedPeerAddressCanBypassAnotherValidationChallenge()
+    public void RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote()
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.104", RemotePort: 443);
         QuicConnectionPathIdentity firstValidatedPath = new("203.0.113.105", RemotePort: 443);
@@ -52,12 +52,11 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0004
             nowTicks: 70);
 
         Assert.True(runtime.ActivePath.HasValue);
-        Assert.Equal(secondValidatedPath, runtime.ActivePath!.Value.Identity);
-        Assert.True(runtime.CandidatePaths.TryGetValue(firstValidatedPath, out QuicConnectionCandidatePathRecord reusedCandidatePath));
-        Assert.True(reusedCandidatePath.Validation.IsValidated);
-        Assert.False(reusedCandidatePath.Validation.IsAbandoned);
-        Assert.Equal(0UL, reusedCandidatePath.Validation.ChallengeSendCount);
-        Assert.Null(reusedCandidatePath.Validation.ValidationDeadlineTicks);
+        Assert.Equal(firstValidatedPath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(firstValidatedPath));
+        Assert.Contains(reuseResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == firstValidatedPath);
         Assert.DoesNotContain(reuseResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 }

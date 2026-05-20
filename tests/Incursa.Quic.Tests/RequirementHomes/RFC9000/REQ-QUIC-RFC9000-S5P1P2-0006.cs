@@ -177,7 +177,8 @@ public sealed class REQ_QUIC_RFC9000_S5P1P2_0006
         byte[] migrationPacket = QuicConnectionIdLifecycleTestSupport.BuildOneRttPacket(
             runtime,
             runtime.CurrentPeerDestinationConnectionId.Span,
-            QuicFrameTestData.BuildPingFrame());
+            QuicFrameTestData.BuildPathChallengeFrame(
+                new QuicPathChallengeFrame([0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27])));
 
         QuicConnectionTransitionResult migrationResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(

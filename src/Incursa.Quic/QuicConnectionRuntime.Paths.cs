@@ -240,6 +240,12 @@ internal sealed partial class QuicConnectionRuntime
         candidatePaths[pathIdentity] = candidatePath;
         UpdatePeerAddressValidationFlag();
 
+        if (candidatePath.Validation.ChallengeSendCount == 0
+            && tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            TrySendPathValidationChallenge(pathIdentity, nowTicks, ref candidatePath, ref effects);
+        }
+
         return stateChanged;
     }
 
@@ -298,7 +304,7 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            return !ContainsOnlyPathValidationFrames(openedPacket.Span.Slice(payloadOffset, payloadLength));
+            return !ContainsOnlyProbingFrames(openedPacket.Span.Slice(payloadOffset, payloadLength));
         }
         finally
         {
@@ -306,7 +312,7 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private static bool ContainsOnlyPathValidationFrames(ReadOnlySpan<byte> payload)
+    private static bool ContainsOnlyProbingFrames(ReadOnlySpan<byte> payload)
     {
         int offset = 0;
         while (offset < payload.Length)
@@ -317,20 +323,6 @@ internal sealed partial class QuicConnectionRuntime
                 && paddingBytesConsumed > 0)
             {
                 offset += paddingBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed)
-                && pingBytesConsumed > 0)
-            {
-                offset += pingBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
-                && ackBytesConsumed > 0)
-            {
-                offset += ackBytesConsumed;
                 continue;
             }
 
@@ -345,6 +337,13 @@ internal sealed partial class QuicConnectionRuntime
                 && pathResponseBytesConsumed > 0)
             {
                 offset += pathResponseBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseNewConnectionIdFrame(remaining, out _, out int newConnectionIdBytesConsumed)
+                && newConnectionIdBytesConsumed > 0)
+            {
+                offset += newConnectionIdBytesConsumed;
                 continue;
             }
 
@@ -578,6 +577,11 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        {
+            return false;
+        }
+
         Span<byte> challengePayload = stackalloc byte[QuicPathValidation.PathChallengeDataLength];
         if (!QuicPathValidation.TryGeneratePathChallengeData(challengePayload, out int challengePayloadBytesWritten))
         {
@@ -602,40 +606,25 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        byte[] datagram = challengeDatagramPayload;
-        if (tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
-        {
-            if (!TryProtectAndAccountApplicationPayloadOnPath(
-                    pathIdentity,
-                    challengeDatagramPayload,
-                    "The connection runtime could not protect the path challenge packet.",
-                    "The connection cannot send the path challenge packet.",
-                    ref effects,
-                    out QuicConnectionPathIdentity sendPathIdentity,
-                    out byte[] protectedPacket,
-                    out _,
-                    retransmittable: false))
-            {
-                return false;
-            }
-
-            pathIdentity = sendPathIdentity;
-            datagram = protectedPacket;
-            candidatePath = candidatePaths[pathIdentity];
-        }
-        else if (candidatePath.AmplificationState.TryConsumeSendBudget(
-            datagram.Length,
-            out QuicConnectionPathAmplificationState updatedAmplificationState))
-        {
-            candidatePath = candidatePath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-        }
-        else
+        if (!TryProtectAndAccountApplicationPayloadOnPath(
+                pathIdentity,
+                challengeDatagramPayload,
+                "The connection runtime could not protect the path challenge packet.",
+                "The connection cannot send the path challenge packet.",
+                ref effects,
+                out QuicConnectionPathIdentity sendPathIdentity,
+                out byte[] protectedPacket,
+                out _,
+                retransmittable: false,
+                probePacket: true,
+                includeAckFrame: false))
         {
             return false;
         }
+
+        pathIdentity = sendPathIdentity;
+        byte[] datagram = protectedPacket;
+        candidatePath = candidatePaths[pathIdentity];
 
         candidatePath = candidatePath with
         {
@@ -702,6 +691,61 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryGetCandidatePath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
     {
         return candidatePaths.TryGetValue(pathIdentity, out candidatePath);
+    }
+
+    private bool TryMarkCandidatePathReadyForNonProbingTraffic(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong packetNumber,
+        long nowTicks)
+    {
+        if (!TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+            || candidatePath.Validation.IsAbandoned
+            || (candidatePath.HasHighestNonProbingPacketNumber
+                && packetNumber <= candidatePath.HighestNonProbingPacketNumber))
+        {
+            return false;
+        }
+
+        candidatePaths[pathIdentity] = candidatePath with
+        {
+            LastActivityTicks = nowTicks,
+            HasHighestNonProbingPacketNumber = true,
+            HighestNonProbingPacketNumber = packetNumber,
+        };
+        return true;
+    }
+
+    private bool TryGetPermittedPeerMigrationSendPath(out QuicConnectionPathIdentity pathIdentity)
+    {
+        pathIdentity = default;
+        if (activePath is null || candidatePaths.Count == 0)
+        {
+            return false;
+        }
+
+        ulong selectedPacketNumber = hasObservedApplicationPacketNumber
+            ? largestObservedApplicationPacketNumber
+            : 0UL;
+        bool selected = false;
+        foreach (QuicConnectionCandidatePathRecord candidatePath in candidatePaths.Values)
+        {
+            if (candidatePath.Validation.IsAbandoned
+                || !candidatePath.HasHighestNonProbingPacketNumber
+                || (hasObservedApplicationPacketNumber
+                    && candidatePath.HighestNonProbingPacketNumber < largestObservedApplicationPacketNumber)
+                || (selected
+                    && candidatePath.HighestNonProbingPacketNumber <= selectedPacketNumber)
+                || !CanPromoteActivePathMigration(candidatePath.Identity))
+            {
+                continue;
+            }
+
+            selectedPacketNumber = candidatePath.HighestNonProbingPacketNumber;
+            pathIdentity = candidatePath.Identity;
+            selected = true;
+        }
+
+        return selected;
     }
 
     private bool TryGetRecentlyValidatedPath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionValidatedPathRecord validatedPath)
@@ -997,9 +1041,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (activePath is not null && activePathChanged && !preserveCurrentRecoveryState)
+        if (activePath is not null && activePathChanged)
         {
-            ResetRecoveryStateForNewPath(candidatePath.MaximumDatagramSizeState);
+            if (!preserveCurrentRecoveryState)
+            {
+                ResetRecoveryStateForNewPath(candidatePath.MaximumDatagramSizeState);
+            }
         }
 
         MaybeRememberPreferredAddressMigrationSource(pathIdentity);
@@ -1105,9 +1152,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (activePath is not null && !preserveCurrentRecoveryState)
+        if (activePath is not null)
         {
-            ResetRecoveryStateForNewPath(bestCandidate.Value.MaximumDatagramSizeState);
+            if (!preserveCurrentRecoveryState)
+            {
+                ResetRecoveryStateForNewPath(bestCandidate.Value.MaximumDatagramSizeState);
+            }
         }
 
         MaybeRememberPreferredAddressMigrationSource(bestPathIdentity.Value);
@@ -1212,7 +1262,9 @@ internal sealed partial class QuicConnectionRuntime
             resetToInitialWindow: true);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Initial, discardAckGenerationState: false);
         sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.Handshake, discardAckGenerationState: false);
-        sendRuntime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData, discardAckGenerationState: false);
+        sendRuntime.TryDiscardPacketNumberSpaceForPathMigration(
+            QuicPacketNumberSpace.ApplicationData,
+            discardAckGenerationState: false);
         recoveryController.Reset();
     }
 
@@ -1393,13 +1445,22 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (PeerRequestedZeroLengthConnectionId())
+        if (PeerRequestedZeroLengthConnectionId()
+            && IsLocalAddressChange(pathIdentity))
         {
             return false;
         }
 
         return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration)
-            || IsPreferredAddressPath(pathIdentity);
+            || IsPreferredAddressPath(pathIdentity)
+            || !IsLocalAddressChange(pathIdentity);
+    }
+
+    private bool IsLocalAddressChange(QuicConnectionPathIdentity pathIdentity)
+    {
+        return activePath is not null
+            && (!string.Equals(activePath.Value.Identity.LocalAddress, pathIdentity.LocalAddress, StringComparison.Ordinal)
+                || activePath.Value.Identity.LocalPort != pathIdentity.LocalPort);
     }
 
     private bool PeerRequestedZeroLengthConnectionId()

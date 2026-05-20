@@ -10,7 +10,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0002
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.20", RemotePort: 443);
         QuicConnectionPathIdentity candidatePath = new("203.0.113.21", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
@@ -26,11 +26,24 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0002
         Assert.False(candidate.Validation.IsAbandoned);
         Assert.Equal(1UL, candidate.Validation.ChallengeSendCount);
         Assert.True(candidate.Validation.ValidationDeadlineTicks.HasValue);
-        Assert.Equal(dirty, QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime));
+        QuicPathMigrationRecoverySnapshot afterCandidateProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+        Assert.Equal(dirty.PendingRetransmissionCount, afterCandidateProbe.PendingRetransmissionCount);
+        Assert.Equal(dirty.HasAckElicitingPacketsInFlight, afterCandidateProbe.HasAckElicitingPacketsInFlight);
+        Assert.Equal(dirty.LossDetectionDeadlineMicros, afterCandidateProbe.LossDetectionDeadlineMicros);
+        Assert.Equal(dirty.ProbeTimeoutCount, afterCandidateProbe.ProbeTimeoutCount);
+        Assert.Equal(dirty.CongestionWindowBytes, afterCandidateProbe.CongestionWindowBytes);
+        Assert.Equal(dirty.SlowStartThresholdBytes, afterCandidateProbe.SlowStartThresholdBytes);
+        Assert.Equal(dirty.RecoveryStartTimeMicros, afterCandidateProbe.RecoveryStartTimeMicros);
+        Assert.Equal(dirty.SmoothedRttMicros, afterCandidateProbe.SmoothedRttMicros);
+        Assert.Equal(dirty.RttVarMicros, afterCandidateProbe.RttVarMicros);
+        Assert.Equal(dirty.EcnValidated, afterCandidateProbe.EcnValidated);
+        Assert.True(afterCandidateProbe.SentPacketCount > dirty.SentPacketCount);
+        Assert.True(afterCandidateProbe.BytesInFlightBytes > dirty.BytesInFlightBytes);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
-        Assert.Contains(result.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == candidatePath
-            && send.Datagram.Length == QuicVersionNegotiation.Version1MinimumDatagramPayloadSize);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            candidatePath,
+            runtime: runtime);
     }
 }

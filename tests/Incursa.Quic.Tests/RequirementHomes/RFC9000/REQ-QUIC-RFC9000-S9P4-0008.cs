@@ -10,7 +10,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0008
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.10", RemotePort: 443);
         QuicConnectionPathIdentity candidatePath = new("203.0.113.11", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult firstResult = runtime.Transition(
@@ -20,10 +20,10 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0008
                 datagram),
             nowTicks: 20);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
-            firstResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
-
-        Assert.Equal(candidatePath, sendEffect.PathIdentity);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            firstResult,
+            candidatePath,
+            runtime: runtime);
         Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation).HasValue);
         Assert.Null(runtime.SendRuntime.LossDetectionDeadlineMicros);
 

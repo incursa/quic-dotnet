@@ -67,8 +67,9 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0006
         QuicConnectionPathIdentity otherFamilyPreferredPath,
         QuicTransportParameters parsedTransportParameters)
     {
-        using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, parsedTransportParameters);
+        using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            activePath,
+            parsedTransportParameters);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult discoveryResult = runtime.Transition(
@@ -81,10 +82,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0006
         Assert.True(discoveryResult.StateChanged);
         Assert.True(runtime.CandidatePaths.TryGetValue(sameFamilyPreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
-        Assert.Contains(discoveryResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == sameFamilyPreferredPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            discoveryResult,
+            sameFamilyPreferredPath,
+            runtime: runtime);
         Assert.False(runtime.CandidatePaths.ContainsKey(otherFamilyPreferredPath));
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
 

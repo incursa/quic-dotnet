@@ -7,7 +7,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0017
     [Requirement("REQ-QUIC-RFC9000-S18P2-0017")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ValidatedNonPreferredMigrationCandidateDoesNotPromoteWhenDisableActiveMigrationIsSet()
+    public void ValidatedNewLocalAddressCandidateDoesNotPromoteWhenDisableActiveMigrationIsSet()
     {
         QuicTransportParameters parsedTransportParameters =
             QuicS18P2DisableActiveMigrationTestSupport.ParsePeerTransportParameters(
@@ -19,7 +19,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0017
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
 
         QuicConnectionPathIdentity migrationPath =
-            QuicS18P2DisableActiveMigrationTestSupport.CreateNonPreferredMigrationPath();
+            QuicS18P2DisableActiveMigrationTestSupport.CreateNewLocalAddressPath();
         byte[] datagram = QuicS18P2DisableActiveMigrationTestSupport.CreateDatagram();
 
         Assert.True(runtime.Transition(
@@ -43,6 +43,51 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0017
         Assert.DoesNotContain(validationResult.Effects, effect =>
             effect is QuicConnectionPromoteActivePathEffect promoteActivePathEffect
             && promoteActivePathEffect.PathIdentity == migrationPath);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S18P2-0017")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ValidatedPeerRebindingCandidatePromotesWhenDisableActiveMigrationIsSet()
+    {
+        QuicTransportParameters parsedTransportParameters =
+            QuicS18P2DisableActiveMigrationTestSupport.ParsePeerTransportParameters(
+                QuicS18P2DisableActiveMigrationTestSupport.CreateDisableActiveMigrationPeerTransportParameters());
+
+        using QuicConnectionRuntime runtime =
+            QuicS18P2DisableActiveMigrationTestSupport.CreateRuntimeWithCommittedPeerTransportParameters(
+                parsedTransportParameters);
+        Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
+
+        QuicConnectionPathIdentity rebindingPath =
+            QuicS18P2DisableActiveMigrationTestSupport.CreatePeerRebindingPath();
+        byte[] datagram = QuicS18P2DisableActiveMigrationTestSupport.CreateDatagram();
+
+        Assert.Equal(QuicS18P2DisableActiveMigrationTestSupport.OriginalPath.LocalAddress, rebindingPath.LocalAddress);
+        Assert.Equal(QuicS18P2DisableActiveMigrationTestSupport.OriginalPath.LocalPort, rebindingPath.LocalPort);
+        Assert.NotEqual(QuicS18P2DisableActiveMigrationTestSupport.OriginalPath.RemoteAddress, rebindingPath.RemoteAddress);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                rebindingPath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            rebindingPath,
+            observedAtTicks: 30);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(rebindingPath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.ActivePath!.Value.IsValidated);
+        Assert.False(runtime.CandidatePaths.ContainsKey(rebindingPath));
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promoteActivePathEffect
+            && promoteActivePathEffect.PathIdentity == rebindingPath);
     }
 
     [Fact]

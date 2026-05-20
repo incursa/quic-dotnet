@@ -31,9 +31,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
             nowTicks: 20);
 
         Assert.True(probeResult.StateChanged);
-        Assert.Contains(probeResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == PreferredPath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            probeResult,
+            PreferredPath,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(PreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
 
@@ -70,9 +71,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
             nowTicks: 20);
 
         Assert.True(probeResult.StateChanged);
-        Assert.Contains(probeResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == PreferredPath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            probeResult,
+            PreferredPath,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(PreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
 
@@ -124,9 +126,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
             nowTicks: 20);
 
         Assert.True(probeResult.StateChanged);
-        Assert.Contains(probeResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == PreferredIpv6Path);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            probeResult,
+            PreferredIpv6Path,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(PreferredIpv6Path, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
 
@@ -167,9 +170,9 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
 
     private static QuicConnectionRuntime CreateRuntime()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(OriginalPath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, CreatePeerTransportParameters());
-        return runtime;
+        return QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            OriginalPath,
+            CreatePeerTransportParameters());
     }
 
     private static QuicTransportParameters CreatePeerTransportParameters()

@@ -40,10 +40,10 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void ValidatedMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId()
+    public void ValidatedLocalMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId()
     {
-        QuicConnectionPathIdentity activePath = new("203.0.113.122", RemotePort: 443);
-        QuicConnectionPathIdentity migratedPath = new("203.0.113.123", RemotePort: 443);
+        QuicConnectionPathIdentity activePath = new("203.0.113.122", "198.51.100.122", RemotePort: 443, LocalPort: 61234);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.123", "198.51.100.123", RemotePort: 443, LocalPort: 61234);
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
 
         PreparePeerTransportParametersForMigration(runtime, []);
@@ -69,6 +69,40 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0005
         Assert.DoesNotContain(validationResult.Effects, effect =>
             effect is QuicConnectionPromoteActivePathEffect promote
             && promote.PathIdentity == migratedPath);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ValidatedPeerRebindingCanPromoteWhenThePeerRequestedZeroLengthConnectionId()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.126", "198.51.100.126", RemotePort: 443, LocalPort: 61234);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.127", "198.51.100.126", RemotePort: 8443, LocalPort: 61234);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+
+        PreparePeerTransportParametersForMigration(runtime, []);
+
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                migratedPath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            migratedPath,
+            observedAtTicks: 30);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.Equal(0, runtime.CurrentPeerDestinationConnectionId.Length);
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == migratedPath
+            && !promote.RestoreSavedState);
     }
 
     [Fact]

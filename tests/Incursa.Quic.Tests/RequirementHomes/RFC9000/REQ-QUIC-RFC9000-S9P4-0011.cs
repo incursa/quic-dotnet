@@ -19,9 +19,10 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0011
                 initialTimerGeneration),
             nowTicks: initialDeadlineTicks);
 
-        Assert.Contains(retryResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            retryResult,
+            candidatePath,
+            runtime: runtime);
         Assert.Contains(retryResult.Effects, effect =>
             effect is QuicConnectionArmTimerEffect arm
             && arm.TimerKind == QuicConnectionTimerKind.PathValidation);
@@ -53,16 +54,17 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0011
         Assert.True(retriedCandidate.Validation.ValidationDeadlineTicks.HasValue);
         Assert.True(retriedCandidate.Validation.ChallengeSentAtTicks.HasValue);
         Assert.True(retriedCandidate.Validation.ValidationDeadlineTicks.Value - retriedCandidate.Validation.ChallengeSentAtTicks.Value >= initialIntervalTicks);
-        Assert.Contains(retryResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == candidatePath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            retryResult,
+            candidatePath,
+            runtime: runtime);
     }
 
     private static (QuicConnectionRuntime Runtime, QuicConnectionPathIdentity CandidatePath, long DeadlineTicks, ulong TimerGeneration, long ChallengeSentAtTicks) CreatePendingPathValidation()
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.40", RemotePort: 443);
         QuicConnectionPathIdentity candidatePath = new("203.0.113.41", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         Assert.True(runtime.Transition(

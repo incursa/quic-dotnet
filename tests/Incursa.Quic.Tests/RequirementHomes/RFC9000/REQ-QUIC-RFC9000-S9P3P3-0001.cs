@@ -11,7 +11,8 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0001
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.70", RemotePort: 443);
         QuicConnectionPathIdentity migratedPath = new("203.0.113.71", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime =
+            QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult result = runtime.Transition(
@@ -32,14 +33,10 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0001
         Assert.Equal(QuicPathValidation.PathChallengeDataLength, candidatePath.Validation.ChallengePayload.Length);
         Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation).HasValue);
 
-        QuicConnectionSendDatagramEffect send = Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
-        Assert.Equal(migratedPath, send.PathIdentity);
-        Assert.True(QuicFrameCodec.TryParsePathChallengeFrame(
-            send.Datagram.Span,
-            out QuicPathChallengeFrame parsedChallenge,
-            out int bytesConsumed));
-        Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesConsumed);
-        Assert.Equal(QuicPathValidation.PathChallengeDataLength, parsedChallenge.Data.Length);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            migratedPath,
+            runtime: runtime);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 }
