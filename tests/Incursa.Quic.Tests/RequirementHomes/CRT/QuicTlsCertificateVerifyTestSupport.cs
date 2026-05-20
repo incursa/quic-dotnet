@@ -63,6 +63,47 @@ internal static class QuicTlsCertificateVerifyTestSupport
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.Certificate, body);
     }
 
+    internal static byte[] CreateCertificateChainTranscript(params byte[][] certificateChainDer)
+    {
+        ArgumentNullException.ThrowIfNull(certificateChainDer);
+        if (certificateChainDer.Length == 0)
+        {
+            throw new ArgumentException("The certificate chain must contain at least one entry.", nameof(certificateChainDer));
+        }
+
+        int certificateListLength = 0;
+        for (int i = 0; i < certificateChainDer.Length; i++)
+        {
+            byte[] certificateDer = certificateChainDer[i];
+            if (certificateDer is null || certificateDer.Length == 0)
+            {
+                throw new ArgumentException("Certificate chain entries must not be empty.", nameof(certificateChainDer));
+            }
+
+            certificateListLength = checked(certificateListLength + UInt24Length + certificateDer.Length + UInt16Length);
+        }
+
+        byte[] body = new byte[1 + UInt24Length + certificateListLength];
+        int index = 0;
+
+        body[index++] = 0x00;
+        WriteUInt24(body.AsSpan(index, UInt24Length), certificateListLength);
+        index += UInt24Length;
+
+        for (int i = 0; i < certificateChainDer.Length; i++)
+        {
+            byte[] certificateDer = certificateChainDer[i];
+            WriteUInt24(body.AsSpan(index, UInt24Length), certificateDer.Length);
+            index += UInt24Length;
+            certificateDer.CopyTo(body.AsSpan(index, certificateDer.Length));
+            index += certificateDer.Length;
+            WriteUInt16(body.AsSpan(index, UInt16Length), 0);
+            index += UInt16Length;
+        }
+
+        return WrapHandshakeMessage(QuicTlsHandshakeMessageType.Certificate, body);
+    }
+
     internal static byte[] CreateCertificateRequestTranscript()
     {
         Span<byte> body = stackalloc byte[11];

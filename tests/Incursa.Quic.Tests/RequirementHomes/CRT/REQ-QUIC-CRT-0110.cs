@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
 
@@ -33,6 +34,50 @@ public sealed class REQ_QUIC_CRT_0110
         Assert.True(schedule.PeerCertificateVerifyVerified);
         Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out _));
         Assert.False(schedule.PeerFinishedVerified);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientRoleCertificateMessageAcceptsAdditionalChainEntriesForLeafProof()
+    {
+        QuicTransportParameters peerTransportParameters = CreateServerTransportParameters();
+        ProofInputs inputs = CreateProofInputs(peerTransportParameters);
+        QuicTlsKeySchedule schedule = new(CreateScalar(0x11));
+
+        using ECDsa leafKey = inputs.LeafKey;
+        using ECDsa intermediateKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+
+        byte[] intermediateCertificateDer = QuicTlsCertificateVerifyTestSupport.CreateLeafCertificateDer(intermediateKey);
+        byte[] certificateChainTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateChainTranscript(
+            inputs.LeafCertificateDer,
+            intermediateCertificateDer);
+        byte[] certificateVerifyTranscriptHash = SHA256.HashData([
+            .. inputs.ServerHelloTranscript,
+            .. inputs.EncryptedExtensionsTranscript,
+            .. certificateChainTranscript,
+        ]);
+
+        Assert.Equal(3, schedule.ProcessTranscriptStep(CreateServerHelloStep(inputs.ServerHelloTranscript)).Count);
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateEncryptedExtensionsStep(peerTransportParameters)));
+        Assert.Empty(schedule.ProcessTranscriptStep(CreateCertificateStep(certificateChainTranscript)));
+        Assert.True(schedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerLeafCertificate));
+
+        using (peerLeafCertificate)
+        {
+            Assert.Equal(inputs.LeafCertificateDer, peerLeafCertificate!.RawData);
+        }
+
+        byte[] certificateVerifyTranscript = QuicTlsCertificateVerifyTestSupport.CreateCertificateVerifyTranscript(
+            leafKey,
+            certificateVerifyTranscriptHash);
+
+        IReadOnlyList<QuicTlsStateUpdate> certificateVerifyUpdates = schedule.ProcessTranscriptStep(
+            CreateCertificateVerifyStep(certificateVerifyTranscript));
+
+        Assert.Single(certificateVerifyUpdates);
+        Assert.Equal(QuicTlsUpdateKind.PeerCertificateVerifyVerified, certificateVerifyUpdates[0].Kind);
+        Assert.True(schedule.PeerCertificateVerifyVerified);
     }
 
     [Fact]

@@ -376,11 +376,12 @@ verification artifact.
 
 `REQ-QUIC-INT-0018` remains the owning inventory/profile requirement for the
 non-HTTP/3 interop testcase list. The current helper inventory keeps
-`versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, and `zerortt` in
-the supported/executed class, with `versionnegotiation` now backed by explicit
-reserved-version runner dispatch, keeps `http3` out of scope, and classifies
-`v2`, `rebind-port`, and `rebind-addr` as prerequisite-blocked while keeping
-`connectionmigration` in the supported/executed class.
+`versionnegotiation`, `longrtt`, `multiplexing`, `chacha20`, `keyupdate`,
+`resumption`, `zerortt`, `amplificationlimit`, `blackhole`, `transferloss`,
+`ipv6`, and `connectionmigration` in the supported/executed class, with
+`versionnegotiation` now backed by explicit reserved-version runner dispatch,
+keeps `http3` out of scope, and classifies `v2`, `rebind-port`, and
+`rebind-addr` as prerequisite-blocked.
 
 Those two socket-rebind cells remain blocked on live runner corroboration and
 inventory promotion, while `connectionmigration` is awaiting a fresh hosted

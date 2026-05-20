@@ -8,6 +8,51 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0005
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0005">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S8P1-0005")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientSendsAckElicitingHandshakeAckProbeWhenServerCryptoTrafficNeedsAck()
+    {
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+            QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+
+        QuicConnectionTransitionResult initialResult = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: scenario.InitialPacket),
+            nowTicks: 10);
+        Assert.True(initialResult.StateChanged);
+
+        byte[] serverHandshakeCryptoGap = CreateServerHandshakeCryptoGapPacket(scenario);
+        QuicConnectionTransitionResult handshakeResult = scenario.ClientRuntime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 11,
+                PathIdentity: scenario.PathIdentity,
+                Datagram: serverHandshakeCryptoGap),
+            nowTicks: 11);
+
+        QuicConnectionSendDatagramEffect probeEffect = Assert.Single(
+            handshakeResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => QuicPacketParser.TryGetPacketNumberSpace(
+                    effect.Datagram.Span,
+                    out QuicPacketNumberSpace packetNumberSpace)
+                && packetNumberSpace == QuicPacketNumberSpace.Handshake);
+
+        Assert.Contains(
+            scenario.ClientRuntime.SendRuntime.SentPackets.Values,
+            sentPacket => sentPacket.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && sentPacket.AckEliciting
+                && !sentPacket.AckOnlyPacket
+                && !sentPacket.Retransmittable
+                && sentPacket.PacketBytes.Span.SequenceEqual(probeEffect.Datagram.Span));
+        Assert.NotNull(scenario.ClientRuntime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery));
+    }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0005">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -56,5 +101,28 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0005
 
         Assert.Fail("No Initial probe datagram was emitted when PTO expired.");
         return default!;
+    }
+
+    private static byte[] CreateServerHandshakeCryptoGapPacket(
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario)
+    {
+        Assert.True(scenario.ServerRuntime.TlsState.HandshakeProtectPacketProtectionMaterial.HasValue);
+
+        QuicHandshakeFlowCoordinator coordinator = new(
+            scenario.ClientSourceConnectionId,
+            scenario.ServerSourceConnectionId);
+
+        byte[] protectedPacket = [];
+        for (int i = 0; i < 3; i++)
+        {
+            Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+                [0xC0, 0xFF, 0xEE],
+                cryptoPayloadOffset: 64_000,
+                scenario.ServerRuntime.TlsState.HandshakeProtectPacketProtectionMaterial.Value,
+                out _,
+                out protectedPacket));
+        }
+
+        return protectedPacket;
     }
 }

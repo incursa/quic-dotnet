@@ -66,14 +66,45 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-logs"), GetPlanValue(output, "Runner logs"));
         Assert.Equal(Path.Combine(runRoot, "artifact-tree.txt"), GetPlanValue(output, "Artifact tree"));
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
-        Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("19", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
             "v2,rebind-port,rebind-addr",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
+        Assert.False(Directory.Exists(fixture.ArtifactsRoot));
+        Assert.False(File.Exists(fixture.DockerSentinelPath));
+    }
+
+    [Fact]
+    public async Task DryRunAcceptsTransferDerivedUpstreamTestcasesAsSupported()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+
+        ScriptRunResult result = await fixture.RunAsync(
+            CreateDryRunArguments(
+                fixture.RepoRoot,
+                "client",
+                "chrome",
+                "quic-go,msquic",
+                "longrtt,multiplexing,amplificationlimit,blackhole,transferloss,ipv6"));
+
+        string output = result.CombinedOutput;
+        string runRoot = GetPlanValue(output, "Run root");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Equal("longrtt,multiplexing,amplificationlimit,blackhole,transferloss,ipv6", GetPlanValue(output, "Test cases"));
+        Assert.Equal("longrtt,multiplexing,amplificationlimit,blackhole,transferloss,ipv6", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
+        Assert.Contains("longrtt -> supported-executed (runner: longrtt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("multiplexing -> supported-executed (runner: multiplexing)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("amplificationlimit -> supported-executed (runner: amplificationlimit)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("blackhole -> supported-executed (runner: blackhole)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("transferloss -> supported-executed (runner: transferloss)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ipv6 -> supported-executed (runner: ipv6)", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));
     }
