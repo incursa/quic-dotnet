@@ -1759,7 +1759,11 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                if (!TryHandleRetireConnectionIdFrame(retireConnectionIdFrame, nowTicks, ref effects))
+                if (!TryHandleRetireConnectionIdFrame(
+                        retireConnectionIdFrame,
+                        packetReceivedEvent.RoutedLocallyIssuedConnectionId,
+                        nowTicks,
+                        ref effects))
                 {
                     return false;
                 }
@@ -2951,7 +2955,8 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects,
                     out QuicConnectionPathIdentity sendPathIdentity,
                     out byte[] protectedPacket,
-                    out _))
+                    out _,
+                    retransmittable: false))
             {
                 return false;
             }
@@ -3022,7 +3027,8 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects,
                     out QuicConnectionPathIdentity sendPathIdentity,
                     out byte[] protectedPacket,
-                    out _))
+                    out _,
+                    retransmittable: false))
             {
                 return false;
             }
@@ -3103,6 +3109,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryHandleRetireConnectionIdFrame(
         QuicRetireConnectionIdFrame retireConnectionIdFrame,
+        ulong? packetDestinationConnectionIdSequence,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
@@ -3124,8 +3131,8 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
-        if (peerConnectionIdState.CurrentDestinationConnectionIdSequence.HasValue
-            && retireConnectionIdFrame.SequenceNumber == peerConnectionIdState.CurrentDestinationConnectionIdSequence.Value)
+        if (packetDestinationConnectionIdSequence.HasValue
+            && retireConnectionIdFrame.SequenceNumber == packetDestinationConnectionIdSequence.Value)
         {
             return HandleFatalTlsSignal(
                 nowTicks,

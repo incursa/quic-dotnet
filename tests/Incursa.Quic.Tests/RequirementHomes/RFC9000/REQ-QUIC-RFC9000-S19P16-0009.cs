@@ -14,27 +14,13 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0009
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         byte[] issuedStatelessResetToken = QuicS17P2P3TestSupport.CreateSequentialBytes(0x35, QuicStatelessReset.StatelessResetTokenLength);
-        byte[] statelessResetToken = QuicS17P2P3TestSupport.CreateSequentialBytes(0x60, QuicStatelessReset.StatelessResetTokenLength);
-        byte[] retiredConnectionId = QuicS17P2P3TestSupport.CreateSequentialBytes(0x70, 4);
 
         Assert.True(runtime.Transition(
             new QuicConnectionConnectionIdIssuedEvent(
                 ObservedAtTicks: 0,
-                ConnectionId: 20UL,
+                ConnectionId: 10UL,
                 StatelessResetToken: issuedStatelessResetToken),
             nowTicks: 0).StateChanged);
-
-        byte[] newConnectionIdPayload = QuicFrameTestData.BuildNewConnectionIdFrame(
-            new QuicNewConnectionIdFrame(10UL, 0UL, retiredConnectionId, statelessResetToken));
-        QuicConnectionTransitionResult newConnectionIdResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
-            runtime,
-            runtime.ActivePath!.Value.Identity,
-            QuicS17P2P3TestSupport.PacketConnectionId,
-            newConnectionIdPayload,
-            observedAtTicks: 1);
-
-        Assert.True(newConnectionIdResult.StateChanged);
-        Assert.True(runtime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(retiredConnectionId));
 
         byte[] retirePayload = QuicFrameTestData.BuildRetireConnectionIdFrame(new QuicRetireConnectionIdFrame(10UL));
         QuicConnectionTransitionResult retireResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
@@ -42,7 +28,8 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0009
             runtime.ActivePath!.Value.Identity,
             runtime.CurrentPeerDestinationConnectionId.Span,
             retirePayload,
-            observedAtTicks: 2);
+            observedAtTicks: 2,
+            routedLocallyIssuedConnectionId: 10UL);
 
         Assert.True(retireResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);

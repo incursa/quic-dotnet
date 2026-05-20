@@ -234,7 +234,16 @@ public sealed class REQ_QUIC_CRT_0106
             PayloadBytes: 128,
             SentAtMicros: 0,
             CryptoMetadata: new QuicConnectionCryptoSendMetadata(QuicTlsEncryptionLevel.Handshake)));
-        Assert.Single(runtime.SendRuntime.SentPackets);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            packet => packet.Key.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && packet.Key.PacketNumber == 0
+                && !packet.Value.Retransmittable);
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets,
+            packet => packet.Key.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                && packet.Key.PacketNumber == 7
+                && packet.Value.Retransmittable);
 
         QuicConnectionTransitionResult discardResult = runtime.Transition(
             new QuicConnectionTlsStateUpdatedEvent(

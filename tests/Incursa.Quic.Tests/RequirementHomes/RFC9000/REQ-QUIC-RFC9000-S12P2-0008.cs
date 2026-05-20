@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0008
         QuicConnectionTransitionResult newConnectionIdResult = ProcessNewConnectionIdFrame(
             runtime,
             sequenceNumber: 1,
-            retirePriorTo: 0,
+            retirePriorTo: 1,
             connectionId: rotatedDestinationConnectionId,
             statelessResetToken: [0x93, 0xCA, 0x79, 0x2B, 0xDC, 0xF0, 0xA9, 0x2A, 0x83, 0xF3, 0x64, 0x93, 0xE1, 0x0D, 0xBD, 0x47],
             observedAtTicks: 10);

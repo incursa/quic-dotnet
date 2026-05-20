@@ -21,9 +21,10 @@ public sealed class REQ_QUIC_INT_0025
         Assert.Contains("source-address blocked advisory", spec, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("preferred migration address", spec, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0025", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("source-address blocked advisory", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("remaining gap is hosted corroboration", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rather than a known local source-address failure", gapLedger, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0025", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("source-address advisory", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hosted lane remains advisory", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("preferred_lft 0", setupScript, StringComparison.Ordinal);
         Assert.Contains("preferred migration address", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("source-address blocker", architecture, StringComparison.OrdinalIgnoreCase);

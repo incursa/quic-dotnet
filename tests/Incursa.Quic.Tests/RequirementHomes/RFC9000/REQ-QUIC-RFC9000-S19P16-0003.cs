@@ -16,11 +16,11 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0003
         byte[] secondConnectionId = [0x50, 0x51, 0x52];
         byte[] statelessResetToken = CreateStatelessResetToken(0x60);
 
-        Assert.True(ProcessNewConnectionIdFrame(runtime, 0x01, 0x00, firstConnectionId, statelessResetToken, observedAtTicks: 8).StateChanged);
+        Assert.True(ProcessNewConnectionIdFrame(runtime, 0x01, 0x01, firstConnectionId, statelessResetToken, observedAtTicks: 8).StateChanged);
         Assert.True(firstConnectionId.AsSpan().SequenceEqual(runtime.CurrentPeerDestinationConnectionId.Span));
         Assert.Null(runtime.TerminalState);
 
-        Assert.True(ProcessNewConnectionIdFrame(runtime, 0x02, 0x01, secondConnectionId, statelessResetToken, observedAtTicks: 9).StateChanged);
+        Assert.True(ProcessNewConnectionIdFrame(runtime, 0x02, 0x02, secondConnectionId, statelessResetToken, observedAtTicks: 9).StateChanged);
         Assert.True(secondConnectionId.AsSpan().SequenceEqual(runtime.CurrentPeerDestinationConnectionId.Span));
         Assert.Null(runtime.TerminalState);
     }

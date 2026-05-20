@@ -338,7 +338,7 @@ public sealed class REQ_QUIC_CRT_0147
         Assert.Empty(destinationConnectionId.ToArray());
         Assert.True(sourceConnectionId.SequenceEqual(serverSourceConnectionId));
 
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicCryptoFrame cryptoFrame,
             out _));
@@ -450,7 +450,7 @@ public sealed class REQ_QUIC_CRT_0147
             out byte[] openedHelloRetryRequestPacket,
             out int helloRetryRequestPayloadOffset,
             out int helloRetryRequestPayloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedHelloRetryRequestPacket.AsSpan(helloRetryRequestPayloadOffset, helloRetryRequestPayloadLength),
             out QuicCryptoFrame helloRetryRequestFrame,
             out _));
@@ -502,7 +502,7 @@ public sealed class REQ_QUIC_CRT_0147
             (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift));
         Assert.Empty(destinationConnectionId.ToArray());
         Assert.True(sourceConnectionId.SequenceEqual(serverSourceConnectionId));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedServerHelloPacket.AsSpan(serverHelloPayloadOffset, serverHelloPayloadLength),
             out QuicCryptoFrame serverHelloFrame,
             out _));
@@ -1320,11 +1320,53 @@ public sealed class REQ_QUIC_CRT_0147
             out byte[] openedPacket,
             out int payloadOffset,
             out int payloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicCryptoFrame cryptoFrame,
             out _));
         return cryptoFrame;
+    }
+
+    private static bool TryParseCryptoFrameAfterControlFrames(
+        ReadOnlySpan<byte> payload,
+        out QuicCryptoFrame cryptoFrame,
+        out int bytesConsumed)
+    {
+        int offset = SkipLeadingAckPingPaddingFrames(payload);
+        return QuicFrameCodec.TryParseCryptoFrame(payload[offset..], out cryptoFrame, out bytesConsumed);
+    }
+
+    private static int SkipLeadingAckPingPaddingFrames(ReadOnlySpan<byte> payload)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed)
+                && paddingBytesConsumed > 0)
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
+                && ackBytesConsumed > 0)
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed)
+                && pingBytesConsumed > 0)
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            return offset;
+        }
+
+        return offset;
     }
 
     private static string DescribeClientInitialCryptoFrames(
@@ -1383,7 +1425,7 @@ public sealed class REQ_QUIC_CRT_0147
             out byte[] openedPacket,
             out int payloadOffset,
             out int payloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out QuicCryptoFrame cryptoFrame,
             out _));

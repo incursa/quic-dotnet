@@ -491,7 +491,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             out byte[] openedHandshakeRepairPacket,
             out int handshakePayloadOffset,
             out int handshakePayloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedHandshakeRepairPacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
             out QuicCryptoFrame handshakeProbeFrame,
             out _));
@@ -634,7 +634,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             out byte[] openedHandshakePacket,
             out int handshakePayloadOffset,
             out int handshakePayloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
             out QuicCryptoFrame handshakeProbeFrame,
             out _));
@@ -661,7 +661,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             out byte[] openedHandshakeRepairPacket,
             out int handshakeRepairPayloadOffset,
             out int handshakeRepairPayloadLength));
-        Assert.True(QuicFrameCodec.TryParseCryptoFrame(
+        Assert.True(TryParseCryptoFrameAfterControlFrames(
             openedHandshakeRepairPacket.AsSpan(handshakeRepairPayloadOffset, handshakeRepairPayloadLength),
             out QuicCryptoFrame handshakeRepairFrame,
             out _));
@@ -1047,7 +1047,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         Assert.True(ProcessNewConnectionIdFrame(
             runtime,
             sequenceNumber: 1,
-            retirePriorTo: 0,
+            retirePriorTo: 1,
             connectionId: rotatedPeerDestinationConnectionId,
             statelessResetToken,
             observedAtTicks: 10).StateChanged);
@@ -1755,6 +1755,56 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         return default!;
     }
 
+    private static bool TryParseCryptoFrameAfterControlFrames(
+        ReadOnlySpan<byte> payload,
+        out QuicCryptoFrame frame,
+        out int bytesConsumed)
+    {
+        int offset = SkipLeadingAckPingPaddingFrames(payload);
+        return QuicFrameCodec.TryParseCryptoFrame(payload[offset..], out frame, out bytesConsumed);
+    }
+
+    private static bool TryParseStreamFrameAfterControlFrames(
+        ReadOnlySpan<byte> payload,
+        out QuicStreamFrame frame)
+    {
+        int offset = SkipLeadingAckPingPaddingFrames(payload);
+        return QuicStreamParser.TryParseStreamFrame(payload[offset..], out frame);
+    }
+
+    private static int SkipLeadingAckPingPaddingFrames(ReadOnlySpan<byte> payload)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[offset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed)
+                && paddingBytesConsumed > 0)
+            {
+                offset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
+                && ackBytesConsumed > 0)
+            {
+                offset += ackBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed)
+                && pingBytesConsumed > 0)
+            {
+                offset += pingBytesConsumed;
+                continue;
+            }
+
+            return offset;
+        }
+
+        return offset;
+    }
+
     private static QuicConnectionSendDatagramEffect FindHandshakeProbeEffect(
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,
         QuicHandshakeFlowCoordinator coordinator,
@@ -1795,7 +1845,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
                 continue;
             }
 
-            if (!QuicFrameCodec.TryParseCryptoFrame(
+            if (!TryParseCryptoFrameAfterControlFrames(
                     openedPacket.AsSpan(payloadOffset, payloadLength),
                     out QuicCryptoFrame cryptoFrame,
                     out _))
@@ -1948,7 +1998,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             out keyPhase));
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-        Assert.True(QuicStreamParser.TryParseStreamFrame(payload, out QuicStreamFrame frame));
+        Assert.True(TryParseStreamFrameAfterControlFrames(payload, out QuicStreamFrame frame));
         return frame;
     }
 
@@ -1973,7 +2023,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             return false;
         }
 
-        return QuicStreamParser.TryParseStreamFrame(
+        return TryParseStreamFrameAfterControlFrames(
             openedPacket.AsSpan(payloadOffset, payloadLength),
             out frame);
     }

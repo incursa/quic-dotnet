@@ -84,6 +84,7 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0011
 
         Assert.True(runtime.TrySetHandshakeDestinationConnectionId([0x71, 0x72, 0x73]));
         Assert.True(runtime.TrySetHandshakeSourceConnectionId([0x81, 0x82, 0x83, 0x84]));
+        CommitLocalTransportParameters(runtime, ReadOnlySpan<byte>.Empty);
 
         QuicTransportParameters peerTransportParameters = QuicPostHandshakeTicketTestSupport.CreatePeerTransportParameters();
         peerTransportParameters.InitialSourceConnectionId = peerInitialSourceConnectionId.ToArray();
@@ -94,6 +95,28 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0011
             peerTransportParameters);
 
         return runtime;
+    }
+
+    private static void CommitLocalTransportParameters(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> initialSourceConnectionId)
+    {
+        QuicTransportParameters localTransportParameters = new()
+        {
+            InitialSourceConnectionId = initialSourceConnectionId.ToArray(),
+        };
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 0,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.LocalTransportParametersReady,
+                    TransportParameters: localTransportParameters)),
+            nowTicks: 0).StateChanged);
+        Assert.NotNull(runtime.TlsState.LocalTransportParameters);
+        Assert.Equal(
+            initialSourceConnectionId.ToArray(),
+            runtime.TlsState.LocalTransportParameters!.InitialSourceConnectionId);
     }
 
     private static QuicConnectionTransitionResult ProcessPeerRetireConnectionIdFrame(

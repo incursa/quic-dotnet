@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0013
         QuicConnectionTransitionResult newConnectionIdResult = QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
             runtime,
             sequenceNumber: 1,
-            retirePriorTo: 0,
+            retirePriorTo: 1,
             peerIssuedConnectionId,
             observedAtTicks: 10,
             statelessResetTokenStart: 0x90);

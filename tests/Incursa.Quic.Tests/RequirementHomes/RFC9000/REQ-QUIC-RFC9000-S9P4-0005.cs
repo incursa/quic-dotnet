@@ -14,14 +14,15 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
 
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
-        QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        runtime.Transition(
+        Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
                 ObservedAtTicks: 10,
                 portOnlyPath,
                 new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
-            nowTicks: 10);
+            nowTicks: 10).StateChanged);
+        QuicPathMigrationRecoverySnapshot afterValidationProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
@@ -30,11 +31,11 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
 
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        Assert.Equal(dirty.SentPacketCount, afterPromotion.SentPacketCount);
-        Assert.Equal(dirty.PendingRetransmissionCount, afterPromotion.PendingRetransmissionCount);
-        Assert.Equal(dirty.HasAckElicitingPacketsInFlight, afterPromotion.HasAckElicitingPacketsInFlight);
-        Assert.Equal(dirty.LossDetectionDeadlineMicros, afterPromotion.LossDetectionDeadlineMicros);
-        Assert.Equal(dirty.ProbeTimeoutCount, afterPromotion.ProbeTimeoutCount);
+        Assert.Equal(afterValidationProbe.SentPacketCount, afterPromotion.SentPacketCount);
+        Assert.Equal(afterValidationProbe.PendingRetransmissionCount, afterPromotion.PendingRetransmissionCount);
+        Assert.Equal(afterValidationProbe.HasAckElicitingPacketsInFlight, afterPromotion.HasAckElicitingPacketsInFlight);
+        Assert.Equal(afterValidationProbe.LossDetectionDeadlineMicros, afterPromotion.LossDetectionDeadlineMicros);
+        Assert.Equal(afterValidationProbe.ProbeTimeoutCount, afterPromotion.ProbeTimeoutCount);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
         Assert.Contains(validationResult.Effects, effect =>
@@ -81,7 +82,6 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     {
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
-        QuicPathMigrationRecoverySnapshot dirty = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         Assert.True(runtime.Transition(
@@ -90,6 +90,8 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
                 portOnlyPath,
                 datagram),
             nowTicks: 20).StateChanged);
+        QuicPathMigrationRecoverySnapshot afterValidationProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
@@ -97,7 +99,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
             observedAtTicks: 30);
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        Assert.Equal(dirty, afterPromotion);
+        Assert.Equal(afterValidationProbe, afterPromotion);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
         Assert.Contains(validationResult.Effects, effect =>

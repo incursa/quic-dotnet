@@ -613,7 +613,8 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects,
                     out QuicConnectionPathIdentity sendPathIdentity,
                     out byte[] protectedPacket,
-                    out _))
+                    out _,
+                    retransmittable: false))
             {
                 return false;
             }
