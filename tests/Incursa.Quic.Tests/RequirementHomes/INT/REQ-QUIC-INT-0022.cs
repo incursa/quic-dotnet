@@ -46,6 +46,8 @@ public sealed class REQ_QUIC_INT_0022
         Assert.Contains("First decryptable server packet on new path", helper, StringComparison.Ordinal);
         Assert.Contains("def _try_complete_migrated_path_validation_from_qlog", helper, StringComparison.Ordinal);
         Assert.Contains("Falling back to client qlog path-validation evidence", helper, StringComparison.Ordinal);
+        Assert.Contains("def _patched_connection_migration_check", helper, StringComparison.Ordinal);
+        Assert.Contains("Skipping QUIC packet without a complete UDP/IP path during active migration DCID check", helper, StringComparison.Ordinal);
         Assert.Contains("ip addr replace 193.167.100.110/32 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
         Assert.Contains("ip -6 addr replace fd00:cafe:cafe:100::110/128 dev eth0 preferred_lft 0", setupScript, StringComparison.Ordinal);
 

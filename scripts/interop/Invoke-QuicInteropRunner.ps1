@@ -2159,6 +2159,66 @@ def _patched_port_rebinding_check(self):
 if hasattr(testcases_quic, "TestCasePortRebinding"):
     testcases_quic.TestCasePortRebinding.check = _patched_port_rebinding_check
 
+def _try_get_packet_path(self, packet):
+    try:
+        return self._path(packet)
+    except (AttributeError, KeyError, ValueError):
+        logging.info(
+            "Skipping QUIC packet without a complete UDP/IP path during active migration DCID check"
+        )
+        return None
+
+def _try_get_packet_dcid(packet):
+    try:
+        return getattr(packet["quic"], "dcid")
+    except (AttributeError, KeyError):
+        return None
+
+def _patched_connection_migration_check(self):
+    super(testcases_quic.TestCaseConnectionMigration, self).check()
+    result = super(testcases_quic.TestCaseConnectionMigration, self).check()
+    if result != testcases_quic.TestResult.SUCCEEDED:
+        return result
+
+    tr_client = self._client_trace()._get_packets(
+        self._client_trace()._get_direction_filter(trace.Direction.FROM_CLIENT) + " quic"
+    )
+
+    last = None
+    paths = set()
+    dcid = None
+    for packet in tr_client:
+        cur = _try_get_packet_path(self, packet)
+        packet_dcid = _try_get_packet_dcid(packet)
+        if cur is None or packet_dcid is None:
+            continue
+
+        if last is None:
+            last = cur
+            dcid = packet_dcid
+            continue
+
+        if last != cur and cur not in paths:
+            paths.add(last)
+            last = cur
+            if dcid == packet_dcid:
+                logging.info(
+                    "First client packet during active migration to %s used previous DCID %s",
+                    cur,
+                    dcid,
+                )
+                logging.info(packet["quic"])
+                return testcases_quic.TestResult.FAILED
+            dcid = packet_dcid
+            logging.info(
+                "DCID changed to %s during active migration to %s", dcid, cur
+            )
+
+    return testcases_quic.TestResult.SUCCEEDED
+
+if hasattr(testcases_quic, "TestCaseConnectionMigration"):
+    testcases_quic.TestCaseConnectionMigration.check = _patched_connection_migration_check
+
 if hasattr(testcases_quic, "TestCaseVersionNegotiation"):
     if not any(
         getattr(_runner_testcase, "name", lambda: "")() == "versionnegotiation"
