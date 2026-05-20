@@ -2651,22 +2651,39 @@ internal sealed class QuicTlsKeySchedule
             checked((int)certificateListLength));
 
         int certificateListIndex = 0;
+        int leafCertificateOffset;
+        int leafCertificateLength;
         if (!TryReadUInt24(certificateList, ref certificateListIndex, out uint certificateLength)
             || certificateLength == 0
             || certificateLength > int.MaxValue
-            || certificateList.Length - certificateListIndex < checked((int)certificateLength) + UInt16Length
-            || !TrySkipBytes(certificateList, ref certificateListIndex, checked((int)certificateLength))
-            || !TryReadUInt16(certificateList, ref certificateListIndex, out ushort certificateExtensionsLength)
-            || certificateExtensionsLength != 0
-            || !TrySkipBytes(certificateList, ref certificateListIndex, certificateExtensionsLength)
-            || certificateListIndex != certificateList.Length)
+            || certificateList.Length - certificateListIndex < checked((int)certificateLength) + UInt16Length)
         {
             return false;
         }
 
-        ReadOnlySpan<byte> leafCertificateBytes = certificateList.Slice(
-            certificateListIndex - UInt16Length - checked((int)certificateLength),
-            checked((int)certificateLength));
+        leafCertificateOffset = certificateListIndex;
+        leafCertificateLength = checked((int)certificateLength);
+        if (!TrySkipBytes(certificateList, ref certificateListIndex, leafCertificateLength)
+            || !TryReadUInt16(certificateList, ref certificateListIndex, out ushort certificateExtensionsLength)
+            || !TrySkipBytes(certificateList, ref certificateListIndex, certificateExtensionsLength))
+        {
+            return false;
+        }
+
+        while (certificateListIndex < certificateList.Length)
+        {
+            if (!TryReadUInt24(certificateList, ref certificateListIndex, out uint chainCertificateLength)
+                || chainCertificateLength == 0
+                || chainCertificateLength > int.MaxValue
+                || !TrySkipBytes(certificateList, ref certificateListIndex, checked((int)chainCertificateLength))
+                || !TryReadUInt16(certificateList, ref certificateListIndex, out ushort chainCertificateExtensionsLength)
+                || !TrySkipBytes(certificateList, ref certificateListIndex, chainCertificateExtensionsLength))
+            {
+                return false;
+            }
+        }
+
+        ReadOnlySpan<byte> leafCertificateBytes = certificateList.Slice(leafCertificateOffset, leafCertificateLength);
 
         try
         {

@@ -468,6 +468,20 @@ function Get-InteropRunnerTestCaseInventory {
         }
 
         [pscustomobject]@{
+            TestCase = 'longrtt'
+            RunnerTestCase = 'longrtt'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed long-RTT runner cell routed through the existing HTTP/0.9 transfer path.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'multiplexing'
+            RunnerTestCase = 'multiplexing'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed multiplexing runner cell routed through the existing multi-stream transfer path.'
+        }
+
+        [pscustomobject]@{
             TestCase = 'retry'
             RunnerTestCase = 'retry'
             Classification = 'supported-executed'
@@ -514,6 +528,34 @@ function Get-InteropRunnerTestCaseInventory {
             RunnerTestCase = 'zerortt'
             Classification = 'supported-executed'
             Notes = 'Supported/executed zerortt cell with buffered request-line reads and hosted Linux proof success.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'amplificationlimit'
+            RunnerTestCase = 'amplificationlimit'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed amplification-limit runner cell routed through the existing HTTP/0.9 transfer path.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'blackhole'
+            RunnerTestCase = 'blackhole'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed blackhole runner cell routed through the existing PTO and recovery path.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'transferloss'
+            RunnerTestCase = 'transferloss'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed loss runner cell routed through the existing retransmission and recovery path.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'ipv6'
+            RunnerTestCase = 'ipv6'
+            Classification = 'supported-executed'
+            Notes = 'Transfer-backed IPv6 runner cell routed through the existing endpoint and HTTP/0.9 transfer path.'
         }
 
         [pscustomobject]@{

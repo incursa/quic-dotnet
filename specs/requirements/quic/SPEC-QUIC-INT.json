@@ -595,7 +595,7 @@
         ]
       },
       "notes": [
-        "The documented upstream non-HTTP/3 suite currently includes versionnegotiation, handshake, transfer, chacha20, keyupdate, retry, resumption, zerortt, multiconnect, v2, rebind-port, rebind-addr, and connectionmigration.",
+        "The documented upstream non-HTTP/3 suite currently includes versionnegotiation, handshake, transfer, longrtt, chacha20, multiplexing, keyupdate, retry, resumption, zerortt, amplificationlimit, blackhole, multiconnect, transferloss, ipv6, v2, rebind-port, rebind-addr, and connectionmigration. HTTP/3, corruption, and ECN cells remain outside this helper-supported inventory until a separate proof slice promotes them explicitly.",
         "`http3` remains out of scope for this slice.",
         "A testcase may be classified as intentionally unsupported or prerequisite-blocked while its underlying protocol slice is still red; that classification must be explicit rather than implied by a generic unsupported fallthrough."
       ]

@@ -82,7 +82,12 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged |= TryHandleReceivedPacketDatagram(packetReceivedEvent, nowTicks, ref effects);
         }
 
-        stateChanged |= TryFlushHandshakePackets(ref effects);
+        bool flushedHandshakePackets = TryFlushHandshakePackets(ref effects);
+        stateChanged |= flushedHandshakePackets;
+        if (!flushedHandshakePackets)
+        {
+            stateChanged |= TrySendPendingClientHandshakeAckProbeWhenNoHandshakeDataInFlight(nowTicks, ref effects);
+        }
         stateChanged |= TryFlushHandshakeDonePacket(ref effects);
         stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
 
@@ -946,7 +951,6 @@ internal sealed partial class QuicConnectionRuntime
                 || (!activePath.Value.AmplificationState.IsAddressValidated
                     && activePath.Value.AmplificationState.RemainingSendBudget == 0));
         bool peerAddressValidationComplete = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
-
         return recoveryController.TrySelectLossDetectionTimer(
             nowMicros,
             maxAckDelayMicros,
@@ -1039,7 +1043,14 @@ internal sealed partial class QuicConnectionRuntime
                     QuicPacketNumberSpace.Handshake,
                     nowTicks,
                     probePacket: true,
-                    ref effects),
+                    ref effects)
+                || (pendingClientHandshakeAckProbeOnPto
+                    && TrySendLongHeaderAckProbePacket(
+                    QuicPacketNumberSpace.Handshake,
+                    nowTicks,
+                    probePacket: true,
+                    requireAckFrame: true,
+                    ref effects)),
             QuicPacketNumberSpace.ApplicationData => TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.ApplicationData,
                     nowTicks,

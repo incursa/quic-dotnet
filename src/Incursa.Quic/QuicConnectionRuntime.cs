@@ -132,6 +132,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool hasObservedInitialPacketNumber;
     private bool hasObservedHandshakePacketNumber;
     private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
+    private bool pendingClientHandshakeAckProbeOnPto;
 
     private sealed record BufferedEstablishmentHandshakePacket(
         QuicConnectionPathIdentity PathIdentity,

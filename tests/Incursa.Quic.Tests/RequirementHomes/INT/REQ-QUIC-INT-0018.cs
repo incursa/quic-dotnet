@@ -28,7 +28,7 @@ public sealed class REQ_QUIC_INT_0018
             "-PeerImplementationSlots",
             "quic-go,msquic",
             "-TestCases",
-            "versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration");
+            "longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration");
 
         string output = result.CombinedOutput;
         string runRoot = GetPlanValue(output, "Run root");
@@ -40,12 +40,12 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Peer implementation slots"));
         Assert.Equal("chrome", GetPlanValue(output, "Runner client implementations"));
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Runner server implementations"));
-        Assert.Equal("versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
-        Assert.Equal("versionnegotiation,zerortt,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
-        Assert.Equal("13", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
+        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal("19", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal("v2,rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -53,7 +53,13 @@ public sealed class REQ_QUIC_INT_0018
         Assert.EndsWith("client-chrome", runRoot, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("longrtt -> supported-executed (runner: longrtt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("multiplexing -> supported-executed (runner: multiplexing)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("zerortt -> supported-executed (runner: zerortt)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("amplificationlimit -> supported-executed (runner: amplificationlimit)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("blackhole -> supported-executed (runner: blackhole)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("transferloss -> supported-executed (runner: transferloss)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ipv6 -> supported-executed (runner: ipv6)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);

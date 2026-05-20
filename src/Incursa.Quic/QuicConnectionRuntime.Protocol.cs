@@ -1070,6 +1070,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             processedCryptoFrame = true;
+            packetAckEliciting = true;
             if (IsDuplicateServerInitialCryptoFrame(encryptionLevel, cryptoFrame))
             {
                 if (!replayedDuplicateInitialCrypto)
@@ -1141,6 +1142,13 @@ internal sealed partial class QuicConnectionRuntime
                 encryptionLevel,
                 nowTicks,
                 ref effects);
+        }
+
+        if (tlsState.Role == QuicTlsRole.Client
+            && encryptionLevel == QuicTlsEncryptionLevel.Handshake
+            && progressedTranscript)
+        {
+            pendingClientHandshakeAckProbeOnPto = false;
         }
 
         packetProcessed = true;
@@ -2520,6 +2528,227 @@ internal sealed partial class QuicConnectionRuntime
             currentPath.Identity,
             protectedPacket));
         return true;
+    }
+
+    private bool TrySendPendingClientHandshakeAckProbeWhenNoHandshakeDataInFlight(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || !tlsState.HandshakeKeysAvailable
+            || sendRuntime.SentPackets.Values.Any(
+                sentPacket => sentPacket.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                    && sentPacket.Retransmittable))
+        {
+            return false;
+        }
+
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros,
+            maxAckDelayMicros: 0))
+        {
+            return false;
+        }
+
+        bool sent = TrySendLongHeaderAckProbePacket(
+            QuicPacketNumberSpace.Handshake,
+            nowTicks,
+            probePacket: false,
+            requireAckFrame: true,
+            ref effects);
+        if (sent)
+        {
+            pendingClientHandshakeAckProbeOnPto = true;
+        }
+
+        return sent;
+    }
+
+    private bool TrySendLongHeaderAckProbePacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        long nowTicks,
+        bool probePacket,
+        bool requireAckFrame,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (activePath is null
+            || packetNumberSpace is not (QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake)
+            || TryHandlePacketNumberExhaustion(packetNumberSpace, ref effects))
+        {
+            return false;
+        }
+
+        ulong nowMicros = GetElapsedMicros(nowTicks);
+        if (!TryBuildLongHeaderAckProbePayload(
+            packetNumberSpace,
+            nowMicros,
+            requireAckFrame,
+            out byte[] framePayload,
+            out QuicAckFrame? ackFrame))
+        {
+            return false;
+        }
+
+        if (!TryBuildProtectedLongHeaderControlPacket(
+            packetNumberSpace,
+            framePayload,
+            out ulong packetNumber,
+            out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        QuicConnectionActivePathRecord currentPath = activePath.Value;
+        if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
+            || !currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length)
+            || !sendRuntime.FlowController.CanSend(
+                packetNumberSpace,
+                (ulong)protectedPacket.Length,
+                isAckOnlyPacket: false,
+                isProbePacket: probePacket)
+            || !currentPath.AmplificationState.TryConsumeSendBudget(
+                protectedPacket.Length,
+                out QuicConnectionPathAmplificationState updatedAmplificationState))
+        {
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        TrackLongHeaderAckProbePacket(packetNumberSpace, packetNumber, protectedPacket, probePacket, nowMicros);
+        if (ackFrame is not null)
+        {
+            sendRuntime.FlowController.MarkAckFrameSent(
+                packetNumberSpace,
+                packetNumber,
+                ackFrame,
+                nowMicros,
+                ackOnlyPacket: false);
+        }
+
+        if (diagnosticsEnabled)
+        {
+            if (packetNumberSpace == QuicPacketNumberSpace.Initial)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(currentPath.Identity, protectedPacket));
+            }
+            else
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(currentPath.Identity, protectedPacket));
+            }
+        }
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private bool TryBuildLongHeaderAckProbePayload(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong nowMicros,
+        bool requireAckFrame,
+        out byte[] payload,
+        out QuicAckFrame? ackFrame)
+    {
+        payload = [];
+        ackFrame = null;
+
+        byte[] ackPayload = [];
+        if (sendRuntime.FlowController.TryBuildAckFrame(packetNumberSpace, nowMicros, out QuicAckFrame builtAckFrame)
+            && TryBuildOutboundAckFramePayload(builtAckFrame, out ackPayload))
+        {
+            ackFrame = builtAckFrame;
+        }
+
+        if (requireAckFrame && ackFrame is null)
+        {
+            return false;
+        }
+
+        byte[] buffer = new byte[ackPayload.Length + 1];
+        ackPayload.CopyTo(buffer.AsSpan());
+        if (!QuicFrameCodec.TryFormatPingFrame(buffer.AsSpan(ackPayload.Length), out int pingBytesWritten)
+            || pingBytesWritten <= 0)
+        {
+            return false;
+        }
+
+        payload = buffer.AsSpan(0, ackPayload.Length + pingBytesWritten).ToArray();
+        return true;
+    }
+
+    private bool TryBuildProtectedLongHeaderControlPacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        ReadOnlySpan<byte> framePayload,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = [];
+
+        return packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => initialPacketProtection is not null
+                && handshakeFlowCoordinator.TryBuildProtectedInitialControlPacketForHandshakeDestination(
+                    framePayload,
+                    initialPacketProtection,
+                    out packetNumber,
+                    out protectedPacket),
+            QuicPacketNumberSpace.Handshake => tlsState.TryGetHandshakeProtectPacketProtectionMaterial(
+                    out QuicTlsPacketProtectionMaterial handshakeMaterial)
+                && handshakeFlowCoordinator.TryBuildProtectedHandshakeControlPacket(
+                    framePayload,
+                    handshakeMaterial,
+                    out packetNumber,
+                    out protectedPacket),
+            _ => false,
+        };
+    }
+
+    private void TrackLongHeaderAckProbePacket(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        byte[] protectedPacket,
+        bool probePacket,
+        ulong sentAtMicros)
+    {
+        QuicTlsEncryptionLevel encryptionLevel = packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => QuicTlsEncryptionLevel.Initial,
+            QuicPacketNumberSpace.Handshake => QuicTlsEncryptionLevel.Handshake,
+            _ => throw new InvalidOperationException($"Unsupported ACK probe packet number space {packetNumberSpace}."),
+        };
+
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            (ulong)protectedPacket.Length,
+            sentAtMicros,
+            AckEliciting: true,
+            AckOnlyPacket: false,
+            ProbePacket: probePacket,
+            Retransmittable: false,
+            PacketBytes: protectedPacket,
+            PacketProtectionLevel: encryptionLevel));
+        recoveryController.RecordPacketSent(
+            packetNumberSpace,
+            packetNumber,
+            sentAtMicros,
+            isAckElicitingPacket: true,
+            isProbePacket: probePacket,
+            packetProtectionLevel: encryptionLevel);
+
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(sentAtMicros);
+        }
     }
 
     private bool HandleAckDelayTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
