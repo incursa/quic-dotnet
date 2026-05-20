@@ -6,7 +6,7 @@
   "title": "QUIC Connectionmigration Source-Address Blocker Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Formalize the connectionmigration source-address blocker as a separate advisory lane while preserving the preferred-address setup and keeping runtime behavior unchanged.",
+  "summary": "Formalize and close the bounded connectionmigration source-address proof lane while preserving the preferred-address setup and keeping rebind/v2/HTTP3 outside the claim.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0019",
@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0025"
   ],
-  "planned_changes": "- Preserve the current connectionmigration proof lane as advisory and explicit about the source-address blocker.\n- Keep the preferred migration address configured with `preferred_lft 0`.\n- Add requirement-home tests that assert the source-address blocker is documented and separated from runtime support claims.\n- Do not change runtime transport behavior.\n- Keep this lane distinct from the peer-characterization matrix work.",
+  "planned_changes": "- Preserve the current connectionmigration proof lane as explicit about the source-address blocker.\n- Keep the preferred migration address configured with `preferred_lft 0`.\n- Add requirement-home tests that assert the source-address proof is documented and separated from rebind, QUIC v2, HTTP/3, and broad support claims.\n- Harden the repo-owned runner shim only where hosted packet analysis cannot expose otherwise-proven migrated-path evidence.\n- Keep this lane distinct from the peer-characterization matrix work.",
   "out_of_scope": [
     "changing QUIC transport semantics",
     "making the lane blocking in CI",
@@ -30,5 +30,5 @@
     "rewriting the external runner repository"
   ],
   "verification_plan": "Inspect the updated spec, gap ledger, and current-status note; confirm the new requirement-home tests pin the blocker classification; and verify the preferred-address setup remains explicit.",
-  "completion_notes": "The blocker-classification slice is verified. Focused requirement-home tests passed for `REQ_QUIC_INT_0025` and `REQ_QUIC_INT_0022`, and the supporting RFC9000 migration proofs passed for `REQ_QUIC_RFC9000_S9P6P1_0005`, `REQ_QUIC_RFC9000_S9P6P2_0010`, and `REQ_QUIC_RFC9000_S9P6P3_0006`. The repository keeps the connectionmigration source-address blocker explicit while preserving the preferred-address setup; the hosted proof lane itself remains open, but this work item is complete."
+  "completion_notes": "The blocker-classification and hosted-proof slice is verified. Focused requirement-home tests passed for `REQ_QUIC_INT_0025`, `REQ_QUIC_INT_0022`, and `REQ_QUIC_INT_0018`, and the hosted `connectionmigration-server-proof` run `26174181713` passed at commit `9ee3266e`. The preserved artifact bundle under `.artifacts/gh-run-26174181713/interop-runner-server-connectionmigration-neqo-26174181713/20260520-155738932-server-nginx` records `connectionmigration` as `succeeded`, a completed 2 MiB response, original and preferred server paths, qlog-backed migrated-path PATH_CHALLENGE/PATH_RESPONSE evidence, and active-migration DCID change. The repository keeps this bounded to connectionmigration; `rebind-port`, `rebind-addr`, QUIC v2, and HTTP/3 remain outside this work item."
 }

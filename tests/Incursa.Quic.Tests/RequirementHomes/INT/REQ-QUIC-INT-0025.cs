@@ -18,18 +18,21 @@ public sealed class REQ_QUIC_INT_0025
         string verification = ReadRepositoryFile("specs/verification/quic/VER-QUIC-INT-0019.json");
 
         Assert.Contains("REQ-QUIC-INT-0025", spec, StringComparison.Ordinal);
-        Assert.Contains("source-address blocked advisory", spec, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("bounded completed source-address proof", spec, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("26174181713", spec, StringComparison.Ordinal);
         Assert.Contains("preferred migration address", spec, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0025", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("remaining gap is hosted corroboration", gapLedger, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("rather than a known local source-address failure", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("interop-connectionmigration-source-address-blocker` is closed", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("26174181713", gapLedger, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0025", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("hosted lane remains advisory", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration hosted corroboration is now green", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("26174181713", currentStatus, StringComparison.Ordinal);
         Assert.Contains("preferred_lft 0", setupScript, StringComparison.Ordinal);
         Assert.Contains("preferred migration address", readme, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("source-address blocker", architecture, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("source-address blocker", workItem, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0025", verification, StringComparison.Ordinal);
+        Assert.Contains("runner-report.json` records `connectionmigration` as `succeeded`", verification, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -43,6 +46,8 @@ public sealed class REQ_QUIC_INT_0025
         Assert.DoesNotContain("preferred_lft 1", setupScript, StringComparison.Ordinal);
         Assert.DoesNotContain("preferred_lft 1", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("preferred migration address with `preferred_lft 1`", setupScript, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("`rebind-port` as supported", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("`rebind-addr` as supported", readme, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadRepositoryFile(string relativePath)

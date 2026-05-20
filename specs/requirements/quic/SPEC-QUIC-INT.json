@@ -638,7 +638,7 @@
       "notes": [
         "This profile is an evidence-collection surface, not a broad interop-readiness gate. The completed run `25904716076` now has a dedicated evidence report that preserves its mixed peer-specific pass and failure classes.",
         "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope.",
-        "`v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` is now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
+        "`v2`, `rebind-port`, and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
     },
     {
@@ -823,7 +823,7 @@
     {
       "id": "REQ-QUIC-INT-0025",
       "title": "Classify the connectionmigration source-address blocker as a distinct hosted proof lane",
-      "statement": "The repository MUST keep the hosted `connectionmigration-server-proof` lane classified as a source-address blocked advisory until a fresh proof run shows the first server flight sourced from the original server address instead of the preferred migration address, preserve the `preferred_lft 0` setup for the preferred migration address so the address remains reachable without becoming the kernel-preferred source for the original-path first flight, and remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
+      "statement": "The repository MUST preserve the hosted `connectionmigration-server-proof` lane as a bounded completed source-address proof only when a fresh hosted run shows `connectionmigration` succeeded with the first server flight sourced from the original server address instead of the preferred migration address, later preferred-address path use, server PATH_CHALLENGE and client PATH_RESPONSE evidence for migrated-path validation, active-migration Destination Connection ID change, and a completed transfer; preserve the `preferred_lft 0` setup for the preferred migration address so the address remains reachable without becoming the kernel-preferred source for the original-path first flight; and remain outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0019"
@@ -850,8 +850,9 @@
         ]
       },
       "notes": [
-        "This formalizes the hosted blocker only. It does not claim server-side path promotion or rebind support.",
-        "The preferred migration address stays configured with `preferred_lft 0` so the lane remains reachable for migration without hijacking the original-path first flight."
+        "Hosted run `26174181713` on 2026-05-20 closed the source-address blocker for the bounded `connectionmigration` proof lane at commit `9ee3266e`.",
+        "The preferred migration address stays configured with `preferred_lft 0` so the lane remains reachable for migration without hijacking the original-path first flight.",
+        "This does not claim `rebind-port`, `rebind-addr`, QUIC v2, HTTP/3, or broad support-readiness."
       ]
     },
     {
