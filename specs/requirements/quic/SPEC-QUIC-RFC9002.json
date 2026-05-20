@@ -3950,7 +3950,10 @@
           "RFC 9002 §7.5 RFC9002-S7.5-B2-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
         ],
-        "x_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0001.cs::CanSend_StillAllowsProbePacketsWhenTheCongestionWindowIsFull"
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0001.cs::CanSend_StillAllowsProbePacketsWhenTheCongestionWindowIsFull",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
+        ]
       }
     },
     {
@@ -3978,7 +3981,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0002.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0002.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
         ]
       }
     },

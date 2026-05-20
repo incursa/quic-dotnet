@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0018
     [Requirement("REQ-QUIC-RFC9000-S9-0009")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet()
+    public void NonPreferredNewLocalAddressStillDoesNotPromoteWhenDisableActiveMigrationIsSet()
     {
         QuicTransportParameters parsedTransportParameters =
             QuicS18P2DisableActiveMigrationTestSupport.ParsePeerTransportParameters(
@@ -63,7 +63,7 @@ public sealed class REQ_QUIC_RFC9000_S18P2_0018
         Assert.True(runtime.TransportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration));
 
         QuicConnectionPathIdentity nonPreferredPath =
-            QuicS18P2DisableActiveMigrationTestSupport.CreateNonPreferredMigrationPath();
+            QuicS18P2DisableActiveMigrationTestSupport.CreateNewLocalAddressPath();
         byte[] datagram = QuicS18P2DisableActiveMigrationTestSupport.CreateDatagram();
 
         Assert.True(runtime.Transition(

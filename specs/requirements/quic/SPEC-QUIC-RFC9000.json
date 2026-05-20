@@ -6532,7 +6532,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs::ValidatedMigrationWithoutAnUnusedPeerConnectionIdDoesNotReuseTheOriginalAddressPairConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::PeerAddressRebindingWithoutAnUnusedPeerConnectionIdCanReuseTheCurrentAddressPairConnectionId"
         ]
       }
     },
@@ -12483,7 +12484,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredNewLocalAddressStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
         ]
       }
     },
@@ -12612,7 +12613,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0002.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0001.cs::ReplyTrafficStaysOnTheOriginalPathWhileValidationIsPending",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0002.cs::PathValidationMustCompleteBeforeOldPathRecoveryStateIsReset",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryKeepCongestionRttAndOutstandingPacketState"
         ]
       }
     },
@@ -12704,7 +12705,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredNewLocalAddressStillDoesNotPromoteWhenDisableActiveMigrationIsSet"
         ]
       }
     },
@@ -12971,7 +12972,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs::PortOnlyPeerAddressChangesRetainThePathRecoveryState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0004.cs::PortOnlyPeerAddressChangesRetainCongestionWindowRttAndOutstandingPackets"
         ]
       }
     },
@@ -13060,7 +13061,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::UnvalidatedPeerAddressCanReceiveAPathValidationChallengeBeforePromotion"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::UnvalidatedPeerAddressCanReceiveAPathValidationChallengeBeforePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::ServerHandshakeResponsesUseTheLatestUnvalidatedPeerAddressBeforePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::ServerHandshakeRetransmissionsUseTheLatestUnvalidatedPeerAddressBeforePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::ServerHandshakeResponsesStayOnTheActivePathWhenNoUnvalidatedPeerAddressIsNewer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0002.cs::ServerHandshakeRetransmissionsStayOnTheActivePathWhenNoUnvalidatedPeerAddressIsNewer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::NonProbingPacketFromPermittedMigrationRoutesStreamPacketsToTheMigratedAddressBeforeValidation"
         ]
       }
     },
@@ -13118,7 +13124,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0004.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallenge"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0004.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote"
         ]
       }
     },
@@ -13182,6 +13188,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::NonProbingPacketFromPermittedMigrationRoutesStreamPacketsToTheMigratedAddressBeforeValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::AckOnlyPacketFromPermittedMigrationRoutesStreamPacketsToTheMigratedAddressBeforeValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::NonProbingMigrationSendCreditExhaustionQueuesStreamWritesUntilValidation",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0006.cs::ValidatedMigrationRoutesConnectionCloseRepliesToTheMigratedAddress"
         ]
       }
@@ -13212,8 +13221,11 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PacketFromANewAddressStartsPathValidationWhenMigrationIsPermitted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PacketFromANewAddressBeforeOneRttProtectionDoesNotSendARawPathChallenge",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::RepeatedPacketsDoNotRestartPathValidationWhileTheChallengeIsPending",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::TinyPacketFromASecondPortRebindStillStartsPathValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
         ]
       }
     },
@@ -13243,7 +13255,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::ValidatedMigrationPromotesTheMigratedPathBeforeTheNextReplyPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::PathValidationMustCompleteBeforeReplyPacketsSwitchToTheMigratedAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0008.cs::PathValidationOnlyPacketsDoNotSwitchStreamPacketsToTheMigratedAddress",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
         ]
       }
@@ -13733,7 +13745,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0003.cs::PortOnlyPathPromotionRetainsCongestionControlState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0003.cs::PortOnlyPathPromotionRetainsCongestionControlState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0003.cs::PortOnlyPathPromotionKeepsOutstandingStreamDataTrackedWithoutImmediateRetransmission",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::TinyPacketFromASecondPortRebindStillStartsPathValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
         ]
       }
     },
@@ -13791,7 +13806,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPathPromotionRetainsLossDetectionState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPathPromotionRetainsRttAndCongestionStateWithoutKeepingOldPathPackets"
         ]
       }
     },
@@ -14091,7 +14106,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::ValidatedMigrationMayKeepTheSameLocalAddressWhenThePeerSourceAddressChanges",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::ValidatedMigrationDoesNotPromoteBeforeHandshakeTranscriptCompletion",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::ValidatedMigrationKeepsTheSameLocalAddressAtTheMaximumRemotePortBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::ValidatedMigrationKeepsTheSameLocalAddressAtTheMaximumRemotePortBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs::PeerAddressRebindingWithoutAnUnusedPeerConnectionIdCanReuseTheCurrentAddressPairConnectionId"
         ]
       }
     },
@@ -14121,7 +14137,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedMigrationIsAllowedWhenThePeerUsesANonZeroLengthConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedLocalMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedPeerRebindingCanPromoteWhenThePeerRequestedZeroLengthConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId"
         ]
       }
@@ -14152,8 +14169,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0006.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesPreserveTheDirtyMigrationRecoveryState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesKeepCongestionRttAndOutstandingPacketState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0005.cs::PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryKeepCongestionRttAndOutstandingPacketState"
         ]
       }
     },
@@ -14274,7 +14291,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0010.cs::ValidatedMigrationIsAllowedWhenThePeerUsesANonZeroLengthConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0010.cs::ValidatedMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0010.cs::ValidatedLocalMigrationIsNotPromotedWhenThePeerRequestedZeroLengthConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedPeerRebindingCanPromoteWhenThePeerRequestedZeroLengthConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0005.cs::ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId"
         ]
       }
@@ -33927,7 +33945,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-18.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ValidatedNonPreferredMigrationCandidateDoesNotPromoteWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ValidatedNewLocalAddressCandidateDoesNotPromoteWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::ValidatedPeerRebindingCandidatePromotesWhenDisableActiveMigrationIsSet",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs::PreferredAddressCandidateDoesNotPromoteBeforeValidationCompletesWhenDisableActiveMigrationIsSet"
         ]
       }
@@ -33961,7 +33980,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredValidatedPathStillDoesNotPromoteWhenDisableActiveMigrationIsSet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::NonPreferredNewLocalAddressStillDoesNotPromoteWhenDisableActiveMigrationIsSet",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs::PortOnlyPreferredAddressPromotesAfterValidationEvenWhenDisableActiveMigrationIsSet"
         ]
       }

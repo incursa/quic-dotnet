@@ -311,6 +311,70 @@ internal sealed class QuicConnectionSendRuntime
         return updated;
     }
 
+    internal bool TryDiscardPacketNumberSpaceForPathMigration(
+        QuicPacketNumberSpace packetNumberSpace,
+        bool discardAckGenerationState = false)
+    {
+        List<QuicConnectionRetransmissionPlan>? retainedRetransmissions = null;
+        if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData)
+        {
+            CaptureBuildableApplicationRetransmissions(ref retainedRetransmissions);
+        }
+
+        bool updated = TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
+
+        if (retainedRetransmissions is null || retainedRetransmissions.Count == 0)
+        {
+            return updated;
+        }
+
+        retainedRetransmissions.Sort(static (left, right) => left.PacketNumber.CompareTo(right.PacketNumber));
+        foreach (QuicConnectionRetransmissionPlan retransmission in retainedRetransmissions)
+        {
+            pendingRetransmissions.Enqueue(retransmission);
+        }
+
+        return true;
+    }
+
+    private void CaptureBuildableApplicationRetransmissions(
+        ref List<QuicConnectionRetransmissionPlan>? retainedRetransmissions)
+    {
+        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
+        {
+            if (packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
+                || !packet.Retransmittable
+                || packet.PlaintextPayload.IsEmpty)
+            {
+                continue;
+            }
+
+            (retainedRetransmissions ??= []).Add(new QuicConnectionRetransmissionPlan(
+                packet.PacketNumberSpace,
+                packet.PacketNumber,
+                packet.PayloadBytes,
+                packet.SentAtMicros,
+                packet.ProbePacket,
+                packet.CryptoMetadata,
+                default,
+                packet.PacketProtectionLevel,
+                packet.StreamIds,
+                packet.PlaintextPayload,
+                packet.OneRttKeyPhase));
+        }
+
+        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
+        {
+            if (retransmission.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
+                || retransmission.PlaintextPayload.IsEmpty)
+            {
+                continue;
+            }
+
+            (retainedRetransmissions ??= []).Add(retransmission with { PacketBytes = default });
+        }
+    }
+
     /// <summary>
     /// Discards all retained recovery state for packets that used the specified packet protection level.
     /// </summary>

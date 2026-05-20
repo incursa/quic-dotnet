@@ -1450,11 +1450,15 @@ internal sealed partial class QuicConnectionRuntime
             || packetNumber > largestObservedApplicationPacketNumber;
         bool processedCryptoFrame = false;
         bool processedStreamFrame = false;
+        bool processedApplicationAckFrame = false;
+        bool applicationSendCreditUpdated = false;
         bool processedMaxStreamsFrame = false;
         bool packetAckEliciting = false;
         ulong originalBidirectionalLimit = streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit;
         ulong originalUnidirectionalLimit = streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit;
         int payloadEnd = payloadOffset + payloadLength;
+        bool receivedOnlyProbingFrames = ContainsOnlyProbingFrames(
+            openedPacket.Span.Slice(payloadOffset, payloadLength));
         int offset = payloadOffset;
 
         while (offset < payloadEnd)
@@ -1495,6 +1499,7 @@ internal sealed partial class QuicConnectionRuntime
                     nowTicks,
                     openedWithRetainedOldOpenMaterial,
                     ref effects);
+                processedApplicationAckFrame = true;
                 offset += ackBytesConsumed;
                 continue;
             }
@@ -1526,6 +1531,7 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (streamRegistry.Bookkeeping.TryApplyMaxDataFrame(maxDataFrame))
                 {
+                    applicationSendCreditUpdated = true;
                     stateChanged = true;
                 }
 
@@ -1543,6 +1549,7 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (streamRegistry.Bookkeeping.TryApplyMaxStreamDataFrame(maxStreamDataFrame, out QuicTransportErrorCode maxStreamDataErrorCode))
                 {
+                    applicationSendCreditUpdated = true;
                     stateChanged = true;
                 }
                 else if (maxStreamDataErrorCode != default)
@@ -1916,6 +1923,20 @@ internal sealed partial class QuicConnectionRuntime
             packetAckEliciting = true;
         }
 
+        if (packetNumberAdvancesTheHighestObservedValue
+            && !receivedOnlyProbingFrames
+            && activePath is not null
+            && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(
+                activePath.Value.Identity,
+                packetReceivedEvent.PathIdentity)
+            && TryMarkCandidatePathReadyForNonProbingTraffic(
+                packetReceivedEvent.PathIdentity,
+                packetNumber,
+                nowTicks))
+        {
+            stateChanged = true;
+        }
+
         if (processedMaxStreamsFrame)
         {
             int bidirectionalIncrement = GetPositiveIncrement(
@@ -1948,6 +1969,12 @@ internal sealed partial class QuicConnectionRuntime
             && receivePathCandidate.Validation.IsValidated
             && !receivePathCandidate.Validation.IsAbandoned
             && TryPromoteValidatedCandidatePath(packetReceivedEvent.PathIdentity, nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+
+        if ((processedApplicationAckFrame || applicationSendCreditUpdated)
+            && TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects))
         {
             stateChanged = true;
         }
@@ -2455,12 +2482,13 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (TryFlushPendingRetransmissions(
-            packetNumberSpace,
-            nowTicks,
-            probePacket: false,
-            ref effects))
+                packetNumberSpace,
+                nowTicks,
+                probePacket: false,
+                ref effects))
         {
             stateChanged = true;
+            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         }
 
         return stateChanged;
@@ -2956,7 +2984,8 @@ internal sealed partial class QuicConnectionRuntime
                     out QuicConnectionPathIdentity sendPathIdentity,
                     out byte[] protectedPacket,
                     out _,
-                    retransmittable: false))
+                    retransmittable: false,
+                    includeAckFrame: false))
             {
                 return false;
             }
@@ -3028,7 +3057,8 @@ internal sealed partial class QuicConnectionRuntime
                     out QuicConnectionPathIdentity sendPathIdentity,
                     out byte[] protectedPacket,
                     out _,
-                    retransmittable: false))
+                    retransmittable: false,
+                    includeAckFrame: false))
             {
                 return false;
             }
@@ -3631,10 +3661,11 @@ internal sealed partial class QuicConnectionRuntime
                 break;
             }
 
-            QuicConnectionActivePathRecord currentPath = activePath.Value;
-            if (!currentPath.AmplificationState.TryConsumeSendBudget(
-                protectedPacket.Length,
-                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            if (!TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+                || !TryConsumeHandshakeSendBudget(
+                    pathIdentity,
+                    protectedPacket.Length,
+                    out QuicConnectionPathIdentity sendPathIdentity))
             {
                 break;
             }
@@ -3650,11 +3681,6 @@ internal sealed partial class QuicConnectionRuntime
                 break;
             }
 
-            activePath = currentPath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-
             TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
             if (hasPiggybackedAck)
             {
@@ -3668,10 +3694,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (diagnosticsEnabled)
             {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(currentPath.Identity, protectedPacket));
+                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(sendPathIdentity, protectedPacket));
             }
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-                currentPath.Identity,
+                sendPathIdentity,
                 protectedPacket));
             stateChanged = true;
 
@@ -4008,6 +4034,11 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
+        if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
+        {
+            return true;
+        }
+
         if (activePath is not null)
         {
             pathIdentity = activePath.Value.Identity;
@@ -4023,6 +4054,93 @@ internal sealed partial class QuicConnectionRuntime
 
         pathIdentity = default;
         return false;
+    }
+
+    private bool TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    {
+        if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
+        {
+            return true;
+        }
+
+        if (activePath is not null)
+        {
+            pathIdentity = activePath.Value.Identity;
+            return true;
+        }
+
+        pathIdentity = default;
+        return false;
+    }
+
+    private bool TryGetMostRecentUnconfirmedServerCandidatePath(out QuicConnectionPathIdentity pathIdentity)
+    {
+        pathIdentity = default;
+        if (tlsState.Role != QuicTlsRole.Server
+            || HandshakeConfirmed
+            || activePath is null
+            || candidatePaths.Count == 0)
+        {
+            return false;
+        }
+
+        long mostRecentActivityTicks = activePath.Value.LastActivityTicks;
+        bool found = false;
+        foreach (QuicConnectionCandidatePathRecord candidatePath in candidatePaths.Values)
+        {
+            if (candidatePath.Validation.IsAbandoned
+                || candidatePath.LastActivityTicks < mostRecentActivityTicks)
+            {
+                continue;
+            }
+
+            pathIdentity = candidatePath.Identity;
+            mostRecentActivityTicks = candidatePath.LastActivityTicks;
+            found = true;
+        }
+
+        return found;
+    }
+
+    private bool TryConsumeHandshakeSendBudget(
+        QuicConnectionPathIdentity pathIdentity,
+        int protectedPacketLength,
+        out QuicConnectionPathIdentity sendPathIdentity)
+    {
+        sendPathIdentity = default;
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+        {
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                    protectedPacketLength,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+            sendPathIdentity = currentPath.Identity;
+            return true;
+        }
+
+        if (!TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+            || !candidatePath.AmplificationState.TryConsumeSendBudget(
+                protectedPacketLength,
+                out QuicConnectionPathAmplificationState updatedCandidateAmplificationState))
+        {
+            return false;
+        }
+
+        candidatePaths[pathIdentity] = candidatePath with
+        {
+            AmplificationState = updatedCandidateAmplificationState,
+        };
+        sendPathIdentity = candidatePath.Identity;
+        return true;
     }
 
     private ReadOnlySpan<byte> GetClientInitialPacketDestinationConnectionId()

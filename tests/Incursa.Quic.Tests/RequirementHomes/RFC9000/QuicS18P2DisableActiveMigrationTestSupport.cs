@@ -5,7 +5,11 @@ namespace Incursa.Quic.Tests;
 internal static class QuicS18P2DisableActiveMigrationTestSupport
 {
     internal const ulong DisableActiveMigrationId = 0x0C;
-    internal static readonly QuicConnectionPathIdentity OriginalPath = new("203.0.113.30", RemotePort: 443);
+    internal static readonly QuicConnectionPathIdentity OriginalPath = new(
+        "203.0.113.30",
+        LocalAddress: "198.51.100.1",
+        RemotePort: 443,
+        LocalPort: 61234);
 
     private static readonly byte[] InitialSourceConnectionId = [0x10, 0x11, 0x12, 0x13];
     private static readonly byte[] DedicatedAddressIpv4 = [198, 51, 100, 30];
@@ -16,16 +20,31 @@ internal static class QuicS18P2DisableActiveMigrationTestSupport
 
     internal static byte[] CreateDatagram() => new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
-    internal static QuicConnectionPathIdentity CreateNonPreferredMigrationPath()
+    internal static QuicConnectionPathIdentity CreatePeerRebindingPath()
     {
-        return new QuicConnectionPathIdentity("198.51.100.77", RemotePort: 443);
+        return new QuicConnectionPathIdentity(
+            "198.51.100.77",
+            OriginalPath.LocalAddress,
+            RemotePort: 443,
+            OriginalPath.LocalPort);
+    }
+
+    internal static QuicConnectionPathIdentity CreateNewLocalAddressPath()
+    {
+        return new QuicConnectionPathIdentity(
+            OriginalPath.RemoteAddress,
+            LocalAddress: "198.51.100.2",
+            OriginalPath.RemotePort,
+            LocalPort: 61235);
     }
 
     internal static QuicConnectionPathIdentity CreatePreferredPath(QuicPreferredAddress preferredAddress)
     {
         return new QuicConnectionPathIdentity(
             new IPAddress(preferredAddress.IPv4Address).ToString(),
-            RemotePort: preferredAddress.IPv4Port);
+            OriginalPath.LocalAddress,
+            RemotePort: preferredAddress.IPv4Port,
+            OriginalPath.LocalPort);
     }
 
     internal static QuicTransportParameters CreateDisableActiveMigrationPeerTransportParameters()

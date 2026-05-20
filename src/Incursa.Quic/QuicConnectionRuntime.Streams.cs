@@ -10,6 +10,8 @@ internal sealed partial class QuicConnectionRuntime
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
             "1",
             StringComparison.Ordinal);
+    private const string StreamWriteSendBlockedMessage = "The connection cannot send the stream write packet.";
+    private const string QueuedStreamWriteSendBlockedMessage = "The connection cannot send the queued stream write packet.";
 
     private bool HandleStreamAction(
         QuicConnectionStreamActionEvent streamActionEvent,
@@ -167,13 +169,14 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
+        if (!TryProtectAndAccountStreamApplicationPayload(
             streamPayload,
             "The connection runtime could not protect the stream open packet.",
             "The connection cannot send the stream open packet.",
+            probePacket: false,
+            streamIds: null,
             ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out QuicConnectionPathIdentity sendPathIdentity,
             out byte[] protectedPacket,
             out Exception? payloadException))
         {
@@ -194,13 +197,8 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        activePath = currentPath with
-        {
-            AmplificationState = updatedAmplificationState,
-        };
-
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
+            sendPathIdentity,
             protectedPacket));
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
 
@@ -311,7 +309,7 @@ internal sealed partial class QuicConnectionRuntime
 
             if (!FlushPendingApplicationSends(nowTicks, ref effects, out Exception? flushException))
             {
-                if (IsTransientCongestionExhaustion(flushException))
+                if (IsTransientApplicationSendPathBlocked(flushException))
                 {
                     completion.TrySetResult(null);
                     return true;
@@ -362,30 +360,32 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
+        if (!TryProtectAndAccountStreamApplicationPayload(
             streamPayload,
             "The connection runtime could not protect the stream write packet.",
-            "The connection cannot send the stream write packet.",
-            new[] { streamId },
+            StreamWriteSendBlockedMessage,
+            probePacket: false,
+            streamIds: new[] { streamId },
             ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out QuicConnectionPathIdentity sendPathIdentity,
             out byte[] protectedPacket,
             out exception))
         {
+            if (IsTransientApplicationSendPathBlocked(exception))
+            {
+                QueuePendingApplicationSend(streamId, streamPriority, streamPayload, nowTicks, ref effects);
+                completion.TrySetResult(null);
+                return true;
+            }
+
             return FailWriteAfterRollback(
                 completion,
                 sendStateBeforeWrite,
                 exception!);
         }
 
-        activePath = currentPath with
-        {
-            AmplificationState = updatedAmplificationState,
-        };
-
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
+            sendPathIdentity,
             protectedPacket));
 
         if (finishWrites)
@@ -554,36 +554,38 @@ internal sealed partial class QuicConnectionRuntime
 
         Array.Sort(queuedWrites, ComparePendingApplicationSendRequests);
 
+        int batchCount = SelectQueuedApplicationSendBatchCount(
+            queuedWrites,
+            GetMaximumQueuedApplicationPayloadBytes());
+        ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = queuedWrites.AsSpan(0, batchCount);
         int combinedPayloadLength = 0;
-        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
         {
             combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayload.Length);
         }
 
         byte[] combinedPayload = new byte[combinedPayloadLength];
         int copyOffset = 0;
-        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
         {
             queuedWrite.StreamPayload.CopyTo(combinedPayload.AsSpan(copyOffset));
             copyOffset += queuedWrite.StreamPayload.Length;
         }
 
-        ulong[] streamIds = BuildDistinctStreamIds(queuedWrites);
+        ulong[] streamIds = BuildDistinctStreamIds(selectedWrites);
 
-        if (!TryProtectAndAccountApplicationPayload(
+        if (!TryProtectAndAccountStreamApplicationPayload(
             combinedPayload,
             "The connection runtime could not protect the queued stream write packet.",
-            "The connection cannot send the queued stream write packet.",
+            QueuedStreamWriteSendBlockedMessage,
             probePacket,
-            ackOnlyPacket: false,
             streamIds,
             ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out QuicConnectionPathIdentity sendPathIdentity,
             out byte[] protectedPacket,
             out exception))
         {
-            if (IsTransientCongestionExhaustion(exception))
+            if (IsTransientApplicationSendPathBlocked(exception))
             {
                 pendingApplicationSendDelayDueTicks = SaturatingAdd(
                     nowTicks,
@@ -594,18 +596,92 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        pendingApplicationSendRequests.Clear();
-        pendingApplicationSendDelayDueTicks = null;
-        activePath = currentPath with
+        RemovePendingApplicationSendRequests(selectedWrites);
+        if (pendingApplicationSendRequests.Count == 0)
         {
-            AmplificationState = updatedAmplificationState,
-        };
+            pendingApplicationSendDelayDueTicks = null;
+        }
+        else
+        {
+            pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                nowTicks,
+                ConvertMicrosToTicks(ApplicationSendDelayMicros));
+        }
 
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
+            sendPathIdentity,
             protectedPacket));
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         exception = null;
         return true;
+    }
+
+    private bool TryProtectAndAccountStreamApplicationPayload(
+        ReadOnlyMemory<byte> payload,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        bool probePacket,
+        ulong[]? streamIds,
+        ref List<QuicConnectionEffect>? effects,
+        out QuicConnectionPathIdentity sendPathIdentity,
+        out byte[] protectedPacket,
+        out Exception? exception)
+    {
+        sendPathIdentity = default;
+        protectedPacket = [];
+
+        if (activePath is null)
+        {
+            exception = new InvalidOperationException("The connection has no active path.");
+            return false;
+        }
+
+        QuicConnectionPathIdentity selectedPathIdentity = activePath.Value.Identity;
+        if (!probePacket && TryGetPermittedPeerMigrationSendPath(out QuicConnectionPathIdentity peerMigrationPathIdentity))
+        {
+            selectedPathIdentity = peerMigrationPathIdentity;
+        }
+
+        return TryProtectAndAccountApplicationPayloadOnPath(
+            selectedPathIdentity,
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            ref effects,
+            out sendPathIdentity,
+            out protectedPacket,
+            out exception,
+            retransmittable: true,
+            probePacket: probePacket,
+            includeAckFrame: true,
+            streamIds: streamIds);
+    }
+
+    private bool TryFlushPendingApplicationSendsAfterRecoveryProgress(
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        while (pendingApplicationSendRequests.Count > 0)
+        {
+            if (!FlushPendingApplicationSends(nowTicks, ref effects))
+            {
+                break;
+            }
+
+            stateChanged = true;
+            if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+            {
+                break;
+            }
+        }
+
+        return stateChanged;
     }
 
     private static bool IsTransientCongestionExhaustion(Exception? exception)
@@ -615,6 +691,20 @@ internal sealed partial class QuicConnectionRuntime
                 invalidOperationException.Message,
                 CongestionControllerExhaustedMessage,
                 StringComparison.Ordinal);
+    }
+
+    private static bool IsTransientApplicationSendPathBlocked(Exception? exception)
+    {
+        return IsTransientCongestionExhaustion(exception)
+            || exception is InvalidOperationException invalidOperationException
+            && (string.Equals(
+                    invalidOperationException.Message,
+                    StreamWriteSendBlockedMessage,
+                    StringComparison.Ordinal)
+                || string.Equals(
+                    invalidOperationException.Message,
+                    QueuedStreamWriteSendBlockedMessage,
+                    StringComparison.Ordinal));
     }
 
     private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref List<QuicConnectionEffect>? effects)
@@ -640,6 +730,69 @@ internal sealed partial class QuicConnectionRuntime
         {
             pendingApplicationSendDelayDueTicks = null;
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        }
+    }
+
+    private int GetMaximumQueuedApplicationPayloadBytes()
+    {
+        if (!activePath.HasValue)
+        {
+            return int.MaxValue;
+        }
+
+        ulong maximumDatagramSizeBytes = activePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes;
+        int shortHeaderOverheadBytes =
+            1
+            + CurrentPeerDestinationConnectionId.Length
+            + ApplicationPacketNumberLengthBytes
+            + QuicInitialPacketProtection.AuthenticationTagLength;
+        ulong reservedBytes = (ulong)(shortHeaderOverheadBytes + ApplicationSendBatchAckHeadroomBytes);
+        if (maximumDatagramSizeBytes <= reservedBytes)
+        {
+            return ApplicationMinimumProtectedPayloadLength;
+        }
+
+        ulong maximumPayloadBytes = maximumDatagramSizeBytes - reservedBytes;
+        return maximumPayloadBytes > int.MaxValue
+            ? int.MaxValue
+            : Math.Max(ApplicationMinimumProtectedPayloadLength, (int)maximumPayloadBytes);
+    }
+
+    private static int SelectQueuedApplicationSendBatchCount(
+        ReadOnlySpan<PendingApplicationSendRequest> queuedWrites,
+        int maximumPayloadBytes)
+    {
+        int selectedCount = 0;
+        int selectedBytes = 0;
+        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+        {
+            int nextSelectedBytes = checked(selectedBytes + queuedWrite.StreamPayload.Length);
+            if (selectedCount > 0 && nextSelectedBytes > maximumPayloadBytes)
+            {
+                break;
+            }
+
+            selectedBytes = nextSelectedBytes;
+            selectedCount++;
+        }
+
+        return selectedCount;
+    }
+
+    private void RemovePendingApplicationSendRequests(ReadOnlySpan<PendingApplicationSendRequest> selectedWrites)
+    {
+        foreach (PendingApplicationSendRequest selectedWrite in selectedWrites)
+        {
+            for (int index = 0; index < pendingApplicationSendRequests.Count; index++)
+            {
+                if (pendingApplicationSendRequests[index].Sequence != selectedWrite.Sequence)
+                {
+                    continue;
+                }
+
+                pendingApplicationSendRequests.RemoveAt(index);
+                break;
+            }
         }
     }
 
@@ -1261,31 +1414,6 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ulong[]? streamIds,
-        ref List<QuicConnectionEffect>? effects,
-        out QuicConnectionActivePathRecord currentPath,
-        out QuicConnectionPathAmplificationState updatedAmplificationState,
-        out byte[] protectedPacket,
-        out Exception? exception)
-    {
-        return TryProtectAndAccountApplicationPayload(
-            payload,
-            protectFailureMessage,
-            amplificationFailureMessage,
-            probePacket: false,
-            ackOnlyPacket: false,
-            streamIds,
-            ref effects,
-            out currentPath,
-            out updatedAmplificationState,
-            out protectedPacket,
-            out exception);
-    }
-
-    private bool TryProtectAndAccountApplicationPayload(
-        ReadOnlyMemory<byte> payload,
-        string protectFailureMessage,
-        string amplificationFailureMessage,
         bool probePacket,
         bool ackOnlyPacket,
         ulong[]? streamIds,
@@ -1344,6 +1472,15 @@ internal sealed partial class QuicConnectionRuntime
         {
             packetPayload = piggybackedPayload;
             piggybackedAckFrame = includedAckFrame;
+        }
+
+        if (!TryPreflightApplicationDataCongestionBudget(
+                packetPayload.Length,
+                ackOnlyPacket,
+                probePacket,
+                out exception))
+        {
+            return false;
         }
 
         if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
@@ -1448,7 +1585,10 @@ internal sealed partial class QuicConnectionRuntime
         out QuicConnectionPathIdentity sendPathIdentity,
         out byte[] protectedPacket,
         out Exception? exception,
-        bool retransmittable = true)
+        bool retransmittable = true,
+        bool probePacket = false,
+        bool includeAckFrame = true,
+        ulong[]? streamIds = null)
     {
         sendPathIdentity = default;
         protectedPacket = [];
@@ -1487,7 +1627,8 @@ internal sealed partial class QuicConnectionRuntime
         ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
-        if (TryBuildApplicationAckPiggybackPayload(
+        if (includeAckFrame
+            && TryBuildApplicationAckPiggybackPayload(
                 payload,
                 nowMicros,
                 out byte[] piggybackedPayload,
@@ -1495,6 +1636,15 @@ internal sealed partial class QuicConnectionRuntime
         {
             packetPayload = piggybackedPayload;
             piggybackedAckFrame = includedAckFrame;
+        }
+
+        if (!TryPreflightApplicationDataCongestionBudget(
+                packetPayload.Length,
+                ackOnlyPacket: false,
+                probePacket,
+                out exception))
+        {
+            return false;
         }
 
         if (!TryGetStoredSpinBitForPath(pathIdentity, out bool pathSpinBit))
@@ -1522,8 +1672,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (!sendRuntime.FlowController.CanSend(
-            QuicPacketNumberSpace.ApplicationData,
-            (ulong)protectedPacket.Length))
+                QuicPacketNumberSpace.ApplicationData,
+                (ulong)protectedPacket.Length,
+                isProbePacket: probePacket))
         {
             exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
             return false;
@@ -1572,6 +1723,8 @@ internal sealed partial class QuicConnectionRuntime
             packetNumber,
             protectedPacket,
             retransmittable: retransmittable,
+            probePacket: probePacket,
+            streamIds: streamIds,
             plaintextPayload: payload);
         if (piggybackedAckFrame is not null)
         {
@@ -1586,6 +1739,43 @@ internal sealed partial class QuicConnectionRuntime
         sendPathIdentity = pathIdentity;
         exception = null;
         return true;
+    }
+
+    private bool TryPreflightApplicationDataCongestionBudget(
+        int packetPayloadLength,
+        bool ackOnlyPacket,
+        bool probePacket,
+        out Exception? exception)
+    {
+        if (packetPayloadLength < 0)
+        {
+            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+            return false;
+        }
+
+        ulong estimatedProtectedPacketLength = EstimateProtectedApplicationDataPacketLength(packetPayloadLength);
+        if (!sendRuntime.FlowController.CanSend(
+                QuicPacketNumberSpace.ApplicationData,
+                estimatedProtectedPacketLength,
+                isAckOnlyPacket: ackOnlyPacket,
+                isProbePacket: probePacket))
+        {
+            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+            return false;
+        }
+
+        exception = null;
+        return true;
+    }
+
+    private ulong EstimateProtectedApplicationDataPacketLength(int packetPayloadLength)
+    {
+        return checked((ulong)(
+            1
+            + CurrentPeerDestinationConnectionId.Length
+            + ApplicationPacketNumberLengthBytes
+            + packetPayloadLength
+            + QuicInitialPacketProtection.AuthenticationTagLength));
     }
 
     private bool TryUsePeerDestinationConnectionIdOnPath(
@@ -1724,31 +1914,20 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            QuicConnectionActivePathRecord currentPath = activePath.Value;
-            if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
-                || !currentPath.MaximumDatagramSizeState.CanSend((ulong)datagram.Length)
-                || !sendRuntime.FlowController.CanSend(
+            if (!TryConsumeRetransmissionSendBudget(
                     probeRetransmission.PacketNumberSpace,
-                    (ulong)datagram.Length,
-                    isAckOnlyPacket: false,
-                    isProbePacket: probePacket)
-                || !currentPath.AmplificationState.TryConsumeSendBudget(
                     datagram.Length,
-                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+                    probePacket,
+                    out QuicConnectionPathIdentity retransmissionPathIdentity))
             {
                 sendRuntime.QueueRetransmission(probeRetransmission);
                 return false;
             }
 
-            activePath = currentPath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-
             if (rebuildableCryptoRetransmission)
             {
                 TrackCryptoRetransmissionSent(
-                    currentPath.Identity,
+                    retransmissionPathIdentity,
                     cryptoProtectionLevel,
                     rebuiltPacketNumber,
                     datagram.ToArray(),
@@ -1774,7 +1953,7 @@ internal sealed partial class QuicConnectionRuntime
             else
             {
                 TrackRetransmissionPlanSent(
-                    currentPath.Identity,
+                    retransmissionPathIdentity,
                     probeRetransmission,
                     sentAtMicros,
                     probePacket,
@@ -1782,7 +1961,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-                currentPath.Identity,
+                retransmissionPathIdentity,
                 datagram));
             return true;
         }
@@ -1843,31 +2022,20 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            QuicConnectionActivePathRecord currentPath = activePath.Value;
-            if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
-                || !currentPath.MaximumDatagramSizeState.CanSend((ulong)datagram.Length)
-                || !sendRuntime.FlowController.CanSend(
+            if (!TryConsumeRetransmissionSendBudget(
                     retransmission.PacketNumberSpace,
-                    (ulong)datagram.Length,
-                    isAckOnlyPacket: false,
-                    isProbePacket: probePacket)
-                || !currentPath.AmplificationState.TryConsumeSendBudget(
                     datagram.Length,
-                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+                    probePacket,
+                    out QuicConnectionPathIdentity retransmissionPathIdentity))
             {
                 sendRuntime.QueueRetransmission(retransmission);
                 break;
             }
 
-            activePath = currentPath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-
             if (rebuildableCryptoRetransmission)
             {
                 TrackCryptoRetransmissionSent(
-                    currentPath.Identity,
+                    retransmissionPathIdentity,
                     cryptoProtectionLevel,
                     rebuiltPacketNumber,
                     datagram.ToArray(),
@@ -1893,7 +2061,7 @@ internal sealed partial class QuicConnectionRuntime
             else
             {
                 TrackRetransmissionPlanSent(
-                    currentPath.Identity,
+                    retransmissionPathIdentity,
                     retransmission,
                     sentAtMicros,
                     probePacket,
@@ -1901,7 +2069,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-                currentPath.Identity,
+                retransmissionPathIdentity,
                 datagram));
             sentAny = true;
 
@@ -1912,6 +2080,77 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return sentAny;
+    }
+
+    private bool TryConsumeRetransmissionSendBudget(
+        QuicPacketNumberSpace packetNumberSpace,
+        int datagramLength,
+        bool probePacket,
+        out QuicConnectionPathIdentity pathIdentity)
+    {
+        pathIdentity = default;
+        if (activePath is null)
+        {
+            return false;
+        }
+
+        QuicConnectionPathIdentity selectedPathIdentity = activePath.Value.Identity;
+        if (packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake
+            && TryGetMostRecentUnconfirmedServerCandidatePath(out QuicConnectionPathIdentity candidatePathIdentity))
+        {
+            selectedPathIdentity = candidatePathIdentity;
+        }
+        else if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && TryGetPermittedPeerMigrationSendPath(out QuicConnectionPathIdentity peerMigrationPathIdentity))
+        {
+            selectedPathIdentity = peerMigrationPathIdentity;
+        }
+
+        if (!sendRuntime.FlowController.CanSend(
+                packetNumberSpace,
+                (ulong)datagramLength,
+                isAckOnlyPacket: false,
+                isProbePacket: probePacket))
+        {
+            return false;
+        }
+
+        if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, selectedPathIdentity))
+        {
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets
+                || !currentPath.MaximumDatagramSizeState.CanSend((ulong)datagramLength)
+                || !currentPath.AmplificationState.TryConsumeSendBudget(
+                    datagramLength,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+            pathIdentity = currentPath.Identity;
+            return true;
+        }
+
+        if (!TryGetCandidatePath(selectedPathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
+            || !candidatePath.MaximumDatagramSizeState.CanSendOrdinaryPackets
+            || !candidatePath.MaximumDatagramSizeState.CanSend((ulong)datagramLength)
+            || !candidatePath.AmplificationState.TryConsumeSendBudget(
+                datagramLength,
+                out QuicConnectionPathAmplificationState updatedCandidateAmplificationState))
+        {
+            return false;
+        }
+
+        candidatePaths[selectedPathIdentity] = candidatePath with
+        {
+            AmplificationState = updatedCandidateAmplificationState,
+        };
+        pathIdentity = candidatePath.Identity;
+        return true;
     }
 
     private bool TryDequeuePreferredProbeRetransmission(

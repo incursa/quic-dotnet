@@ -321,7 +321,12 @@ internal sealed class QuicConnectionPeerConnectionIdState
         {
             if (!TryFindAvailableConnectionIdForPath(pathIdentity, out selectedSequence))
             {
-                return false;
+                if (!CanReuseCurrentConnectionIdForPeerAddressChange(boundPath, pathIdentity))
+                {
+                    return false;
+                }
+
+                selectedSequence = previousDestinationSequence;
             }
         }
 
@@ -536,6 +541,14 @@ internal sealed class QuicConnectionPeerConnectionIdState
             && string.Equals(left.LocalAddress, right.LocalAddress, StringComparison.Ordinal)
             && left.RemotePort == right.RemotePort
             && left.LocalPort == right.LocalPort;
+    }
+
+    private static bool CanReuseCurrentConnectionIdForPeerAddressChange(
+        QuicConnectionPathIdentity currentPath,
+        QuicConnectionPathIdentity requestedPath)
+    {
+        return string.Equals(currentPath.LocalAddress, requestedPath.LocalAddress, StringComparison.Ordinal)
+            && currentPath.LocalPort == requestedPath.LocalPort;
     }
 
     private bool CanReportRetiredSequenceNumbers(

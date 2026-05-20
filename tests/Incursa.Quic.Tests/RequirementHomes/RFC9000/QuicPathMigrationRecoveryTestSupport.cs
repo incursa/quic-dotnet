@@ -54,21 +54,50 @@ internal static class QuicPathMigrationRecoveryTestSupport
         QuicConnectionPathIdentity activePath,
         IQuicDiagnosticsSink? diagnosticsSink = null)
     {
+        return CreateRuntimeWithConfirmedHandshakeAndActivePath(
+            activePath,
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = ConfirmedClientHandshakeSourceConnectionId.ToArray(),
+            },
+            diagnosticsSink);
+    }
+
+    internal static QuicConnectionRuntime CreateRuntimeWithConfirmedHandshakeAndActivePath(
+        QuicConnectionPathIdentity activePath,
+        QuicTransportParameters peerTransportParameters,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            activePath,
+            peerTransportParameters,
+            diagnosticsSink);
+
+        Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 3).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+
+        return runtime;
+    }
+
+    internal static QuicConnectionRuntime CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+        QuicConnectionPathIdentity activePath,
+        QuicTransportParameters peerTransportParameters,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
+    {
         QuicConnectionRuntime runtime = CreateRuntimeWithActivePathBeforeHandshakeConfirmation(
             activePath,
             diagnosticsSink);
 
-        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(ConfirmedClientHandshakeDestinationConnectionId));
+        ReadOnlySpan<byte> peerInitialSourceConnectionId = peerTransportParameters.InitialSourceConnectionId is { } initialSourceConnectionId
+            ? initialSourceConnectionId
+            : ConfirmedClientHandshakeDestinationConnectionId;
+
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId(peerInitialSourceConnectionId));
         Assert.True(runtime.TrySetHandshakeSourceConnectionId(ConfirmedClientHandshakeSourceConnectionId));
         CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
             runtime,
-            new QuicTransportParameters
-            {
-                InitialSourceConnectionId = ConfirmedClientHandshakeSourceConnectionId.ToArray(),
-            });
-
-        Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(runtime, observedAtTicks: 3).StateChanged);
-        Assert.True(runtime.HandshakeConfirmed);
+            peerTransportParameters);
+        ApplyCommittedPeerTransportParametersToRuntime(runtime, peerTransportParameters);
 
         return runtime;
     }
@@ -113,6 +142,48 @@ internal static class QuicPathMigrationRecoveryTestSupport
                 new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
             nowTicks: 2).StateChanged);
 
+        return runtime;
+    }
+
+    internal static QuicConnectionRuntime CreateServerRuntimeWithConfirmedHandshakeAndActivePath(
+        QuicConnectionPathIdentity activePath,
+        IQuicDiagnosticsSink? diagnosticsSink = null,
+        ulong connectionSendLimit = 4096,
+        ulong streamSendLimit = 4096)
+    {
+        QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: true,
+                connectionSendLimit: connectionSendLimit,
+                localBidirectionalSendLimit: streamSendLimit,
+                peerBidirectionalReceiveLimit: streamSendLimit),
+            tlsRole: QuicTlsRole.Server,
+            diagnosticsSink: diagnosticsSink);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 1),
+            nowTicks: 1).StateChanged);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 2,
+                activePath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 2).StateChanged);
+
+        CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
+            runtime,
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = [],
+                InitialMaxData = connectionSendLimit,
+                InitialMaxStreamDataBidiLocal = streamSendLimit,
+                InitialMaxStreamDataBidiRemote = streamSendLimit,
+                InitialMaxStreamDataUni = streamSendLimit,
+            });
+
+        Assert.True(runtime.HandshakeConfirmed);
+        Assert.True(runtime.TlsState.OneRttKeysAvailable);
         return runtime;
     }
 
@@ -264,12 +335,75 @@ internal static class QuicPathMigrationRecoveryTestSupport
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
     }
 
+    internal static void ApplyCommittedPeerTransportParametersToRuntime(
+        QuicConnectionRuntime runtime,
+        QuicTransportParameters peerTransportParameters,
+        long observedAtTicks = 2)
+    {
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                observedAtTicks,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PeerTransportParametersCommitted,
+                    TransportParameters: peerTransportParameters)),
+            nowTicks: observedAtTicks);
+
+        Assert.Null(runtime.TerminalState);
+        _ = result;
+    }
+
+    internal static void ApplyLocalActiveConnectionIdLimit(
+        QuicConnectionRuntime runtime,
+        ulong activeConnectionIdLimit,
+        long observedAtTicks = 1)
+    {
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                observedAtTicks,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.LocalTransportParametersReady,
+                    TransportParameters: new QuicTransportParameters
+                    {
+                        ActiveConnectionIdLimit = activeConnectionIdLimit,
+                    })),
+            nowTicks: observedAtTicks);
+
+        Assert.Null(runtime.TerminalState);
+        _ = result;
+    }
+
+    internal static void AddUnusedPeerConnectionId(
+        QuicConnectionRuntime runtime,
+        ulong sequenceNumber = 2,
+        byte connectionIdStart = 0x80,
+        long observedAtTicks = 10)
+    {
+        byte[] connectionId =
+        [
+            connectionIdStart,
+            unchecked((byte)(connectionIdStart + 1)),
+            unchecked((byte)(connectionIdStart + 2)),
+            unchecked((byte)(connectionIdStart + 3)),
+        ];
+
+        QuicConnectionTransitionResult result = QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
+            runtime,
+            sequenceNumber,
+            retirePriorTo: 0,
+            connectionId,
+            observedAtTicks,
+            statelessResetTokenStart: unchecked((byte)(connectionIdStart + 0x10)));
+
+        Assert.True(result.StateChanged);
+        Assert.Null(runtime.TerminalState);
+    }
+
     internal static void AssertChangedPeerAddressStartsPathValidationBeforePromotion(
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity changedPeerAddressPath,
         long observedAtTicks)
     {
-        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult result = runtime.Transition(
@@ -289,10 +423,10 @@ internal static class QuicPathMigrationRecoveryTestSupport
         Assert.False(candidatePath.Validation.IsAbandoned);
         Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
         Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
-        Assert.Contains(result.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == changedPeerAddressPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            changedPeerAddressPath,
+            runtime: runtime);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 

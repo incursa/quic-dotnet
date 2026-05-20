@@ -12,8 +12,9 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0010
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.30", RemotePort: 443);
         QuicConnectionPathIdentity candidatePath = new("203.0.113.31", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+        ulong expectedProbeTimeoutMicros = runtime.CurrentProbeTimeoutMicros;
 
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -27,7 +28,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0010
         Assert.True(candidate.Validation.ValidationDeadlineTicks.HasValue);
         Assert.Equal(1UL, candidate.Validation.ChallengeSendCount);
 
-        long expectedIntervalTicks = MicrosecondsToTicks(runtime.CurrentProbeTimeoutMicros);
+        long expectedIntervalTicks = MicrosecondsToTicks(expectedProbeTimeoutMicros);
         long observedIntervalTicks = candidate.Validation.ValidationDeadlineTicks.Value - candidate.Validation.ChallengeSentAtTicks.Value;
 
         Assert.Equal(expectedIntervalTicks, observedIntervalTicks);

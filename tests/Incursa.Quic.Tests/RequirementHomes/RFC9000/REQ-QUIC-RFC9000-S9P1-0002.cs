@@ -18,7 +18,8 @@ public sealed class REQ_QUIC_RFC9000_S9P1_0002
             LocalAddress: "198.51.100.21",
             RemotePort: 443,
             LocalPort: 61245);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicPathMigrationRecoveryTestSupport.AddUnusedPeerConnectionId(runtime);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult receiveResult = runtime.Transition(
@@ -52,7 +53,8 @@ public sealed class REQ_QUIC_RFC9000_S9P1_0002
             LocalAddress: "198.51.100.21",
             RemotePort: 443,
             LocalPort: ushort.MaxValue);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicPathMigrationRecoveryTestSupport.AddUnusedPeerConnectionId(runtime);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult receiveResult = runtime.Transition(
@@ -70,10 +72,10 @@ public sealed class REQ_QUIC_RFC9000_S9P1_0002
         Assert.False(candidatePath.Validation.IsAbandoned);
         Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
         Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
-        Assert.Contains(receiveResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == migratedPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            receiveResult,
+            migratedPath,
+            runtime: runtime);
         Assert.DoesNotContain(receiveResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 }

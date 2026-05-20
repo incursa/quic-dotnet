@@ -50,7 +50,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0009
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.107", RemotePort: 443);
         QuicConnectionPathIdentity spoofedPath = new("203.0.113.108", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult result = runtime.Transition(
@@ -66,9 +66,10 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0009
         Assert.False(candidatePath.Validation.IsValidated);
         Assert.False(candidatePath.Validation.IsAbandoned);
         Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
-        Assert.Contains(result.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == spoofedPath);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            spoofedPath,
+            runtime: runtime);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 }

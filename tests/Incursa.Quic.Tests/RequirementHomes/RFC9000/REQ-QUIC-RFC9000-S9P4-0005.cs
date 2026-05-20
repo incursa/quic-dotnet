@@ -7,7 +7,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     [Requirement("REQ-QUIC-RFC9000-S9P4-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void PortOnlyPathPromotionRetainsLossDetectionState()
+    public void PortOnlyPathPromotionRetainsRttCongestionStateAndOutstandingPackets()
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.40", RemotePort: 443);
         QuicConnectionPathIdentity portOnlyPath = new("203.0.113.40", RemotePort: 8443);
@@ -31,6 +31,11 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
 
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
+        Assert.Equal(afterValidationProbe.CongestionWindowBytes, afterPromotion.CongestionWindowBytes);
+        Assert.Equal(afterValidationProbe.SlowStartThresholdBytes, afterPromotion.SlowStartThresholdBytes);
+        Assert.Equal(afterValidationProbe.SmoothedRttMicros, afterPromotion.SmoothedRttMicros);
+        Assert.Equal(afterValidationProbe.RttVarMicros, afterPromotion.RttVarMicros);
+        Assert.Equal(afterValidationProbe.BytesInFlightBytes, afterPromotion.BytesInFlightBytes);
         Assert.Equal(afterValidationProbe.SentPacketCount, afterPromotion.SentPacketCount);
         Assert.Equal(afterValidationProbe.PendingRetransmissionCount, afterPromotion.PendingRetransmissionCount);
         Assert.Equal(afterValidationProbe.HasAckElicitingPacketsInFlight, afterPromotion.HasAckElicitingPacketsInFlight);
@@ -53,9 +58,9 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     [Requirement("REQ-QUIC-RFC9000-S9P4-0005")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void PortOnlyPeerAddressChangesPreserveTheDirtyMigrationRecoveryState()
+    public void PortOnlyPeerAddressChangesKeepCongestionRttAndOutstandingPacketState()
     {
-        AssertPortOnlyPathPromotionRetainsMigrationRecoveryState(
+        AssertPortOnlyPathPromotionKeepsCongestionRttAndOutstandingPackets(
             new QuicConnectionPathIdentity("203.0.113.40", RemotePort: 443),
             new QuicConnectionPathIdentity("203.0.113.40", RemotePort: 8443));
     }
@@ -69,14 +74,14 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
     [Requirement("REQ-QUIC-RFC9000-S9P4-0005")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    public void PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryPreserveTheDirtyMigrationRecoveryState()
+    public void PortOnlyPeerAddressChangesAtTheMaximumPortBoundaryKeepCongestionRttAndOutstandingPacketState()
     {
-        AssertPortOnlyPathPromotionRetainsMigrationRecoveryState(
+        AssertPortOnlyPathPromotionKeepsCongestionRttAndOutstandingPackets(
             new QuicConnectionPathIdentity("203.0.113.41", RemotePort: 443),
             new QuicConnectionPathIdentity("203.0.113.41", RemotePort: ushort.MaxValue));
     }
 
-    private static void AssertPortOnlyPathPromotionRetainsMigrationRecoveryState(
+    private static void AssertPortOnlyPathPromotionKeepsCongestionRttAndOutstandingPackets(
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity portOnlyPath)
     {
@@ -99,7 +104,15 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0005
             observedAtTicks: 30);
         QuicPathMigrationRecoverySnapshot afterPromotion = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
 
-        Assert.Equal(afterValidationProbe, afterPromotion);
+        Assert.Equal(afterValidationProbe.CongestionWindowBytes, afterPromotion.CongestionWindowBytes);
+        Assert.Equal(afterValidationProbe.SlowStartThresholdBytes, afterPromotion.SlowStartThresholdBytes);
+        Assert.Equal(afterValidationProbe.SmoothedRttMicros, afterPromotion.SmoothedRttMicros);
+        Assert.Equal(afterValidationProbe.RttVarMicros, afterPromotion.RttVarMicros);
+        Assert.Equal(afterValidationProbe.BytesInFlightBytes, afterPromotion.BytesInFlightBytes);
+        Assert.Equal(afterValidationProbe.SentPacketCount, afterPromotion.SentPacketCount);
+        Assert.Equal(afterValidationProbe.PendingRetransmissionCount, afterPromotion.PendingRetransmissionCount);
+        Assert.Equal(afterValidationProbe.HasAckElicitingPacketsInFlight, afterPromotion.HasAckElicitingPacketsInFlight);
+        Assert.Equal(afterValidationProbe.LossDetectionDeadlineMicros, afterPromotion.LossDetectionDeadlineMicros);
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
         Assert.Contains(validationResult.Effects, effect =>

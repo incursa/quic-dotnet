@@ -47,10 +47,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0001
         Assert.Equal(OriginalPath, runtime.ActivePath!.Value.Identity);
         Assert.True(runtime.CandidatePaths.TryGetValue(PreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
-        Assert.Contains(discoveryResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect send
-            && send.PathIdentity == PreferredPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            discoveryResult,
+            PreferredPath,
+            runtime: runtime);
         Assert.DoesNotContain(discoveryResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
 
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
@@ -70,9 +70,9 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0001
 
     private static QuicConnectionRuntime CreateRuntime()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(OriginalPath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, CreatePeerTransportParameters());
-        return runtime;
+        return QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            OriginalPath,
+            CreatePeerTransportParameters());
     }
 
     private static QuicTransportParameters CreatePeerTransportParameters()

@@ -45,8 +45,18 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0001
         QuicPreferredAddress preferredAddress = parsedTransportParameters.PreferredAddress!;
 
         QuicConnectionPathIdentity activePath = new("203.0.113.40", "192.0.2.100", 443, 61234);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, parsedTransportParameters);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            activePath,
+            parsedTransportParameters);
+        QuicPathMigrationRecoveryTestSupport.ApplyLocalActiveConnectionIdLimit(
+            runtime,
+            activeConnectionIdLimit: 3,
+            observedAtTicks: 4);
+        QuicPathMigrationRecoveryTestSupport.AddUnusedPeerConnectionId(
+            runtime,
+            sequenceNumber: 2,
+            connectionIdStart: 0x40,
+            observedAtTicks: 10);
 
         QuicConnectionPathIdentity originalValidationPath = new("203.0.113.40", "192.0.2.101", 443, 61235);
         QuicConnectionPathIdentity preferredValidationPath = new(
@@ -64,10 +74,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0001
             nowTicks: 20);
 
         Assert.True(originalReceiveResult.StateChanged);
-        Assert.Contains(originalReceiveResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == originalValidationPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            originalReceiveResult,
+            originalValidationPath,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(originalValidationPath, out QuicConnectionCandidatePathRecord originalCandidatePath));
         Assert.False(originalCandidatePath.Validation.IsValidated);
         Assert.False(originalCandidatePath.Validation.IsAbandoned);
@@ -81,10 +91,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0001
             nowTicks: 21);
 
         Assert.True(preferredReceiveResult.StateChanged);
-        Assert.Contains(preferredReceiveResult.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == preferredValidationPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            preferredReceiveResult,
+            preferredValidationPath,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredValidationPath, out QuicConnectionCandidatePathRecord preferredCandidatePath));
         Assert.False(preferredCandidatePath.Validation.IsValidated);
         Assert.False(preferredCandidatePath.Validation.IsAbandoned);

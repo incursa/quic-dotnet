@@ -35,6 +35,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     // Hold slightly underfilled application writes long enough to coalesce a follow-up FIN
     // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
     private const int ApplicationSendDelayThresholdBytes = 32;
+    private const int ApplicationPacketNumberLengthBytes = 4;
+    private const int ApplicationSendBatchAckHeadroomBytes = 64;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const int MaximumBufferedEstablishmentHandshakePackets = 8;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;

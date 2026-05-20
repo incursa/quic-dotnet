@@ -207,6 +207,20 @@ public sealed class REQ_QUIC_RFC9000_S9P3P3_0004
                 new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
             nowTicks: 2).StateChanged);
 
+        Assert.True(runtime.TrySetHandshakeDestinationConnectionId([0x10, 0x11, 0x12, 0x13]));
+        Assert.True(runtime.TrySetHandshakeSourceConnectionId([0x14, 0x15, 0x16, 0x17]));
+        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParametersAndSeedOneRttPacketProtectionMaterial(
+            runtime,
+            new QuicTransportParameters
+            {
+                InitialSourceConnectionId = [0x14, 0x15, 0x16, 0x17],
+            });
+
+        Assert.True(QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(
+            runtime,
+            observedAtTicks: 3).StateChanged);
+        Assert.True(runtime.HandshakeConfirmed);
+
         return runtime;
     }
 

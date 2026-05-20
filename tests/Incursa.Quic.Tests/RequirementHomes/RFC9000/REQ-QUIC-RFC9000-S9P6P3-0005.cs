@@ -43,8 +43,9 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0005
 
         QuicConnectionPathIdentity activePath = new("203.0.113.31", RemotePort: 443);
         QuicConnectionPathIdentity preferredPath = new("198.51.100.31", RemotePort: 9444);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
-        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, parsedTransportParameters);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            activePath,
+            parsedTransportParameters);
 
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -54,10 +55,10 @@ public sealed class REQ_QUIC_RFC9000_S9P6P3_0005
             nowTicks: 20);
 
         Assert.True(result.StateChanged);
-        Assert.Contains(result.Effects, effect =>
-            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-            && sendDatagramEffect.PathIdentity == preferredPath
-            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            result,
+            preferredPath,
+            runtime: runtime);
         Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
         Assert.False(candidatePath.Validation.IsAbandoned);
