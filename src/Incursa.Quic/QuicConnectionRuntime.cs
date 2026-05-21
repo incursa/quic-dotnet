@@ -54,8 +54,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
-    private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
-    private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
     private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
     private readonly Dictionary<ulong, byte[]> issuedConnectionIdBytesByConnectionId = [];
     private readonly HashSet<ulong> usedIssuedConnectionIds = [];
@@ -104,7 +102,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool peerHandshakeTranscriptCompleted;
     private bool handshakeConfirmed;
     private QuicConnectionTransportState transportFlags;
-    private QuicConnectionActivePathRecord? activePath;
+    private readonly QuicConnectionPathState pathState;
     private QuicConnectionTimerDeadlineState timerState = default;
     private QuicConnectionTerminalState? terminalState;
     private QuicIdleTimeoutState? idleTimeoutState;
@@ -112,8 +110,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong? localMaxIdleTimeoutMicros;
     private ulong? peerMaxIdleTimeoutMicros;
     private ulong currentProbeTimeoutMicros;
-    private string? lastValidatedRemoteAddress;
-    private QuicConnectionPathIdentity? preferredAddressOldPathIdentity;
     private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
@@ -237,6 +233,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         MaximumCandidatePaths = maximumCandidatePaths;
         MaximumRecentlyValidatedPaths = maximumRecentlyValidatedPaths;
         MaximumLocallyIssuedConnectionIds = maximumLocallyIssuedConnectionIds;
+        pathState = new QuicConnectionPathState(maximumRecentlyValidatedPaths);
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.allowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript;
@@ -328,31 +325,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal ReadOnlyMemory<byte> CurrentHandshakeSourceConnectionId
         => handshakeFlowCoordinator.SourceConnectionId;
 
-    public bool HasValidatedPath
-    {
-        get
-        {
-            if (activePath?.IsValidated ?? false)
-            {
-                return true;
-            }
-
-            if (recentlyValidatedPaths.Count > 0)
-            {
-                return true;
-            }
-
-            foreach (QuicConnectionCandidatePathRecord candidate in candidatePaths.Values)
-            {
-                if (candidate.Validation.IsValidated && !candidate.Validation.IsAbandoned)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
+    public bool HasValidatedPath => pathState.HasValidatedPath;
 
     public QuicConnectionStreamRegistry StreamRegistry => streamRegistry;
 
