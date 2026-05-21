@@ -245,7 +245,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0007
             out _,
             out _,
             out _));
-        Assert.True(runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes > bytesInFlightBeforeProbe);
+        Assert.Equal(bytesInFlightBeforeProbe, runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
         Assert.DoesNotContain(secondRebindResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 }

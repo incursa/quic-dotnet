@@ -2967,35 +2967,55 @@ internal sealed partial class QuicConnectionRuntime
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
         {
             QuicConnectionActivePathRecord currentPath = activePath.Value;
+            ReadOnlySpan<byte> responseFramePayload = responseFrameBuffer[..responseFrameBytesWritten];
             if (!TryBuildPathValidationDatagram(
-                responseFrameBuffer[..responseFrameBytesWritten],
+                responseFramePayload,
                 currentPath.AmplificationState,
                 out byte[] responsePayload))
             {
                 return false;
             }
 
-            if (!TryProtectAndAccountApplicationPayloadOnPath(
+            if (tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+            {
+                if (!TryProtectAndAccountApplicationPayloadOnPath(
                     pathIdentity,
                     responsePayload,
-                    "The connection runtime could not protect the path response packet.",
-                    "The connection cannot send the path response packet.",
+                    "The connection runtime could not protect the PATH_RESPONSE packet.",
+                    "The connection cannot send the PATH_RESPONSE packet.",
                     ref effects,
-                    out QuicConnectionPathIdentity sendPathIdentity,
+                    out QuicConnectionPathIdentity actualPathIdentity,
                     out byte[] protectedPacket,
-                    out _,
+                    out Exception? exception,
                     retransmittable: false,
+                    probePacket: true,
                     includeAckFrame: false))
+                {
+                    _ = exception;
+                    return false;
+                }
+
+                activePath = activePath.Value with
+                {
+                    LastActivityTicks = nowTicks,
+                };
+                AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(actualPathIdentity, protectedPacket));
+                return true;
+            }
+
+            if (!TrySendRawPathValidationDatagram(
+                pathIdentity,
+                responsePayload,
+                nowTicks,
+                ref effects))
             {
                 return false;
             }
 
-            currentPath = activePath.Value;
-            activePath = currentPath with
+            activePath = activePath.Value with
             {
                 LastActivityTicks = nowTicks,
             };
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(sendPathIdentity, protectedPacket));
             return true;
         }
         else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
@@ -3023,7 +3043,8 @@ internal sealed partial class QuicConnectionRuntime
                 }
             }
 
-            if (candidatePath.Validation.ChallengePayload.Length == QuicPathValidation.PathChallengeDataLength)
+            if (tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+                && candidatePath.Validation.ChallengePayload.Length == QuicPathValidation.PathChallengeDataLength)
             {
                 Span<byte> challengeFrameBuffer = stackalloc byte[16];
                 if (QuicFrameCodec.TryFormatPathChallengeFrame(
@@ -3048,17 +3069,40 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (!TryProtectAndAccountApplicationPayloadOnPath(
+            if (tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+            {
+                if (!TryProtectAndAccountApplicationPayloadOnPath(
                     pathIdentity,
                     responsePayload,
-                    "The connection runtime could not protect the path response packet.",
-                    "The connection cannot send the path response packet.",
+                    "The connection runtime could not protect the PATH_RESPONSE packet.",
+                    "The connection cannot send the PATH_RESPONSE packet.",
                     ref effects,
-                    out QuicConnectionPathIdentity sendPathIdentity,
+                    out QuicConnectionPathIdentity actualPathIdentity,
                     out byte[] protectedPacket,
-                    out _,
+                    out Exception? exception,
                     retransmittable: false,
+                    probePacket: true,
                     includeAckFrame: false))
+                {
+                    _ = exception;
+                    return false;
+                }
+
+                candidatePath = candidatePaths[pathIdentity];
+                candidatePath = candidatePath with
+                {
+                    LastActivityTicks = nowTicks,
+                };
+                candidatePaths[pathIdentity] = candidatePath;
+                AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(actualPathIdentity, protectedPacket));
+                return true;
+            }
+
+            if (!TrySendRawPathValidationDatagram(
+                pathIdentity,
+                responsePayload,
+                nowTicks,
+                ref effects))
             {
                 return false;
             }
@@ -3069,7 +3113,6 @@ internal sealed partial class QuicConnectionRuntime
                 LastActivityTicks = nowTicks,
             };
             candidatePaths[pathIdentity] = candidatePath;
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(sendPathIdentity, protectedPacket));
             return true;
         }
         else

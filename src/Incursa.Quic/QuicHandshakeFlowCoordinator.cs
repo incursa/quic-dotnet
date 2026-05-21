@@ -392,6 +392,20 @@ internal sealed class QuicHandshakeFlowCoordinator
             out protectedPacket);
     }
 
+    internal bool TryReserveApplicationPacketNumber(out ulong packetNumber)
+    {
+        packetNumber = default;
+
+        if (nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
+        packetNumber = nextApplicationPacketNumber;
+        nextApplicationPacketNumber = packetNumber + 1;
+        return true;
+    }
+
     internal bool TryBuildProtectedApplicationDataPacket(
         ReadOnlySpan<byte> applicationPayload,
         QuicTlsPacketProtectionMaterial material,

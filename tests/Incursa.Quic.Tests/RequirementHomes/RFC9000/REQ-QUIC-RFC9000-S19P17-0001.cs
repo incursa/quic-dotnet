@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_RFC9000_S19P17_0001
     [Trait("Category", "Positive")]
     public void PacketFromANewAddressUsesPathChallengeToStartMigrationValidation()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(OriginalPath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(OriginalPath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult result = runtime.Transition(
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_S19P17_0001
     [Trait("Category", "Negative")]
     public void RepeatedPacketsDoNotRestartPathChallengeValidationWhileTheChallengeIsPending()
     {
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(OriginalPath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(OriginalPath);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         QuicConnectionTransitionResult firstResult = runtime.Transition(

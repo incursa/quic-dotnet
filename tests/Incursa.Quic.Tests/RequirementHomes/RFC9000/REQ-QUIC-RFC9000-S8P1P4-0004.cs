@@ -55,7 +55,8 @@ public sealed class REQ_QUIC_RFC9000_S8P1P4_0004
             runtime,
             validatedPath,
             observedAtTicks: 30);
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+        QuicConnectionSendDatagramEffect sendEffect = QuicS13AckPiggybackTestSupport.FindNewTokenSendEffect(
+            runtime,
             validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
         ReadOnlySpan<byte> tokenPayload = payloadBytes;

@@ -73,6 +73,13 @@ internal static class QuicS9P3TokenEmissionTestSupport
         Assert.True(runtime.Transition(
             new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 1),
             nowTicks: 1).StateChanged);
+        _ = runtime.Transition(
+            new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.KeysAvailable,
+                    EncryptionLevel: QuicTlsEncryptionLevel.OneRtt)),
+            nowTicks: 1);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.PeerHandshakeTranscriptCompleted);
         Assert.True(runtime.TlsState.OneRttKeysAvailable);

@@ -235,7 +235,8 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
             validatedPath,
             observedAtTicks: 30);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+        QuicConnectionSendDatagramEffect sendEffect = QuicS13AckPiggybackTestSupport.FindNewTokenSendEffect(
+            runtime,
             validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
         ReadOnlySpan<byte> payload = payloadBytes;
@@ -274,7 +275,8 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0010
             validatedPath,
             observedAtTicks: 30);
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+        QuicConnectionSendDatagramEffect sendEffect = QuicS13AckPiggybackTestSupport.FindNewTokenSendEffect(
+            runtime,
             validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
         ReadOnlySpan<byte> payload = payloadBytes;

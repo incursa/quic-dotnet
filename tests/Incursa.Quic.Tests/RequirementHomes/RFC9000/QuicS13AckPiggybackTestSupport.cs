@@ -112,6 +112,22 @@ internal static class QuicS13AckPiggybackTestSupport
         return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
     }
 
+    internal static QuicConnectionSendDatagramEffect FindNewTokenSendEffect(
+        QuicConnectionRuntime runtime,
+        IEnumerable<QuicConnectionSendDatagramEffect> sendEffects)
+    {
+        List<QuicConnectionSendDatagramEffect> tokenSendEffects = [];
+        foreach (QuicConnectionSendDatagramEffect sendEffect in sendEffects)
+        {
+            if (ContainsNewTokenFrame(runtime, sendEffect))
+            {
+                tokenSendEffects.Add(sendEffect);
+            }
+        }
+
+        return Assert.Single(tokenSendEffects);
+    }
+
     internal static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> FindTrackedPacket(
         QuicConnectionRuntime runtime,
         ReadOnlyMemory<byte> datagram)
@@ -152,6 +168,20 @@ internal static class QuicS13AckPiggybackTestSupport
         return QuicS17P1TestSupport.ReadPacketNumber(openedPacket.AsSpan(
             payloadOffset - sizeof(uint),
             sizeof(uint)));
+    }
+
+    private static bool ContainsNewTokenFrame(
+        QuicConnectionRuntime runtime,
+        QuicConnectionSendDatagramEffect sendEffect)
+    {
+        byte[] payloadBytes = OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> payload = payloadBytes;
+        if (QuicFrameCodec.TryParseAckFrame(payload, out _, out int ackBytesConsumed))
+        {
+            payload = SkipPadding(payload[ackBytesConsumed..]);
+        }
+
+        return QuicFrameCodec.TryParseNewTokenFrame(payload, out _, out _);
     }
 
     internal static void AssertPayloadStartsWithAckThenCrypto(
