@@ -641,7 +641,7 @@ internal sealed class QuicConnectionSendRuntime
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
             if (!entry.Value.Retransmittable
-                || !ContainsStopSendingFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+                || !QuicFramePayloadInspector.ContainsStopSendingFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
             {
                 continue;
             }
@@ -664,7 +664,7 @@ internal sealed class QuicConnectionSendRuntime
             while (pendingRetransmissions.Count > 0)
             {
                 QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (!ContainsStopSendingFrameForStream(retransmission.PlaintextPayload.Span, streamId))
+                if (!QuicFramePayloadInspector.ContainsStopSendingFrameForStream(retransmission.PlaintextPayload.Span, streamId))
                 {
                     retainedRetransmissions.Enqueue(retransmission);
                     continue;
@@ -689,7 +689,7 @@ internal sealed class QuicConnectionSendRuntime
 
     private bool TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(ReadOnlySpan<byte> payload)
     {
-        ulong[] acknowledgedStreamDataStreamIds = GetStreamDataStreamIds(payload);
+        ulong[] acknowledgedStreamDataStreamIds = QuicFramePayloadInspector.GetStreamDataStreamIds(payload);
         if (acknowledgedStreamDataStreamIds.Length == 0)
         {
             return false;
@@ -711,7 +711,7 @@ internal sealed class QuicConnectionSendRuntime
     {
         foreach (QuicConnectionSentPacket packet in sentPackets.Values)
         {
-            if (ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
+            if (QuicFramePayloadInspector.ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
             {
                 return true;
             }
@@ -719,7 +719,7 @@ internal sealed class QuicConnectionSendRuntime
 
         foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
         {
-            if (ContainsStreamDataForStream(retransmission.PlaintextPayload.Span, streamId))
+            if (QuicFramePayloadInspector.ContainsStreamDataForStream(retransmission.PlaintextPayload.Span, streamId))
             {
                 return true;
             }
@@ -736,7 +736,7 @@ internal sealed class QuicConnectionSendRuntime
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
             if (!entry.Value.Retransmittable
-                || !ContainsResetStreamFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+                || !QuicFramePayloadInspector.ContainsResetStreamFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
             {
                 continue;
             }
@@ -759,7 +759,7 @@ internal sealed class QuicConnectionSendRuntime
             while (pendingRetransmissions.Count > 0)
             {
                 QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (!ContainsResetStreamFrameForStream(retransmission.PlaintextPayload.Span, streamId))
+                if (!QuicFramePayloadInspector.ContainsResetStreamFrameForStream(retransmission.PlaintextPayload.Span, streamId))
                 {
                     retainedRetransmissions.Enqueue(retransmission);
                     continue;
@@ -928,159 +928,6 @@ internal sealed class QuicConnectionSendRuntime
             default:
                 packetNumberSpace = default;
                 return false;
-        }
-    }
-
-    private static bool ContainsStopSendingFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
-            {
-                offset += paddingBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
-            {
-                offset += ackBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseStopSendingFrame(
-                remaining,
-                out QuicStopSendingFrame stopSendingFrame,
-                out int stopSendingBytesConsumed))
-            {
-                if (stopSendingFrame.StreamId == streamId)
-                {
-                    return true;
-                }
-
-                offset += stopSendingBytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static ulong[] GetStreamDataStreamIds(ReadOnlySpan<byte> payload)
-    {
-        List<ulong>? streamIds = null;
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
-            {
-                if (streamFrame.StreamDataLength > 0)
-                {
-                    AddDistinctStreamId(ref streamIds, streamFrame.StreamId.Value);
-                }
-
-                offset += streamFrame.ConsumedLength;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            break;
-        }
-
-        return streamIds?.ToArray() ?? [];
-    }
-
-    private static bool ContainsStreamDataForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
-            {
-                if (streamFrame.StreamId.Value == streamId && streamFrame.StreamDataLength > 0)
-                {
-                    return true;
-                }
-
-                offset += streamFrame.ConsumedLength;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static bool ContainsResetStreamFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicFrameCodec.TryParseResetStreamFrame(
-                remaining,
-                out QuicResetStreamFrame resetStreamFrame,
-                out int resetStreamBytesConsumed))
-            {
-                if (resetStreamFrame.StreamId == streamId)
-                {
-                    return true;
-                }
-
-                offset += resetStreamBytesConsumed;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static bool TryConsumeNonStreamDataFrame(ReadOnlySpan<byte> remaining, out int bytesConsumed)
-    {
-        if (QuicFrameCodec.TryParsePaddingFrame(remaining, out bytesConsumed)
-            || QuicFrameCodec.TryParseAckFrame(remaining, out _, out bytesConsumed)
-            || QuicFrameCodec.TryParsePingFrame(remaining, out bytesConsumed)
-            || QuicFrameCodec.TryParseStopSendingFrame(remaining, out _, out bytesConsumed)
-            || QuicFrameCodec.TryParseResetStreamFrame(remaining, out _, out bytesConsumed))
-        {
-            return true;
-        }
-
-        bytesConsumed = 0;
-        return false;
-    }
-
-    private static void AddDistinctStreamId(ref List<ulong>? streamIds, ulong streamId)
-    {
-        streamIds ??= [];
-        if (!streamIds.Contains(streamId))
-        {
-            streamIds.Add(streamId);
         }
     }
 
