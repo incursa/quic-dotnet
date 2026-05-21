@@ -38,8 +38,8 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0002
         Assert.Equal(dirty.SmoothedRttMicros, afterCandidateProbe.SmoothedRttMicros);
         Assert.Equal(dirty.RttVarMicros, afterCandidateProbe.RttVarMicros);
         Assert.Equal(dirty.EcnValidated, afterCandidateProbe.EcnValidated);
-        Assert.True(afterCandidateProbe.SentPacketCount > dirty.SentPacketCount);
-        Assert.True(afterCandidateProbe.BytesInFlightBytes > dirty.BytesInFlightBytes);
+        Assert.Equal(dirty.SentPacketCount, afterCandidateProbe.SentPacketCount);
+        Assert.Equal(dirty.BytesInFlightBytes, afterCandidateProbe.BytesInFlightBytes);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
         QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
             result,

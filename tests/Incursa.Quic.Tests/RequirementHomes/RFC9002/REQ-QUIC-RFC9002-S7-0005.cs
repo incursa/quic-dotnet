@@ -12,7 +12,7 @@ public sealed class REQ_QUIC_RFC9002_S7_0005
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.40", RemotePort: 443);
         QuicConnectionPathIdentity candidatePath = new("203.0.113.41", RemotePort: 443);
-        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
         QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
         QuicPathMigrationRecoverySnapshot beforeCandidateProbe =
             QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);

@@ -121,6 +121,7 @@ internal sealed partial class QuicConnectionRuntime
         int payloadBytes,
         long nowTicks,
         ReadOnlySpan<byte> datagram,
+        ulong? routedLocallyIssuedConnectionId,
         bool deferTrustedPathReusePromotion,
         ref List<QuicConnectionEffect>? effects,
         out bool packetDiscarded)
@@ -138,7 +139,10 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (ShouldDiscardUnexpectedServerAddressPacket(pathIdentity, datagram))
+        if (ShouldDiscardUnexpectedServerAddressPacket(
+                pathIdentity,
+                datagram,
+                routedLocallyIssuedConnectionId))
         {
             packetDiscarded = true;
             return false;
@@ -251,9 +255,15 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool ShouldDiscardUnexpectedServerAddressPacket(
         QuicConnectionPathIdentity pathIdentity,
-        ReadOnlySpan<byte> datagram)
+        ReadOnlySpan<byte> datagram,
+        ulong? routedLocallyIssuedConnectionId)
     {
         if (tlsState.Role != QuicTlsRole.Client)
+        {
+            return false;
+        }
+
+        if (routedLocallyIssuedConnectionId.HasValue)
         {
             return false;
         }
@@ -337,6 +347,13 @@ internal sealed partial class QuicConnectionRuntime
                 && pathResponseBytesConsumed > 0)
             {
                 offset += pathResponseBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed)
+                && pingBytesConsumed > 0)
+            {
+                offset += pingBytesConsumed;
                 continue;
             }
 
@@ -577,7 +594,9 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        if (tlsState.Role == QuicTlsRole.Client
+            && peerHandshakeTranscriptCompleted
+            && !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
             return false;
         }
@@ -606,28 +625,23 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayloadOnPath(
+        if (!TrySendRawPathValidationDatagram(
                 pathIdentity,
                 challengeDatagramPayload,
-                "The connection runtime could not protect the path challenge packet.",
-                "The connection cannot send the path challenge packet.",
-                ref effects,
-                out QuicConnectionPathIdentity sendPathIdentity,
-                out byte[] protectedPacket,
-                out _,
-                retransmittable: false,
-                probePacket: true,
-                includeAckFrame: false))
+                nowTicks,
+                ref effects))
         {
             return false;
         }
 
-        pathIdentity = sendPathIdentity;
-        byte[] datagram = protectedPacket;
-        candidatePath = candidatePaths[pathIdentity];
+        if (!TryGetCandidatePath(pathIdentity, out candidatePath))
+        {
+            return false;
+        }
 
         candidatePath = candidatePath with
         {
+            LastActivityTicks = nowTicks,
             Validation = candidatePath.Validation with
             {
                 Generation = QuicConnectionTimerDeadlineState.IncrementCounter(candidatePath.Validation.Generation),
@@ -642,7 +656,98 @@ internal sealed partial class QuicConnectionRuntime
         };
 
         candidatePaths[pathIdentity] = candidatePath;
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, datagram));
+        return true;
+    }
+
+    private bool TrySendRawPathValidationDatagram(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> pathValidationDatagram,
+        long nowTicks,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (pathValidationDatagram.IsEmpty)
+        {
+            return false;
+        }
+
+        if (!TryUsePeerDestinationConnectionIdOnPath(
+                pathIdentity,
+                retireInactivePathConnectionIds: false,
+                ref effects,
+                out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return false;
+        }
+
+        if (!sendRuntime.FlowController.CanSend(
+                QuicPacketNumberSpace.ApplicationData,
+                (ulong)pathValidationDatagram.Length,
+                isAckOnlyPacket: false,
+                isProbePacket: true))
+        {
+            return false;
+        }
+
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+        {
+            QuicConnectionActivePathRecord currentPath = activePath.Value;
+            if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                    pathValidationDatagram.Length,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                LastActivityTicks = nowTicks,
+                AmplificationState = updatedAmplificationState,
+            };
+        }
+        else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            if (!candidatePath.AmplificationState.TryConsumeSendBudget(
+                    pathValidationDatagram.Length,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+            {
+                return false;
+            }
+
+            candidatePath = candidatePath with
+            {
+                LastActivityTicks = nowTicks,
+                AmplificationState = updatedAmplificationState,
+            };
+            candidatePaths[pathIdentity] = candidatePath;
+        }
+        else
+        {
+            return false;
+        }
+
+        // Path validation probes consume packet numbers and path-local amplification budget,
+        // but they intentionally bypass the connection recovery controller so the current
+        // path's congestion state remains stable while validation is in flight.
+        byte[] rawDatagram = pathValidationDatagram.ToArray();
+        if (!handshakeFlowCoordinator.TryReserveApplicationPacketNumber(out _))
+        {
+            return false;
+        }
+
+        ulong sentAtMicros = GetElapsedMicros(lastTransitionTicks);
+        if (idleTimeoutState is not null)
+        {
+            idleTimeoutState.RecordAckElicitingPacketSent(sentAtMicros);
+        }
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, rawDatagram));
         return true;
     }
 
