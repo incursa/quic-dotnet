@@ -19,6 +19,7 @@ namespace Incursa.Quic;
 // - QuicConnectionRuntime.Streams.cs owns stream-facing actions and flow-control publication.
 // - QuicConnectionRuntime.Routing.cs owns packet/timer dispatch and connection-id event handling.
 // - QuicConnectionRuntime.Paths.cs owns path validation, migration, promotion, and PMTU state.
+// - QuicConnectionLifecycleTimerState owns lifecycle timer deadlines and terminal deadline bookkeeping.
 // - QuicConnectionRuntime.Lifecycle.cs owns terminal transitions, diagnostics, and shared helpers.
 
 internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposable
@@ -103,14 +104,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool handshakeConfirmed;
     private QuicConnectionTransportState transportFlags;
     private readonly QuicConnectionPathState pathState;
-    private QuicConnectionTimerDeadlineState timerState = default;
+    private readonly QuicConnectionLifecycleTimerState lifecycleTimerState = new();
     private QuicConnectionTerminalState? terminalState;
     private QuicIdleTimeoutState? idleTimeoutState;
     private QuicConnectionPhase phase = QuicConnectionPhase.Establishing;
     private ulong? localMaxIdleTimeoutMicros;
     private ulong? peerMaxIdleTimeoutMicros;
     private ulong currentProbeTimeoutMicros;
-    private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
     private ulong largestObservedApplicationPacketNumber;
@@ -267,7 +267,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     public IReadOnlyDictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> RecentlyValidatedPaths => recentlyValidatedPaths;
 
-    public QuicConnectionTimerDeadlineState TimerState => timerState;
+    public QuicConnectionTimerDeadlineState TimerState => lifecycleTimerState.TimerState;
 
     public QuicConnectionTerminalState? TerminalState => terminalState;
 

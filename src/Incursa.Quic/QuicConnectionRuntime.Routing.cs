@@ -819,39 +819,7 @@ internal sealed partial class QuicConnectionRuntime
 
     internal QuicConnectionEffect[] SetTimerDeadline(QuicConnectionTimerKind timerKind, long? dueTicks)
     {
-        QuicConnectionTimerSchedule currentSchedule = GetTimerSchedule(timerKind);
-        if (currentSchedule.DueTicks == dueTicks)
-        {
-            return Array.Empty<QuicConnectionEffect>();
-        }
-
-        ulong nextGeneration = QuicConnectionTimerDeadlineState.IncrementCounter(currentSchedule.Generation);
-        timerState = timerState.WithSchedule(timerKind, dueTicks, nextGeneration);
-
-        if (!dueTicks.HasValue)
-        {
-            return [new QuicConnectionCancelTimerEffect(timerKind, nextGeneration)];
-        }
-
-        QuicConnectionTimerPriority priority = timerState.CreatePriority(dueTicks.Value);
-        timerState = timerState.AdvancePrioritySequence();
-        return [new QuicConnectionArmTimerEffect(timerKind, nextGeneration, priority)];
-    }
-
-    private QuicConnectionTimerSchedule GetTimerSchedule(QuicConnectionTimerKind timerKind)
-    {
-        return timerKind switch
-        {
-            QuicConnectionTimerKind.IdleTimeout => timerState.IdleTimeout,
-            QuicConnectionTimerKind.CloseLifetime => timerState.CloseLifetime,
-            QuicConnectionTimerKind.DrainLifetime => timerState.DrainLifetime,
-            QuicConnectionTimerKind.PathValidation => timerState.PathValidation,
-            QuicConnectionTimerKind.Recovery => timerState.Recovery,
-            QuicConnectionTimerKind.KeyUpdateRetention => timerState.KeyUpdateRetention,
-            QuicConnectionTimerKind.ApplicationSendDelay => timerState.ApplicationSendDelay,
-            QuicConnectionTimerKind.AckDelay => timerState.AckDelay,
-            _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
-        };
+        return lifecycleTimerState.SetTimerDeadline(timerKind, dueTicks);
     }
 
     private bool TryHandleTimerExpired(
@@ -859,15 +827,10 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!timerState.IsCurrent(timerExpiredEvent.TimerKind, timerExpiredEvent.Generation))
+        if (!lifecycleTimerState.TryConsumeTimerExpiration(timerExpiredEvent.TimerKind, timerExpiredEvent.Generation))
         {
             return false;
         }
-
-        ulong nextGeneration = QuicConnectionTimerDeadlineState.IncrementCounter(
-            timerState.GetGeneration(timerExpiredEvent.TimerKind));
-
-        timerState = timerState.WithSchedule(timerExpiredEvent.TimerKind, null, nextGeneration);
 
         switch (timerExpiredEvent.TimerKind)
         {
@@ -1627,7 +1590,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         phase = QuicConnectionPhase.Discarded;
         idleTimeoutState = null;
-        terminalEndTicks = null;
+        lifecycleTimerState.ClearTerminalEndTicks();
         terminalState = new QuicConnectionTerminalState(
             QuicConnectionPhase.Discarded,
             origin,

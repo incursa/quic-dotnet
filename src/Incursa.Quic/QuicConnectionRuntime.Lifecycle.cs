@@ -16,11 +16,7 @@ internal sealed partial class QuicConnectionRuntime
         bool preserveTerminalEndTicks)
     {
         phase = nextPhase;
-
-        if (!preserveTerminalEndTicks || !terminalEndTicks.HasValue)
-        {
-            terminalEndTicks = ComputeTerminalEndTicks(nowTicks);
-        }
+        lifecycleTimerState.UpdateTerminalEndTicks(nowTicks, currentProbeTimeoutMicros, preserveTerminalEndTicks);
 
         idleTimeoutState = null;
         terminalState = new QuicConnectionTerminalState(
@@ -406,8 +402,8 @@ internal sealed partial class QuicConnectionRuntime
             : null;
         long? applicationAckDelayDueTicks = GetApplicationAckDelayDueTicks();
 
-        long? closeDueTicks = phase == QuicConnectionPhase.Closing ? terminalEndTicks : null;
-        long? drainDueTicks = phase == QuicConnectionPhase.Draining ? terminalEndTicks : null;
+        long? closeDueTicks = phase == QuicConnectionPhase.Closing ? lifecycleTimerState.TerminalEndTicks : null;
+        long? drainDueTicks = phase == QuicConnectionPhase.Draining ? lifecycleTimerState.TerminalEndTicks : null;
 
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
@@ -556,12 +552,6 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private long ComputeTerminalEndTicks(long nowTicks)
-    {
-        ulong terminalLifetimeMicros = MultiplySaturating(currentProbeTimeoutMicros, TerminalLifetimePtoMultiplier);
-        return SaturatingAdd(nowTicks, ConvertMicrosToTicks(terminalLifetimeMicros));
-    }
-
     internal ulong GetElapsedMicros(long nowTicks)
     {
         long elapsedTicks = nowTicks - timeOriginTicks;
@@ -576,6 +566,21 @@ internal sealed partial class QuicConnectionRuntime
     private long GetAbsoluteTicks(ulong absoluteMicros)
     {
         return SaturatingAdd(timeOriginTicks, ConvertMicrosToTicks(absoluteMicros));
+    }
+
+    private static ulong MultiplySaturating(ulong value, ulong multiplier)
+    {
+        if (value == 0 || multiplier == 0)
+        {
+            return 0;
+        }
+
+        if (value > ulong.MaxValue / multiplier)
+        {
+            return ulong.MaxValue;
+        }
+
+        return value * multiplier;
     }
 
     private static ReadOnlyMemory<byte> FormatConnectionClosePayload(
@@ -641,21 +646,6 @@ internal sealed partial class QuicConnectionRuntime
 
         ulong ticks = roundedUp / MicrosecondsPerSecond;
         return ticks >= long.MaxValue ? long.MaxValue : (long)ticks;
-    }
-
-    private static ulong MultiplySaturating(ulong value, ulong multiplier)
-    {
-        if (value == 0 || multiplier == 0)
-        {
-            return 0;
-        }
-
-        if (value > ulong.MaxValue / multiplier)
-        {
-            return ulong.MaxValue;
-        }
-
-        return value * multiplier;
     }
 
     private static long SaturatingAdd(long left, long right)
