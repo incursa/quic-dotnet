@@ -159,7 +159,7 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.NotEqual(0, result.ExitCode);
         Assert.Contains(
             "PeerImplementationSlots cannot mix explicit implementation slots with 'all'.",
-            result.CombinedOutput,
+            result.ExceptionMessage,
             StringComparison.OrdinalIgnoreCase);
     }
 
@@ -488,17 +488,16 @@ public sealed class InteropRunnerScriptDryRunTests
                 CreateNoWindow = true,
             };
 
+            string wrapperPath = Path.Combine(tempDirectoryFixture.RootDirectory, $"invoke-dryrun-wrapper-{Guid.NewGuid():N}.ps1");
+            string exceptionMessagePath = Path.Combine(tempDirectoryFixture.RootDirectory, $"invoke-dryrun-exception-{Guid.NewGuid():N}.txt");
+            File.WriteAllText(wrapperPath, BuildCommandText(ScriptPath, exceptionMessagePath, arguments));
+
             startInfo.ArgumentList.Add("-NoProfile");
             startInfo.ArgumentList.Add("-NonInteractive");
             startInfo.ArgumentList.Add("-ExecutionPolicy");
             startInfo.ArgumentList.Add("Bypass");
             startInfo.ArgumentList.Add("-File");
-            startInfo.ArgumentList.Add(ScriptPath);
-
-            foreach (string argument in arguments)
-            {
-                startInfo.ArgumentList.Add(argument);
-            }
+            startInfo.ArgumentList.Add(wrapperPath);
 
             string existingPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
             startInfo.Environment["PATH"] = $"{toolRoot}{Path.PathSeparator}{existingPath}";
@@ -528,11 +527,15 @@ public sealed class InteropRunnerScriptDryRunTests
 
             await exitTask.ConfigureAwait(false);
 
+            string exceptionMessage = File.Exists(exceptionMessagePath)
+                ? File.ReadAllText(exceptionMessagePath).Trim()
+                : string.Empty;
+
             return new ScriptRunResult(
                 process.ExitCode,
                 await stdoutTask.ConfigureAwait(false),
                 await stderrTask.ConfigureAwait(false),
-                string.Empty);
+                exceptionMessage);
         }
 
         public void Dispose()
@@ -626,6 +629,51 @@ public sealed class InteropRunnerScriptDryRunTests
             }
 
             throw new InvalidOperationException("Unable to locate scripts/interop/Invoke-QuicInteropRunner.ps1.");
+        }
+
+        private static string BuildCommandText(string scriptPath, string exceptionMessagePath, IReadOnlyList<string> arguments)
+        {
+            List<string> scriptParameterLines = [];
+            for (int index = 0; index < arguments.Count; index++)
+            {
+                string argument = arguments[index];
+                if (!argument.StartsWith("-", StringComparison.Ordinal))
+                {
+                    throw new ArgumentException($"Unexpected helper argument '{argument}'.", nameof(arguments));
+                }
+
+                string parameterName = argument.TrimStart('-');
+                bool hasExplicitValue = index + 1 < arguments.Count && !arguments[index + 1].StartsWith("-", StringComparison.Ordinal);
+                string parameterValue = hasExplicitValue
+                    ? QuotePowerShellSingleQuoted(arguments[++index])
+                    : "$true";
+
+                scriptParameterLines.Add($"  {parameterName} = {parameterValue}");
+            }
+
+            return
+                "$errorMessagePath = " + QuotePowerShellSingleQuoted(exceptionMessagePath) + "\n" +
+                "$scriptPath = " + QuotePowerShellSingleQuoted(scriptPath) + "\n" +
+                "$scriptParameters = @{\n" +
+                string.Join(Environment.NewLine, scriptParameterLines) +
+                "\n}\n\n" +
+                "try {\n" +
+                "  & $scriptPath @scriptParameters\n" +
+                "  if ($LASTEXITCODE -ne 0) {\n" +
+                "    exit $LASTEXITCODE\n" +
+                "  }\n" +
+                "}\n" +
+                "catch {\n" +
+                "  $exceptionMessage = $_.Exception.Message\n" +
+                "  Set-Content -LiteralPath $errorMessagePath -Value $exceptionMessage -Encoding utf8\n" +
+                "  Write-Error -Message ('CAUGHT:' + $exceptionMessage)\n" +
+                "  exit 1\n" +
+                "}\n";
+        }
+
+        private static string QuotePowerShellSingleQuoted(string value)
+        {
+            return $"'{value.Replace("'", "''")}'";
         }
     }
 
