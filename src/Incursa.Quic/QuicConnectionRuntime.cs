@@ -20,6 +20,7 @@ namespace Incursa.Quic;
 // - QuicConnectionRuntime.Routing.cs owns packet/timer dispatch and connection-id event handling.
 // - QuicConnectionRuntime.Paths.cs owns path validation, migration, promotion, and PMTU state.
 // - QuicConnectionLifecycleTimerState owns lifecycle timer deadlines and terminal deadline bookkeeping.
+// - QuicConnectionDiagnosticsState owns diagnostics sink resolution and enabled-state caching.
 // - QuicConnectionRuntime.Lifecycle.cs owns terminal transitions, diagnostics, and shared helpers.
 
 internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposable
@@ -65,8 +66,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
-    private readonly IQuicDiagnosticsSink diagnosticsSink;
-    private readonly bool diagnosticsEnabled;
+    private readonly QuicConnectionDiagnosticsState diagnosticsState;
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
@@ -170,8 +170,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
-        this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
-        diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
+        diagnosticsState = new QuicConnectionDiagnosticsState(diagnosticsSink);
         uint[] supportedVersionSnapshot = supportedVersions is { Length: > 0 }
             ? (uint[])supportedVersions.Clone()
             : [QuicVersionNegotiation.Version1];
@@ -287,9 +286,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicTlsTransportBridgeDriver TlsBridgeDriver => tlsBridgeDriver;
 
-    internal IQuicDiagnosticsSink DiagnosticsSink => diagnosticsSink;
+    internal IQuicDiagnosticsSink DiagnosticsSink => diagnosticsState.Sink;
 
-    internal bool DiagnosticsEnabled => diagnosticsEnabled;
+    internal bool DiagnosticsEnabled => diagnosticsState.IsEnabled;
+
+    private bool diagnosticsEnabled => diagnosticsState.IsEnabled;
 
     internal byte[]? InitialBootstrapClientHelloBytes => initialBootstrapClientHelloBytes;
 
