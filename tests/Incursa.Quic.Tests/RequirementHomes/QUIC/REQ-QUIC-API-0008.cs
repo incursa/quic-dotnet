@@ -357,18 +357,12 @@ public sealed class REQ_QUIC_API_0008
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(runtimeField);
-        return Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
+        return connection.Runtime;
     }
 
     private static Func<QuicConnectionEvent, bool> GetLocalApiEventDispatcher(QuicConnectionRuntime runtime)
     {
-        FieldInfo? dispatcherField = typeof(QuicConnectionRuntime).GetField(
-            "localApiEventDispatcher",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(dispatcherField);
-        return Assert.IsType<Func<QuicConnectionEvent, bool>>(dispatcherField!.GetValue(runtime));
+        return Assert.IsType<Func<QuicConnectionEvent, bool>>(runtime.LocalApiEventDispatcher);
     }
 
     private static QuicListenerOptions CreateListenerOptions()
@@ -408,11 +402,7 @@ public sealed class REQ_QUIC_API_0008
 
     private static Action<int, int> GetStreamCapacityObserver(QuicConnectionRuntime runtime)
     {
-        FieldInfo? observerField = typeof(QuicConnectionRuntime).GetField(
-            "streamCapacityObserver",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(observerField);
-        return Assert.IsType<Action<int, int>>(observerField!.GetValue(runtime));
+        return Assert.IsType<Action<int, int>>(runtime.StreamCapacityObserver);
     }
 
     private sealed class LoopbackStreamPair : IAsyncDisposable

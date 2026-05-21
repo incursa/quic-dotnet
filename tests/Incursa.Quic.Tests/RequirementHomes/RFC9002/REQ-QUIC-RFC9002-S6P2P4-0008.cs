@@ -104,31 +104,20 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
             out ulong packetNumber,
             out byte[] protectedPacket));
 
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrackApplicationPacket",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-        method.Invoke(
-            runtime,
-            [
-                packetNumber,
-                protectedPacket,
-                true,
-                false,
-                false,
-                false,
-                QuicTlsEncryptionLevel.OneRtt,
-                null,
-                default(ReadOnlyMemory<byte>),
-            ]);
+        runtime.TrackApplicationPacket(
+            packetNumber,
+            protectedPacket,
+            true,
+            false,
+            false,
+            false,
+            QuicTlsEncryptionLevel.OneRtt,
+            null,
+            default(ReadOnlyMemory<byte>));
     }
 
     private static QuicConnectionEffect[] InvokeRecomputeLifecycleTimerEffects(QuicConnectionRuntime runtime)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "RecomputeLifecycleTimerEffects",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-        return (QuicConnectionEffect[])method.Invoke(runtime, [])!;
+        return runtime.RecomputeLifecycleTimerEffects();
     }
 }

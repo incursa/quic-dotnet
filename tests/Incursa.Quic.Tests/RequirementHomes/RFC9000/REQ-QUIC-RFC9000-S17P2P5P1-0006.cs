@@ -73,9 +73,6 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0006
         int payloadBytes,
         long observedAtTicks)
     {
-        System.Reflection.MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "InitializeActivePath",
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
-        return (bool)method.Invoke(runtime, [pathIdentity, payloadBytes, observedAtTicks])!;
+        return runtime.InitializeActivePath(pathIdentity, payloadBytes, observedAtTicks);
     }
 }

@@ -121,6 +121,8 @@ internal sealed class QuicCongestionControlState
     /// </summary>
     internal ulong BytesInFlightBytes { get; private set; }
 
+    internal ulong[] EcnCeCounters => ecnCeCounters;
+
     /// <summary>
     /// Gets the start time of the most recent recovery period, if any.
     /// </summary>

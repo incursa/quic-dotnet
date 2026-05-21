@@ -287,6 +287,16 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicConnectionVersionProfile VersionProfile => versionProfile;
 
+    internal QuicHandshakeFlowCoordinator HandshakeFlowCoordinator => handshakeFlowCoordinator;
+
+    internal QuicTlsTransportBridgeDriver TlsBridgeDriver => tlsBridgeDriver;
+
+    internal IQuicDiagnosticsSink DiagnosticsSink => diagnosticsSink;
+
+    internal bool DiagnosticsEnabled => diagnosticsEnabled;
+
+    internal byte[]? InitialBootstrapClientHelloBytes => initialBootstrapClientHelloBytes;
+
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
     {
         get
@@ -361,11 +371,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool IsDisposed => Volatile.Read(ref disposed) != 0;
 
+    internal bool HasProcessingTask => processingTask is not null;
+
+    internal void SetPhaseForTesting(QuicConnectionPhase phase)
+    {
+        this.phase = phase;
+    }
+
     internal IMonotonicClock Clock => clock;
 
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
+
+    internal QuicRecoveryController RecoveryController => recoveryController;
 
     internal ReadOnlyMemory<byte> OwnedResumptionTicketBytes => ownedResumptionTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
@@ -403,6 +422,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         dormantDetachedResumptionTicketSnapshot is not null
         && dormantDetachedResumptionTicketSnapshot.HasResumptionCredentialMaterial
         && dormantDetachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial;
+
+    internal Func<QuicConnectionEvent, bool>? LocalApiEventDispatcher => localApiEventDispatcher;
+
+    internal Action<int, int>? StreamCapacityObserver => streamCapacityObserver;
+
+    internal QuicInitialPacketProtection? InitialPacketProtection => initialPacketProtection;
+
+    internal int BufferedEstablishmentHandshakePacketCount => bufferedEstablishmentHandshakePackets.Count;
+
+    internal Dictionary<ulong, byte[]> StatelessResetTokensByConnectionId => statelessResetTokensByConnectionId;
+
+    internal Dictionary<string, QuicConnectionNewTokenEmissionRecord> NewTokenEmissionsByRemoteAddress => newTokenEmissionsByRemoteAddress;
+
+    internal void MarkHandshakeDonePacketSentForTests()
+    {
+        handshakeDonePacketSent = true;
+    }
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {

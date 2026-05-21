@@ -950,7 +950,7 @@ internal sealed partial class QuicConnectionRuntime
         return TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref effects);
     }
 
-    private bool TrySelectRecoveryTimer(
+    internal bool TrySelectRecoveryTimer(
         long nowTicks,
         out ulong selectedRecoveryTimerMicros,
         out QuicPacketNumberSpace selectedPacketNumberSpace)
@@ -1019,7 +1019,7 @@ internal sealed partial class QuicConnectionRuntime
             && TrySendRecoveryPingProbe(ref effects);
     }
 
-    private bool TrySendRecoveryProbeDatagram(
+    internal bool TrySendRecoveryProbeDatagram(
         QuicPacketNumberSpace packetNumberSpace,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
@@ -1489,7 +1489,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TrySendAdditionalRecoveryProbeDatagram(
+    internal bool TrySendAdditionalRecoveryProbeDatagram(
         QuicPacketNumberSpace firstPacketNumberSpace,
         QuicPacketNumberSpace secondPacketNumberSpace,
         QuicPacketNumberSpace thirdPacketNumberSpace,
@@ -1548,7 +1548,7 @@ internal sealed partial class QuicConnectionRuntime
         return TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects);
     }
 
-    private bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
+    internal bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
     {
         if (activePath is null
             || !activePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets

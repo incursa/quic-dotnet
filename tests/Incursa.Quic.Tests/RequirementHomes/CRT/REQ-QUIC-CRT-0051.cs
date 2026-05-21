@@ -10,6 +10,8 @@ public sealed class REQ_QUIC_CRT_0051
     [Trait("Category", "Negative")]
     public void ConnectionRuntimeDoesNotOwnPerConnectionTimerInstances()
     {
+        // Quarantined structural probe: follow-up work item will replace this reflection-based
+        // field-shape check with a non-reflection repository-native assertion.
         FieldInfo[] timerFields = typeof(QuicConnectionRuntime)
             .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(field =>

@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0093")]
@@ -10,10 +8,6 @@ public sealed class REQ_QUIC_CRT_0093
     [Trait("Category", "Negative")]
     public async Task HighDensityHostDoesNotStartPerConnectionRuntimeConsumers()
     {
-        FieldInfo processingTaskField = typeof(QuicConnectionRuntime).GetField(
-            "processingTask",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-
         using QuicConnectionRuntimeHost host = new(2);
         List<QuicConnectionRuntime> runtimes = [];
 
@@ -24,7 +18,7 @@ public sealed class REQ_QUIC_CRT_0093
                 QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
                 runtimes.Add(runtime);
                 Assert.True(host.TryRegisterConnection(new QuicConnectionHandle(index), runtime));
-                Assert.Null(processingTaskField.GetValue(runtime));
+                Assert.False(runtime.HasProcessingTask);
             }
         }
         finally

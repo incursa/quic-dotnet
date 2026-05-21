@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
@@ -114,13 +112,8 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
         Assert.NotNull(runtime.TerminalState);
         Assert.Equal(QuicConnectionCloseOrigin.VersionNegotiation, runtime.TerminalState!.Value.Origin);
 
-        MethodInfo? mapTerminalStateMethod = typeof(QuicClientConnectionHost).GetMethod(
-            "MapTerminalState",
-            BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.NotNull(mapTerminalStateMethod);
-
         QuicException exception = Assert.IsType<QuicException>(
-            mapTerminalStateMethod!.Invoke(null, [runtime.TerminalState.Value]));
+            QuicClientConnectionHost.MapTerminalState(runtime.TerminalState.Value));
         Assert.Equal(QuicError.VersionNegotiationError, exception.QuicError);
     }
 

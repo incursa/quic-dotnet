@@ -232,30 +232,13 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
         out QuicTlsPacketProtectionMaterial openMaterial,
         out bool retainedNewMaterial)
     {
-        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
-            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
-
-        MethodInfo ensureMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
-            "TryEnsureNextOneRttOpenPacketProtectionMaterial",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        object?[] arguments =
-        [
-            default(QuicTlsPacketProtectionMaterial),
-            default(bool),
-        ];
-
-        if (!(bool)ensureMethod.Invoke(runtimeBridgeDriver, arguments)!)
+        if (!runtime.TlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
+                out openMaterial,
+                out retainedNewMaterial))
         {
             openMaterial = default;
-            retainedNewMaterial = (bool)arguments[1]!;
             return false;
         }
-
-        openMaterial = (QuicTlsPacketProtectionMaterial)arguments[0]!;
-        retainedNewMaterial = (bool)arguments[1]!;
         return true;
     }
 
@@ -266,9 +249,6 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0002
             return;
         }
 
-        FieldInfo handshakeDonePacketSentField = typeof(QuicConnectionRuntime).GetField(
-            "handshakeDonePacketSent",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        handshakeDonePacketSentField.SetValue(runtime, true);
+        runtime.MarkHandshakeDonePacketSentForTests();
     }
 }

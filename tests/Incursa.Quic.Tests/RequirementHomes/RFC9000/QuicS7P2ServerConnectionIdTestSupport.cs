@@ -1,5 +1,4 @@
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
@@ -191,13 +190,7 @@ internal static class QuicS7P2ServerConnectionIdTestSupport
 
     internal static int GetBufferedEstablishmentHandshakePacketCount(QuicConnectionRuntime runtime)
     {
-        FieldInfo? field = typeof(QuicConnectionRuntime).GetField(
-            "bufferedEstablishmentHandshakePackets",
-            BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field);
-        object? value = field.GetValue(runtime);
-        Assert.NotNull(value);
-        return Assert.IsAssignableFrom<System.Collections.ICollection>(value).Count;
+        return runtime.BufferedEstablishmentHandshakePacketCount;
     }
 
     internal static byte[] CreateScalar(byte lastByte)

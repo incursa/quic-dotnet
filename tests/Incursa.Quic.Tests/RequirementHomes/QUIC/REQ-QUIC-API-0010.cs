@@ -826,11 +826,8 @@ public sealed class REQ_QUIC_API_0010
 
     private static string DescribeStream(QuicStream stream)
     {
-        FieldInfo? bookkeepingField = typeof(QuicStream).GetField("bookkeeping", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(bookkeepingField);
-
-        if (bookkeepingField!.GetValue(stream) is not QuicConnectionStreamState bookkeeping
-            || !bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot))
+        QuicConnectionStreamState bookkeeping = stream.Bookkeeping;
+        if (!bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot))
         {
             return "<snapshot unavailable>";
         }
@@ -856,18 +853,12 @@ public sealed class REQ_QUIC_API_0010
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(runtimeField);
-        Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
-        return (QuicConnectionRuntime)runtimeField.GetValue(connection)!;
+        return connection.Runtime;
     }
 
     private static QuicHandshakeFlowCoordinator GetHandshakeFlow(QuicConnectionRuntime runtime)
     {
-        FieldInfo? handshakeFlowField = typeof(QuicConnectionRuntime).GetField("handshakeFlowCoordinator", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(handshakeFlowField);
-        Assert.IsType<QuicHandshakeFlowCoordinator>(handshakeFlowField!.GetValue(runtime));
-        return (QuicHandshakeFlowCoordinator)handshakeFlowField.GetValue(runtime)!;
+        return runtime.HandshakeFlowCoordinator;
     }
 
     private static byte[] CreateProtectedMinimalApplicationDataPacket(

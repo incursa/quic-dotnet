@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS7P2FirstFlightConnectionIdTestSupport
@@ -28,13 +26,6 @@ internal static class QuicS7P2FirstFlightConnectionIdTestSupport
         }
 
         return true;
-    }
-
-    internal static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field);
-        return Assert.IsType<T>(field.GetValue(target));
     }
 
     internal static QuicConnectionRuntime CreateClientRuntime()

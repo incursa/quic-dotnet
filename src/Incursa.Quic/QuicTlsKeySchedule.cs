@@ -258,6 +258,10 @@ internal sealed class QuicTlsKeySchedule
     /// </summary>
     internal ReadOnlyMemory<byte> ResumptionMasterSecret => resumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
 
+    internal ReadOnlyMemory<byte> ClientApplicationTrafficSecret => clientApplicationTrafficSecret ?? ReadOnlyMemory<byte>.Empty;
+
+    internal ReadOnlyMemory<byte> ServerApplicationTrafficSecret => serverApplicationTrafficSecret ?? ReadOnlyMemory<byte>.Empty;
+
     /// <summary>
     /// Gets whether the current client ClientHello attempted PSK resumption and may surface 0-RTT material.
     /// </summary>

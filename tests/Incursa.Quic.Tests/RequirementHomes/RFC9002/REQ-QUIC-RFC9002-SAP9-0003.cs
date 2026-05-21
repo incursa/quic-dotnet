@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 
 namespace Incursa.Quic.Tests;
@@ -2442,11 +2441,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
 
     private static void MarkActivePathValidated(QuicConnectionRuntime runtime, long nowTicks)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TryMarkActivePathValidated",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-        Assert.True((bool)method.Invoke(runtime, [nowTicks])!);
+        Assert.True(runtime.TryMarkActivePathValidated(nowTicks));
         Assert.True(runtime.ActivePath.HasValue);
         Assert.True(runtime.ActivePath.Value.IsValidated);
     }

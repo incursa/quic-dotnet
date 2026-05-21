@@ -1843,7 +1843,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushPendingRetransmissions(
+    internal bool TryFlushPendingRetransmissions(
         QuicPacketNumberSpace packetNumberSpace,
         long nowTicks,
         bool probePacket,
@@ -2152,7 +2152,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryDequeuePreferredProbeRetransmission(
+    internal bool TryDequeuePreferredProbeRetransmission(
         QuicPacketNumberSpace packetNumberSpace,
         out QuicConnectionRetransmissionPlan retransmission)
     {
@@ -2553,7 +2553,7 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+    internal bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
@@ -3548,7 +3548,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private void TrackApplicationPacket(
+    internal void TrackApplicationPacket(
         ulong packetNumber,
         byte[] protectedPacket,
         bool ackEliciting = true,

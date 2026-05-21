@@ -66,6 +66,16 @@ public sealed class QuicStream : Stream
     public QuicStreamType Type => type;
 
     /// <summary>
+    /// Gets the connection-owned stream bookkeeping backing this stream.
+    /// </summary>
+    internal QuicConnectionStreamState Bookkeeping => bookkeeping;
+
+    /// <summary>
+    /// Gets the connection runtime backing this stream when it is attached to one.
+    /// </summary>
+    internal QuicConnectionRuntime? Runtime => runtime;
+
+    /// <summary>
     /// Gets or sets the local scheduling priority for this stream.
     /// Higher values are scheduled before lower values when pending application sends are flushed.
     /// This priority is local-only and is not exchanged on the wire.

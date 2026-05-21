@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -78,7 +76,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0005
             Retransmittable: true,
             PacketBytes: handshakePacketBytes,
             PacketProtectionLevel: QuicTlsEncryptionLevel.Handshake));
-        GetRecoveryController(runtime).RecordPacketSent(
+        runtime.RecoveryController.RecordPacketSent(
             QuicPacketNumberSpace.Handshake,
             packetNumber: 1,
             sentAtMicros: 0,
@@ -96,7 +94,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0005
             Retransmittable: true,
             PacketBytes: applicationPacketBytes,
             PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
-        GetRecoveryController(runtime).RecordPacketSent(
+        runtime.RecoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber: 7,
             sentAtMicros: 0,
@@ -117,7 +115,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0005
             QuicPacketNumberSpace.Handshake,
             packetNumber: 1,
             handshakeConfirmed: false));
-        Assert.True(GetRecoveryController(runtime).RecordAcknowledgment(
+        Assert.True(runtime.RecoveryController.RecordAcknowledgment(
             QuicPacketNumberSpace.Handshake,
             largestAcknowledgedPacketNumber: 1,
             ackReceivedAtMicros: 10,
@@ -144,27 +142,9 @@ public sealed class REQ_QUIC_RFC9002_S6P2P1_0005
         out ulong selectedRecoveryTimerMicros,
         out QuicPacketNumberSpace selectedPacketNumberSpace)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySelectRecoveryTimer",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
+        return runtime.TrySelectRecoveryTimer(
             nowTicks,
-            default(ulong),
-            default(QuicPacketNumberSpace),
-        ];
-
-        bool selected = (bool)method.Invoke(runtime, arguments)!;
-        selectedRecoveryTimerMicros = (ulong)arguments[1]!;
-        selectedPacketNumberSpace = (QuicPacketNumberSpace)arguments[2]!;
-        return selected;
-    }
-
-    private static QuicRecoveryController GetRecoveryController(QuicConnectionRuntime runtime)
-    {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "recoveryController",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (QuicRecoveryController)field.GetValue(runtime)!;
+            out selectedRecoveryTimerMicros,
+            out selectedPacketNumberSpace);
     }
 }

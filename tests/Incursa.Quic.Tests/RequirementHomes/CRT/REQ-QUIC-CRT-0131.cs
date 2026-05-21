@@ -335,9 +335,7 @@ public sealed class REQ_QUIC_CRT_0131
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(runtimeField);
-        return Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
+        return connection.Runtime;
     }
 
     private static byte[] RequireBackingArray(ReadOnlyMemory<byte> memory)

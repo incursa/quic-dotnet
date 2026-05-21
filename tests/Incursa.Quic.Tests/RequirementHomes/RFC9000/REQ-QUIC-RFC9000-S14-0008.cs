@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
@@ -40,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S14_0008
             (_, _, _) => ValueTask.FromResult(new QuicServerConnectionOptions()),
             listenBacklog: 1);
 
-        Socket socket = GetPrivateField<Socket>(listenerHost, "socket");
+        Socket socket = listenerHost.Socket;
 
         Assert.True(socket.DontFragment);
     }
@@ -60,10 +59,4 @@ public sealed class REQ_QUIC_RFC9000_S14_0008
         Assert.False(QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket));
     }
 
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(field);
-        return Assert.IsType<T>(field!.GetValue(target));
-    }
 }

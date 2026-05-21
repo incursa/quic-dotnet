@@ -385,7 +385,7 @@ internal sealed partial class QuicConnectionRuntime
             ReasonPhrase: null);
     }
 
-    private QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
+    internal QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
     {
         RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
         _ = RecomputeIdleTimeoutState(lastTransitionTicks);
@@ -562,7 +562,7 @@ internal sealed partial class QuicConnectionRuntime
         return SaturatingAdd(nowTicks, ConvertMicrosToTicks(terminalLifetimeMicros));
     }
 
-    private ulong GetElapsedMicros(long nowTicks)
+    internal ulong GetElapsedMicros(long nowTicks)
     {
         long elapsedTicks = nowTicks - timeOriginTicks;
         if (elapsedTicks <= 0)
@@ -679,7 +679,7 @@ internal sealed partial class QuicConnectionRuntime
         int Priority,
         byte[] StreamPayload);
 
-    private sealed class QuicConnectionNewTokenEmissionRecord
+    internal sealed class QuicConnectionNewTokenEmissionRecord
     {
         internal QuicConnectionNewTokenEmissionRecord(QuicConnectionPathIdentity pathIdentity, byte[] token)
         {

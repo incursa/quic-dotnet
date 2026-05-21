@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Security;
 using System.Linq;
-using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
@@ -18,14 +17,20 @@ public sealed class REQ_QUIC_CRT_0135
                 QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint()),
             "options");
 
-        QuicConnectionRuntime clientRuntime = InvokeCreateRuntime(typeof(QuicClientConnectionHost), clientSettings);
-        Assert.Same(QuicNullDiagnosticsSink.Instance, GetPrivateField<IQuicDiagnosticsSink>(clientRuntime, "diagnosticsSink"));
-        Assert.False(GetPrivateField<bool>(clientRuntime, "diagnosticsEnabled"));
+        QuicConnectionRuntime clientRuntime = QuicClientConnectionHost.CreateRuntime(clientSettings);
+        Assert.Same(QuicNullDiagnosticsSink.Instance, clientRuntime.DiagnosticsSink);
+        Assert.False(clientRuntime.DiagnosticsEnabled);
 
         QuicServerConnectionOptions serverOptions = new();
-        QuicConnectionRuntime serverRuntime = InvokeCreateRuntime(typeof(QuicListenerHost), serverOptions);
-        Assert.Same(QuicNullDiagnosticsSink.Instance, GetPrivateField<IQuicDiagnosticsSink>(serverRuntime, "diagnosticsSink"));
-        Assert.False(GetPrivateField<bool>(serverRuntime, "diagnosticsEnabled"));
+        using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [SslApplicationProtocol.Http3],
+            static (_, _, _) => new ValueTask<QuicServerConnectionOptions>(new QuicServerConnectionOptions()),
+            listenBacklog: 1);
+
+        QuicConnectionRuntime serverRuntime = listenerHost.CreateRuntime(serverOptions);
+        Assert.Same(QuicNullDiagnosticsSink.Instance, serverRuntime.DiagnosticsSink);
+        Assert.False(serverRuntime.DiagnosticsEnabled);
     }
 
     [Fact]
@@ -47,8 +52,8 @@ public sealed class REQ_QUIC_CRT_0135
                 Datagram: new byte[] { 0xC0 }),
             nowTicks: 1);
 
-        Assert.Same(QuicNullDiagnosticsSink.Instance, GetPrivateField<IQuicDiagnosticsSink>(runtime, "diagnosticsSink"));
-        Assert.False(GetPrivateField<bool>(runtime, "diagnosticsEnabled"));
+        Assert.Same(QuicNullDiagnosticsSink.Instance, runtime.DiagnosticsSink);
+        Assert.False(runtime.DiagnosticsEnabled);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionEmitDiagnosticEffect);
     }
 
@@ -67,51 +72,4 @@ public sealed class REQ_QUIC_CRT_0135
         Assert.DoesNotContain(retryResult.Effects, effect => effect is QuicConnectionEmitDiagnosticEffect);
     }
 
-    private static QuicConnectionRuntime InvokeCreateRuntime(Type hostType, object settings)
-    {
-        if (hostType == typeof(QuicClientConnectionHost))
-        {
-            MethodInfo? createRuntimeMethod = hostType.GetMethod(
-                "CreateRuntime",
-                BindingFlags.NonPublic | BindingFlags.Static,
-                binder: null,
-                types: [typeof(QuicClientConnectionSettings), typeof(IQuicDiagnosticsSink)],
-                modifiers: null);
-
-            Assert.NotNull(createRuntimeMethod);
-
-            object? runtime = createRuntimeMethod!.Invoke(null, [settings, null]);
-            return Assert.IsType<QuicConnectionRuntime>(runtime);
-        }
-
-        if (hostType == typeof(QuicListenerHost))
-        {
-            using QuicListenerHost listenerHost = new(
-                new IPEndPoint(IPAddress.Loopback, 0),
-                [SslApplicationProtocol.Http3],
-                static (_, _, _) => new ValueTask<QuicServerConnectionOptions>(new QuicServerConnectionOptions()),
-                listenBacklog: 1);
-
-            MethodInfo? createRuntimeMethod = hostType.GetMethod(
-                "CreateRuntime",
-                BindingFlags.NonPublic | BindingFlags.Instance,
-                binder: null,
-                types: [typeof(QuicServerConnectionOptions)],
-                modifiers: null);
-
-            Assert.NotNull(createRuntimeMethod);
-
-            object? runtime = createRuntimeMethod!.Invoke(listenerHost, [settings]);
-            return Assert.IsType<QuicConnectionRuntime>(runtime);
-        }
-
-        throw new ArgumentOutOfRangeException(nameof(hostType));
-    }
-
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(field);
-        return Assert.IsAssignableFrom<T>(field!.GetValue(target));
-    }
 }

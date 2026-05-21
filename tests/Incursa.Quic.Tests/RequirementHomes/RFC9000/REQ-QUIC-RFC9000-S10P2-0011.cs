@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -16,11 +14,10 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0011
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
 
-        QuicHandshakeFlowCoordinator coordinator = GetPrivateField<QuicHandshakeFlowCoordinator>(runtime, "handshakeFlowCoordinator");
-        SetPrivateField(coordinator, "nextApplicationPacketNumber", QuicVariableLengthInteger.MaxValue);
+        runtime.HandshakeFlowCoordinator.SetNextApplicationPacketNumberForTests(QuicVariableLengthInteger.MaxValue);
 
         List<QuicConnectionEffect>? effects = [];
-        Assert.True(InvokeTrySendRecoveryPingProbe(runtime, ref effects));
+        Assert.True(runtime.TrySendRecoveryPingProbe(ref effects));
         Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
         Assert.False(runtime.CanSendOrdinaryPackets);
@@ -39,47 +36,9 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0011
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
 
         List<QuicConnectionEffect>? effects = [];
-        Assert.True(InvokeTrySendRecoveryPingProbe(runtime, ref effects));
+        Assert.True(runtime.TrySendRecoveryPingProbe(ref effects));
         Assert.NotEqual(QuicConnectionPhase.Discarded, runtime.Phase);
         Assert.DoesNotContain(effects!, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 
-    private static bool InvokeTrySendRecoveryPingProbe(
-        QuicConnectionRuntime runtime,
-        ref List<QuicConnectionEffect>? effects)
-    {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySendRecoveryPingProbe",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-        object?[] arguments =
-        [
-            effects,
-        ];
-
-        bool result = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[0];
-        return result;
-    }
-
-    private static T GetPrivateField<T>(
-        object target,
-        string fieldName)
-    {
-        FieldInfo field = target.GetType().GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (T)field.GetValue(target)!;
-    }
-
-    private static void SetPrivateField<T>(
-        object target,
-        string fieldName,
-        T value)
-    {
-        FieldInfo field = target.GetType().GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        field.SetValue(target, value);
-    }
 }

@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using Xunit;
@@ -315,10 +314,7 @@ internal static class QuicResumptionClientHelloTestSupport
 
     internal static byte[] GetInitialBootstrapClientHelloBytes(QuicConnectionRuntime runtime)
     {
-        FieldInfo? field = typeof(QuicConnectionRuntime).GetField("initialBootstrapClientHelloBytes", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(field);
-        byte[]? bytes = Assert.IsType<byte[]>(field!.GetValue(runtime));
-        return bytes;
+        return Assert.IsType<byte[]>(runtime.InitialBootstrapClientHelloBytes);
     }
 
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)

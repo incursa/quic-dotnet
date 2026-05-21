@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 
 namespace Incursa.Quic.Tests;
@@ -164,18 +163,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0008
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
-            nowTicks,
-            effects,
-        ];
-
-        bool sent = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[1];
-        return sent;
+        return runtime.TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(nowTicks, ref effects);
     }
 
     private static (ReadOnlyMemory<byte> HandshakePacket, ReadOnlyMemory<byte> ApplicationPacket)

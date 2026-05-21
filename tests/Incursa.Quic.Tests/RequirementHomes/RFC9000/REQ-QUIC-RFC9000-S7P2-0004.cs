@@ -16,10 +16,8 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
-        byte[] routeConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "routeConnectionId");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+        byte[] routeConnectionId = host.RouteConnectionId;
 
         Assert.Equal(8, initialDestinationConnectionId.Length);
         Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(initialDestinationConnectionId));
@@ -43,10 +41,8 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
         await using QuicClientConnectionHost firstHost = new(firstSettings);
         await using QuicClientConnectionHost secondHost = new(secondSettings);
 
-        byte[] firstInitialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(firstHost, "initialDestinationConnectionId");
-        byte[] secondInitialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(secondHost, "initialDestinationConnectionId");
+        byte[] firstInitialDestinationConnectionId = firstHost.InitialDestinationConnectionId;
+        byte[] secondInitialDestinationConnectionId = secondHost.InitialDestinationConnectionId;
 
         Assert.Equal(8, firstInitialDestinationConnectionId.Length);
         Assert.Equal(8, secondInitialDestinationConnectionId.Length);
@@ -66,10 +62,8 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
-        byte[] routeConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "routeConnectionId");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+        byte[] routeConnectionId = host.RouteConnectionId;
 
         Assert.Equal(8, initialDestinationConnectionId.Length);
         Assert.Equal(8, routeConnectionId.Length);

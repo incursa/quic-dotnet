@@ -283,7 +283,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0007
     public void TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
-        SetPrivateField(coordinator, "nextApplicationPacketNumber", QuicVariableLengthInteger.MaxValue);
+        coordinator.SetNextApplicationPacketNumberForTests(QuicVariableLengthInteger.MaxValue);
 
         Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
             QuicTlsEncryptionLevel.OneRtt,
@@ -298,7 +298,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0007
             out _));
         Assert.Equal(
             QuicVariableLengthInteger.MaxValue,
-            GetPrivateField<ulong>(coordinator, "nextApplicationPacketNumber"));
+            coordinator.NextApplicationPacketNumber);
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0007
     public void TryBuildProtectedApplicationDataPacket_UsesTheUintMaxValuePacketNumberBoundary()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
-        SetPrivateField(coordinator, "nextApplicationPacketNumber", (ulong)uint.MaxValue - 1);
+        coordinator.SetNextApplicationPacketNumberForTests((ulong)uint.MaxValue - 1);
 
         Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
             QuicTlsEncryptionLevel.OneRtt,
@@ -324,7 +324,7 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0007
         Assert.Equal((ulong)uint.MaxValue - 1, packetNumber);
         Assert.Equal(
             (ulong)uint.MaxValue,
-            GetPrivateField<ulong>(coordinator, "nextApplicationPacketNumber"));
+            coordinator.NextApplicationPacketNumber);
         Assert.NotEmpty(protectedPacket);
         QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
             coordinator,
@@ -338,26 +338,6 @@ public sealed class REQ_QUIC_RFC9000_S12P3_0007
         return QuicS17P1TestSupport.ReadPacketNumber(openedPacket.AsSpan(payloadOffset - sizeof(uint), sizeof(uint)));
     }
 
-    private static T GetPrivateField<T>(
-        object target,
-        string fieldName)
-    {
-        FieldInfo field = target.GetType().GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (T)field.GetValue(target)!;
-    }
-
-    private static void SetPrivateField<T>(
-        object target,
-        string fieldName,
-        T value)
-    {
-        FieldInfo field = target.GetType().GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        field.SetValue(target, value);
-    }
 }
 
 internal static class QuicS12P3ApplicationRecoveryTestSupport

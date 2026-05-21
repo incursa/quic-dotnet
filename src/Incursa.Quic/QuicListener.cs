@@ -13,6 +13,8 @@ public sealed class QuicListener : IAsyncDisposable
         this.host = host ?? throw new ArgumentNullException(nameof(host));
     }
 
+    internal QuicListenerHost Host => host;
+
     /// <summary>
     /// Gets whether the current runtime supports the repository's managed QUIC loopback slice.
     /// </summary>

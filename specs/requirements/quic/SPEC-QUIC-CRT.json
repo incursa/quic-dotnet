@@ -107,8 +107,11 @@
     },
     {
       "id": "REQ-QUIC-CRT-0004",
-      "title": "Centralize orchestration even when subcomponents exist",
-      "statement": "The implementation MUST expose one connection-runtime orchestration surface even when lifecycle, path, timer, and stream logic are decomposed into internal sub-state records or helper classes."
+      "title": "Preserve one serialized protocol-state owner per connection",
+      "statement": "The implementation MUST preserve one serialized protocol state ownership and ordering model per connection, even when packet opening, frame dispatch, send planning, stream bookkeeping, recovery, path validation, TLS transcript processing, and effect emission are delegated to internal components.",
+      "notes": [
+        "Internal helpers may own specialized work, but they must feed one ordered connection-state owner."
+      ]
     },
     {
       "id": "REQ-QUIC-CRT-0005",

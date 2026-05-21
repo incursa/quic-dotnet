@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -790,10 +789,7 @@ public sealed class QuicCapturedInteropReplayTests
 
     private static void ForcePhase(QuicConnectionRuntime runtime, QuicConnectionPhase phase)
     {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "phase",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        field.SetValue(runtime, phase);
+        runtime.SetPhaseForTesting(phase);
     }
 
     private static bool TryCreateHandshakePacketProtectionMaterial(

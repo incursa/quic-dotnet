@@ -358,9 +358,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     private static void MarkPeerFinishedVerifiedWithoutConfirmingHandshake(QuicConnectionRuntime runtime)
     {
-        typeof(QuicTransportTlsBridgeState)
-            .GetProperty(nameof(QuicTransportTlsBridgeState.PeerFinishedVerified))!
-            .SetValue(runtime.TlsState, true);
+        runtime.TlsState.SetPeerFinishedVerifiedForTests(true);
     }
 
     private static QuicConnectionSendDatagramEffect AssertSingleSendByPacketNumberSpace(

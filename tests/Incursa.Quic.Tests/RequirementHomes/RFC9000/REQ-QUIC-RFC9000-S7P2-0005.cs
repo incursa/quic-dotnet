@@ -15,8 +15,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0005
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
 
         Assert.True(initialDestinationConnectionId.Length >= 8);
     }
@@ -33,8 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0005
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
 
         Assert.NotEmpty(initialDestinationConnectionId);
         Assert.False(initialDestinationConnectionId.Length < 8);
@@ -52,8 +50,7 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0005
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId =
-            QuicS7P2FirstFlightConnectionIdTestSupport.GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
 
         Assert.Equal(8, initialDestinationConnectionId.Length);
     }

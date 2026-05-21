@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0004")]
@@ -8,25 +6,38 @@ public sealed class REQ_QUIC_CRT_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void QuicConnectionRuntimeIsTheOnlyTransitionOrchestrationSurface()
+    public void RuntimePreservesOneSerializedProtocolStateOwnerAcrossDelegatedComponents()
     {
-        MethodInfo[] transitionMethods = typeof(QuicConnectionRuntime)
-            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-            .Where(method => method.Name == nameof(QuicConnectionRuntime.Transition))
-            .ToArray();
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
 
-        Assert.Equal(2, transitionMethods.Length);
+        Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.Ordinary, runtime.SendingMode);
+        Assert.True(runtime.CanSendOrdinaryPackets);
 
-        Type[] otherTypesWithConnectionEventTransition = typeof(QuicConnectionRuntime).Assembly
-            .GetTypes()
-            .Where(type => type != typeof(QuicConnectionRuntime))
-            .Where(type => type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                .Any(method =>
-                    method.Name == nameof(QuicConnectionRuntime.Transition)
-                    && method.GetParameters() is [{ ParameterType: Type parameterType }, ..]
-                    && parameterType == typeof(QuicConnectionEvent)))
-            .ToArray();
+        QuicConnectionTransitionResult handshakeResult = runtime.Transition(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: 1),
+            nowTicks: 1);
 
-        Assert.Empty(otherTypesWithConnectionEventTransition);
+        Assert.Equal(QuicConnectionPhase.Establishing, handshakeResult.PreviousPhase);
+        Assert.Equal(QuicConnectionPhase.Active, handshakeResult.CurrentPhase);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.Ordinary, runtime.SendingMode);
+        Assert.True(runtime.CanSendOrdinaryPackets);
+
+        QuicConnectionTransitionResult closeResult = runtime.Transition(
+            new QuicConnectionLocalCloseRequestedEvent(
+                ObservedAtTicks: 2,
+                new QuicConnectionCloseMetadata(
+                    TransportErrorCode: QuicTransportErrorCode.NoError,
+                    ApplicationErrorCode: null,
+                    TriggeringFrameType: 0x1c,
+                    ReasonPhrase: "closing")),
+            nowTicks: 2);
+
+        Assert.Equal(QuicConnectionPhase.Active, closeResult.PreviousPhase);
+        Assert.Equal(QuicConnectionPhase.Closing, closeResult.CurrentPhase);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+        Assert.False(runtime.CanSendOrdinaryPackets);
     }
 }

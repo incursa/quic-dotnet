@@ -147,6 +147,24 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     internal ReadOnlyMemory<byte> ResumptionMasterSecret => keySchedule?.ResumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
 
+    internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
+
+    internal bool TryGetExpectedPeerFinishedVerifyData(out byte[] verifyData)
+    {
+        verifyData = [];
+        return keySchedule?.TryGetExpectedPeerFinishedVerifyData(out verifyData) == true;
+    }
+
+    internal bool TryGetApplicationTrafficSecrets(
+        out ReadOnlyMemory<byte> clientApplicationTrafficSecret,
+        out ReadOnlyMemory<byte> serverApplicationTrafficSecret)
+    {
+        clientApplicationTrafficSecret = keySchedule?.ClientApplicationTrafficSecret ?? ReadOnlyMemory<byte>.Empty;
+        serverApplicationTrafficSecret = keySchedule?.ServerApplicationTrafficSecret ?? ReadOnlyMemory<byte>.Empty;
+        return !clientApplicationTrafficSecret.IsEmpty
+            && !serverApplicationTrafficSecret.IsEmpty;
+    }
+
     /// <inheritdoc />
     public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
         => StartHandshake(localTransportParameters, detachedResumptionTicketSnapshot: null, nowTicks: 0);

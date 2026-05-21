@@ -191,12 +191,13 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TryProcessHandshakePacketPayload",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        ProcessHandshakePacketPayloadDelegate handler =
-            method.CreateDelegate<ProcessHandshakePacketPayloadDelegate>();
-        return handler(runtime, payload, encryptionLevel, nowTicks, out _, out _, ref effects);
+        return runtime.TryProcessHandshakePacketPayload(
+            payload,
+            encryptionLevel,
+            nowTicks,
+            out _,
+            out _,
+            ref effects);
     }
 
     private static byte[] BuildAckAndCryptoPayload(
@@ -240,7 +241,7 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
                 : null,
             PacketBytes: packetBytes,
             PacketProtectionLevel: packetProtectionLevel));
-        GetRecoveryController(runtime).RecordPacketSent(
+        runtime.RecoveryController.RecordPacketSent(
             packetNumberSpace,
             packetNumber,
             sentAtMicros,
@@ -255,27 +256,9 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
         out ulong selectedRecoveryTimerMicros,
         out QuicPacketNumberSpace selectedPacketNumberSpace)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySelectRecoveryTimer",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
+        return runtime.TrySelectRecoveryTimer(
             nowTicks,
-            default(ulong),
-            default(QuicPacketNumberSpace),
-        ];
-
-        bool selected = (bool)method.Invoke(runtime, arguments)!;
-        selectedRecoveryTimerMicros = (ulong)arguments[1]!;
-        selectedPacketNumberSpace = (QuicPacketNumberSpace)arguments[2]!;
-        return selected;
-    }
-
-    private static QuicRecoveryController GetRecoveryController(QuicConnectionRuntime runtime)
-    {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "recoveryController",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (QuicRecoveryController)field.GetValue(runtime)!;
+            out selectedRecoveryTimerMicros,
+            out selectedPacketNumberSpace);
     }
 }

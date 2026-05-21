@@ -185,9 +185,6 @@ public sealed class REQ_QUIC_RFC9001_S6P3_0001
             return;
         }
 
-        FieldInfo handshakeDonePacketSentField = typeof(QuicConnectionRuntime).GetField(
-            "handshakeDonePacketSent",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        handshakeDonePacketSentField.SetValue(runtime, true);
+        runtime.MarkHandshakeDonePacketSentForTests();
     }
 }

@@ -5,7 +5,7 @@ namespace Incursa.Quic;
 // Active-path state, path validation, migration promotion, and recovery resets.
 internal sealed partial class QuicConnectionRuntime
 {
-    private bool InitializeActivePath(
+    internal bool InitializeActivePath(
         QuicConnectionPathIdentity pathIdentity,
         int payloadBytes,
         long nowTicks)
@@ -89,7 +89,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryMarkActivePathValidated(long nowTicks)
+    internal bool TryMarkActivePathValidated(long nowTicks)
     {
         if (activePath is null)
         {

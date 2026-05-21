@@ -675,21 +675,11 @@ public sealed class REQ_QUIC_API_0005
             out QuicCryptoFrame handshakeCryptoFrame,
             out int handshakeCryptoFrameBytesWritten));
         Assert.True(handshakeCryptoFrameBytesWritten > 0);
-        FieldInfo? runtimeCoordinatorField = typeof(QuicConnectionRuntime).GetField("handshakeFlowCoordinator", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(runtimeCoordinatorField);
-        QuicHandshakeFlowCoordinator runtimeHandshakeFlowCoordinator = Assert.IsType<QuicHandshakeFlowCoordinator>(runtimeCoordinatorField.GetValue(serverRuntime));
-        FieldInfo? initialDestinationConnectionIdField = typeof(QuicHandshakeFlowCoordinator).GetField("initialDestinationConnectionId", BindingFlags.Instance | BindingFlags.NonPublic);
-        FieldInfo? destinationConnectionIdField = typeof(QuicHandshakeFlowCoordinator).GetField("destinationConnectionId", BindingFlags.Instance | BindingFlags.NonPublic);
-        FieldInfo? sourceConnectionIdField = typeof(QuicHandshakeFlowCoordinator).GetField("sourceConnectionId", BindingFlags.Instance | BindingFlags.NonPublic);
-        FieldInfo? nextPacketNumberField = typeof(QuicHandshakeFlowCoordinator).GetField("nextPacketNumber", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(initialDestinationConnectionIdField);
-        Assert.NotNull(destinationConnectionIdField);
-        Assert.NotNull(sourceConnectionIdField);
-        Assert.NotNull(nextPacketNumberField);
-        Assert.Equal(clientInitialDestinationConnectionId, (byte[]?)initialDestinationConnectionIdField.GetValue(runtimeHandshakeFlowCoordinator));
-        Assert.Equal(clientSourceConnectionId, (byte[]?)destinationConnectionIdField.GetValue(runtimeHandshakeFlowCoordinator));
-        Assert.Equal(serverSourceConnectionId, (byte[]?)sourceConnectionIdField.GetValue(runtimeHandshakeFlowCoordinator));
-        Assert.Equal(2UL, (ulong)nextPacketNumberField.GetValue(runtimeHandshakeFlowCoordinator)!);
+        QuicHandshakeFlowCoordinator runtimeHandshakeFlowCoordinator = serverRuntime.HandshakeFlowCoordinator;
+        Assert.Equal(clientInitialDestinationConnectionId, runtimeHandshakeFlowCoordinator.InitialDestinationConnectionId.ToArray());
+        Assert.Equal(clientSourceConnectionId, runtimeHandshakeFlowCoordinator.DestinationConnectionId.ToArray());
+        Assert.Equal(serverSourceConnectionId, runtimeHandshakeFlowCoordinator.SourceConnectionId.ToArray());
+        Assert.Equal(2UL, runtimeHandshakeFlowCoordinator.NextPacketNumber);
         Assert.True(runtimeHandshakeFlowCoordinator.TryBuildProtectedHandshakePacket(
             handshakeCryptoFrame.CryptoData,
             handshakeCryptoFrame.Offset,
@@ -843,42 +833,20 @@ public sealed class REQ_QUIC_API_0005
 
     private static string DescribeCryptoBuffer(QuicCryptoBuffer buffer)
     {
-        BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
-        Type bufferType = typeof(QuicCryptoBuffer);
-        FieldInfo? entriesField = bufferType.GetField("entries", bindingFlags);
-        FieldInfo? bufferedBytesField = bufferType.GetField("bufferedBytes", bindingFlags);
-        FieldInfo? nextReadOffsetField = bufferType.GetField("nextReadOffset", bindingFlags);
-        FieldInfo? discardFutureFramesField = bufferType.GetField("discardFutureFrames", bindingFlags);
-
-        object? entriesValue = entriesField?.GetValue(buffer);
-        int entryCount = entriesValue is System.Collections.ICollection collection ? collection.Count : -1;
+        QuicCryptoBuffer.QuicCryptoBufferSnapshot snapshot = buffer.GetSnapshot();
         List<string> entries = [];
-
-        if (entriesValue is System.Collections.IEnumerable enumerable)
+        foreach (QuicCryptoBuffer.QuicCryptoBufferEntrySnapshot entry in snapshot.Entries)
         {
-            foreach (object? entry in enumerable)
-            {
-                if (entry is null)
-                {
-                    entries.Add("<null>");
-                    continue;
-                }
-
-                PropertyInfo? offsetProperty = entry.GetType().GetProperty("Offset", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                PropertyInfo? dataProperty = entry.GetType().GetProperty("Data", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                ulong offset = offsetProperty is null ? 0 : (ulong)offsetProperty.GetValue(entry)!;
-                byte[]? data = dataProperty?.GetValue(entry) as byte[];
-                entries.Add($"[{offset}, len={(data?.Length ?? 0)}]");
-            }
+            entries.Add($"[{entry.Offset}, len={entry.Length}]");
         }
 
         return string.Join(
             "; ",
             [
-                $"BufferedBytes={bufferedBytesField?.GetValue(buffer) ?? "<n/a>"}",
-                $"NextReadOffset={nextReadOffsetField?.GetValue(buffer) ?? "<n/a>"}",
-                $"DiscardFutureFrames={discardFutureFramesField?.GetValue(buffer) ?? "<n/a>"}",
-                $"EntryCount={entryCount}",
+                $"BufferedBytes={snapshot.BufferedBytes}",
+                $"NextReadOffset={snapshot.NextReadOffset}",
+                $"DiscardFutureFrames={snapshot.DiscardFutureFrames}",
+                $"EntryCount={snapshot.Entries.Length}",
                 $"Entries={string.Join(", ", entries)}",
             ]);
     }

@@ -956,7 +956,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryProcessHandshakePacketPayload(
+    internal bool TryProcessHandshakePacketPayload(
         ReadOnlySpan<byte> payload,
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
@@ -4075,7 +4075,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    internal bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
         {
@@ -4099,7 +4099,7 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
-    private bool TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    internal bool TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
         {

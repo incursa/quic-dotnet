@@ -47,6 +47,25 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
     public QuicConnectionRuntimeHost Host => host;
 
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, byte>> RouteIdsByHandle => routeIdsByHandle;
+
+    internal ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionHandle>> RoutesByLength => routesByLength;
+
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, ulong>> StatelessResetConnectionIdsByRouteIdByHandle => statelessResetConnectionIdsByRouteIdByHandle;
+
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<ulong, byte>> StatelessResetTokenIdsByHandle => statelessResetTokenIdsByHandle;
+
+    internal ConcurrentDictionary<QuicConnectionStatelessResetMatchKey, QuicConnectionStatelessResetBinding> StatelessResetBindingsByMatchKey => statelessResetBindingsByMatchKey;
+
+    internal ConcurrentDictionary<ulong, QuicConnectionStatelessResetBinding> StatelessResetBindingsByConnectionId => statelessResetBindingsByConnectionId;
+
+    internal ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>> RetainedStatelessResetBindingsByRouteLength => retainedStatelessResetBindingsByRouteLength;
+
+    internal void SetVersionProfileForTests(QuicConnectionHandle handle, QuicConnectionVersionProfile versionProfile)
+    {
+        versionProfilesByHandle[handle] = versionProfile;
+    }
+
     public QuicConnectionHandle AllocateConnectionHandle()
     {
         return host.AllocateConnectionHandle();

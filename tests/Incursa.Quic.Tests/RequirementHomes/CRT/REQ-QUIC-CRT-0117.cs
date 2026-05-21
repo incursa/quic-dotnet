@@ -51,11 +51,7 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.False(driver.State.PeerFinishedVerified);
         Assert.False(driver.State.PeerHandshakeTranscriptCompleted);
 
-        FieldInfo keyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule driverKeySchedule = (QuicTlsKeySchedule)keyScheduleField.GetValue(driver)!;
-        Assert.True(driverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+        Assert.True(driver.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -156,11 +152,7 @@ public sealed class REQ_QUIC_CRT_0117
             QuicTlsEncryptionLevel.Handshake,
             clientHelloTranscript).Count);
 
-        FieldInfo malformedKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule malformedDriverKeySchedule = (QuicTlsKeySchedule)malformedKeyScheduleField.GetValue(malformedDriver)!;
-        Assert.True(malformedDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] malformedExpectedFinishedVerifyData));
+        Assert.True(malformedDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] malformedExpectedFinishedVerifyData));
 
         byte[] malformedFinishedTranscript = CreateFinishedTranscript(malformedExpectedFinishedVerifyData);
         WriteUInt24(malformedFinishedTranscript.AsSpan(1, 3), checked((int)malformedExpectedFinishedVerifyData.Length - 1));
@@ -185,11 +177,7 @@ public sealed class REQ_QUIC_CRT_0117
             QuicTlsEncryptionLevel.Handshake,
             clientHelloTranscript).Count);
 
-        FieldInfo mismatchedKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule mismatchedDriverKeySchedule = (QuicTlsKeySchedule)mismatchedKeyScheduleField.GetValue(mismatchedDriver)!;
-        Assert.True(mismatchedDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] mismatchedExpectedFinishedVerifyData));
+        Assert.True(mismatchedDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] mismatchedExpectedFinishedVerifyData));
 
         byte[] mismatchedFinishedTranscript = CreateFinishedTranscript(mismatchedExpectedFinishedVerifyData);
         mismatchedFinishedTranscript[^1] ^= 0x80;
@@ -280,15 +268,8 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.True(runtime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial runtimeHandshakePacketMaterial));
         Assert.True(runtime.TlsState.HandshakeKeysAvailable);
-        FieldInfo runtimeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsTransportBridgeDriver runtimeDriver = (QuicTlsTransportBridgeDriver)runtimeDriverField.GetValue(runtime)!;
-        FieldInfo runtimeKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule runtimeKeySchedule = (QuicTlsKeySchedule)runtimeKeyScheduleField.GetValue(runtimeDriver)!;
-        Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+        QuicTlsTransportBridgeDriver runtimeDriver = runtime.TlsBridgeDriver;
+        Assert.True(runtimeDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         QuicConnectionTransitionResult candidatePacketResult = runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
@@ -359,11 +340,7 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.Equal(9, repeatedDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             clientHelloTranscript).Count);
-        FieldInfo repeatedKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule repeatedDriverKeySchedule = (QuicTlsKeySchedule)repeatedKeyScheduleField.GetValue(repeatedDriver)!;
-        Assert.True(repeatedDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] repeatedFinishedVerifyData));
+        Assert.True(repeatedDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] repeatedFinishedVerifyData));
         byte[] finishedTranscript = CreateFinishedTranscript(repeatedFinishedVerifyData);
         Assert.Equal(6, repeatedDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -388,11 +365,7 @@ public sealed class REQ_QUIC_CRT_0117
         Assert.Equal(9, conflictingDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             clientHelloTranscript).Count);
-        FieldInfo conflictingKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule conflictingDriverKeySchedule = (QuicTlsKeySchedule)conflictingKeyScheduleField.GetValue(conflictingDriver)!;
-        Assert.True(conflictingDriverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] conflictingFinishedVerifyData));
+        Assert.True(conflictingDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] conflictingFinishedVerifyData));
         byte[] conflictingFinishedTranscript = CreateFinishedTranscript(conflictingFinishedVerifyData);
         Assert.Equal(6, conflictingDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,

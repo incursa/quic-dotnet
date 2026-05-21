@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 
@@ -58,20 +57,20 @@ public sealed class REQ_QUIC_CRT_0123
 
         await using QuicClientConnectionHost host = new(settings);
 
-        QuicClientConnectionSettings capturedSettings = GetPrivateField<QuicClientConnectionSettings>(host, "settings");
+        QuicClientConnectionSettings capturedSettings = host.Settings;
         Assert.NotNull(capturedSettings.Options.PeerCertificatePolicy);
         Assert.Equal(expectedIdentity, capturedSettings.Options.PeerCertificatePolicy!.ExactPeerLeafCertificateDer.ToArray());
         Assert.Equal(expectedTrust, capturedSettings.Options.PeerCertificatePolicy.ExplicitTrustMaterialSha256.ToArray());
         Assert.Equal(expectedIdentity, capturedSettings.ClientCertificatePolicySnapshot!.ExactPeerLeafCertificateDer.ToArray());
         Assert.Equal(expectedTrust, capturedSettings.ClientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.ToArray());
 
-        QuicConnection connection = GetPrivateField<QuicConnection>(host, "connection");
-        QuicConnectionRuntime runtime = GetPrivateField<QuicConnectionRuntime>(connection, "runtime");
+        QuicConnection connection = host.Connection;
+        QuicConnectionRuntime runtime = connection.Runtime;
         Assert.Equal(expectedIdentity, runtime.ClientCertificatePolicySnapshot!.ExactPeerLeafCertificateDer.ToArray());
         Assert.Equal(expectedTrust, runtime.ClientCertificatePolicySnapshot.ExplicitTrustMaterialSha256.ToArray());
 
-        QuicTlsTransportBridgeDriver driver = GetPrivateField<QuicTlsTransportBridgeDriver>(runtime, "tlsBridgeDriver");
-        QuicClientCertificatePolicySnapshot driverSnapshot = GetPrivateField<QuicClientCertificatePolicySnapshot>(driver, "clientCertificatePolicySnapshot");
+        QuicTlsTransportBridgeDriver driver = runtime.TlsBridgeDriver;
+        QuicClientCertificatePolicySnapshot driverSnapshot = driver.ClientCertificatePolicySnapshot!;
         Assert.Equal(expectedIdentity, driverSnapshot.ExactPeerLeafCertificateDer.ToArray());
         Assert.Equal(expectedTrust, driverSnapshot.ExplicitTrustMaterialSha256.ToArray());
 
@@ -511,15 +510,4 @@ public sealed class REQ_QUIC_CRT_0123
         return mutated;
     }
 
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-        if (field is null)
-        {
-            throw new InvalidOperationException($"Field '{fieldName}' was not found on {target.GetType().FullName}.");
-        }
-
-        object? value = field.GetValue(target);
-        return value is null ? default! : (T)value;
-    }
 }

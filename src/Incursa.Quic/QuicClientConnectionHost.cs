@@ -27,6 +27,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
 
+    internal QuicClientConnectionSettings Settings => settings;
+
+    internal QuicConnection Connection => connection;
+
+    internal byte[] InitialDestinationConnectionId => initialDestinationConnectionId;
+
+    internal byte[] RouteConnectionId => routeConnectionId;
+
     private int started;
     private int disposed;
     private int retryReceivedObserved;
@@ -331,12 +339,12 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         }
     }
 
-    private static QuicConnectionRuntime CreateRuntime(
+    internal static QuicConnectionRuntime CreateRuntime(
         QuicClientConnectionSettings settings,
         IQuicDiagnosticsSink? diagnosticsSink = null)
         => CreateRuntime(settings, diagnosticsSink, tlsKeyLogSecretObserver: null);
 
-    private static QuicConnectionRuntime CreateRuntime(
+    internal static QuicConnectionRuntime CreateRuntime(
         QuicClientConnectionSettings settings,
         IQuicDiagnosticsSink? diagnosticsSink,
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver)
@@ -423,7 +431,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             innerException);
     }
 
-    private static Exception MapTerminalState(QuicConnectionTerminalState terminalState)
+    internal static Exception MapTerminalState(QuicConnectionTerminalState terminalState)
     {
         if (terminalState.Close.TransportErrorCode.HasValue)
         {

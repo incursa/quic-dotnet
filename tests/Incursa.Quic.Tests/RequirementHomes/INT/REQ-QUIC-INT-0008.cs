@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -187,7 +186,7 @@ public sealed class REQ_QUIC_INT_0008
                 serverEndPoint.Port);
 
             using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
-            Socket initialSocket = GetPrivateField<Socket>(host, "socket");
+            Socket initialSocket = host.Socket;
 
             IPEndPoint promotedLocalEndPoint = new(IPAddress.Parse("127.0.0.2"), serverEndPoint.Port);
             QuicConnectionPathIdentity promotedPath = new(
@@ -198,8 +197,8 @@ public sealed class REQ_QUIC_INT_0008
 
             Assert.True(host.TryApplyEffect(new QuicConnectionPromoteActivePathEffect(promotedPath)));
 
-            Socket reboundSocket = GetPrivateField<Socket>(host, "socket");
-            QuicConnectionPathIdentity reboundPath = GetPrivateField<QuicConnectionPathIdentity>(host, "peerPathIdentity");
+            Socket reboundSocket = host.Socket;
+            QuicConnectionPathIdentity reboundPath = host.PeerPathIdentity;
 
             Assert.Same(initialSocket, reboundSocket);
             Assert.Equal(promotedPath, reboundPath);
@@ -276,7 +275,7 @@ public sealed class REQ_QUIC_INT_0008
                 serverEndPoint.Port);
 
             using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
-            Socket initialSocket = GetPrivateField<Socket>(host, "socket");
+            Socket initialSocket = host.Socket;
             Assert.NotSame(serverSocket, initialSocket);
             Assert.Equal(serverEndPoint, (IPEndPoint)initialSocket.LocalEndPoint!);
             Assert.Null(initialSocket.RemoteEndPoint);
@@ -296,8 +295,8 @@ public sealed class REQ_QUIC_INT_0008
 
             Assert.True(host.TryApplyEffect(new QuicConnectionPromoteActivePathEffect(promotedPath)));
 
-            Socket rebindingSocket = GetPrivateField<Socket>(host, "socket");
-            QuicConnectionPathIdentity reboundPath = GetPrivateField<QuicConnectionPathIdentity>(host, "peerPathIdentity");
+            Socket rebindingSocket = host.Socket;
+            QuicConnectionPathIdentity reboundPath = host.PeerPathIdentity;
 
             Assert.NotSame(initialSocket, rebindingSocket);
             Assert.Equal(promotedPath, reboundPath);
@@ -333,7 +332,7 @@ public sealed class REQ_QUIC_INT_0008
             ((IPEndPoint)serverSocket.LocalEndPoint!).Port);
 
         using QuicConnectionEndpointHost host = new(endpoint, serverSocket, initialPath);
-        Socket reboundSocket = GetPrivateField<Socket>(host, "socket");
+        Socket reboundSocket = host.Socket;
 
         Assert.Equal(AddressFamily.InterNetworkV6, reboundSocket.AddressFamily);
         Assert.True(reboundSocket.DualMode);
@@ -410,18 +409,18 @@ public sealed class REQ_QUIC_INT_0008
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId = GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
-        byte[] routeConnectionId = GetPrivateField<byte[]>(host, "routeConnectionId");
-        QuicConnection connection = GetPrivateField<QuicConnection>(host, "connection");
-        QuicConnectionRuntime runtime = GetPrivateField<QuicConnectionRuntime>(connection, "runtime");
-        QuicHandshakeFlowCoordinator handshakeFlowCoordinator = GetPrivateField<QuicHandshakeFlowCoordinator>(runtime, "handshakeFlowCoordinator");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+        byte[] routeConnectionId = host.RouteConnectionId;
+        QuicConnection connection = host.Connection;
+        QuicConnectionRuntime runtime = connection.Runtime;
+        QuicHandshakeFlowCoordinator handshakeFlowCoordinator = runtime.HandshakeFlowCoordinator;
 
         Assert.Equal(8, initialDestinationConnectionId.Length);
         Assert.Equal(8, routeConnectionId.Length);
-        Assert.Equal(initialDestinationConnectionId, GetPrivateField<byte[]>(handshakeFlowCoordinator, "initialDestinationConnectionId"));
-        Assert.Empty(GetPrivateField<byte[]>(handshakeFlowCoordinator, "destinationConnectionId"));
-        Assert.Equal(routeConnectionId, GetPrivateField<byte[]>(handshakeFlowCoordinator, "sourceConnectionId"));
-        Assert.NotNull(GetPrivateField<QuicInitialPacketProtection>(runtime, "initialPacketProtection"));
+        Assert.Equal(initialDestinationConnectionId, handshakeFlowCoordinator.InitialDestinationConnectionId.ToArray());
+        Assert.Empty(handshakeFlowCoordinator.DestinationConnectionId.ToArray());
+        Assert.Equal(routeConnectionId, handshakeFlowCoordinator.SourceConnectionId.ToArray());
+        Assert.NotNull(runtime.InitialPacketProtection);
         Assert.Equal(QuicTlsRole.Client, runtime.TlsState.Role);
     }
 
@@ -562,8 +561,7 @@ public sealed class REQ_QUIC_INT_0008
             (_, _, _) => ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
             listenBacklog: 1);
 
-        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
-        IPEndPoint listenerEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
+        IPEndPoint listenerEndPoint = (IPEndPoint)listenerHost.Socket.LocalEndPoint!;
         IPEndPoint promotedLocalEndPoint = new(IPAddress.Parse("127.0.0.2"), listenerEndPoint.Port);
         QuicConnectionPathIdentity promotedPath = new(
             clientEndPoint.Address.ToString(),
@@ -580,20 +578,7 @@ public sealed class REQ_QUIC_INT_0008
             new IPEndPoint(IPAddress.Any, 0),
             receiveTimeout.Token);
 
-        MethodInfo? sendDatagramMethod = typeof(QuicListenerHost).GetMethod(
-            "SendDatagram",
-            BindingFlags.NonPublic | BindingFlags.Instance,
-            binder: null,
-            types: [typeof(QuicConnectionSendDatagramEffect)],
-            modifiers: null);
-        Assert.NotNull(sendDatagramMethod);
-
-        sendDatagramMethod!.Invoke(
-            listenerHost,
-            new object[]
-            {
-                new QuicConnectionSendDatagramEffect(promotedPath, datagram),
-            });
+        listenerHost.SendDatagram(new QuicConnectionSendDatagramEffect(promotedPath, datagram));
 
         SocketReceiveMessageFromResult receiveResult = await receiveTask;
         Assert.Equal(datagram.Length, receiveResult.ReceivedBytes);
@@ -774,12 +759,8 @@ public sealed class REQ_QUIC_INT_0008
             },
         });
 
-        IPEndPoint listenEndPoint = GetPrivateField<QuicListenerHost>(listener, "host")
-            .GetType()
-            .GetField("socket", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .GetValue(GetPrivateField<QuicListenerHost>(listener, "host")) is Socket socket
-            ? (IPEndPoint)socket.LocalEndPoint!
-            : throw new InvalidOperationException("Listener socket unavailable.");
+        QuicListenerHost listenerHost = listener.Host;
+        IPEndPoint listenEndPoint = (IPEndPoint)listenerHost.Socket.LocalEndPoint!;
 
         QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
             QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(listenEndPoint),
@@ -796,7 +777,6 @@ public sealed class REQ_QUIC_INT_0008
         Task completed = await Task.WhenAny(completionTask, Task.Delay(TimeSpan.FromSeconds(5)));
         if (completed != completionTask)
         {
-            QuicListenerHost listenerHost = GetPrivateField<QuicListenerHost>(listener, "host");
             string clientDescription = QuicLoopbackEstablishmentTestSupport.DescribeClientHost(clientHost);
             string clientTransitionDescription = DescribeClientTransitionHistory(clientHost);
             string handshakeReplayDescription = DescribeFirstPendingServerHandshakeReplay(observedServerConnection, clientHost, listenerHost);
@@ -814,8 +794,8 @@ public sealed class REQ_QUIC_INT_0008
         await using QuicConnection serverConnection = await acceptTask;
 
         Assert.Same(serverConnection, observedServerConnection);
-        Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(clientConnection, "runtime").TlsState.PeerTransportParameters);
-        Assert.NotNull(GetPrivateField<QuicConnectionRuntime>(serverConnection, "runtime").TlsState.PeerTransportParameters);
+        Assert.NotNull(clientConnection.Runtime.TlsState.PeerTransportParameters);
+        Assert.NotNull(serverConnection.Runtime.TlsState.PeerTransportParameters);
     }
 
     [Fact]
@@ -881,41 +861,11 @@ public sealed class REQ_QUIC_INT_0008
         }
     }
 
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(field);
-        return Assert.IsType<T>(field!.GetValue(target));
-    }
-
     private static string DescribeFirstPendingServerConnection(QuicListenerHost listenerHost)
     {
-        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(connectionsField);
-
-        object? connectionsObject = connectionsField!.GetValue(listenerHost);
-        Assert.NotNull(connectionsObject);
-
-        System.Collections.IEnumerable connections = Assert.IsAssignableFrom<System.Collections.IEnumerable>(connectionsObject);
-        foreach (object? entry in connections)
+        if (listenerHost.TryGetFirstPendingConnection(out QuicConnection connection))
         {
-            if (entry is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
-            object? pendingState = valueProperty?.GetValue(entry);
-            if (pendingState is null)
-            {
-                continue;
-            }
-
-            FieldInfo? connectionField = pendingState.GetType().GetField("Connection", BindingFlags.Public | BindingFlags.Instance);
-            if (connectionField?.GetValue(pendingState) is QuicConnection connection)
-            {
-                return QuicLoopbackEstablishmentTestSupport.DescribeConnection(connection);
-            }
+            return QuicLoopbackEstablishmentTestSupport.DescribeConnection(connection);
         }
 
         return "<no pending server connection>";
@@ -984,20 +934,20 @@ public sealed class REQ_QUIC_INT_0008
             return "<server connection unavailable>";
         }
 
-        FieldInfo? connectionField = typeof(QuicClientConnectionHost).GetField("connection", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (connectionField?.GetValue(clientHost) is not QuicConnection connection)
+        QuicConnection connection = clientHost.Connection;
+        if (connection is null)
         {
             return "<client connection unavailable>";
         }
 
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (runtimeField?.GetValue(connection) is not QuicConnectionRuntime runtime)
+        QuicConnectionRuntime runtime = connection.Runtime;
+        if (runtime is null)
         {
             return "<client runtime unavailable>";
         }
 
-        FieldInfo? serverRuntimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (serverRuntimeField?.GetValue(serverConnection) is not QuicConnectionRuntime serverRuntime)
+        QuicConnectionRuntime serverRuntime = serverConnection.Runtime;
+        if (serverRuntime is null)
         {
             return "<server runtime unavailable>";
         }
@@ -1035,89 +985,19 @@ public sealed class REQ_QUIC_INT_0008
 
     private static byte[]? TryGetFirstPendingServerHandshakeDatagram(QuicListenerHost listenerHost)
     {
-        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
+        if (!listenerHost.TryGetFirstPendingHandshakeDatagram(out ReadOnlyMemory<byte> datagram))
         {
             return null;
         }
 
-        foreach (object? entry in connections)
-        {
-            if (entry is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
-            object? pendingState = valueProperty?.GetValue(entry);
-            if (pendingState is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? historyProperty = pendingState.GetType().GetProperty("TransitionHistory", BindingFlags.Public | BindingFlags.Instance);
-            if (historyProperty?.GetValue(pendingState) is not System.Collections.IEnumerable transitionHistory)
-            {
-                continue;
-            }
-
-            foreach (object? transitionObject in transitionHistory)
-            {
-                if (transitionObject is not QuicConnectionTransitionResult transition
-                    || transition.EventKind != QuicConnectionEventKind.PacketReceived)
-                {
-                    continue;
-                }
-
-                foreach (QuicConnectionEffect effect in transition.Effects)
-                {
-                    if (effect is not QuicConnectionSendDatagramEffect sendEffect)
-                    {
-                        continue;
-                    }
-
-                    if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
-                        && packetNumberSpace == QuicPacketNumberSpace.Handshake)
-                    {
-                        return sendEffect.Datagram.ToArray();
-                    }
-                }
-            }
-        }
-
-        return null;
+        return datagram.ToArray();
     }
 
     private static QuicConnection? TryGetFirstPendingServerConnection(QuicListenerHost listenerHost)
     {
-        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
-        {
-            return null;
-        }
-
-        foreach (object? entry in connections)
-        {
-            if (entry is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
-            object? pendingState = valueProperty?.GetValue(entry);
-            if (pendingState is null)
-            {
-                continue;
-            }
-
-            FieldInfo? connectionField = pendingState.GetType().GetField("Connection", BindingFlags.Public | BindingFlags.Instance);
-            if (connectionField?.GetValue(pendingState) is QuicConnection connection)
-            {
-                return connection;
-            }
-        }
-
-        return null;
+        return listenerHost.TryGetFirstPendingConnection(out QuicConnection connection)
+            ? connection
+            : null;
     }
 
     private static bool TryDescribeOpenedHandshakePacket(ReadOnlySpan<byte> openedPacket, out string description)
