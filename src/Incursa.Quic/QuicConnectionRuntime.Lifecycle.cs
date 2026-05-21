@@ -418,12 +418,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private long? GetApplicationAckDelayDueTicks()
     {
-        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
-        {
-            return null;
-        }
-
-        return pendingApplicationAckDelayDueTicks;
+        return applicationAckState.GetDueTicks(phase);
     }
 
     private void RefreshCurrentProbeTimeoutMicros(long nowTicks)

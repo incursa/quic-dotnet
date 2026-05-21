@@ -1349,8 +1349,9 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
         if (!ackOnlyPacket
-            && TryBuildApplicationAckPiggybackPayload(
+            && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
                 payload,
+                sendRuntime.FlowController,
                 nowMicros,
                 out byte[] piggybackedPayload,
                 out QuicAckFrame includedAckFrame))
@@ -1432,35 +1433,6 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryBuildApplicationAckPiggybackPayload(
-        ReadOnlyMemory<byte> payload,
-        ulong nowMicros,
-        out byte[] piggybackedPayload,
-        out QuicAckFrame ackFrame)
-    {
-        piggybackedPayload = [];
-        ackFrame = new QuicAckFrame();
-
-        if (payload.IsEmpty
-            || !sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                maxAckDelayMicros: 0)
-            || !sendRuntime.FlowController.TryBuildAckFrame(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackPayload))
-        {
-            return false;
-        }
-
-        piggybackedPayload = new byte[checked(ackPayload.Length + payload.Length)];
-        ackPayload.CopyTo(piggybackedPayload.AsSpan());
-        payload.Span.CopyTo(piggybackedPayload.AsSpan(ackPayload.Length));
-        return true;
-    }
-
     private bool TryProtectAndAccountApplicationPayloadOnPath(
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlyMemory<byte> payload,
@@ -1513,8 +1485,9 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
         if (includeAckFrame
-            && TryBuildApplicationAckPiggybackPayload(
+            && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
                 payload,
+                sendRuntime.FlowController,
                 nowMicros,
                 out byte[] piggybackedPayload,
                 out QuicAckFrame includedAckFrame))

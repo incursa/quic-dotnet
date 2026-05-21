@@ -2268,7 +2268,7 @@ internal sealed partial class QuicConnectionRuntime
         List<ulong> newlyAcknowledgedAckElicitingPacketNumbers = [];
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
 
-        foreach (ulong packetNumber in EnumerateAcknowledgedPacketNumbers(ackFrame))
+        foreach (ulong packetNumber in QuicConnectionAckHelpers.EnumerateAcknowledgedPacketNumbers(ackFrame))
         {
             if (!acknowledgedPacketNumbers.Add(packetNumber))
             {
@@ -2369,9 +2369,9 @@ internal sealed partial class QuicConnectionRuntime
         ulong nowMicros = GetElapsedMicros(nowTicks);
         ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
         if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-            QuicPacketNumberSpace.ApplicationData,
-            nowMicros,
-            localMaxAckDelayMicros)
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                localMaxAckDelayMicros)
             || !sendRuntime.FlowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
@@ -2637,7 +2637,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleAckDelayTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
-        pendingApplicationAckDelayDueTicks = null;
+        applicationAckState.ClearDueTicks();
 
         bool sentAck = TrySendPendingApplicationAck(nowTicks, ref effects);
         bool timerUpdated = UpdateApplicationAckDelayTimer(nowTicks);
@@ -2647,39 +2647,14 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool UpdateApplicationAckDelayTimer(long nowTicks)
     {
-        long? nextDueTicks = ComputeApplicationAckDelayDueTicks(nowTicks);
-        if (pendingApplicationAckDelayDueTicks == nextDueTicks)
-        {
-            return false;
-        }
-
-        pendingApplicationAckDelayDueTicks = nextDueTicks;
-        return true;
-    }
-
-    private long? ComputeApplicationAckDelayDueTicks(long nowTicks)
-    {
-        if (activePath is null || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
-        {
-            return null;
-        }
-
         ulong nowMicros = GetElapsedMicros(nowTicks);
-        ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
-        if (sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                localMaxAckDelayMicros)
-            || !sendRuntime.FlowController.CanSendAckOnlyPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                localMaxAckDelayMicros))
-        {
-            return null;
-        }
-
-        return pendingApplicationAckDelayDueTicks
-            ?? SaturatingAdd(nowTicks, ConvertMicrosToTicks(localMaxAckDelayMicros));
+        return applicationAckState.TryUpdateDueTicks(
+            phase,
+            activePath is not null && tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
+            sendRuntime.FlowController,
+            GetLocalMaxAckDelayMicros(),
+            nowMicros,
+            nowTicks);
     }
 
     private ulong GetLocalMaxAckDelayMicros()
@@ -2693,24 +2668,12 @@ internal sealed partial class QuicConnectionRuntime
         ulong sentAtMicros,
         bool ackOnlyPacket)
     {
-        if (packetNumber.HasValue)
-        {
-            sendRuntime.FlowController.MarkAckFrameSent(
-                QuicPacketNumberSpace.ApplicationData,
-                packetNumber.Value,
-                ackFrame,
-                sentAtMicros,
-                ackOnlyPacket);
-        }
-        else
-        {
-            sendRuntime.FlowController.MarkAckFrameSent(
-                QuicPacketNumberSpace.ApplicationData,
-                sentAtMicros,
-                ackOnlyPacket);
-        }
-
-        pendingApplicationAckDelayDueTicks = null;
+        applicationAckState.MarkAckFrameSent(
+            sendRuntime.FlowController,
+            ackFrame,
+            packetNumber,
+            sentAtMicros,
+            ackOnlyPacket);
     }
 
     private bool TryBuildOutboundAckPayload(QuicAckFrame ackFrame, out byte[] payload)
@@ -2737,15 +2700,12 @@ internal sealed partial class QuicConnectionRuntime
         ackFramePayload = [];
         ackFrame = new QuicAckFrame();
 
-        if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+        if (!QuicConnectionAckHelpers.TryBuildLongHeaderAckPiggybackFramePayload(
                 packetNumberSpace,
+                sendRuntime.FlowController,
                 nowMicros,
-                maxAckDelayMicros: 0)
-            || !sendRuntime.FlowController.TryBuildAckFrame(
-                packetNumberSpace,
-                nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out ackFramePayload))
+                out ackFramePayload,
+                out ackFrame))
         {
             return false;
         }
@@ -2757,47 +2717,14 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[512];
-        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten)
-            || frameBytesWritten <= 0
-            || frameBytesWritten > buffer.Length)
+        if (!QuicConnectionAckHelpers.TryBuildOutboundAckPayload(
+                ackFrame,
+                ApplicationMinimumProtectedPayloadLength,
+                out payload))
         {
             return false;
         }
-
-        payload = buffer.AsSpan(0, frameBytesWritten).ToArray();
         return true;
-    }
-
-    private static IEnumerable<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
-    {
-        if (ackFrame.LargestAcknowledged < ackFrame.FirstAckRange)
-        {
-            yield break;
-        }
-
-        ulong largestAcknowledged = ackFrame.LargestAcknowledged;
-        ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
-        for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
-        {
-            yield return packetNumber;
-            if (packetNumber == largestAcknowledged)
-            {
-                break;
-            }
-        }
-
-        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
-        {
-            for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
-            {
-                yield return packetNumber;
-                if (packetNumber == range.LargestAcknowledged)
-                {
-                    break;
-                }
-            }
-        }
     }
 
     private bool TryHandlePathChallengeFrame(

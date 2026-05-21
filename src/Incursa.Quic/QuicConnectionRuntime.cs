@@ -67,6 +67,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
     private readonly QuicConnectionDiagnosticsState diagnosticsState;
+    private readonly QuicConnectionApplicationAckState applicationAckState = new();
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
@@ -122,7 +123,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
-    private long? pendingApplicationAckDelayDueTicks;
     private ulong largestObservedInitialPacketNumber;
     private ulong largestObservedHandshakePacketNumber;
     private bool hasObservedApplicationPacketNumber;
