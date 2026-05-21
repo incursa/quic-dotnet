@@ -19,11 +19,6 @@ internal static class QuicPacketParsing
     /// </summary>
     private const int MaximumRfc9000ConnectionIdLength = 20;
 
-    /// <summary>
-    /// RFC 9000 version 1 keeps the same 20-byte connection-ID cap.
-    /// </summary>
-    private const int Version1MaximumConnectionIdLength = 20;
-
     internal static bool TryParseLongHeaderFields(
         ReadOnlySpan<byte> packet,
         out byte headerControlBits,
@@ -47,7 +42,8 @@ internal static class QuicPacketParsing
         version = BinaryPrimitives.ReadUInt32BigEndian(packet.Slice(1, sizeof(uint)));
 
         int destinationConnectionIdLength = packet[5];
-        if (version == 1 && destinationConnectionIdLength > Version1MaximumConnectionIdLength)
+        int maximumConnectionIdLength = QuicVersionNegotiation.GetLongHeaderConnectionIdLengthLimit(version);
+        if (destinationConnectionIdLength > maximumConnectionIdLength)
         {
             return false;
         }
@@ -59,7 +55,7 @@ internal static class QuicPacketParsing
         }
 
         int sourceConnectionIdLength = packet[sourceConnectionIdLengthOffset];
-        if (version == 1 && sourceConnectionIdLength > Version1MaximumConnectionIdLength)
+        if (sourceConnectionIdLength > maximumConnectionIdLength)
         {
             return false;
         }
@@ -83,7 +79,7 @@ internal static class QuicPacketParsing
         int sourceConnectionIdLength,
         ReadOnlySpan<byte> versionSpecificData)
     {
-        if (version != 1)
+        if (!QuicVersionNegotiation.IsVersion1(version))
         {
             return true;
         }
