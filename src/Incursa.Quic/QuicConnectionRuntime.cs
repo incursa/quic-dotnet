@@ -21,6 +21,7 @@ namespace Incursa.Quic;
 // - QuicConnectionRuntime.Paths.cs owns path validation, migration, promotion, and PMTU state.
 // - QuicConnectionLifecycleTimerState owns lifecycle timer deadlines and terminal deadline bookkeeping.
 // - QuicConnectionDiagnosticsState owns diagnostics sink resolution and enabled-state caching.
+// - QuicConnectionIssuedConnectionIdState owns locally issued connection-ID bookkeeping and stateless-reset token tracking.
 // - QuicConnectionRuntime.Lifecycle.cs owns terminal transitions, diagnostics, and shared helpers.
 
 internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposable
@@ -56,9 +57,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
-    private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
-    private readonly Dictionary<ulong, byte[]> issuedConnectionIdBytesByConnectionId = [];
-    private readonly HashSet<ulong> usedIssuedConnectionIds = [];
+    private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
@@ -95,8 +94,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool handshakeDonePacketSent;
     private bool localCloseEffectsPending;
     private bool hasSuccessfullyProcessedAnotherPacket;
-    private ulong highestConnectionIdIssuedToPeer;
-    private ulong totalIssuedConnectionIdCount;
 
     private int consumerStarted;
     private int disposed;
@@ -404,7 +401,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal int BufferedEstablishmentHandshakePacketCount => bufferedEstablishmentHandshakePackets.Count;
 
-    internal Dictionary<ulong, byte[]> StatelessResetTokensByConnectionId => statelessResetTokensByConnectionId;
+    internal Dictionary<ulong, byte[]> StatelessResetTokensByConnectionId => issuedConnectionIdState.StatelessResetTokensByConnectionId;
 
     internal Dictionary<string, QuicConnectionNewTokenEmissionRecord> NewTokenEmissionsByRemoteAddress => newTokenEmissionsByRemoteAddress;
 
@@ -1077,10 +1074,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         peerConnectionIdState.Clear();
-        issuedConnectionIdBytesByConnectionId.Clear();
-        usedIssuedConnectionIds.Clear();
-        highestConnectionIdIssuedToPeer = 0;
-        totalIssuedConnectionIdCount = 0;
+        issuedConnectionIdState.Reset();
     }
 
     public void Dispose()

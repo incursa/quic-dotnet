@@ -2974,7 +2974,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
-        if (retireConnectionIdFrame.SequenceNumber > highestConnectionIdIssuedToPeer)
+        if (retireConnectionIdFrame.SequenceNumber > issuedConnectionIdState.HighestConnectionIdIssuedToPeer)
         {
             return HandleFatalTlsSignal(
                 nowTicks,
@@ -4055,38 +4055,24 @@ internal sealed partial class QuicConnectionRuntime
             || preferredAddress.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
             || !QuicConnectionIdKey.TryCreate(preferredAddress.ConnectionId, out _)
             || LocallySelectedZeroLengthConnectionId()
-            || !CanIssueAnotherConnectionId()
-            || statelessResetTokensByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence)
-            || issuedConnectionIdBytesByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence))
+            || !issuedConnectionIdState.CanIssueAnotherConnectionId(MaximumLocallyIssuedConnectionIds)
+            || issuedConnectionIdState.StatelessResetTokensByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence)
+            || !issuedConnectionIdState.HasRoomForAdditionalPeerIssuedConnectionId(GetPeerActiveConnectionIdLimit())
+            || issuedConnectionIdState.IsActiveIssuedConnectionId(preferredAddress.ConnectionId))
         {
             return false;
         }
 
-        ReadOnlySpan<byte> preferredConnectionId = preferredAddress.ConnectionId;
-        foreach (byte[] activeConnectionIdBytes in issuedConnectionIdBytesByConnectionId.Values)
-        {
-            if (activeConnectionIdBytes.AsSpan().SequenceEqual(preferredConnectionId))
-            {
-                return false;
-            }
-        }
-
-        ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
-        if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit())
-        {
-            return false;
-        }
-
-        byte[] connectionIdBytes = preferredConnectionId.ToArray();
+        byte[] connectionIdBytes = preferredAddress.ConnectionId.ToArray();
         byte[] token = preferredAddress.StatelessResetToken.ToArray();
-        statelessResetTokensByConnectionId.Add(PreferredAddressConnectionIdSequence, token);
-        issuedConnectionIdBytesByConnectionId.Add(PreferredAddressConnectionIdSequence, connectionIdBytes);
-        if (highestConnectionIdIssuedToPeer < PreferredAddressConnectionIdSequence)
+        if (!issuedConnectionIdState.TryRegisterIssuedConnectionId(
+                PreferredAddressConnectionIdSequence,
+                connectionIdBytes,
+                token,
+                GetPeerActiveConnectionIdLimit()))
         {
-            highestConnectionIdIssuedToPeer = PreferredAddressConnectionIdSequence;
+            return false;
         }
-
-        totalIssuedConnectionIdCount++;
 
         AppendEffect(ref effects, new QuicConnectionRegisterConnectionIdRouteEffect(PreferredAddressConnectionIdSequence, connectionIdBytes));
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(PreferredAddressConnectionIdSequence, token));
