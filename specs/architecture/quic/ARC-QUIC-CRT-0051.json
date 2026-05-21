@@ -1,0 +1,99 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0051",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC transport core cleanup boundary architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the QUIC transport core can satisfy REQ-QUIC-CRT-0004 and its neighboring CRT ownership requirements after the monolithic-runtime assumption is loosened, while keeping one serialized connection-state owner and keeping higher-layer semantics out of the transport runtime.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0001",
+    "ARC-QUIC-CRT-0006",
+    "ARC-QUIC-CRT-0032"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0001",
+    "REQ-QUIC-CRT-0002",
+    "REQ-QUIC-CRT-0003",
+    "REQ-QUIC-CRT-0004",
+    "REQ-QUIC-CRT-0005",
+    "REQ-QUIC-CRT-0006",
+    "REQ-QUIC-CRT-0007",
+    "REQ-QUIC-CRT-0008",
+    "REQ-QUIC-CRT-0009",
+    "REQ-QUIC-CRT-0010",
+    "REQ-QUIC-CRT-0011",
+    "REQ-QUIC-CRT-0012",
+    "REQ-QUIC-CRT-0013",
+    "REQ-QUIC-CRT-0014",
+    "REQ-QUIC-CRT-0015",
+    "REQ-QUIC-CRT-0016",
+    "REQ-QUIC-CRT-0017",
+    "REQ-QUIC-CRT-0018",
+    "REQ-QUIC-CRT-0019",
+    "REQ-QUIC-CRT-0020",
+    "REQ-QUIC-CRT-0021",
+    "REQ-QUIC-CRT-0022"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicStreamParser.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionStreamSnapshot.cs",
+    "src/Incursa.Quic/QuicByteRangeSet.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs"
+  ],
+  "design_summary": "The transport core remains one serialized connection-state owner per connection, but QuicConnectionRuntime becomes the reducer and coordinator rather than a monolith that owns every specialized concern. QuicConnectionRuntimeEndpoint handles inbound datagram classification and route selection; QuicVersionNegotiation, QuicPacketParser, QuicFrameCodec, and QuicHandshakeFlowCoordinator handle version policy, packet opening, and frame legality; QuicConnectionSendRuntime, QuicRecoveryTiming, QuicRecoveryController, and QuicCongestionControlState handle send planning, loss detection, PTO timing, and congestion state; QuicTlsTransportBridgeDriver, QuicTransportTlsBridgeState, QuicTlsKeySchedule, and QuicTlsTranscriptProgress handle TLS transcript and key lifecycle; and QuicConnectionStreamState plus its snapshot record structs own stream send/receive bookkeeping. QuicConnectionRuntimeEventModels carries the explicit effect vocabulary for datagram emission, endpoint-binding updates, state discard, and diagnostics, so side effects stay outside the serialized owner. All of those seams stay span-based or record-struct-based so packet and frame work remains allocation-conscious and testable without reflection. HTTP/3, QPACK, Extended CONNECT, MASQUE, DoQ, and encrypted-DNS discovery remain adapter or provisioning concerns above the transport runtime, not responsibilities of the core.",
+  "alternatives_considered": [
+    "Keep packet opening, frame legality, send planning, recovery, TLS, and diagnostics inside QuicConnectionRuntime. Rejected because it preserves the monolith and keeps the architecture hard to test and hard to evolve.",
+    "Introduce interface dispatch for every helper boundary. Rejected because it adds per-packet overhead and creates a heavier dispatch surface without improving the ownership model.",
+    "Move HTTP/3, QPACK, Extended CONNECT, MASQUE, DoQ, or encrypted-DNS discovery semantics into the transport runtime. Rejected because those are adapter or provisioning concerns and would overstate the transport core's support boundary.",
+    "Continue to test private fields through reflection. Rejected because the repository is explicitly moving to internal seams, snapshots, and setup helpers instead of private-member probing."
+  ],
+  "edge_cases_and_constraints": [
+    "REQ-QUIC-CRT-0004 remains the ownership contract: specialization is allowed, but the reducer still owns the final ordered connection-state transition.",
+    "Version policy pressure, including greasing or later version-family readiness, must enter through the version-negotiation and packet-classification seam rather than by hardcoding more policy inside the reducer.",
+    "Packet opening and frame legality must stay span-based on the common path, and outbound datagrams should remain ReadOnlyMemory<byte> until the adapter emits them.",
+    "The runtime must not absorb HTTP/3, QPACK, Extended CONNECT, MASQUE, DoQ, or encrypted-DNS discovery semantics.",
+    "Test-only setup helpers remain internal and deliberately named; they are not a public API."
+  ],
+  "data_and_state_considerations": "Connection-owned state should stay grouped into phase, route and path, handshake and TLS bridge, stream, send and recovery, congestion, and diagnostics buckets. The reducer mutates that state in order, but helpers own the localized substate and return value snapshots or explicit effects to cross the boundary. Snapshot records such as QuicConnectionTransitionResult, QuicConnectionStreamSnapshot, QuicConnectionStreamSendStateSnapshot, and QuicByteRangeSetSnapshot are the preferred observation and restore surface because they keep the hot path allocation-conscious. Shared registries remain endpoint-scoped, and any future version-policy or adapter work must preserve that split instead of pulling extra mutable state into the transport core.",
+  "risks": [
+    "If packet opening or frame legality stays inside QuicConnectionRuntime, the core remains monolithic and the cleanup loses most of its testability benefit.",
+    "If helper boundaries start dispatching through interfaces on the packet path, the runtime becomes allocation- and dispatch-heavy.",
+    "If outbound datagrams are copied into intermediate envelopes before the adapter sends them, the effect boundary stops being low-allocation.",
+    "If tests keep using private reflection instead of the snapshot and ForTests seams, the repo will not get the intended testability payoff."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary Model",
+      "content": "Permanent architecture: [`QuicConnectionRuntime`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs), [`QuicConnectionRuntimeEndpoint`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs), [`QuicVersionNegotiation`](../../../src/Incursa.Quic/QuicVersionNegotiation.cs), [`QuicPacketParser`](../../../src/Incursa.Quic/QuicPacketParser.cs), [`QuicFrameCodec`](../../../src/Incursa.Quic/QuicFrameCodec.cs), [`QuicHandshakeFlowCoordinator`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs), [`QuicConnectionSendRuntime`](../../../src/Incursa.Quic/QuicConnectionSendRuntime.cs), [`QuicRecoveryTiming`](../../../src/Incursa.Quic/QuicRecoveryTiming.cs), [`QuicCongestionControlState`](../../../src/Incursa.Quic/QuicCongestionControlState.cs), [`QuicTlsTransportBridgeDriver`](../../../src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs), [`QuicTransportTlsBridgeState`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs), [`QuicTlsKeySchedule`](../../../src/Incursa.Quic/QuicTlsKeySchedule.cs), [`QuicTlsTranscriptProgress`](../../../src/Incursa.Quic/QuicTlsTranscriptProgress.cs), [`QuicConnectionStreamState`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs), [`QuicConnectionStreamSnapshot`](../../../src/Incursa.Quic/QuicConnectionStreamSnapshot.cs), and [`QuicByteRangeSet`](../../../src/Incursa.Quic/QuicByteRangeSet.cs).\nAdapter-facing: [`QuicConnectionRuntimeEventModels`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs), [`QuicConnectionSendDatagramEffect`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs), [`QuicConnectionUpdateEndpointBindingsEffect`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs), [`QuicConnectionEmitDiagnosticEffect`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs), [`QuicConnectionDiscardConnectionStateEffect`](../../../src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs), [`QuicListenerHost`](../../../src/Incursa.Quic/QuicListenerHost.cs), [`TryGetFirstPendingConnection`](../../../src/Incursa.Quic/QuicListenerHost.cs), and [`TryGetFirstPendingHandshakeDatagram`](../../../src/Incursa.Quic/QuicListenerHost.cs).\nTest-only: [`SetPhaseForTesting`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs), [`MarkHandshakeDonePacketSentForTests`](../../../src/Incursa.Quic/QuicConnectionRuntime.cs), [`SetVersionProfileForTests`](../../../src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs), [`SetNextPacketNumberForTests`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs), [`SetNextApplicationPacketNumberForTests`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs), [`TryBuildHandshakePlaintextPacketForTest`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs), [`SetCurrentOneRttOpenKeyLifecycleForTests`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs), [`SetCurrentOneRttProtectKeyLifecycleForTests`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs), [`SetRetainedOldOneRttOpenKeyLifecycleForTests`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs), and [`SetPeerFinishedVerifiedForTests`](../../../src/Incursa.Quic/QuicTransportTlsBridgeState.cs)."
+    },
+    {
+      "heading": "Allocation And Proof",
+      "content": "Packet opening, frame legality, send planning, retransmission selection, TLS bridge updates, stream snapshot and restore, and diagnostics emission are allocation-sensitive seams. Keep the packet and frame codecs span-based, keep effect emission boundary-only, and keep outbound datagram payloads as ReadOnlyMemory<byte> until the adapter owns the send. Positive and negative tests are required for the boundary behavior, fuzz or property coverage is required for packet and frame parsing, and benchmarks should remain under [`benchmarks/README.md`](../../../benchmarks/README.md) for parsing, encoding, recovery, and other throughput-sensitive paths."
+    },
+    {
+      "heading": "Rejected Semantics",
+      "content": "HTTP/3, QPACK, Extended CONNECT, MASQUE, DoQ, and encrypted-DNS discovery semantics stay outside the transport runtime. They can consume the transport effects and snapshots, but they do not belong in QuicConnectionRuntime or in the packet/recovery helpers that preserve the RFC 9000, RFC 9001, and RFC 9002 behavior floor."
+    }
+  ]
+}

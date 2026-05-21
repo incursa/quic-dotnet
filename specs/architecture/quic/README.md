@@ -173,6 +173,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0047.json`](ARC-QUIC-CRT-0047.json): canonical CRT server-side resumption PSK acceptance design source
 - [`ARC-QUIC-CRT-0048.json`](ARC-QUIC-CRT-0048.json): canonical CRT server-side 0-RTT admission anti-replay gate design source
 - [`ARC-QUIC-CRT-0050.json`](ARC-QUIC-CRT-0050.json): canonical CRT server first-flight x25519 compatibility design source
+- [`ARC-QUIC-CRT-0051.json`](ARC-QUIC-CRT-0051.json): canonical CRT transport-core cleanup boundary architecture source
 
 ## Notes
 
