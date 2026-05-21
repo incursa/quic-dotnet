@@ -401,7 +401,7 @@ internal sealed partial class QuicConnectionRuntime
         long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
         long? recoveryDueTicks = GetEarliestRecoveryDueTicks();
         long? keyUpdateRetentionDueTicks = GetEarliestKeyUpdateRetentionDueTicks();
-        long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
+        long? applicationSendDelayDueTicks = applicationSendQueue.Count > 0
             ? pendingApplicationSendDelayDueTicks
             : null;
         long? applicationAckDelayDueTicks = GetApplicationAckDelayDueTicks();
@@ -672,12 +672,6 @@ internal sealed partial class QuicConnectionRuntime
 
         return left + right;
     }
-
-    internal sealed record PendingApplicationSendRequest(
-        long Sequence,
-        ulong StreamId,
-        int Priority,
-        byte[] StreamPayload);
 
     internal sealed class QuicConnectionNewTokenEmissionRecord
     {

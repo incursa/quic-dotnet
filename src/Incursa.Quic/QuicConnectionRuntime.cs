@@ -52,7 +52,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
-    private readonly List<PendingApplicationSendRequest> pendingApplicationSendRequests = [];
+    private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
     private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
@@ -122,7 +122,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong observedCurrentOneRttKeyPhase;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
-    private long nextPendingApplicationSendSequence;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
