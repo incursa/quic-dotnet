@@ -2789,7 +2789,7 @@ internal sealed class QuicTlsKeySchedule
     {
         parseFailed = false;
 
-        if (!TryReadClientHelloApplicationProtocols(
+        if (!QuicTlsClientHelloExtensions.TryReadClientHelloApplicationProtocols(
             clientHelloBytes,
             out byte[][] peerApplicationProtocols,
             out ClientHelloApplicationProtocolOfferState offerState))
@@ -2810,7 +2810,7 @@ internal sealed class QuicTlsKeySchedule
         selectedApplicationProtocol = Array.Empty<byte>();
         parseFailed = false;
 
-        if (!TryReadClientHelloApplicationProtocols(
+        if (!QuicTlsClientHelloExtensions.TryReadClientHelloApplicationProtocols(
             clientHelloBytes,
             out byte[][] peerApplicationProtocols,
             out ClientHelloApplicationProtocolOfferState offerState))
@@ -2838,142 +2838,6 @@ internal sealed class QuicTlsKeySchedule
                     selectedApplicationProtocol = localApplicationProtocol;
                     return true;
                 }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryReadClientHelloApplicationProtocols(
-        ReadOnlySpan<byte> clientHelloBytes,
-        out byte[][] applicationProtocols,
-        out ClientHelloApplicationProtocolOfferState offerState)
-    {
-        applicationProtocols = [];
-        offerState = ClientHelloApplicationProtocolOfferState.Missing;
-
-        if (clientHelloBytes.Length <= HandshakeHeaderLength
-            || clientHelloBytes[0] != (byte)QuicTlsHandshakeMessageType.ClientHello)
-        {
-            return false;
-        }
-
-        int declaredBodyLength = checked((int)ReadUInt24(clientHelloBytes.Slice(1, UInt24Length)));
-        if (declaredBodyLength != clientHelloBytes.Length - HandshakeHeaderLength)
-        {
-            return false;
-        }
-
-        ReadOnlySpan<byte> clientHelloBody = clientHelloBytes.Slice(HandshakeHeaderLength);
-        int index = 0;
-        if (!TryReadUInt16(clientHelloBody, ref index, out ushort legacyVersion)
-            || legacyVersion != TlsLegacyVersion
-            || !TrySkipBytes(clientHelloBody, ref index, TlsRandomLength)
-            || !TryReadUInt8(clientHelloBody, ref index, out int sessionIdLength)
-            || sessionIdLength > MaximumSessionIdLength
-            || !TrySkipBytes(clientHelloBody, ref index, sessionIdLength)
-            || !TryReadUInt16(clientHelloBody, ref index, out ushort cipherSuitesLength)
-            || cipherSuitesLength < TlsCipherSuitesListLength
-            || (cipherSuitesLength & 1) != 0
-            || !TrySkipBytes(clientHelloBody, ref index, cipherSuitesLength)
-            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethodsLength)
-            || compressionMethodsLength != 1
-            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethod)
-            || compressionMethod != NullCompressionMethod
-            || !TryReadUInt16(clientHelloBody, ref index, out ushort extensionsLength)
-            || !TrySkipBytes(clientHelloBody, ref index, extensionsLength)
-            || index != clientHelloBody.Length)
-        {
-            return false;
-        }
-
-        ReadOnlySpan<byte> extensions = clientHelloBody.Slice(clientHelloBody.Length - extensionsLength, extensionsLength);
-        int extensionsIndex = 0;
-        while (extensionsIndex < extensions.Length)
-        {
-            if (!TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionType)
-                || !TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionLength)
-                || !TrySkipBytes(extensions, ref extensionsIndex, extensionLength))
-            {
-                return false;
-            }
-
-            if (extensionType != ApplicationLayerProtocolNegotiationExtensionType)
-            {
-                continue;
-            }
-
-            if (offerState != ClientHelloApplicationProtocolOfferState.Missing)
-            {
-                offerState = ClientHelloApplicationProtocolOfferState.Invalid;
-                return true;
-            }
-
-            if (!TryReadApplicationLayerProtocolOfferList(
-                extensions.Slice(extensionsIndex - extensionLength, extensionLength),
-                out applicationProtocols))
-            {
-                offerState = ClientHelloApplicationProtocolOfferState.Invalid;
-                applicationProtocols = [];
-                return true;
-            }
-
-            offerState = ClientHelloApplicationProtocolOfferState.Present;
-        }
-
-        return true;
-    }
-
-    private static bool TryReadApplicationLayerProtocolOfferList(
-        ReadOnlySpan<byte> extensionValue,
-        out byte[][] applicationProtocols)
-    {
-        applicationProtocols = [];
-
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort protocolNameListLength)
-            || protocolNameListLength == 0
-            || index + protocolNameListLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        List<byte[]> offeredProtocols = [];
-        int protocolListEnd = index + protocolNameListLength;
-        while (index < protocolListEnd)
-        {
-            if (!TryReadUInt8(extensionValue, ref index, out int protocolNameLength)
-                || protocolNameLength == 0
-                || !TrySkipBytes(extensionValue, ref index, protocolNameLength))
-            {
-                return false;
-            }
-
-            byte[] protocolName = extensionValue.Slice(index - protocolNameLength, protocolNameLength).ToArray();
-            if (ContainsApplicationProtocol(offeredProtocols, protocolName))
-            {
-                return false;
-            }
-
-            offeredProtocols.Add(protocolName);
-        }
-
-        if (index != extensionValue.Length || offeredProtocols.Count == 0)
-        {
-            return false;
-        }
-
-        applicationProtocols = [.. offeredProtocols];
-        return true;
-    }
-
-    private static bool ContainsApplicationProtocol(IReadOnlyList<byte[]> applicationProtocols, ReadOnlySpan<byte> candidate)
-    {
-        foreach (byte[] applicationProtocol in applicationProtocols)
-        {
-            if (applicationProtocol.AsSpan().SequenceEqual(candidate))
-            {
-                return true;
             }
         }
 
@@ -3667,13 +3531,6 @@ internal sealed class QuicTlsKeySchedule
             : (unchecked((ulong)elapsedTicks) * 1_000UL) / (ulong)Stopwatch.Frequency;
         uint ticketAgeMilliseconds32 = unchecked((uint)ticketAgeMilliseconds);
         return unchecked(ticketAgeMilliseconds32 + detachedResumptionTicketSnapshot.TicketAgeAdd);
-    }
-
-    private enum ClientHelloApplicationProtocolOfferState
-    {
-        Missing = 0,
-        Present = 1,
-        Invalid = 2,
     }
 
     private readonly record struct ParsedClientHelloPreSharedKeyOffer(
