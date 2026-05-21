@@ -5,38 +5,11 @@ internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
     private const ulong MaximumStreamLimit = 1UL << 60;
-    // RFC 9000 section 12.4 allows only the narrow Initial/Handshake control-frame set.
-    private const ulong ResetStreamFrameType = 0x04UL;
-    private const ulong HandshakePacketResetStreamFrameType = ResetStreamFrameType;
-    private const ulong HandshakePacketStopSendingFrameType = 0x05UL;
-    private const ulong HandshakePacketNewTokenFrameType = 0x07UL;
-    private const ulong HandshakePacketMaxDataFrameType = 0x10UL;
-    private const ulong HandshakePacketMaxStreamDataFrameType = 0x11UL;
-    private const ulong HandshakePacketMaxStreamsBidirectionalFrameType = 0x12UL;
-    private const ulong HandshakePacketMaxStreamsUnidirectionalFrameType = 0x13UL;
-    private const ulong HandshakePacketDataBlockedFrameType = 0x14UL;
-    private const ulong HandshakePacketStreamDataBlockedFrameType = 0x15UL;
-    private const ulong HandshakePacketStreamsBlockedBidirectionalFrameType = 0x16UL;
-    private const ulong HandshakePacketStreamsBlockedUnidirectionalFrameType = 0x17UL;
-    private const ulong HandshakePacketNewConnectionIdFrameType = 0x18UL;
-    private const ulong HandshakePacketRetireConnectionIdFrameType = 0x19UL;
-    private const ulong HandshakePacketPathChallengeFrameType = 0x1AUL;
-    private const ulong HandshakePacketPathResponseFrameType = 0x1BUL;
-    private const ulong HandshakePacketHandshakeDoneFrameType = 0x1EUL;
-    private const ulong ApplicationPacketAckFrameType = 0x02UL;
-    private const ulong ApplicationPacketCryptoFrameType = 0x06UL;
     private static readonly bool ApplicationReceiveDebugEnabled =
         string.Equals(
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
             "1",
             StringComparison.Ordinal);
-
-    private enum QuicWeaklyProtectedPacketPayloadValidationResult
-    {
-        Process,
-        Discard,
-        ConnectionError,
-    }
 
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
@@ -424,7 +397,7 @@ internal sealed partial class QuicConnectionRuntime
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
         QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Initial);
+            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Initial);
         if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
         {
             return false;
@@ -537,93 +510,6 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return processed;
-    }
-
-    private static QuicWeaklyProtectedPacketPayloadValidationResult ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(
-        ReadOnlySpan<byte> payload,
-        QuicTlsEncryptionLevel encryptionLevel)
-    {
-        int payloadOffset = 0;
-        bool observedProcessablePrefix = false;
-        while (payloadOffset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
-            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
-            {
-                if (paddingBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += paddingBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
-            {
-                if (pingBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += pingBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
-            {
-                if (ackBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += ackBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseConnectionCloseFrame(
-                    remaining,
-                    out QuicConnectionCloseFrame connectionCloseFrame,
-                    out int connectionCloseBytesConsumed))
-            {
-                if (connectionCloseBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                return connectionCloseFrame.IsApplicationError
-                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
-                    : QuicWeaklyProtectedPacketPayloadValidationResult.Process;
-            }
-
-            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
-            {
-                if (cryptoBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += cryptoBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
-                && frameTypeBytesConsumed > 0
-                && IsHandshakePacketForbiddenFrameType(frameType))
-            {
-                return encryptionLevel == QuicTlsEncryptionLevel.Handshake || observedProcessablePrefix
-                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
-                    : QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-            }
-
-            return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-        }
-
-        return QuicWeaklyProtectedPacketPayloadValidationResult.Process;
     }
 
     private bool TryResetClientPeerHandshakeAttempt(
@@ -809,7 +695,7 @@ internal sealed partial class QuicConnectionRuntime
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
         QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Handshake);
+            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Handshake);
         if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
         {
             return false;
@@ -1057,7 +943,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
                     && frameTypeBytesConsumed > 0
-                    && IsHandshakePacketForbiddenFrameType(frameType))
+                    && QuicPacketFrameLegality.IsHandshakePacketForbiddenFrameType(frameType))
                 {
                     return HandleFatalTlsSignal(
                         nowTicks,
@@ -1153,28 +1039,6 @@ internal sealed partial class QuicConnectionRuntime
 
         packetProcessed = true;
         return stateChanged || processedCryptoFrame;
-    }
-
-    private static bool IsHandshakePacketForbiddenFrameType(ulong frameType)
-    {
-        return (frameType >= QuicStreamFrameBits.StreamFrameTypeMinimum
-                && frameType <= QuicStreamFrameBits.StreamFrameTypeMaximum)
-            || frameType is HandshakePacketResetStreamFrameType
-            || frameType is HandshakePacketStopSendingFrameType
-            || frameType is HandshakePacketNewTokenFrameType
-            || frameType is HandshakePacketMaxDataFrameType
-            || frameType is HandshakePacketMaxStreamDataFrameType
-            || frameType is HandshakePacketMaxStreamsBidirectionalFrameType
-            || frameType is HandshakePacketMaxStreamsUnidirectionalFrameType
-            || frameType is HandshakePacketDataBlockedFrameType
-            || frameType is HandshakePacketStreamDataBlockedFrameType
-            || frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
-            || frameType is HandshakePacketStreamsBlockedUnidirectionalFrameType
-            || frameType is HandshakePacketNewConnectionIdFrameType
-            || frameType is HandshakePacketRetireConnectionIdFrameType
-            || frameType is HandshakePacketPathChallengeFrameType
-            || frameType is HandshakePacketPathResponseFrameType
-            || frameType is HandshakePacketHandshakeDoneFrameType;
     }
 
     private bool IsDuplicateServerInitialCryptoFrame(
@@ -1580,8 +1444,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong malformedMaxStreamsFrameType)
-                && IsMaxStreamsFrameType(malformedMaxStreamsFrameType))
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedMaxStreamsFrameType)
+                && QuicPacketFrameLegality.IsMaxStreamsFrameType(malformedMaxStreamsFrameType))
             {
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
@@ -1607,7 +1471,7 @@ internal sealed partial class QuicConnectionRuntime
                 {
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        HandshakePacketStreamDataBlockedFrameType,
+                        QuicPacketFrameLegality.HandshakePacketStreamDataBlockedFrameType,
                         streamDataBlockedErrorCode,
                         "The peer sent a STREAM_DATA_BLOCKED frame that violated receive-side stream state.",
                         ref effects);
@@ -1634,8 +1498,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong malformedStreamsBlockedFrameType)
-                && IsStreamsBlockedFrameType(malformedStreamsBlockedFrameType))
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedStreamsBlockedFrameType)
+                && QuicPacketFrameLegality.IsStreamsBlockedFrameType(malformedStreamsBlockedFrameType))
             {
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
@@ -1698,7 +1562,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong frameType) && frameType == HandshakePacketNewTokenFrameType)
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong frameType)
+                && frameType == QuicPacketFrameLegality.HandshakePacketNewTokenFrameType)
             {
                 QuicTransportErrorCode newTokenErrorCode = tlsState.Role == QuicTlsRole.Server
                     ? QuicTransportErrorCode.ProtocolViolation
@@ -2098,7 +1963,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        ApplicationPacketAckFrameType,
+                        QuicPacketFrameLegality.ApplicationPacketAckFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent an ACK frame in a 0-RTT packet.",
                         ref effects);
@@ -2113,7 +1978,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        ApplicationPacketCryptoFrameType,
+                        QuicPacketFrameLegality.ApplicationPacketCryptoFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent a CRYPTO frame in a 0-RTT packet.",
                         ref effects);
@@ -2142,7 +2007,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        HandshakePacketHandshakeDoneFrameType,
+                        QuicPacketFrameLegality.HandshakePacketHandshakeDoneFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent a HANDSHAKE_DONE frame in a 0-RTT packet.",
                         ref effects);
@@ -3916,7 +3781,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: errorCode,
             ApplicationErrorCode: null,
-            TriggeringFrameType: HandshakePacketNewTokenFrameType,
+            TriggeringFrameType: QuicPacketFrameLegality.HandshakePacketNewTokenFrameType,
             ReasonPhrase: reasonPhrase);
 
         return HandleLocalCloseRequested(
@@ -3947,24 +3812,6 @@ internal sealed partial class QuicConnectionRuntime
             new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
             nowTicks,
             ref effects);
-    }
-
-    private static bool TryReadApplicationFrameType(ReadOnlySpan<byte> payload, out ulong frameType)
-    {
-        return QuicVariableLengthInteger.TryParse(payload, out frameType, out int bytesConsumed)
-            && bytesConsumed > 0;
-    }
-
-    private static bool IsMaxStreamsFrameType(ulong frameType)
-    {
-        return frameType is HandshakePacketMaxStreamsBidirectionalFrameType
-            or HandshakePacketMaxStreamsUnidirectionalFrameType;
-    }
-
-    private static bool IsStreamsBlockedFrameType(ulong frameType)
-    {
-        return frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
-            or HandshakePacketStreamsBlockedUnidirectionalFrameType;
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)

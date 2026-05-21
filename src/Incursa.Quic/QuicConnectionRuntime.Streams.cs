@@ -3873,7 +3873,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             return TryHandleApplicationDataFrameError(
                 nowTicks,
-                ResetStreamFrameType,
+                QuicPacketFrameLegality.HandshakePacketResetStreamFrameType,
                 errorCode,
                 "The peer sent a RESET_STREAM frame that violated receive-side stream or flow-control state.",
                 ref effects);
