@@ -21,7 +21,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-INT-0013.json`](WI-QUIC-INT-0013.json): canonical versionnegotiation harness dispatch work item
 - [`WI-QUIC-INT-0014.json`](WI-QUIC-INT-0014.json): canonical zerortt hosted proof gate work item
 - [`WI-QUIC-INT-0015.json`](WI-QUIC-INT-0015.json): canonical connectionmigration hosted proof lane work item
-- [`WI-QUIC-INT-0016.json`](WI-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot work item
+- [`WI-QUIC-INT-0016.json`](WI-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot work item for the generated pilot, inventory, and evidence reports
 - [`WI-QUIC-INT-0020.json`](WI-QUIC-INT-0020.json): canonical simulator-backed correctness scenario work item
 - [`WI-QUIC-INT-0021.json`](WI-QUIC-INT-0021.json): canonical all-upstream implementation handshake matrix work item
 - [`WI-QUIC-RFC8999-0001.json`](WI-QUIC-RFC8999-0001.json): canonical RFC 8999 work-item source

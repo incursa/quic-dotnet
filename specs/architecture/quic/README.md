@@ -30,7 +30,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-INT-0013.json`](ARC-QUIC-INT-0013.json): canonical versionnegotiation harness dispatch design source
 - [`ARC-QUIC-INT-0014.json`](ARC-QUIC-INT-0014.json): canonical zerortt hosted proof gate design source
 - [`ARC-QUIC-INT-0015.json`](ARC-QUIC-INT-0015.json): canonical connectionmigration hosted proof lane design source
-- [`ARC-QUIC-INT-0016.json`](ARC-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot design source
+- [`ARC-QUIC-INT-0016.json`](ARC-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot design source for the generated pilot, inventory, and evidence reports
 - [`ARC-QUIC-INT-0020.json`](ARC-QUIC-INT-0020.json): canonical simulator-backed correctness scenario design source
 - [`ARC-QUIC-INT-0021.json`](ARC-QUIC-INT-0021.json): canonical all-upstream implementation handshake matrix design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
