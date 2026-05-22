@@ -6,7 +6,7 @@
   "title": "QUIC Advisory Peer Characterization Matrix Pilot Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Add an advisory peer-characterization matrix overlay that records peer, role, testcase, outcome class, failure class, and artifact root for mixed interop results, seeded by connectionmigration, expanded into the major-peer matrix inventory, and refreshed in the generated pilot report with completed major-peer evidence, without changing runtime behavior or CI gates.",
+  "summary": "Add an advisory peer-characterization matrix overlay that records peer, role, testcase, outcome class, failure class, and artifact root for mixed interop results, seeded by connectionmigration, expanded into the generated `interop-major-peer-matrix-inventory` report, and refreshed in the generated `interop-peer-characterization-matrix-pilot` and `interop-major-peer-matrix-evidence-25904716076` reports, without changing runtime behavior or CI gates.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0012",
