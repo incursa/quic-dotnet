@@ -20,9 +20,9 @@
     "The major-peer-matrix and connectionmigration workflow profiles remain advisory and available.",
     "Captured connectionmigration and comparison bundles remain available for inspection.",
     "The repo-local helper can run in dry-run mode and enumerate per-cell rows.",
-    "The generated peer-characterization pilot report is present in the repository.",
-    "The generated major-peer matrix inventory report is present in the repository.",
-    "The generated major-peer matrix evidence report is present in the repository."
+    "The generated peer-characterization pilot report `interop-peer-characterization-matrix-pilot` is present in the repository.",
+    "The generated major-peer matrix inventory report `interop-major-peer-matrix-inventory` is present in the repository.",
+    "The generated major-peer matrix evidence report `interop-major-peer-matrix-evidence-25904716076` is present in the repository."
   ],
   "scope": "Verify that the repository can characterize mixed peer outcomes by peer, role, testcase, outcome class, failure class, and artifact root without collapsing them into a single green/red verdict, using the current major-peer matrix and connectionmigration lanes as the pilot surfaces.",
   "procedure": [
