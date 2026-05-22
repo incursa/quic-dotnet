@@ -64,8 +64,10 @@ and runs Incursa.Quic as local server against every client-capable upstream
 slot.
 
 This first all-upstream slice is handshake-only and advisory. It does not widen
-the existing `REQ-QUIC-INT-0019` `quic-go`/`msquic` major-peer matrix, does not
-add Incursa.Quic to the upstream registry, does not run every testcase, and does
+the existing `REQ-QUIC-INT-0019` `quic-go`/`msquic` major-peer matrix or the
+generated `interop-major-peer-matrix-inventory` /
+`interop-major-peer-matrix-evidence-25904716076` reports, does not add
+Incursa.Quic to the upstream registry, does not run every testcase, and does
 not claim broad support readiness. Local client-role cells now retain the
 known source-length completion boundary when the source file is mounted locally
 and otherwise read until peer FIN for upstream-runner generated response bodies
