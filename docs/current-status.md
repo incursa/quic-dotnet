@@ -40,7 +40,7 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-14 RFC9000 S19P21 and S5 Trace Closure
 
-The advisory peer-characterization pilot report now combines the seed rows with the current major-peer evidence, but it remains an analysis surface rather than support proof.
+The advisory peer-characterization pilot report now combines the seed rows with the current major-peer evidence, and the generated pilot, inventory, and evidence reports are present under `specs/generated/quic`, but it remains an analysis surface rather than support proof.
 
 `REQ-QUIC-RFC9000-1376` through `REQ-QUIC-RFC9000-1383` and `REQ-QUIC-RFC9000-S5-0006` are now `trace_clean`. The requirement-home tests now cover the extension-frame understanding, transport-parameter willingness, multi-frame support, extension interaction guidance, congestion-controlled extension frames, ACK generation, flow-control exclusion, and 0-RTT replay-protection prohibition proofs. Focused `dotnet test` for the eight RFC9000 homes passed 24/24, and the derived RFC 9000 coverage summary now reports 1,771 `trace_clean` requirements with zero blocked and zero partially covered cells.
 
