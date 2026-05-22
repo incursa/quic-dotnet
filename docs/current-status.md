@@ -126,7 +126,9 @@ mostly green matrix.
 
 `REQ-QUIC-INT-0019` now owns the manual `major-peer-matrix` hosted workflow
 profile. The profile is opt-in and advisory; it does not run on ordinary push,
-pull request, build, test, package, or support-readiness gates.
+pull request, build, test, package, or support-readiness gates, and it feeds
+the generated `interop-major-peer-matrix-inventory` and
+`interop-major-peer-matrix-evidence-25904716076` reports.
 
 The matrix covers Incursa.Quic as local client and local server against the
 `quic-go` and `msquic` peer slots for the currently executable non-HTTP/3 cells:
