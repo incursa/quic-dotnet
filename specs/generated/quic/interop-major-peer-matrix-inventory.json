@@ -3,7 +3,7 @@
   "advisory": true,
   "source_profile": "major-peer-matrix",
   "source_requirement": "REQ-QUIC-INT-0019",
-  "summary": "Advisory inventory for the currently executable non-HTTP/3 major-peer matrix cells.",
+  "summary": "Advisory inventory `interop-major-peer-matrix-inventory` for the currently executable non-HTTP/3 major-peer matrix cells.",
   "cell_count": 20,
   "cells": [
     {
