@@ -908,11 +908,11 @@ public sealed class REQ_QUIC_API_0010
         }
 
         Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+        // QUIC header protection intentionally uses AES-ECB per RFC 9001.
+        // codeql[cs/weak-encryption]
         using (Aes aes = Aes.Create())
         {
             aes.Key = material.HeaderProtectionKey.ToArray();
-            // QUIC header protection intentionally uses AES-ECB per RFC 9001.
-            // codeql[cs/weak-encryption]
             aes.Mode = CipherMode.ECB;
             aes.Padding = PaddingMode.None;
             int bytesWritten = aes.EncryptEcb(
