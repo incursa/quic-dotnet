@@ -229,6 +229,31 @@ function Write-ArtifactTree {
     Write-Utf8File -Path (Join-Path $RunRoot "artifact-tree.txt") -Content (($entries -join [Environment]::NewLine) + [Environment]::NewLine)
 }
 
+function Copy-SimulatorLogs {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SimulatorRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string]$RunRoot
+    )
+
+    $sourceLogsRoot = Join-Path $SimulatorRoot "logs"
+    if (-not (Test-Path -LiteralPath $sourceLogsRoot -PathType Container)) {
+        return
+    }
+
+    $destinationLogsRoot = Join-Path $RunRoot "simulator-logs"
+    if (Test-Path -LiteralPath $destinationLogsRoot) {
+        Remove-Item -LiteralPath $destinationLogsRoot -Recurse -Force
+    }
+
+    Copy-DirectoryTreeWithExcludes `
+        -SourceRoot $sourceLogsRoot `
+        -DestinationRoot $destinationLogsRoot `
+        -ExcludedDirectoryNames @()
+}
+
 function Resolve-DockerExecutable {
     $docker = Get-Command "docker" -ErrorAction SilentlyContinue
     if ($null -eq $docker) {
@@ -592,6 +617,7 @@ function Write-InvocationLog {
         "ComposeFile: $composeFile",
         "ComposeOverride: $composeOverridePathToUse",
         "ComposeCommand: $composeCommand",
+        "SimulatorLogs: $(Join-Path $runRoot 'simulator-logs')",
         "ScenarioSummary: $scenarioSummaryPath",
         "SimulatorStdout: $stdoutPath",
         "SimulatorStderr: $stderrPath",
@@ -747,5 +773,14 @@ Write-ScenarioEvidence `
     -Summary $summary `
     -Stdout $stdout `
     -Stderr $stderr
+
+try {
+    Copy-SimulatorLogs -SimulatorRoot $resolvedSimulatorRoot -RunRoot $runRoot
+}
+catch {
+    Write-Warning "Unable to preserve simulator logs: $($_.Exception.Message)"
+}
+
+Write-ArtifactTree -RunRoot $runRoot
 
 exit $process.ExitCode

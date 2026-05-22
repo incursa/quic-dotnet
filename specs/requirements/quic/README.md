@@ -22,6 +22,7 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-CRT.json`](SPEC-QUIC-CRT.json): canonical connection-runtime source
 - [`SPEC-QUIC-API.json`](SPEC-QUIC-API.json): canonical public API surface source
 - [`REQUIREMENT-GAPS.md`](REQUIREMENT-GAPS.md): the local gap ledger
+- [`../rfcs/README.md`](../rfcs/README.md): local QUIC RFC text corpus index for the later planning-only families
 
 ## Migration References
 
@@ -37,3 +38,4 @@ Each canonical artifact is authored in `.json`.
 - Use the gap ledger when a source rule is unclear or needs an explicit decision record.
 - Use the migration references above when reconciling stale RFC9000 requirement IDs or retired requirement references.
 - RFC 8999 now carries the shared header-invariant slice.
+- The broader QUIC RFC text corpus now lives locally under `../rfcs`; use the corpus index there together with `REQUIREMENT-GAPS.md` when planning later RFC families.
