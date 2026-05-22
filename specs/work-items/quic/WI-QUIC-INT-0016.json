@@ -36,5 +36,5 @@
     "rewriting the external runner repository",
     "solving the underlying NEQO-specific failure first"
   ],
-  "verification_plan": "Review the current proof bundles and dry-run plans, confirm the report surface can enumerate peer, role, testcase, outcome class, failure class, and artifact-root rows, run focused helper and requirement-home tests for `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`, verify the generated seed report files, the generated major-peer inventory report files, and the completed major-peer evidence report files, and dispatch a fresh hosted comparison run only after the matrix layer exists so the heterogeneous outcomes remain classifiable."
+  "verification_plan": "Review the current proof bundles and dry-run plans, confirm the report surface can enumerate peer, role, testcase, outcome class, failure class, and artifact-root rows, run focused helper and requirement-home tests for `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`, verify the generated `interop-peer-characterization-matrix-pilot`, `interop-major-peer-matrix-inventory`, and `interop-major-peer-matrix-evidence-25904716076` reports, and dispatch a fresh hosted comparison run only after the matrix layer exists so the heterogeneous outcomes remain classifiable."
 }
