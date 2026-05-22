@@ -15,9 +15,9 @@
   "verifies": [
     "REQ-QUIC-RFC9000-S7P4P1-0005",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
-    "REQ-QUIC-RFC9000-S7P4P1-0007",
-    "REQ-QUIC-RFC9000-S7P4P1-0008",
-    "REQ-QUIC-RFC9000-S7P4P1-0009"
+    "REQ-QUIC-RFC9000-0348",
+    "REQ-QUIC-RFC9000-0350",
+    "REQ-QUIC-RFC9000-0351"
   ],
   "scope": "This verification covers the internal server policy that decides whether current server transport parameters can support the remembered values needed for 0-RTT acceptance.",
   "expected_result": "The focused tests show servers can accept 0-RTT only when current values preserve or exceed remembered required limits, reject each reduced required Section 18.2 limit, reject reduced restored optional values, expose non-zero application-data allowance checks, and reject acceptance when current server parameters are unavailable.",
@@ -38,11 +38,11 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0350.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0351.cs",
     "dotnet build Incursa.Quic.slnx -c Release",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0004|FullyQualifiedName~REQ_QUIC_CRT_0143\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_0348|FullyQualifiedName~REQ_QUIC_RFC9000_0350|FullyQualifiedName~REQ_QUIC_RFC9000_0351|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S7P4P1_0002|FullyQualifiedName~REQ_QUIC_RFC9000_0346|FullyQualifiedName~REQ_QUIC_CRT_0143\"",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
     "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
@@ -54,5 +54,5 @@
       "content": "This verification does not claim public early-data APIs, TLS early_data extension admission wiring, server anti-replay behavior, application-data delivery, or updated-value-in-0-RTT protocol-violation enforcement."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 plus CRT early-data guard filter passed 31/31, regenerated coverage triage marks REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-S7P4P1-0009 trace_clean and reports 1,269 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 451 artifacts, the full Release no-build suite passed 4,487/4,487, and git diff --check returned exit code 0 with line-ending warnings only."
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 plus CRT early-data guard filter passed 31/31, regenerated coverage triage marks REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-0351 trace_clean and reports 1,269 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 451 artifacts, the full Release no-build suite passed 4,487/4,487, and git diff --check returned exit code 0 with line-ending warnings only."
 }

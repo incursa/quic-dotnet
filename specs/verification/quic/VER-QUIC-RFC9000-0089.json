@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused requirement-home tests over Handshake CRYPTO retransmission recovery state, coverage triage regeneration, SpecTrace JSON validation, Release build, full Release no-build test execution, and diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S13P3-0006"
+    "REQ-QUIC-RFC9000-0789"
   ],
   "scope": "This verification covers the supported local Handshake CRYPTO retransmission boundary: unacknowledged lost CRYPTO data is rebuilt in a fresh packet, queued repair state is cleared if the original packet is acknowledged, and later CRYPTO frames preserve their nonzero stream offset when retransmitted.",
   "expected_result": "Focused tests show a lost Handshake CRYPTO packet is rebuilt with the original bytes in a new packet, a queued repair is not sent after acknowledgment of the original packet, and a later contiguous Handshake CRYPTO frame retransmits with its nonzero CRYPTO stream offset and payload intact.",
@@ -35,9 +35,9 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0789.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0789\"",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
     "dotnet build Incursa.Quic.slnx -c Release",
@@ -50,5 +50,5 @@
       "content": "This verification does not claim hosted interop success, public API behavior, packet-number-space discard behavior, or broader recovery tuning beyond the local CRYPTO repair boundary."
     }
   ],
-  "status_summary": "Local verification passed on 2026-05-08: focused S13P3-0006 requirement-home filter 3/3, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-S13P3-0006 trace_clean and reports 1,482 of 1,771 QUIC requirements trace-clean overall, SpecTrace core validation passed for 511 artifacts, Release build passed with 0 warnings and 0 errors, full Release no-build suite passed 4,840/4,840, and git diff --check passed with only generated-triage CRLF normalization warnings."
+  "status_summary": "Local verification passed on 2026-05-08: focused S13P3-0006 requirement-home filter 3/3, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-0789 trace_clean and reports 1,482 of 1,771 QUIC requirements trace-clean overall, SpecTrace core validation passed for 511 artifacts, Release build passed with 0 warnings and 0 errors, full Release no-build suite passed 4,840/4,840, and git diff --check passed with only generated-triage CRLF normalization warnings."
 }

@@ -6,7 +6,7 @@
 - `REQ-QUIC-RFC9000-S18-0003`
 - `REQ-QUIC-RFC9000-S18-0004`
 - `REQ-QUIC-RFC9000-S18-0005`
-- `REQ-QUIC-RFC9000-S18-0006`
+- `REQ-QUIC-RFC9000-1103`
 - `REQ-QUIC-RFC9000-S18P1-0001`
 - `REQ-QUIC-RFC9000-S18P1-0002`
 - `REQ-QUIC-RFC9000-S18P2-0002`
@@ -19,18 +19,18 @@
 - `REQ-QUIC-RFC9000-S18P2-0013`
 - `REQ-QUIC-RFC9000-S18P2-0015`
 - `REQ-QUIC-RFC9000-S18P2-0016`
-- `REQ-QUIC-RFC9000-S18P2-0020`
-- `REQ-QUIC-RFC9000-S18P2-0021`
-- `REQ-QUIC-RFC9000-S18P2-0022`
-- `REQ-QUIC-RFC9000-S18P2-0023`
+- `REQ-QUIC-RFC9000-1145`
+- `REQ-QUIC-RFC9000-1146`
+- `REQ-QUIC-RFC9000-1147`
+- `REQ-QUIC-RFC9000-1151`
 - `REQ-QUIC-RFC9000-S18P2-0028`
 - `REQ-QUIC-RFC9000-S18P2-0029`
 - `REQ-QUIC-RFC9000-S18P2-0030`
 - `REQ-QUIC-RFC9000-S18P2-0031`
 - `REQ-QUIC-RFC9000-S18P2-0032`
 - `REQ-QUIC-RFC9000-S18P2-0033`
-- `REQ-QUIC-RFC9000-S18P2-0035`
-- `REQ-QUIC-RFC9000-S18P2-0037`
+- `REQ-QUIC-RFC9000-1157`
+- `REQ-QUIC-RFC9000-1162`
 
 ## Files Changed
 
@@ -67,11 +67,11 @@
 
 ## Remaining Open Requirements In Scope
 
-- `REQ-QUIC-RFC9000-S18-0001` and `REQ-QUIC-RFC9000-S18-0007` still need TLS `extension_data` integration that this repository does not currently own.
-- `REQ-QUIC-RFC9000-S18P2-0007`, `REQ-QUIC-RFC9000-S18P2-0003`, `REQ-QUIC-RFC9000-S18P2-0006`, `REQ-QUIC-RFC9000-S18P2-0009`, `REQ-QUIC-RFC9000-S18P2-0011`, `REQ-QUIC-RFC9000-S18P2-0012`, `REQ-QUIC-RFC9000-S18P2-0014`, `REQ-QUIC-RFC9000-S18P2-0017`, `REQ-QUIC-RFC9000-S18P2-0018`, `REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-S18P2-0024`, `REQ-QUIC-RFC9000-S18P2-0025`, `REQ-QUIC-RFC9000-S18P2-0026`, `REQ-QUIC-RFC9000-S18P2-0027`, `REQ-QUIC-RFC9000-S18P2-0034`, `REQ-QUIC-RFC9000-S18P2-0036`, and `REQ-QUIC-RFC9000-S18P2-0038` require connection-layer state or error propagation that this codec-only slice does not own.
+- `REQ-QUIC-RFC9000-1100` and `REQ-QUIC-RFC9000-S18-0007` still need TLS `extension_data` integration that this repository does not currently own.
+- `REQ-QUIC-RFC9000-S18P2-0007`, `REQ-QUIC-RFC9000-S18P2-0003`, `REQ-QUIC-RFC9000-S18P2-0006`, `REQ-QUIC-RFC9000-S18P2-0009`, `REQ-QUIC-RFC9000-S18P2-0011`, `REQ-QUIC-RFC9000-S18P2-0012`, `REQ-QUIC-RFC9000-S18P2-0014`, `REQ-QUIC-RFC9000-S18P2-0017`, `REQ-QUIC-RFC9000-S18P2-0018`, `REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-S18P2-0024`, `REQ-QUIC-RFC9000-1154`, `REQ-QUIC-RFC9000-S18P2-0026`, `REQ-QUIC-RFC9000-1156`, `REQ-QUIC-RFC9000-S18P2-0034`, `REQ-QUIC-RFC9000-1158`, and `REQ-QUIC-RFC9000-S18P2-0038` require connection-layer state or error propagation that this codec-only slice does not own.
 
 ## Risks And Follow-Up
 
 - The new codec proves wire encoding/decoding and boundary validation, but not the downstream handshake, stream-control, migration, or stateless-reset behaviors those requirements imply.
-- `REQ-QUIC-RFC9000-S18P2-0036` and `REQ-QUIC-RFC9000-S18P2-0038` currently stop at parse/format rejection; mapping them to QUIC connection errors remains a later connection-layer task.
+- `REQ-QUIC-RFC9000-1158` and `REQ-QUIC-RFC9000-S18P2-0038` currently stop at parse/format rejection; mapping them to QUIC connection errors remains a later connection-layer task.
 - No unrelated worktree edits affected this chunk implementation summary.

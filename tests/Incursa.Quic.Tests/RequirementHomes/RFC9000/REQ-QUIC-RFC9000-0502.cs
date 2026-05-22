@@ -1,0 +1,117 @@
+namespace Incursa.Quic.Tests;
+
+[Requirement("REQ-QUIC-RFC9000-0502")]
+public sealed class REQ_QUIC_RFC9000_0502
+{
+    private static readonly byte[] PacketNumber =
+    [
+        0x00, 0x00, 0x00, 0x01,
+    ];
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0502")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PathChallengeFramesOnTheActivePathAreAnsweredWithPathResponseFrames()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionPathIdentity activePath = runtime.ActivePath!.Value.Identity;
+        byte[] challengeData =
+        [
+            0x10, 0x11, 0x12, 0x13,
+            0x14, 0x15, 0x16, 0x17,
+        ];
+        byte[] applicationPayload = QuicFrameTestData.BuildPathChallengeFrame(new QuicPathChallengeFrame(challengeData));
+
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        QuicTlsPacketProtectionMaterial material = runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value;
+
+        byte[] protectedPacket = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            [0x00, 0x00, 0x00, 0x01],
+            applicationPayload,
+            material,
+            declaredPacketNumberLength: 4);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 9,
+                activePath,
+                protectedPacket),
+            nowTicks: 9);
+
+        QuicConnectionSendDatagramEffect send =
+            QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                runtime,
+                result,
+                activePath,
+                challengeData);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0502")]
+    [Requirement("REQ-QUIC-RFC9000-0815")]
+    [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathChallengeFramesOnActivePathEmitOneMatchingPathResponse()
+    {
+        for (int iteration = 0; iteration < 16; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(runtime.ActivePath.HasValue);
+
+            QuicConnectionPathIdentity activePath = runtime.ActivePath!.Value.Identity;
+            byte[] challengeData = BuildChallengeData(iteration);
+            byte[] protectedPacket = BuildProtectedPathChallengePacket(runtime, challengeData);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 30 + iteration,
+                    activePath,
+                    protectedPacket),
+                nowTicks: 30 + iteration);
+
+            QuicConnectionSendDatagramEffect send =
+                QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                    runtime,
+                    result,
+                    activePath,
+                    challengeData);
+            Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+        }
+    }
+
+    private static byte[] BuildChallengeData(int iteration)
+    {
+        byte[] challengeData = new byte[QuicPathValidation.PathChallengeDataLength];
+        for (int index = 0; index < challengeData.Length; index++)
+        {
+            challengeData[index] = (byte)((iteration * 17 + index * 31) & 0xFF);
+        }
+
+        return challengeData;
+    }
+
+    private static byte[] BuildProtectedPathChallengePacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> challengeData)
+    {
+        byte[] applicationPayload = QuicFrameTestData.BuildPathChallengeFrame(new QuicPathChallengeFrame(challengeData));
+
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        QuicTlsPacketProtectionMaterial material = runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value;
+
+        return QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            PacketNumber,
+            applicationPayload,
+            material,
+            declaredPacketNumberLength: PacketNumber.Length);
+    }
+}

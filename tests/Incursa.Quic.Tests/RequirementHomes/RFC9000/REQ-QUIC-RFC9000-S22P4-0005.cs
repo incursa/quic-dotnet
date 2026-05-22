@@ -22,9 +22,7 @@ public sealed class REQ_QUIC_RFC9000_S22P4_0005
             .EnumerateArray()
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P4-0005");
 
-        Assert.Equal(
-            "In addition to the advice in Section 22.1, specifications for new permanent registrations SHOULD describe the means by which an endpoint might determine that it can send the identified type of frame.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("In addition to the advice in Section 22.1, specifications for new permanent registrations SHOULD describe the means by which an endpoint might determine that it can send the identified type of frame.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.4 RFC9000-S22.4-B6-P4-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

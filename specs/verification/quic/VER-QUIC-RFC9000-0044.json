@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused S5P1P2-0006/0007 requirement-home tests, full S5P1P2 peer connection-ID lifecycle regression tests, related path-migration regressions, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S5P1P2-0006",
-    "REQ-QUIC-RFC9000-S5P1P2-0007"
+    "REQ-QUIC-RFC9000-0244",
+    "REQ-QUIC-RFC9000-0245"
   ],
   "scope": "This verification covers the single-active-path runtime behavior that binds peer-issued CIDs to the address pair on which they are used, avoids reusing that CID on a different validated path, and retires CIDs bound to inactive address pairs.",
   "expected_result": "Validated migration with a spare peer-issued CID uses the spare on the migrated address pair, validated migration without a spare CID does not reuse the original address-pair CID, maximum-length peer-issued CIDs remain usable on a migrated address pair, and successful migration retires the CID bound to the abandoned address pair while same-address-pair CID availability does not cause retirement.",
@@ -32,11 +32,11 @@
     "The runtime owns a single active outbound path."
   ],
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0245.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPeerConnectionIdSelectionTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P2_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P2_0007\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0244|FullyQualifiedName~REQ_QUIC_RFC9000_0245\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P2\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",

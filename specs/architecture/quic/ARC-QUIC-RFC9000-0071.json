@@ -18,16 +18,16 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S7P4P1-0010",
-    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-0353",
     "REQ-QUIC-RFC9000-S7P4P1-0012",
-    "REQ-QUIC-RFC9000-S7P4P1-0013"
+    "REQ-QUIC-RFC9000-0356"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0353.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0013.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0356.cs"
   ],
   "design_summary": "QuicZeroRttTransportParameterPolicy now has an internal packet-use decision seam that combines the packet protection level with the source of a transport-parameter value. 0-RTT packets are allowed to use remembered transport-parameter values only. Updated values learned from the server handshake or from 1-RTT frames are rejected for 0-RTT use with PROTOCOL_VIOLATION semantics, while updated values are accepted only once the sender is constructing 1-RTT packets. A server-side helper maps detected updated-value use in 0-RTT to the optional PROTOCOL_VIOLATION connection-error policy.",
   "data_and_state_considerations": "The policy is intentionally source-classification based. It does not admit early data, decrypt 0-RTT, parse frames to infer value provenance, or persist new public state; future sender and receiver integration can feed the same source classification into the policy without widening public early-data support.",

@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713`, plus the May 19 local QUIC-protocol audit and local all-upstream client-role QUIC testcase refresh. HTTP/3 is intentionally out of scope. SpecTrace core validation passed for 568 JSON artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,217/5,217 before the focused ACK-threshold topoff, and the current focused ACK/stream/key-update/interoperability tests passed. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is now green for the bounded `connectionmigration` profile, `SIM-QUIC-LOSS-0001` deterministic simulator loss evidence remains open, xquic remains the only failed local client-role all-upstream `transfer`/`keyupdate`/`chacha20` peer cluster, and broader non-HTTP/3 server-role all-upstream testcase coverage remains advisory outside the currently green handshake plus dedicated connectionmigration proof lanes.
+Last verified: 2026-05-22 local `SIM-QUIC-LOSS-0001` droplist rerun `20260522T060348Z`, plus the 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713` and the May 19 local QUIC-protocol audit and local all-upstream client-role QUIC testcase refresh. HTTP/3 is intentionally out of scope. SpecTrace core validation passed for 568 JSON artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,217/5,217 before the focused ACK-threshold topoff, and the current focused ACK/stream/key-update/interoperability tests passed. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is now green for the bounded `connectionmigration` profile, `SIM-QUIC-LOSS-0001` deterministic simulator loss now has a completed local evidence-preserved run under `.artifacts/network-simulator-live/SIM-QUIC-LOSS-0001/20260522T060348Z` with `--drops_to_server=41`, xquic remains the only failed local client-role all-upstream `transfer`/`keyupdate`/`chacha20` peer cluster, and broader non-HTTP/3 server-role all-upstream testcase coverage remains advisory outside the currently green handshake plus dedicated connectionmigration proof lanes. RFC9000 reference reconciliation should use the derived crosswalk and retired-ID ledger in `specs/generated/quic` before changing live requirement references. A repo-wide scan of non-generated RFC9000-related requirement, docs, architecture, work-item, verification, and requirement-home surfaces in this pass found zero retired RFC9000 IDs, so the remaining section-style IDs in those files are live canonical IDs rather than stale migration leftovers. I also checked RFC 8999 and RFC 9002 next; `REQUIREMENT-GAPS.md` currently has no open RFC 8999 or RFC 9002 gap families, and both remain fully trace-clean at 8/8 and 224/224. The latest `SIM-QUIC-LOSS-0001` rerun preserved a fresh `simulator-logs/` bundle and the client completed the 10,250-byte transfer, so the loss lane now has evidence but still awaits linked promotion review rather than a runtime fix.
 
 ## 2026-05-19 QUIC Protocol Audit
 
@@ -36,13 +36,13 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-18 INT Network Simulator Baseline
 
-`REQ-QUIC-INT-0026` now owns the simulator-backed scenario accounting surface. The first live local `SIM-QUIC-BASE-0001` simple-p2p run passed under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`: staged Incursa.Quic client/server endpoints ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, the server served `/www/10000.txt`, and the client downloaded 10,250 bytes to `/downloads/10000.txt`. The helper now mounts `/www` into both staged endpoints because the client-side transfer completion boundary checks the known source length, and simulator `-Execute` runs use `--force-recreate` to avoid stale QNS containers. This is baseline simulator evidence only; deterministic loss for `SIM-QUIC-LOSS-0001`, qlog/pcap proof promotion, hosted simulator workflow coverage, and broad simulator-matrix claims remain open.
+`REQ-QUIC-INT-0026` now owns the simulator-backed scenario accounting surface. The first live local `SIM-QUIC-BASE-0001` simple-p2p run passed under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`: staged Incursa.Quic client/server endpoints ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, the server served `/www/10000.txt`, and the client downloaded 10,250 bytes to `/downloads/10000.txt`. The helper now mounts `/www` into both staged endpoints because the client-side transfer completion boundary checks the known source length, simulator `-Execute` runs use `--force-recreate` to avoid stale QNS containers, and the latest deterministic-loss rerun under `.artifacts/network-simulator-live/SIM-QUIC-LOSS-0001/20260522T060348Z` preserved the fresh current-run qlog/pcap bundle under `simulator-logs/` after a successful transfer with `--drops_to_server=41`. This is now baseline-plus-loss simulator evidence; qlog/pcap proof promotion, hosted simulator workflow coverage, and broad simulator-matrix claims remain open until the preserved evidence is reviewed.
 
 ## 2026-05-14 RFC9000 S19P21 and S5 Trace Closure
 
 The advisory peer-characterization pilot report now combines the seed rows with the current major-peer evidence, but it remains an analysis surface rather than support proof.
 
-`REQ-QUIC-RFC9000-S19P21-0004` through `REQ-QUIC-RFC9000-S19P21-0010` and `REQ-QUIC-RFC9000-S5-0006` are now `trace_clean`. The requirement-home tests now cover the extension-frame understanding, transport-parameter willingness, multi-frame support, extension interaction guidance, congestion-controlled extension frames, ACK generation, flow-control exclusion, and 0-RTT replay-protection prohibition proofs. Focused `dotnet test` for the eight RFC9000 homes passed 24/24, and the derived RFC 9000 coverage summary now reports 1,771 `trace_clean` requirements with zero blocked and zero partially covered cells.
+`REQ-QUIC-RFC9000-1376` through `REQ-QUIC-RFC9000-1383` and `REQ-QUIC-RFC9000-S5-0006` are now `trace_clean`. The requirement-home tests now cover the extension-frame understanding, transport-parameter willingness, multi-frame support, extension interaction guidance, congestion-controlled extension frames, ACK generation, flow-control exclusion, and 0-RTT replay-protection prohibition proofs. Focused `dotnet test` for the eight RFC9000 homes passed 24/24, and the derived RFC 9000 coverage summary now reports 1,771 `trace_clean` requirements with zero blocked and zero partially covered cells.
 
 ## 2026-05-13 INT Chacha20 Closure Note
 
@@ -179,14 +179,14 @@ The local permanent-frame registry proof slice is now closed for
 `REQ-QUIC-RFC9000-S19P21-0011`, and the frame-type registry policy slice is now
 closed for `REQ-QUIC-RFC9000-S22P4-0001`, `REQ-QUIC-RFC9000-S22P4-0002`, and
 `REQ-QUIC-RFC9000-S22P4-0005`. The first remaining blocked requirement is
-`REQ-QUIC-RFC9000-S19P21-0004`, the frame-understanding extension clause. The
+`REQ-QUIC-RFC9000-1376`, the frame-understanding extension clause. The
 rest of the blocked tail is still policy, registry, and deployment heavy.
 
 The bounded deployment-policy proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P11-0001` and `REQ-QUIC-RFC9000-S21P11-0002`.
 
 The stream-fragmentation guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P7-0001`.
+`REQ-QUIC-RFC9000-1476`.
 
 The Slowloris mitigation guidance proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P6-0001`.
@@ -201,19 +201,19 @@ The ingress-filtering deployment guidance proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P5-0002`.
 
 The future server-migration forgery-countermeasures guidance proof surface is
-now closed for `REQ-QUIC-RFC9000-S21P5-0003`.
+now closed for `REQ-QUIC-RFC9000-1454`.
 
 The port-hygiene and problematic-CID guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P5P6-0005` and `REQ-QUIC-RFC9000-S21P5P6-0006`.
+`REQ-QUIC-RFC9000-S21P5P6-0005` and `REQ-QUIC-RFC9000-1473`.
 
 The loopback-hygiene and address-use guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P5P6-0002` and `REQ-QUIC-RFC9000-S21P5P6-0003`.
+`REQ-QUIC-RFC9000-1469` and `REQ-QUIC-RFC9000-1470`.
 
 The transport-parameter registry policy slice is now closed for
 `REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002`.
 
 The codepoint-reclamation policy slice is now closed for
-`REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004`.
+`REQ-QUIC-RFC9000-1498` through `REQ-QUIC-RFC9000-1501`.
 
 The codepoint-selection policy slice is now closed for
 `REQ-QUIC-RFC9000-S22P1P2-0001` through `REQ-QUIC-RFC9000-S22P1P2-0007`.
@@ -435,7 +435,7 @@ not yet fully green.
 
 ## 2026-05-08 S5 Disable-Active-Migration Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S5P2P3-0004` is now `trace_clean` under the baseline RFC
+`REQ-QUIC-RFC9000-0277` is now `trace_clean` under the baseline RFC
 9000 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
 `VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that a
 server with `disable_active_migration` set encodes the empty transport
@@ -455,7 +455,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S6 Reserved-Version Ignore Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S6P3-0001` is now `trace_clean` under the baseline RFC 9000
+`REQ-QUIC-RFC9000-6321` is now `trace_clean` under the baseline RFC 9000
 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
 `VER-QUIC-RFC9000-0001`. The closure adds direct focused negative proof that
 client-side Version Negotiation processing ignores a reserved-version
@@ -476,7 +476,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S2 Concurrent-Streams Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S2-0008` is now `trace_clean` under the baseline RFC 9000
+`REQ-QUIC-RFC9000-0027` is now `trace_clean` under the baseline RFC 9000
 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
 `VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that
 the stream-state helper can keep multiple local bidirectional and
@@ -497,7 +497,7 @@ requirement coverage triage, and `git diff --check`.
 
 ## 2026-05-08 S2 Stream-Cancellation Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S2-0006` is now `trace_clean` under the baseline RFC 9000
+`REQ-QUIC-RFC9000-0024` is now `trace_clean` under the baseline RFC 9000
 artifact family `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
 `VER-QUIC-RFC9000-0001`. The closure adds direct focused positive proof that
 the stream-cancellation frame paths round-trip both `RESET_STREAM` and
@@ -691,7 +691,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 CRYPTO Retransmission Acknowledgment Boundary Closure Note
 
-`REQ-QUIC-RFC9000-S13P3-0006` is now `trace_clean` under
+`REQ-QUIC-RFC9000-0789` is now `trace_clean` under
 `ARC-QUIC-RFC9000-0089`, `WI-QUIC-RFC9000-0089`, and
 `VER-QUIC-RFC9000-0089`, alongside the existing runtime and ACK-piggyback
 ownership. The closure adds direct positive, negative, and edge proof that a
@@ -736,7 +736,7 @@ no-build suite 4,838/4,838, regenerated QUIC requirement coverage triage, and
 
 ## 2026-05-08 S13 Multiple-Packet ACK-Decision Closure Note
 
-`REQ-QUIC-RFC9000-S13P2P2-0003` is now `trace_clean` under the existing
+`REQ-QUIC-RFC9000-1324` is now `trace_clean` under the existing
 `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`,
 `VER-QUIC-RFC9000-0001`, `ARC-QUIC-RFC9000-0024`,
 `WI-QUIC-RFC9000-0024`, and `VER-QUIC-RFC9000-0024` ownership. The closure
@@ -856,13 +856,13 @@ hosted supported-subset evidence.
 Follow-on S13/S17 metadata cleanup moved fourteen already-proved requirements
 from `covered_but_missing_xrefs` to `trace_clean` by attaching focused
 requirement-home evidence under `trace.x_test_refs`:
-`REQ-QUIC-RFC9000-S13P2-0001`, `REQ-QUIC-RFC9000-S13P2P3-0003`,
-`REQ-QUIC-RFC9000-S13P2P3-0004`, `REQ-QUIC-RFC9000-S13P2P3-0007`,
+`REQ-QUIC-RFC9000-0753`, `REQ-QUIC-RFC9000-S13P2P3-0003`,
+`REQ-QUIC-RFC9000-13233`, `REQ-QUIC-RFC9000-13235`,
 `REQ-QUIC-RFC9000-S13P2P3-0008`, `REQ-QUIC-RFC9000-S13P2P3-0013`,
-`REQ-QUIC-RFC9000-S17P2P4-0003`, `REQ-QUIC-RFC9000-S17P2P4-0016`,
+`REQ-QUIC-RFC9000-S17P2P4-0003`, `REQ-QUIC-RFC9000-1015`,
 `REQ-QUIC-RFC9000-S17P2P4-0017`, `REQ-QUIC-RFC9000-S17P2P4-0018`,
-`REQ-QUIC-RFC9000-S17P2P4-0019`, `REQ-QUIC-RFC9000-S17P2P4-0020`,
-`REQ-QUIC-RFC9000-S17P2P4-0021`, and `REQ-QUIC-RFC9000-S17P2P5-0002`.
+`REQ-QUIC-RFC9000-S17P2P4-0019`, `REQ-QUIC-RFC9000-1735`,
+`REQ-QUIC-RFC9000-1018`, and `REQ-QUIC-RFC9000-S17P2P5-0002`.
 The S17P2P4 requirements also gained reciprocal ownership under
 `ARC-QUIC-RFC9000-0087`, `WI-QUIC-RFC9000-0087`, and
 `VER-QUIC-RFC9000-0087`.
@@ -876,13 +876,13 @@ trace-clean.
 
 Follow-on metadata cleanup moved nine already-proved requirements from
 `covered_but_missing_xrefs` to `trace_clean` by attaching focused
-requirement-home evidence under `trace.x_test_refs`: `REQ-QUIC-RFC9000-S10P2P1-0004`,
-`REQ-QUIC-RFC9000-S11-0003`, `REQ-QUIC-RFC9000-S11-0004`,
+requirement-home evidence under `trace.x_test_refs`: `REQ-QUIC-RFC9000-0580`,
+`REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`,
 `REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-S12P1-0006`,
-`REQ-QUIC-RFC9000-S12P1-0007`, `REQ-QUIC-RFC9000-S12P2-0008`,
-`REQ-QUIC-RFC9000-S12P3-0009`, and `REQ-QUIC-RFC9000-S12P3-0010`.
+`REQ-QUIC-RFC9000-S12P1-0007`, `REQ-QUIC-RFC9000-0685`,
+`REQ-QUIC-RFC9000-S12P3-0009`, and `REQ-QUIC-RFC9000-0710`.
 Adjacent stale refs for `REQ-QUIC-RFC9000-S11-0001`,
-`REQ-QUIC-RFC9000-S11P1-0001`, and `REQ-QUIC-RFC9000-S11P1-0002` were
+`REQ-QUIC-RFC9000-S11P1-0001`, and `REQ-QUIC-RFC9000-0663` were
 corrected to their direct requirement homes without changing their clean
 state.
 
@@ -909,7 +909,7 @@ global count.
 
 Follow-on S19P20 HANDSHAKE_DONE proof-tail closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S19P20-0003`, `REQ-QUIC-RFC9000-S19P20-0004`,
-`REQ-QUIC-RFC9000-S19P20-0005`, and `REQ-QUIC-RFC9000-S19P20-0006`
+`REQ-QUIC-RFC9000-1371`, and `REQ-QUIC-RFC9000-1372`
 under `ARC-QUIC-RFC9000-0086`, `WI-QUIC-RFC9000-0086`, and
 `VER-QUIC-RFC9000-0086`. The proof covers HANDSHAKE_DONE single-byte
 varint type encoding as `0x1e`, adjacent and non-minimal type rejection,
@@ -929,9 +929,9 @@ claim broad S19 frame-family closure, public API widening, hosted interop
 readiness, or closure of unrelated deferred fuzz obligations.
 
 Follow-on S8P1P4 Retry token source binding and lifetime closure on
-2026-05-06 closes `REQ-QUIC-RFC9000-S8P1P4-0003`,
+2026-05-06 closes `REQ-QUIC-RFC9000-0409`,
 `REQ-QUIC-RFC9000-S8P1P4-0007`, and
-`REQ-QUIC-RFC9000-S8P1P4-0011` under `ARC-QUIC-RFC9000-0085`,
+`REQ-QUIC-RFC9000-0412` under `ARC-QUIC-RFC9000-0085`,
 `WI-QUIC-RFC9000-0085`, and `VER-QUIC-RFC9000-0085`. The proof
 covers listener Retry replay admission from the issuing source address and
 port, rejection of the same Retry token from a fresh UDP source port before
@@ -953,7 +953,7 @@ unrelated deferred fuzz obligations.
 
 Follow-on S17P1 packet-number encoding completion on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S17P1-0002`, `REQ-QUIC-RFC9000-S17P1-0003`,
-and `REQ-QUIC-RFC9000-S17P1-0004` under
+and `REQ-QUIC-RFC9000-0925` under
 `ARC-QUIC-RFC9000-0084`, `WI-QUIC-RFC9000-0084`, and
 `VER-QUIC-RFC9000-0084`. The proof covers protected packet behavior for
 full four-byte Initial and Handshake packet numbers before acknowledgment,
@@ -971,7 +971,7 @@ deferred fuzz obligations.
 
 Follow-on S17P4 spin-bit per-path state closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S17P4-0008`, `REQ-QUIC-RFC9000-S17P4-0009`,
-and `REQ-QUIC-RFC9000-S17P4-0010` under `ARC-QUIC-RFC9000-0083`,
+and `REQ-QUIC-RFC9000-1098` under `ARC-QUIC-RFC9000-0083`,
 `WI-QUIC-RFC9000-0083`, and `VER-QUIC-RFC9000-0083`. The proof covers
 protected 1-RTT runtime/wire behavior for emitting the stored path spin
 value, server receive-side storage of the received spin bit when the packet
@@ -1022,7 +1022,7 @@ Follow-on S9P6P1 preferred-address handshake-confirmed transition closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S9P6P1-0002`,
 `REQ-QUIC-RFC9000-S9P6P1-0003`,
 `REQ-QUIC-RFC9000-S9P6P1-0004`, and
-`REQ-QUIC-RFC9000-S9P6P1-0008` under `ARC-QUIC-RFC9000-0080`,
+`REQ-QUIC-RFC9000-0525` under `ARC-QUIC-RFC9000-0080`,
 `WI-QUIC-RFC9000-0080`, and `VER-QUIC-RFC9000-0080`. The proof covers
 client HANDSHAKE_DONE starting preferred_address validation, no validation
 candidate when no preferred_address exists, same-family IPv4 or IPv6
@@ -1106,9 +1106,9 @@ policy, hosted interop readiness, or closure of the deferred S4P6-0010 fuzz
 expectation.
 
 Follow-on S4P6 stream-limit enforcement and blocked-open tail closure on
-2026-05-06 closes `REQ-QUIC-RFC9000-S4P6-0008`,
-`REQ-QUIC-RFC9000-S4P6-0009`, and
-`REQ-QUIC-RFC9000-S4P6-0012` under `ARC-QUIC-RFC9000-0076`,
+2026-05-06 closes `REQ-QUIC-RFC9000-0200`,
+`REQ-QUIC-RFC9000-0201`, and
+`REQ-QUIC-RFC9000-0203` under `ARC-QUIC-RFC9000-0076`,
 `WI-QUIC-RFC9000-0076`, and `VER-QUIC-RFC9000-0076`. The proof covers local
 bidirectional and unidirectional opens staying within the peer's current stream
 limit, inbound STREAM frames at the advertised limit being accepted, zero
@@ -1145,11 +1145,11 @@ public local migration controls, Retry integrity validation changes, public API
 widening, or hosted interop readiness.
 
 Follow-on S5P1P1 connection-ID sequence and active-set floor closure on
-2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0003`,
-`REQ-QUIC-RFC9000-S5P1P1-0004`, `REQ-QUIC-RFC9000-S5P1P1-0006`,
+2026-05-06 closes `REQ-QUIC-RFC9000-0220`,
+`REQ-QUIC-RFC9000-0221`, `REQ-QUIC-RFC9000-0222`,
 `REQ-QUIC-RFC9000-S5P1P1-0008`, `REQ-QUIC-RFC9000-S5P1P1-0009`,
-`REQ-QUIC-RFC9000-S5P1P1-0011`, `REQ-QUIC-RFC9000-S5P1P1-0013`,
-and `REQ-QUIC-RFC9000-S5P1P1-0015` under `ARC-QUIC-RFC9000-0074`,
+`REQ-QUIC-RFC9000-0229`, `REQ-QUIC-RFC9000-S5P1P1-0013`,
+and `REQ-QUIC-RFC9000-0233` under `ARC-QUIC-RFC9000-0074`,
 `WI-QUIC-RFC9000-0074`, and `VER-QUIC-RFC9000-0074`. The proof covers
 initial CID sequence 0 retirement, preferred-address CID sequence 1 retirement,
 local replacement CID sequence increment and max-varint non-wrap behavior,
@@ -1186,7 +1186,7 @@ Negotiation behavior changes, public API widening, or hosted interop readiness.
 Follow-on S5P2 packet classification and connection association floor closure
 on 2026-05-06 closes `REQ-QUIC-RFC9000-S5P2-0001` through
 `REQ-QUIC-RFC9000-S5P2-0006`, `REQ-QUIC-RFC9000-S5P2-0008`,
-`REQ-QUIC-RFC9000-S5P2-0009`, and `REQ-QUIC-RFC9000-S5P2-0011`
+`REQ-QUIC-RFC9000-S5P2-0009`, and `REQ-QUIC-RFC9000-0258`
 under `ARC-QUIC-RFC9000-0072`, `WI-QUIC-RFC9000-0072`, and
 `VER-QUIC-RFC9000-0072`. The proof covers packet classification on receipt,
 existing connection association before unroutable handling, conforming Initial
@@ -1205,7 +1205,7 @@ widening or hosted interop readiness.
 
 Follow-on S7P4P1 updated-value packet-use policy closure on 2026-05-06 closes
 `REQ-QUIC-RFC9000-S7P4P1-0010` through
-`REQ-QUIC-RFC9000-S7P4P1-0013` under
+`REQ-QUIC-RFC9000-0356` under
 `ARC-QUIC-RFC9000-0071`, `WI-QUIC-RFC9000-0071`, and
 `VER-QUIC-RFC9000-0071`. The proof covers an internal packet-use policy that
 allows 0-RTT packet use only with remembered transport-parameter values,
@@ -1221,7 +1221,7 @@ anti-replay behavior, 0-RTT decryption, application-data delivery, or hosted
 interop readiness.
 
 Follow-on S7P4P1 client 0-RTT handshake-value supersession policy closure on
-2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0003` under
+2026-05-06 closes `REQ-QUIC-RFC9000-0345` under
 `ARC-QUIC-RFC9000-0070`, `WI-QUIC-RFC9000-0070`, and
 `VER-QUIC-RFC9000-0070`. The proof covers ignoring prohibited remembered
 transport-parameter values in favor of the server's new handshake values and
@@ -1230,7 +1230,7 @@ values. At that closure point, regenerated coverage triage marked the
 requirement as `trace_clean` and reported 1,270 of 1,771 QUIC requirements
 trace-clean overall, leaving 501 non-clean. `S7P4P1` then had four remaining non-clean requirements:
 `REQ-QUIC-RFC9000-S7P4P1-0010` through
-`REQ-QUIC-RFC9000-S7P4P1-0013`. This closure does not claim updated-value use
+`REQ-QUIC-RFC9000-0356`. This closure does not claim updated-value use
 in 0-RTT packets, server protocol-violation handling, public early-data APIs,
 TLS `early_data` extension admission wiring, anti-replay behavior, or
 application-data delivery. Later S7P4P1 tail closure under
@@ -1238,7 +1238,7 @@ application-data delivery. Later S7P4P1 tail closure under
 
 Follow-on S7P4P1 server 0-RTT transport-parameter acceptance policy closure
 on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0005` through
-`REQ-QUIC-RFC9000-S7P4P1-0009` under `ARC-QUIC-RFC9000-0069`,
+`REQ-QUIC-RFC9000-0351` under `ARC-QUIC-RFC9000-0069`,
 `WI-QUIC-RFC9000-0069`, and `VER-QUIC-RFC9000-0069`. The proof covers an
 internal server acceptance decision over remembered and current transport
 parameters, reductions to required Section 18.2 0-RTT limits, non-zero
@@ -1248,9 +1248,9 @@ missing current server-parameter rejection. At that closure point, regenerated
 coverage triage marked those five requirements as `trace_clean` and reported
 1,269 of 1,771 QUIC requirements trace-clean overall, leaving 502 non-clean.
 `S7P4P1` then had five
-remaining non-clean requirements: `REQ-QUIC-RFC9000-S7P4P1-0003` and
+remaining non-clean requirements: `REQ-QUIC-RFC9000-0345` and
 `REQ-QUIC-RFC9000-S7P4P1-0010` through
-`REQ-QUIC-RFC9000-S7P4P1-0013`. This closure does not claim public early-data
+`REQ-QUIC-RFC9000-0356`. This closure does not claim public early-data
 APIs, TLS `early_data` extension admission wiring, server anti-replay behavior,
 application-data delivery, or updated-value-in-0-RTT protocol-violation
 enforcement.
@@ -1258,7 +1258,7 @@ enforcement.
 Follow-on S7P4P1 client 0-RTT remembered transport-parameter policy closure
 on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0001`,
 `REQ-QUIC-RFC9000-S7P4P1-0002`, and
-`REQ-QUIC-RFC9000-S7P4P1-0004` under `ARC-QUIC-RFC9000-0068`,
+`REQ-QUIC-RFC9000-0346` under `ARC-QUIC-RFC9000-0068`,
 `WI-QUIC-RFC9000-0068`, and `VER-QUIC-RFC9000-0068`. The proof covers an
 internal 0-RTT transport-parameter storage classification table, exclusion of
 prohibited remembered values, retention of processable peer transport
@@ -1267,8 +1267,8 @@ parameters in the detached-ticket 0-RTT subset, and failure to enable dormant
 that closure point, regenerated coverage triage marked those three requirements
 as `trace_clean` and reported 1,264 of 1,771 QUIC requirements trace-clean
 overall, leaving 507 non-clean. `S7P4P1` then had ten remaining non-clean requirements:
-`REQ-QUIC-RFC9000-S7P4P1-0003` and `REQ-QUIC-RFC9000-S7P4P1-0005` through
-`REQ-QUIC-RFC9000-S7P4P1-0013`. This closure does not claim server 0-RTT
+`REQ-QUIC-RFC9000-0345` and `REQ-QUIC-RFC9000-S7P4P1-0005` through
+`REQ-QUIC-RFC9000-0356`. This closure does not claim server 0-RTT
 acceptance or rejection policy, restored transport-parameter support checks,
 updated transport-parameter violation handling, TLS `early_data` extension
 support, public early-data APIs, anti-replay behavior, or application-data
@@ -1346,7 +1346,7 @@ reopening the Section 18.2 tail without new evidence.
 ## 2026-05-05 Restart Note
 
 Follow-on S17P2P5P2/P3 closure on 2026-05-05 closes
-`REQ-QUIC-RFC9000-S17P2P5P2-0001` through
+`REQ-QUIC-RFC9000-1036` through
 `REQ-QUIC-RFC9000-S17P2P5P2-0009` and
 `REQ-QUIC-RFC9000-S17P2P5P3-0001` through
 `REQ-QUIC-RFC9000-S17P2P5P3-0007` under
@@ -1359,12 +1359,12 @@ post-Retry 0-RTT destination connection ID selection, packet-number continuity,
 and protected 0-RTT payload confidentiality. Regenerated coverage triage marks
 those claimed S17P2P5P2/P3 requirements as `trace_clean` and reports 1,226 of
 1,771 QUIC requirements trace-clean overall, leaving 545 non-clean.
-`REQ-QUIC-RFC9000-S17P2P5P3-0008` remains optional server abort behavior and
+`REQ-QUIC-RFC9000-1055` remains optional server abort behavior and
 is deliberately not claimed by this closure.
 
 Follow-on S7P3 closure on 2026-05-05 closes
 `REQ-QUIC-RFC9000-S7P3-0001` through
-`REQ-QUIC-RFC9000-S7P3-0009` under
+`REQ-QUIC-RFC9000-0332` under
 `ARC-QUIC-RFC9000-0059`, `WI-QUIC-RFC9000-0059`, and
 `VER-QUIC-RFC9000-0059`. The proof covers codec preservation of
 `original_destination_connection_id`, `initial_source_connection_id`, and
@@ -1413,8 +1413,8 @@ preferred-address field-shape family, public migration APIs, multipath, or
 hosted interop readiness.
 
 Follow-on S18P2 preferred-address field-shape closure on 2026-05-05 closes
-`REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-S18P2-0020` through
-`REQ-QUIC-RFC9000-S18P2-0023`, `REQ-QUIC-RFC9000-S18P2-0028` through
+`REQ-QUIC-RFC9000-S18P2-0019`, `REQ-QUIC-RFC9000-1145` through
+`REQ-QUIC-RFC9000-1151`, `REQ-QUIC-RFC9000-S18P2-0028` through
 `REQ-QUIC-RFC9000-S18P2-0031`, and `REQ-QUIC-RFC9000-S18P2-0033` under
 `ARC-QUIC-RFC9000-0063`, `WI-QUIC-RFC9000-0063`, and
 `VER-QUIC-RFC9000-0063`. The proof covers preferred_address IPv4 and IPv6
@@ -1432,8 +1432,8 @@ disable_active_migration beyond the existing `0062` lane, public migration
 APIs, multipath, or hosted interop readiness.
 
 Follow-on S5P2P2 closure on 2026-05-05 closes
-`REQ-QUIC-RFC9000-S5P2P2-0007` and
-`REQ-QUIC-RFC9000-S5P2P2-0008` under
+`REQ-QUIC-RFC9000-0272` and
+`REQ-QUIC-RFC9000-0273` under
 `ARC-QUIC-RFC9000-0056`, `WI-QUIC-RFC9000-0056`, and
 `VER-QUIC-RFC9000-0056`. The proof covers protected Initial
 `CONNECTION_REFUSED` emission when the listener application deliberately
@@ -1449,7 +1449,7 @@ This note is intentionally narrow for handoff. The just-finished slices close
 the RFC 9000 S19P13 STREAM_DATA_BLOCKED parser/field-shape topoff for
 `REQ-QUIC-RFC9000-S19P13-0003` through
 `REQ-QUIC-RFC9000-S19P13-0008`, and the receiver-side send-only closeout for
-`REQ-QUIC-RFC9000-S19P13-0002`. The S19P13 proof now covers type `0x15`,
+`REQ-QUIC-RFC9000-1299`. The S19P13 proof now covers type `0x15`,
 Stream ID and Maximum Stream Data varint encoding, truncation/out-of-range
 rejection, frame-boundary consumption, blocked-stream identity preservation,
 blocked-offset preservation, receive-capable stream acceptance, and protected
@@ -1486,20 +1486,20 @@ Current triage reminders after the S17P2P5P2/P3 closure:
    `specs/requirements/quic/REQUIREMENT-GAPS.md` and the nearest owning
    `SPEC-QUIC-RFC9000.json` section before choosing the next non-clean group.
 2. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S7P3-0001` through
-   `REQ-QUIC-RFC9000-S7P3-0009` as `trace_clean`; S7P3 no longer needs to be
+   `REQ-QUIC-RFC9000-0332` as `trace_clean`; S7P3 no longer needs to be
    the next local lane.
-3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S17P2P5P2-0001`
+3. Regenerated coverage triage marks `REQ-QUIC-RFC9000-1036`
    through `REQ-QUIC-RFC9000-S17P2P5P2-0009` and
    `REQ-QUIC-RFC9000-S17P2P5P3-0001` through
    `REQ-QUIC-RFC9000-S17P2P5P3-0007` as `trace_clean`.
-4. `REQ-QUIC-RFC9000-S17P2P5P3-0008` remains optional, unclaimed server abort
+4. `REQ-QUIC-RFC9000-1055` remains optional, unclaimed server abort
    behavior and should not be treated as proven by the Retry client-processing
    closure.
 5. Do not describe S19P13 closure as new STREAM_DATA_BLOCKED emission
    scheduling, flow-control autotuning, asynchronous credit waiting,
    sender/recovery behavior, public flow-control APIs, S19P14 STREAMS_BLOCKED
    behavior, or interop readiness.
-6. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P13-0001` through
+6. Regenerated coverage triage marks `REQ-QUIC-RFC9000-1298` through
    `REQ-QUIC-RFC9000-S19P13-0008` as `trace_clean`.
 7. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0002` and
    `REQ-QUIC-RFC9000-S19P14-0004` through
@@ -1508,7 +1508,7 @@ Current triage reminders after the S17P2P5P2/P3 closure:
    `REQ-QUIC-RFC9000-S19P14-0003` as `trace_clean`; S19P14 no longer needs to
    be the next local lane.
 9. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S5P2P2-0001` through
-   `REQ-QUIC-RFC9000-S5P2P2-0010` as `trace_clean`; S5P2P2 no longer needs to
+   `REQ-QUIC-RFC9000-0275` as `trace_clean`; S5P2P2 no longer needs to
    be the next local lane.
 
 Focused triage command:
@@ -1793,14 +1793,14 @@ The next useful lanes are:
   current selection surface. The canonical/generated trace gate is repaired,
   and older per-slice count snapshots in this file are historical notes.
 - If the goal is fast trace-clean burn-down, continue with the 55 metadata-only
-  missing-xref requirements, for example `REQ-QUIC-RFC9000-S19P16-0011`,
+  missing-xref requirements, for example `REQ-QUIC-RFC9000-1330`,
   `REQ-QUIC-RFC9000-S20P1-0002`, and
   `REQ-QUIC-RFC9000-S21P12-0001`.
 - If the goal is harder protocol proof, start with the 221 new-test-needed
   requirements or the 45 partially-covered requirements, for example
   `REQ-QUIC-RFC9000-S10P2P1-0006`,
   `REQ-QUIC-RFC9000-S10P2P1-0009`, or
-  `REQ-QUIC-RFC9000-S12P3-0007`.
+  `REQ-QUIC-RFC9000-0708`.
 - Resolve the 54 blocked requirements only through the recorded gap families,
   notably connection close, stateless reset, migration/path-validation, and
   RFC 9001 TLS/packet-space work.

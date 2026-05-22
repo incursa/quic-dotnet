@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9000-0044"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S5P1P2-0006",
-    "REQ-QUIC-RFC9000-S5P1P2-0007"
+    "REQ-QUIC-RFC9000-0244",
+    "REQ-QUIC-RFC9000-0245"
   ],
   "summary": "Add bounded runtime selection and proof for peer-issued connection IDs that are limited to one local/destination address pair and retired when their address pair is no longer active.",
   "planned_changes": "- Track the address pair on which each active peer-issued CID sequence is used.\n- Apply peer-CID selection before application-data sends and validated path promotion.\n- Preserve bound active-path CIDs when new spare CIDs are advertised.\n- Require a spare peer-issued CID before promoting a new address pair.\n- Retire CIDs bound to inactive address pairs after successful migration.\n- Add focused requirement-home proof for S5P1P2-0006 and S5P1P2-0007.",

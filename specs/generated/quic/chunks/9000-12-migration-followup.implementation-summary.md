@@ -2,7 +2,7 @@
 
 ## Requirements Completed
 - `REQ-QUIC-RFC9000-S9P4-0004`
-- `REQ-QUIC-RFC9000-S9P4-0006`
+- `REQ-QUIC-RFC9000-0510`
 - `REQ-QUIC-RFC9000-S9P6P1-0001`
 - `REQ-QUIC-RFC9000-S9P6P1-0007`
 
@@ -14,7 +14,7 @@
 - `specs/generated/quic/chunks/9000-12-migration-followup.implementation-summary.json`
 
 ## Tests Added or Updated
-- Updated `QuicAckGenerationStateTests.TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay` with `REQ-QUIC-RFC9000-S9P4-0004` and `REQ-QUIC-RFC9000-S9P4-0006`.
+- Updated `QuicAckGenerationStateTests.TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay` with `REQ-QUIC-RFC9000-S9P4-0004` and `REQ-QUIC-RFC9000-0510`.
 - Updated `QuicTransportParametersTests.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress` with `REQ-QUIC-RFC9000-S9P6P1-0001` and `REQ-QUIC-RFC9000-S9P6P1-0007`.
 - Updated `QuicTransportParametersFuzzTests.Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation` with the same preferred-address migration refs.
 
@@ -26,7 +26,7 @@
 - `S9P4`: 9 blocked requirements.
 - `S9P5`: 12 blocked requirements.
 - `S9P6`: 2 blocked requirements.
-- `S9P6P1`: `REQ-QUIC-RFC9000-S9P6P1-0002` through `REQ-QUIC-RFC9000-S9P6P1-0006`, and `REQ-QUIC-RFC9000-S9P6P1-0008` through `REQ-QUIC-RFC9000-S9P6P1-0010` remain blocked.
+- `S9P6P1`: `REQ-QUIC-RFC9000-S9P6P1-0002` through `REQ-QUIC-RFC9000-S9P6P1-0006`, and `REQ-QUIC-RFC9000-0525` through `REQ-QUIC-RFC9000-S9P6P1-0010` remain blocked.
 - `S9P6P2`: 11 blocked requirements.
 - `S9P6P3`: 11 blocked requirements.
 - `S9P7`: 4 blocked requirements.

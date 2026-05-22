@@ -57,7 +57,7 @@ pwsh -NoProfile -File scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1 `
   -Execute
 ```
 
-The helper preserves invocation evidence by default and requires `-Execute` before running Docker. When explicit endpoint directories are omitted, it stages Incursa.Quic client/server Docker contexts, a compose override, `/www`, `/downloads`, and `/certs` under the run artifact root. It does not add runtime transport behavior, hosted workflow dispatch, qlog/pcap analysis, or broad simulator-matrix promotion.
+The helper preserves invocation evidence by default and requires `-Execute` before running Docker. When explicit endpoint directories are omitted, it stages Incursa.Quic client/server Docker contexts, a compose override, `/www`, `/downloads`, and `/certs` under the run artifact root. Execute mode also preserves the current-run simulator qlog/pcap tree under `simulator-logs/`, but it still does not add runtime transport behavior, hosted workflow dispatch, qlog/pcap analysis, or broad simulator-matrix promotion.
 
 ## `Invoke-QuicInteropRunner.ps1`
 

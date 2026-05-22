@@ -6,8 +6,8 @@ public sealed class REQ_QUIC_RFC9000_S4P4_0001
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P4-0001")]
     [Requirement("REQ-QUIC-RFC9000-S4P4-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S4P4-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S4P4-0004")]
+    [Requirement("REQ-QUIC-RFC9000-0185")]
+    [Requirement("REQ-QUIC-RFC9000-0186")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection()

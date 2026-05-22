@@ -39,7 +39,7 @@
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
       "REQ-QUIC-RFC9000-S9P4-0004",
-      "REQ-QUIC-RFC9000-S9P4-0006",
+      "REQ-QUIC-RFC9000-0510",
       "REQ-QUIC-RFC9000-S9P6P1-0001",
       "REQ-QUIC-RFC9000-S9P6P1-0007"
     ],
@@ -62,16 +62,16 @@
         "REQ-QUIC-RFC9000-S9P4-0003",
         "REQ-QUIC-RFC9000-S9P4-0004",
         "REQ-QUIC-RFC9000-S9P4-0005",
-        "REQ-QUIC-RFC9000-S9P4-0006",
+        "REQ-QUIC-RFC9000-0510",
         "REQ-QUIC-RFC9000-S9P4-0007",
         "REQ-QUIC-RFC9000-S9P4-0008",
         "REQ-QUIC-RFC9000-S9P4-0009",
-        "REQ-QUIC-RFC9000-S9P4-0010",
+        "REQ-QUIC-RFC9000-0513",
         "REQ-QUIC-RFC9000-S9P4-0011"
       ],
       "implemented_requirement_ids": [
         "REQ-QUIC-RFC9000-S9P4-0004",
-        "REQ-QUIC-RFC9000-S9P4-0006"
+        "REQ-QUIC-RFC9000-0510"
       ],
       "blocked_requirement_ids": [
         "REQ-QUIC-RFC9000-S9P4-0001",
@@ -81,7 +81,7 @@
         "REQ-QUIC-RFC9000-S9P4-0007",
         "REQ-QUIC-RFC9000-S9P4-0008",
         "REQ-QUIC-RFC9000-S9P4-0009",
-        "REQ-QUIC-RFC9000-S9P4-0010",
+        "REQ-QUIC-RFC9000-0513",
         "REQ-QUIC-RFC9000-S9P4-0011"
       ],
       "tests_covering_requirement": [
@@ -98,7 +98,7 @@
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S9P5-0001",
-        "REQ-QUIC-RFC9000-S9P5-0002",
+        "REQ-QUIC-RFC9000-0515",
         "REQ-QUIC-RFC9000-S9P5-0003",
         "REQ-QUIC-RFC9000-S9P5-0004",
         "REQ-QUIC-RFC9000-S9P5-0005",
@@ -106,14 +106,14 @@
         "REQ-QUIC-RFC9000-S9P5-0007",
         "REQ-QUIC-RFC9000-S9P5-0008",
         "REQ-QUIC-RFC9000-S9P5-0009",
-        "REQ-QUIC-RFC9000-S9P5-0010",
-        "REQ-QUIC-RFC9000-S9P5-0011",
-        "REQ-QUIC-RFC9000-S9P5-0012"
+        "REQ-QUIC-RFC9000-0518",
+        "REQ-QUIC-RFC9000-0519",
+        "REQ-QUIC-RFC9000-0520"
       ],
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
         "REQ-QUIC-RFC9000-S9P5-0001",
-        "REQ-QUIC-RFC9000-S9P5-0002",
+        "REQ-QUIC-RFC9000-0515",
         "REQ-QUIC-RFC9000-S9P5-0003",
         "REQ-QUIC-RFC9000-S9P5-0004",
         "REQ-QUIC-RFC9000-S9P5-0005",
@@ -121,9 +121,9 @@
         "REQ-QUIC-RFC9000-S9P5-0007",
         "REQ-QUIC-RFC9000-S9P5-0008",
         "REQ-QUIC-RFC9000-S9P5-0009",
-        "REQ-QUIC-RFC9000-S9P5-0010",
-        "REQ-QUIC-RFC9000-S9P5-0011",
-        "REQ-QUIC-RFC9000-S9P5-0012"
+        "REQ-QUIC-RFC9000-0518",
+        "REQ-QUIC-RFC9000-0519",
+        "REQ-QUIC-RFC9000-0520"
       ],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
@@ -158,7 +158,7 @@
         "REQ-QUIC-RFC9000-S9P6P1-0005",
         "REQ-QUIC-RFC9000-S9P6P1-0006",
         "REQ-QUIC-RFC9000-S9P6P1-0007",
-        "REQ-QUIC-RFC9000-S9P6P1-0008",
+        "REQ-QUIC-RFC9000-0525",
         "REQ-QUIC-RFC9000-S9P6P1-0009",
         "REQ-QUIC-RFC9000-S9P6P1-0010"
       ],
@@ -172,7 +172,7 @@
         "REQ-QUIC-RFC9000-S9P6P1-0004",
         "REQ-QUIC-RFC9000-S9P6P1-0005",
         "REQ-QUIC-RFC9000-S9P6P1-0006",
-        "REQ-QUIC-RFC9000-S9P6P1-0008",
+        "REQ-QUIC-RFC9000-0525",
         "REQ-QUIC-RFC9000-S9P6P1-0009",
         "REQ-QUIC-RFC9000-S9P6P1-0010"
       ],
@@ -192,13 +192,13 @@
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S9P6P2-0001",
-        "REQ-QUIC-RFC9000-S9P6P2-0002",
-        "REQ-QUIC-RFC9000-S9P6P2-0003",
-        "REQ-QUIC-RFC9000-S9P6P2-0004",
-        "REQ-QUIC-RFC9000-S9P6P2-0005",
+        "REQ-QUIC-RFC9000-0531",
+        "REQ-QUIC-RFC9000-0532",
+        "REQ-QUIC-RFC9000-0534",
+        "REQ-QUIC-RFC9000-0535",
         "REQ-QUIC-RFC9000-S9P6P2-0006",
         "REQ-QUIC-RFC9000-S9P6P2-0007",
-        "REQ-QUIC-RFC9000-S9P6P2-0008",
+        "REQ-QUIC-RFC9000-0529",
         "REQ-QUIC-RFC9000-S9P6P2-0009",
         "REQ-QUIC-RFC9000-S9P6P2-0010",
         "REQ-QUIC-RFC9000-S9P6P2-0011"
@@ -206,13 +206,13 @@
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
         "REQ-QUIC-RFC9000-S9P6P2-0001",
-        "REQ-QUIC-RFC9000-S9P6P2-0002",
-        "REQ-QUIC-RFC9000-S9P6P2-0003",
-        "REQ-QUIC-RFC9000-S9P6P2-0004",
-        "REQ-QUIC-RFC9000-S9P6P2-0005",
+        "REQ-QUIC-RFC9000-0531",
+        "REQ-QUIC-RFC9000-0532",
+        "REQ-QUIC-RFC9000-0534",
+        "REQ-QUIC-RFC9000-0535",
         "REQ-QUIC-RFC9000-S9P6P2-0006",
         "REQ-QUIC-RFC9000-S9P6P2-0007",
-        "REQ-QUIC-RFC9000-S9P6P2-0008",
+        "REQ-QUIC-RFC9000-0529",
         "REQ-QUIC-RFC9000-S9P6P2-0009",
         "REQ-QUIC-RFC9000-S9P6P2-0010",
         "REQ-QUIC-RFC9000-S9P6P2-0011"
@@ -226,31 +226,31 @@
       "section_token": "S9P6P3",
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-S9P6P3-0001",
-        "REQ-QUIC-RFC9000-S9P6P3-0002",
-        "REQ-QUIC-RFC9000-S9P6P3-0003",
-        "REQ-QUIC-RFC9000-S9P6P3-0004",
+        "REQ-QUIC-RFC9000-0538",
+        "REQ-QUIC-RFC9000-0539",
+        "REQ-QUIC-RFC9000-0540",
+        "REQ-QUIC-RFC9000-0541",
         "REQ-QUIC-RFC9000-S9P6P3-0005",
-        "REQ-QUIC-RFC9000-S9P6P3-0006",
+        "REQ-QUIC-RFC9000-0543",
         "REQ-QUIC-RFC9000-S9P6P3-0007",
         "REQ-QUIC-RFC9000-S9P6P3-0008",
         "REQ-QUIC-RFC9000-S9P6P3-0009",
-        "REQ-QUIC-RFC9000-S9P6P3-0010",
-        "REQ-QUIC-RFC9000-S9P6P3-0011"
+        "REQ-QUIC-RFC9000-0542",
+        "REQ-QUIC-RFC9000-0545"
       ],
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
-        "REQ-QUIC-RFC9000-S9P6P3-0001",
-        "REQ-QUIC-RFC9000-S9P6P3-0002",
-        "REQ-QUIC-RFC9000-S9P6P3-0003",
-        "REQ-QUIC-RFC9000-S9P6P3-0004",
+        "REQ-QUIC-RFC9000-0538",
+        "REQ-QUIC-RFC9000-0539",
+        "REQ-QUIC-RFC9000-0540",
+        "REQ-QUIC-RFC9000-0541",
         "REQ-QUIC-RFC9000-S9P6P3-0005",
-        "REQ-QUIC-RFC9000-S9P6P3-0006",
+        "REQ-QUIC-RFC9000-0543",
         "REQ-QUIC-RFC9000-S9P6P3-0007",
         "REQ-QUIC-RFC9000-S9P6P3-0008",
         "REQ-QUIC-RFC9000-S9P6P3-0009",
-        "REQ-QUIC-RFC9000-S9P6P3-0010",
-        "REQ-QUIC-RFC9000-S9P6P3-0011"
+        "REQ-QUIC-RFC9000-0542",
+        "REQ-QUIC-RFC9000-0545"
       ],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],

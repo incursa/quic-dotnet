@@ -10,6 +10,7 @@ workbench:
 # QUIC Architecture
 
 This directory holds design artifacts for the QUIC slice.
+If a row references RFC 9000 or RFC 9002 requirement IDs, reconcile them against the derived RFC9000 crosswalk and retired-ID ledger in `specs/generated/quic` before renaming or retiring references.
 Each canonical artifact is authored in `.json`.
 
 ## Current Artifacts

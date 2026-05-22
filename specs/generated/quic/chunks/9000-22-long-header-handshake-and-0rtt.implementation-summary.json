@@ -167,7 +167,7 @@
       "notes": "The unused-field wire image is covered by the requirement-home tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0969",
       "completion_status": "implemented and tested",
       "files_changed": [],
       "tests_covering_requirement": [
@@ -196,7 +196,7 @@
       "notes": "The most-significant unused bit is covered by the requirement-home tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0971",
       "completion_status": "implemented and tested",
       "files_changed": [],
       "tests_covering_requirement": [
@@ -211,17 +211,17 @@
       "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0972",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0972.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0972.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0972.cs"
       ],
       "remaining_gap": null,
       "notes": "The response echoes the client source connection ID into the destination field."
@@ -259,18 +259,18 @@
       "notes": "Version Negotiation send decisions are independent of version-specific connection-ID rules."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-0976",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",
         "src/Incursa.Quic/QuicVersionNegotiationPacket.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0976.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0976.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0976.cs"
       ],
       "remaining_gap": null,
       "notes": "Version Negotiation packets are rejected from packet-number space and cannot be acknowledged."
@@ -307,17 +307,17 @@
       "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0980",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0980.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0980.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0980.cs"
       ],
       "remaining_gap": null,
       "notes": "The single-response guard is covered by the requirement-home tests."
@@ -617,7 +617,7 @@
       "notes": "Version-1 Initial packets now enforce that the encoded token length fits within the available trailing bytes."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "requirement_id": "REQ-QUIC-RFC9000-0985",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -626,7 +626,7 @@
       "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-0986",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -662,7 +662,7 @@
       "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "requirement_id": "REQ-QUIC-RFC9000-0990",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -960,7 +960,7 @@
       "notes": "Version-1 0-RTT packets now require enough bytes for the packet-number field selected by the packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1006",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -978,7 +978,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-1009",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1005,7 +1005,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-1011",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

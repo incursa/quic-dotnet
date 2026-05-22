@@ -56,9 +56,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0018
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0012">A Version Negotiation packet MUST echo the connection IDs selected by the client.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P1-0001">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P1-0002">An endpoint MUST NOT send a Version Negotiation packet in response to receiving a Version Negotiation packet.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P3-0001">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0284">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0285">An endpoint MUST NOT send a Version Negotiation packet in response to receiving a Version Negotiation packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6321">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P2-0002">Each endpoint MUST use the Source Connection ID field to specify the connection ID that is used in the Destination Connection ID field of packets being sent to it.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S5-0003">Version Negotiation packets MUST NOT have cryptographic protection.</workbench-requirement>
     /// </workbench-requirements>
@@ -68,9 +68,9 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0018
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
-    [Requirement("REQ-QUIC-RFC9000-S6P1-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S6P1-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S6P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-0284")]
+    [Requirement("REQ-QUIC-RFC9000-0285")]
+    [Requirement("REQ-QUIC-RFC9000-6321")]
     [Requirement("REQ-QUIC-RFC9000-S7P2-0002")]
     [Requirement("REQ-QUIC-RFC9001-S5-0003")]
     [CoverageType(RequirementCoverageType.Fuzz)]

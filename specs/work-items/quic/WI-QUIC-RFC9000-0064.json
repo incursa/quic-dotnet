@@ -24,7 +24,7 @@
     "REQ-QUIC-RFC9000-S22P1P1-0010",
     "REQ-QUIC-RFC9000-S22P1P1-0011",
     "REQ-QUIC-RFC9000-S22P1P1-0012",
-    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-1488",
     "REQ-QUIC-RFC9000-S22P1P1-0014"
   ],
   "summary": "Close the RFC 9000 Section 22.1.1 provisional-registration policy proof gap with a narrow internal policy model and focused requirement-home tests.",

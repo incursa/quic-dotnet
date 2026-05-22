@@ -12,9 +12,9 @@
     "VER-QUIC-RFC9000-0046"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-0543",
     "REQ-QUIC-RFC9000-S9P6P3-0009",
-    "REQ-QUIC-RFC9000-S9P6P3-0010"
+    "REQ-QUIC-RFC9000-0542"
   ],
   "summary": "Add focused requirement-home proof and trace ownership for the remaining S9P6P3 preferred-address migration-source protection tail.",
   "planned_changes": "- Add direct positive proof that a client-side new-address migration validates and promotes the same address-family preferred server address for IPv4 and IPv6 cases.\n- Add direct positive proof that preferred-address traffic from a changed source remains candidate-path protected and anti-amplification-limited.\n- Add direct positive proof that a probe packet from a different address initiates client-address validation with a PATH_CHALLENGE before promotion.\n- Link the S9P6P3-0006, S9P6P3-0009, and S9P6P3-0010 requirements to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",

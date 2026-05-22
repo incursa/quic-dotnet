@@ -14,8 +14,8 @@
     "VER-QUIC-RFC9000-0032"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S8P1P3-0003",
-    "REQ-QUIC-RFC9000-S8P1P3-0009",
+    "REQ-QUIC-RFC9000-0392",
+    "REQ-QUIC-RFC9000-0399",
     "REQ-QUIC-RFC9000-S8P1P3-0010",
     "REQ-QUIC-RFC9000-S8P1P3-0012",
     "REQ-QUIC-RFC9000-S8P1P3-0013",
@@ -28,8 +28,8 @@
     "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3TokenLifecycleTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0392.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0399.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0013.cs",

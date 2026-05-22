@@ -15,17 +15,17 @@
     "VER-QUIC-RFC9000-0076"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S4P6-0008",
-    "REQ-QUIC-RFC9000-S4P6-0009",
-    "REQ-QUIC-RFC9000-S4P6-0012"
+    "REQ-QUIC-RFC9000-0200",
+    "REQ-QUIC-RFC9000-0201",
+    "REQ-QUIC-RFC9000-0203"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0200.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0201.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0203.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs"
   ],
   "design_summary": "The stream registry treats peer-advertised maximum stream counts as zero-based stream-index ceilings. Local stream opens first peek the next local stream ID against the peer's current bidirectional or unidirectional limit and only commit a stream state when the next stream index is below that limit. Blocked local opens return a STREAMS_BLOCKED frame shaped with the exhausted stream direction and current maximum-stream count; the active runtime sends that frame on the supported advisory path when no ack-eliciting packet or retransmission is already outstanding. Inbound STREAM processing resolves peer-initiated stream IDs through the same indexed limit model and maps stream IDs at or beyond the locally advertised limit to STREAM_LIMIT_ERROR before allocating stream state.",

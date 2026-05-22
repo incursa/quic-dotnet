@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0002
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0002");
 
         Assert.Equal("Verify the specification for permanent registrations", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "The designated expert or experts MUST verify that a specification exists and is readily accessible.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("The designated expert or experts MUST verify that a specification exists and is readily accessible.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

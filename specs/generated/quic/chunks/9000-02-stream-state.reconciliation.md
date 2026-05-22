@@ -21,14 +21,14 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ### S3P1
 
-- implemented and tested: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-S3P1-0008`, `REQ-QUIC-RFC9000-S3P1-0009`
+- implemented and tested: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-0082`, `REQ-QUIC-RFC9000-0083`
 - blocked: `REQ-QUIC-RFC9000-S3P1-0004`, `REQ-QUIC-RFC9000-S3P1-0005`, `REQ-QUIC-RFC9000-S3P1-0006`, `REQ-QUIC-RFC9000-S3P1-0010`, `REQ-QUIC-RFC9000-S3P1-0011`, `REQ-QUIC-RFC9000-S3P1-0012`, `REQ-QUIC-RFC9000-S3P1-0013`, `REQ-QUIC-RFC9000-S3P1-0014`, `REQ-QUIC-RFC9000-S3P1-0015`, `REQ-QUIC-RFC9000-S3P1-0016`, `REQ-QUIC-RFC9000-S3P1-0017`
 
 ### S3P2
 
-- implemented and tested: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-S3P2-0011`, `REQ-QUIC-RFC9000-S3P2-0012`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-S3P2-0017`, `REQ-QUIC-RFC9000-S3P2-0019`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
-- partially implemented: `REQ-QUIC-RFC9000-S3P2-0001`, `REQ-QUIC-RFC9000-S3P2-0002`, `REQ-QUIC-RFC9000-S3P2-0003`, `REQ-QUIC-RFC9000-S3P2-0007`, `REQ-QUIC-RFC9000-S3P2-0013`, `REQ-QUIC-RFC9000-S3P2-0021`
-- blocked: `REQ-QUIC-RFC9000-S3P2-0004`, `REQ-QUIC-RFC9000-S3P2-0010`, `REQ-QUIC-RFC9000-S3P2-0018`, `REQ-QUIC-RFC9000-S3P2-0022`, `REQ-QUIC-RFC9000-S3P2-0023`
+- implemented and tested: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-0109`, `REQ-QUIC-RFC9000-0110`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-0113`, `REQ-QUIC-RFC9000-0115`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
+- partially implemented: `REQ-QUIC-RFC9000-S3P2-0001`, `REQ-QUIC-RFC9000-S3P2-0002`, `REQ-QUIC-RFC9000-0098`, `REQ-QUIC-RFC9000-S3P2-0007`, `REQ-QUIC-RFC9000-S3P2-0013`, `REQ-QUIC-RFC9000-S3P2-0021`
+- blocked: `REQ-QUIC-RFC9000-0097`, `REQ-QUIC-RFC9000-S3P2-0010`, `REQ-QUIC-RFC9000-S3P2-0018`, `REQ-QUIC-RFC9000-0120`, `REQ-QUIC-RFC9000-S3P2-0023`
 
 ### S3P3
 
@@ -40,7 +40,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ### S3P5
 
-- blocked: `REQ-QUIC-RFC9000-S3P5-0001`, `REQ-QUIC-RFC9000-S3P5-0002`, `REQ-QUIC-RFC9000-S3P5-0003`, `REQ-QUIC-RFC9000-S3P5-0004`, `REQ-QUIC-RFC9000-S3P5-0005`, `REQ-QUIC-RFC9000-S3P5-0006`, `REQ-QUIC-RFC9000-S3P5-0007`, `REQ-QUIC-RFC9000-S3P5-0008`, `REQ-QUIC-RFC9000-S3P5-0009`, `REQ-QUIC-RFC9000-S3P5-0010`, `REQ-QUIC-RFC9000-S3P5-0011`, `REQ-QUIC-RFC9000-S3P5-0012`, `REQ-QUIC-RFC9000-S3P5-0013`
+- blocked: `REQ-QUIC-RFC9000-S3P5-0001`, `REQ-QUIC-RFC9000-S3P5-0002`, `REQ-QUIC-RFC9000-S3P5-0003`, `REQ-QUIC-RFC9000-S3P5-0004`, `REQ-QUIC-RFC9000-S3P5-0005`, `REQ-QUIC-RFC9000-S3P5-0006`, `REQ-QUIC-RFC9000-S3P5-0007`, `REQ-QUIC-RFC9000-S3P5-0008`, `REQ-QUIC-RFC9000-S3P5-0009`, `REQ-QUIC-RFC9000-0152`, `REQ-QUIC-RFC9000-S3P5-0011`, `REQ-QUIC-RFC9000-S3P5-0012`, `REQ-QUIC-RFC9000-S3P5-0013`
 
 ## Existing Implementation Evidence
 
@@ -61,8 +61,8 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0005.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0006.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0008.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0082.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0083.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0010.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0011.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0012.cs`
@@ -73,26 +73,26 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0017.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0001.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0002.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0003.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0004.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0098.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0097.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0005.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0007.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0008.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0009.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0010.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0019.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0115.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0021.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0022.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0120.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs`
@@ -113,7 +113,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0010.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0152.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0012.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0013.cs`
@@ -129,7 +129,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ## Tests Run and Results
 
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0009"`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0083"`
 - Passed: 3
 - Failed: 0
 - Skipped: 0

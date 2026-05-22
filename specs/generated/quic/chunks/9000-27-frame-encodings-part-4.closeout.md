@@ -20,17 +20,17 @@
 ### Partially implemented (4)
 - `REQ-QUIC-RFC9000-S19P14-0009`: Codec rejects oversize stream-limit values, but the connection-layer STREAM_LIMIT_ERROR / FRAME_ENCODING_ERROR mapping is still deferred.
 - `REQ-QUIC-RFC9000-S19P15-0011`: Codec rejects invalid CID lengths, but the repository does not yet surface a connection-layer FRAME_ENCODING_ERROR.
-- `REQ-QUIC-RFC9000-S19P15-0019`: Codec validates Retire Prior To <= Sequence Number, but peer CID-retirement bookkeeping is not present in this slice.
-- `REQ-QUIC-RFC9000-S19P15-0020`: Codec rejects Retire Prior To values greater than Sequence Number, but the connection-layer FRAME_ENCODING_ERROR mapping is still deferred.
+- `REQ-QUIC-RFC9000-19150005`: Codec validates Retire Prior To <= Sequence Number, but peer CID-retirement bookkeeping is not present in this slice.
+- `REQ-QUIC-RFC9000-19150006`: Codec rejects Retire Prior To values greater than Sequence Number, but the connection-layer FRAME_ENCODING_ERROR mapping is still deferred.
 
 These are codec-level validations or frame-level invariants that are implemented now, but the corresponding connection-layer error classification or peer-state bookkeeping remains deferred.
 
 ### Blocked / deferred (26)
 - Flow-control sender behavior: `REQ-QUIC-RFC9000-S19P12-0001`, `REQ-QUIC-RFC9000-S19P12-0002`
-- Send-only stream handling: `REQ-QUIC-RFC9000-S19P13-0001`, `REQ-QUIC-RFC9000-S19P13-0002`
+- Send-only stream handling: `REQ-QUIC-RFC9000-1298`, `REQ-QUIC-RFC9000-1299`
 - Stream-opening accounting: `REQ-QUIC-RFC9000-S19P14-0001`, `REQ-QUIC-RFC9000-S19P14-0003`
-- Connection-ID lifecycle and duplicate tracking: `REQ-QUIC-RFC9000-S19P15-0001`, `REQ-QUIC-RFC9000-S19P15-0014`.. `REQ-QUIC-RFC9000-S19P15-0023`
-- Peer-issued CID lifecycle and destination-CID checks: `REQ-QUIC-RFC9000-S19P16-0001`, `REQ-QUIC-RFC9000-S19P16-0002`, `REQ-QUIC-RFC9000-S19P16-0003`, `REQ-QUIC-RFC9000-S19P16-0007`.. `REQ-QUIC-RFC9000-S19P16-0011`
+- Connection-ID lifecycle and duplicate tracking: `REQ-QUIC-RFC9000-S19P15-0001`, `REQ-QUIC-RFC9000-19150001`.. `REQ-QUIC-RFC9000-19150008`
+- Peer-issued CID lifecycle and destination-CID checks: `REQ-QUIC-RFC9000-S19P16-0001`, `REQ-QUIC-RFC9000-S19P16-0002`, `REQ-QUIC-RFC9000-S19P16-0003`, `REQ-QUIC-RFC9000-S19P16-0007`.. `REQ-QUIC-RFC9000-1330`
 - Path validation response generation: `REQ-QUIC-RFC9000-S19P17-0001`, `REQ-QUIC-RFC9000-S19P17-0006`
 - Path validation comparison/state: `REQ-QUIC-RFC9000-S19P18-0003`
 

@@ -2,15 +2,15 @@
   "chunk_id": "9000-14-stateless-reset",
   "requirement_id": [
     "REQ-QUIC-RFC9000-S10P3-0003",
-    "REQ-QUIC-RFC9000-S10P3-0004",
+    "REQ-QUIC-RFC9000-0607",
     "REQ-QUIC-RFC9000-S10P3-0005",
     "REQ-QUIC-RFC9000-S10P3-0006",
     "REQ-QUIC-RFC9000-S10P3-0007",
     "REQ-QUIC-RFC9000-S10P3-0008",
     "REQ-QUIC-RFC9000-S10P3-0009",
     "REQ-QUIC-RFC9000-S10P3-0010",
-    "REQ-QUIC-RFC9000-S10P3-0011",
-    "REQ-QUIC-RFC9000-S10P3-0012",
+    "REQ-QUIC-RFC9000-0622",
+    "REQ-QUIC-RFC9000-0623",
     "REQ-QUIC-RFC9000-S10P3-0013",
     "REQ-QUIC-RFC9000-S10P3-0016",
     "REQ-QUIC-RFC9000-S10P3-0017",
@@ -27,15 +27,15 @@
     "REQ-QUIC-RFC9000-S10P3P1-0003",
     "REQ-QUIC-RFC9000-S10P3P1-0007",
     "REQ-QUIC-RFC9000-S10P3P1-0008",
-    "REQ-QUIC-RFC9000-S10P3P1-0009",
-    "REQ-QUIC-RFC9000-S10P3P1-0011",
-    "REQ-QUIC-RFC9000-S10P3P1-0012",
+    "REQ-QUIC-RFC9000-0629",
+    "REQ-QUIC-RFC9000-0639",
+    "REQ-QUIC-RFC9000-0640",
     "REQ-QUIC-RFC9000-S10P3P2-0001",
     "REQ-QUIC-RFC9000-S10P3P2-0002",
     "REQ-QUIC-RFC9000-S10P3P2-0004",
     "REQ-QUIC-RFC9000-S10P3P2-0009",
     "REQ-QUIC-RFC9000-S10P3P2-0010",
-    "REQ-QUIC-RFC9000-S10P3P2-0011",
+    "REQ-QUIC-RFC9000-0644",
     "REQ-QUIC-RFC9000-S10P3P2-0012",
     "REQ-QUIC-RFC9000-S10P3P3-0001"
   ],
@@ -54,8 +54,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStatelessResetEndpointHostTestSupport.cs"
   ],
   "tests_covering_requirement": [
@@ -73,11 +73,11 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs::TryGetTrailingStatelessResetToken_RejectsDatagramsShorterThanSixteenBytes",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_EntersDrainingAndStopsSendingOnMatchingToken",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs::TryHandlePotentialStatelessReset_LeavesTheConnectionSendableWhenTheTokenDoesNotMatch",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs::TryHandlePotentialStatelessReset_DoesNotEnterDrainingWhenTheTokenDoesNotMatch",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs::TryHandlePotentialStatelessReset_TransitionsToDrainingWhenTheTokenMatches",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs::TryHandlePotentialStatelessReset_DoesNotEnterDrainingWhenTheTokenDoesNotMatch",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch"
   ],
   "direct_refs_added_or_updated": [
     "REQ-QUIC-RFC9000-S10P3-0010",
@@ -87,8 +87,8 @@
     "REQ-QUIC-RFC9000-S10P3-0015",
     "REQ-QUIC-RFC9000-S10P3P1-0001",
     "REQ-QUIC-RFC9000-S10P3P1-0008",
-    "REQ-QUIC-RFC9000-S10P3P1-0011",
-    "REQ-QUIC-RFC9000-S10P3P1-0012"
+    "REQ-QUIC-RFC9000-0639",
+    "REQ-QUIC-RFC9000-0640"
   ],
   "remaining_gap": [
     {
@@ -100,7 +100,7 @@
       "reason": "Immediate connection teardown on stateless reset requires a connection-state machine."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0610",
       "reason": "Token invalidation on RETIRE_CONNECTION_ID needs endpoint state and retirement bookkeeping."
     },
     {
@@ -136,11 +136,11 @@
       "reason": "Preventing reuse of the CID/static-key pair needs endpoint state and allocation policy."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0650",
       "reason": "Preventing reuse of reset CIDs across shared static keys needs cross-endpoint policy state."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0651",
       "reason": "Enforcing one token per CID needs a token registry."
     },
     {

@@ -8,7 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0001
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S14-0004")]
+    [Requirement("REQ-QUIC-RFC9000-0856")]
     public void TryFormatVersion1InitialDatagramPadding_WritesPaddingFramesUpToTheRFCMinimum()
     {
         Span<byte> destination = stackalloc byte[13];

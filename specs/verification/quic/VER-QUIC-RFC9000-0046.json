@@ -13,9 +13,9 @@
   ],
   "verification_method": "Focused S9P6P3-0006/0009/0010 requirement-home tests, Release build, full Release no-build solution tests, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-0543",
     "REQ-QUIC-RFC9000-S9P6P3-0009",
-    "REQ-QUIC-RFC9000-S9P6P3-0010"
+    "REQ-QUIC-RFC9000-0542"
   ],
   "scope": "This verification covers the current single-active-path runtime behavior for same-family preferred-address validation, preferred-address changed-source protection, and probe-triggered validation on the S9P6P3 tail.",
   "expected_result": "The focused requirement-home tests prove that same-family IPv4 and IPv6 preferred-address candidates are validated before promotion, changed-source preferred-address traffic remains candidate-path and anti-amplification protected, and probe packets from a different address trigger a PATH_CHALLENGE without active-path promotion.",
@@ -33,11 +33,11 @@
     "The connection has completed enough handshake state for active migration promotion to be policy-eligible."
   ],
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0543.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0542.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0010\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0543|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0542\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",

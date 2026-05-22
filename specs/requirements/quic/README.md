@@ -23,8 +23,17 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-API.json`](SPEC-QUIC-API.json): canonical public API surface source
 - [`REQUIREMENT-GAPS.md`](REQUIREMENT-GAPS.md): the local gap ledger
 
+## Migration References
+
+- [`../generated/quic/rfc9000-requirement-migration-crosswalk.json`](../generated/quic/rfc9000-requirement-migration-crosswalk.json) and [`../generated/quic/rfc9000-requirement-migration-crosswalk.md`](../generated/quic/rfc9000-requirement-migration-crosswalk.md): derived RFC9000 live-to-staged crosswalk for conservative requirement-ID updates
+- [`../generated/quic/rfc9000-migration-retired-requirements.json`](../generated/quic/rfc9000-migration-retired-requirements.json): derived retired-ID ledger for references that no longer remain live
+- [`../generated/quic/rfc9000-migration-exact-statement-renames.json`](../generated/quic/rfc9000-migration-exact-statement-renames.json) and [`../generated/quic/rfc9000-migration-exact-statement-renames.md`](../generated/quic/rfc9000-migration-exact-statement-renames.md): exact-statement rename slice used to preserve lineage when the obligation text is unchanged
+- [`../generated/quic/rfc9000-migration-section-2-review.json`](../generated/quic/rfc9000-migration-section-2-review.json), [`../generated/quic/rfc9000-migration-s15-review.json`](../generated/quic/rfc9000-migration-s15-review.json), and [`../generated/quic/rfc9000-migration-s16-review.json`](../generated/quic/rfc9000-migration-s16-review.json): derived review slices for the staged RFC9000 migration pilot
+- The remaining section-style RFC9000 IDs that still appear in canonical spec JSON are live canonical requirements, not retired migration leftovers, unless the retired ledger says otherwise.
+
 ## Notes
 
 - Keep new QUIC work traceable to a stable `SPEC-...` file before implementation.
 - Use the gap ledger when a source rule is unclear or needs an explicit decision record.
+- Use the migration references above when reconciling stale RFC9000 requirement IDs or retired requirement references.
 - RFC 8999 now carries the shared header-invariant slice.

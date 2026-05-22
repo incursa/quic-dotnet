@@ -14,12 +14,12 @@
     "VER-QUIC-RFC9000-0015"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S13P2P1-0014"
+    "REQ-QUIC-RFC9000-1322"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicAckGenerationState.cs",
     "src/Incursa.Quic/QuicCongestionControlState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs"
   ],
   "design_summary": "The sender flow controller forwards the processed-packet congestion-experienced observation into the ACK-generation state. When that flag is set for the Application Data packet number space, ACK generation marks the space as requiring an immediate ACK, causing the scheduling queries used by outgoing packet composition to report that an ACK frame should be sent without waiting for the normal delayed-ACK threshold. Marking an ACK frame as sent clears the immediate flag, and a later CE-marked packet rearms it.",
@@ -47,7 +47,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0014.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs)\n- [`REQ-QUIC-RFC9000-S13P2P5-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs)"
+      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-1322.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs)\n- [`REQ-QUIC-RFC9000-S13P2P5-0005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs)"
     }
   ]
 }

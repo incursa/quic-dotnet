@@ -17,7 +17,7 @@
     "REQ-QUIC-RFC9000-S17P4-0005",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
-    "REQ-QUIC-RFC9000-S17P4-0010"
+    "REQ-QUIC-RFC9000-1098"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
@@ -31,7 +31,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0010.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1098.cs"
   ],
   "design_summary": "Each runtime path record carries a spin-bit state containing the stored spin value and the highest received 1-RTT packet number that affected it. The 1-RTT receive path updates that state only when the packet number advances for the path, with servers storing the received bit and clients storing its inverse. All runtime 1-RTT emission seams pass the path's stored value into short-header packet construction.",
   "data_and_state_considerations": "The spin-bit state is path-local and moves with active, candidate, and recently validated path records. The short-header builder still applies the randomized one-in-sixteen connection-ID disablement floor before setting the wire bit, so path state cannot override disabled spin-bit selection.",
@@ -50,7 +50,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, REQ-QUIC-RFC9000-S17P4-0009, and REQ-QUIC-RFC9000-S17P4-0010, plus the missing REQ-QUIC-RFC9000-S17P4-0005 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, REQ-QUIC-RFC9000-S17P4-0009, and REQ-QUIC-RFC9000-1098, plus the missing REQ-QUIC-RFC9000-S17P4-0005 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

@@ -53,7 +53,7 @@ public sealed class REQ_QUIC_API_0004
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
     [Requirement("REQ-QUIC-RFC9000-S2-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-0023")]
     [Requirement("REQ-QUIC-RFC9000-S2P2-0005")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

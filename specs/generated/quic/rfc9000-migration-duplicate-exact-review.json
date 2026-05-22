@@ -1,0 +1,115 @@
+{
+  "generated_at_utc": "2026-05-22T00:00:00Z",
+  "scope": "RFC9000 duplicated exact-statement review from the migration crosswalk",
+  "source_crosswalk": "specs/generated/quic/rfc9000-requirement-migration-crosswalk.json",
+  "governing_plan": "C:/src/incursa/spec-trace/quic-rfc-migration-plan.md",
+  "policy": {
+    "primary_signal": "exact statement text",
+    "review_signal": "source-compatible RFC section context",
+    "rule": "Do not collapse live section-keyed requirements only because their statement text is identical."
+  },
+  "summary": {
+    "unique_groups_reviewed": 5,
+    "live_requirements_reviewed": 12,
+    "source_compatible_preserve_mappings": 5,
+    "contextual_live_requirements_preserved_without_staged_replacement": 7,
+    "canonical_requirement_edits_applied": 0,
+    "identity_changes_applied": 0,
+    "retired_id_ledger_updates_required": 0
+  },
+  "decisions": [
+    {
+      "statement": "MAX_STREAMS frames that do not increase the stream limit MUST be ignored.",
+      "classification": "preserve",
+      "live_requirement_ids": [
+        "REQ-QUIC-RFC9000-S4P6-0011",
+        "REQ-QUIC-RFC9000-S19P11-0008"
+      ],
+      "source_compatible_mappings": [
+        {
+          "live_requirement_id": "REQ-QUIC-RFC9000-S4P6-0011",
+          "staged_requirement_id": "REQ-QUIC-RFC9000-0202"
+        }
+      ],
+      "preserve_without_staged_replacement": [
+        "REQ-QUIC-RFC9000-S19P11-0008"
+      ],
+      "reason": "The staged clause is sourced from RFC 9000 section 4.6. The live section 19.11 requirement has identical text but owns a frame-encoding context and existing requirement-home evidence, so it should not be retired or merged on text equality alone."
+    },
+    {
+      "statement": "The stateless reset token MUST be difficult to guess.",
+      "classification": "preserve",
+      "live_requirement_ids": [
+        "REQ-QUIC-RFC9000-S10P3-0016",
+        "REQ-QUIC-RFC9000-S10P3P2-0001"
+      ],
+      "source_compatible_mappings": [
+        {
+          "live_requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0001",
+          "staged_requirement_id": "REQ-QUIC-RFC9000-0641"
+        }
+      ],
+      "preserve_without_staged_replacement": [
+        "REQ-QUIC-RFC9000-S10P3-0016"
+      ],
+      "reason": "The staged clause is sourced from RFC 9000 section 10.3.2. The live section 10.3 requirement has broader stateless-reset context and separate evidence, so it remains live unless a later policy explicitly consolidates repeated source text."
+    },
+    {
+      "statement": "Packets containing a zero value for this bit are not valid packets in this version and MUST be discarded.",
+      "classification": "preserve",
+      "live_requirement_ids": [
+        "REQ-QUIC-RFC9000-S17P2-0015",
+        "REQ-QUIC-RFC9000-S17P3P1-0014"
+      ],
+      "source_compatible_mappings": [
+        {
+          "live_requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0014",
+          "staged_requirement_id": "REQ-QUIC-RFC9000-1069"
+        }
+      ],
+      "preserve_without_staged_replacement": [
+        "REQ-QUIC-RFC9000-S17P2-0015"
+      ],
+      "reason": "The staged clause is sourced from the short-header section 17.3.1. The live long-header section 17.2 requirement must remain distinct because its proof and parser behavior are separate."
+    },
+    {
+      "statement": "The value included prior to protection MUST be set to 0.",
+      "classification": "preserve",
+      "live_requirement_ids": [
+        "REQ-QUIC-RFC9000-S17P2-0028",
+        "REQ-QUIC-RFC9000-S17P3P1-0016"
+      ],
+      "source_compatible_mappings": [
+        {
+          "live_requirement_id": "REQ-QUIC-RFC9000-S17P2-0028",
+          "staged_requirement_id": "REQ-QUIC-RFC9000-1730"
+        },
+        {
+          "live_requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0016",
+          "staged_requirement_id": "REQ-QUIC-RFC9000-1072"
+        }
+      ],
+      "preserve_without_staged_replacement": [],
+      "reason": "Both staged clauses have source-compatible section provenance, one for long headers and one for short headers. Preserve both live IDs; no identity change is required."
+    },
+    {
+      "statement": "The Length field MUST be encoded as a variable-length integer.",
+      "classification": "preserve",
+      "live_requirement_ids": [
+        "REQ-QUIC-RFC9000-S17P2P2-0013",
+        "REQ-QUIC-RFC9000-S17P2P3-0015",
+        "REQ-QUIC-RFC9000-S17P2P4-0014",
+        "REQ-QUIC-RFC9000-S19P6-0006"
+      ],
+      "source_compatible_mappings": [],
+      "preserve_without_staged_replacement": [
+        "REQ-QUIC-RFC9000-S17P2P2-0013",
+        "REQ-QUIC-RFC9000-S17P2P3-0015",
+        "REQ-QUIC-RFC9000-S17P2P4-0014",
+        "REQ-QUIC-RFC9000-S19P6-0006"
+      ],
+      "reason": "The staged clause is sourced from generic long-header section 17.2, while the live requirements own Initial, 0-RTT, Handshake, and CRYPTO frame Length contexts. Collapsing them would lose packet/frame-specific proof ownership."
+    }
+  ],
+  "next_review_target": "Review no-exact-statement live rows by RFC section cluster, starting with RFC9000 section 2 stream abstraction rows."
+}

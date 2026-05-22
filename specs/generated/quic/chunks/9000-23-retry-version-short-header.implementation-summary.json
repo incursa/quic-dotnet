@@ -34,12 +34,12 @@
     "REQ-QUIC-RFC9000-S17P2P4-0013",
     "REQ-QUIC-RFC9000-S17P2P4-0014",
     "REQ-QUIC-RFC9000-S17P2P4-0015",
-    "REQ-QUIC-RFC9000-S17P2P4-0016",
+    "REQ-QUIC-RFC9000-1015",
     "REQ-QUIC-RFC9000-S17P2P4-0017",
     "REQ-QUIC-RFC9000-S17P2P4-0018",
     "REQ-QUIC-RFC9000-S17P2P4-0019",
-    "REQ-QUIC-RFC9000-S17P2P4-0020",
-    "REQ-QUIC-RFC9000-S17P2P4-0021",
+    "REQ-QUIC-RFC9000-1735",
+    "REQ-QUIC-RFC9000-1018",
     "REQ-QUIC-RFC9000-S17P2P5-0001",
     "REQ-QUIC-RFC9000-S17P2P5-0002",
     "REQ-QUIC-RFC9000-S17P2P5-0003",
@@ -60,14 +60,14 @@
     "REQ-QUIC-RFC9000-S17P2P5P1-0002",
     "REQ-QUIC-RFC9000-S17P2P5P1-0003",
     "REQ-QUIC-RFC9000-S17P2P5P1-0004",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+    "REQ-QUIC-RFC9000-1033",
     "REQ-QUIC-RFC9000-S17P2P5P1-0006",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0007",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0008",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0001",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+    "REQ-QUIC-RFC9000-1034",
+    "REQ-QUIC-RFC9000-1035",
+    "REQ-QUIC-RFC9000-1036",
+    "REQ-QUIC-RFC9000-1037",
     "REQ-QUIC-RFC9000-S17P2P5P2-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+    "REQ-QUIC-RFC9000-1039",
     "REQ-QUIC-RFC9000-S17P2P5P2-0005",
     "REQ-QUIC-RFC9000-S17P2P5P2-0006",
     "REQ-QUIC-RFC9000-S17P2P5P2-0007",
@@ -75,14 +75,14 @@
     "REQ-QUIC-RFC9000-S17P2P5P2-0009",
     "REQ-QUIC-RFC9000-S17P2P5P3-0001",
     "REQ-QUIC-RFC9000-S17P2P5P3-0002",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0004",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0005",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-1050",
+    "REQ-QUIC-RFC9000-1051",
+    "REQ-QUIC-RFC9000-1052",
+    "REQ-QUIC-RFC9000-1053",
     "REQ-QUIC-RFC9000-S17P2P5P3-0007",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+    "REQ-QUIC-RFC9000-1055",
     "REQ-QUIC-RFC9000-S17P3-0001",
-    "REQ-QUIC-RFC9000-S17P3P1-0001",
+    "REQ-QUIC-RFC9000-1059",
     "REQ-QUIC-RFC9000-S17P3P1-0002",
     "REQ-QUIC-RFC9000-S17P3P1-0009",
     "REQ-QUIC-RFC9000-S17P3P1-0010",
@@ -94,13 +94,13 @@
     "REQ-QUIC-RFC9000-S17P4-0001",
     "REQ-QUIC-RFC9000-S17P4-0002",
     "REQ-QUIC-RFC9000-S17P4-0003",
-    "REQ-QUIC-RFC9000-S17P4-0004",
+    "REQ-QUIC-RFC9000-1088",
     "REQ-QUIC-RFC9000-S17P4-0005",
-    "REQ-QUIC-RFC9000-S17P4-0006",
-    "REQ-QUIC-RFC9000-S17P4-0007",
+    "REQ-QUIC-RFC9000-1090",
+    "REQ-QUIC-RFC9000-1091",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
-    "REQ-QUIC-RFC9000-S17P4-0010"
+    "REQ-QUIC-RFC9000-1098"
   ],
   "requirements": [
     {
@@ -491,7 +491,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-1015",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -527,7 +527,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1735",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -536,7 +536,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+      "requirement_id": "REQ-QUIC-RFC9000-1018",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -914,7 +914,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1033",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -932,7 +932,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1034",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -941,7 +941,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1035",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -950,7 +950,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1036",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -959,7 +959,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1037",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -977,7 +977,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1039",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1049,7 +1049,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1050",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1058,7 +1058,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1051",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1067,7 +1067,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1052",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1076,7 +1076,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1053",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1094,7 +1094,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1055",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1133,7 +1133,7 @@
       "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1059",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1439,7 +1439,7 @@
       "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-1071",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",
@@ -1497,7 +1497,7 @@
       "notes": "Short-header reserved bits are now normalized in valid inputs and rejected when non-zero."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1073",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",
@@ -1564,7 +1564,7 @@
       "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1075",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",
@@ -1647,7 +1647,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1088",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1665,7 +1665,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1090",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1674,7 +1674,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1091",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1701,7 +1701,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1098",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],

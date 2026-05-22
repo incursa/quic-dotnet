@@ -16,7 +16,7 @@
   "artifact_type": "specification",
   "status": "draft",
   "purpose": "Capture the QUIC loss-detection and congestion-control requirements defined by RFC 9002 as canonical spec-trace clauses.",
-  "context": "RFC 9002 contains both normative behavioral text and pseudocode-oriented appendices. The assembly keeps those clauses in one RFC-level specification while surfacing overlap with RFC 9000 transport recovery rules in generated reports.",
+  "context": "RFC 9002 contains both normative behavioral text and pseudocode-oriented appendices. The assembly keeps those clauses in one RFC-level specification while surfacing overlap with RFC 9000 transport recovery rules in generated reports. When RFC 9000 requirement references appear nearby, reconcile them against the derived RFC9000 crosswalk and retired-ID ledger before renaming any references.",
   "requirements": [
     {
       "id": "REQ-QUIC-RFC9002-S2-0001",
@@ -374,7 +374,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0001.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1910.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame"
         ]
       }
     },

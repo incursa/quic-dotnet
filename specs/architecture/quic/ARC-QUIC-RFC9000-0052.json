@@ -35,7 +35,7 @@
     "benchmarks/QuicFrameCodecBenchmarks.cs"
   ],
   "design_summary": "The STREAM_DATA_BLOCKED frame remains centered on the existing span-backed frame codec and immutable frame view. The parser accepts the fixed STREAM_DATA_BLOCKED frame type 0x15, parses Stream ID and Maximum Stream Data as QUIC variable-length integers, preserves the blocked stream identifier and stream offset at which blocking occurred, and consumes exactly the STREAM_DATA_BLOCKED frame bytes so following packet frames remain available to the packet parser. The formatter writes the fixed type and both fields through the shared QUIC variable-length integer formatter and rejects values outside the 62-bit varint range.",
-  "data_and_state_considerations": "This slice is wire-shape proof over QuicStreamDataBlockedFrame.StreamId, QuicStreamDataBlockedFrame.MaximumStreamData, and the frame codec. Runtime advisory emission remains owned by ARC-QUIC-RFC9000-0025. Receiver-side send-only stream rejection remains a separate requirement lane under REQ-QUIC-RFC9000-S19P13-0002.",
+  "data_and_state_considerations": "This slice is wire-shape proof over QuicStreamDataBlockedFrame.StreamId, QuicStreamDataBlockedFrame.MaximumStreamData, and the frame codec. Runtime advisory emission remains owned by ARC-QUIC-RFC9000-0025. Receiver-side send-only stream rejection remains a separate requirement lane under REQ-QUIC-RFC9000-1299.",
   "edge_cases_and_constraints": [
     "Non-0x15 and non-minimal 0x15 frame-type encodings are rejected by the fixed-type parser.",
     "Stream ID is accepted at each QUIC variable-length integer width boundary, including the maximum 62-bit varint value.",
@@ -46,12 +46,12 @@
   ],
   "alternatives_considered": [
     "Leave S19P13 under the existing broad frame-codec closeout; rejected because generated triage still reported broad or missing proof for requirements 0003 through 0008.",
-    "Fold receive-side send-only stream policy into this proof; rejected because REQ-QUIC-RFC9000-S19P13-0002 is a stream-state connection-error lane rather than parser and field-shape proof.",
+    "Fold receive-side send-only stream policy into this proof; rejected because REQ-QUIC-RFC9000-1299 is a stream-state connection-error lane rather than parser and field-shape proof.",
     "Create a standalone STREAM_DATA_BLOCKED benchmark suite; rejected because the existing QuicFrameCodec benchmark suite already owns permanent parser and formatter hot-path coverage for neighboring frame families."
   ],
   "risks": [
     "This proof does not claim new STREAM_DATA_BLOCKED emission scheduling or retry policy.",
-    "This proof does not close receiver-side send-only stream termination for REQ-QUIC-RFC9000-S19P13-0002.",
+    "This proof does not close receiver-side send-only stream termination for REQ-QUIC-RFC9000-1299.",
     "Malformed-frame handling is proven at the codec seam, not as a hosted endpoint close-packet assertion for every malformed STREAM_DATA_BLOCKED input."
   ],
   "supplemental_sections": [

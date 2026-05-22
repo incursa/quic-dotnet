@@ -13,9 +13,9 @@
   ],
   "verification_method": "Focused S8P1P4 requirement-home tests over listener Retry bootstrap replay admission, source-port rejection, port-bound token lifetime validation, deterministic port mutation fuzzing, and anti-amplification budget enforcement, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S8P1P4-0003",
+    "REQ-QUIC-RFC9000-0409",
     "REQ-QUIC-RFC9000-S8P1P4-0007",
-    "REQ-QUIC-RFC9000-S8P1P4-0011"
+    "REQ-QUIC-RFC9000-0412"
   ],
   "scope": "This verification covers the focused generated S8P1P4 hard proof tail for Retry token source endpoint continuity, short Retry token lifetime, and anti-amplification behavior when the client address changes.",
   "expected_result": "The focused tests show that a Retry replay from the original source endpoint is validated and admitted, the same Retry token from a fresh source port is rejected before admission, port-bound token validation rejects mutated source ports, the token remains accepted through its expiration boundary and is rejected immediately after, and the anti-amplification budget remains capped at three times received bytes for an unvalidated changed address.",
@@ -37,10 +37,10 @@
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0409.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0011.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0011\"",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0412.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0409|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0412\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",

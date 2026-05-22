@@ -67,25 +67,25 @@
     "S2": {
       "implemented_and_tested": [],
       "tested_but_implementation_mapping_unclear": [
-        "REQ-QUIC-RFC9000-S2-0006",
-        "REQ-QUIC-RFC9000-S2-0008",
-        "REQ-QUIC-RFC9000-S2-0009"
+        "REQ-QUIC-RFC9000-0024",
+        "REQ-QUIC-RFC9000-0027",
+        "REQ-QUIC-RFC9000-0026"
       ],
       "partially_implemented": [],
       "not_implemented": [
-        "REQ-QUIC-RFC9000-S2-0001",
-        "REQ-QUIC-RFC9000-S2-0002",
+        "REQ-QUIC-RFC9000-0019",
+        "REQ-QUIC-RFC9000-0020",
         "REQ-QUIC-RFC9000-S2-0003",
-        "REQ-QUIC-RFC9000-S2-0004",
-        "REQ-QUIC-RFC9000-S2-0005",
-        "REQ-QUIC-RFC9000-S2-0007"
+        "REQ-QUIC-RFC9000-0023",
+        "REQ-QUIC-RFC9000-0022",
+        "REQ-QUIC-RFC9000-0025"
       ]
     },
     "S2P1": {
       "implemented_and_tested": [
         "REQ-QUIC-RFC9000-S2P1-0003",
-        "REQ-QUIC-RFC9000-S2P1-0004",
-        "REQ-QUIC-RFC9000-S2P1-0006",
+        "REQ-QUIC-RFC9000-0032",
+        "REQ-QUIC-RFC9000-0033",
         "REQ-QUIC-RFC9000-S2P1-0008",
         "REQ-QUIC-RFC9000-S2P1-0009",
         "REQ-QUIC-RFC9000-S2P1-0010",
@@ -97,30 +97,30 @@
       ],
       "partially_implemented": [],
       "not_implemented": [
-        "REQ-QUIC-RFC9000-S2P1-0005",
-        "REQ-QUIC-RFC9000-S2P1-0007",
+        "REQ-QUIC-RFC9000-0031",
+        "REQ-QUIC-RFC9000-0034",
         "REQ-QUIC-RFC9000-S2P1-0012",
-        "REQ-QUIC-RFC9000-S2P1-0013",
+        "REQ-QUIC-RFC9000-0045",
         "REQ-QUIC-RFC9000-S2P1-0014"
       ]
     },
     "S2P2": {
       "implemented_and_tested": [
         "REQ-QUIC-RFC9000-S2P2-0001",
-        "REQ-QUIC-RFC9000-S2P2-0002"
+        "REQ-QUIC-RFC9000-0047"
       ],
       "tested_but_implementation_mapping_unclear": [
         "REQ-QUIC-RFC9000-S2P2-0009"
       ],
       "partially_implemented": [],
       "not_implemented": [
-        "REQ-QUIC-RFC9000-S2P2-0003",
+        "REQ-QUIC-RFC9000-0048",
         "REQ-QUIC-RFC9000-S2P2-0004",
         "REQ-QUIC-RFC9000-S2P2-0005",
         "REQ-QUIC-RFC9000-S2P2-0006",
         "REQ-QUIC-RFC9000-S2P2-0007",
-        "REQ-QUIC-RFC9000-S2P2-0008",
-        "REQ-QUIC-RFC9000-S2P2-0010"
+        "REQ-QUIC-RFC9000-0052",
+        "REQ-QUIC-RFC9000-0056"
       ]
     },
     "S2P3": {
@@ -129,7 +129,7 @@
       "partially_implemented": [],
       "not_implemented": [
         "REQ-QUIC-RFC9000-S2P3-0001",
-        "REQ-QUIC-RFC9000-S2P3-0002",
+        "REQ-QUIC-RFC9000-0057",
         "REQ-QUIC-RFC9000-S2P3-0003"
       ]
     },
@@ -174,18 +174,18 @@
       "src/Incursa.Quic/QuicFrameCodec.cs"
     ],
     "in_scope_requirement_ids_found_in_tests": [
-      "REQ-QUIC-RFC9000-S2-0006",
-      "REQ-QUIC-RFC9000-S2-0008",
-      "REQ-QUIC-RFC9000-S2-0009",
+      "REQ-QUIC-RFC9000-0024",
+      "REQ-QUIC-RFC9000-0027",
+      "REQ-QUIC-RFC9000-0026",
       "REQ-QUIC-RFC9000-S2P1-0003",
-      "REQ-QUIC-RFC9000-S2P1-0004",
-      "REQ-QUIC-RFC9000-S2P1-0006",
+      "REQ-QUIC-RFC9000-0032",
+      "REQ-QUIC-RFC9000-0033",
       "REQ-QUIC-RFC9000-S2P1-0008",
       "REQ-QUIC-RFC9000-S2P1-0009",
       "REQ-QUIC-RFC9000-S2P1-0010",
       "REQ-QUIC-RFC9000-S2P1-0011",
       "REQ-QUIC-RFC9000-S2P2-0001",
-      "REQ-QUIC-RFC9000-S2P2-0002",
+      "REQ-QUIC-RFC9000-0047",
       "REQ-QUIC-RFC9000-S2P2-0009",
       "REQ-QUIC-RFC9000-S2P4-0004",
       "REQ-QUIC-RFC9000-S2P4-0005",

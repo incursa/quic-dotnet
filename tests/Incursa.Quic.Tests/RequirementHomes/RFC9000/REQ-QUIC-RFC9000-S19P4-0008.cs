@@ -5,7 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0006">Streams in QUIC MAY be canceled.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0024">QUIC MUST allow streams to be canceled.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0005">An application protocol MAY reset a stream if the stream is not already in a terminal state, resulting in a RESET_STREAM frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0003">The Final Size field of a RESET_STREAM frame MUST carry the final size value.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0004">The Type field MUST be encoded as a variable-length integer with value 0x04.</workbench-requirement>
@@ -17,7 +17,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0010">A variable-length integer containing the application protocol error code (see Section 20.2) that MUST indicate why the stream is being closed.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0011">The Final Size field MUST be variable-length integer indicating the final size of the stream by the RESET_STREAM sender, in units of bytes; see Section 4.5.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0024")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0005")]
     [Requirement("REQ-QUIC-RFC9000-S4P5-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0004")]
@@ -48,7 +48,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0006">Streams in QUIC MAY be canceled.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0024">QUIC MUST allow streams to be canceled.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0004">The Type field MUST be encoded as a variable-length integer with value 0x04.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0005">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0006">The Application Protocol Error Code field MUST be encoded as a variable-length integer.</workbench-requirement>
@@ -58,7 +58,7 @@ public sealed class REQ_QUIC_RFC9000_S19P4_0008
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0010">A variable-length integer containing the application protocol error code (see Section 20.2) that MUST indicate why the stream is being closed.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P4-0011">The Final Size field MUST be variable-length integer indicating the final size of the stream by the RESET_STREAM sender, in units of bytes; see Section 4.5.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0024")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P4-0006")]

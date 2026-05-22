@@ -45,7 +45,7 @@ public sealed class REQ_QUIC_RFC9000_S19P9_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-0026")]
     [Requirement("REQ-QUIC-RFC9000-S19P9-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P9-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P9-0005")]

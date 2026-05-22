@@ -28,16 +28,16 @@
 - `REQ-QUIC-RFC9000-S10P3P1-0001` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3-0010` is traced in [`REQ-QUIC-RFC9000-S10P3-0010.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0008` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs#L1).
-- `REQ-QUIC-RFC9000-S10P3P1-0011` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0011.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs#L1).
-- `REQ-QUIC-RFC9000-S10P3P1-0012` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0012.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs#L1).
+- `REQ-QUIC-RFC9000-0639` is traced in [`REQ-QUIC-RFC9000-0639.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs#L1).
+- `REQ-QUIC-RFC9000-0640` is traced in [`REQ-QUIC-RFC9000-0640.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs#L1).
 - The focused stateless-reset run passed with `23` tests, and the full `Incursa.Quic.Tests` suite still surfaces unrelated baseline failures outside this slice.
 
 ## Deferred Requirements
 
-- `REQ-QUIC-RFC9000-S10P3-0002`: Connection-close preference is blocked by the missing connection error routing and close-path surface.
+- `REQ-QUIC-RFC9000-0604`: Connection-close preference is blocked by the missing connection error routing and close-path surface.
 - `REQ-QUIC-RFC9000-S10P3-0014`: Token-ending packet recognition has helper evidence, but endpoint shutdown and receive-path orchestration are still missing.
 - `REQ-QUIC-RFC9000-S10P3-0019`: Immediate connection teardown on Stateless Reset requires a connection-state machine.
-- `REQ-QUIC-RFC9000-S10P3-0020`: Token invalidation on `RETIRE_CONNECTION_ID` needs endpoint state and retirement bookkeeping.
+- `REQ-QUIC-RFC9000-0610`: Token invalidation on `RETIRE_CONNECTION_ID` needs endpoint state and retirement bookkeeping.
 - `REQ-QUIC-RFC9000-S10P3-0029`: Version-aware Stateless Reset generation still needs negotiated-version policy and endpoint history.
 - `REQ-QUIC-RFC9000-S10P3P1-0002`: Recent-token memory by connection ID and remote address needs a receive-side token store.
 - `REQ-QUIC-RFC9000-S10P3P1-0004`: Skipping the token check after another packet succeeds requires a datagram-processing pipeline.
@@ -46,8 +46,8 @@
 - `REQ-QUIC-RFC9000-S10P3P1-0010`: Remember-and-scope behavior spans `NEW_CONNECTION_ID`, transport-parameter, and retirement state that is not yet modeled.
 - `REQ-QUIC-RFC9000-S10P3P2-0003`: Recoverable connection-ID length handling for static-key tokens is not modeled.
 - `REQ-QUIC-RFC9000-S10P3P2-0005`: Preventing reuse of the CID/static-key pair needs endpoint state and allocation policy.
-- `REQ-QUIC-RFC9000-S10P3P2-0006`: Preventing reuse of reset CIDs across shared static keys needs cross-endpoint policy state.
-- `REQ-QUIC-RFC9000-S10P3P2-0007`: Enforcing one token per CID needs a token registry.
+- `REQ-QUIC-RFC9000-0650`: Preventing reuse of reset CIDs across shared static keys needs cross-endpoint policy state.
+- `REQ-QUIC-RFC9000-0651`: Enforcing one token per CID needs a token registry.
 - `REQ-QUIC-RFC9000-S10P3P2-0008`: Treating duplicates as protocol violations needs connection-level token issuance state.
 - `REQ-QUIC-RFC9000-S10P3P3-0002`: Reset-send limiting requires stateful accounting of emitted Stateless Resets.
 
@@ -62,8 +62,8 @@
   - [`REQ-QUIC-RFC9000-S10P3-0015.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs) - `REQ-QUIC-RFC9000-S10P3-0015`
   - [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs) - `REQ-QUIC-RFC9000-S10P3P1-0001`
   - [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs) - `REQ-QUIC-RFC9000-S10P3P1-0008`
-  - [`REQ-QUIC-RFC9000-S10P3P1-0011.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0011.cs) - `REQ-QUIC-RFC9000-S10P3P1-0011`
-  - [`REQ-QUIC-RFC9000-S10P3P1-0012.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0012.cs) - `REQ-QUIC-RFC9000-S10P3P1-0012`
+  - [`REQ-QUIC-RFC9000-0639.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs) - `REQ-QUIC-RFC9000-0639`
+  - [`REQ-QUIC-RFC9000-0640.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs) - `REQ-QUIC-RFC9000-0640`
 - Stale or wrong in-scope requirement refs found: none.
 
 ## Conclusion

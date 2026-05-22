@@ -33,7 +33,7 @@ Intentionally deferred: 26
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1488.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`
@@ -64,7 +64,7 @@ Intentionally deferred: 26
 ## Remaining Open Requirements In Scope
 
 - `REQ-QUIC-RFC9000-S22P1P2-0001` through `REQ-QUIC-RFC9000-S22P1P2-0007`
-- `REQ-QUIC-RFC9000-S22P1P3-0001` through `REQ-QUIC-RFC9000-S22P1P3-0004`
+- `REQ-QUIC-RFC9000-1498` through `REQ-QUIC-RFC9000-1501`
 - `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008`
 - `REQ-QUIC-RFC9000-S22P3-0001` through `REQ-QUIC-RFC9000-S22P3-0002`
 - `REQ-QUIC-RFC9000-S22P4-0001` through `REQ-QUIC-RFC9000-S22P4-0002`

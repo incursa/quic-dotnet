@@ -18,13 +18,13 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 
 ## Requirements Covered
 
-- `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`
-- `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0015`
-- `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-S4P2-0005`
-- `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`
+- `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-0159`
+- `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-0177`
+- `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-0180`
+- `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`
 - `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`
-- `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0012`
-- `REQ-QUIC-RFC9000-S4P6-0013`
+- `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-0203`
+- `REQ-QUIC-RFC9000-0204`
 
 ## Requirements Partial
 
@@ -37,9 +37,9 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 ## Reference Audit
 
 - Source requirement refs found: none.
-- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-S4-0005`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-S4P1-0015`, `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-S4P2-0005`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-S4P4-0004`, `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`, and `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-S4P6-0013`.
+- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-0159`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-0177`, `REQ-QUIC-RFC9000-S4P2-0001` through `REQ-QUIC-RFC9000-0180`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`, `REQ-QUIC-RFC9000-S4P5-0001` through `REQ-QUIC-RFC9000-S4P5-0008`, and `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-0204`.
 - Stale requirement refs found: none.
-- The accidental RFC 9001 tags in `QuicFrameCodecPart3Tests.cs` and `QuicFrameCodecFuzzTests.cs` were corrected to `REQ-QUIC-RFC9000-S4-0004`.
+- The accidental RFC 9001 tags in `QuicFrameCodecPart3Tests.cs` and `QuicFrameCodecFuzzTests.cs` were corrected to `REQ-QUIC-RFC9000-0158`.
 
 ## Files Changed
 
@@ -49,20 +49,20 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `specs/work-items/quic/WI-QUIC-RFC9000-0001.json`
 - `specs/verification/quic/VER-QUIC-RFC9000-0001.json`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0002.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0004.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0158.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0003.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0005.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0162.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0164.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0176.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0002.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0004.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0180.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0005.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0193.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0004.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0005.cs`

@@ -19,50 +19,50 @@ Section tokens: `S2, S2P1, S2P2, S2P3, S2P4`
 
 ### S2
 
-- `REQ-QUIC-RFC9000-S2-0001` - not implemented; The repository does not expose an ordered application-facing stream abstraction.
-- `REQ-QUIC-RFC9000-S2-0002` - not implemented; There is no connection or send-path surface that creates streams by writing data.
+- `REQ-QUIC-RFC9000-0019` - not implemented; The repository does not expose an ordered application-facing stream abstraction.
+- `REQ-QUIC-RFC9000-0020` - not implemented; There is no connection or send-path surface that creates streams by writing data.
 - `REQ-QUIC-RFC9000-S2-0003` - not implemented; No connection-scoped stream lifetime model exists.
-- `REQ-QUIC-RFC9000-S2-0004` - not implemented; The parser classifies initiator bits, but it does not model endpoint-driven stream creation.
-- `REQ-QUIC-RFC9000-S2-0005` - not implemented; No scheduler or multiplexing surface models interleaved concurrent stream transmission.
-- `REQ-QUIC-RFC9000-S2-0006` - tested but implementation mapping unclear; RESET_STREAM and STOP_SENDING wire formats exist, but there is no stream lifecycle implementation behind them.
-- `REQ-QUIC-RFC9000-S2-0007` - not implemented; There is no delivery layer that could enforce or expose cross-stream ordering semantics.
-- `REQ-QUIC-RFC9000-S2-0008` - tested but implementation mapping unclear; MAX_STREAMS and related frame codecs exist, but no live stream manager operates concurrent streams.
-- `REQ-QUIC-RFC9000-S2-0009` - tested but implementation mapping unclear; Flow-control-related frame codecs exist, but there is no sender-side enforcement or per-stream data accounting.
+- `REQ-QUIC-RFC9000-0023` - not implemented; The parser classifies initiator bits, but it does not model endpoint-driven stream creation.
+- `REQ-QUIC-RFC9000-0022` - not implemented; No scheduler or multiplexing surface models interleaved concurrent stream transmission.
+- `REQ-QUIC-RFC9000-0024` - tested but implementation mapping unclear; RESET_STREAM and STOP_SENDING wire formats exist, but there is no stream lifecycle implementation behind them.
+- `REQ-QUIC-RFC9000-0025` - not implemented; There is no delivery layer that could enforce or expose cross-stream ordering semantics.
+- `REQ-QUIC-RFC9000-0027` - tested but implementation mapping unclear; MAX_STREAMS and related frame codecs exist, but no live stream manager operates concurrent streams.
+- `REQ-QUIC-RFC9000-0026` - tested but implementation mapping unclear; Flow-control-related frame codecs exist, but there is no sender-side enforcement or per-stream data accounting.
 
 ### S2P1
 
 - `REQ-QUIC-RFC9000-S2P1-0001` - tested but implementation mapping unclear; Stream-ID classification shows unidirectional types, but no data-path enforcement restricts direction.
 - `REQ-QUIC-RFC9000-S2P1-0002` - tested but implementation mapping unclear; Stream-ID classification shows bidirectional types, but no bidirectional send/receive surface exists.
 - `REQ-QUIC-RFC9000-S2P1-0003` - implemented and tested; `QuicStreamId` and `TryParseStreamIdentifier` expose stream IDs as first-class values.
-- `REQ-QUIC-RFC9000-S2P1-0004` - implemented and tested; Stream IDs are parsed through the shared QUIC varint helper and bounded by the 62-bit QUIC varint ceiling.
-- `REQ-QUIC-RFC9000-S2P1-0005` - not implemented; No connection-scoped stream registry enforces uniqueness.
-- `REQ-QUIC-RFC9000-S2P1-0006` - implemented and tested; Stream IDs are encoded and parsed as QUIC variable-length integers.
-- `REQ-QUIC-RFC9000-S2P1-0007` - not implemented; No stream allocation or reuse prevention surface exists.
+- `REQ-QUIC-RFC9000-0032` - implemented and tested; Stream IDs are parsed through the shared QUIC varint helper and bounded by the 62-bit QUIC varint ceiling.
+- `REQ-QUIC-RFC9000-0031` - not implemented; No connection-scoped stream registry enforces uniqueness.
+- `REQ-QUIC-RFC9000-0033` - implemented and tested; Stream IDs are encoded and parsed as QUIC variable-length integers.
+- `REQ-QUIC-RFC9000-0034` - not implemented; No stream allocation or reuse prevention surface exists.
 - `REQ-QUIC-RFC9000-S2P1-0008` - implemented and tested; The least significant bit is exposed as initiator classification.
 - `REQ-QUIC-RFC9000-S2P1-0009` - implemented and tested; Even-valued stream IDs classify as client-initiated.
 - `REQ-QUIC-RFC9000-S2P1-0010` - implemented and tested; Odd-valued stream IDs classify as server-initiated.
 - `REQ-QUIC-RFC9000-S2P1-0011` - implemented and tested; The second least significant bit is exposed as bidirectional versus unidirectional classification.
 - `REQ-QUIC-RFC9000-S2P1-0012` - not implemented; No stream ID allocator establishes the per-type minimum starting points.
-- `REQ-QUIC-RFC9000-S2P1-0013` - not implemented; No stream ID allocator enforces monotonic creation.
+- `REQ-QUIC-RFC9000-0045` - not implemented; No stream ID allocator enforces monotonic creation.
 - `REQ-QUIC-RFC9000-S2P1-0014` - not implemented; No stream manager opens lower-numbered streams when IDs arrive out of order.
 
 ### S2P2
 
 - `REQ-QUIC-RFC9000-S2P2-0001` - implemented and tested; STREAM frame parsing and formatting preserve stream payload bytes.
-- `REQ-QUIC-RFC9000-S2P2-0002` - partially implemented; STREAM frames expose Stream ID and Offset fields, but no ordered reassembly layer places data for delivery.
-- `REQ-QUIC-RFC9000-S2P2-0003` - not implemented; No application-facing ordered byte-stream delivery surface exists.
+- `REQ-QUIC-RFC9000-0047` - partially implemented; STREAM frames expose Stream ID and Offset fields, but no ordered reassembly layer places data for delivery.
+- `REQ-QUIC-RFC9000-0048` - not implemented; No application-facing ordered byte-stream delivery surface exists.
 - `REQ-QUIC-RFC9000-S2P2-0004` - not implemented; No out-of-order buffering or flow-control-bounded reassembly exists.
 - `REQ-QUIC-RFC9000-S2P2-0005` - not implemented; No optional out-of-order delivery API exists.
 - `REQ-QUIC-RFC9000-S2P2-0006` - not implemented; No receive-state implementation can discard already-received data.
 - `REQ-QUIC-RFC9000-S2P2-0007` - not implemented; No retransmission/send-state surface ensures byte stability at offsets.
-- `REQ-QUIC-RFC9000-S2P2-0008` - not implemented; No conflicting-retransmission detection or error path exists.
+- `REQ-QUIC-RFC9000-0052` - not implemented; No conflicting-retransmission detection or error path exists.
 - `REQ-QUIC-RFC9000-S2P2-0009` - tested but implementation mapping unclear; The parser exposes stream payload as opaque bytes, but there is no higher-level stream abstraction to prove the API shape.
-- `REQ-QUIC-RFC9000-S2P2-0010` - not implemented; No sender-side flow-control enforcement exists.
+- `REQ-QUIC-RFC9000-0056` - not implemented; No sender-side flow-control enforcement exists.
 
 ### S2P3
 
 - `REQ-QUIC-RFC9000-S2P3-0001` - not implemented; The repository has no stream scheduling or prioritization interface.
-- `REQ-QUIC-RFC9000-S2P3-0002` - not implemented; The repository has no application-visible priority controls.
+- `REQ-QUIC-RFC9000-0057` - not implemented; The repository has no application-visible priority controls.
 - `REQ-QUIC-RFC9000-S2P3-0003` - not implemented; The repository has no resource allocator that consumes stream priority information.
 
 ### S2P4
@@ -118,7 +118,7 @@ Section tokens: `S2, S2P1, S2P2, S2P3, S2P4`
 
 - Rewrote the remaining legacy stream-ID test traits in `tests/Incursa.Quic.Tests/QuicStreamIdTests.cs` and `tests/Incursa.Quic.Tests/QuicStreamIdPropertyTests.cs`.
 - Applied these clear mappings:
-  - `REQ-QUIC-STRM-0001` -> `REQ-QUIC-RFC9000-S2P1-0003`, `REQ-QUIC-RFC9000-S2P1-0004`, `REQ-QUIC-RFC9000-S2P1-0006`
+  - `REQ-QUIC-STRM-0001` -> `REQ-QUIC-RFC9000-S2P1-0003`, `REQ-QUIC-RFC9000-0032`, `REQ-QUIC-RFC9000-0033`
   - `REQ-QUIC-STRM-0002` -> `REQ-QUIC-RFC9000-S2P1-0008`, `REQ-QUIC-RFC9000-S2P1-0009`, `REQ-QUIC-RFC9000-S2P1-0010`
   - `REQ-QUIC-STRM-0003` -> `REQ-QUIC-RFC9000-S2P1-0011`
   - `REQ-QUIC-STRM-0004` -> `REQ-QUIC-RFC9000-S2P1-0008`, `REQ-QUIC-RFC9000-S2P1-0009`, `REQ-QUIC-RFC9000-S2P1-0010`, `REQ-QUIC-RFC9000-S2P1-0011`
@@ -139,12 +139,12 @@ Section tokens: `S2, S2P1, S2P2, S2P3, S2P4`
 
 ## Requirements Needing Deeper Implementation Work
 
-- `REQ-QUIC-RFC9000-S2-0001` through `REQ-QUIC-RFC9000-S2-0005`
-- `REQ-QUIC-RFC9000-S2-0007`
-- `REQ-QUIC-RFC9000-S2P1-0005`
-- `REQ-QUIC-RFC9000-S2P1-0007`
+- `REQ-QUIC-RFC9000-0019` through `REQ-QUIC-RFC9000-0022`
+- `REQ-QUIC-RFC9000-0025`
+- `REQ-QUIC-RFC9000-0031`
+- `REQ-QUIC-RFC9000-0034`
 - `REQ-QUIC-RFC9000-S2P1-0012` through `REQ-QUIC-RFC9000-S2P1-0014`
-- `REQ-QUIC-RFC9000-S2P2-0002` through `REQ-QUIC-RFC9000-S2P2-0010`
+- `REQ-QUIC-RFC9000-0047` through `REQ-QUIC-RFC9000-0056`
 - `REQ-QUIC-RFC9000-S2P3-0001` through `REQ-QUIC-RFC9000-S2P3-0003`
 - `REQ-QUIC-RFC9000-S2P4-0001` through `REQ-QUIC-RFC9000-S2P4-0003`
 - `REQ-QUIC-RFC9000-S2P4-0008`

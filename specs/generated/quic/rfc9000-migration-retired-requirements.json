@@ -1,0 +1,4308 @@
+{
+  "retired_requirements": [
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0001",
+      "title": "Provide ordered byte-stream abstraction",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0019"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical for the overlapping ordered byte-stream obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0019 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0002",
+      "title": "Permit streams to be created by sending data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0020"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0020 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0005",
+      "title": "Allow interleaved concurrent stream data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0022"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0022 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0004",
+      "title": "Allow either endpoint to create streams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0023"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0023 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0006",
+      "title": "Allow streams to be canceled",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0024"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0024 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0007",
+      "title": "Avoid cross-stream byte ordering guarantees",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0025"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical for the overlapping cross-stream ordering obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0025 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0009",
+      "title": "Allow arbitrary per-stream data subject to limits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0026"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0026 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2-0008",
+      "title": "Allow arbitrary concurrent streams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0027"
+      ],
+      "notes": [
+        "RFC9000 section 2 pilot adopted incoming staged ID as canonical and strengthened the capability wording from MAY to MUST allow."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0027 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0008",
+      "title": "Keep first-flight 0-RTT connection IDs aligned with the first Initial packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0315"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0315 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P3P1-0001",
+      "title": "Use short packet header for 1-RTT packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1059"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1059 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+      "title": "Allow 0-RTT after Retry",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1052"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1052 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P3-0011",
+      "title": "Tokens from prior connections may be reused",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0401"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0401 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0008",
+      "title": "Allow clients to use reserved version numbers",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0901"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0901 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+      "title": "Limit Retry processing to one packet per connection attempt",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1036"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1036 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+      "title": "Discard zero-length Retry tokens",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1039"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1039 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S6P2-0004",
+      "title": "Discard Version Negotiation packets listing the selected version",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-6223"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-6223 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S6P2-0003",
+      "title": "Discard stale Version Negotiation packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-6222"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-6222 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0037",
+      "title": "Forbid server-only transport parameters on clients",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1162"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1162 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+      "title": "Do not reset packet numbers after Retry",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1053"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1053 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "title": "Stop sending 0-RTT after processing 1-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1009"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1009 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0027",
+      "title": "Preferred address violations are transport parameter errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1156"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1156 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P7-0007",
+      "title": "Reject empty NEW_TOKEN frames as frame encoding errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1244"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1244 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+      "title": "Reuse handshake message after Retry",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1050"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1050 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0007",
+      "title": "Allow advertising support for reserved versions",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0900"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0900 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "title": "Resend 0-RTT data after a new Initial packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1006"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1006 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0004",
+      "title": "Remember other processable server transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0346"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0346 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0006",
+      "title": "Prefer the same address family for client migration",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0543"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0543 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P2-0008",
+      "title": "Validate chosen preferred address before migrating",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0529"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0529 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "title": "Client handling of non-zero token length",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0985"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0985 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P2-0006",
+      "title": "Do not reuse a connection ID after a revealed stateless reset",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0650"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0650 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P19-0009",
+      "title": "Use transport error code space for 0x1c",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1358"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1358 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P3-0006",
+      "title": "Replace 0x1d CONNECTION_CLOSE in handshake packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0595"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0595 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P6-0001",
+      "title": "Use CRYPTO frames for handshake messages",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1222"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1222 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0020",
+      "title": "Use the shortest possible frame type encoding",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0734"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0734 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0026",
+      "title": "Send PATH_CHALLENGE checks periodically until satisfied",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0813"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0813 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0008",
+      "title": "Define MAX_STREAM_DATA offset",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0168"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0168 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3P3-0003",
+      "title": "Move back to the original path on packet number increase",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0498"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0498 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P1-0001",
+      "title": "Delay acknowledgment until processing completes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0749"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0749 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0005",
+      "title": "Require short-header packets to be last in a datagram",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1220010"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1220010 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P1-0001",
+      "title": "Padding frame carries no semantic value",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1910"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1910 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "title": "Send PATH_RESPONSE on the received path",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0443"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0443 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4-0003",
+      "title": "Limit peer-initiated stream concurrency",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0157"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0157 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P3-0008",
+      "title": "Do not reuse packet numbers within a space",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0709"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0709 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P1-0007",
+      "title": "Do not reuse stream IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0034"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0034 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P3-0002",
+      "title": "Provide stream priority indication",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0057"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0057 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0007",
+      "title": "Advertise larger stream limits with MAX_STREAM_DATA",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0167"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0167 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0007",
+      "title": "Discard unacknowledged ACK ranges to reduce size",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-13235"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-13235 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P2-0003",
+      "title": "Allow multiple packets before deciding to ACK",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1324"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1324 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0035",
+      "title": "Accept packets containing outdated frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1344"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1344 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0012",
+      "title": "Close on flow-control violations",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0173"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0173 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P3-0011",
+      "title": "Discard newly unprotected packets when duplicate status is uncertain",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0712"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0712 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0022",
+      "title": "Ignore non-increasing Retire Prior To values",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150007"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150007 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0004",
+      "title": "Limit remembered ACK ranges",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-13233"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-13233 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0010",
+      "title": "Track cumulative received bytes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0170"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0170 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P2-0005",
+      "title": "Do not wait for blocked-flow-control frames before sending credit updates",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0180"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0180 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0010",
+      "title": "Retain ACK ranges until safe to discard",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0768"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0768 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0005",
+      "title": "Set initial limits via transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0164"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0164 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P4-0006",
+      "title": "Send ACK frames for all received packets on multiple paths",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0510"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0510 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0012",
+      "title": "Include the largest received packet number in ACK frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0771"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0771 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P2-0002",
+      "title": "Send ACK frames after at least two ack-eliciting packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1323"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1323 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P3-0001",
+      "title": "Review codepoint removal requests",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1498"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1498 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0013",
+      "title": "Ignore non-increasing flow-control frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0174"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0174 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0036",
+      "title": "Avoid retransmitting acknowledged information",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0816"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0816 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P13-0001",
+      "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1298"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1298 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0014",
+      "title": "Signal flow-control blocking",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0176"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0176 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0015",
+      "title": "Periodically signal blocked flow control",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0177"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0177 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P3-0004",
+      "title": "Indicate that migration is unsupported",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0277"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0277 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+      "title": "Abort on packet number reset",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1055"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1055 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0009",
+      "title": "Allow servers to advertise reserved versions",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0902"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0902 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0002",
+      "title": "Limit Version Negotiation responses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0265"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0265 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S6P1-0003",
+      "title": "Limit Version Negotiation packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0286"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0286 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "title": "Allow multiple server Initial packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0990"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0990 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
+      "title": "Allow multiple Retry packets while receiving Initial or 0-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1034"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1034 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+      "title": "Allow Retry on Initial and 0-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1033"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1033 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0008",
+      "title": "Server may retain remembered parameters and reject smaller 0-RTT values",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0350"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0350 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+      "title": "Server handling of changed handshake message",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1051"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1051 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0013",
+      "title": "Allow protocol error for updated transport parameters in 0-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0356"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0356 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
+      "title": "Limit Retry responses per UDP datagram",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1035"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1035 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "title": "Do not send multiple Version Negotiation packets for one datagram",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0980"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0980 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+      "title": "Reject unsupported 0-RTT transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0351"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0351 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0012",
+      "title": "Set the destination connection ID from the first Initial packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0319"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0319 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P20-0006",
+      "title": "Treat HANDSHAKE_DONE receipt as PROTOCOL_VIOLATION",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1372"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1372 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P7-0010",
+      "title": "Treat NEW_TOKEN frames as protocol violations for servers",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1246"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1246 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0025",
+      "title": "Zero-length connection IDs forbid preferred addresses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1154"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1154 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11-0005",
+      "title": "Do not use stateless reset when frame transmission state exists",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0661"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0661 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3-0004",
+      "title": "Bind stateless reset tokens to a connection ID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0607"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0607 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P1-0004",
+      "title": "Limit stream ID width",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0032"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0032 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P1-0005",
+      "title": "Keep stream IDs unique",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0031"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0031 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P1-0001",
+      "title": "Construct tokens for server provenance",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0381"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0381 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14-0001",
+      "title": "UDP datagrams may carry multiple QUIC packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0851"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0851 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P3P1-0007",
+      "title": "Interpret zero ACK range length as largest packet only",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1198"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1198 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "title": "Version Negotiation packet is not acknowledged",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0976"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0976 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1-0013",
+      "title": "Allow zero-length connection IDs when routing is unnecessary",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0215"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0215 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0021",
+      "title": "Use a zero-length destination connection ID toward such an endpoint",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0239"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0239 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0002",
+      "title": "Acknowledge most recent packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-13230"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-13230 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P5-0011",
+      "title": "Change addresses infrequently",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0519"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0519 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0003",
+      "title": "Use received source connection ID after the first Initial packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0307"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0307 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0005",
+      "title": "Stop tracking acknowledged ACK ranges",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-13234"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-13234 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2-0009",
+      "title": "Enter closing state after sending CONNECTION_CLOSE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0564"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0564 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P1-0009",
+      "title": "Enter Data Sent after FIN is sent",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0083"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0083 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+      "title": "Discard subsequent Retry packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1037"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1037 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3-0011",
+      "title": "Send address validation tokens after verifying a new client address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0488"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0488 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0011",
+      "title": "Allow all frames in 1-RTT packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0726"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0726 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P5-0006",
+      "title": "All other frame types limited to application data packet number space",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0741"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0741 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P4-0006",
+      "title": "Make Standards Track registrations permanent",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1507"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1507 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "title": "Carry 1-RTT acknowledgments in 1-RTT packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1011"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1011 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P3-0007",
+      "title": "ACKs indicate packet number and space",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1177"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1177 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P4-0001",
+      "title": "Make address validation tokens hard to guess",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0407"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0407 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0006",
+      "title": "Permit waiting before state discard",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0465"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0465 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0007",
+      "title": "Limit packets sent to unvalidated addresses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0583"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0583 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0010",
+      "title": "Send CONNECTION_CLOSE in response to attributed packets while closing",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0575"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0575 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P1-0008",
+      "title": "Generate STREAM_DATA_BLOCKED when flow control blocks sending",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0082"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0082 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0001",
+      "title": "Change the peer connection ID at any time during the connection",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0240"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0240 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P2-0001",
+      "title": "Allow deferred path validation after the next non-probing frame",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0476"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0476 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10-0002",
+      "title": "Discard state without a validated path",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0548"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0548 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0004",
+      "title": "Drop keys and reply with CONNECTION_CLOSE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0580"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0580 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P2-0001",
+      "title": "Allow other frames alongside path validation frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0425"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0425 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0003",
+      "title": "Retain keys to process CONNECTION_CLOSE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0579"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0579 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P2-0008",
+      "title": "Allow connection termination when no alternative path exists",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0872"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0872 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P2-0008",
+      "title": "Allow PROTOCOL_VIOLATION on conflicting duplicate data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0052"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0052 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11-0003",
+      "title": "Allow generic error codes in place of specific codes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0659"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0659 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0005",
+      "title": "Signal extension-frame willingness with transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1377"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1377 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11-0004",
+      "title": "Allow applicable error codes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0658"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0658 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P1-0009",
+      "title": "Detect stateless reset from trailing bytes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0629"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0629 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0008",
+      "title": "Enter closing state after immediate close",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0572"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0572 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P2P1-0001",
+      "title": "Ignore ICMP PMTU decreases below the minimum datagram size",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1421"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1421 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P2-0001",
+      "title": "Ignore unsupported transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0357"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0357 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11P1-0008",
+      "title": "Discard packets only without retained processing effects",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0668"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0668 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+      "title": "Do not fail validation on ACK frames that do not advance the largest acknowledged packet number",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0845"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0845 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0014",
+      "title": "Do not forget connection IDs without retiring them",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0251"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0251 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P5-0003",
+      "title": "Exclude uncontrolled delays from ACK Delay",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0779"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0779 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0001",
+      "title": "Do not migrate before handshake confirmation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0460"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0460 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P11-0009",
+      "title": "Limit stream openings to peer allowance",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1291"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1291 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P5-0002",
+      "title": "Do not reuse a connection ID across multiple local addresses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0515"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0515 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4-0002",
+      "title": "Send each transport parameter at most once",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0335"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0335 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3-0011",
+      "title": "Limit Stateless Reset amplification",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0622"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0622 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S6P1-0002",
+      "title": "Do not send Version Negotiation in response to Version Negotiation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0285"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0285 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P5-0005",
+      "title": "Do not send data at or beyond final size",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0193"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0193 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P2-0010",
+      "title": "Respect peer flow control limits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0056"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0056 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "title": "Send at most one PATH_RESPONSE per PATH_CHALLENGE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0447"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0447 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0014",
+      "title": "Do not send NEW_CONNECTION_ID when peer uses zero-length DCID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150001"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150001 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P6-0013",
+      "title": "Do not wait for STREAMS_BLOCKED before advertising credit",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0204"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0204 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3-0008",
+      "title": "Change the send address only in response to the highest-numbered non-probing packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0483"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0483 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0004",
+      "title": "Validate changed peer addresses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0463"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0463 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P1-0005",
+      "title": "Restart idle timer on received packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0552"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0552 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2-0006",
+      "title": "Send CONNECTION_CLOSE to terminate immediately",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0562"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0562 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P10-0013",
+      "title": "Flow control error on excess stream data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1283"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1283 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P9-0007",
+      "title": "Terminate on FLOW_CONTROL_ERROR when exceeding MAX_DATA",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1273"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1273 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P11-0010",
+      "title": "Terminate on stream limit violation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1292"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1292 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P8-0007",
+      "title": "Terminate on STREAM_STATE_ERROR for invalid locally initiated stream",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1259"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1259 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0012",
+      "title": "Treat frames in forbidden packet types as protocol violation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0727"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0727 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0004",
+      "title": "Treat empty frame packets as protocol violations",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0718"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0718 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+      "title": "Reject non-zero reserved bits after protection removal",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1073"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1073 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4-0001",
+      "title": "Treat invalid transport parameters as connection errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0334"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0334 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P4-0001",
+      "title": "Use RESET_STREAM to terminate sending",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1205"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1205 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P2-0002",
+      "title": "Use Stream ID and Offset to order stream data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0047"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0047 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11P1-0004",
+      "title": "Prepare to retransmit CONNECTION_CLOSE packets after additional traffic on a terminated connection",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0665"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0665 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0010",
+      "title": "Maintain a sufficient peer connection ID pool",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0228"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0228 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0012",
+      "title": "Limit locally retired but unacknowledged connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0249"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0249 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2P1-0001",
+      "title": "Limit packet generation rate in closing state",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0576"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0576 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P5-0010",
+      "title": "Avoid initiating migration with peers that request zero-length connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0518"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0518 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "title": "Limit PATH_CHALLENGE probe frequency",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0435"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0435 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P1-0010",
+      "title": "Send ACK frames with other frames for new acknowledgments",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0763"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0763 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0015",
+      "title": "Supply a new connection ID when the peer retires one",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0233"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0233 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P1-0004",
+      "title": "Treat unexpected acknowledgments as PROTOCOL_VIOLATION",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0752"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0752 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4-0003",
+      "title": "Treat duplicate transport parameters as connection errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0336"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0336 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P1-0004",
+      "title": "Use packet number encoding large enough for reordered delivery",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0925"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0925 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0015",
+      "title": "Treat NEW_CONNECTION_ID on zero-length DCID as a protocol violation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150002"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150002 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P6-0012",
+      "title": "Send STREAMS_BLOCKED when blocked by peer limits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0203"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0203 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P2-0011",
+      "title": "Generate a valid stateless reset token after state loss",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0644"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0644 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P16-0011",
+      "title": "Treat RETIRE_CONNECTION_ID as PROTOCOL_VIOLATION with zero-length CID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1330"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1330 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P6-0009",
+      "title": "Treat excessive stream IDs as stream limit errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0201"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0201 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P10-0004",
+      "title": "Treat MAX_STREAM_DATA on receive-only streams as STREAM_STATE_ERROR",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1276"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1276 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0023",
+      "title": "Retire lower-sequence NEW_CONNECTION_ID entries",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150008"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150008 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3P3-0002",
+      "title": "Respond to PATH_CHALLENGE on active paths with a non-probing packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0502"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0502 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P4-0003",
+      "title": "Error on RESET_STREAM for send-only streams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1208"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1208 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P5-0004",
+      "title": "Terminate on STOP_SENDING for receive-only streams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1217"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1217 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P13-0002",
+      "title": "Terminate on STREAM_DATA_BLOCKED for send-only stream",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1299"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1299 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0036",
+      "title": "Reject active connection ID limits below 2",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1158"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1158 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0020",
+      "title": "Do not issue new connection IDs after selecting a zero-length one",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0238"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0238 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3-0002",
+      "title": "Use CONNECTION_CLOSE for fatal connection errors when able",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0604"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0604 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0004",
+      "title": "Ensure peers understand new extension frames first",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1376"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1376 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0022",
+      "title": "Allow interruption, discard, and reset signaling on RESET_STREAM",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0120"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0120 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0016",
+      "title": "Retransmit MAX_DATA when lost or updated",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0799"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0799 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P5-0003",
+      "title": "Define forgery countermeasures for server migration extensions",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1454"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1454 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P2P1-0007",
+      "title": "Treat ICMP-driven PMTU reductions as provisional",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1428"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1428 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11P2-0005",
+      "title": "Define prematurely canceled stream rules",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0674"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0674 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P1P2-0001",
+      "title": "Application protocols provide idle-timeout guidance",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0560"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0560 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S11P1-0002",
+      "title": "Signal application-specific protocol errors with frame type 0x1d",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0663"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0663 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P2-0006",
+      "title": "Allow requested codepoint values in registration applications",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1494"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1494 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0011",
+      "title": "Create lower-numbered same-type streams first",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0109"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0109 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P4-0004",
+      "title": "Maintain flow control state after RESET_STREAM",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0186"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0186 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1-0004",
+      "title": "Pad Initial datagrams to 1200 bytes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0375"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0375 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "title": "Ignore the Unused field value",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0969"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0969 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P7-0009",
+      "title": "Prohibit clients from sending NEW_TOKEN frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1245"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1245 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+      "title": "Identify zero-length DCID connections by local address and port",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0261"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0261 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S6-0001",
+      "title": "Size the first datagram for multi-version support",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0281"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0281 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0014",
+      "title": "Do not resend CONNECTION_CLOSE on loss",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0797"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0797 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0003",
+      "title": "Limit connection flow control",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0162"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0162 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1-0006",
+      "title": "Prevent external correlation of connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0208"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0208 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0006",
+      "title": "Retransmit CRYPTO data until acknowledged",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0789"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0789 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4-0004",
+      "title": "Exclude CRYPTO frames from stream flow control",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0158"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0158 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0001",
+      "title": "Handshake uses long header packets to establish connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0305"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0305 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P3P1-0001",
+      "title": "Order ACK range components in descending packet number order",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1192"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1192 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P3-0002",
+      "title": "Include the first sent Initial Source CID in transport parameters",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0323"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0323 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0006",
+      "title": "Frame type precedes type-dependent fields",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0720"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0720 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P3P1-0009",
+      "title": "Use gaps to represent unacknowledged packet ranges",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1203"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1203 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P4P1-0009",
+      "title": "Increment ECN counts only while processing QUIC packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0828"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0828 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P5P6-0001",
+      "title": "Optionally prevent connection attempts or migration to a loopback address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1468"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1468 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+      "title": "Retire problematic connection IDs before use",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1473"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1473 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2-0001",
+      "title": "Acknowledge all received packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0753"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0753 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0011",
+      "title": "Advertise active connection ID limit",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0229"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0229 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P2-0003",
+      "title": "Deliver stream data as an ordered byte stream",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0048"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0048 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3-0012",
+      "title": "Discard undersized QUIC packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0623"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0623 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7-0011",
+      "title": "Explicitly negotiate an application protocol",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0295"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0295 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P1-0007",
+      "title": "Raise idle timeout to at least 3x PTO",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0554"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0554 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0006",
+      "title": "Limit each connection ID to one local and one destination address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0244"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0244 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P6-0008",
+      "title": "Respect peer-advertised stream limits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0200"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0200 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+      "title": "Treat Handshake packets with other frames as a protocol violation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1018"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1018 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P3-0006",
+      "title": "Validate transport parameters against connection ID values",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0326"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0326 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "title": "Abandon path validation on a timer",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0454"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0454 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P5-0004",
+      "title": "Include decryption-key buffering delays",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0780"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0780 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P5P6-0002",
+      "title": "Do not allow loopback connections or migration after prior non-loopback exposure",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1469"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1469 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0016",
+      "title": "Delay Retire Prior To updates",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0253"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0253 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P5P6-0003",
+      "title": "Do not refuse an address without network-specific safety knowledge",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1470"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1470 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P5-0012",
+      "title": "Provide new connection IDs before migration",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0520"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0520 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0007",
+      "title": "Retire connection IDs when they are no longer actively used",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0245"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0245 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P3-0003",
+      "title": "Set BASE_PLPMTU consistently with QUIC's smallest allowed maximum datagram size",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0877"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0877 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P1-0002",
+      "title": "Acknowledge every packet at least once",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0758"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0758 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0008",
+      "title": "Extension frames are congestion controlled",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1380"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1380 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0009",
+      "title": "Extension frames trigger ACK generation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1381"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1381 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0010",
+      "title": "Extension frames excluded from flow control by default",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1383"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1383 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0023",
+      "title": "Stateless Reset Token carries connection ID token",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1151"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1151 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P4-0003",
+      "title": "Leave opposite data flow unaffected",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0185"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0185 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0009",
+      "title": "Other frames use Frame Type as identifier",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0724"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0724 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0004",
+      "title": "Create receiving part on bidirectional control frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0097"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0097 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P12-0002",
+      "title": "Defend version negotiation against downgrade",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-21120001"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-21120001 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P4-0020",
+      "title": "Allow CONNECTION_CLOSE frames in Handshake packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1735"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1735 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P1-0005",
+      "title": "Discard packets with a different version",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0264"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0264 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0007",
+      "title": "Discard packets from unknown server addresses",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0468"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0468 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0007",
+      "title": "Send CONNECTION_REFUSED on connection refusal",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0272"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0272 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P3-0009",
+      "title": "Include zero-length connection ID transport parameter with zero-length value",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0332"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0332 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P5-0003",
+      "title": "Close when handshake CRYPTO buffering is exceeded",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0365"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0365 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3P2-0002",
+      "title": "Close silently without last validated peer address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0495"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0495 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0016",
+      "title": "Optionally supply a new connection ID after an unused one appears",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0234"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0234 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0018",
+      "title": "Allow protocol-violation handling for inconsistent NEW_CONNECTION_ID state",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150004"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150004 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P3-0003",
+      "title": "Do not reclaim codepoints when use is identified",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1500"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1500 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P3-0004",
+      "title": "Allow removal when no use is identified",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1501"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1501 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0004",
+      "title": "Protect against source-address mismatch attacks at the preferred address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0541"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0541 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0003",
+      "title": "Optionally migrate after original address validation succeeds",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0540"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0540 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0002",
+      "title": "Abandon validation after preferred address validation succeeds",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0539"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0539 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P4-0011",
+      "title": "Apply anti-amplification limits after client IP changes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0412"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0412 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2-0005",
+      "title": "Match zero-length DCI packets by address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0255"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0255 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0010",
+      "title": "Allow connection close when indicated connection IDs cannot be processed",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0247"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0247 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P1-0011",
+      "title": "Enter the draining period when a stateless reset token matches",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0639"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0639 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P1-0012",
+      "title": "Stop sending packets after a stateless reset token match",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0640"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0640 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0008",
+      "title": "Buffer a limited number of 0-RTT packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0273"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0273 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0006",
+      "title": "Proceed with the handshake for valid Initial packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0271"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0271 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P3-0010",
+      "title": "Close the connection when packet-number exhaustion is reached",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0710"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0710 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0003",
+      "title": "Handle prohibited migration packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0462"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0462 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0004",
+      "title": "Preferred-address connection ID sequence number",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0221"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0221 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3-0006",
+      "title": "Send subsequent packets to the new peer address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0481"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0481 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P3-0016",
+      "title": "Allow the handshake to proceed after successful validation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-8135"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-8135 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P4-0004",
+      "title": "Administrative spin-bit disable controls",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1088"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1088 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P5-0001",
+      "title": "Buffer out-of-order CRYPTO frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0361"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0361 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P3P3-0001",
+      "title": "Validate the previously active path with PATH_CHALLENGE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0499"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0499 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0012",
+      "title": "Receive STREAM and STREAM_DATA_BLOCKED in Recv state",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0110"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0110 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0001",
+      "title": "Validate both server addresses concurrently after client migration",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0538"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0538 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "title": "Server token length in Initial packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0986"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0986 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0001",
+      "title": "Include a length field in long-header packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1220006"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1220006 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2-0011",
+      "title": "Discard invalid packets lacking strong integrity protection",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0258"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0258 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0021",
+      "title": "IP addresses use network byte order",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1146"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1146 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+      "title": "Use Handshake packets after receiving one from the server",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1015"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1015 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0010",
+      "title": "Discard packets with different source connection IDs after a valid Initial",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0317"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0317 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P5-0006",
+      "title": "Keep final stream size immutable",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0194"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0194 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0017",
+      "title": "Enter Data Recvd once all data is received",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0113"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0113 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2-0004",
+      "title": "Discard connection state after closing or draining ends",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0570"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0570 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P1-0008",
+      "title": "Select an address and start path validation after handshake confirmation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0525"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0525 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0006",
+      "title": "One transport parameter can cover multiple extension frame types",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1378"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1378 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P1-0014",
+      "title": "Immediately acknowledge ECN CE packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1322"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1322 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P5-0002",
+      "title": "PADDING, PING, and CRYPTO frames allowed in any packet number space",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0736"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0736 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0027",
+      "title": "Use a different payload in each PATH_CHALLENGE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0814"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0814 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P1-0013",
+      "title": "Allow omission of provisional-registration fields",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1488"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1488 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S21P7-0001",
+      "title": "Provide stream fragmentation mitigations",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1476"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1476 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P2P1-0002",
+      "title": "Validate ICMP messages against packet injection",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1422"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1422 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0001",
+      "title": "Non-self-describing frame encoding",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1373"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1373 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4-0005",
+      "title": "Provide buffering limit interfaces",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0159"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0159 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14-0004",
+      "title": "Require path support for 1200-byte datagrams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0856"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0856 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0001",
+      "title": "Identify QUIC versions with 32-bit numbers",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0895"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0895 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P6-0011",
+      "title": "Oversized CRYPTO frames are connection errors",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1237"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1237 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P3-0009",
+      "title": "Further limit ACK frame size",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-13236"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-13236 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0007",
+      "title": "Route based on the first packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0684"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0684 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0004",
+      "title": "Process coalesced packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0682"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0682 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0009",
+      "title": "Ignore later packets with a different DCID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0686"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0686 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P10-0003",
+      "title": "Reject premature MAX_STREAM_DATA for uncreated local streams",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1275"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1275 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P5-0003",
+      "title": "Treat premature local STOP_SENDING as STREAM_STATE_ERROR",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1216"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1216 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0020",
+      "title": "Treat oversized Retire Prior To as FRAME_ENCODING_ERROR",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150006"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150006 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P2-0002",
+      "title": "Allow contiguous ranges for multi-codepoint requests",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1491"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1491 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0028",
+      "title": "Send PATH_RESPONSE only once",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0815"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0815 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P2-0008",
+      "title": "Do not coalesce packets with different connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0685"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0685 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P1-0004",
+      "title": "Disallow excess data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0163"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0163 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0020",
+      "title": "Preferred address can cover one family",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1145"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1145 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P3-0004",
+      "title": "Discard Initial packets without expected token",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0393"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0393 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0010",
+      "title": "Drop packets under all other circumstances",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0275"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0275 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P2-0003",
+      "title": "Drop smaller unsupported-version packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0267"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0267 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P20-0005",
+      "title": "Do not send HANDSHAKE_DONE before handshake completes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1371"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1371 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0011",
+      "title": "Wait for a non-probing packet before sending to a client address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0467"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0467 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0010",
+      "title": "Initiate path validation on probe packets from a different address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0542"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0542 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2-0003",
+      "title": "Do not end closing or draining state early for servers with open sockets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0569"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0569 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P5-0010",
+      "title": "Use STOP_SENDING only before peer reset",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0152"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0152 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P1-0006",
+      "title": "Encode stream IDs as variable-length integers",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0033"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0033 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P3-0007",
+      "title": "Increase packet numbers by at least one",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0708"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0708 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S2P1-0013",
+      "title": "Successive streams use increasing IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0045"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0045 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P21-0007",
+      "title": "Define interaction with prior extensions",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1379"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1379 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+      "title": "Set application-data-capable parameters non-zero for 0-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0348"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0348 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P19-0013",
+      "title": "Omit the field from application-specific CONNECTION_CLOSE",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1361"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1361 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2-0024",
+      "title": "Encode Source Connection ID length after Destination Connection ID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0944"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0944 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2-0018",
+      "title": "Encode Destination Connection ID length after version",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0939"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0939 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P3-0011",
+      "title": "Client may use the preferred-address connection ID on any path",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0545"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0545 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P3-0003",
+      "title": "Do not use Retry tokens for future connections",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0392"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0392 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0003",
+      "title": "Use server-provided 0-RTT transport parameter values",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0345"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0345 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P2-0002",
+      "title": "Reserve codepoint 0x00000000",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1514"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1514 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0012",
+      "title": "Keep RESET_STREAM content unchanged on retransmission",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0795"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0795 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0019",
+      "title": "Keep Data Recvd until delivery to the application",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0115"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0115 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P10-0012",
+      "title": "Do not exceed the advertised stream data limit",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1282"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1282 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P2P3-0005",
+      "title": "disable_active_migration does not block migration after preferred_address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0278"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0278 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P2-0005",
+      "title": "Send Stateless Reset after closing or draining ends",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0571"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0571 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P4P2-0002",
+      "title": "Set ECT(0) on early packets for validation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0831"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0831 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14P2P1-0005",
+      "title": "Ignore ICMP messages that fail validation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1426"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1426 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S22P1P3-0002",
+      "title": "Determine whether codepoints remain in use",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1499"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1499 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18-0001",
+      "title": "Carry transport parameters in extension data",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1100"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1100 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0033",
+      "title": "Retransmit HANDSHAKE_DONE until acknowledged",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1340"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1340 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0002",
+      "title": "Send the initial connection ID in the long header Source Connection ID field",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0219"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0219 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S16-0002",
+      "title": "Encode integer values in remaining bits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0906"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0906 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P3P1-0020",
+      "title": "Encode packet number length in byte 0",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1075"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1075 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P11-0013",
+      "title": "Count closed streams toward the limit",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1293"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1293 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0020",
+      "title": "Send stream-type limits in MAX_STREAMS frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0804"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0804 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P3P1-0015",
+      "title": "Mark reserved bits in byte 0",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1071"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1071 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7-0010",
+      "title": "Start CRYPTO offsets at zero in each packet number space",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0293"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0293 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0002",
+      "title": "Allow multiple frames and frame types in frame-bearing packet payloads",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0716"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0716 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0003",
+      "title": "Require at least one frame in frame-bearing packet payloads",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0717"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0717 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0022",
+      "title": "Preferred address includes IPv4 and IPv6 pairs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1147"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1147 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S16-0001",
+      "title": "Reserve leading bits in variable-length integer encoding",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0905"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0905 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S4P5-0004",
+      "title": "Use final size for flow control accounting",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0192"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0192 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S3P2-0003",
+      "title": "Create receiving part on first peer frame",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0098"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0098 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1-0007",
+      "title": "Do not reissue a connection ID on the same connection",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0209"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0209 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3P2-0007",
+      "title": "Use each stateless reset token for only one connection ID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0651"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0651 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0003",
+      "title": "Initial connection ID sequence number",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0220"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0220 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P1-0006",
+      "title": "Issued connection ID sequence numbers increase by 1",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0222"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0222 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P16-0008",
+      "title": "Reject RETIRE_CONNECTION_ID sequence numbers that refer to the packet's destination CID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1328"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1328 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P2-0005",
+      "title": "Continue processing delayed packets on the old IP address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0535"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0535 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "title": "Echo the received Source Connection ID",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0972"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0972 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P2-0003",
+      "title": "Probe toward the client from the preferred address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0532"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0532 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P2-0002",
+      "title": "Send non-probing packets from the original address until validation completes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0531"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0531 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P6P2-0004",
+      "title": "Drop newer packets received on the old IP address",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0534"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0534 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P7-0006",
+      "title": "Require non-empty NEW_TOKEN tokens",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1243"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1243 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18-0006",
+      "title": "Transport parameter length field contains value length",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1103"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1103 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P15-0019",
+      "title": "Limit Retire Prior To to the Sequence Number",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-19150005"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-19150005 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S18P2-0035",
+      "title": "Active connection ID limit minimum",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1157"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1157 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0002",
+      "title": "Reserve version 0x00000000 for version negotiation",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0896"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0896 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "title": "Set the Version field to zero",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0971"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0971 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0005",
+      "title": "Initial destination connection ID length minimum",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0309"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0309 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P4-0010",
+      "title": "Set timer as described in QUIC-RECOVERY",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0513"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0513 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9P2-0002",
+      "title": "Initiate path validation to establish reachability",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0475"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0475 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S10P3-0020",
+      "title": "Invalidate tokens on connection ID retirement",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0610"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0610 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P4-0004",
+      "title": "Include client-address continuity information in NEW_TOKEN frames",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0410"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0410 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P4-0003",
+      "title": "Include source-address continuity information in Retry tokens",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0409"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0409 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S14-0007",
+      "title": "Do not fragment UDP datagrams at the IP layer",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0857"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0857 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0006",
+      "title": "Client reuses one destination connection ID until server packet receipt",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0310"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0310 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P3-0039",
+      "title": "Take congestion control action upon loss",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0818"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0818 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P2-0009",
+      "title": "Adopt the server Source Connection ID for subsequent packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0316"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0316 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1P2-0011",
+      "title": "Retire affected connection IDs before activating the new one",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0248"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0248 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0004",
+      "title": "Use TLS for QUIC version 1 handshake",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0897"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0897 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P3-0008",
+      "title": "VN and Retry packets are not acknowledged",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1179"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1179 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S12P4-0001",
+      "title": "Forbid frames in Version Negotiation, Stateless Reset, and Retry packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0715"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0715 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0006",
+      "title": "Reserve 0x?a?a?a?a versions for negotiation exercise",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0899"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0899 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0005",
+      "title": "Reserve versions with cleared high 16 bits",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0898"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0898 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P4-0010",
+      "title": "Update client spin value on new server packet",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1098"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1098 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S19P19-0019",
+      "title": "Permit handshake-time APPLICATION_ERROR closes",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1366"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1366 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S9-0005",
+      "title": "Allow discarding state without a validated path",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0464"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0464 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S5P1-0015",
+      "title": "Ensure the peer has a supply of connection IDs",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0217"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0217 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S8P1P3-0009",
+      "title": "Include applicable unused tokens in Initial packets",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0399"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0399 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2P1-0011",
+      "title": "Defer ACK frames when only non-ack-eliciting packets remain",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0764"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0764 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S13P2-0004",
+      "title": "Include ACK frames when not sent recently",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0756"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0756 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S7P4P1-0011",
+      "title": "Use only remembered transport parameters in 0-RTT",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0353"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0353 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P4-0006",
+      "title": "Disabled spin bit may carry any value",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1090"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1090 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S17P4-0007",
+      "title": "Ignore incoming spin-bit value when disabled",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-1091"
+      ],
+      "notes": [
+        "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-1091 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S15-0010",
+      "title": "Treat reserved versions as non-real protocols",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0903"
+      ],
+      "notes": [
+        "RFC9000 S15 semantic review adopted the incoming staged reserved-version wording as canonical."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0903 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S16-0003",
+      "title": "RFC9000 S16 migrated requirement",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0907",
+        "REQ-QUIC-RFC9000-0908"
+      ],
+      "notes": [
+        "RFC9000 S16 split-merge adopted incoming staged IDs as canonical."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0907, REQ-QUIC-RFC9000-0908 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S16-0004",
+      "title": "RFC9000 S16 migrated requirement",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0913"
+      ],
+      "notes": [
+        "RFC9000 S16 rename-with-lineage adopted incoming staged IDs as canonical."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0913 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "REQ-QUIC-RFC9000-S16-0005",
+      "title": "RFC9000 S16 migrated requirement",
+      "replaced_by": [
+        "REQ-QUIC-RFC9000-0914",
+        "REQ-QUIC-RFC9000-0915",
+        "REQ-QUIC-RFC9000-0916"
+      ],
+      "notes": [
+        "RFC9000 S16 split-merge adopted incoming staged IDs as canonical."
+      ],
+      "x_lineage": "REQ-QUIC-RFC9000-0914, REQ-QUIC-RFC9000-0915, REQ-QUIC-RFC9000-0916 derived_from and supersedes this retired ID."
+    }
+  ]
+}
