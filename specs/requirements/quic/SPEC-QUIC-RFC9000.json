@@ -2850,9 +2850,15 @@
         "fuzz": "deferred"
       },
       "trace": {
-        "satisfied_by": "ARC-QUIC-RFC9000-0001",
-        "implemented_by": "WI-QUIC-RFC9000-0001",
-        "verified_by": "VER-QUIC-RFC9000-0001",
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9000-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
         "upstream_refs": [
           "RFC 9000 section 6.1 RFC9000-S6P1-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.1"
@@ -2875,9 +2881,15 @@
         "fuzz": "deferred"
       },
       "trace": {
-        "satisfied_by": "ARC-QUIC-RFC9000-0001",
-        "implemented_by": "WI-QUIC-RFC9000-0001",
-        "verified_by": "VER-QUIC-RFC9000-0001",
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9000-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
         "upstream_refs": [
           "RFC 9000 section 6.1 RFC9000-S6P1-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.1"
@@ -12781,9 +12793,15 @@
         "fuzz": "deferred"
       },
       "trace": {
-        "satisfied_by": "ARC-QUIC-RFC9000-0001",
-        "implemented_by": "WI-QUIC-RFC9000-0001",
-        "verified_by": "VER-QUIC-RFC9000-0001",
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9000-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
         "upstream_refs": [
           "RFC 9000 section 6.3 RFC9000-S6P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.3"
@@ -12805,9 +12823,15 @@
         "fuzz": "deferred"
       },
       "trace": {
-        "satisfied_by": "ARC-QUIC-RFC9000-0001",
-        "implemented_by": "WI-QUIC-RFC9000-0001",
-        "verified_by": "VER-QUIC-RFC9000-0001",
+        "satisfied_by": [
+          "ARC-QUIC-RFC9000-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9000-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9000-0001"
+        ],
         "upstream_refs": [
           "RFC 9000 section 6.3 RFC9000-S6P3-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-6.3"
