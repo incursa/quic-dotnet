@@ -17,18 +17,18 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S7P4P1-0005",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
-    "REQ-QUIC-RFC9000-S7P4P1-0007",
-    "REQ-QUIC-RFC9000-S7P4P1-0008",
-    "REQ-QUIC-RFC9000-S7P4P1-0009"
+    "REQ-QUIC-RFC9000-0348",
+    "REQ-QUIC-RFC9000-0350",
+    "REQ-QUIC-RFC9000-0351"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0009.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0350.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0351.cs"
   ],
   "design_summary": "QuicZeroRttTransportParameterPolicy now evaluates whether a server can accept 0-RTT against a remembered client transport-parameter snapshot. The decision rejects missing remembered or current server parameters, rejects reductions to required 0-RTT limits from Section 18.2, rejects reductions to restored optional max_idle_timeout and max_udp_payload_size values, rejects removal of a remembered disable_active_migration value, and exposes a separate helper for checking whether the advertised values actually provide non-zero client application-data allowance for 0-RTT.",
   "data_and_state_considerations": "The policy is stateless and uses effective RFC defaults where the current runtime already models defaults: absent active_connection_id_limit is treated as 2 and absent max_udp_payload_size is treated as the version 1 default. Absent flow-control and stream-limit parameters are treated as zero because those values block application-data sending until later MAX_DATA, MAX_STREAM_DATA, or MAX_STREAMS frames.",
@@ -46,7 +46,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-S7P4P1-0009 as an internal server policy and proof slice. It deliberately leaves REQ-QUIC-RFC9000-S7P4P1-0003 and REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013 to follow-on client updated-value and packet-context enforcement work."
+      "content": "This design closes REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-0351 as an internal server policy and proof slice. It deliberately leaves REQ-QUIC-RFC9000-0345 and REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-0356 to follow-on client updated-value and packet-context enforcement work."
     }
   ]
 }

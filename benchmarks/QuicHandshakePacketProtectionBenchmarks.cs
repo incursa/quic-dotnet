@@ -398,14 +398,8 @@ public class QuicTlsServerHelloRetryRequestBenchmarks
         localHandshakePrivateKey = CreateScalar(0x22);
         localTransportParameters = CreateBootstrapLocalTransportParameters();
         peerTransportParameters = CreateClientTransportParameters();
-        retryEligibleClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
+        retryEligibleClientHello = CreateRetryEligibleHybridOnlyClientHello(
             peerTransportParameters,
-            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, (ushort)0x001D, (ushort)0x11EC],
-            keyShareEntries:
-            [
-                new ClientHelloKeyShareEntry(0x001D, CreateSequentialBytes(0x90, 32)),
-                new ClientHelloKeyShareEntry(0x11EC, CreateSequentialBytes(0xA0, 48)),
-            ],
             applicationProtocols: [Http3Protocol]);
         retriedClientHello = CreateClientHelloTranscriptWithKeyShareEntries(
             peerTransportParameters,
@@ -559,6 +553,21 @@ public class QuicTlsServerHelloRetryRequestBenchmarks
 
         return WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
     }
+
+    private static byte[] CreateRetryEligibleHybridOnlyClientHello(
+        QuicTransportParameters peerTransportParameters,
+        IReadOnlyList<byte[]>? applicationProtocols = null,
+        int unsupportedKeyShareLength = 48)
+        => CreateClientHelloTranscriptWithKeyShareEntries(
+            peerTransportParameters,
+            supportedGroups: [(ushort)QuicTlsNamedGroup.Secp256r1, (ushort)QuicTlsNamedGroup.X25519, 0x11EC],
+            keyShareEntries:
+            [
+                new ClientHelloKeyShareEntry(
+                    0x11EC,
+                    CreateSequentialBytes(0x90, unsupportedKeyShareLength)),
+            ],
+            applicationProtocols: applicationProtocols);
 
     private static byte[] CreateClientApplicationProtocolNegotiationExtension(IReadOnlyList<byte[]> applicationProtocols)
     {

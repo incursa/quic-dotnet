@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0004
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0004");
 
         Assert.Equal("The creation of a registry MAY identify a range of codepoints where registrations are governe...", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.4 RFC9000-S22.1.4-B3-P2-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

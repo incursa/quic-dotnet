@@ -10,6 +10,7 @@ workbench:
 # QUIC Architecture
 
 This directory holds design artifacts for the QUIC slice.
+If a row references RFC 9000 or RFC 9002 requirement IDs, reconcile them against the derived RFC9000 crosswalk and retired-ID ledger in `specs/generated/quic` before renaming or retiring references.
 Each canonical artifact is authored in `.json`.
 
 ## Current Artifacts
@@ -29,7 +30,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-INT-0013.json`](ARC-QUIC-INT-0013.json): canonical versionnegotiation harness dispatch design source
 - [`ARC-QUIC-INT-0014.json`](ARC-QUIC-INT-0014.json): canonical zerortt hosted proof gate design source
 - [`ARC-QUIC-INT-0015.json`](ARC-QUIC-INT-0015.json): canonical connectionmigration hosted proof lane design source
-- [`ARC-QUIC-INT-0016.json`](ARC-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot design source
+- [`ARC-QUIC-INT-0016.json`](ARC-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot design source for the generated pilot, inventory, and evidence reports
 - [`ARC-QUIC-INT-0020.json`](ARC-QUIC-INT-0020.json): canonical simulator-backed correctness scenario design source
 - [`ARC-QUIC-INT-0021.json`](ARC-QUIC-INT-0021.json): canonical all-upstream implementation handshake matrix design source
 - [`ARC-QUIC-RFC8999-0001.json`](ARC-QUIC-RFC8999-0001.json): canonical RFC 8999 design source
@@ -173,6 +174,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0047.json`](ARC-QUIC-CRT-0047.json): canonical CRT server-side resumption PSK acceptance design source
 - [`ARC-QUIC-CRT-0048.json`](ARC-QUIC-CRT-0048.json): canonical CRT server-side 0-RTT admission anti-replay gate design source
 - [`ARC-QUIC-CRT-0050.json`](ARC-QUIC-CRT-0050.json): canonical CRT server first-flight x25519 compatibility design source
+- [`ARC-QUIC-CRT-0051.json`](ARC-QUIC-CRT-0051.json): canonical CRT transport-core cleanup boundary architecture source
 
 ## Notes
 

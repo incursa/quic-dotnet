@@ -24,19 +24,19 @@
     "REQ-QUIC-RFC9000-S19P3-0004",
     "REQ-QUIC-RFC9000-S19P3-0005",
     "REQ-QUIC-RFC9000-S19P3-0006",
-    "REQ-QUIC-RFC9000-S19P3-0007",
-    "REQ-QUIC-RFC9000-S19P3-0008",
-    "REQ-QUIC-RFC9000-S19P4-0001",
+    "REQ-QUIC-RFC9000-1177",
+    "REQ-QUIC-RFC9000-1179",
+    "REQ-QUIC-RFC9000-1205",
     "REQ-QUIC-RFC9000-S19P4-0002",
-    "REQ-QUIC-RFC9000-S19P4-0003",
+    "REQ-QUIC-RFC9000-1208",
     "REQ-QUIC-RFC9000-S19P5-0001",
     "REQ-QUIC-RFC9000-S19P5-0002",
-    "REQ-QUIC-RFC9000-S19P5-0003",
-    "REQ-QUIC-RFC9000-S19P5-0004"
+    "REQ-QUIC-RFC9000-1216",
+    "REQ-QUIC-RFC9000-1217"
   ],
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1910",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckRange.cs",
@@ -381,7 +381,7 @@
       "notes": "The codec does not model Initial, Handshake, or Application packet number spaces."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1177",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
@@ -393,7 +393,7 @@
       "notes": "Packet context is outside this codec slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1179",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
@@ -753,7 +753,7 @@
       "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1192",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckRange.cs",
@@ -927,7 +927,7 @@
       "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1198",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckRange.cs",
@@ -985,7 +985,7 @@
       "notes": "ACK Range decoding now preserves descending ranges, repeated ranges, and rejects negative computed packet numbers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1203",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckRange.cs",
@@ -1246,7 +1246,7 @@
       "notes": "ACK type 0x03 now round-trips ECN feedback counters as QUIC variable-length integers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1205",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
@@ -1270,7 +1270,7 @@
       "notes": "No stream receive buffer model exists here."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1208",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
@@ -1538,7 +1538,7 @@
       "notes": "The repo does not yet model STOP_SENDING send conditions."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1216",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",
@@ -1550,7 +1550,7 @@
       "notes": "That bookkeeping is outside the frame codec."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1217",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",

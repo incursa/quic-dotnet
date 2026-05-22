@@ -31,8 +31,8 @@ public sealed class CoverageTypeAttributeTests
     [Fact]
     public void MultipleAttributesCanBeAppliedToOneMethod()
     {
-        CoverageTypeAttribute[] attributes = typeof(CoverageTypeAttributeTests)
-            .GetMethod(nameof(MethodWithMultipleCoverageTypes), BindingFlags.NonPublic | BindingFlags.Static)!
+        CoverageTypeAttribute[] attributes = typeof(CoverageTypeAttributeSamples)
+            .GetMethod(nameof(CoverageTypeAttributeSamples.MethodWithMultipleCoverageTypes))!
             .GetCustomAttributes<CoverageTypeAttribute>()
             .ToArray();
 
@@ -54,12 +54,6 @@ public sealed class CoverageTypeAttributeTests
         Assert.Equal("Fuzz", traits[0].Value);
     }
 
-    [CoverageType(RequirementCoverageType.Positive)]
-    [CoverageType(RequirementCoverageType.Negative)]
-    private static void MethodWithMultipleCoverageTypes()
-    {
-    }
-
     private sealed class AttributeInfoStub : LongLivedMarshalByRefObject, IAttributeInfo
     {
         private readonly object[] constructorArguments;
@@ -74,5 +68,14 @@ public sealed class CoverageTypeAttributeTests
         public IEnumerable<IAttributeInfo> GetCustomAttributes(string attributeName) => [];
 
         public T GetNamedArgument<T>(string name) => default!;
+    }
+
+    private static class CoverageTypeAttributeSamples
+    {
+        [CoverageType(RequirementCoverageType.Positive)]
+        [CoverageType(RequirementCoverageType.Negative)]
+        public static void MethodWithMultipleCoverageTypes()
+        {
+        }
     }
 }

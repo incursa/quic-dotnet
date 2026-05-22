@@ -23,51 +23,51 @@
     "S11": [
       "REQ-QUIC-RFC9000-S11-0001",
       "REQ-QUIC-RFC9000-S11-0002",
-      "REQ-QUIC-RFC9000-S11-0003",
-      "REQ-QUIC-RFC9000-S11-0004",
-      "REQ-QUIC-RFC9000-S11-0005"
+      "REQ-QUIC-RFC9000-0659",
+      "REQ-QUIC-RFC9000-0658",
+      "REQ-QUIC-RFC9000-0661"
     ],
     "S11P1": [
       "REQ-QUIC-RFC9000-S11P1-0001",
-      "REQ-QUIC-RFC9000-S11P1-0002",
+      "REQ-QUIC-RFC9000-0663",
       "REQ-QUIC-RFC9000-S11P1-0003",
-      "REQ-QUIC-RFC9000-S11P1-0004",
+      "REQ-QUIC-RFC9000-0665",
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
       "REQ-QUIC-RFC9000-S11P1-0007",
-      "REQ-QUIC-RFC9000-S11P1-0008"
+      "REQ-QUIC-RFC9000-0668"
     ],
     "S11P2": [
       "REQ-QUIC-RFC9000-S11P2-0001",
       "REQ-QUIC-RFC9000-S11P2-0002",
       "REQ-QUIC-RFC9000-S11P2-0003",
       "REQ-QUIC-RFC9000-S11P2-0004",
-      "REQ-QUIC-RFC9000-S11P2-0005"
+      "REQ-QUIC-RFC9000-0674"
     ]
   },
   "coverage": {
     "covered_requirement_ids": [
       "REQ-QUIC-RFC9000-S11-0001",
       "REQ-QUIC-RFC9000-S11-0002",
-      "REQ-QUIC-RFC9000-S11-0003",
-      "REQ-QUIC-RFC9000-S11-0004",
-      "REQ-QUIC-RFC9000-S11-0005",
+      "REQ-QUIC-RFC9000-0659",
+      "REQ-QUIC-RFC9000-0658",
+      "REQ-QUIC-RFC9000-0661",
       "REQ-QUIC-RFC9000-S11P1-0001",
-      "REQ-QUIC-RFC9000-S11P1-0002",
+      "REQ-QUIC-RFC9000-0663",
       "REQ-QUIC-RFC9000-S11P1-0003"
     ],
     "deferred_requirement_ids": [
-      "REQ-QUIC-RFC9000-S11-0005",
-      "REQ-QUIC-RFC9000-S11P1-0004",
+      "REQ-QUIC-RFC9000-0661",
+      "REQ-QUIC-RFC9000-0665",
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
       "REQ-QUIC-RFC9000-S11P1-0007",
-      "REQ-QUIC-RFC9000-S11P1-0008",
+      "REQ-QUIC-RFC9000-0668",
       "REQ-QUIC-RFC9000-S11P2-0001",
       "REQ-QUIC-RFC9000-S11P2-0002",
       "REQ-QUIC-RFC9000-S11P2-0003",
       "REQ-QUIC-RFC9000-S11P2-0004",
-      "REQ-QUIC-RFC9000-S11P2-0005"
+      "REQ-QUIC-RFC9000-0674"
     ],
     "uncovered_requirement_ids": []
   },
@@ -79,10 +79,10 @@
         "requirement_ids": [
           "REQ-QUIC-RFC9000-S11-0001",
           "REQ-QUIC-RFC9000-S11-0002",
-          "REQ-QUIC-RFC9000-S11-0003",
-          "REQ-QUIC-RFC9000-S11-0004",
+          "REQ-QUIC-RFC9000-0659",
+          "REQ-QUIC-RFC9000-0658",
           "REQ-QUIC-RFC9000-S11P1-0001",
-          "REQ-QUIC-RFC9000-S11P1-0002",
+          "REQ-QUIC-RFC9000-0663",
           "REQ-QUIC-RFC9000-S11P1-0003"
         ]
       },
@@ -91,17 +91,17 @@
         "requirement_ids": [
           "REQ-QUIC-RFC9000-S11-0001",
           "REQ-QUIC-RFC9000-S11-0002",
-          "REQ-QUIC-RFC9000-S11-0003",
-          "REQ-QUIC-RFC9000-S11-0004",
+          "REQ-QUIC-RFC9000-0659",
+          "REQ-QUIC-RFC9000-0658",
           "REQ-QUIC-RFC9000-S11P1-0001",
-          "REQ-QUIC-RFC9000-S11P1-0002",
+          "REQ-QUIC-RFC9000-0663",
           "REQ-QUIC-RFC9000-S11P1-0003"
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S11-0005"
+          "REQ-QUIC-RFC9000-0661"
         ]
       }
     ],
@@ -129,19 +129,19 @@
     "test_files": [
       "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
     ],
     "notes": [
       "The implementation summary reports successful test runs for the frame-codec error-handling slice and the full suite; this closeout did not rerun them.",
-      "The requirement-home proof and canonical x_test_refs now close REQ-QUIC-RFC9000-S11-0005.",
+      "The requirement-home proof and canonical x_test_refs now close REQ-QUIC-RFC9000-0661.",
       "The missing reconciliation artifact path is treated as absent, not stale."
     ]
   },
   "deferred_requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0665",
       "reason": "Retransmitting a terminal close packet after additional traffic needs a send path."
     },
     {
@@ -157,7 +157,7 @@
       "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0668",
       "reason": "Safe discard after reverting side effects needs a reversible receive pipeline."
     },
     {
@@ -177,10 +177,10 @@
       "reason": "STOP_SENDING-driven RESET_STREAM needs an application-protocol callback surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0674",
       "reason": "Premature-cancel handling is application-specific."
     }
   ],
   "uncovered_requirements": [],
-  "conclusion": "The selected S11/S11P1/S11P2 slice is trace-consistent: implemented requirements have code and test evidence, REQ-QUIC-RFC9000-S11-0005 is now closed by the requirement-home proof and canonical x_test_refs, deferred requirements are explicitly blocked in the implementation summary, and no silent gaps remain in scope. One out-of-scope stale test tag remains in QuicFrameCodecTests.cs and should be retagged if the repository wants that classifier test to carry the error-handling trace."
+  "conclusion": "The selected S11/S11P1/S11P2 slice is trace-consistent: implemented requirements have code and test evidence, REQ-QUIC-RFC9000-0661 is now closed by the requirement-home proof and canonical x_test_refs, deferred requirements are explicitly blocked in the implementation summary, and no silent gaps remain in scope. One out-of-scope stale test tag remains in QuicFrameCodecTests.cs and should be retagged if the repository wants that classifier test to carry the error-handling trace."
 }

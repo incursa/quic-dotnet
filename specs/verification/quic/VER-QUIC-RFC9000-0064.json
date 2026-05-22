@@ -25,7 +25,7 @@
     "REQ-QUIC-RFC9000-S22P1P1-0010",
     "REQ-QUIC-RFC9000-S22P1P1-0011",
     "REQ-QUIC-RFC9000-S22P1P1-0012",
-    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-1488",
     "REQ-QUIC-RFC9000-S22P1P1-0014"
   ],
   "scope": "This verification covers the RFC 9000 Section 22.1.1 provisional-registration policy facts represented in the repository's internal IANA registration policy model.",
@@ -56,7 +56,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1488.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs",
     "dotnet build Incursa.Quic.slnx -c Release",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P1\"",

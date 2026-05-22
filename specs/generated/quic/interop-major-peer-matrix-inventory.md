@@ -1,6 +1,6 @@
 # Interop Major Peer Matrix Inventory
 
-Advisory inventory only. The cells are the manually dispatched major-peer matrix shape owned by `REQ-QUIC-INT-0019`; this report does not claim execution evidence.
+Advisory inventory only. The cells are the manually dispatched major-peer matrix shape owned by `REQ-QUIC-INT-0019`; this report `interop-major-peer-matrix-inventory` does not claim execution evidence.
 
 ## Profile
 

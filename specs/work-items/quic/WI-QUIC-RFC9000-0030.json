@@ -12,14 +12,14 @@
     "VER-QUIC-RFC9000-0030"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S19P15-0014",
-    "REQ-QUIC-RFC9000-S19P15-0015",
+    "REQ-QUIC-RFC9000-19150001",
+    "REQ-QUIC-RFC9000-19150002",
     "REQ-QUIC-RFC9000-S19P15-0016",
     "REQ-QUIC-RFC9000-S19P15-0017",
-    "REQ-QUIC-RFC9000-S19P15-0018",
+    "REQ-QUIC-RFC9000-19150004",
     "REQ-QUIC-RFC9000-S19P15-0021",
-    "REQ-QUIC-RFC9000-S19P15-0022",
-    "REQ-QUIC-RFC9000-S19P15-0023"
+    "REQ-QUIC-RFC9000-19150007",
+    "REQ-QUIC-RFC9000-19150008"
   ],
   "summary": "Complete the bounded S19P15 NEW_CONNECTION_ID runtime lifecycle proof by adding direct requirement-home coverage and correcting stale sequence handling to report RETIRE_CONNECTION_ID work instead of closing.",
   "planned_changes": "- Keep local NEW_CONNECTION_ID issuance suppressed in zero-length local connection-ID mode.\n- Add direct S19P15 requirement-home proof for zero-length-mode receive rejection, exact duplicate acceptance, sequence-based duplicate handling, and conflict rejection.\n- Preserve historical peer connection-ID sequence records after active retirement.\n- Treat later NEW_CONNECTION_ID frames with smaller Retire Prior To values as no-ops for the largest received threshold.\n- Report a newly received sequence below the largest Retire Prior To value for one RETIRE_CONNECTION_ID emission and suppress duplicate stale retirement reports.\n- Update canonical requirement trace, architecture, work-item, and verification artifacts.",

@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0002
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0002");
 
         Assert.Equal("More generally, servers MUST NOT generate a stateless reset if a connection with the correspo...", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.11 RFC9000-S21.11-B4-P3-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

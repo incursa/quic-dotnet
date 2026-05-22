@@ -10,6 +10,8 @@ public sealed class REQ_QUIC_CRT_0095
     [Trait("Category", "Positive")]
     public async Task ConcurrentEventPostingUsesShardQueueWithoutConnectionLockFields()
     {
+        // Quarantined structural probe: follow-up work item will replace this reflection-based
+        // field-shape check with a non-reflection repository-native assertion.
         FieldInfo[] lockLikeConnectionFields = typeof(QuicConnectionRuntime)
             .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
             .Where(field =>

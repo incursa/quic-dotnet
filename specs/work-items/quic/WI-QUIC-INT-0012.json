@@ -6,7 +6,7 @@
   "title": "QUIC Major Peer Interop Matrix Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Add an advisory manual hosted profile that runs the currently executable major non-HTTP/3 interop scenarios against quic-go and msquic with Incursa.Quic in both local client and local server roles.",
+  "summary": "Add an advisory manual hosted profile that runs the currently executable major non-HTTP/3 interop scenarios against quic-go and msquic with Incursa.Quic in both local client and local server roles and feeds the generated major-peer inventory and evidence reports.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0012",
@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0019"
   ],
-  "planned_changes": "- Add a `major-peer-matrix` choice to the manual interop-runner workflow.\n- Add matrix cells for local client and local server roles against `quic-go` and `msquic` for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`.\n- Pre-pull the selected peer image for each matrix cell and upload a distinct per-cell artifact bundle with `if: always()`.\n- Keep blocked or out-of-scope cells out of the major peer matrix.\n- Expand helper-side FileNotFound advisory classification for keyupdate and resumption with testcase-specific preserved-log markers.\n- Document the profile and add requirement-home tests that lock the matrix shape.",
+  "planned_changes": "- Add a `major-peer-matrix` choice to the manual interop-runner workflow.\n- Add matrix cells for local client and local server roles against `quic-go` and `msquic` for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`.\n- Pre-pull the selected peer image for each matrix cell and upload a distinct per-cell artifact bundle with `if: always()`.\n- Keep blocked or out-of-scope cells out of the major peer matrix.\n- Expand helper-side FileNotFound advisory classification for keyupdate and resumption with testcase-specific preserved-log markers.\n- Document the profile and add requirement-home tests that lock the matrix shape.\n- Keep the generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports aligned with the manual workflow so later evidence refreshes stay advisory.",
   "out_of_scope": [
     "HTTP/3 support",
     "zerortt promotion",
@@ -31,6 +31,6 @@
     "running the major peer matrix on push or pull request",
     "public support-readiness claims"
   ],
-  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0017` and `REQ-QUIC-INT-0019`, run helper dry-run plans for representative quic-go and msquic client/server cells, run helper FileNotFound fallback tests for keyupdate and resumption, run SpecTrace validation where the repo baseline allows it, and dispatch the manual `major-peer-matrix` profile when hosted artifact evidence is needed.",
-  "completion_notes": "Implemented the manual `major-peer-matrix` workflow profile and requirement-home tests. The configuration now covers local client and local server cells for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` against `quic-go` and `msquic`. The helper now has testcase-specific FileNotFound advisory classification for keyupdate and resumption preserved-log evidence. Hosted execution remains an explicit advisory follow-up evidence step rather than a push or pull-request gate."
+  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0017` and `REQ-QUIC-INT-0019`, run helper dry-run plans for representative quic-go and msquic client/server cells, run helper FileNotFound fallback tests for keyupdate and resumption, run SpecTrace validation where the repo baseline allows it, confirm the generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports stay in sync with the workflow shape, and dispatch the manual `major-peer-matrix` profile when hosted artifact evidence is needed.",
+  "completion_notes": "Implemented the manual `major-peer-matrix` workflow profile and requirement-home tests. The configuration now covers local client and local server cells for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` against `quic-go` and `msquic`. The helper now has testcase-specific FileNotFound advisory classification for keyupdate and resumption preserved-log evidence. Hosted execution remains an explicit advisory follow-up evidence step rather than a push or pull-request gate, and the generated inventory/evidence reports remain the advisory record of that hosted follow-up."
 }

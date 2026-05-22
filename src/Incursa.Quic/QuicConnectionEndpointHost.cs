@@ -152,6 +152,10 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         DisposeAsync().GetAwaiter().GetResult();
     }
 
+    internal Socket Socket => socket;
+
+    internal QuicConnectionPathIdentity PeerPathIdentity => peerPathIdentity;
+
     internal bool TryApplyEffect(QuicConnectionEffect effect)
     {
         ArgumentNullException.ThrowIfNull(effect);

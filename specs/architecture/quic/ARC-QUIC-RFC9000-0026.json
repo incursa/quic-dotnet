@@ -14,7 +14,7 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S2P3-0001",
-    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-0057",
     "REQ-QUIC-RFC9000-S2P3-0003"
   ],
   "key_components": [
@@ -24,7 +24,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
     "benchmarks/QuicApplicationSendPriorityBenchmarks.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0057.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs"
   ],
   "design_summary": "Each writable stream owns a local priority value in stream bookkeeping, and the public QuicStream facade exposes that value as a simple local-only property. The runtime snapshots the current priority when it queues delayed application sends, then flushes queued writes in descending priority order with FIFO tie-breaking for equal priorities. The priority never changes the wire format, does not introduce a built-in priority exchange, and does not alter the existing stream frame codec or transport-parameter surfaces. A small permanent benchmark suite exercises the exact queue-ordering comparator so the delayed-send hot path remains visible in the repo's performance evidence.",
@@ -53,7 +53,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicStream.cs`](../../../src/Incursa.Quic/QuicStream.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicApplicationSendPriorityBenchmarks.cs`](../../../benchmarks/QuicApplicationSendPriorityBenchmarks.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs)"
+      "content": "- [`QuicStream.cs`](../../../src/Incursa.Quic/QuicStream.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicApplicationSendPriorityBenchmarks.cs`](../../../benchmarks/QuicApplicationSendPriorityBenchmarks.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0001.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs)\n- [`REQ-QUIC-RFC9000-0057.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0057.cs)\n- [`REQ-QUIC-RFC9000-S2P3-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs)"
     }
   ]
 }

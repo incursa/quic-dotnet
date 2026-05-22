@@ -17,10 +17,10 @@
     "VER-QUIC-RFC9000-0058"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S7P2-0009",
-    "REQ-QUIC-RFC9000-S7P2-0010",
+    "REQ-QUIC-RFC9000-0316",
+    "REQ-QUIC-RFC9000-0317",
     "REQ-QUIC-RFC9000-S7P2-0011",
-    "REQ-QUIC-RFC9000-S7P2-0012",
+    "REQ-QUIC-RFC9000-0319",
     "REQ-QUIC-RFC9000-S7P2-0013",
     "REQ-QUIC-RFC9000-S7P2-0014"
   ],
@@ -33,10 +33,10 @@
     "src/Incursa.Quic.Qlog/QuicQlogCapture.cs",
     "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2ServerConnectionIdTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0316.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0317.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0319.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs"
   ],

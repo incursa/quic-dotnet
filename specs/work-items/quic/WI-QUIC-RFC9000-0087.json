@@ -13,12 +13,12 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S17P2P4-0003",
-    "REQ-QUIC-RFC9000-S17P2P4-0016",
+    "REQ-QUIC-RFC9000-1015",
     "REQ-QUIC-RFC9000-S17P2P4-0017",
     "REQ-QUIC-RFC9000-S17P2P4-0018",
     "REQ-QUIC-RFC9000-S17P2P4-0019",
-    "REQ-QUIC-RFC9000-S17P2P4-0020",
-    "REQ-QUIC-RFC9000-S17P2P4-0021"
+    "REQ-QUIC-RFC9000-1735",
+    "REQ-QUIC-RFC9000-1018"
   ],
   "summary": "Close the focused S17P2P4 handshake packet format proof tail with requirement-home negative and edge evidence, packet/header parsing xrefs, and canonical trace closure.",
   "planned_changes": "- Add focused requirement-home negative and edge proofs for client handshake-state commitment, handshake packet number boundaries, and handshake receive error handling.\n- Add missing x_test_refs for the packet-format requirements already covered by existing positive tests.\n- Link the focused proof through canonical architecture and verification artifacts.\n- Regenerate QUIC requirement coverage triage and validate the resulting SpecTrace JSON.",

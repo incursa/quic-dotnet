@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Reflection;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
@@ -35,11 +34,7 @@ public sealed class REQ_QUIC_CRT_0119
         Assert.Null(driver.State.OneRttOpenPacketProtectionMaterial);
         Assert.Null(driver.State.OneRttProtectPacketProtectionMaterial);
 
-        FieldInfo keyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule driverKeySchedule = (QuicTlsKeySchedule)keyScheduleField.GetValue(driver)!;
-        Assert.True(driverKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+        Assert.True(driver.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,

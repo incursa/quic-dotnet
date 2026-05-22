@@ -18,7 +18,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S9P3-0005",
-    "REQ-QUIC-RFC9000-S9P3-0011"
+    "REQ-QUIC-RFC9000-0488"
   ],
   "planned_changes": "- Add a server-only token-emission record keyed by remote address.\n- Flush NEW_TOKEN frames after new-address validation once a protected 1-RTT send is possible.\n- Keep repeated validation of the same address from creating duplicate NEW_TOKEN traffic.\n- Keep the framing helper internal to the runtime and avoid public API widening.",
   "verification_plan": "Run the RFC 9000 requirement-home tests for the two token-emission clauses and confirm the new-token payload helper round-trips through the frame codec.",
@@ -31,7 +31,7 @@
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs"
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0488.cs"
     }
   ]
 }

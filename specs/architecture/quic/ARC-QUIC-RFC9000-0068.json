@@ -16,14 +16,14 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S7P4P1-0001",
     "REQ-QUIC-RFC9000-S7P4P1-0002",
-    "REQ-QUIC-RFC9000-S7P4P1-0004"
+    "REQ-QUIC-RFC9000-0346"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0346.cs"
   ],
   "design_summary": "The client-side resumption carrier now separates the raw peer transport-parameter snapshot from the subset that can be used to decide whether a dormant 0-RTT attempt has usable remembered transport parameters. QuicZeroRttTransportParameterPolicy defines the known transport-parameter identifiers and classifies each modeled parameter as mandatory, optional, or prohibited for 0-RTT storage. It builds a sanitized QuicTransportParameters snapshot containing only the processable parameters the runtime may remember for client 0-RTT, while leaving prohibited parameters such as max_ack_delay, preferred_address, stateless_reset_token, initial_source_connection_id, retry_source_connection_id, original_destination_connection_id, and ack_delay_exponent out of the 0-RTT subset.",
   "data_and_state_considerations": "QuicDetachedResumptionTicketSnapshot continues to preserve the raw peer transport-parameter snapshot for resumption metadata and existing diagnostics. The new internal ZeroRttTransportParameters snapshot is derived once at ticket construction time and gates HasEarlyDataPrerequisiteMaterial, so a ticket containing only prohibited remembered values does not make the runtime report 0-RTT readiness.",
@@ -41,7 +41,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the client remembered-transport-parameter policy floor for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and REQ-QUIC-RFC9000-S7P4P1-0004 only. The remaining S7P4P1 server acceptance, restored-value support, and updated-value violation requirements remain separate follow-on work."
+      "content": "This design closes the client remembered-transport-parameter policy floor for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and REQ-QUIC-RFC9000-0346 only. The remaining S7P4P1 server acceptance, restored-value support, and updated-value violation requirements remain separate follow-on work."
     }
   ]
 }

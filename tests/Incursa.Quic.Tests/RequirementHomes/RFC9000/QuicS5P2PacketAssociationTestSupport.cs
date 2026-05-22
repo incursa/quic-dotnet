@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS5P2PacketAssociationTestSupport
@@ -120,11 +117,7 @@ internal static class QuicS5P2PacketAssociationTestSupport
 
     internal static int GetBufferedEstablishmentHandshakePacketCount(QuicConnectionRuntime runtime)
     {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "bufferedEstablishmentHandshakePackets",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        ICollection bufferedPackets = (ICollection)field.GetValue(runtime)!;
-        return bufferedPackets.Count;
+        return runtime.BufferedEstablishmentHandshakePacketCount;
     }
 
     private static byte[] CreateSequentialBytes(byte start, int length)

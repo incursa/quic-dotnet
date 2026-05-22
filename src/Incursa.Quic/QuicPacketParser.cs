@@ -39,7 +39,8 @@ internal static class QuicPacketParser
             return false;
         }
 
-        if (version != 0 && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
+        if (!QuicVersionNegotiation.IsVersionNegotiationVersion(version)
+            && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             header = default;
             return false;
@@ -98,7 +99,7 @@ internal static class QuicPacketParser
             return false;
         }
 
-        if (version != QuicVersionNegotiationPacket.VersionNegotiationVersion
+        if (!QuicVersionNegotiation.IsVersionNegotiationVersion(version)
             || supportedVersionBytes.IsEmpty
             || (supportedVersionBytes.Length % QuicVersionNegotiationPacket.SupportedVersionLength) != 0)
         {
@@ -139,7 +140,7 @@ internal static class QuicPacketParser
 
         if (!TryParseLongHeader(packet, out QuicLongHeaderPacket header)
             || header.IsVersionNegotiation
-            || header.Version != 1)
+            || !QuicVersionNegotiation.IsVersion1(header.Version))
         {
             return false;
         }
@@ -187,7 +188,8 @@ internal static class QuicPacketParser
             + 1
             + sourceConnectionId.Length;
 
-        if (version != 0 && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
+        if (!QuicVersionNegotiation.IsVersionNegotiationVersion(version)
+            && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             return false;
         }
@@ -202,7 +204,7 @@ internal static class QuicPacketParser
             return false;
         }
 
-        if (version == QuicVersionNegotiation.VersionNegotiationVersion)
+        if (QuicVersionNegotiation.IsVersionNegotiationVersion(version))
         {
             if (!TryParseVersionNegotiation(datagram, out _))
             {
@@ -213,7 +215,7 @@ internal static class QuicPacketParser
             return true;
         }
 
-        if (version != QuicVersionNegotiation.Version1)
+        if (!QuicVersionNegotiation.IsVersion1(version))
         {
             if (!TryParseLongHeader(datagram, out _))
             {

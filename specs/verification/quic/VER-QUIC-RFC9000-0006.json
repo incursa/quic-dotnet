@@ -15,7 +15,7 @@
   "verifies": [
     "REQ-QUIC-RFC9000-S14P3-0001",
     "REQ-QUIC-RFC9000-S14P3-0002",
-    "REQ-QUIC-RFC9000-S14P3-0003",
+    "REQ-QUIC-RFC9000-0877",
     "REQ-QUIC-RFC9000-S14P3-0004"
   ],
   "scope": "This verification covers the bounded RFC 9000 Section 14.3 DPLPMTUD helper subset: PMTU probe packet-number tracking, acknowledgment/loss outcomes, padding-based probe sizing, BASE_PLPMTU initialization, and per-address-pair MPS isolation. It excludes automatic probe scheduling, packet-builder integration, OS ICMP ingress, alternative-path search, and public API claims.",
@@ -35,7 +35,7 @@
     "src/Incursa.Quic/QuicDplpmtudState.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0877.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs",
     "benchmarks/QuicDplpmtudStateBenchmarks.cs",
     "artifacts/bb/20260422-2343-dplpmtud-dry/",

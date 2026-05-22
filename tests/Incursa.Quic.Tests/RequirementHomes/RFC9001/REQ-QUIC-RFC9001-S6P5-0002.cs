@@ -616,17 +616,8 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0002
         out QuicAckFrame ackFrame)
     {
         ackFrame = new QuicAckFrame();
-
-        FieldInfo sendRuntimeField = typeof(QuicConnectionRuntime).GetField(
-            "sendRuntime",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicConnectionSendRuntime sendRuntime =
-            (QuicConnectionSendRuntime)sendRuntimeField.GetValue(runtime)!;
-
-        MethodInfo getElapsedMicrosMethod = typeof(QuicConnectionRuntime).GetMethod(
-            "GetElapsedMicros",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        ulong nowMicros = (ulong)getElapsedMicrosMethod.Invoke(runtime, [nowTicks])!;
+        QuicConnectionSendRuntime sendRuntime = runtime.SendRuntime;
+        ulong nowMicros = runtime.GetElapsedMicros(nowTicks);
 
         return sendRuntime.FlowController.TryBuildAckFrame(
             QuicPacketNumberSpace.ApplicationData,
@@ -666,9 +657,6 @@ public sealed class REQ_QUIC_RFC9001_S6P5_0002
             return;
         }
 
-        FieldInfo handshakeDonePacketSentField = typeof(QuicConnectionRuntime).GetField(
-            "handshakeDonePacketSent",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        handshakeDonePacketSentField.SetValue(runtime, true);
+        runtime.MarkHandshakeDonePacketSentForTests();
     }
 }

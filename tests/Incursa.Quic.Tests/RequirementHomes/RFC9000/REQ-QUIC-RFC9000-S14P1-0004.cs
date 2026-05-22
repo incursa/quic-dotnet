@@ -8,7 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0004
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S14-0007")]
+    [Requirement("REQ-QUIC-RFC9000-0857")]
     [Trait("Category", "Positive")]
     public void TryFormatPathValidationDatagramPadding_ExpandsTheProbePayloadWhenBudgetPermits()
     {
@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Requirement("REQ-QUIC-RFC9000-S14-0007")]
+    [Requirement("REQ-QUIC-RFC9000-0857")]
     [Trait("Category", "Negative")]
     public void TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall()
     {

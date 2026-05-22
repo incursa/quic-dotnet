@@ -5,38 +5,11 @@ internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
     private const ulong MaximumStreamLimit = 1UL << 60;
-    // RFC 9000 section 12.4 allows only the narrow Initial/Handshake control-frame set.
-    private const ulong ResetStreamFrameType = 0x04UL;
-    private const ulong HandshakePacketResetStreamFrameType = ResetStreamFrameType;
-    private const ulong HandshakePacketStopSendingFrameType = 0x05UL;
-    private const ulong HandshakePacketNewTokenFrameType = 0x07UL;
-    private const ulong HandshakePacketMaxDataFrameType = 0x10UL;
-    private const ulong HandshakePacketMaxStreamDataFrameType = 0x11UL;
-    private const ulong HandshakePacketMaxStreamsBidirectionalFrameType = 0x12UL;
-    private const ulong HandshakePacketMaxStreamsUnidirectionalFrameType = 0x13UL;
-    private const ulong HandshakePacketDataBlockedFrameType = 0x14UL;
-    private const ulong HandshakePacketStreamDataBlockedFrameType = 0x15UL;
-    private const ulong HandshakePacketStreamsBlockedBidirectionalFrameType = 0x16UL;
-    private const ulong HandshakePacketStreamsBlockedUnidirectionalFrameType = 0x17UL;
-    private const ulong HandshakePacketNewConnectionIdFrameType = 0x18UL;
-    private const ulong HandshakePacketRetireConnectionIdFrameType = 0x19UL;
-    private const ulong HandshakePacketPathChallengeFrameType = 0x1AUL;
-    private const ulong HandshakePacketPathResponseFrameType = 0x1BUL;
-    private const ulong HandshakePacketHandshakeDoneFrameType = 0x1EUL;
-    private const ulong ApplicationPacketAckFrameType = 0x02UL;
-    private const ulong ApplicationPacketCryptoFrameType = 0x06UL;
     private static readonly bool ApplicationReceiveDebugEnabled =
         string.Equals(
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
             "1",
             StringComparison.Ordinal);
-
-    private enum QuicWeaklyProtectedPacketPayloadValidationResult
-    {
-        Process,
-        Discard,
-        ConnectionError,
-    }
 
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
@@ -135,26 +108,21 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = true;
-        foreach (QuicTlsStateUpdate update in updates)
-        {
-            stateChanged |= HandleTlsStateUpdated(
-                new QuicConnectionTlsStateUpdatedEvent(handshakeBootstrapRequestedEvent.ObservedAtTicks, update),
-                nowTicks,
-                ref effects);
-        }
+        stateChanged |= ApplyTlsStateUpdates(
+            updates,
+            handshakeBootstrapRequestedEvent.ObservedAtTicks,
+            nowTicks,
+            ref effects);
 
         IReadOnlyList<QuicTlsStateUpdate> replayedHandshakeUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
         if (replayedHandshakeUpdates.Count > 0)
         {
             stateChanged = true;
-
-            foreach (QuicTlsStateUpdate replayedHandshakeUpdate in replayedHandshakeUpdates)
-            {
-                stateChanged |= HandleTlsStateUpdated(
-                    new QuicConnectionTlsStateUpdatedEvent(handshakeBootstrapRequestedEvent.ObservedAtTicks, replayedHandshakeUpdate),
-                    nowTicks,
-                    ref effects);
-            }
+            stateChanged |= ApplyTlsStateUpdates(
+                replayedHandshakeUpdates,
+                handshakeBootstrapRequestedEvent.ObservedAtTicks,
+                nowTicks,
+                ref effects);
         }
 
         return stateChanged;
@@ -424,7 +392,7 @@ internal sealed partial class QuicConnectionRuntime
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
         QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Initial);
+            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Initial);
         if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
         {
             return false;
@@ -537,93 +505,6 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return processed;
-    }
-
-    private static QuicWeaklyProtectedPacketPayloadValidationResult ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(
-        ReadOnlySpan<byte> payload,
-        QuicTlsEncryptionLevel encryptionLevel)
-    {
-        int payloadOffset = 0;
-        bool observedProcessablePrefix = false;
-        while (payloadOffset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
-            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
-            {
-                if (paddingBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += paddingBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
-            {
-                if (pingBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += pingBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
-            {
-                if (ackBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += ackBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseConnectionCloseFrame(
-                    remaining,
-                    out QuicConnectionCloseFrame connectionCloseFrame,
-                    out int connectionCloseBytesConsumed))
-            {
-                if (connectionCloseBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                return connectionCloseFrame.IsApplicationError
-                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
-                    : QuicWeaklyProtectedPacketPayloadValidationResult.Process;
-            }
-
-            if (QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int cryptoBytesConsumed))
-            {
-                if (cryptoBytesConsumed <= 0)
-                {
-                    return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-                }
-
-                payloadOffset += cryptoBytesConsumed;
-                observedProcessablePrefix = true;
-                continue;
-            }
-
-            if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
-                && frameTypeBytesConsumed > 0
-                && IsHandshakePacketForbiddenFrameType(frameType))
-            {
-                return encryptionLevel == QuicTlsEncryptionLevel.Handshake || observedProcessablePrefix
-                    ? QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError
-                    : QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-            }
-
-            return QuicWeaklyProtectedPacketPayloadValidationResult.Discard;
-        }
-
-        return QuicWeaklyProtectedPacketPayloadValidationResult.Process;
     }
 
     private bool TryResetClientPeerHandshakeAttempt(
@@ -809,7 +690,7 @@ internal sealed partial class QuicConnectionRuntime
 
         ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
         QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            ValidateWeaklyProtectedHandshakePayloadBeforeProcessing(payload, QuicTlsEncryptionLevel.Handshake);
+            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Handshake);
         if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
         {
             return false;
@@ -956,7 +837,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryProcessHandshakePacketPayload(
+    internal bool TryProcessHandshakePacketPayload(
         ReadOnlySpan<byte> payload,
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
@@ -1057,7 +938,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (QuicVariableLengthInteger.TryParse(remaining, out ulong frameType, out int frameTypeBytesConsumed)
                     && frameTypeBytesConsumed > 0
-                    && IsHandshakePacketForbiddenFrameType(frameType))
+                    && QuicPacketFrameLegality.IsHandshakePacketForbiddenFrameType(frameType))
                 {
                     return HandleFatalTlsSignal(
                         nowTicks,
@@ -1109,20 +990,14 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             progressedTranscript = true;
-            bool sawFatalAlert = false;
-            foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
-            {
-                stateChanged |= HandleTlsStateUpdated(
-                    new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
+            bool sawFatalAlert;
+                stateChanged |= ApplyTlsStateUpdates(
+                    transcriptUpdates,
                     nowTicks,
-                    ref effects);
-
-                if (transcriptUpdate.Kind == QuicTlsUpdateKind.FatalAlert)
-                {
-                    sawFatalAlert = true;
-                    break;
-                }
-            }
+                    nowTicks,
+                    ref effects,
+                    true,
+                    out sawFatalAlert);
 
             if (!sawFatalAlert)
             {
@@ -1153,28 +1028,6 @@ internal sealed partial class QuicConnectionRuntime
 
         packetProcessed = true;
         return stateChanged || processedCryptoFrame;
-    }
-
-    private static bool IsHandshakePacketForbiddenFrameType(ulong frameType)
-    {
-        return (frameType >= QuicStreamFrameBits.StreamFrameTypeMinimum
-                && frameType <= QuicStreamFrameBits.StreamFrameTypeMaximum)
-            || frameType is HandshakePacketResetStreamFrameType
-            || frameType is HandshakePacketStopSendingFrameType
-            || frameType is HandshakePacketNewTokenFrameType
-            || frameType is HandshakePacketMaxDataFrameType
-            || frameType is HandshakePacketMaxStreamDataFrameType
-            || frameType is HandshakePacketMaxStreamsBidirectionalFrameType
-            || frameType is HandshakePacketMaxStreamsUnidirectionalFrameType
-            || frameType is HandshakePacketDataBlockedFrameType
-            || frameType is HandshakePacketStreamDataBlockedFrameType
-            || frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
-            || frameType is HandshakePacketStreamsBlockedUnidirectionalFrameType
-            || frameType is HandshakePacketNewConnectionIdFrameType
-            || frameType is HandshakePacketRetireConnectionIdFrameType
-            || frameType is HandshakePacketPathChallengeFrameType
-            || frameType is HandshakePacketPathResponseFrameType
-            || frameType is HandshakePacketHandshakeDoneFrameType;
     }
 
     private bool IsDuplicateServerInitialCryptoFrame(
@@ -1580,8 +1433,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong malformedMaxStreamsFrameType)
-                && IsMaxStreamsFrameType(malformedMaxStreamsFrameType))
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedMaxStreamsFrameType)
+                && QuicPacketFrameLegality.IsMaxStreamsFrameType(malformedMaxStreamsFrameType))
             {
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
@@ -1607,7 +1460,7 @@ internal sealed partial class QuicConnectionRuntime
                 {
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        HandshakePacketStreamDataBlockedFrameType,
+                        QuicPacketFrameLegality.HandshakePacketStreamDataBlockedFrameType,
                         streamDataBlockedErrorCode,
                         "The peer sent a STREAM_DATA_BLOCKED frame that violated receive-side stream state.",
                         ref effects);
@@ -1634,8 +1487,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong malformedStreamsBlockedFrameType)
-                && IsStreamsBlockedFrameType(malformedStreamsBlockedFrameType))
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedStreamsBlockedFrameType)
+                && QuicPacketFrameLegality.IsStreamsBlockedFrameType(malformedStreamsBlockedFrameType))
             {
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
@@ -1664,13 +1517,11 @@ internal sealed partial class QuicConnectionRuntime
 
                 IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
                     QuicTlsEncryptionLevel.OneRtt);
-                foreach (QuicTlsStateUpdate transcriptUpdate in transcriptUpdates)
-                {
-                    stateChanged |= HandleTlsStateUpdated(
-                        new QuicConnectionTlsStateUpdatedEvent(nowTicks, transcriptUpdate),
-                        nowTicks,
-                        ref effects);
-                }
+                stateChanged |= ApplyTlsStateUpdates(
+                    transcriptUpdates,
+                    nowTicks,
+                    nowTicks,
+                    ref effects);
 
                 offset += cryptoBytesConsumed;
                 packetAckEliciting = true;
@@ -1698,7 +1549,8 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (TryReadApplicationFrameType(remaining, out ulong frameType) && frameType == HandshakePacketNewTokenFrameType)
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong frameType)
+                && frameType == QuicPacketFrameLegality.HandshakePacketNewTokenFrameType)
             {
                 QuicTransportErrorCode newTokenErrorCode = tlsState.Role == QuicTlsRole.Server
                     ? QuicTransportErrorCode.ProtocolViolation
@@ -1939,10 +1791,10 @@ internal sealed partial class QuicConnectionRuntime
 
         if (processedMaxStreamsFrame)
         {
-            int bidirectionalIncrement = GetPositiveIncrement(
+            int bidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
                 originalBidirectionalLimit,
                 streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
-            int unidirectionalIncrement = GetPositiveIncrement(
+            int unidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
                 originalUnidirectionalLimit,
                 streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
 
@@ -2098,7 +1950,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        ApplicationPacketAckFrameType,
+                        QuicPacketFrameLegality.ApplicationPacketAckFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent an ACK frame in a 0-RTT packet.",
                         ref effects);
@@ -2113,7 +1965,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        ApplicationPacketCryptoFrameType,
+                        QuicPacketFrameLegality.ApplicationPacketCryptoFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent a CRYPTO frame in a 0-RTT packet.",
                         ref effects);
@@ -2142,7 +1994,7 @@ internal sealed partial class QuicConnectionRuntime
 
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
-                        HandshakePacketHandshakeDoneFrameType,
+                        QuicPacketFrameLegality.HandshakePacketHandshakeDoneFrameType,
                         QuicTransportErrorCode.ProtocolViolation,
                         "The peer sent a HANDSHAKE_DONE frame in a 0-RTT packet.",
                         ref effects);
@@ -2416,7 +2268,7 @@ internal sealed partial class QuicConnectionRuntime
         List<ulong> newlyAcknowledgedAckElicitingPacketNumbers = [];
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
 
-        foreach (ulong packetNumber in EnumerateAcknowledgedPacketNumbers(ackFrame))
+        foreach (ulong packetNumber in QuicConnectionAckHelpers.EnumerateAcknowledgedPacketNumbers(ackFrame))
         {
             if (!acknowledgedPacketNumbers.Add(packetNumber))
             {
@@ -2517,9 +2369,9 @@ internal sealed partial class QuicConnectionRuntime
         ulong nowMicros = GetElapsedMicros(nowTicks);
         ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
         if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-            QuicPacketNumberSpace.ApplicationData,
-            nowMicros,
-            localMaxAckDelayMicros)
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                localMaxAckDelayMicros)
             || !sendRuntime.FlowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
@@ -2785,7 +2637,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleAckDelayTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
     {
-        pendingApplicationAckDelayDueTicks = null;
+        applicationAckState.ClearDueTicks();
 
         bool sentAck = TrySendPendingApplicationAck(nowTicks, ref effects);
         bool timerUpdated = UpdateApplicationAckDelayTimer(nowTicks);
@@ -2795,39 +2647,14 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool UpdateApplicationAckDelayTimer(long nowTicks)
     {
-        long? nextDueTicks = ComputeApplicationAckDelayDueTicks(nowTicks);
-        if (pendingApplicationAckDelayDueTicks == nextDueTicks)
-        {
-            return false;
-        }
-
-        pendingApplicationAckDelayDueTicks = nextDueTicks;
-        return true;
-    }
-
-    private long? ComputeApplicationAckDelayDueTicks(long nowTicks)
-    {
-        if (activePath is null || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
-        {
-            return null;
-        }
-
         ulong nowMicros = GetElapsedMicros(nowTicks);
-        ulong localMaxAckDelayMicros = GetLocalMaxAckDelayMicros();
-        if (sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                localMaxAckDelayMicros)
-            || !sendRuntime.FlowController.CanSendAckOnlyPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                localMaxAckDelayMicros))
-        {
-            return null;
-        }
-
-        return pendingApplicationAckDelayDueTicks
-            ?? SaturatingAdd(nowTicks, ConvertMicrosToTicks(localMaxAckDelayMicros));
+        return applicationAckState.TryUpdateDueTicks(
+            phase,
+            activePath is not null && tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
+            sendRuntime.FlowController,
+            GetLocalMaxAckDelayMicros(),
+            nowMicros,
+            nowTicks);
     }
 
     private ulong GetLocalMaxAckDelayMicros()
@@ -2841,24 +2668,12 @@ internal sealed partial class QuicConnectionRuntime
         ulong sentAtMicros,
         bool ackOnlyPacket)
     {
-        if (packetNumber.HasValue)
-        {
-            sendRuntime.FlowController.MarkAckFrameSent(
-                QuicPacketNumberSpace.ApplicationData,
-                packetNumber.Value,
-                ackFrame,
-                sentAtMicros,
-                ackOnlyPacket);
-        }
-        else
-        {
-            sendRuntime.FlowController.MarkAckFrameSent(
-                QuicPacketNumberSpace.ApplicationData,
-                sentAtMicros,
-                ackOnlyPacket);
-        }
-
-        pendingApplicationAckDelayDueTicks = null;
+        applicationAckState.MarkAckFrameSent(
+            sendRuntime.FlowController,
+            ackFrame,
+            packetNumber,
+            sentAtMicros,
+            ackOnlyPacket);
     }
 
     private bool TryBuildOutboundAckPayload(QuicAckFrame ackFrame, out byte[] payload)
@@ -2885,15 +2700,12 @@ internal sealed partial class QuicConnectionRuntime
         ackFramePayload = [];
         ackFrame = new QuicAckFrame();
 
-        if (!sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+        if (!QuicConnectionAckHelpers.TryBuildLongHeaderAckPiggybackFramePayload(
                 packetNumberSpace,
+                sendRuntime.FlowController,
                 nowMicros,
-                maxAckDelayMicros: 0)
-            || !sendRuntime.FlowController.TryBuildAckFrame(
-                packetNumberSpace,
-                nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out ackFramePayload))
+                out ackFramePayload,
+                out ackFrame))
         {
             return false;
         }
@@ -2905,47 +2717,14 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[512];
-        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten)
-            || frameBytesWritten <= 0
-            || frameBytesWritten > buffer.Length)
+        if (!QuicConnectionAckHelpers.TryBuildOutboundAckPayload(
+                ackFrame,
+                ApplicationMinimumProtectedPayloadLength,
+                out payload))
         {
             return false;
         }
-
-        payload = buffer.AsSpan(0, frameBytesWritten).ToArray();
         return true;
-    }
-
-    private static IEnumerable<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
-    {
-        if (ackFrame.LargestAcknowledged < ackFrame.FirstAckRange)
-        {
-            yield break;
-        }
-
-        ulong largestAcknowledged = ackFrame.LargestAcknowledged;
-        ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
-        for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
-        {
-            yield return packetNumber;
-            if (packetNumber == largestAcknowledged)
-            {
-                break;
-            }
-        }
-
-        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
-        {
-            for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
-            {
-                yield return packetNumber;
-                if (packetNumber == range.LargestAcknowledged)
-                {
-                    break;
-                }
-            }
-        }
     }
 
     private bool TryHandlePathChallengeFrame(
@@ -3195,7 +2974,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects);
         }
 
-        if (retireConnectionIdFrame.SequenceNumber > highestConnectionIdIssuedToPeer)
+        if (retireConnectionIdFrame.SequenceNumber > issuedConnectionIdState.HighestConnectionIdIssuedToPeer)
         {
             return HandleFatalTlsSignal(
                 nowTicks,
@@ -3916,7 +3695,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: errorCode,
             ApplicationErrorCode: null,
-            TriggeringFrameType: HandshakePacketNewTokenFrameType,
+            TriggeringFrameType: QuicPacketFrameLegality.HandshakePacketNewTokenFrameType,
             ReasonPhrase: reasonPhrase);
 
         return HandleLocalCloseRequested(
@@ -3947,24 +3726,6 @@ internal sealed partial class QuicConnectionRuntime
             new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
             nowTicks,
             ref effects);
-    }
-
-    private static bool TryReadApplicationFrameType(ReadOnlySpan<byte> payload, out ulong frameType)
-    {
-        return QuicVariableLengthInteger.TryParse(payload, out frameType, out int bytesConsumed)
-            && bytesConsumed > 0;
-    }
-
-    private static bool IsMaxStreamsFrameType(ulong frameType)
-    {
-        return frameType is HandshakePacketMaxStreamsBidirectionalFrameType
-            or HandshakePacketMaxStreamsUnidirectionalFrameType;
-    }
-
-    private static bool IsStreamsBlockedFrameType(ulong frameType)
-    {
-        return frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
-            or HandshakePacketStreamsBlockedUnidirectionalFrameType;
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
@@ -4075,7 +3836,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    internal bool TryGetInitialOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
         {
@@ -4099,7 +3860,7 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
-    private bool TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+    internal bool TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
     {
         if (TryGetMostRecentUnconfirmedServerCandidatePath(out pathIdentity))
         {
@@ -4266,11 +4027,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         _ = ApplyTransportParameters(
-            new QuicConnectionTransportParametersCommittedEvent(
-                ObservedAtTicks: nowTicks,
-                TransportFlags: QuicConnectionTransportState.None,
-                LocalMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
-                    localTransportParameters.MaxIdleTimeout)),
+            QuicTransportParameterCommitHelper.CreateLocalTransportParametersCommittedEvent(
+                nowTicks,
+                localTransportParameters),
             nowTicks,
             ref effects);
 
@@ -4294,38 +4053,24 @@ internal sealed partial class QuicConnectionRuntime
             || preferredAddress.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
             || !QuicConnectionIdKey.TryCreate(preferredAddress.ConnectionId, out _)
             || LocallySelectedZeroLengthConnectionId()
-            || !CanIssueAnotherConnectionId()
-            || statelessResetTokensByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence)
-            || issuedConnectionIdBytesByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence))
+            || !issuedConnectionIdState.CanIssueAnotherConnectionId(MaximumLocallyIssuedConnectionIds)
+            || issuedConnectionIdState.StatelessResetTokensByConnectionId.ContainsKey(PreferredAddressConnectionIdSequence)
+            || !issuedConnectionIdState.HasRoomForAdditionalPeerIssuedConnectionId(GetPeerActiveConnectionIdLimit())
+            || issuedConnectionIdState.IsActiveIssuedConnectionId(preferredAddress.ConnectionId))
         {
             return false;
         }
 
-        ReadOnlySpan<byte> preferredConnectionId = preferredAddress.ConnectionId;
-        foreach (byte[] activeConnectionIdBytes in issuedConnectionIdBytesByConnectionId.Values)
-        {
-            if (activeConnectionIdBytes.AsSpan().SequenceEqual(preferredConnectionId))
-            {
-                return false;
-            }
-        }
-
-        ulong activeIssuedConnectionIdCount = (ulong)statelessResetTokensByConnectionId.Count + 1;
-        if (activeIssuedConnectionIdCount >= GetPeerActiveConnectionIdLimit())
-        {
-            return false;
-        }
-
-        byte[] connectionIdBytes = preferredConnectionId.ToArray();
+        byte[] connectionIdBytes = preferredAddress.ConnectionId.ToArray();
         byte[] token = preferredAddress.StatelessResetToken.ToArray();
-        statelessResetTokensByConnectionId.Add(PreferredAddressConnectionIdSequence, token);
-        issuedConnectionIdBytesByConnectionId.Add(PreferredAddressConnectionIdSequence, connectionIdBytes);
-        if (highestConnectionIdIssuedToPeer < PreferredAddressConnectionIdSequence)
+        if (!issuedConnectionIdState.TryRegisterIssuedConnectionId(
+                PreferredAddressConnectionIdSequence,
+                connectionIdBytes,
+                token,
+                GetPeerActiveConnectionIdLimit()))
         {
-            highestConnectionIdIssuedToPeer = PreferredAddressConnectionIdSequence;
+            return false;
         }
-
-        totalIssuedConnectionIdCount++;
 
         AppendEffect(ref effects, new QuicConnectionRegisterConnectionIdRouteEffect(PreferredAddressConnectionIdSequence, connectionIdBytes));
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(PreferredAddressConnectionIdSequence, token));
@@ -4401,16 +4146,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        bool stateChanged = false;
-        foreach (QuicTlsStateUpdate update in updates)
-        {
-            stateChanged |= HandleTlsStateUpdated(
-                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
-                nowTicks,
-                ref effects);
-        }
-
-        return stateChanged;
+        return ApplyTlsStateUpdates(updates, nowTicks, nowTicks, ref effects);
     }
 
     private bool TryCommitPeerTransportParametersFromTlsBridgeState(
@@ -4527,18 +4263,10 @@ internal sealed partial class QuicConnectionRuntime
             streamCapacityObserver?.Invoke(bidirectionalIncrement, unidirectionalIncrement);
         }
 
-        QuicConnectionTransportState committedTransportFlags = QuicConnectionTransportState.PeerTransportParametersCommitted;
-        if (peerTransportParameters.DisableActiveMigration)
-        {
-            committedTransportFlags |= QuicConnectionTransportState.DisableActiveMigration;
-        }
-
         stateChanged |= ApplyTransportParameters(
-            new QuicConnectionTransportParametersCommittedEvent(
-                ObservedAtTicks: nowTicks,
-                TransportFlags: committedTransportFlags,
-                PeerMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
-                    peerTransportParameters.MaxIdleTimeout)),
+            QuicTransportParameterCommitHelper.CreatePeerTransportParametersCommittedEvent(
+                nowTicks,
+                peerTransportParameters),
             nowTicks,
             ref effects);
         return stateChanged;
@@ -4601,16 +4329,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        bool stateChanged = false;
-        foreach (QuicTlsStateUpdate update in updates)
-        {
-            stateChanged |= HandleTlsStateUpdated(
-                new QuicConnectionTlsStateUpdatedEvent(nowTicks, update),
-                nowTicks,
-                ref effects);
-        }
-
-        return stateChanged;
+        return ApplyTlsStateUpdates(updates, nowTicks, nowTicks, ref effects);
     }
 
     private bool HandleFatalTlsSignal(
@@ -4707,24 +4426,14 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged |= streamRegistry.Bookkeeping.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(false, initialMaxStreamsUni));
         }
 
-        bidirectionalIncrement = GetPositiveIncrement(
+        bidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
             originalBidirectionalLimit,
             streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
-        unidirectionalIncrement = GetPositiveIncrement(
+        unidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
             originalUnidirectionalLimit,
             streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
 
         return stateChanged;
     }
 
-    private static int GetPositiveIncrement(ulong originalValue, ulong updatedValue)
-    {
-        if (updatedValue <= originalValue)
-        {
-            return 0;
-        }
-
-        ulong increment = updatedValue - originalValue;
-        return increment > int.MaxValue ? int.MaxValue : (int)increment;
-    }
 }

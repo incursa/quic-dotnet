@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
@@ -305,11 +303,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0010
 
     private static int GetBufferedEstablishmentHandshakePacketCount(QuicConnectionRuntime runtime)
     {
-        FieldInfo field = typeof(QuicConnectionRuntime).GetField(
-            "bufferedEstablishmentHandshakePackets",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        ICollection bufferedPackets = (ICollection)field.GetValue(runtime)!;
-        return bufferedPackets.Count;
+        return runtime.BufferedEstablishmentHandshakePacketCount;
     }
 
     private static string DescribeState(QuicConnectionRuntime runtime, QuicConnectionTransitionResult result)

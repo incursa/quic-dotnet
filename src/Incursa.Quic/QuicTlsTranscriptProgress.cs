@@ -42,16 +42,12 @@ internal sealed class QuicTlsTranscriptProgress
     private const ushort PskKeyExchangeModesExtensionType = 0x002d;
     private const ushort EarlyDataExtensionType = 0x002a;
     private const ushort Secp256r1NamedGroup = (ushort)QuicTlsNamedGroup.Secp256r1;
-    private const ushort X25519NamedGroup = (ushort)QuicTlsNamedGroup.X25519;
     private const ushort EcdsaSecp256r1Sha256SignatureScheme = (ushort)QuicTlsSignatureScheme.EcdsaSecp256r1Sha256;
     private const ushort TlsAes128GcmSha256Value = (ushort)QuicTlsCipherSuite.TlsAes128GcmSha256;
     private const ushort TlsChacha20Poly1305Sha256Value = (ushort)QuicTlsCipherSuite.TlsChacha20Poly1305Sha256;
-    private const byte UncompressedEcPointFormat = 0x00;
     private const byte UncompressedPointFormat = 0x04;
     private const int Secp256r1CoordinateLength = 32;
     private const int Secp256r1KeyShareLength = 1 + (Secp256r1CoordinateLength * 2);
-    private const int X25519KeyShareLength = 32;
-    private const byte PskDheKeMode = 0x01;
 
     private readonly QuicTlsRole role;
     private readonly ArrayBufferWriter<byte> partialTranscript = new();
@@ -997,7 +993,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
             {
-                if (!TryParseApplicationLayerProtocolNegotiationExtension(
+                if (!QuicTlsClientHelloExtensions.TryParseApplicationLayerProtocolNegotiationExtension(
                     extensionValue,
                     requireSingleProtocol: false,
                     rejectDuplicateProtocols: true)
@@ -1015,21 +1011,21 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == ServerNameExtensionType)
             {
-                if (!TryParseClientHelloServerName(extensionValue))
+                if (!QuicTlsClientHelloExtensions.TryParseClientHelloServerName(extensionValue))
                 {
                     return false;
                 }
             }
             else if (extensionType == EcPointFormatsExtensionType)
             {
-                if (!TryParseClientHelloEcPointFormats(extensionValue))
+                if (!QuicTlsClientHelloExtensions.TryParseClientHelloEcPointFormats(extensionValue))
                 {
                     return false;
                 }
             }
             else if (extensionType == RenegotiationInfoExtensionType)
             {
-                if (!TryParseClientHelloRenegotiationInfo(extensionValue))
+                if (!QuicTlsClientHelloExtensions.TryParseClientHelloRenegotiationInfo(extensionValue))
                 {
                     return false;
                 }
@@ -1044,7 +1040,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == StatusRequestExtensionType)
             {
-                if (!TryParseClientHelloStatusRequest(extensionValue))
+                if (!QuicTlsClientHelloExtensions.TryParseClientHelloStatusRequest(extensionValue))
                 {
                     return false;
                 }
@@ -1058,7 +1054,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == SupportedGroupsExtensionType)
             {
-                if (foundSupportedGroups || !TryParseClientHelloSupportedGroups(extensionValue, out supportedGroups))
+                if (foundSupportedGroups || !QuicTlsClientHelloExtensions.TryParseClientHelloSupportedGroups(extensionValue, out supportedGroups))
                 {
                     return false;
                 }
@@ -1068,7 +1064,7 @@ internal sealed class QuicTlsTranscriptProgress
             else if (extensionType == KeyShareExtensionType)
             {
                 if (foundKeyShare
-                    || !TryParseClientHelloKeyShare(
+                    || !QuicTlsClientHelloExtensions.TryParseClientHelloKeyShare(
                         extensionValue,
                         out keyShareCandidates))
                 {
@@ -1093,7 +1089,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == PskKeyExchangeModesExtensionType)
             {
-                if (foundPskKeyExchangeModes || !TryParseClientHelloPskKeyExchangeModes(extensionValue))
+                if (foundPskKeyExchangeModes || !QuicTlsClientHelloExtensions.TryParseClientHelloPskKeyExchangeModes(extensionValue))
                 {
                     return false;
                 }
@@ -1113,7 +1109,7 @@ internal sealed class QuicTlsTranscriptProgress
             {
                 if (foundPreSharedKey
                     || index != extensions.Length
-                    || !TryParseClientHelloPreSharedKey(extensionValue))
+                    || !QuicTlsClientHelloExtensions.TryParseClientHelloPreSharedKey(extensionValue))
                 {
                     return false;
                 }
@@ -1232,325 +1228,6 @@ internal sealed class QuicTlsTranscriptProgress
         return index == extensionValue.Length && foundSupportedSignatureScheme;
     }
 
-    private static bool TryParseClientHelloSupportedGroups(
-        ReadOnlySpan<byte> extensionValue,
-        out ClientHelloSupportedGroups supportedGroups)
-    {
-        supportedGroups = default;
-
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort groupsLength)
-            || groupsLength == 0
-            || (groupsLength & 1) != 0
-            || index + groupsLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        bool foundSecp256r1 = false;
-        bool foundX25519 = false;
-        int groupsEnd = index + groupsLength;
-        while (index < groupsEnd)
-        {
-            if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroup))
-            {
-                return false;
-            }
-
-            if (namedGroup == Secp256r1NamedGroup)
-            {
-                if (foundSecp256r1)
-                {
-                    return false;
-                }
-
-                foundSecp256r1 = true;
-                continue;
-            }
-
-            if (namedGroup == X25519NamedGroup)
-            {
-                if (foundX25519)
-                {
-                    return false;
-                }
-
-                foundX25519 = true;
-            }
-        }
-
-        supportedGroups = new ClientHelloSupportedGroups(foundSecp256r1, foundX25519);
-        return index == extensionValue.Length && (foundSecp256r1 || foundX25519);
-    }
-
-    private static bool TryParseApplicationLayerProtocolNegotiationExtension(
-        ReadOnlySpan<byte> extensionValue,
-        bool requireSingleProtocol,
-        bool rejectDuplicateProtocols = false)
-    {
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort protocolNameListLength)
-            || protocolNameListLength == 0
-            || index + protocolNameListLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        int protocolCount = 0;
-        List<byte[]>? seenProtocols = rejectDuplicateProtocols ? [] : null;
-        int protocolListEnd = index + protocolNameListLength;
-        while (index < protocolListEnd)
-        {
-            if (!TryReadUInt8(extensionValue, ref index, out int protocolNameLength)
-                || protocolNameLength == 0
-                || !TrySkipBytes(extensionValue, ref index, protocolNameLength))
-            {
-                return false;
-            }
-
-            if (rejectDuplicateProtocols)
-            {
-                List<byte[]> duplicateCheckedProtocols = seenProtocols ?? [];
-                seenProtocols = duplicateCheckedProtocols;
-                byte[] protocolName = extensionValue.Slice(index - protocolNameLength, protocolNameLength).ToArray();
-                if (ContainsProtocolName(duplicateCheckedProtocols, protocolName))
-                {
-                    return false;
-                }
-
-                duplicateCheckedProtocols.Add(protocolName);
-            }
-
-            protocolCount++;
-        }
-
-        return index == extensionValue.Length
-            && protocolCount > 0
-            && (!requireSingleProtocol || protocolCount == 1);
-    }
-
-    private static bool ContainsProtocolName(IReadOnlyList<byte[]> seenProtocols, ReadOnlySpan<byte> protocolName)
-    {
-        foreach (byte[] seenProtocol in seenProtocols)
-        {
-            if (seenProtocol.AsSpan().SequenceEqual(protocolName))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParseClientHelloServerName(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort serverNameListLength)
-            || serverNameListLength == 0
-            || index + serverNameListLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        bool foundHostName = false;
-        int serverNameListEnd = index + serverNameListLength;
-        while (index < serverNameListEnd)
-        {
-            if (!TryReadUInt8(extensionValue, ref index, out int serverNameType)
-                || serverNameType != 0
-                || !TryReadUInt16(extensionValue, ref index, out ushort serverNameLength)
-                || serverNameLength == 0
-                || !TrySkipBytes(extensionValue, ref index, serverNameLength))
-            {
-                return false;
-            }
-
-            foundHostName = true;
-        }
-
-        return index == extensionValue.Length && foundHostName;
-    }
-
-    private static bool TryParseClientHelloStatusRequest(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        if (!TryReadUInt8(extensionValue, ref index, out int statusType)
-            || statusType != 1
-            || !TryReadUInt16(extensionValue, ref index, out ushort responderIdListLength)
-            || !TrySkipBytes(extensionValue, ref index, responderIdListLength)
-            || !TryReadUInt16(extensionValue, ref index, out ushort requestExtensionsLength)
-            || !TrySkipBytes(extensionValue, ref index, requestExtensionsLength))
-        {
-            return false;
-        }
-
-        return index == extensionValue.Length;
-    }
-
-    private static bool TryParseClientHelloEcPointFormats(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        if (!TryReadUInt8(extensionValue, ref index, out int pointFormatsLength)
-            || pointFormatsLength == 0
-            || index + pointFormatsLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        bool foundUncompressedFormat = false;
-        int pointFormatsEnd = index + pointFormatsLength;
-        while (index < pointFormatsEnd)
-        {
-            if (!TryReadUInt8(extensionValue, ref index, out int pointFormat))
-            {
-                return false;
-            }
-
-            if (pointFormat == UncompressedEcPointFormat)
-            {
-                foundUncompressedFormat = true;
-            }
-        }
-
-        return index == extensionValue.Length && foundUncompressedFormat;
-    }
-
-    private static bool TryParseClientHelloRenegotiationInfo(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        return TryReadUInt8(extensionValue, ref index, out int renegotiatedConnectionLength)
-            && renegotiatedConnectionLength == 0
-            && index == extensionValue.Length;
-    }
-
-    private static bool TryParseClientHelloKeyShare(
-        ReadOnlySpan<byte> extensionValue,
-        out ClientHelloKeyShareCandidates keyShareCandidates)
-    {
-        keyShareCandidates = default;
-
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort keyShareVectorLength)
-            || keyShareVectorLength == 0
-            || index + keyShareVectorLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        bool foundUsableSecp256r1KeyShare = false;
-        bool foundUsableX25519KeyShare = false;
-        ReadOnlyMemory<byte> secp256r1KeyShare = default;
-        ReadOnlyMemory<byte> x25519KeyShare = default;
-        int keyShareVectorEnd = index + keyShareVectorLength;
-        while (index < keyShareVectorEnd)
-        {
-            if (!TryReadUInt16(extensionValue, ref index, out ushort namedGroupValue)
-                || !TryReadUInt16(extensionValue, ref index, out ushort keyExchangeLength)
-                || keyExchangeLength == 0
-                || !TrySkipBytes(extensionValue, ref index, keyExchangeLength))
-            {
-                return false;
-            }
-
-            ReadOnlySpan<byte> keyExchange = extensionValue.Slice(index - keyExchangeLength, keyExchangeLength);
-            if (namedGroupValue == Secp256r1NamedGroup)
-            {
-                if (foundUsableSecp256r1KeyShare
-                    || keyExchangeLength != Secp256r1KeyShareLength
-                    || keyExchange[0] != UncompressedPointFormat)
-                {
-                    return false;
-                }
-
-                secp256r1KeyShare = keyExchange.ToArray();
-                foundUsableSecp256r1KeyShare = true;
-                continue;
-            }
-
-            if (namedGroupValue == X25519NamedGroup)
-            {
-                if (foundUsableX25519KeyShare || keyExchangeLength != X25519KeyShareLength)
-                {
-                    return false;
-                }
-
-                x25519KeyShare = keyExchange.ToArray();
-                foundUsableX25519KeyShare = true;
-            }
-        }
-
-        if (index != extensionValue.Length)
-        {
-            return false;
-        }
-
-        keyShareCandidates = new ClientHelloKeyShareCandidates(
-            foundUsableSecp256r1KeyShare,
-            secp256r1KeyShare,
-            foundUsableX25519KeyShare,
-            x25519KeyShare);
-        return true;
-    }
-
-    private static bool TryParseClientHelloPskKeyExchangeModes(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        if (!TryReadUInt8(extensionValue, ref index, out int modesLength)
-            || modesLength == 0
-            || index + modesLength != extensionValue.Length)
-        {
-            return false;
-        }
-
-        bool foundPskDheKe = false;
-        int modesEnd = index + modesLength;
-        while (index < modesEnd)
-        {
-            if (!TryReadUInt8(extensionValue, ref index, out int keyExchangeMode))
-            {
-                return false;
-            }
-
-            foundPskDheKe |= keyExchangeMode == PskDheKeMode;
-        }
-
-        return foundPskDheKe && index == extensionValue.Length;
-    }
-
-    private static bool TryParseClientHelloPreSharedKey(ReadOnlySpan<byte> extensionValue)
-    {
-        int index = 0;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort identitiesLength)
-            || identitiesLength == 0
-            || index + identitiesLength > extensionValue.Length)
-        {
-            return false;
-        }
-
-        int identitiesEnd = index + identitiesLength;
-        if (!TryReadUInt16(extensionValue, ref index, out ushort identityLength)
-            || identityLength == 0
-            || !TrySkipBytes(extensionValue, ref index, identityLength)
-            || !TryReadUInt32(extensionValue, ref index, out _)
-            || index != identitiesEnd)
-        {
-            return false;
-        }
-
-        if (!TryReadUInt16(extensionValue, ref index, out ushort bindersLength)
-            || bindersLength != 1 + FinishedSha256Length
-            || index + bindersLength != extensionValue.Length
-            || !TryReadUInt8(extensionValue, ref index, out int binderLength)
-            || binderLength != FinishedSha256Length
-            || !TrySkipBytes(extensionValue, ref index, binderLength)
-            || index != extensionValue.Length)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     private static bool TryParseServerHelloKeyShare(
         ReadOnlySpan<byte> extensionValue,
         out QuicTlsNamedGroup namedGroup,
@@ -1649,7 +1326,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == ApplicationLayerProtocolNegotiationExtensionType)
             {
-                if (!TryParseApplicationLayerProtocolNegotiationExtension(
+                if (!QuicTlsClientHelloExtensions.TryParseApplicationLayerProtocolNegotiationExtension(
                     extensionValue,
                     requireSingleProtocol: true))
                 {
@@ -1658,7 +1335,7 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == SupportedGroupsExtensionType)
             {
-                if (!TryParseClientHelloSupportedGroups(extensionValue, out _))
+                if (!QuicTlsClientHelloExtensions.TryParseClientHelloSupportedGroups(extensionValue, out _))
                 {
                     return false;
                 }
@@ -1987,16 +1664,6 @@ internal sealed class QuicTlsTranscriptProgress
         Accepted = 0,
         HelloRetryRequestRequired = 1,
     }
-
-    private readonly record struct ClientHelloSupportedGroups(
-        bool HasSecp256r1,
-        bool HasX25519);
-
-    private readonly record struct ClientHelloKeyShareCandidates(
-        bool HasSecp256r1,
-        ReadOnlyMemory<byte> Secp256r1KeyShare,
-        bool HasX25519,
-        ReadOnlyMemory<byte> X25519KeyShare);
 
     private readonly record struct ParsedHandshakeMessage(
         QuicTlsTranscriptStepKind StepKind,

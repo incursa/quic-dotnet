@@ -92,7 +92,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0510",
       "completion_status": "implemented and tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs",
@@ -140,7 +140,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0513",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -167,7 +167,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0515",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -239,7 +239,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0518",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -248,7 +248,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0519",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -257,7 +257,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0520",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -371,7 +371,7 @@
       "notes": "The preferred_address transport-parameter codec round-trips both address families and the associated connection ID in the existing parse/format and fuzz coverage."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0525",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -407,7 +407,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0531",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -416,7 +416,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0532",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -425,7 +425,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0534",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -434,7 +434,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0535",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -461,7 +461,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0529",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -497,7 +497,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0538",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -506,7 +506,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0539",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -515,7 +515,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0540",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -524,7 +524,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0541",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -542,7 +542,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0543",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -578,7 +578,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0542",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -587,7 +587,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0545",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

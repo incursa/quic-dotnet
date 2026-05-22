@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -54,69 +53,31 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         out QuicTlsPacketProtectionMaterial openMaterial,
         out QuicTlsPacketProtectionMaterial protectMaterial)
     {
-        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
-            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
-
-        MethodInfo deriveMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
-            "TryDeriveOneRttSuccessorPacketProtectionMaterial",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        object?[] arguments =
-        [
-            default(QuicTlsPacketProtectionMaterial),
-            default(QuicTlsPacketProtectionMaterial),
-        ];
-
-        if (!(bool)deriveMethod.Invoke(runtimeBridgeDriver, arguments)!)
+        QuicTlsTransportBridgeDriver runtimeBridgeDriver = runtime.TlsBridgeDriver;
+        if (!runtimeBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                out QuicTlsPacketProtectionMaterial derivedOpenMaterial,
+                out QuicTlsPacketProtectionMaterial derivedProtectMaterial))
         {
             openMaterial = default;
             protectMaterial = default;
             return false;
         }
 
-        openMaterial = (QuicTlsPacketProtectionMaterial)arguments[0]!;
-        protectMaterial = (QuicTlsPacketProtectionMaterial)arguments[1]!;
+        openMaterial = derivedOpenMaterial;
+        protectMaterial = derivedProtectMaterial;
         return true;
     }
 
     internal static bool TryInstallRuntimeOneRttKeyUpdate(QuicConnectionRuntime runtime)
     {
-        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
-            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
-
-        MethodInfo installMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
-            "TryInstallOneRttKeyUpdate",
-            BindingFlags.NonPublic | BindingFlags.Instance,
-            binder: null,
-            Type.EmptyTypes,
-            modifiers: null)!;
-
-        return (bool)installMethod.Invoke(runtimeBridgeDriver, [])!;
+        return runtime.TlsBridgeDriver.TryInstallOneRttKeyUpdate();
     }
 
     internal static bool TryInstallRuntimeRepeatedOneRttKeyUpdate(
         QuicConnectionRuntime runtime,
         ulong nowMicros)
     {
-        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
-            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
-
-        MethodInfo installMethod = typeof(QuicTlsTransportBridgeDriver).GetMethod(
-            "TryInstallRepeatedOneRttKeyUpdate",
-            BindingFlags.NonPublic | BindingFlags.Instance,
-            binder: null,
-            [typeof(ulong)],
-            modifiers: null)!;
-
-        return (bool)installMethod.Invoke(runtimeBridgeDriver, [nowMicros])!;
+        return runtime.TlsBridgeDriver.TryInstallRepeatedOneRttKeyUpdate(nowMicros);
     }
 
     internal static bool TryGetRuntimeApplicationTrafficSecrets(
@@ -127,27 +88,9 @@ internal static class QuicRfc9001KeyPhaseTestSupport
         clientApplicationTrafficSecret = [];
         serverApplicationTrafficSecret = [];
 
-        FieldInfo runtimeBridgeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsTransportBridgeDriver runtimeBridgeDriver =
-            (QuicTlsTransportBridgeDriver)runtimeBridgeDriverField.GetValue(runtime)!;
-
-        FieldInfo keyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        QuicTlsKeySchedule keySchedule = (QuicTlsKeySchedule)keyScheduleField.GetValue(runtimeBridgeDriver)!;
-
-        FieldInfo clientSecretField = typeof(QuicTlsKeySchedule).GetField(
-            "clientApplicationTrafficSecret",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        FieldInfo serverSecretField = typeof(QuicTlsKeySchedule).GetField(
-            "serverApplicationTrafficSecret",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-        byte[]? clientSecret = (byte[]?)clientSecretField.GetValue(keySchedule);
-        byte[]? serverSecret = (byte[]?)serverSecretField.GetValue(keySchedule);
-        if (clientSecret is null || serverSecret is null)
+        if (!runtime.TlsBridgeDriver.TryGetApplicationTrafficSecrets(
+                out ReadOnlyMemory<byte> clientSecret,
+                out ReadOnlyMemory<byte> serverSecret))
         {
             return false;
         }

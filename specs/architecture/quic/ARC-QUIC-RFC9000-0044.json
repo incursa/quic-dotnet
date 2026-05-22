@@ -15,15 +15,15 @@
     "VER-QUIC-RFC9000-0044"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S5P1P2-0006",
-    "REQ-QUIC-RFC9000-S5P1P2-0007"
+    "REQ-QUIC-RFC9000-0244",
+    "REQ-QUIC-RFC9000-0245"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P2-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0245.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPeerConnectionIdSelectionTestSupport.cs"
   ],

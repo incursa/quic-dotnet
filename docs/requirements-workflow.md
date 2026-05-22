@@ -7,6 +7,7 @@ This guide captures the expected order for RFC-derived QUIC work in `Incursa.Qui
 1. Capture source material.
    - Record the RFC section, extracted behavior, open questions, and any interoperability or wire-format concern.
    - If a rule is unclear, add it to [`../specs/requirements/quic/REQUIREMENT-GAPS.md`](../specs/requirements/quic/REQUIREMENT-GAPS.md) before implementation.
+   - If a requirement family already has a migration crosswalk, check the derived live-to-staged report and retired-ID ledger before renaming references.
 2. Draft the smallest stable requirement slice.
    - Keep each spec narrow and grouped by stable technical concern.
    - Keep normative statements separate from notes, examples, and rationale.

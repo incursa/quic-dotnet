@@ -317,7 +317,7 @@ foreach ($record in $artifactRecords) {
 if ($profiles -contains 'traceable' -or $profiles -contains 'auditable') {
     foreach ($requirementRecord in $requirementById.Values) {
         $trace = if ($requirementRecord.requirement.Contains('trace')) { $requirementRecord.requirement['trace'] } else { @{} }
-        $downstreamCount = (Get-NonEmptyArray -Value $trace['satisfied_by']).Count + (Get-NonEmptyArray -Value $trace['implemented_by']).Count + (Get-NonEmptyArray -Value $trace['verified_by']).Count
+        $downstreamCount = (@(Get-NonEmptyArray -Value $trace['satisfied_by'])).Count + (@(Get-NonEmptyArray -Value $trace['implemented_by'])).Count + (@(Get-NonEmptyArray -Value $trace['verified_by'])).Count
         if ($downstreamCount -eq 0) {
             Add-ValidationError -Errors $errors -Message "Requirement '$($requirementRecord.id)' is missing downstream trace links."
         }
@@ -327,13 +327,13 @@ if ($profiles -contains 'traceable' -or $profiles -contains 'auditable') {
 if ($profiles -contains 'auditable') {
     foreach ($requirementRecord in $requirementById.Values) {
         $trace = if ($requirementRecord.requirement.Contains('trace')) { $requirementRecord.requirement['trace'] } else { @{} }
-        if ((Get-NonEmptyArray -Value $trace['verified_by']).Count -eq 0) {
+        if ((@(Get-NonEmptyArray -Value $trace['verified_by'])).Count -eq 0) {
             Add-ValidationError -Errors $errors -Message "Requirement '$($requirementRecord.id)' is missing verification coverage."
         }
     }
 
     foreach ($record in $artifactRecords | Where-Object { $_.type -eq 'verification' }) {
-        if ((Get-NonEmptyArray -Value $record.artifact['evidence']).Count -eq 0) {
+        if ((@(Get-NonEmptyArray -Value $record.artifact['evidence'])).Count -eq 0) {
             Add-ValidationError -Errors $errors -Message "Verification artifact '$($record.id)' is missing evidence entries."
         }
     }

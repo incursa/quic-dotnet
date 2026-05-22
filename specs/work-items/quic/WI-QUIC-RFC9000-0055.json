@@ -13,13 +13,13 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S5P2P2-0001",
-    "REQ-QUIC-RFC9000-S5P2P2-0002",
-    "REQ-QUIC-RFC9000-S5P2P2-0003",
+    "REQ-QUIC-RFC9000-0265",
+    "REQ-QUIC-RFC9000-0267",
     "REQ-QUIC-RFC9000-S5P2P2-0004",
     "REQ-QUIC-RFC9000-S5P2P2-0005",
-    "REQ-QUIC-RFC9000-S5P2P2-0006",
+    "REQ-QUIC-RFC9000-0271",
     "REQ-QUIC-RFC9000-S5P2P2-0009",
-    "REQ-QUIC-RFC9000-S5P2P2-0010"
+    "REQ-QUIC-RFC9000-0275"
   ],
   "summary": "Close the bounded RFC 9000 Section 5.2.2 server pre-acceptance ingress policy floor without widening into connection-refusal or 0-RTT buffering behavior.",
   "planned_changes": "- Add a small listener pre-acceptance classifier for unmatched datagrams.\n- Add Version Negotiation limiting support while preserving unlimited default listener behavior.\n- Require zero-length connection-ID routes to match the registered local address and port when local tuple data is available.\n- Add focused requirement-home tests for unsupported-version drop/response behavior, response limiting, supported-version and zero-length-CID matching, conforming Initial admission, premature Handshake drops, and unmatched short-header drops.\n- Link the focused proof to dedicated architecture and verification artifacts.",

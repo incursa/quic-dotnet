@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
@@ -381,8 +380,8 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
 
-        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
-        QuicConnectionRuntimeEndpoint endpoint = GetPrivateField<QuicConnectionRuntimeEndpoint>(listenerHost, "endpoint");
+        Socket listenerSocket = listenerHost.Socket;
+        QuicConnectionRuntimeEndpoint endpoint = listenerHost.Endpoint;
         IPEndPoint serverEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
         clientSocket.Connect(serverEndPoint);
         IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
@@ -436,8 +435,8 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
         using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
 
-        Socket listenerSocket = GetPrivateField<Socket>(listenerHost, "socket");
-        QuicConnectionRuntimeEndpoint endpoint = GetPrivateField<QuicConnectionRuntimeEndpoint>(listenerHost, "endpoint");
+        Socket listenerSocket = listenerHost.Socket;
+        QuicConnectionRuntimeEndpoint endpoint = listenerHost.Endpoint;
         IPEndPoint serverEndPoint = (IPEndPoint)listenerSocket.LocalEndPoint!;
         clientSocket.Connect(serverEndPoint);
         IPEndPoint clientEndPoint = (IPEndPoint)clientSocket.LocalEndPoint!;
@@ -762,13 +761,6 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0005
             destinationConnectionId: routeConnectionId.ToArray(),
             sourceConnectionId: [0x51, 0x52],
             protectedPayload: [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]);
-    }
-
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(field);
-        return Assert.IsType<T>(field.GetValue(target));
     }
 
     private static QuicConnectionTerminalState CreateAeadLimitTerminalState(int enteredAtTicks)

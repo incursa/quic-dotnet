@@ -13,7 +13,7 @@
   ],
   "verification_method": "Requirement-home execution, reciprocal trace inspection, and SpecTrace render/check for the bounded CE immediate-ACK scheduling proof.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S13P2P1-0014"
+    "REQ-QUIC-RFC9000-1322"
   ],
   "scope": "This verification covers the supported ACK-generation consequence after packet processing reports an ECN Congestion Experienced observation for an Application Data packet: the packet number space requires immediate ACK scheduling, ordinary non-CE Application Data packets keep normal delayed-ACK scheduling, and the CE-triggered immediate flag clears after ACK emission before rearming on a later CE packet.",
   "expected_result": "Focused tests prove positive CE immediate-ACK scheduling, a non-CE delayed-ACK control case, and rearm behavior after ACK emission. No parser, serializer, wire-format, hot-path production, or endpoint ECN enablement behavior is introduced by this proof slice.",
@@ -31,14 +31,14 @@
   "evidence": [
     "src/Incursa.Quic/QuicAckGenerationState.cs",
     "src/Incursa.Quic/QuicCongestionControlState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs",
     "artifacts/v/20260425-rfc9000-ce-immediate-ack/focused-rfc9000-ce-immediate-ack-tests.log",
     "artifacts/v/20260425-rfc9000-ce-immediate-ack/render.log",
     "artifacts/v/20260425-rfc9000-ce-immediate-ack/render-check.log",
     "artifacts/v/20260425-rfc9000-ce-immediate-ack/reciprocal-trace-check.log",
     "artifacts/v/20260425-rfc9000-ce-immediate-ack/git-diff-check.log",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P5_0005\""
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_1322|FullyQualifiedName~REQ_QUIC_RFC9000_S13P2P5_0005\""
   ],
   "supplemental_sections": [
     {

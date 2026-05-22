@@ -74,7 +74,7 @@
     "VER-QUIC-INT-0022"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios and the generated inventory/evidence reports, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
   "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness owns process-facing adapter concerns, including runner environment parsing, mounted path mapping, role dispatch, process exit behavior, endpoint-host composition, local preflight planning, optional hosted corroboration, and inventory publication. Supported server-role dispatch paths derive responses from observed HTTP/0.9 request targets rather than relying on server-side `REQUESTS` values, and `versionnegotiation` now uses a reserved unsupported client version so the server can elicit Version Negotiation on the documented root request target without a transfer-path dependency. Long-running supported paths avoid initiating application close before the peer closes or a bounded timeout expires. Library-owned protocol behavior remains traced through the CRT and RFC requirement families; this INT specification owns only the harness adapter, inventory, artifact, and runner-facing contracts. The non-HTTP/3 inventory/profile requirement records the required classification model and artifact-retention contract without turning current execution status into normative requirement text. HTTP/3 stays out of scope.",
   "open_questions": [
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
@@ -636,8 +636,8 @@
         ]
       },
       "notes": [
-        "This profile is an evidence-collection surface, not a broad interop-readiness gate. The completed run `25904716076` now has a dedicated evidence report that preserves its mixed peer-specific pass and failure classes.",
-        "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope.",
+        "This profile is an evidence-collection surface, not a broad interop-readiness gate. The generated `interop-major-peer-matrix-inventory` report keeps the current cell set explicit, and the completed run `25904716076` now has the dedicated `interop-major-peer-matrix-evidence-25904716076` report that preserves its mixed peer-specific pass and failure classes.",
+        "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope, and the generated inventory/evidence reports stay limited to the current handshake, retry, transfer, keyupdate, and resumption cell set.",
         "`v2`, `rebind-port`, and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
     },
@@ -660,7 +660,7 @@
           "REQ-QUIC-INT-0004",
           "REQ-QUIC-INT-0018",
           "REQ-QUIC-INT-0019",
-          "REQ-QUIC-RFC9000-S15-0008",
+          "REQ-QUIC-RFC9000-0901",
           "SPEC-QUIC-CRT"
         ],
         "x_code_refs": [
@@ -968,7 +968,7 @@
         ],
         "related": [
           "REQ-QUIC-INT-0027",
-          "REQ-QUIC-RFC9000-S17P1-0004",
+          "REQ-QUIC-RFC9000-0925",
           "SPEC-QUIC-RFC9000"
         ],
         "x_code_refs": [

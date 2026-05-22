@@ -140,6 +140,79 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     internal string? NewTokenValidationTokenHex => newTokenValidationTokenHex;
 
+    internal Socket Socket => socket;
+
+    internal QuicConnectionRuntimeEndpoint Endpoint => endpoint;
+
+    internal Task? RunningTask => runningTask;
+
+    internal bool TryGetFirstPendingConnection(out QuicConnection connection)
+    {
+        using var enumerator = connections.Values.GetEnumerator();
+        if (enumerator.MoveNext())
+        {
+            connection = enumerator.Current.Connection;
+            return true;
+        }
+
+        connection = default!;
+        return false;
+    }
+
+    internal bool TryGetFirstPendingHandshakeDatagram(out ReadOnlyMemory<byte> datagram)
+    {
+        foreach (PendingConnectionState state in connections.Values)
+        {
+            foreach (QuicConnectionTransitionResult transition in state.TransitionHistory)
+            {
+                if (transition.EventKind != QuicConnectionEventKind.PacketReceived)
+                {
+                    continue;
+                }
+
+                foreach (QuicConnectionEffect effect in transition.Effects)
+                {
+                    if (effect is not QuicConnectionSendDatagramEffect sendEffect)
+                    {
+                        continue;
+                    }
+
+                    if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
+                        && packetNumberSpace == QuicPacketNumberSpace.Handshake)
+                    {
+                        datagram = sendEffect.Datagram;
+                        return true;
+                    }
+                }
+            }
+        }
+
+        datagram = ReadOnlyMemory<byte>.Empty;
+        return false;
+    }
+
+    internal string DescribeFirstPendingConnectionTransition()
+    {
+        QuicConnectionTransitionResult[] firstTransition = connections.Values
+            .SelectMany(static state => state.TransitionHistory)
+            .Take(1)
+            .ToArray();
+
+        if (firstTransition.Length > 0)
+        {
+            QuicConnectionTransitionResult transition = firstTransition[0];
+            string effectSummary = string.Join(
+                ", ",
+                transition.Effects.Select(static effect => effect.GetType().Name));
+
+            return $"ListenerPacketTransition=Prev:{transition.PreviousPhase}; Curr:{transition.CurrentPhase}; StateChanged:{transition.StateChanged}; Effects:[{effectSummary}]";
+        }
+
+        return connections.IsEmpty
+            ? "ListenerTransitions=<no pending connection>"
+            : "ListenerTransitions=<no packet transition observed>";
+    }
+
     public Task RunAsync(CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
@@ -530,7 +603,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         SendDatagram(state.FlowLabelSeed, sendDatagramEffect);
     }
 
-    private void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
+    internal void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
     {
         SendDatagram(flowLabelSeed, sendDatagramEffect);
     }
@@ -1476,7 +1549,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         };
     }
 
-    private static Exception MapTerminalState(QuicConnectionTerminalState terminalState)
+    internal static Exception MapTerminalState(QuicConnectionTerminalState terminalState)
     {
         if (terminalState.Close.TransportErrorCode.HasValue)
         {
@@ -1568,7 +1641,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         throw new InvalidOperationException("Unexpected listener queue item.");
     }
 
-    private QuicConnectionRuntime CreateRuntime(QuicServerConnectionOptions options)
+    internal QuicConnectionRuntime CreateRuntime(QuicServerConnectionOptions options)
     {
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
         QuicConnectionStreamState bookkeeping = new(new QuicConnectionStreamStateOptions(
@@ -1665,7 +1738,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
     }
 
-    private static void ApplyReturnedOptions(QuicServerConnectionOptions selectedOptions, QuicServerConnectionOptions returnedOptions)
+    internal static void ApplyReturnedOptions(QuicServerConnectionOptions selectedOptions, QuicServerConnectionOptions returnedOptions)
     {
         selectedOptions.DefaultCloseErrorCode = returnedOptions.DefaultCloseErrorCode;
         selectedOptions.DefaultStreamErrorCode = returnedOptions.DefaultStreamErrorCode;

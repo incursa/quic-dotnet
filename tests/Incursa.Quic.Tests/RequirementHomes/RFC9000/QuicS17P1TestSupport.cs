@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS17P1TestSupport
@@ -106,11 +104,16 @@ internal static class QuicS17P1TestSupport
         string fieldName,
         ulong packetNumber)
     {
-        FieldInfo? field = typeof(QuicHandshakeFlowCoordinator).GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic);
-
-        Assert.NotNull(field);
-        field.SetValue(coordinator, packetNumber);
+        switch (fieldName)
+        {
+            case "nextPacketNumber":
+                coordinator.SetNextPacketNumberForTests(packetNumber);
+                break;
+            case "nextApplicationPacketNumber":
+                coordinator.SetNextApplicationPacketNumberForTests(packetNumber);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fieldName), fieldName, "Unknown packet number field name.");
+        }
     }
 }

@@ -22,7 +22,7 @@
   ],
   "scope": "Verify that the harness accepts versionnegotiation on both client and server roles, routes it through the reserved-version runner path from the documented root REQUESTS URL, and keeps the major-peer matrix unchanged.",
   "procedure": [
-    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S15_0008\"` and confirm the positive and negative requirement-home tests pass.",
+    "Run `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_INT_0020|FullyQualifiedName~REQ_QUIC_RFC9000_0901\"` and confirm the positive and negative requirement-home tests pass.",
     "Run `dotnet build benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` as supporting evidence for the slice.",
     "Run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation` and confirm the helper plan classifies the testcase as supported/executed.",
     "Run one real local interop invocation for `versionnegotiation` and confirm both harness roles complete with the expected reserved-version and version-negotiation markers.",
@@ -38,7 +38,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0020.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S15-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0901.cs",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/runner-report.json",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/runner.stderr.log"

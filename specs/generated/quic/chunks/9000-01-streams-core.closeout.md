@@ -21,50 +21,50 @@
 
 ### S2
 
-- `REQ-QUIC-RFC9000-S2-0001` - not implemented
-- `REQ-QUIC-RFC9000-S2-0002` - not implemented
+- `REQ-QUIC-RFC9000-0019` - not implemented
+- `REQ-QUIC-RFC9000-0020` - not implemented
 - `REQ-QUIC-RFC9000-S2-0003` - not implemented
-- `REQ-QUIC-RFC9000-S2-0004` - not implemented
-- `REQ-QUIC-RFC9000-S2-0005` - not implemented
-- `REQ-QUIC-RFC9000-S2-0006` - tested but implementation mapping unclear
-- `REQ-QUIC-RFC9000-S2-0007` - not implemented
-- `REQ-QUIC-RFC9000-S2-0008` - tested but implementation mapping unclear
-- `REQ-QUIC-RFC9000-S2-0009` - tested but implementation mapping unclear
+- `REQ-QUIC-RFC9000-0023` - not implemented
+- `REQ-QUIC-RFC9000-0022` - not implemented
+- `REQ-QUIC-RFC9000-0024` - tested but implementation mapping unclear
+- `REQ-QUIC-RFC9000-0025` - not implemented
+- `REQ-QUIC-RFC9000-0027` - tested but implementation mapping unclear
+- `REQ-QUIC-RFC9000-0026` - tested but implementation mapping unclear
 
 ### S2P1
 
 - `REQ-QUIC-RFC9000-S2P1-0001` - tested but implementation mapping unclear
 - `REQ-QUIC-RFC9000-S2P1-0002` - tested but implementation mapping unclear
 - `REQ-QUIC-RFC9000-S2P1-0003` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P1-0004` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P1-0005` - not implemented
-- `REQ-QUIC-RFC9000-S2P1-0006` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P1-0007` - not implemented
+- `REQ-QUIC-RFC9000-0032` - implemented and tested
+- `REQ-QUIC-RFC9000-0031` - not implemented
+- `REQ-QUIC-RFC9000-0033` - implemented and tested
+- `REQ-QUIC-RFC9000-0034` - not implemented
 - `REQ-QUIC-RFC9000-S2P1-0008` - implemented and tested
 - `REQ-QUIC-RFC9000-S2P1-0009` - implemented and tested
 - `REQ-QUIC-RFC9000-S2P1-0010` - implemented and tested
 - `REQ-QUIC-RFC9000-S2P1-0011` - implemented and tested
 - `REQ-QUIC-RFC9000-S2P1-0012` - not implemented
-- `REQ-QUIC-RFC9000-S2P1-0013` - not implemented
+- `REQ-QUIC-RFC9000-0045` - not implemented
 - `REQ-QUIC-RFC9000-S2P1-0014` - not implemented
 
 ### S2P2
 
 - `REQ-QUIC-RFC9000-S2P2-0001` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P2-0002` - implemented and tested
-- `REQ-QUIC-RFC9000-S2P2-0003` - not implemented
+- `REQ-QUIC-RFC9000-0047` - implemented and tested
+- `REQ-QUIC-RFC9000-0048` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0004` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0005` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0006` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0007` - not implemented
-- `REQ-QUIC-RFC9000-S2P2-0008` - not implemented
+- `REQ-QUIC-RFC9000-0052` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0009` - tested but implementation mapping unclear
-- `REQ-QUIC-RFC9000-S2P2-0010` - not implemented
+- `REQ-QUIC-RFC9000-0056` - not implemented
 
 ### S2P3
 
 - `REQ-QUIC-RFC9000-S2P3-0001` - not implemented
-- `REQ-QUIC-RFC9000-S2P3-0002` - not implemented
+- `REQ-QUIC-RFC9000-0057` - not implemented
 - `REQ-QUIC-RFC9000-S2P3-0003` - not implemented
 
 ### S2P4

@@ -14,7 +14,7 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S9P3-0005",
-    "REQ-QUIC-RFC9000-S9P3-0011"
+    "REQ-QUIC-RFC9000-0488"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
@@ -34,7 +34,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0011.cs"
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0488.cs"
     }
   ]
 }

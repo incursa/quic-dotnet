@@ -26,11 +26,11 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0013
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0008">The Packet Number Length field MUST be 2 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0012">The most significant bit (0x80) of byte 0 MUST be set to 0 for the short header.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0013">The next bit (0x40) of byte 0 MUST be set to 1.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0015">The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1071">The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0016">The value included prior to protection MUST be set to 0.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0017">An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after removing both packet and header protection, as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1073">An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after removing both packet and header protection, as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0019">The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a packet to identify the packet protection keys that are used to protect the packet.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0020">The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length of the Packet Number field, encoded as an unsigned two-bit integer that is one less than the length of the Packet Number field in bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1075">The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length of the Packet Number field, encoded as an unsigned two-bit integer that is one less than the length of the Packet Number field in bytes.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0005")]
@@ -39,11 +39,11 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0013
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0013")]
-    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0015")]
+    [Requirement("REQ-QUIC-RFC9000-1071")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0016")]
-    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0017")]
+    [Requirement("REQ-QUIC-RFC9000-1073")]
     [Requirement("REQ-QUIC-RFC9000-S17P3P1-0019")]
-    [Requirement("REQ-QUIC-RFC9000-S17P3P1-0020")]
+    [Requirement("REQ-QUIC-RFC9000-1075")]
     [Trait("Category", "Property")]
     public void TryParseShortHeader_PreservesOpaqueRemainder(ShortHeaderScenario scenario)
     {
@@ -70,11 +70,11 @@ public sealed class REQ_QUIC_RFC9000_S17P3P1_0013
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0012">The most significant bit (0x80) of byte 0 MUST be set to 0 for the short header.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0013">The next bit (0x40) of byte 0 MUST be set to 1.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0014">Packets containing a zero value for this bit are not valid packets in this version and MUST be discarded.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0015">The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1071">The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0016">The value included prior to protection MUST be set to 0.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0017">An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after removing both packet and header protection, as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1073">An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after removing both packet and header protection, as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0019">The next bit (0x04) of byte 0 MUST indicate the key phase, which allows a recipient of a packet to identify the packet protection keys that are used to protect the packet.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P3P1-0020">The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length of the Packet Number field, encoded as an unsigned two-bit integer that is one less than the length of the Packet Number field in bytes.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1075">The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length of the Packet Number field, encoded as an unsigned two-bit integer that is one less than the length of the Packet Number field in bytes.</workbench-requirement>
     /// </workbench-requirements>
     [Trait("Category", "Fuzz")]
     public void Fuzz_ShortHeaderParsing_RoundTripsValidInputsAndRejectsFixedBitZero()

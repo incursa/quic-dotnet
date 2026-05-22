@@ -10,9 +10,9 @@ artifacts.
 - [`Convert-SpecTraceCueToJson.ps1`](./Convert-SpecTraceCueToJson.ps1): convert legacy sibling `.cue` artifacts into canonical `.json` files.
 - [`Test-SpecTraceJsonMigration.ps1`](./Test-SpecTraceJsonMigration.ps1): compare migrated JSON artifacts against a backup manifest and fail on semantic drift.
 - [`Invoke-SpecTraceJsonMigration.ps1`](./Invoke-SpecTraceJsonMigration.ps1): run backup, conversion, schema alignment, and migration verification in one command.
-- [`Generate-QuicPeerCharacterizationMatrix.ps1`](./Generate-QuicPeerCharacterizationMatrix.ps1): emit the advisory peer-characterization matrix pilot report from the current hosted comparison evidence.
-- [`Generate-QuicMajorPeerMatrixInventory.ps1`](./Generate-QuicMajorPeerMatrixInventory.ps1): emit the advisory major-peer matrix inventory report from the current `REQ-QUIC-INT-0019` cell set.
-- [`Generate-QuicMajorPeerMatrixEvidence.ps1`](./Generate-QuicMajorPeerMatrixEvidence.ps1): emit the advisory major-peer matrix evidence report from the completed hosted `REQ-QUIC-INT-0019` run artifacts.
+- [`Generate-QuicPeerCharacterizationMatrix.ps1`](./Generate-QuicPeerCharacterizationMatrix.ps1): emit the advisory peer-characterization matrix pilot report `interop-peer-characterization-matrix-pilot` from the current hosted comparison evidence.
+- [`Generate-QuicMajorPeerMatrixInventory.ps1`](./Generate-QuicMajorPeerMatrixInventory.ps1): emit the advisory major-peer matrix inventory report `interop-major-peer-matrix-inventory` from the current `REQ-QUIC-INT-0019` cell set.
+- [`Generate-QuicMajorPeerMatrixEvidence.ps1`](./Generate-QuicMajorPeerMatrixEvidence.ps1): emit the advisory major-peer matrix evidence report `interop-major-peer-matrix-evidence-25904716076` from the completed hosted `REQ-QUIC-INT-0019` run artifacts.
 
 ## Notes
 

@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S9P3-0002")]
@@ -164,14 +162,12 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0002
         QuicConnectionRuntime runtime,
         string methodName)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            methodName,
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new MissingMethodException(nameof(QuicConnectionRuntime), methodName);
-        object?[] arguments = [null];
-
-        Assert.True((bool)method.Invoke(runtime, arguments)!);
-        return Assert.IsType<QuicConnectionPathIdentity>(arguments[0]);
+        return methodName switch
+        {
+            nameof(QuicConnectionRuntime.TryGetInitialOutboundPath) when runtime.TryGetInitialOutboundPath(out QuicConnectionPathIdentity path) => path,
+            nameof(QuicConnectionRuntime.TryGetHandshakeOutboundPath) when runtime.TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity path) => path,
+            _ => throw new MissingMethodException(nameof(QuicConnectionRuntime), methodName),
+        };
     }
 
     private static QuicConnectionSentPacketKey GetFirstSentPacketKey(
@@ -195,13 +191,8 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0002
         long nowTicks,
         bool probePacket)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TryFlushPendingRetransmissions",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new MissingMethodException(nameof(QuicConnectionRuntime), "TryFlushPendingRetransmissions");
-        object?[] arguments = [packetNumberSpace, nowTicks, probePacket, null];
-
-        Assert.True((bool)method.Invoke(runtime, arguments)!);
-        return Assert.IsAssignableFrom<IReadOnlyList<QuicConnectionEffect>>(arguments[3]);
+        List<QuicConnectionEffect>? effects = null;
+        Assert.True(runtime.TryFlushPendingRetransmissions(packetNumberSpace, nowTicks, probePacket, ref effects));
+        return Assert.IsAssignableFrom<IReadOnlyList<QuicConnectionEffect>>(effects);
     }
 }

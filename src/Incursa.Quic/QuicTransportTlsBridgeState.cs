@@ -101,6 +101,21 @@ internal sealed class QuicTransportTlsBridgeState
 
     internal QuicAeadKeyLifecycle? RetainedOldOneRttProtectKeyLifecycle => retainedOldOneRttProtectKeyLifecycle;
 
+    internal void SetCurrentOneRttOpenKeyLifecycleForTests(QuicAeadKeyLifecycle lifecycle)
+    {
+        currentOneRttOpenKeyLifecycle = lifecycle;
+    }
+
+    internal void SetCurrentOneRttProtectKeyLifecycleForTests(QuicAeadKeyLifecycle lifecycle)
+    {
+        currentOneRttProtectKeyLifecycle = lifecycle;
+    }
+
+    internal void SetRetainedOldOneRttOpenKeyLifecycleForTests(QuicAeadKeyLifecycle lifecycle)
+    {
+        retainedOldOneRttOpenKeyLifecycle = lifecycle;
+    }
+
     public ulong? RetainedOldOneRttPacketProtectionDiscardAtMicros =>
         oneRttKeyUpdateLifecycle.RetainedOldPacketProtectionDiscardAtMicros;
 
@@ -612,6 +627,11 @@ internal sealed class QuicTransportTlsBridgeState
 
         PeerFinishedVerified = true;
         return true;
+    }
+
+    internal void SetPeerFinishedVerifiedForTests(bool value)
+    {
+        PeerFinishedVerified = value;
     }
 
     private bool TryApplyTranscriptProgress(QuicTlsStateUpdate update)

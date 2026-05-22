@@ -1,15 +1,15 @@
 # Chunk Implementation Summary: 9000-06-version-negotiation
 
 ## Requirements Completed
-- REQ-QUIC-RFC9000-S6P1-0001
-- REQ-QUIC-RFC9000-S6P1-0002
-- REQ-QUIC-RFC9000-S6P1-0003
+- REQ-QUIC-RFC9000-0284
+- REQ-QUIC-RFC9000-0285
+- REQ-QUIC-RFC9000-0286
 - REQ-QUIC-RFC9000-S6P2-0001
 - REQ-QUIC-RFC9000-S6P2-0002
-- REQ-QUIC-RFC9000-S6P2-0003
-- REQ-QUIC-RFC9000-S6P2-0004
-- REQ-QUIC-RFC9000-S6P3-0001
-- REQ-QUIC-RFC9000-S6P3-0002
+- REQ-QUIC-RFC9000-6222
+- REQ-QUIC-RFC9000-6223
+- REQ-QUIC-RFC9000-6321
+- REQ-QUIC-RFC9000-6322
 
 ## Files Changed
 - [QuicVersionNegotiation.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicVersionNegotiation.cs)
@@ -29,7 +29,7 @@
 - Result: 71 passed, 0 failed, 0 skipped
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S6-0001`
+- `REQ-QUIC-RFC9000-0281`
 - `REQ-QUIC-RFC9000-S6-0002`
 
 ## Risks Or Follow-Up Notes

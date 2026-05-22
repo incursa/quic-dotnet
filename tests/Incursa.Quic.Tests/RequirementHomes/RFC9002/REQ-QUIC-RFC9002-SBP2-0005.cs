@@ -80,11 +80,6 @@ public sealed class REQ_QUIC_RFC9002_SBP2_0005
 
     private static ulong[] GetEcnCeCounters(QuicCongestionControlState state)
     {
-        System.Reflection.FieldInfo field = typeof(QuicCongestionControlState).GetField(
-            "ecnCeCounters",
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Missing ecnCeCounters field.");
-
-        return Assert.IsType<ulong[]>(field.GetValue(state));
+        return state.EcnCeCounters;
     }
 }

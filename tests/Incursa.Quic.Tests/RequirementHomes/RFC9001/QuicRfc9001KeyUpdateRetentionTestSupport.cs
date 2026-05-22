@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 internal static class QuicRfc9001KeyUpdateRetentionTestSupport
@@ -137,10 +135,7 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
 
     internal static QuicRecoveryController GetRecoveryController(QuicConnectionRuntime runtime)
     {
-        FieldInfo recoveryControllerField = typeof(QuicConnectionRuntime).GetField(
-            "recoveryController",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        return (QuicRecoveryController)recoveryControllerField.GetValue(runtime)!;
+        return runtime.RecoveryController;
     }
 
     internal static ulong ConvertTicksToMicros(long ticks)
@@ -161,10 +156,7 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
             return;
         }
 
-        FieldInfo handshakeDonePacketSentField = typeof(QuicConnectionRuntime).GetField(
-            "handshakeDonePacketSent",
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        handshakeDonePacketSentField.SetValue(runtime, true);
+        runtime.MarkHandshakeDonePacketSentForTests();
     }
 
     private static QuicAeadKeyLifecycle ReplaceOneRttAeadKeyLifecycleForTest(
@@ -178,10 +170,21 @@ internal static class QuicRfc9001KeyUpdateRetentionTestSupport
             integrityLimitPackets));
         Assert.True(lifecycle.TryActivate());
 
-        FieldInfo lifecycleField = typeof(QuicTransportTlsBridgeState).GetField(
-            fieldName,
-            BindingFlags.NonPublic | BindingFlags.Instance)!;
-        lifecycleField.SetValue(runtime.TlsState, lifecycle);
+        switch (fieldName)
+        {
+            case "currentOneRttProtectKeyLifecycle":
+                runtime.TlsState.SetCurrentOneRttProtectKeyLifecycleForTests(lifecycle);
+                break;
+            case "currentOneRttOpenKeyLifecycle":
+                runtime.TlsState.SetCurrentOneRttOpenKeyLifecycleForTests(lifecycle);
+                break;
+            case "retainedOldOneRttOpenKeyLifecycle":
+                runtime.TlsState.SetRetainedOldOneRttOpenKeyLifecycleForTests(lifecycle);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fieldName), fieldName, "Unknown lifecycle field name.");
+        }
+
         return lifecycle;
     }
 }

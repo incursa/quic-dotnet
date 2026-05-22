@@ -14,7 +14,7 @@
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded active-path 1-RTT Application Data ACK piggyback policy.",
   "verifies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-0763",
     "REQ-QUIC-RFC9000-S13P2P1-0012"
   ],
   "scope": "This verification covers active-path 1-RTT Application Data packet composition when ACK-generation state already contains pending ack-eliciting Application Data receipts, plus ACK-only feedback-loop protection for the same supported lane.",
@@ -37,7 +37,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-ack-piggyback-policy/focused-rfc9000-ack-piggyback-tests.log",

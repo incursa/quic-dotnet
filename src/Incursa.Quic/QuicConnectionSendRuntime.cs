@@ -45,7 +45,7 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
 internal sealed class QuicConnectionSendRuntime
 {
     private readonly Dictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPackets = [];
-    private readonly Queue<QuicConnectionRetransmissionPlan> pendingRetransmissions = [];
+    private readonly QuicRetransmissionQueue retransmissionQueue = new();
     private readonly QuicSenderFlowController flowController;
     private readonly QuicRttEstimator rttEstimator;
     private QuicEcnValidationState ecnValidationState;
@@ -73,19 +73,11 @@ internal sealed class QuicConnectionSendRuntime
 
     public int ProbeTimeoutCount { get; private set; }
 
-    public int PendingRetransmissionCount => pendingRetransmissions.Count;
+    public int PendingRetransmissionCount => retransmissionQueue.Count;
 
     internal bool HasPendingRetransmission(QuicPacketNumberSpace packetNumberSpace)
     {
-        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
-        {
-            if (retransmission.PacketNumberSpace == packetNumberSpace)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return retransmissionQueue.HasPendingRetransmission(packetNumberSpace);
     }
 
     internal ulong? GetLargestTrackedPacketNumber(QuicPacketNumberSpace packetNumberSpace)
@@ -106,16 +98,12 @@ internal sealed class QuicConnectionSendRuntime
             found = true;
         }
 
-        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
+        ulong? largestQueuedPacketNumber = retransmissionQueue.GetLargestTrackedPacketNumber(packetNumberSpace);
+        if (largestQueuedPacketNumber.HasValue)
         {
-            if (retransmission.PacketNumberSpace != packetNumberSpace)
-            {
-                continue;
-            }
-
             largestPacketNumber = found
-                ? Math.Max(largestPacketNumber, retransmission.PacketNumber)
-                : retransmission.PacketNumber;
+                ? Math.Max(largestPacketNumber, largestQueuedPacketNumber.Value)
+                : largestQueuedPacketNumber.Value;
             found = true;
         }
 
@@ -193,7 +181,7 @@ internal sealed class QuicConnectionSendRuntime
     {
         QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
         bool removedSentPacket = sentPackets.Remove(key, out QuicConnectionSentPacket acknowledgedPacket);
-        bool removedPendingRetransmission = TryRemovePendingRetransmission(key);
+        bool removedPendingRetransmission = retransmissionQueue.TryRemovePendingRetransmission(key);
         if (!removedSentPacket && !removedPendingRetransmission)
         {
             return false;
@@ -221,36 +209,6 @@ internal sealed class QuicConnectionSendRuntime
         return true;
     }
 
-    private bool TryRemovePendingRetransmission(QuicConnectionSentPacketKey key)
-    {
-        if (pendingRetransmissions.Count == 0)
-        {
-            return false;
-        }
-
-        bool removed = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
-        {
-            QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-            if (retransmission.PacketNumberSpace == key.PacketNumberSpace
-                && retransmission.PacketNumber == key.PacketNumber)
-            {
-                removed = true;
-                continue;
-            }
-
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-        }
-
-        return removed;
-    }
-
     public bool TryDiscardPacketNumberSpace(
         QuicPacketNumberSpace packetNumberSpace,
         bool discardAckGenerationState = true)
@@ -274,26 +232,7 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (retransmission.PacketNumberSpace == packetNumberSpace)
-                {
-                    updated = true;
-                    continue;
-                }
-
-                retainedRetransmissions.Enqueue(retransmission);
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
+        updated |= retransmissionQueue.TryDiscardPacketNumberSpace(packetNumberSpace);
 
         if (packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake)
         {
@@ -303,7 +242,7 @@ internal sealed class QuicConnectionSendRuntime
             LossDetectionDeadlineMicros = null;
             updated = true;
         }
-        else if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        else if (sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -318,7 +257,7 @@ internal sealed class QuicConnectionSendRuntime
         List<QuicConnectionRetransmissionPlan>? retainedRetransmissions = null;
         if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData)
         {
-            CaptureBuildableApplicationRetransmissions(ref retainedRetransmissions);
+            retransmissionQueue.CaptureBuildableApplicationRetransmissions(sentPackets.Values, ref retainedRetransmissions);
         }
 
         bool updated = TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
@@ -331,48 +270,10 @@ internal sealed class QuicConnectionSendRuntime
         retainedRetransmissions.Sort(static (left, right) => left.PacketNumber.CompareTo(right.PacketNumber));
         foreach (QuicConnectionRetransmissionPlan retransmission in retainedRetransmissions)
         {
-            pendingRetransmissions.Enqueue(retransmission);
+            retransmissionQueue.QueueRetransmission(retransmission);
         }
 
         return true;
-    }
-
-    private void CaptureBuildableApplicationRetransmissions(
-        ref List<QuicConnectionRetransmissionPlan>? retainedRetransmissions)
-    {
-        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
-        {
-            if (packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
-                || !packet.Retransmittable
-                || packet.PlaintextPayload.IsEmpty)
-            {
-                continue;
-            }
-
-            (retainedRetransmissions ??= []).Add(new QuicConnectionRetransmissionPlan(
-                packet.PacketNumberSpace,
-                packet.PacketNumber,
-                packet.PayloadBytes,
-                packet.SentAtMicros,
-                packet.ProbePacket,
-                packet.CryptoMetadata,
-                default,
-                packet.PacketProtectionLevel,
-                packet.StreamIds,
-                packet.PlaintextPayload,
-                packet.OneRttKeyPhase));
-        }
-
-        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
-        {
-            if (retransmission.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
-                || retransmission.PlaintextPayload.IsEmpty)
-            {
-                continue;
-            }
-
-            (retainedRetransmissions ??= []).Add(retransmission with { PacketBytes = default });
-        }
     }
 
     /// <summary>
@@ -401,28 +302,9 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (retransmission.PacketProtectionLevel == packetProtectionLevel)
-                {
-                    updated = true;
-                    continue;
-                }
+        updated |= retransmissionQueue.TryDiscardPacketProtectionLevel(packetProtectionLevel);
 
-                retainedRetransmissions.Enqueue(retransmission);
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
-
-        if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -457,29 +339,9 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (retransmission.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt
-                    && retransmission.OneRttKeyPhase == keyPhase)
-                {
-                    updated = true;
-                    continue;
-                }
+        updated |= retransmissionQueue.TryDiscardOneRttKeyPhase(keyPhase);
 
-                retainedRetransmissions.Enqueue(retransmission);
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
-
-        if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -496,31 +358,9 @@ internal sealed class QuicConnectionSendRuntime
     /// </remarks>
     public bool TryDiscardPendingRetransmissionsOlderThan(ulong discardBeforeSentAtMicros)
     {
-        if (pendingRetransmissions.Count == 0)
-        {
-            return false;
-        }
+        bool updated = retransmissionQueue.TryDiscardPendingRetransmissionsOlderThan(discardBeforeSentAtMicros);
 
-        bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
-        {
-            QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-            if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
-            {
-                updated = true;
-                continue;
-            }
-
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-        }
-
-        if (updated && pendingRetransmissions.Count == 0 && sentPackets.Count == 0)
+        if (updated && retransmissionQueue.Count == 0 && sentPackets.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -548,7 +388,7 @@ internal sealed class QuicConnectionSendRuntime
 
         if (scheduleRetransmission && packet.Retransmittable)
         {
-            pendingRetransmissions.Enqueue(new QuicConnectionRetransmissionPlan(
+            retransmissionQueue.QueueRetransmission(new QuicConnectionRetransmissionPlan(
                 packet.PacketNumberSpace,
                 packet.PacketNumber,
                 packet.PayloadBytes,
@@ -567,7 +407,7 @@ internal sealed class QuicConnectionSendRuntime
             acknowledgmentPacketNumberSpace: packet.PacketNumberSpace,
             handshakeConfirmed: handshakeConfirmed);
 
-        if (sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -602,30 +442,9 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (retransmission.StreamIds is null
-                    || retransmission.StreamIds.Length != 1
-                    || retransmission.StreamIds[0] != streamId)
-                {
-                    retainedRetransmissions.Enqueue(retransmission);
-                    continue;
-                }
+        updated |= retransmissionQueue.TrySuppressRetransmissionForStream(streamId);
 
-                updated = true;
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
-
-        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (updated && sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -641,7 +460,7 @@ internal sealed class QuicConnectionSendRuntime
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
             if (!entry.Value.Retransmittable
-                || !ContainsStopSendingFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+                || !QuicFramePayloadInspector.ContainsStopSendingFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
             {
                 continue;
             }
@@ -658,28 +477,9 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (!ContainsStopSendingFrameForStream(retransmission.PlaintextPayload.Span, streamId))
-                {
-                    retainedRetransmissions.Enqueue(retransmission);
-                    continue;
-                }
+        updated |= retransmissionQueue.TrySuppressStopSendingRetransmissionForStream(streamId);
 
-                updated = true;
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
-
-        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (updated && sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -689,7 +489,7 @@ internal sealed class QuicConnectionSendRuntime
 
     private bool TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(ReadOnlySpan<byte> payload)
     {
-        ulong[] acknowledgedStreamDataStreamIds = GetStreamDataStreamIds(payload);
+        ulong[] acknowledgedStreamDataStreamIds = QuicFramePayloadInspector.GetStreamDataStreamIds(payload);
         if (acknowledgedStreamDataStreamIds.Length == 0)
         {
             return false;
@@ -711,21 +511,13 @@ internal sealed class QuicConnectionSendRuntime
     {
         foreach (QuicConnectionSentPacket packet in sentPackets.Values)
         {
-            if (ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
+            if (QuicFramePayloadInspector.ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
             {
                 return true;
             }
         }
 
-        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
-        {
-            if (ContainsStreamDataForStream(retransmission.PlaintextPayload.Span, streamId))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return retransmissionQueue.ContainsStreamDataForStream(streamId);
     }
 
     private bool TrySuppressResetStreamRetransmissionForStream(ulong streamId)
@@ -736,7 +528,7 @@ internal sealed class QuicConnectionSendRuntime
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
             if (!entry.Value.Retransmittable
-                || !ContainsResetStreamFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
+                || !QuicFramePayloadInspector.ContainsResetStreamFrameForStream(entry.Value.PlaintextPayload.Span, streamId))
             {
                 continue;
             }
@@ -753,28 +545,9 @@ internal sealed class QuicConnectionSendRuntime
             }
         }
 
-        if (pendingRetransmissions.Count > 0)
-        {
-            Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-            while (pendingRetransmissions.Count > 0)
-            {
-                QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-                if (!ContainsResetStreamFrameForStream(retransmission.PlaintextPayload.Span, streamId))
-                {
-                    retainedRetransmissions.Enqueue(retransmission);
-                    continue;
-                }
+        updated |= retransmissionQueue.TrySuppressResetStreamRetransmissionForStream(streamId);
 
-                updated = true;
-            }
-
-            while (retainedRetransmissions.Count > 0)
-            {
-                pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
-            }
-        }
-
-        if (updated && sentPackets.Count == 0 && pendingRetransmissions.Count == 0)
+        if (updated && sentPackets.Count == 0 && retransmissionQueue.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -812,14 +585,12 @@ internal sealed class QuicConnectionSendRuntime
 
     public bool TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission)
     {
-        if (pendingRetransmissions.Count == 0)
+        if (!retransmissionQueue.TryDequeueRetransmission(out retransmission))
         {
-            retransmission = default;
             return false;
         }
 
-        retransmission = pendingRetransmissions.Dequeue();
-        if (pendingRetransmissions.Count == 0 && sentPackets.Count == 0)
+        if (retransmissionQueue.Count == 0 && sentPackets.Count == 0)
         {
             LossDetectionDeadlineMicros = null;
         }
@@ -831,13 +602,13 @@ internal sealed class QuicConnectionSendRuntime
         QuicPacketNumberSpace packetNumberSpace,
         out QuicConnectionRetransmissionPlan retransmission)
     {
-        if (pendingRetransmissions.Count == 0)
+        if (retransmissionQueue.Count == 0)
         {
             retransmission = default;
             return false;
         }
 
-        int remainingPlans = pendingRetransmissions.Count;
+        int remainingPlans = retransmissionQueue.Count;
         while (remainingPlans-- > 0
             && TryDequeueRetransmission(out QuicConnectionRetransmissionPlan candidate))
         {
@@ -847,7 +618,7 @@ internal sealed class QuicConnectionSendRuntime
                 return true;
             }
 
-            pendingRetransmissions.Enqueue(candidate);
+            retransmissionQueue.QueueRetransmission(candidate);
         }
 
         retransmission = default;
@@ -856,7 +627,7 @@ internal sealed class QuicConnectionSendRuntime
 
     internal void QueueRetransmission(QuicConnectionRetransmissionPlan retransmission)
     {
-        pendingRetransmissions.Enqueue(retransmission);
+        retransmissionQueue.QueueRetransmission(retransmission);
     }
 
     public void ClearLossDetectionDeadline()
@@ -928,159 +699,6 @@ internal sealed class QuicConnectionSendRuntime
             default:
                 packetNumberSpace = default;
                 return false;
-        }
-    }
-
-    private static bool ContainsStopSendingFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
-            {
-                offset += paddingBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
-            {
-                offset += ackBytesConsumed;
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseStopSendingFrame(
-                remaining,
-                out QuicStopSendingFrame stopSendingFrame,
-                out int stopSendingBytesConsumed))
-            {
-                if (stopSendingFrame.StreamId == streamId)
-                {
-                    return true;
-                }
-
-                offset += stopSendingBytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static ulong[] GetStreamDataStreamIds(ReadOnlySpan<byte> payload)
-    {
-        List<ulong>? streamIds = null;
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
-            {
-                if (streamFrame.StreamDataLength > 0)
-                {
-                    AddDistinctStreamId(ref streamIds, streamFrame.StreamId.Value);
-                }
-
-                offset += streamFrame.ConsumedLength;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            break;
-        }
-
-        return streamIds?.ToArray() ?? [];
-    }
-
-    private static bool ContainsStreamDataForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
-            {
-                if (streamFrame.StreamId.Value == streamId && streamFrame.StreamDataLength > 0)
-                {
-                    return true;
-                }
-
-                offset += streamFrame.ConsumedLength;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static bool ContainsResetStreamFrameForStream(ReadOnlySpan<byte> payload, ulong streamId)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            ReadOnlySpan<byte> remaining = payload[offset..];
-            if (QuicFrameCodec.TryParseResetStreamFrame(
-                remaining,
-                out QuicResetStreamFrame resetStreamFrame,
-                out int resetStreamBytesConsumed))
-            {
-                if (resetStreamFrame.StreamId == streamId)
-                {
-                    return true;
-                }
-
-                offset += resetStreamBytesConsumed;
-                continue;
-            }
-
-            if (TryConsumeNonStreamDataFrame(remaining, out int bytesConsumed))
-            {
-                offset += bytesConsumed;
-                continue;
-            }
-
-            return false;
-        }
-
-        return false;
-    }
-
-    private static bool TryConsumeNonStreamDataFrame(ReadOnlySpan<byte> remaining, out int bytesConsumed)
-    {
-        if (QuicFrameCodec.TryParsePaddingFrame(remaining, out bytesConsumed)
-            || QuicFrameCodec.TryParseAckFrame(remaining, out _, out bytesConsumed)
-            || QuicFrameCodec.TryParsePingFrame(remaining, out bytesConsumed)
-            || QuicFrameCodec.TryParseStopSendingFrame(remaining, out _, out bytesConsumed)
-            || QuicFrameCodec.TryParseResetStreamFrame(remaining, out _, out bytesConsumed))
-        {
-            return true;
-        }
-
-        bytesConsumed = 0;
-        return false;
-    }
-
-    private static void AddDistinctStreamId(ref List<ulong>? streamIds, ulong streamId)
-    {
-        streamIds ??= [];
-        if (!streamIds.Contains(streamId))
-        {
-            streamIds.Add(streamId);
         }
     }
 

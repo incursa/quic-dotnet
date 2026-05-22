@@ -26,8 +26,8 @@
     "REQ-QUIC-RFC9000-S19P15-0011",
     "REQ-QUIC-RFC9000-S19P15-0012",
     "REQ-QUIC-RFC9000-S19P15-0013",
-    "REQ-QUIC-RFC9000-S19P15-0019",
-    "REQ-QUIC-RFC9000-S19P15-0020"
+    "REQ-QUIC-RFC9000-19150005",
+    "REQ-QUIC-RFC9000-19150006"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicFrameCodec.cs",
@@ -36,7 +36,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150005.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs"
   ],
   "design_summary": "The frame codec accepts NEW_CONNECTION_ID frame type 0x18 and decodes the following variable-length integer fields in order: Sequence Number, Retire Prior To, and Length. The codec then admits only connection ID lengths from 1 through 20 bytes, requires the remaining payload to contain the declared connection ID plus a 16-byte stateless reset token, and rejects Retire Prior To values greater than the Sequence Number. Formatting applies the same local shape constraints before emitting type 0x18, the two variable-length integer fields, one length byte, the connection ID, and the stateless reset token.",
@@ -65,7 +65,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`QuicNewConnectionIdFrame.cs`](../../../src/Incursa.Quic/QuicNewConnectionIdFrame.cs)\n- [`QuicFrameCodecPart4FuzzSupport.cs`](../../../tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzSupport.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0011.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0019.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs)\n- [`QuicFrameCodecBenchmarks.cs`](../../../benchmarks/QuicFrameCodecBenchmarks.cs)"
+      "content": "- [`QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`QuicNewConnectionIdFrame.cs`](../../../src/Incursa.Quic/QuicNewConnectionIdFrame.cs)\n- [`QuicFrameCodecPart4FuzzSupport.cs`](../../../tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzSupport.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs)\n- [`REQ-QUIC-RFC9000-S19P15-0011.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs)\n- [`REQ-QUIC-RFC9000-19150005.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150005.cs)\n- [`QuicFrameCodecBenchmarks.cs`](../../../benchmarks/QuicFrameCodecBenchmarks.cs)"
     }
   ]
 }

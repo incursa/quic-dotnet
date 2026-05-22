@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
@@ -156,13 +155,7 @@ public sealed class REQ_QUIC_API_0002
             },
         };
 
-        MethodInfo? applyReturnedOptions = typeof(QuicListenerHost).GetMethod(
-            "ApplyReturnedOptions",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        Assert.NotNull(applyReturnedOptions);
-
-        applyReturnedOptions!.Invoke(null, [selectedOptions, returnedOptions]);
+        QuicListenerHost.ApplyReturnedOptions(selectedOptions, returnedOptions);
 
         Assert.NotNull(selectedOptions.PreferredAddress);
         Assert.True(returnedOptions.PreferredAddress!.IPv4Address.AsSpan().SequenceEqual(selectedOptions.PreferredAddress!.IPv4Address));
@@ -244,14 +237,9 @@ public sealed class REQ_QUIC_API_0002
 
     private static string DescribeListenerHostTask(QuicListener listener)
     {
-        FieldInfo? hostField = typeof(QuicListener).GetField("host", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (hostField?.GetValue(listener) is not QuicListenerHost listenerHost)
-        {
-            return "ListenerHost=<unavailable>";
-        }
-
-        FieldInfo? runningTaskField = typeof(QuicListenerHost).GetField("runningTask", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (runningTaskField?.GetValue(listenerHost) is not Task runningTask)
+        QuicListenerHost listenerHost = listener.Host;
+        Task? runningTask = listenerHost.RunningTask;
+        if (runningTask is null)
         {
             return "ListenerTask=<unavailable>";
         }
@@ -264,84 +252,11 @@ public sealed class REQ_QUIC_API_0002
 
     private static string DescribeFirstPendingConnectionTransition(QuicListener listener)
     {
-        FieldInfo? hostField = typeof(QuicListener).GetField("host", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (hostField?.GetValue(listener) is not QuicListenerHost listenerHost)
-        {
-            return "ListenerTransitions=<host unavailable>";
-        }
-
-        FieldInfo? connectionsField = typeof(QuicListenerHost).GetField("connections", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (connectionsField?.GetValue(listenerHost) is not System.Collections.IEnumerable connections)
-        {
-            return "ListenerTransitions=<connections unavailable>";
-        }
-
-        foreach (object? entry in connections)
-        {
-            if (entry is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? valueProperty = entry.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
-            object? pendingState = valueProperty?.GetValue(entry);
-            if (pendingState is null)
-            {
-                continue;
-            }
-
-            PropertyInfo? historyProperty = pendingState.GetType().GetProperty("TransitionHistory", BindingFlags.Public | BindingFlags.Instance);
-            if (historyProperty?.GetValue(pendingState) is not System.Collections.IEnumerable transitionHistory)
-            {
-                return "ListenerTransitions=<history unavailable>";
-            }
-
-            foreach (object? transitionObject in transitionHistory)
-            {
-                if (transitionObject is not QuicConnectionTransitionResult transition
-                    || transition.EventKind != QuicConnectionEventKind.PacketReceived)
-                {
-                    continue;
-                }
-
-                string effectSummary = string.Join(
-                    ", ",
-                    transition.Effects.Select(effect => effect switch
-                    {
-                        QuicConnectionEmitDiagnosticEffect diagnosticEffect
-                            => $"diag:{diagnosticEffect.Diagnostic.Name}",
-                        QuicConnectionSendDatagramEffect
-                            => $"send:{DescribePacketNumberSpace(effect)}",
-                        _ => effect.GetType().Name,
-                    }));
-
-                return $"ListenerPacketTransition=Prev:{transition.PreviousPhase}; Curr:{transition.CurrentPhase}; StateChanged:{transition.StateChanged}; Effects:[{effectSummary}]";
-            }
-
-            return "ListenerTransitions=<no packet transition observed>";
-        }
-
-        return "ListenerTransitions=<no pending connection>";
-    }
-
-    private static string DescribePacketNumberSpace(QuicConnectionEffect effect)
-    {
-        if (effect is not QuicConnectionSendDatagramEffect sendEffect)
-        {
-            return effect.GetType().Name;
-        }
-
-        if (QuicPacketParser.TryGetPacketNumberSpace(sendEffect.Datagram.Span, out QuicPacketNumberSpace packetNumberSpace))
-        {
-            return packetNumberSpace.ToString();
-        }
-
-        return "Unclassified";
+        return listener.Host.DescribeFirstPendingConnectionTransition();
     }
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.Instance | BindingFlags.NonPublic);
-        return Assert.IsType<QuicConnectionRuntime>(runtimeField?.GetValue(connection));
+        return connection.Runtime;
     }
 }

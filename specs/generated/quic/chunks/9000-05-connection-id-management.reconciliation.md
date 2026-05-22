@@ -18,22 +18,22 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 
 | Requirement | Status |
 | --- | --- |
-| `REQ-QUIC-RFC9000-S5P1P2-0001` | not implemented |
+| `REQ-QUIC-RFC9000-0240` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0002` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0003` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0004` | implemented and tested |
 | `REQ-QUIC-RFC9000-S5P1P2-0005` | implemented and tested |
-| `REQ-QUIC-RFC9000-S5P1P2-0006` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0007` | not implemented |
+| `REQ-QUIC-RFC9000-0244` | not implemented |
+| `REQ-QUIC-RFC9000-0245` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0008` | implemented and tested |
 | `REQ-QUIC-RFC9000-S5P1P2-0009` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0010` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0011` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0012` | not implemented |
+| `REQ-QUIC-RFC9000-0247` | not implemented |
+| `REQ-QUIC-RFC9000-0248` | not implemented |
+| `REQ-QUIC-RFC9000-0249` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0013` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0014` | not implemented |
+| `REQ-QUIC-RFC9000-0251` | not implemented |
 | `REQ-QUIC-RFC9000-S5P1P2-0015` | not implemented |
-| `REQ-QUIC-RFC9000-S5P1P2-0016` | not implemented |
+| `REQ-QUIC-RFC9000-0253` | not implemented |
 
 ### `S5P2`
 
@@ -43,13 +43,13 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 | `REQ-QUIC-RFC9000-S5P2-0002` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0003` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0004` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2-0005` | not implemented |
+| `REQ-QUIC-RFC9000-0255` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0006` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0007` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0008` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0009` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0010` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2-0011` | not implemented |
+| `REQ-QUIC-RFC9000-0258` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0012` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2-0013` | not implemented |
 
@@ -58,25 +58,25 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 | Requirement | Status |
 | --- | --- |
 | `REQ-QUIC-RFC9000-S5P2P1-0001` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P1-0002` | not implemented |
+| `REQ-QUIC-RFC9000-0261` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P1-0003` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P1-0004` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P1-0005` | not implemented |
+| `REQ-QUIC-RFC9000-0264` | not implemented |
 
 ### `S5P2P2`
 
 | Requirement | Status |
 | --- | --- |
 | `REQ-QUIC-RFC9000-S5P2P2-0001` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0002` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0003` | not implemented |
+| `REQ-QUIC-RFC9000-0265` | not implemented |
+| `REQ-QUIC-RFC9000-0267` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P2-0004` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P2-0005` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0006` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0007` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0008` | not implemented |
+| `REQ-QUIC-RFC9000-0271` | not implemented |
+| `REQ-QUIC-RFC9000-0272` | not implemented |
+| `REQ-QUIC-RFC9000-0273` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P2-0009` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P2-0010` | not implemented |
+| `REQ-QUIC-RFC9000-0275` | not implemented |
 
 ### `S5P2P3`
 
@@ -85,8 +85,8 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 | `REQ-QUIC-RFC9000-S5P2P3-0001` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P3-0002` | implemented and tested |
 | `REQ-QUIC-RFC9000-S5P2P3-0003` | not implemented |
-| `REQ-QUIC-RFC9000-S5P2P3-0004` | implemented and tested |
-| `REQ-QUIC-RFC9000-S5P2P3-0005` | not implemented |
+| `REQ-QUIC-RFC9000-0277` | implemented and tested |
+| `REQ-QUIC-RFC9000-0278` | not implemented |
 | `REQ-QUIC-RFC9000-S5P2P3-0006` | not implemented |
 
 ## Requirements Completed
@@ -96,7 +96,7 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 - `REQ-QUIC-RFC9000-S5P1P2-0008`: The wire-format Retire Prior To field is now directly traced.
 - `REQ-QUIC-RFC9000-S5P2-0001`: Trace coverage was already present from the prior pass; the packet-classification hook is still a direct match for the imported ID.
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
-- `REQ-QUIC-RFC9000-S5P2P3-0004`: The disable_active_migration transport parameter is directly traced at the wire level.
+- `REQ-QUIC-RFC9000-0277`: The disable_active_migration transport parameter is directly traced at the wire level.
 
 ## Existing Implementation Evidence
 
@@ -120,16 +120,16 @@ Section tokens: `S5P1P2, S5P2, S5P2P1, S5P2P2, S5P2P3`
 
 - Added `REQ-QUIC-RFC9000-S5P1P2-0004` and `REQ-QUIC-RFC9000-S5P1P2-0005` traits to the RETIRE_CONNECTION_ID frame round-trip and truncation tests, plus the part-4 fuzz slice.
 - Added `REQ-QUIC-RFC9000-S5P1P2-0008` traits to the NEW_CONNECTION_ID frame round-trip and fuzz coverage.
-- Added `REQ-QUIC-RFC9000-S5P2P3-0002` and `REQ-QUIC-RFC9000-S5P2P3-0004` traits to transport-parameter parse/format and fuzz coverage.
+- Added `REQ-QUIC-RFC9000-S5P2P3-0002` and `REQ-QUIC-RFC9000-0277` traits to transport-parameter parse/format and fuzz coverage.
 - Carried forward the existing `REQ-QUIC-RFC9000-S5P2-0001` packet-classification trace from the prior pass.
 
 ## Remaining Gaps
 
-- `S5P1P2`: 13 open requirements (`REQ-QUIC-RFC9000-S5P1P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0002`, `REQ-QUIC-RFC9000-S5P1P2-0003`, `REQ-QUIC-RFC9000-S5P1P2-0006`, `REQ-QUIC-RFC9000-S5P1P2-0007`, `REQ-QUIC-RFC9000-S5P1P2-0009`, `REQ-QUIC-RFC9000-S5P1P2-0010`, `REQ-QUIC-RFC9000-S5P1P2-0011`, `REQ-QUIC-RFC9000-S5P1P2-0012`, `REQ-QUIC-RFC9000-S5P1P2-0013`, `REQ-QUIC-RFC9000-S5P1P2-0014`, `REQ-QUIC-RFC9000-S5P1P2-0015`, `REQ-QUIC-RFC9000-S5P1P2-0016`).
-- `S5P2`: 12 open requirements (`REQ-QUIC-RFC9000-S5P2-0002`, `REQ-QUIC-RFC9000-S5P2-0003`, `REQ-QUIC-RFC9000-S5P2-0004`, `REQ-QUIC-RFC9000-S5P2-0005`, `REQ-QUIC-RFC9000-S5P2-0006`, `REQ-QUIC-RFC9000-S5P2-0007`, `REQ-QUIC-RFC9000-S5P2-0008`, `REQ-QUIC-RFC9000-S5P2-0009`, `REQ-QUIC-RFC9000-S5P2-0010`, `REQ-QUIC-RFC9000-S5P2-0011`, `REQ-QUIC-RFC9000-S5P2-0012`, `REQ-QUIC-RFC9000-S5P2-0013`).
-- `S5P2P1`: 5 open requirements (`REQ-QUIC-RFC9000-S5P2P1-0001`, `REQ-QUIC-RFC9000-S5P2P1-0002`, `REQ-QUIC-RFC9000-S5P2P1-0003`, `REQ-QUIC-RFC9000-S5P2P1-0004`, `REQ-QUIC-RFC9000-S5P2P1-0005`).
-- `S5P2P2`: 10 open requirements (`REQ-QUIC-RFC9000-S5P2P2-0001`, `REQ-QUIC-RFC9000-S5P2P2-0002`, `REQ-QUIC-RFC9000-S5P2P2-0003`, `REQ-QUIC-RFC9000-S5P2P2-0004`, `REQ-QUIC-RFC9000-S5P2P2-0005`, `REQ-QUIC-RFC9000-S5P2P2-0006`, `REQ-QUIC-RFC9000-S5P2P2-0007`, `REQ-QUIC-RFC9000-S5P2P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0009`, `REQ-QUIC-RFC9000-S5P2P2-0010`).
-- `S5P2P3`: 4 open requirements (`REQ-QUIC-RFC9000-S5P2P3-0001`, `REQ-QUIC-RFC9000-S5P2P3-0003`, `REQ-QUIC-RFC9000-S5P2P3-0005`, `REQ-QUIC-RFC9000-S5P2P3-0006`).
+- `S5P1P2`: 13 open requirements (`REQ-QUIC-RFC9000-0240`, `REQ-QUIC-RFC9000-S5P1P2-0002`, `REQ-QUIC-RFC9000-S5P1P2-0003`, `REQ-QUIC-RFC9000-0244`, `REQ-QUIC-RFC9000-0245`, `REQ-QUIC-RFC9000-S5P1P2-0009`, `REQ-QUIC-RFC9000-0247`, `REQ-QUIC-RFC9000-0248`, `REQ-QUIC-RFC9000-0249`, `REQ-QUIC-RFC9000-S5P1P2-0013`, `REQ-QUIC-RFC9000-0251`, `REQ-QUIC-RFC9000-S5P1P2-0015`, `REQ-QUIC-RFC9000-0253`).
+- `S5P2`: 12 open requirements (`REQ-QUIC-RFC9000-S5P2-0002`, `REQ-QUIC-RFC9000-S5P2-0003`, `REQ-QUIC-RFC9000-S5P2-0004`, `REQ-QUIC-RFC9000-0255`, `REQ-QUIC-RFC9000-S5P2-0006`, `REQ-QUIC-RFC9000-S5P2-0007`, `REQ-QUIC-RFC9000-S5P2-0008`, `REQ-QUIC-RFC9000-S5P2-0009`, `REQ-QUIC-RFC9000-S5P2-0010`, `REQ-QUIC-RFC9000-0258`, `REQ-QUIC-RFC9000-S5P2-0012`, `REQ-QUIC-RFC9000-S5P2-0013`).
+- `S5P2P1`: 5 open requirements (`REQ-QUIC-RFC9000-S5P2P1-0001`, `REQ-QUIC-RFC9000-0261`, `REQ-QUIC-RFC9000-S5P2P1-0003`, `REQ-QUIC-RFC9000-S5P2P1-0004`, `REQ-QUIC-RFC9000-0264`).
+- `S5P2P2`: 10 open requirements (`REQ-QUIC-RFC9000-S5P2P2-0001`, `REQ-QUIC-RFC9000-0265`, `REQ-QUIC-RFC9000-0267`, `REQ-QUIC-RFC9000-S5P2P2-0004`, `REQ-QUIC-RFC9000-S5P2P2-0005`, `REQ-QUIC-RFC9000-0271`, `REQ-QUIC-RFC9000-0272`, `REQ-QUIC-RFC9000-0273`, `REQ-QUIC-RFC9000-S5P2P2-0009`, `REQ-QUIC-RFC9000-0275`).
+- `S5P2P3`: 4 open requirements (`REQ-QUIC-RFC9000-S5P2P3-0001`, `REQ-QUIC-RFC9000-S5P2P3-0003`, `REQ-QUIC-RFC9000-0278`, `REQ-QUIC-RFC9000-S5P2P3-0006`).
 
 ## Requirements Needing Deeper Implementation Work
 

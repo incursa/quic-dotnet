@@ -6,7 +6,7 @@
   "title": "QUIC Major Peer Interop Matrix Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Describe the advisory hosted matrix profile that collects role-backed interop artifacts for the currently executable non-HTTP/3 major scenarios against quic-go and msquic.",
+  "purpose": "Describe the advisory hosted matrix profile that collects role-backed interop artifacts for the currently executable non-HTTP/3 major scenarios against quic-go and msquic and feeds the generated major-peer inventory and evidence reports.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0010",
@@ -21,9 +21,13 @@
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.json",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.md",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
     "artifacts/interop-runner"
   ],
-  "design_summary": "The manual workflow keeps the default hosted-handshake profile unchanged and adds a separate `major-peer-matrix` profile. The profile fans out over Incursa.Quic as the local client and local server against `quic-go` and `msquic` peer slots for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the network simulator plus the selected peer implementation image and uploads each role/peer/testcase artifact bundle with `if: always()` so failed, advisory, and passing attempts remain attributable. Helper-side `FileNotFoundError` advisory classification stays testcase-specific and now includes keyupdate and resumption markers so upstream trace-analysis post-check failures do not hide preserved managed evidence or incomplete managed evidence.",
+  "design_summary": "The manual workflow keeps the default hosted-handshake profile unchanged and adds a separate `major-peer-matrix` profile. The profile fans out over Incursa.Quic as the local client and local server against `quic-go` and `msquic` peer slots for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`. Each cell invokes the existing repo-local helper with matrix-supplied role, local implementation slot, peer slot, testcase, timeout, and artifact root. The matrix pre-pulls the network simulator plus the selected peer implementation image and uploads each role/peer/testcase artifact bundle with `if: always()` so failed, advisory, and passing attempts remain attributable. The generated `interop-major-peer-matrix-inventory` report makes the current cell set explicit, and the generated `interop-major-peer-matrix-evidence-25904716076` report preserves the completed hosted run with per-cell outcomes. Helper-side `FileNotFoundError` advisory classification stays testcase-specific and now includes keyupdate and resumption markers so upstream trace-analysis post-check failures do not hide preserved managed evidence or incomplete managed evidence.",
   "alternatives_considered": [
     "Run the major peer matrix on every push or pull request. Rejected because the runner is expensive, externally dependent, and still advisory rather than a support-readiness gate.",
     "Fold blocked cells such as zerortt, chacha20, v2, rebind, and connectionmigration into the same profile. Rejected because those cells have named prerequisites and would make the profile look broader than the current support evidence.",
@@ -44,7 +48,7 @@
   "supplemental_sections": [
     {
       "heading": "Initial Cell Set",
-      "content": "The initial major peer matrix covers `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` with local client and local server roles against `quic-go` and `msquic`. `http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain under the blocked-cell inventory."
+      "content": "The initial major peer matrix covers `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption` with local client and local server roles against `quic-go` and `msquic`. `http3` remains out of scope. `zerortt`, `chacha20`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` remain under the blocked-cell inventory, and the generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports stay advisory rather than support proof."
     }
   ]
 }

@@ -21,7 +21,7 @@
     {
       "requirement_id": [
         "REQ-QUIC-RFC9000-S22P2-0001",
-        "REQ-QUIC-RFC9000-S22P2-0002",
+        "REQ-QUIC-RFC9000-1514",
         "REQ-QUIC-RFC9000-S22P2-0003",
         "REQ-QUIC-RFC9000-S22P2-0004"
       ],
@@ -113,7 +113,7 @@
         "REQ-QUIC-RFC9000-S22P1P1-0010",
         "REQ-QUIC-RFC9000-S22P1P1-0011",
         "REQ-QUIC-RFC9000-S22P1P1-0012",
-        "REQ-QUIC-RFC9000-S22P1P1-0013",
+        "REQ-QUIC-RFC9000-1488",
         "REQ-QUIC-RFC9000-S22P1P1-0014"
       ],
       "completion_status": "implemented and tested",
@@ -131,7 +131,7 @@
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1488.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
       ],
       "tests_covering_requirement": [
@@ -147,7 +147,7 @@
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1488.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
       ],
       "direct_refs_added_or_updated": [],
@@ -157,11 +157,11 @@
     {
       "requirement_id": [
         "REQ-QUIC-RFC9000-S22P1P2-0001",
-        "REQ-QUIC-RFC9000-S22P1P2-0002",
+        "REQ-QUIC-RFC9000-1491",
         "REQ-QUIC-RFC9000-S22P1P2-0003",
         "REQ-QUIC-RFC9000-S22P1P2-0004",
         "REQ-QUIC-RFC9000-S22P1P2-0005",
-        "REQ-QUIC-RFC9000-S22P1P2-0006",
+        "REQ-QUIC-RFC9000-1494",
         "REQ-QUIC-RFC9000-S22P1P2-0007"
       ],
       "completion_status": "intentionally deferred",
@@ -173,10 +173,10 @@
     },
     {
       "requirement_id": [
-        "REQ-QUIC-RFC9000-S22P1P3-0001",
-        "REQ-QUIC-RFC9000-S22P1P3-0002",
-        "REQ-QUIC-RFC9000-S22P1P3-0003",
-        "REQ-QUIC-RFC9000-S22P1P3-0004"
+        "REQ-QUIC-RFC9000-1498",
+        "REQ-QUIC-RFC9000-1499",
+        "REQ-QUIC-RFC9000-1500",
+        "REQ-QUIC-RFC9000-1501"
       ],
       "completion_status": "intentionally deferred",
       "files_changed": [],
@@ -192,7 +192,7 @@
         "REQ-QUIC-RFC9000-S22P1P4-0003",
         "REQ-QUIC-RFC9000-S22P1P4-0004",
         "REQ-QUIC-RFC9000-S22P1P4-0005",
-        "REQ-QUIC-RFC9000-S22P1P4-0006",
+        "REQ-QUIC-RFC9000-1507",
         "REQ-QUIC-RFC9000-S22P1P4-0007",
         "REQ-QUIC-RFC9000-S22P1P4-0008"
       ],
@@ -243,22 +243,22 @@
   ],
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9000-S22P1P2-0001",
-    "REQ-QUIC-RFC9000-S22P1P2-0002",
+    "REQ-QUIC-RFC9000-1491",
     "REQ-QUIC-RFC9000-S22P1P2-0003",
     "REQ-QUIC-RFC9000-S22P1P2-0004",
     "REQ-QUIC-RFC9000-S22P1P2-0005",
-    "REQ-QUIC-RFC9000-S22P1P2-0006",
+    "REQ-QUIC-RFC9000-1494",
     "REQ-QUIC-RFC9000-S22P1P2-0007",
-    "REQ-QUIC-RFC9000-S22P1P3-0001",
-    "REQ-QUIC-RFC9000-S22P1P3-0002",
-    "REQ-QUIC-RFC9000-S22P1P3-0003",
-    "REQ-QUIC-RFC9000-S22P1P3-0004",
+    "REQ-QUIC-RFC9000-1498",
+    "REQ-QUIC-RFC9000-1499",
+    "REQ-QUIC-RFC9000-1500",
+    "REQ-QUIC-RFC9000-1501",
     "REQ-QUIC-RFC9000-S22P1P4-0001",
     "REQ-QUIC-RFC9000-S22P1P4-0002",
     "REQ-QUIC-RFC9000-S22P1P4-0003",
     "REQ-QUIC-RFC9000-S22P1P4-0004",
     "REQ-QUIC-RFC9000-S22P1P4-0005",
-    "REQ-QUIC-RFC9000-S22P1P4-0006",
+    "REQ-QUIC-RFC9000-1507",
     "REQ-QUIC-RFC9000-S22P1P4-0007",
     "REQ-QUIC-RFC9000-S22P1P4-0008",
     "REQ-QUIC-RFC9000-S22P3-0001",

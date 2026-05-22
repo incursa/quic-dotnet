@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P2_0003
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P2-0003");
 
         Assert.Equal("Reserve first unassigned codepoint for Standards Action", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "The use of the first unassigned codepoint MUST be reserved for allocation using the Standards Action policy.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("The use of the first unassigned codepoint MUST be reserved for allocation using the Standards Action policy.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.2 RFC9000-S22.1.2-B3-P2-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

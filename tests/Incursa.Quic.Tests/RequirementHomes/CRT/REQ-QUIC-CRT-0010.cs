@@ -1,5 +1,4 @@
-using System.Collections.Concurrent;
-using System.Reflection;
+using System.Collections.Generic;
 
 namespace Incursa.Quic.Tests;
 
@@ -11,32 +10,15 @@ public sealed class REQ_QUIC_CRT_0010
     [Trait("Category", "Negative")]
     public void PathLifecycleTimerAndStreamStateFieldsDoNotUseConcurrentCollections()
     {
-        string[] connectionOwnedStateFields =
-        [
-            "candidatePaths",
-            "recentlyValidatedPaths",
-            "statelessResetTokensByConnectionId",
-            "newTokenEmissionsByRemoteAddress",
-            "bufferedEstablishmentHandshakePackets",
-            "streamRegistry",
-            "timerState",
-            "terminalState",
-            "idleTimeoutState",
-        ];
+        QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
 
-        foreach (string fieldName in connectionOwnedStateFields)
-        {
-            FieldInfo? field = typeof(QuicConnectionRuntime).GetField(
-                fieldName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.NotNull(field);
-            Assert.False(IsConcurrentCollection(field!.FieldType), $"{fieldName} must remain connection-owned ordinary state.");
-        }
-    }
-
-    private static bool IsConcurrentCollection(Type type)
-    {
-        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>);
+        Assert.IsType<Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord>>(runtime.CandidatePaths);
+        Assert.IsType<Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord>>(runtime.RecentlyValidatedPaths);
+        Assert.IsType<Dictionary<ulong, byte[]>>(runtime.StatelessResetTokensByConnectionId);
+        Assert.IsType<Dictionary<string, QuicConnectionRuntime.QuicConnectionNewTokenEmissionRecord>>(runtime.NewTokenEmissionsByRemoteAddress);
+        Assert.Equal(0, runtime.BufferedEstablishmentHandshakePacketCount);
+        Assert.IsType<QuicConnectionStreamRegistry>(runtime.StreamRegistry);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.IdleTimeoutState);
     }
 }

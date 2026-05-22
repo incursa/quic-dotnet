@@ -88,6 +88,26 @@ internal enum QuicCryptoBufferResult
     /// </summary>
     internal ulong NextReadOffset => nextReadOffset;
 
+    internal readonly record struct QuicCryptoBufferEntrySnapshot(ulong Offset, int Length);
+
+    internal readonly record struct QuicCryptoBufferSnapshot(
+        int BufferedBytes,
+        ulong NextReadOffset,
+        bool DiscardFutureFrames,
+        QuicCryptoBufferEntrySnapshot[] Entries);
+
+    internal QuicCryptoBufferSnapshot GetSnapshot()
+    {
+        QuicCryptoBufferEntrySnapshot[] snapshotEntries = new QuicCryptoBufferEntrySnapshot[entries.Count];
+        for (int i = 0; i < entries.Count; i++)
+        {
+            Entry entry = entries[i];
+            snapshotEntries[i] = new QuicCryptoBufferEntrySnapshot(entry.Offset, entry.Data.Length);
+        }
+
+        return new QuicCryptoBufferSnapshot(bufferedBytes, nextReadOffset, discardFutureFrames, snapshotEntries);
+    }
+
     /// <summary>
     /// Discards all currently buffered CRYPTO data and marks future frames as acknowledged.
     /// </summary>

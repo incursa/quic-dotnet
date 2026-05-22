@@ -15,12 +15,12 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S17P2P4-0003",
-    "REQ-QUIC-RFC9000-S17P2P4-0016",
+    "REQ-QUIC-RFC9000-1015",
     "REQ-QUIC-RFC9000-S17P2P4-0017",
     "REQ-QUIC-RFC9000-S17P2P4-0018",
     "REQ-QUIC-RFC9000-S17P2P4-0019",
-    "REQ-QUIC-RFC9000-S17P2P4-0020",
-    "REQ-QUIC-RFC9000-S17P2P4-0021"
+    "REQ-QUIC-RFC9000-1735",
+    "REQ-QUIC-RFC9000-1018"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
@@ -29,12 +29,12 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicHandshakePacketRequirementTestData.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1015.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0017.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0018.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0019.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0020.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P4-0021.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1735.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1018.cs"
   ],
   "design_summary": "Handshake packets remain long-header version 1 packets parsed through the shared packet parser and formatted through the coordinator with the fixed four-byte packet-number field. The focused proof covers connection-ID parsing, the first server handshake packet number zero boundary, client receipt of Initial-only versus coalesced Initial+Handshake flights, and allowed versus forbidden handshake frame payloads.",
   "data_and_state_considerations": "The proof stays in requirement-home tests and canonical trace metadata. Packet-number state is exercised through the existing coordinator reflection helper, while client and server TLS state observations stay limited to handshake-key and transport-parameter commit boundaries exposed by the test support. The slice does not widen public APIs or add new packet-format surfaces.",
@@ -54,7 +54,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused S17P2P4 hard proof tail for REQ-QUIC-RFC9000-S17P2P4-0003, REQ-QUIC-RFC9000-S17P2P4-0016, REQ-QUIC-RFC9000-S17P2P4-0017, REQ-QUIC-RFC9000-S17P2P4-0018, REQ-QUIC-RFC9000-S17P2P4-0019, REQ-QUIC-RFC9000-S17P2P4-0020, and REQ-QUIC-RFC9000-S17P2P4-0021. It does not claim broader RFC 9000 packet-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+      "content": "This design closes the focused S17P2P4 hard proof tail for REQ-QUIC-RFC9000-S17P2P4-0003, REQ-QUIC-RFC9000-1015, REQ-QUIC-RFC9000-S17P2P4-0017, REQ-QUIC-RFC9000-S17P2P4-0018, REQ-QUIC-RFC9000-S17P2P4-0019, REQ-QUIC-RFC9000-1735, and REQ-QUIC-RFC9000-1018. It does not claim broader RFC 9000 packet-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
     }
   ]
 }

@@ -72,6 +72,20 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     internal ReadOnlyMemory<byte> SourceConnectionId => sourceConnectionId;
 
+    internal ulong NextPacketNumber => nextPacketNumber;
+
+    internal ulong NextApplicationPacketNumber => nextApplicationPacketNumber;
+
+    internal void SetNextPacketNumberForTests(ulong packetNumber)
+    {
+        nextPacketNumber = packetNumber;
+    }
+
+    internal void SetNextApplicationPacketNumberForTests(ulong packetNumber)
+    {
+        nextApplicationPacketNumber = packetNumber;
+    }
+
     internal bool HasExhaustedPacketNumbers => nextPacketNumber >= QuicVariableLengthInteger.MaxValue;
 
     internal bool HasExhaustedApplicationPacketNumbers => nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue;

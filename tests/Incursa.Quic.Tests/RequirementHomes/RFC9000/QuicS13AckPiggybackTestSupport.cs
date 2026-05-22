@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 internal static class QuicS13AckPiggybackTestSupport
@@ -144,23 +142,7 @@ internal static class QuicS13AckPiggybackTestSupport
         bool probePacket,
         ref List<QuicConnectionEffect>? effects)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TryFlushPendingRetransmissions",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new MissingMethodException(
-                nameof(QuicConnectionRuntime),
-                "TryFlushPendingRetransmissions");
-        object?[] arguments =
-        [
-            packetNumberSpace,
-            nowTicks,
-            probePacket,
-            effects,
-        ];
-
-        bool result = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[3];
-        return result;
+        return runtime.TryFlushPendingRetransmissions(packetNumberSpace, nowTicks, probePacket, ref effects);
     }
 
     internal static ulong ReadLongHeaderPacketNumber(byte[] openedPacket, int payloadOffset)

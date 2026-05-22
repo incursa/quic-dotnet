@@ -14,8 +14,8 @@
     "VER-QUIC-RFC9000-0008"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S4P1-0014",
-    "REQ-QUIC-RFC9000-S4P1-0015",
+    "REQ-QUIC-RFC9000-0176",
+    "REQ-QUIC-RFC9000-0177",
     "REQ-QUIC-RFC9000-S13P3-0022",
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S13P3-0024",
@@ -27,7 +27,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
   ],
   "design_summary": "When an application write reaches the active runtime and `QuicConnectionStreamState.TryReserveSendCapacity` reports connection-level send credit exhaustion, the runtime preserves the failed-write boundary and attempts to emit a protected `DATA_BLOCKED` application packet through the existing blocked-signal send helper. The advisory signal is emitted only when no ack-eliciting packet and no retransmission is already in flight, uses the current connection-level blocking limit as `Maximum Data`, and is tracked by the existing application-data sender ledger for loss repair. A later real `MAX_DATA` increase remains the only mechanism that makes the blocked write admissible.",
@@ -51,7 +51,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`REQ-QUIC-RFC9000-S4P1-0015.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs)\n- [`QuicConnectionStreamStateBenchmarks.cs`](../../../benchmarks/QuicConnectionStreamStateBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`REQ-QUIC-RFC9000-0177.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs)\n- [`QuicConnectionStreamStateBenchmarks.cs`](../../../benchmarks/QuicConnectionStreamStateBenchmarks.cs)"
     }
   ]
 }

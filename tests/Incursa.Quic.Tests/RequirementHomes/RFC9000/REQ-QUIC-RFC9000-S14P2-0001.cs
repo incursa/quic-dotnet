@@ -29,7 +29,7 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-S15-0004")]
+    [Requirement("REQ-QUIC-RFC9000-0897")]
     public void TryBuildProtectedPackets_ProducePacketHeadersAndProtectedPayloads()
     {
         byte[] initialCryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x10, 20);

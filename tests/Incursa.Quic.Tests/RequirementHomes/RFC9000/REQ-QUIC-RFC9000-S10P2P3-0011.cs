@@ -4,7 +4,7 @@ using System.Linq;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2P3-0006">A CONNECTION_CLOSE of type 0x1d MUST be replaced by a CONNECTION_CLOSE of type 0x1c when sending the frame in Initial or Handshake packets.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0595">A CONNECTION_CLOSE of type 0x1d MUST be replaced by a CONNECTION_CLOSE of type 0x1c when sending the frame in Initial or Handshake packets.</workbench-requirement>
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2P3-0011">A CONNECTION_CLOSE frame of type 0x1d MUST be replaced by a CONNECTION_CLOSE frame of type 0x1c when sending the frame in Initial or Handshake packets.</workbench-requirement>
 /// </workbench-requirements>
 public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
     private static readonly byte[] ServerSourceConnectionId = [0x51, 0x52, 0x53, 0x54];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0595")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -106,7 +106,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0595")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0009")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -161,7 +161,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0595")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0008")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -358,9 +358,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     private static void MarkPeerFinishedVerifiedWithoutConfirmingHandshake(QuicConnectionRuntime runtime)
     {
-        typeof(QuicTransportTlsBridgeState)
-            .GetProperty(nameof(QuicTransportTlsBridgeState.PeerFinishedVerified))!
-            .SetValue(runtime.TlsState, true);
+        runtime.TlsState.SetPeerFinishedVerifiedForTests(true);
     }
 
     private static QuicConnectionSendDatagramEffect AssertSingleSendByPacketNumberSpace(

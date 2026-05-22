@@ -19,6 +19,9 @@ namespace Incursa.Quic;
 // - QuicConnectionRuntime.Streams.cs owns stream-facing actions and flow-control publication.
 // - QuicConnectionRuntime.Routing.cs owns packet/timer dispatch and connection-id event handling.
 // - QuicConnectionRuntime.Paths.cs owns path validation, migration, promotion, and PMTU state.
+// - QuicConnectionLifecycleTimerState owns lifecycle timer deadlines and terminal deadline bookkeeping.
+// - QuicConnectionDiagnosticsState owns diagnostics sink resolution and enabled-state caching.
+// - QuicConnectionIssuedConnectionIdState owns locally issued connection-ID bookkeeping and stateless-reset token tracking.
 // - QuicConnectionRuntime.Lifecycle.cs owns terminal transitions, diagnostics, and shared helpers.
 
 internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposable
@@ -52,13 +55,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
-    private readonly List<PendingApplicationSendRequest> pendingApplicationSendRequests = [];
+    private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
-    private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths = [];
-    private readonly Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths = [];
-    private readonly Dictionary<ulong, byte[]> statelessResetTokensByConnectionId = [];
-    private readonly Dictionary<ulong, byte[]> issuedConnectionIdBytesByConnectionId = [];
-    private readonly HashSet<ulong> usedIssuedConnectionIds = [];
+    private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
@@ -66,8 +65,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
     private readonly QuicClientCertificatePolicySnapshot? clientCertificatePolicySnapshot;
     private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
-    private readonly IQuicDiagnosticsSink diagnosticsSink;
-    private readonly bool diagnosticsEnabled;
+    private readonly QuicConnectionDiagnosticsState diagnosticsState;
+    private readonly QuicConnectionApplicationAckState applicationAckState = new();
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
@@ -95,8 +94,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool handshakeDonePacketSent;
     private bool localCloseEffectsPending;
     private bool hasSuccessfullyProcessedAnotherPacket;
-    private ulong highestConnectionIdIssuedToPeer;
-    private ulong totalIssuedConnectionIdCount;
 
     private int consumerStarted;
     private int disposed;
@@ -104,17 +101,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool peerHandshakeTranscriptCompleted;
     private bool handshakeConfirmed;
     private QuicConnectionTransportState transportFlags;
-    private QuicConnectionActivePathRecord? activePath;
-    private QuicConnectionTimerDeadlineState timerState = default;
+    private readonly QuicConnectionPathState pathState;
+    private readonly QuicConnectionLifecycleTimerState lifecycleTimerState = new();
     private QuicConnectionTerminalState? terminalState;
     private QuicIdleTimeoutState? idleTimeoutState;
     private QuicConnectionPhase phase = QuicConnectionPhase.Establishing;
     private ulong? localMaxIdleTimeoutMicros;
     private ulong? peerMaxIdleTimeoutMicros;
     private ulong currentProbeTimeoutMicros;
-    private string? lastValidatedRemoteAddress;
-    private QuicConnectionPathIdentity? preferredAddressOldPathIdentity;
-    private long? terminalEndTicks;
     private long lastTransitionTicks;
     private ulong transitionSequence;
     private ulong largestObservedApplicationPacketNumber;
@@ -122,12 +116,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong observedCurrentOneRttKeyPhase;
     private long nextStreamActionRequestId;
     private long nextStreamObserverId;
-    private long nextPendingApplicationSendSequence;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
-    private long? pendingApplicationAckDelayDueTicks;
     private ulong largestObservedInitialPacketNumber;
     private ulong largestObservedHandshakePacketNumber;
     private bool hasObservedApplicationPacketNumber;
@@ -175,8 +167,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
-        this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
-        diagnosticsEnabled = this.diagnosticsSink.IsEnabled;
+        diagnosticsState = new QuicConnectionDiagnosticsState(diagnosticsSink);
         uint[] supportedVersionSnapshot = supportedVersions is { Length: > 0 }
             ? (uint[])supportedVersions.Clone()
             : [QuicVersionNegotiation.Version1];
@@ -238,6 +229,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         MaximumCandidatePaths = maximumCandidatePaths;
         MaximumRecentlyValidatedPaths = maximumRecentlyValidatedPaths;
         MaximumLocallyIssuedConnectionIds = maximumLocallyIssuedConnectionIds;
+        pathState = new QuicConnectionPathState(maximumRecentlyValidatedPaths);
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.allowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript;
@@ -271,7 +263,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     public IReadOnlyDictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> RecentlyValidatedPaths => recentlyValidatedPaths;
 
-    public QuicConnectionTimerDeadlineState TimerState => timerState;
+    public QuicConnectionTimerDeadlineState TimerState => lifecycleTimerState.TimerState;
 
     public QuicConnectionTerminalState? TerminalState => terminalState;
 
@@ -286,6 +278,18 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     public string? LastValidatedRemoteAddress => lastValidatedRemoteAddress;
 
     internal QuicConnectionVersionProfile VersionProfile => versionProfile;
+
+    internal QuicHandshakeFlowCoordinator HandshakeFlowCoordinator => handshakeFlowCoordinator;
+
+    internal QuicTlsTransportBridgeDriver TlsBridgeDriver => tlsBridgeDriver;
+
+    internal IQuicDiagnosticsSink DiagnosticsSink => diagnosticsState.Sink;
+
+    internal bool DiagnosticsEnabled => diagnosticsState.IsEnabled;
+
+    private bool diagnosticsEnabled => diagnosticsState.IsEnabled;
+
+    internal byte[]? InitialBootstrapClientHelloBytes => initialBootstrapClientHelloBytes;
 
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
     {
@@ -319,31 +323,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal ReadOnlyMemory<byte> CurrentHandshakeSourceConnectionId
         => handshakeFlowCoordinator.SourceConnectionId;
 
-    public bool HasValidatedPath
-    {
-        get
-        {
-            if (activePath?.IsValidated ?? false)
-            {
-                return true;
-            }
-
-            if (recentlyValidatedPaths.Count > 0)
-            {
-                return true;
-            }
-
-            foreach (QuicConnectionCandidatePathRecord candidate in candidatePaths.Values)
-            {
-                if (candidate.Validation.IsValidated && !candidate.Validation.IsAbandoned)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
+    public bool HasValidatedPath => pathState.HasValidatedPath;
 
     public QuicConnectionStreamRegistry StreamRegistry => streamRegistry;
 
@@ -361,11 +341,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool IsDisposed => Volatile.Read(ref disposed) != 0;
 
+    internal bool HasProcessingTask => processingTask is not null;
+
+    internal void SetPhaseForTesting(QuicConnectionPhase phase)
+    {
+        this.phase = phase;
+    }
+
     internal IMonotonicClock Clock => clock;
 
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
+
+    internal QuicRecoveryController RecoveryController => recoveryController;
 
     internal ReadOnlyMemory<byte> OwnedResumptionTicketBytes => ownedResumptionTicketBytes ?? ReadOnlyMemory<byte>.Empty;
 
@@ -403,6 +392,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         dormantDetachedResumptionTicketSnapshot is not null
         && dormantDetachedResumptionTicketSnapshot.HasResumptionCredentialMaterial
         && dormantDetachedResumptionTicketSnapshot.HasEarlyDataPrerequisiteMaterial;
+
+    internal Func<QuicConnectionEvent, bool>? LocalApiEventDispatcher => localApiEventDispatcher;
+
+    internal Action<int, int>? StreamCapacityObserver => streamCapacityObserver;
+
+    internal QuicInitialPacketProtection? InitialPacketProtection => initialPacketProtection;
+
+    internal int BufferedEstablishmentHandshakePacketCount => bufferedEstablishmentHandshakePackets.Count;
+
+    internal Dictionary<ulong, byte[]> StatelessResetTokensByConnectionId => issuedConnectionIdState.StatelessResetTokensByConnectionId;
+
+    internal Dictionary<string, QuicConnectionNewTokenEmissionRecord> NewTokenEmissionsByRemoteAddress => newTokenEmissionsByRemoteAddress;
+
+    internal void MarkHandshakeDonePacketSentForTests()
+    {
+        handshakeDonePacketSent = true;
+    }
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {
@@ -1068,10 +1074,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         peerConnectionIdState.Clear();
-        issuedConnectionIdBytesByConnectionId.Clear();
-        usedIssuedConnectionIds.Clear();
-        highestConnectionIdIssuedToPeer = 0;
-        totalIssuedConnectionIdCount = 0;
+        issuedConnectionIdState.Reset();
     }
 
     public void Dispose()

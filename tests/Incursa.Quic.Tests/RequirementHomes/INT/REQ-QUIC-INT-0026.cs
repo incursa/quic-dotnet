@@ -35,6 +35,8 @@ public sealed class REQ_QUIC_INT_0026
         Assert.Contains("NetworkSimulatorScenarioScriptTests", verification, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-BASE-0001", helper, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-LOSS-0001", helper, StringComparison.Ordinal);
+        Assert.Contains("Copy-SimulatorLogs", helper, StringComparison.Ordinal);
+        Assert.Contains("SimulatorLogs:", helper, StringComparison.Ordinal);
     }
 
     [Fact]

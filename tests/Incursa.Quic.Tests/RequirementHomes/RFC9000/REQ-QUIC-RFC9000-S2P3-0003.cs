@@ -8,7 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S2P3_0003
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-0022")]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Positive")]

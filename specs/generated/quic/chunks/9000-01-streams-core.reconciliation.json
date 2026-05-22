@@ -18,7 +18,7 @@
   },
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0019",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -28,7 +28,7 @@
       "notes": "This clause depends on a stateful stream surface that is not present in the current codebase."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0020",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -48,7 +48,7 @@
       "notes": "The repository only exposes byte-oriented parsers and frame codecs."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0023",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -58,7 +58,7 @@
       "notes": "Endpoint-driven creation policy is absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0022",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -68,7 +68,7 @@
       "notes": "Concurrent stream scheduling remains unmodeled."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0024",
       "status": "tested but implementation mapping unclear",
       "implementation_refs": [
         "src/Incursa.Quic/QuicFrameCodec.cs"
@@ -85,7 +85,7 @@
       "notes": "The coverage is wire-level only; the stream-management behavior remains stateful and unmodeled."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0025",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -95,7 +95,7 @@
       "notes": "Cross-stream ordering guarantees remain out of scope for the current implementation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0027",
       "status": "tested but implementation mapping unclear",
       "implementation_refs": [
         "src/Incursa.Quic/QuicFrameCodec.cs"
@@ -114,7 +114,7 @@
       "notes": "The repository only proves the wire encodings, not the stream-limit enforcement path."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0026",
       "status": "tested but implementation mapping unclear",
       "implementation_refs": [
         "src/Incursa.Quic/QuicFrameCodec.cs"
@@ -198,7 +198,7 @@
       "notes": "QuicStreamId and TryParseStreamIdentifier expose stream IDs as first-class values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0032",
       "status": "implemented and tested",
       "implementation_refs": [
         "src/Incursa.Quic/QuicStreamId.cs",
@@ -222,7 +222,7 @@
       "notes": "Stream IDs are parsed through the shared QUIC varint helper and bounded by the 62-bit QUIC varint ceiling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0031",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -232,7 +232,7 @@
       "notes": "Uniqueness is not modeled in the current parser-centric implementation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0033",
       "status": "implemented and tested",
       "implementation_refs": [
         "src/Incursa.Quic/QuicStreamId.cs",
@@ -255,7 +255,7 @@
       "notes": "Stream IDs are encoded and parsed as QUIC variable-length integers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0034",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -371,7 +371,7 @@
       "notes": "The repository does not yet allocate stream IDs."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0045",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -410,7 +410,7 @@
       "notes": "STREAM frame parsing and formatting preserve stream payload bytes."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0047",
       "status": "partially implemented",
       "implementation_refs": [
         "src/Incursa.Quic/QuicStreamFrame.cs",
@@ -427,7 +427,7 @@
       "notes": "The parser exposes Stream ID and Offset fields, but no reassembly layer places data for delivery."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0048",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -477,7 +477,7 @@
       "notes": "This remains unimplemented until a full stream send state exists."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0052",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -504,7 +504,7 @@
       "notes": "Wire-level byte exposure is present, but the policy layer that would make the requirement fully explicit is absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0056",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -524,7 +524,7 @@
       "notes": "No prioritization API is implemented."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0057",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],

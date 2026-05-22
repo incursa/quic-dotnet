@@ -1,6 +1,3 @@
-using System.Collections.Concurrent;
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
@@ -93,12 +90,6 @@ public sealed class REQ_QUIC_RFC9001_S6P6_0007
 
     private static void ForceEmptyVersionProfile(QuicConnectionRuntimeEndpoint endpoint, QuicConnectionHandle handle)
     {
-        FieldInfo field = typeof(QuicConnectionRuntimeEndpoint).GetField(
-            "versionProfilesByHandle",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        ConcurrentDictionary<QuicConnectionHandle, QuicConnectionVersionProfile> versionProfiles =
-            (ConcurrentDictionary<QuicConnectionHandle, QuicConnectionVersionProfile>)field.GetValue(endpoint)!;
-
-        versionProfiles[handle] = new QuicConnectionVersionProfile(ReadOnlyMemory<uint>.Empty);
+        endpoint.SetVersionProfileForTests(handle, new QuicConnectionVersionProfile(ReadOnlyMemory<uint>.Empty));
     }
 }

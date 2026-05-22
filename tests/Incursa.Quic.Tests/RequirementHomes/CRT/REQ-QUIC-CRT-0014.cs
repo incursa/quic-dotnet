@@ -1,38 +1,25 @@
+using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0014")]
 public sealed class REQ_QUIC_CRT_0014
 {
-    private static readonly string[] EndpointRouteAndTokenRegistryFields =
-    [
-        "routeIdsByHandle",
-        "routesByLength",
-        "statelessResetConnectionIdsByRouteIdByHandle",
-        "statelessResetTokenIdsByHandle",
-        "statelessResetBindingsByMatchKey",
-        "statelessResetBindingsByConnectionId",
-        "retainedStatelessResetBindingsByRouteLength",
-    ];
-
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EndpointSharedRouteAndTokenRegistriesUseConcurrentDictionaries()
     {
-        foreach (string fieldName in EndpointRouteAndTokenRegistryFields)
-        {
-            FieldInfo? field = typeof(QuicConnectionRuntimeEndpoint).GetField(
-                fieldName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
+        QuicConnectionRuntimeEndpoint endpoint = new(1);
 
-            Assert.NotNull(field);
-            Assert.True(
-                IsConcurrentDictionary(field!.FieldType),
-                $"{fieldName} must remain an endpoint-scoped concurrent registry.");
-        }
+        Assert.True(IsConcurrentDictionary(endpoint.RouteIdsByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.RoutesByLength.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetConnectionIdsByRouteIdByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetTokenIdsByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetBindingsByMatchKey.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetBindingsByConnectionId.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.RetainedStatelessResetBindingsByRouteLength.GetType()));
     }
 
     [Fact]
@@ -40,21 +27,19 @@ public sealed class REQ_QUIC_CRT_0014
     [Trait("Category", "Edge")]
     public void EndpointSharedRouteAndTokenRegistriesDoNotMoveIntoConnectionRuntime()
     {
-        foreach (string fieldName in EndpointRouteAndTokenRegistryFields)
-        {
-            FieldInfo? runtimeField = typeof(QuicConnectionRuntime).GetField(
-                fieldName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
+        QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeEndpoint endpoint = new(1);
 
-            Assert.Null(runtimeField);
-        }
+        Assert.IsType<Dictionary<ulong, byte[]>>(runtime.StatelessResetTokensByConnectionId);
+        Assert.IsType<Dictionary<string, QuicConnectionRuntime.QuicConnectionNewTokenEmissionRecord>>(runtime.NewTokenEmissionsByRemoteAddress);
 
-        FieldInfo? connectionOwnedTokenMemory = typeof(QuicConnectionRuntime).GetField(
-            "statelessResetTokensByConnectionId",
-            BindingFlags.Instance | BindingFlags.NonPublic);
-
-        Assert.NotNull(connectionOwnedTokenMemory);
-        Assert.False(IsConcurrentDictionary(connectionOwnedTokenMemory!.FieldType));
+        Assert.True(IsConcurrentDictionary(endpoint.RouteIdsByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.RoutesByLength.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetConnectionIdsByRouteIdByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetTokenIdsByHandle.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetBindingsByMatchKey.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.StatelessResetBindingsByConnectionId.GetType()));
+        Assert.True(IsConcurrentDictionary(endpoint.RetainedStatelessResetBindingsByRouteLength.GetType()));
     }
 
     private static bool IsConcurrentDictionary(Type type)

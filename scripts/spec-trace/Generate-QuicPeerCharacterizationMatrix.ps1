@@ -147,7 +147,7 @@ $sourceRuns = @(
 $report = [pscustomobject]@{
     report_id      = 'interop-peer-characterization-matrix-pilot'
     advisory       = $true
-    summary        = 'Refreshed advisory report for mixed connectionmigration and major-peer evidence.'
+    summary        = 'Refreshed advisory report `interop-peer-characterization-matrix-pilot` for mixed connectionmigration and major-peer evidence.'
     source_runs    = $sourceRuns
     row_count      = $rows.Count
     rows           = $rows
@@ -157,7 +157,7 @@ $reportJson = $report | ConvertTo-Json -Depth 8
 $markdownLines = [System.Collections.Generic.List[string]]::new()
 $markdownLines.Add('# Interop Peer Characterization Matrix Pilot')
 $markdownLines.Add('')
-$markdownLines.Add('Advisory report. Derived from preserved hosted bundles and the completed major-peer evidence, and intentionally not a support verdict.')
+$markdownLines.Add('Advisory report `interop-peer-characterization-matrix-pilot`. Derived from preserved hosted bundles and the completed major-peer evidence, and intentionally not a support verdict.')
 $markdownLines.Add('')
 $markdownLines.Add('## Sources')
 $markdownLines.Add('')

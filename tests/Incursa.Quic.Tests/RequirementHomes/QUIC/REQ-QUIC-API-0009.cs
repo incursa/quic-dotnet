@@ -1026,9 +1026,7 @@ public sealed class REQ_QUIC_API_0009
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(runtimeField);
-        return Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
+        return connection.Runtime;
     }
 
     private static IPEndPoint GetConnectionLocalEndPoint(QuicConnection connection)
@@ -1081,20 +1079,11 @@ public sealed class REQ_QUIC_API_0009
 
     private static QuicHandshakeFlowCoordinator GetHandshakeFlowCoordinator(QuicConnectionRuntime runtime)
     {
-        FieldInfo? handshakeFlowField = typeof(QuicConnectionRuntime).GetField(
-            "handshakeFlowCoordinator",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(handshakeFlowField);
-        return Assert.IsType<QuicHandshakeFlowCoordinator>(handshakeFlowField!.GetValue(runtime));
+        return runtime.HandshakeFlowCoordinator;
     }
 
     private static Socket GetListenerSocket(QuicListener listener)
     {
-        FieldInfo? hostField = typeof(QuicListener).GetField("host", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(hostField);
-        QuicListenerHost host = Assert.IsType<QuicListenerHost>(hostField!.GetValue(listener));
-        FieldInfo? socketField = typeof(QuicListenerHost).GetField("socket", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(socketField);
-        return Assert.IsType<Socket>(socketField!.GetValue(host));
+        return listener.Host.Socket;
     }
 }

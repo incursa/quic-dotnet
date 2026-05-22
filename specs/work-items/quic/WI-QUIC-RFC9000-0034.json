@@ -12,14 +12,14 @@
     "VER-QUIC-RFC9000-0034"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S8P1P1-0001",
+    "REQ-QUIC-RFC9000-0381",
     "REQ-QUIC-RFC9000-S8P1P3-0005",
     "REQ-QUIC-RFC9000-S8P1P3-0014",
     "REQ-QUIC-RFC9000-S8P1P3-0015",
-    "REQ-QUIC-RFC9000-S8P1P3-0016",
-    "REQ-QUIC-RFC9000-S8P1P4-0001",
+    "REQ-QUIC-RFC9000-8135",
+    "REQ-QUIC-RFC9000-0407",
     "REQ-QUIC-RFC9000-S8P1P4-0002",
-    "REQ-QUIC-RFC9000-S8P1P4-0004",
+    "REQ-QUIC-RFC9000-0410",
     "REQ-QUIC-RFC9000-S8P1P4-0010"
   ],
   "summary": "Implement and prove a listener-scoped NEW_TOKEN envelope with provenance, nonce-backed unpredictability, integrity protection, client-IP binding, expiration, runtime emission, and pre-admission listener validation.",

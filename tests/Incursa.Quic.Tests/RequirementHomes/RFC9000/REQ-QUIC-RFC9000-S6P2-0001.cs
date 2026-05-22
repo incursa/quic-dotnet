@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
@@ -9,13 +7,13 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     /// <workbench-requirements generated="true" source="manual">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0001">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet unless it has received and successfully processed any other packet or the Version Negotiation packet lists the QUIC version selected by the client.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0002">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet, with the following two exceptions.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0004">A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P12-0002">Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is robust against version downgrade attacks.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6223">A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-21120001">Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is robust against version downgrade attacks.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S6P2-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S21P12-0002")]
+    [Requirement("REQ-QUIC-RFC9000-6223")]
+    [Requirement("REQ-QUIC-RFC9000-21120001")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised()
     {
@@ -72,7 +70,7 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     [Trait("Category", "Edge")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S6P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-6222")]
     public void ShouldAbandonConnectionAttempt_ReturnsFalseAfterAnotherPacketHasAlreadyBeenProcessed()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
@@ -114,13 +112,8 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
         Assert.NotNull(runtime.TerminalState);
         Assert.Equal(QuicConnectionCloseOrigin.VersionNegotiation, runtime.TerminalState!.Value.Origin);
 
-        MethodInfo? mapTerminalStateMethod = typeof(QuicClientConnectionHost).GetMethod(
-            "MapTerminalState",
-            BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.NotNull(mapTerminalStateMethod);
-
         QuicException exception = Assert.IsType<QuicException>(
-            mapTerminalStateMethod!.Invoke(null, [runtime.TerminalState.Value]));
+            QuicClientConnectionHost.MapTerminalState(runtime.TerminalState.Value));
         Assert.Equal(QuicError.VersionNegotiationError, exception.QuicError);
     }
 

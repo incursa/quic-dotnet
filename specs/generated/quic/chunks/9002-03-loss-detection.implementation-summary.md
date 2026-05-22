@@ -88,7 +88,7 @@
 - `specs/generated/quic/chunks/9002-03-loss-detection.closeout.md`
 
 ## Tests Run
-- `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0003|FullyQualifiedName~REQ_QUIC_RFC9002_S6P3_0003"` -> `5 passed, 0 failed, 0 skipped`
+- `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_1050|FullyQualifiedName~REQ_QUIC_RFC9002_S6P3_0003"` -> `5 passed, 0 failed, 0 skipped`
 - `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P1_0006"` -> `4 passed, 0 failed, 0 skipped`
 - `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6P2P4_0008"` -> `3 passed, 0 failed, 0 skipped`
 - `dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~REQ_QUIC_RFC9002_S6"` -> `172 passed, 0 failed, 0 skipped`

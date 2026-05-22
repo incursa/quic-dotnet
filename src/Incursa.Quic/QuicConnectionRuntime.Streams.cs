@@ -296,7 +296,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool queuedWritesPendingForStream = finishWrites
-            && pendingApplicationSendRequests.Any(pendingWrite => pendingWrite.StreamId == streamId);
+            && applicationSendQueue.HasPendingWritesForStream(streamId);
         if (queuedWritesPendingForStream)
         {
             if (!TryPromoteQueuedApplicationSendToFinal(streamId))
@@ -464,7 +464,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         return (activePath?.AmplificationState.IsAddressValidated ?? false)
             && streamData.Length > 0
-            && (pendingApplicationSendRequests.Count > 0
+            && (applicationSendQueue.Count > 0
                 || streamData.Length < ApplicationSendDelayThresholdBytes);
     }
 
@@ -475,13 +475,9 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        pendingApplicationSendRequests.Add(new PendingApplicationSendRequest(
-            nextPendingApplicationSendSequence++,
-            streamId,
-            priority,
-            streamPayload));
+        applicationSendQueue.Enqueue(streamId, priority, streamPayload);
 
-        if (pendingApplicationSendRequests.Count == 1)
+        if (applicationSendQueue.Count == 1)
         {
             pendingApplicationSendDelayDueTicks = SaturatingAdd(
                 nowTicks,
@@ -493,33 +489,23 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryPromoteQueuedApplicationSendToFinal(ulong streamId)
     {
-        for (int index = pendingApplicationSendRequests.Count - 1; index >= 0; index--)
+        if (!applicationSendQueue.TryGetLatestQueuedWriteForStream(streamId, out PendingApplicationSendRequest queuedWrite))
         {
-            PendingApplicationSendRequest queuedWrite = pendingApplicationSendRequests[index];
-            if (queuedWrite.StreamId != streamId)
-            {
-                continue;
-            }
-
-            if (!QuicStreamParser.TryParseStreamFrame(queuedWrite.StreamPayload, out QuicStreamFrame frame)
-                || !TryBuildOutboundStreamPayload(
-                    streamId,
-                    frame.Offset,
-                    frame.StreamData,
-                    fin: true,
-                    out byte[] finalPayload))
-            {
-                return false;
-            }
-
-            pendingApplicationSendRequests[index] = queuedWrite with
-            {
-                StreamPayload = finalPayload,
-            };
-            return true;
+            return false;
         }
 
-        return false;
+        if (!QuicStreamParser.TryParseStreamFrame(queuedWrite.StreamPayload, out QuicStreamFrame frame)
+            || !TryBuildOutboundStreamPayload(
+                streamId,
+                frame.Offset,
+                frame.StreamData,
+                fin: true,
+                out byte[] finalPayload))
+        {
+            return false;
+        }
+
+        return applicationSendQueue.TryReplaceQueuedWritePayload(queuedWrite.Sequence, finalPayload);
     }
 
     private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)
@@ -543,18 +529,16 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects,
         out Exception? exception)
     {
-        if (pendingApplicationSendRequests.Count == 0)
+        if (applicationSendQueue.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
             exception = null;
             return false;
         }
 
-        PendingApplicationSendRequest[] queuedWrites = pendingApplicationSendRequests.ToArray();
+        PendingApplicationSendRequest[] queuedWrites = applicationSendQueue.GetSortedQueuedWrites();
 
-        Array.Sort(queuedWrites, ComparePendingApplicationSendRequests);
-
-        int batchCount = SelectQueuedApplicationSendBatchCount(
+        int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
             queuedWrites,
             GetMaximumQueuedApplicationPayloadBytes());
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = queuedWrites.AsSpan(0, batchCount);
@@ -572,7 +556,7 @@ internal sealed partial class QuicConnectionRuntime
             copyOffset += queuedWrite.StreamPayload.Length;
         }
 
-        ulong[] streamIds = BuildDistinctStreamIds(selectedWrites);
+        ulong[] streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
 
         if (!TryProtectAndAccountStreamApplicationPayload(
             combinedPayload,
@@ -596,8 +580,8 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        RemovePendingApplicationSendRequests(selectedWrites);
-        if (pendingApplicationSendRequests.Count == 0)
+        applicationSendQueue.TryRemoveQueuedWrites(selectedWrites);
+        if (applicationSendQueue.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
         }
@@ -667,7 +651,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
-        while (pendingApplicationSendRequests.Count > 0)
+        while (applicationSendQueue.Count > 0)
         {
             if (!FlushPendingApplicationSends(nowTicks, ref effects))
             {
@@ -709,24 +693,12 @@ internal sealed partial class QuicConnectionRuntime
 
     private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref List<QuicConnectionEffect>? effects)
     {
-        if (pendingApplicationSendRequests.Count == 0)
+        if (!applicationSendQueue.TryRemoveQueuedWritesForStream(streamId))
         {
             return;
         }
 
-        bool removedAny = false;
-        for (int index = pendingApplicationSendRequests.Count - 1; index >= 0; index--)
-        {
-            if (pendingApplicationSendRequests[index].StreamId != streamId)
-            {
-                continue;
-            }
-
-            pendingApplicationSendRequests.RemoveAt(index);
-            removedAny = true;
-        }
-
-        if (removedAny && pendingApplicationSendRequests.Count == 0)
+        if (applicationSendQueue.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -756,93 +728,6 @@ internal sealed partial class QuicConnectionRuntime
         return maximumPayloadBytes > int.MaxValue
             ? int.MaxValue
             : Math.Max(ApplicationMinimumProtectedPayloadLength, (int)maximumPayloadBytes);
-    }
-
-    private static int SelectQueuedApplicationSendBatchCount(
-        ReadOnlySpan<PendingApplicationSendRequest> queuedWrites,
-        int maximumPayloadBytes)
-    {
-        int selectedCount = 0;
-        int selectedBytes = 0;
-        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
-        {
-            int nextSelectedBytes = checked(selectedBytes + queuedWrite.StreamPayload.Length);
-            if (selectedCount > 0 && nextSelectedBytes > maximumPayloadBytes)
-            {
-                break;
-            }
-
-            selectedBytes = nextSelectedBytes;
-            selectedCount++;
-        }
-
-        return selectedCount;
-    }
-
-    private void RemovePendingApplicationSendRequests(ReadOnlySpan<PendingApplicationSendRequest> selectedWrites)
-    {
-        foreach (PendingApplicationSendRequest selectedWrite in selectedWrites)
-        {
-            for (int index = 0; index < pendingApplicationSendRequests.Count; index++)
-            {
-                if (pendingApplicationSendRequests[index].Sequence != selectedWrite.Sequence)
-                {
-                    continue;
-                }
-
-                pendingApplicationSendRequests.RemoveAt(index);
-                break;
-            }
-        }
-    }
-
-    private static ulong[] BuildDistinctStreamIds(ReadOnlySpan<PendingApplicationSendRequest> queuedWrites)
-    {
-        if (queuedWrites.IsEmpty)
-        {
-            return [];
-        }
-
-        ulong[] streamIds = new ulong[queuedWrites.Length];
-        int uniqueCount = 0;
-
-        foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
-        {
-            bool alreadyPresent = false;
-            for (int index = 0; index < uniqueCount; index++)
-            {
-                if (streamIds[index] == queuedWrite.StreamId)
-                {
-                    alreadyPresent = true;
-                    break;
-                }
-            }
-
-            if (!alreadyPresent)
-            {
-                streamIds[uniqueCount++] = queuedWrite.StreamId;
-            }
-        }
-
-        if (uniqueCount != streamIds.Length)
-        {
-            Array.Resize(ref streamIds, uniqueCount);
-        }
-
-        return streamIds;
-    }
-
-    internal static int ComparePendingApplicationSendRequests(
-        PendingApplicationSendRequest left,
-        PendingApplicationSendRequest right)
-    {
-        int priorityComparison = right.Priority.CompareTo(left.Priority);
-        if (priorityComparison != 0)
-        {
-            return priorityComparison;
-        }
-
-        return left.Sequence.CompareTo(right.Sequence);
     }
 
     private bool TryEmitFlowControlBlockedSignal(
@@ -1464,8 +1349,9 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
         if (!ackOnlyPacket
-            && TryBuildApplicationAckPiggybackPayload(
+            && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
                 payload,
+                sendRuntime.FlowController,
                 nowMicros,
                 out byte[] piggybackedPayload,
                 out QuicAckFrame includedAckFrame))
@@ -1547,35 +1433,6 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryBuildApplicationAckPiggybackPayload(
-        ReadOnlyMemory<byte> payload,
-        ulong nowMicros,
-        out byte[] piggybackedPayload,
-        out QuicAckFrame ackFrame)
-    {
-        piggybackedPayload = [];
-        ackFrame = new QuicAckFrame();
-
-        if (payload.IsEmpty
-            || !sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                maxAckDelayMicros: 0)
-            || !sendRuntime.FlowController.TryBuildAckFrame(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackPayload))
-        {
-            return false;
-        }
-
-        piggybackedPayload = new byte[checked(ackPayload.Length + payload.Length)];
-        ackPayload.CopyTo(piggybackedPayload.AsSpan());
-        payload.Span.CopyTo(piggybackedPayload.AsSpan(ackPayload.Length));
-        return true;
-    }
-
     private bool TryProtectAndAccountApplicationPayloadOnPath(
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlyMemory<byte> payload,
@@ -1628,8 +1485,9 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> packetPayload = payload;
         QuicAckFrame? piggybackedAckFrame = null;
         if (includeAckFrame
-            && TryBuildApplicationAckPiggybackPayload(
+            && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
                 payload,
+                sendRuntime.FlowController,
                 nowMicros,
                 out byte[] piggybackedPayload,
                 out QuicAckFrame includedAckFrame))
@@ -1843,7 +1701,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushPendingRetransmissions(
+    internal bool TryFlushPendingRetransmissions(
         QuicPacketNumberSpace packetNumberSpace,
         long nowTicks,
         bool probePacket,
@@ -2152,7 +2010,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryDequeuePreferredProbeRetransmission(
+    internal bool TryDequeuePreferredProbeRetransmission(
         QuicPacketNumberSpace packetNumberSpace,
         out QuicConnectionRetransmissionPlan retransmission)
     {
@@ -2553,7 +2411,7 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+    internal bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
@@ -3548,7 +3406,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private void TrackApplicationPacket(
+    internal void TrackApplicationPacket(
         ulong packetNumber,
         byte[] protectedPacket,
         bool ackEliciting = true,
@@ -3988,7 +3846,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             return TryHandleApplicationDataFrameError(
                 nowTicks,
-                ResetStreamFrameType,
+                QuicPacketFrameLegality.HandshakePacketResetStreamFrameType,
                 errorCode,
                 "The peer sent a RESET_STREAM frame that violated receive-side stream or flow-control state.",
                 ref effects);
@@ -4082,7 +3940,7 @@ internal sealed partial class QuicConnectionRuntime
         CompleteInboundStreamQueue(completionException);
         CompletePendingStreamOpenRequests(completionException);
         CompletePendingStreamActionRequests(completionException);
-        pendingApplicationSendRequests.Clear();
+        applicationSendQueue.Clear();
         pendingApplicationSendDelayDueTicks = null;
     }
 

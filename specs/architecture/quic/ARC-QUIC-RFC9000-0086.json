@@ -16,8 +16,8 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S19P20-0003",
     "REQ-QUIC-RFC9000-S19P20-0004",
-    "REQ-QUIC-RFC9000-S19P20-0005",
-    "REQ-QUIC-RFC9000-S19P20-0006"
+    "REQ-QUIC-RFC9000-1371",
+    "REQ-QUIC-RFC9000-1372"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicFrameCodec.cs",
@@ -26,8 +26,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P20HandshakeDoneTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0006.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1371.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1372.cs"
   ],
   "design_summary": "HANDSHAKE_DONE remains a fixed QUIC frame type parsed and formatted through the shared frame codec as the single-byte varint value 0x1e. The runtime emits the frame only from the server role, only after the peer handshake transcript completion path promotes the connection to active, and only once per connection. Application Data packet receive dispatch treats a HANDSHAKE_DONE frame received by a server as a local PROTOCOL_VIOLATION close while non-HANDSHAKE_DONE protected frames continue through ordinary receive handling.",
   "data_and_state_considerations": "The closure relies on existing runtime state: tlsState.Role gates server-only send and receive policy, peerHandshakeTranscriptCompleted gates the completion boundary, handshakeDonePacketSent prevents duplicate sends, and tracked sent packet plaintext payload metadata provides direct requirement-home proof of the emitted frame.",
@@ -48,7 +48,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused S19P20 hard proof tail for REQ-QUIC-RFC9000-S19P20-0003 through REQ-QUIC-RFC9000-S19P20-0006. It does not claim broader S19 frame-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+      "content": "This design closes the focused S19P20 hard proof tail for REQ-QUIC-RFC9000-S19P20-0003 through REQ-QUIC-RFC9000-1372. It does not claim broader S19 frame-family closure, public API widening, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
     }
   ]
 }

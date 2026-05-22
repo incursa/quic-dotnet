@@ -31,5 +31,5 @@
     "expanding the major peer matrix profile",
     "public support-readiness claims"
   ],
-  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0020` and `REQ-QUIC-RFC9000-S15-0008`, run `dotnet build benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` as supporting evidence, run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation` for the helper-side plan, run one real local interop invocation for `versionnegotiation`, and capture the resulting artifact paths for the verification record."
+  "verification_plan": "Run the focused requirement-home tests for `REQ-QUIC-INT-0020` and `REQ-QUIC-RFC9000-0901`, run `dotnet build benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` as supporting evidence, run `pwsh -NoProfile -File scripts\\interop\\Invoke-QuicInteropRunner.ps1 -DryRun -TestCases versionnegotiation` for the helper-side plan, run one real local interop invocation for `versionnegotiation`, and capture the resulting artifact paths for the verification record."
 }

@@ -1,6 +1,5 @@
-using System.Diagnostics;
-using System.Reflection;
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic.Tests;
@@ -139,7 +138,7 @@ internal static class QuicPostHandshakeTicketTestSupport
                 LocalTransportParameters: localTransportParameters),
             nowTicks: 1).StateChanged);
 
-        byte[] clientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(runtime);
+        byte[] clientHelloBytes = runtime.InitialBootstrapClientHelloBytes!;
         (
             byte[] serverHelloTranscript,
             byte[] encryptedExtensionsTranscript,
@@ -289,21 +288,14 @@ internal static class QuicPostHandshakeTicketTestSupport
                 PacketProtectionMaterial: handshakePacketMaterial)),
             nowTicks: 0).StateChanged);
 
-        FieldInfo runtimeDriverField = typeof(QuicConnectionRuntime).GetField(
-            "tlsBridgeDriver",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsTransportBridgeDriver runtimeDriver = (QuicTlsTransportBridgeDriver)runtimeDriverField.GetValue(runtime)!;
-        FieldInfo runtimeKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule runtimeKeySchedule = (QuicTlsKeySchedule)runtimeKeyScheduleField.GetValue(runtimeDriver)!;
+        QuicTlsTransportBridgeDriver runtimeDriver = runtime.TlsBridgeDriver;
         IReadOnlyList<QuicTlsStateUpdate> clientHelloUpdates = runtimeDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             clientHelloBytes);
         Assert.Equal(9, clientHelloUpdates.Count);
         long observedAtTicks = 1;
         observedAtTicks = ApplyRuntimeUpdates(runtime, clientHelloUpdates, observedAtTicks, emittedEffects);
-        Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+        Assert.True(runtimeDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         IReadOnlyList<QuicTlsStateUpdate> finishedUpdates = runtimeDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -364,11 +356,7 @@ internal static class QuicPostHandshakeTicketTestSupport
             clientHelloBytes);
         Assert.Equal(9, clientHelloUpdates.Count);
 
-        FieldInfo runtimeKeyScheduleField = typeof(QuicTlsTransportBridgeDriver).GetField(
-            "keySchedule",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        QuicTlsKeySchedule runtimeKeySchedule = (QuicTlsKeySchedule)runtimeKeyScheduleField.GetValue(serverDriver)!;
-        Assert.True(runtimeKeySchedule.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
+        Assert.True(serverDriver.TryGetExpectedPeerFinishedVerifyData(out byte[] expectedFinishedVerifyData));
 
         finishedUpdates = serverDriver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
@@ -955,10 +943,7 @@ internal static class QuicPostHandshakeTicketTestSupport
         int payloadBytes,
         long observedAtTicks)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "InitializeActivePath",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (bool)method.Invoke(runtime, [pathIdentity, payloadBytes, observedAtTicks])!;
+        return runtime.InitializeActivePath(pathIdentity, payloadBytes, observedAtTicks);
     }
 
     private static void WriteUInt16(Span<byte> destination, ushort value)

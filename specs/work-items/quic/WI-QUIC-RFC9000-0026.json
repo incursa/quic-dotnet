@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S2P3-0001",
-    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-0057",
     "REQ-QUIC-RFC9000-S2P3-0003"
   ],
   "summary": "Add a local stream-priority property and use it to order queued application sends in the active runtime without introducing any built-in prioritization exchange.",

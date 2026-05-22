@@ -1,0 +1,57 @@
+namespace Incursa.Quic.Tests;
+
+[Requirement("REQ-QUIC-RFC9000-0309")]
+public sealed class REQ_QUIC_RFC9000_0309
+{
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ClientHostUsesAnInitialDestinationConnectionIdAtLeastEightBytesLong()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost host = new(settings);
+
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+
+        Assert.True(initialDestinationConnectionId.Length >= 8);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientHostDoesNotUseAZeroLengthFirstInitialDestinationConnectionId()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost host = new(settings);
+
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+
+        Assert.NotEmpty(initialDestinationConnectionId);
+        Assert.False(initialDestinationConnectionId.Length < 8);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task ClientHostUsesTheEightByteMinimumForTheFirstInitialDestinationConnectionId()
+    {
+        var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+            QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+            "options");
+
+        await using QuicClientConnectionHost host = new(settings);
+
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+
+        Assert.Equal(8, initialDestinationConnectionId.Length);
+    }
+}

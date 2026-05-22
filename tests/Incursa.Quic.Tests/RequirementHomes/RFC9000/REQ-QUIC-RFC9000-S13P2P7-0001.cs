@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S13P2P7-0001")]
@@ -15,7 +13,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P7_0001
             QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
         List<QuicConnectionEffect>? effects = [];
 
-        Assert.True(InvokeTrySendRecoveryPingProbe(runtime, ref effects));
+        Assert.True(runtime.TrySendRecoveryPingProbe(ref effects));
         Assert.NotNull(effects);
         QuicConnectionSendDatagramEffect firstSend =
             Assert.Single(effects.OfType<QuicConnectionSendDatagramEffect>());
@@ -28,7 +26,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P7_0001
         Assert.True(firstTrackedPacket.Value.ProbePacket);
         Assert.False(firstTrackedPacket.Value.Retransmittable);
 
-        _ = InvokeRecomputeLifecycleTimerEffects(runtime);
+        _ = runtime.RecomputeLifecycleTimerEffects();
         long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
         Assert.NotNull(recoveryDueTicks);
         ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
@@ -62,38 +60,9 @@ public sealed class REQ_QUIC_RFC9000_S13P2P7_0001
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
         List<QuicConnectionEffect>? effects = [];
 
-        Assert.False(InvokeTrySendRecoveryPingProbe(runtime, ref effects));
+        Assert.False(runtime.TrySendRecoveryPingProbe(ref effects));
         Assert.NotNull(effects);
         Assert.Empty(effects);
-    }
-
-    private static bool InvokeTrySendRecoveryPingProbe(
-        QuicConnectionRuntime runtime,
-        ref List<QuicConnectionEffect>? effects)
-    {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySendRecoveryPingProbe",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new MissingMethodException(
-                nameof(QuicConnectionRuntime),
-                "TrySendRecoveryPingProbe");
-
-        object?[] arguments = [effects];
-        bool result = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[0];
-        return result;
-    }
-
-    private static QuicConnectionEffect[] InvokeRecomputeLifecycleTimerEffects(QuicConnectionRuntime runtime)
-    {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "RecomputeLifecycleTimerEffects",
-            BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new MissingMethodException(
-                nameof(QuicConnectionRuntime),
-                "RecomputeLifecycleTimerEffects");
-
-        return (QuicConnectionEffect[])method.Invoke(runtime, [])!;
     }
 
     private static void AssertProtectedApplicationPayloadIsPingOnly(

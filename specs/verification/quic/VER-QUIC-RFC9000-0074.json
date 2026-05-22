@@ -13,14 +13,14 @@
   ],
   "verification_method": "Focused S5P1P1 requirement-home tests over implicit connection-ID sequence numbers, local sequence increment and overflow boundary behavior, active-set limit retirement handling, issued-CID endpoint route lifetime, active-CID routing, active_connection_id_limit transport-parameter advertisement, and replacement CID emission after retirement, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S5P1P1-0003",
-    "REQ-QUIC-RFC9000-S5P1P1-0004",
-    "REQ-QUIC-RFC9000-S5P1P1-0006",
+    "REQ-QUIC-RFC9000-0220",
+    "REQ-QUIC-RFC9000-0221",
+    "REQ-QUIC-RFC9000-0222",
     "REQ-QUIC-RFC9000-S5P1P1-0008",
     "REQ-QUIC-RFC9000-S5P1P1-0009",
-    "REQ-QUIC-RFC9000-S5P1P1-0011",
+    "REQ-QUIC-RFC9000-0229",
     "REQ-QUIC-RFC9000-S5P1P1-0013",
-    "REQ-QUIC-RFC9000-S5P1P1-0015"
+    "REQ-QUIC-RFC9000-0233"
   ],
   "scope": "This verification covers the S5P1P1 connection-ID sequence and active-set floor, including metadata-only xref closure for previously focused requirement homes in the same family.",
   "expected_result": "The focused tests show the initial destination connection ID retires as sequence 0, the preferred-address connection ID retires as sequence 1, replacement NEW_CONNECTION_ID frames use the next sequence number, duplicate local sequence numbers are rejected, max-varint sequence replenishment does not wrap, temporary active-set excess is accepted only when Retire Prior To removes enough older IDs, issued CIDs route until retirement, active issued CIDs route short and long headers, active_connection_id_limit is advertised, and peer retirement supplies a replacement CID.",
@@ -43,16 +43,16 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0220.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0221.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0222.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0229.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0233.cs",
     "dotnet build Incursa.Quic.slnx -c Release",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0015\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0220|FullyQualifiedName~REQ_QUIC_RFC9000_0221|FullyQualifiedName~REQ_QUIC_RFC9000_0222|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0229|FullyQualifiedName~REQ_QUIC_RFC9000_S5P1P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_0233\"",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
     "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
@@ -64,5 +64,5 @@
       "content": "This verification does not claim local-initiated migration pool completeness, first client-selected Destination Connection ID or Retry-provided CID sequencing closure, Retry integrity validation changes, public API widening, or hosted interop readiness."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S5P1P1 sequence and active-set filter passed 19/19, regenerated coverage triage marks REQ-QUIC-RFC9000-S5P1P1-0003, REQ-QUIC-RFC9000-S5P1P1-0004, REQ-QUIC-RFC9000-S5P1P1-0006, REQ-QUIC-RFC9000-S5P1P1-0008, REQ-QUIC-RFC9000-S5P1P1-0009, REQ-QUIC-RFC9000-S5P1P1-0011, REQ-QUIC-RFC9000-S5P1P1-0013, and REQ-QUIC-RFC9000-S5P1P1-0015 trace_clean and reports 1,294 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 466 artifacts, the full Release no-build suite passed 4,535/4,535, and git diff --check returned exit code 0 with line-ending warnings only."
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S5P1P1 sequence and active-set filter passed 19/19, regenerated coverage triage marks REQ-QUIC-RFC9000-0220, REQ-QUIC-RFC9000-0221, REQ-QUIC-RFC9000-0222, REQ-QUIC-RFC9000-S5P1P1-0008, REQ-QUIC-RFC9000-S5P1P1-0009, REQ-QUIC-RFC9000-0229, REQ-QUIC-RFC9000-S5P1P1-0013, and REQ-QUIC-RFC9000-0233 trace_clean and reports 1,294 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 466 artifacts, the full Release no-build suite passed 4,535/4,535, and git diff --check returned exit code 0 with line-ending warnings only."
 }

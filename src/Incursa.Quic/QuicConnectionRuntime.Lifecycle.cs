@@ -16,11 +16,7 @@ internal sealed partial class QuicConnectionRuntime
         bool preserveTerminalEndTicks)
     {
         phase = nextPhase;
-
-        if (!preserveTerminalEndTicks || !terminalEndTicks.HasValue)
-        {
-            terminalEndTicks = ComputeTerminalEndTicks(nowTicks);
-        }
+        lifecycleTimerState.UpdateTerminalEndTicks(nowTicks, currentProbeTimeoutMicros, preserveTerminalEndTicks);
 
         idleTimeoutState = null;
         terminalState = new QuicConnectionTerminalState(
@@ -385,7 +381,7 @@ internal sealed partial class QuicConnectionRuntime
             ReasonPhrase: null);
     }
 
-    private QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
+    internal QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
     {
         RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
         _ = RecomputeIdleTimeoutState(lastTransitionTicks);
@@ -401,13 +397,13 @@ internal sealed partial class QuicConnectionRuntime
         long? pathValidationDueTicks = GetEarliestPathValidationDueTicks();
         long? recoveryDueTicks = GetEarliestRecoveryDueTicks();
         long? keyUpdateRetentionDueTicks = GetEarliestKeyUpdateRetentionDueTicks();
-        long? applicationSendDelayDueTicks = pendingApplicationSendRequests.Count > 0
+        long? applicationSendDelayDueTicks = applicationSendQueue.Count > 0
             ? pendingApplicationSendDelayDueTicks
             : null;
         long? applicationAckDelayDueTicks = GetApplicationAckDelayDueTicks();
 
-        long? closeDueTicks = phase == QuicConnectionPhase.Closing ? terminalEndTicks : null;
-        long? drainDueTicks = phase == QuicConnectionPhase.Draining ? terminalEndTicks : null;
+        long? closeDueTicks = phase == QuicConnectionPhase.Closing ? lifecycleTimerState.TerminalEndTicks : null;
+        long? drainDueTicks = phase == QuicConnectionPhase.Draining ? lifecycleTimerState.TerminalEndTicks : null;
 
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
         effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
@@ -422,12 +418,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private long? GetApplicationAckDelayDueTicks()
     {
-        if (phase is not QuicConnectionPhase.Establishing and not QuicConnectionPhase.Active)
-        {
-            return null;
-        }
-
-        return pendingApplicationAckDelayDueTicks;
+        return applicationAckState.GetDueTicks(phase);
     }
 
     private void RefreshCurrentProbeTimeoutMicros(long nowTicks)
@@ -556,13 +547,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private long ComputeTerminalEndTicks(long nowTicks)
-    {
-        ulong terminalLifetimeMicros = MultiplySaturating(currentProbeTimeoutMicros, TerminalLifetimePtoMultiplier);
-        return SaturatingAdd(nowTicks, ConvertMicrosToTicks(terminalLifetimeMicros));
-    }
-
-    private ulong GetElapsedMicros(long nowTicks)
+    internal ulong GetElapsedMicros(long nowTicks)
     {
         long elapsedTicks = nowTicks - timeOriginTicks;
         if (elapsedTicks <= 0)
@@ -576,6 +561,21 @@ internal sealed partial class QuicConnectionRuntime
     private long GetAbsoluteTicks(ulong absoluteMicros)
     {
         return SaturatingAdd(timeOriginTicks, ConvertMicrosToTicks(absoluteMicros));
+    }
+
+    private static ulong MultiplySaturating(ulong value, ulong multiplier)
+    {
+        if (value == 0 || multiplier == 0)
+        {
+            return 0;
+        }
+
+        if (value > ulong.MaxValue / multiplier)
+        {
+            return ulong.MaxValue;
+        }
+
+        return value * multiplier;
     }
 
     private static ReadOnlyMemory<byte> FormatConnectionClosePayload(
@@ -643,21 +643,6 @@ internal sealed partial class QuicConnectionRuntime
         return ticks >= long.MaxValue ? long.MaxValue : (long)ticks;
     }
 
-    private static ulong MultiplySaturating(ulong value, ulong multiplier)
-    {
-        if (value == 0 || multiplier == 0)
-        {
-            return 0;
-        }
-
-        if (value > ulong.MaxValue / multiplier)
-        {
-            return ulong.MaxValue;
-        }
-
-        return value * multiplier;
-    }
-
     private static long SaturatingAdd(long left, long right)
     {
         if (right <= 0)
@@ -673,13 +658,7 @@ internal sealed partial class QuicConnectionRuntime
         return left + right;
     }
 
-    internal sealed record PendingApplicationSendRequest(
-        long Sequence,
-        ulong StreamId,
-        int Priority,
-        byte[] StreamPayload);
-
-    private sealed class QuicConnectionNewTokenEmissionRecord
+    internal sealed class QuicConnectionNewTokenEmissionRecord
     {
         internal QuicConnectionNewTokenEmissionRecord(QuicConnectionPathIdentity pathIdentity, byte[] token)
         {
@@ -696,13 +675,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
     {
-        if (!diagnosticsEnabled)
-        {
-            return;
-        }
-
-        diagnosticsSink.Emit(diagnosticEvent);
-        AppendEffect(ref effects, new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
+        diagnosticsState.EmitDiagnostic(ref effects, diagnosticEvent);
     }
 
     private void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)

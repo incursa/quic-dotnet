@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S9P5-0008")]
@@ -17,19 +15,19 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0008
 
         await using QuicClientConnectionHost host = new(settings);
 
-        byte[] initialDestinationConnectionId = GetPrivateField<byte[]>(host, "initialDestinationConnectionId");
-        byte[] routeConnectionId = GetPrivateField<byte[]>(host, "routeConnectionId");
-        QuicConnection connection = GetPrivateField<QuicConnection>(host, "connection");
-        QuicConnectionRuntime runtime = GetPrivateField<QuicConnectionRuntime>(connection, "runtime");
-        QuicHandshakeFlowCoordinator handshakeFlowCoordinator = GetPrivateField<QuicHandshakeFlowCoordinator>(runtime, "handshakeFlowCoordinator");
+        byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+        byte[] routeConnectionId = host.RouteConnectionId;
+        QuicConnection connection = host.Connection;
+        QuicConnectionRuntime runtime = connection.Runtime;
+        QuicHandshakeFlowCoordinator handshakeFlowCoordinator = runtime.HandshakeFlowCoordinator;
 
         Assert.Equal(8, initialDestinationConnectionId.Length);
         Assert.Equal(8, routeConnectionId.Length);
         Assert.False(initialDestinationConnectionId.AsSpan().SequenceEqual(routeConnectionId));
-        Assert.Equal(initialDestinationConnectionId, GetPrivateField<byte[]>(handshakeFlowCoordinator, "initialDestinationConnectionId"));
-        Assert.Empty(GetPrivateField<byte[]>(handshakeFlowCoordinator, "destinationConnectionId"));
-        Assert.Equal(routeConnectionId, GetPrivateField<byte[]>(handshakeFlowCoordinator, "sourceConnectionId"));
-        Assert.NotNull(GetPrivateField<QuicInitialPacketProtection>(runtime, "initialPacketProtection"));
+        Assert.Equal(initialDestinationConnectionId, handshakeFlowCoordinator.InitialDestinationConnectionId.ToArray());
+        Assert.Empty(handshakeFlowCoordinator.DestinationConnectionId.ToArray());
+        Assert.Equal(routeConnectionId, handshakeFlowCoordinator.SourceConnectionId.ToArray());
+        Assert.NotNull(runtime.InitialPacketProtection);
         Assert.Equal(QuicTlsRole.Client, runtime.TlsState.Role);
     }
 
@@ -49,10 +47,10 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0008
         await using QuicClientConnectionHost firstHost = new(firstSettings);
         await using QuicClientConnectionHost secondHost = new(secondSettings);
 
-        byte[] firstInitialDestinationConnectionId = GetPrivateField<byte[]>(firstHost, "initialDestinationConnectionId");
-        byte[] firstRouteConnectionId = GetPrivateField<byte[]>(firstHost, "routeConnectionId");
-        byte[] secondInitialDestinationConnectionId = GetPrivateField<byte[]>(secondHost, "initialDestinationConnectionId");
-        byte[] secondRouteConnectionId = GetPrivateField<byte[]>(secondHost, "routeConnectionId");
+        byte[] firstInitialDestinationConnectionId = firstHost.InitialDestinationConnectionId;
+        byte[] firstRouteConnectionId = firstHost.RouteConnectionId;
+        byte[] secondInitialDestinationConnectionId = secondHost.InitialDestinationConnectionId;
+        byte[] secondRouteConnectionId = secondHost.RouteConnectionId;
 
         Assert.Equal(8, firstInitialDestinationConnectionId.Length);
         Assert.Equal(8, firstRouteConnectionId.Length);
@@ -64,12 +62,5 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0008
         Assert.False(firstRouteConnectionId.AsSpan().SequenceEqual(secondRouteConnectionId));
         Assert.False(firstInitialDestinationConnectionId.AsSpan().SequenceEqual(secondRouteConnectionId));
         Assert.False(firstRouteConnectionId.AsSpan().SequenceEqual(secondInitialDestinationConnectionId));
-    }
-
-    private static T GetPrivateField<T>(object target, string fieldName)
-    {
-        FieldInfo? field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field);
-        return Assert.IsType<T>(field.GetValue(target));
     }
 }

@@ -14,8 +14,8 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S9P1-0001",
     "REQ-QUIC-RFC9000-S9P1-0002",
-    "REQ-QUIC-RFC9000-S9P2-0001",
-    "REQ-QUIC-RFC9000-S9P2-0002",
+    "REQ-QUIC-RFC9000-0476",
+    "REQ-QUIC-RFC9000-0475",
     "REQ-QUIC-RFC9000-S9P2-0003",
     "REQ-QUIC-RFC9000-S9P2-0004",
     "REQ-QUIC-RFC9000-S9P2-0005"
@@ -30,7 +30,7 @@
     "Generalized multipath scheduling or any broader route-selection policy beyond one active path plus candidates.",
     "Changing unrelated handshake, stream, or endpoint-binding behavior."
   ],
-  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-S9P2-0001, REQ-QUIC-RFC9000-S9P2-0002, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, and REQ-QUIC-RFC9000-S9P2-0005. Unrelated connection and handshake state remain untouched.",
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-0476, REQ-QUIC-RFC9000-0475, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, and REQ-QUIC-RFC9000-S9P2-0005. Unrelated connection and handshake state remain untouched.",
   "design_links": [
     "ARC-QUIC-RFC9000-0005"
   ]

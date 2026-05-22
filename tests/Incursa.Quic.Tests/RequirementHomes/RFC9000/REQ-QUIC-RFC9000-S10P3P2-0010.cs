@@ -4,7 +4,7 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0010">A single static key MAY be used across all connections to the same endpoint by generating the proof using a pseudorandom function that takes a static key and the connection ID chosen by the endpoint as input.</workbench-requirement>
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0011">An endpoint that loses state MAY use the same method to generate a valid stateless reset token.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0644">An endpoint that loses state MAY use the same method to generate a valid stateless reset token.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3P2-0010")]
 public sealed class REQ_QUIC_RFC9000_S10P3P2_0010

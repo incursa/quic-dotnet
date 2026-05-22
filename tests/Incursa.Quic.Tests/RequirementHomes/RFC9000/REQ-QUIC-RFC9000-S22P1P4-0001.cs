@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0001
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0001");
 
         Assert.Equal("Use Specification Required for permanent registrations", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "Permanent registrations in QUIC registries MUST use the Specification Required policy (Section 4.6 of [RFC8126]), unless otherwise specified.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("Permanent registrations in QUIC registries MUST use the Specification Required policy (Section 4.6 of [RFC8126]), unless otherwise specified.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

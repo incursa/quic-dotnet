@@ -14,8 +14,8 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S19P20-0003",
     "REQ-QUIC-RFC9000-S19P20-0004",
-    "REQ-QUIC-RFC9000-S19P20-0005",
-    "REQ-QUIC-RFC9000-S19P20-0006"
+    "REQ-QUIC-RFC9000-1371",
+    "REQ-QUIC-RFC9000-1372"
   ],
   "summary": "Close the focused S19P20 HANDSHAKE_DONE proof tail for frame type encoding, server-only send gating, completion timing, and server receipt error handling.",
   "planned_changes": "- Add focused requirement-home tests for HANDSHAKE_DONE type encoding, adjacent-type rejection, non-minimal varint rejection, and trailing-frame consumption.\n- Add focused runtime tests proving active clients do not send HANDSHAKE_DONE while servers do after peer handshake transcript completion.\n- Add focused runtime tests proving servers do not send HANDSHAKE_DONE before completion and do not duplicate the send after repeated completion signals.\n- Add focused negative receive proof that non-HANDSHAKE_DONE protected packets do not trigger the server HANDSHAKE_DONE PROTOCOL_VIOLATION path.\n- Link focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",

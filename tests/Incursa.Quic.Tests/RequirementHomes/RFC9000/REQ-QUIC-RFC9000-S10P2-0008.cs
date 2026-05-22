@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
@@ -86,13 +85,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0008
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (runtimeField?.GetValue(connection) is not QuicConnectionRuntime runtime)
-        {
-            throw new InvalidOperationException("The connection runtime is unavailable.");
-        }
-
-        return runtime;
+        return connection.Runtime;
     }
 
     private sealed class LoopbackStreamPair : IAsyncDisposable

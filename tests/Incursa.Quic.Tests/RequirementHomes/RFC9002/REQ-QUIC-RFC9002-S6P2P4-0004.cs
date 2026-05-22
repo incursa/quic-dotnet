@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 
 namespace Incursa.Quic.Tests;
@@ -2106,7 +2105,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             PacketProtectionLevel: packetProtectionLevel,
             StreamIds: streamIds));
 
-        GetRecoveryController(runtime).RecordPacketSent(
+        runtime.RecoveryController.RecordPacketSent(
             packetNumberSpace,
             packetNumber,
             sentAtMicros,
@@ -2115,34 +2114,12 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
             packetProtectionLevel);
     }
 
-    private static QuicRecoveryController GetRecoveryController(QuicConnectionRuntime runtime)
-    {
-        FieldInfo? recoveryControllerField = typeof(QuicConnectionRuntime).GetField(
-            "recoveryController",
-            BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(recoveryControllerField);
-        return Assert.IsType<QuicRecoveryController>(recoveryControllerField.GetValue(runtime));
-    }
-
     private static bool TryDequeuePreferredProbeRetransmission(
         QuicConnectionRuntime runtime,
         QuicPacketNumberSpace packetNumberSpace,
         out QuicConnectionRetransmissionPlan retransmission)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TryDequeuePreferredProbeRetransmission",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
-            packetNumberSpace,
-            default(QuicConnectionRetransmissionPlan),
-        ];
-
-        bool dequeued = (bool)method.Invoke(runtime, arguments)!;
-        retransmission = dequeued
-            ? (QuicConnectionRetransmissionPlan)arguments[1]!
-            : default;
-        return dequeued;
+        return runtime.TryDequeuePreferredProbeRetransmission(packetNumberSpace, out retransmission);
     }
 
     private static bool InvokeTrySendRecoveryProbeDatagram(
@@ -2151,19 +2128,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySendRecoveryProbeDatagram",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
-            packetNumberSpace,
-            nowTicks,
-            effects,
-        ];
-
-        bool sent = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[2];
-        return sent;
+        return runtime.TrySendRecoveryProbeDatagram(packetNumberSpace, nowTicks, ref effects);
     }
 
     private static bool InvokeTrySendAdditionalRecoveryProbeDatagram(
@@ -2175,22 +2140,13 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         bool initialAndHandshakeAlreadyCoalesced,
         ref List<QuicConnectionEffect>? effects)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "TrySendAdditionalRecoveryProbeDatagram",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        object?[] arguments =
-        [
+        return runtime.TrySendAdditionalRecoveryProbeDatagram(
             firstPacketNumberSpace,
             secondPacketNumberSpace,
             thirdPacketNumberSpace,
             nowTicks,
             initialAndHandshakeAlreadyCoalesced,
-            effects,
-        ];
-
-        bool sent = (bool)method.Invoke(runtime, arguments)!;
-        effects = (List<QuicConnectionEffect>?)arguments[5];
-        return sent;
+            ref effects);
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()

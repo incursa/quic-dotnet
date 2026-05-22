@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Reflection;
 
 #pragma warning disable CA1416
 
@@ -134,15 +133,11 @@ internal static class QuicLoopbackEstablishmentTestSupport
             return "<null>";
         }
 
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (runtimeField?.GetValue(connection) is not QuicConnectionRuntime runtime)
-        {
-            return "<runtime unavailable>";
-        }
+        QuicConnectionRuntime runtime = connection.Runtime;
 
         QuicTransportTlsBridgeState tlsState = runtime.TlsState;
         QuicConnectionTerminalState? terminalState = runtime.TerminalState;
-        string handshakeFlowDescription = DescribeHandshakeFlow(runtime);
+        string handshakeFlowDescription = DescribeHandshakeFlow(runtime.HandshakeFlowCoordinator);
         string amplificationDescription = runtime.ActivePath is null
             ? "<null>"
             : runtime.ActivePath.Value.AmplificationState.RemainingSendBudget.ToString();
@@ -181,39 +176,22 @@ internal static class QuicLoopbackEstablishmentTestSupport
             return "<null>";
         }
 
-        FieldInfo? connectionField = typeof(QuicClientConnectionHost).GetField("connection", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (connectionField?.GetValue(host) is not QuicConnection connection)
-        {
-            return "<connection unavailable>";
-        }
+        QuicConnection connection = host.Connection;
 
         return DescribeConnection(connection);
     }
 
-    private static string DescribeHandshakeFlow(QuicConnectionRuntime runtime)
+    private static string DescribeHandshakeFlow(QuicHandshakeFlowCoordinator handshakeFlow)
     {
-        FieldInfo? handshakeFlowField = typeof(QuicConnectionRuntime).GetField("handshakeFlowCoordinator", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (handshakeFlowField?.GetValue(runtime) is not QuicHandshakeFlowCoordinator handshakeFlow)
+        static string FormatConnectionId(ReadOnlyMemory<byte> value)
         {
-            return "<unavailable>";
+            return value.IsEmpty ? "<null>" : Convert.ToHexString(value.Span);
         }
 
-        FieldInfo? initialDestinationField = typeof(QuicHandshakeFlowCoordinator).GetField("initialDestinationConnectionId", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo? destinationField = typeof(QuicHandshakeFlowCoordinator).GetField("destinationConnectionId", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo? sourceField = typeof(QuicHandshakeFlowCoordinator).GetField("sourceConnectionId", BindingFlags.NonPublic | BindingFlags.Instance);
-        FieldInfo? nextPacketNumberField = typeof(QuicHandshakeFlowCoordinator).GetField("nextPacketNumber", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        static string FormatConnectionId(FieldInfo? field, object target)
-        {
-            return field?.GetValue(target) is byte[] value
-                ? string.Join(string.Empty, value.Select(static b => b.ToString("X2")))
-                : "<null>";
-        }
-
-        string initialDestination = FormatConnectionId(initialDestinationField, handshakeFlow);
-        string destination = FormatConnectionId(destinationField, handshakeFlow);
-        string source = FormatConnectionId(sourceField, handshakeFlow);
-        string nextPacketNumber = nextPacketNumberField?.GetValue(handshakeFlow)?.ToString() ?? "<null>";
+        string initialDestination = FormatConnectionId(handshakeFlow.InitialDestinationConnectionId);
+        string destination = FormatConnectionId(handshakeFlow.DestinationConnectionId);
+        string source = FormatConnectionId(handshakeFlow.SourceConnectionId);
+        string nextPacketNumber = handshakeFlow.NextPacketNumber.ToString();
 
         return $"InitialDcid={initialDestination}, Dcid={destination}, Scid={source}, NextPn={nextPacketNumber}";
     }

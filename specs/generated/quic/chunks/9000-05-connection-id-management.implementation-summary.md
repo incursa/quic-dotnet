@@ -9,7 +9,7 @@
 - `REQ-QUIC-RFC9000-S5P2P2-0001`: The Version Negotiation send helper now gates unsupported versions on the observed datagram size.
 - `REQ-QUIC-RFC9000-S5P2P2-0004`: The same helper now covers the "datagram sufficiently long" decision for server responses.
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
-- `REQ-QUIC-RFC9000-S5P2P3-0004`: The disable_active_migration transport parameter is directly traced at the wire level.
+- `REQ-QUIC-RFC9000-0277`: The disable_active_migration transport parameter is directly traced at the wire level.
 
 ## Files Changed
 
@@ -43,19 +43,19 @@
 ### `S5P1P2`
 
 - Open: 13
-- `REQ-QUIC-RFC9000-S5P1P2-0001`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0240`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0002`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0003`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0006`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0007`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0244`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0245`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0009`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0010`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0011`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0012`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0247`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0248`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0249`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0013`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0014`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0251`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0015`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0016`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `REQ-QUIC-RFC9000-0253`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 
 ### `S5P2`
 
@@ -63,13 +63,13 @@
 - `REQ-QUIC-RFC9000-S5P2-0002`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0003`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0004`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
-- `REQ-QUIC-RFC9000-S5P2-0005`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
+- `REQ-QUIC-RFC9000-0255`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0006`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0007`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0008`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0009`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0010`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
-- `REQ-QUIC-RFC9000-S5P2-0011`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
+- `REQ-QUIC-RFC9000-0258`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0012`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0013`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 
@@ -77,29 +77,29 @@
 
 - Open: 5
 - `REQ-QUIC-RFC9000-S5P2P1-0001`: No client-side packet association or version-selection state exists.
-- `REQ-QUIC-RFC9000-S5P2P1-0002`: No client-side packet association or version-selection state exists.
+- `REQ-QUIC-RFC9000-0261`: No client-side packet association or version-selection state exists.
 - `REQ-QUIC-RFC9000-S5P2P1-0003`: No client-side packet association or version-selection state exists.
 - `REQ-QUIC-RFC9000-S5P2P1-0004`: No client-side packet association or version-selection state exists.
-- `REQ-QUIC-RFC9000-S5P2P1-0005`: No client-side packet association or version-selection state exists.
+- `REQ-QUIC-RFC9000-0264`: No client-side packet association or version-selection state exists.
 
 ### `S5P2P2`
 
 - Open: 8
-- `REQ-QUIC-RFC9000-S5P2P2-0002`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0003`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0265`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0267`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0005`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0006`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0007`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0008`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0271`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0272`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0273`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0009`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0010`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `REQ-QUIC-RFC9000-0275`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 
 ### `S5P2P3`
 
 - Open: 4
 - `REQ-QUIC-RFC9000-S5P2P3-0001`: No preferred-address migration or load-balancing runtime exists in this slice.
 - `REQ-QUIC-RFC9000-S5P2P3-0003`: No preferred-address migration or load-balancing runtime exists in this slice.
-- `REQ-QUIC-RFC9000-S5P2P3-0005`: No preferred-address migration or load-balancing runtime exists in this slice.
+- `REQ-QUIC-RFC9000-0278`: No preferred-address migration or load-balancing runtime exists in this slice.
 - `REQ-QUIC-RFC9000-S5P2P3-0006`: No preferred-address migration or load-balancing runtime exists in this slice.
 
 ## Risks or Follow-up Notes

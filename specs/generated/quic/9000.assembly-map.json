@@ -15,7 +15,7 @@
   ],
   "final_requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0019",
       "title": "Give streams an ordered byte-stream abstraction",
       "source_batches": [
         "2-5"
@@ -38,7 +38,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0020",
       "title": "Permit streams to be created by sending data",
       "source_batches": [
         "2-5"
@@ -84,7 +84,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0023",
       "title": "Allow either endpoint to create streams",
       "source_batches": [
         "2-5"
@@ -107,7 +107,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0022",
       "title": "Allow interleaved concurrent stream data",
       "source_batches": [
         "2-5"
@@ -130,7 +130,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0024",
       "title": "Allow streams to be canceled",
       "source_batches": [
         "2-5"
@@ -153,7 +153,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0025",
       "title": "Avoid cross-stream byte ordering guarantees",
       "source_batches": [
         "2-5"
@@ -176,7 +176,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0027",
       "title": "Allow arbitrary concurrent streams",
       "source_batches": [
         "2-5"
@@ -199,7 +199,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0026",
       "title": "Allow arbitrary per-stream data subject to limits",
       "source_batches": [
         "2-5"
@@ -291,7 +291,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0032",
       "title": "Bound stream IDs to 62 bits",
       "source_batches": [
         "2-5"
@@ -314,7 +314,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0031",
       "title": "Keep stream IDs unique per connection",
       "source_batches": [
         "2-5"
@@ -337,7 +337,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0033",
       "title": "Encode stream IDs as variable-length integers",
       "source_batches": [
         "2-5"
@@ -360,7 +360,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0034",
       "title": "Forbid stream ID reuse",
       "source_batches": [
         "2-5"
@@ -498,7 +498,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0045",
       "title": "Increase stream IDs numerically",
       "source_batches": [
         "2-5"
@@ -567,7 +567,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0047",
       "title": "Use stream and offset fields to order data",
       "source_batches": [
         "2-5"
@@ -590,7 +590,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0048",
       "title": "Deliver stream data as an ordered byte stream",
       "source_batches": [
         "2-5"
@@ -705,7 +705,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0052",
       "title": "Permit treating conflicting retransmissions as protocol violations",
       "source_batches": [
         "2-5"
@@ -751,7 +751,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P2-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0056",
       "title": "Respect peer flow control limits before sending",
       "source_batches": [
         "2-5"
@@ -797,7 +797,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S2P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0057",
       "title": "Provide application-visible stream priority controls",
       "source_batches": [
         "2-5"
@@ -1257,7 +1257,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0082",
       "title": "Signal Send blocking with STREAM_DATA_BLOCKED",
       "source_batches": [
         "2-5"
@@ -1280,7 +1280,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0083",
       "title": "Enter Data Sent after sending FIN",
       "source_batches": [
         "2-5"
@@ -1533,7 +1533,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0098",
       "title": "Create peer-initiated receiving parts on first frame",
       "source_batches": [
         "2-5"
@@ -1556,7 +1556,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0097",
       "title": "Create bidirectional receiving parts on peer flow-control or stop-sending frames",
       "source_batches": [
         "2-5"
@@ -1717,7 +1717,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0109",
       "title": "Open lower-numbered peer streams first",
       "source_batches": [
         "2-5"
@@ -1740,7 +1740,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0110",
       "title": "Receive STREAM and STREAM_DATA_BLOCKED in Recv",
       "source_batches": [
         "2-5"
@@ -1855,7 +1855,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-0113",
       "title": "Enter Data Recvd after all data arrives",
       "source_batches": [
         "2-5"
@@ -1901,7 +1901,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-0115",
       "title": "Keep Data Recvd until the application receives the data",
       "source_batches": [
         "2-5"
@@ -1970,7 +1970,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-0120",
       "title": "Allow interruption of delivery and signal RESET_STREAM",
       "source_batches": [
         "2-5"
@@ -2453,7 +2453,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0152",
       "title": "Prefer STOP_SENDING only for streams that have not been reset",
       "source_batches": [
         "2-5"
@@ -2591,7 +2591,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0157",
       "title": "Control how many streams a peer can initiate",
       "source_batches": [
         "2-5"
@@ -2614,7 +2614,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0158",
       "title": "Exclude CRYPTO frames from stream-style flow control",
       "source_batches": [
         "2-5"
@@ -2637,7 +2637,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0159",
       "title": "Expose cryptographic buffering limits",
       "source_batches": [
         "2-5"
@@ -2706,7 +2706,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0162",
       "title": "Limit total stream-data bytes on the connection",
       "source_batches": [
         "2-5"
@@ -2729,7 +2729,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0163",
       "title": "Never send beyond either flow-control limit",
       "source_batches": [
         "2-5"
@@ -2752,7 +2752,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0164",
       "title": "Set initial flow-control limits in transport parameters",
       "source_batches": [
         "2-5"
@@ -2798,7 +2798,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0167",
       "title": "Advertise larger stream limits with MAX_STREAM_DATA",
       "source_batches": [
         "2-5"
@@ -2821,7 +2821,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0168",
       "title": "Make MAX_STREAM_DATA indicate an absolute stream offset",
       "source_batches": [
         "2-5"
@@ -2867,7 +2867,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0170",
       "title": "Track cumulative bytes for connection flow control",
       "source_batches": [
         "2-5"
@@ -2913,7 +2913,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0173",
       "title": "Close on flow-control violations",
       "source_batches": [
         "2-5"
@@ -2936,7 +2936,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0174",
       "title": "Ignore non-increasing MAX frames",
       "source_batches": [
         "2-5"
@@ -2959,7 +2959,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0176",
       "title": "Signal blocked senders",
       "source_batches": [
         "2-5"
@@ -2982,7 +2982,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-0177",
       "title": "Periodically signal blocking while flow-control limited",
       "source_batches": [
         "2-5"
@@ -3097,7 +3097,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0180",
       "title": "Do not wait for blocked signals before sending credit",
       "source_batches": [
         "2-5"
@@ -3166,7 +3166,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0185",
       "title": "Leave the opposite direction unaffected",
       "source_batches": [
         "2-5"
@@ -3189,7 +3189,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0186",
       "title": "Keep flow-control state for the unterminated direction",
       "source_batches": [
         "2-5"
@@ -3281,7 +3281,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0192",
       "title": "Account final size at connection level",
       "source_batches": [
         "2-5"
@@ -3304,7 +3304,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0193",
       "title": "Never send data at or beyond final size",
       "source_batches": [
         "2-5"
@@ -3327,7 +3327,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P5-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0194",
       "title": "Make final size immutable once known",
       "source_batches": [
         "2-5"
@@ -3557,7 +3557,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0200",
       "title": "Do not exceed the peer's stream limit",
       "source_batches": [
         "2-5"
@@ -3580,7 +3580,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0201",
       "title": "Treat over-limit stream IDs as STREAM_LIMIT_ERROR",
       "source_batches": [
         "2-5"
@@ -3651,7 +3651,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0203",
       "title": "Signal blocked stream openings with STREAMS_BLOCKED",
       "source_batches": [
         "2-5"
@@ -3674,7 +3674,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0204",
       "title": "Do not wait for STREAMS_BLOCKED before advertising more credit",
       "source_batches": [
         "2-5"
@@ -3996,7 +3996,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0208",
       "title": "Keep CIDs free of correlating information",
       "source_batches": [
         "2-5"
@@ -4019,7 +4019,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0209",
       "title": "Do not issue the same CID twice on a connection",
       "source_batches": [
         "2-5"
@@ -4157,7 +4157,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0215",
       "title": "Permit zero-length CIDs when routing does not need them",
       "source_batches": [
         "2-5"
@@ -4203,7 +4203,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-0217",
       "title": "Maintain a supply of peer-usable connection IDs",
       "source_batches": [
         "2-5"
@@ -4249,7 +4249,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0219",
       "title": "Carry the initial CID in the long-header Source CID field",
       "source_batches": [
         "2-5"
@@ -4272,7 +4272,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0220",
       "title": "Assign sequence number 0 to the initial CID",
       "source_batches": [
         "2-5"
@@ -4295,7 +4295,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0221",
       "title": "Assign sequence number 1 to the preferred-address CID",
       "source_batches": [
         "2-5"
@@ -4341,7 +4341,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0222",
       "title": "Increment CID sequence numbers by one",
       "source_batches": [
         "2-5"
@@ -4433,7 +4433,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0228",
       "title": "Try to keep enough unused CIDs available",
       "source_batches": [
         "2-5"
@@ -4456,7 +4456,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0229",
       "title": "Advertise active CID limits with transport parameters",
       "source_batches": [
         "2-5"
@@ -4548,7 +4548,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-0233",
       "title": "Supply a new CID when the peer retires one",
       "source_batches": [
         "2-5"
@@ -4571,7 +4571,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-0234",
       "title": "May replenish CIDs on previously unused packet receipt",
       "source_batches": [
         "2-5"
@@ -4663,7 +4663,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0238",
       "title": "Forbid new CIDs after selecting zero-length CID in the handshake",
       "source_batches": [
         "2-5"
@@ -4686,7 +4686,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0021",
+      "requirement_id": "REQ-QUIC-RFC9000-0239",
       "title": "Use zero-length destination CIDs toward such endpoints",
       "source_batches": [
         "2-5"
@@ -4709,7 +4709,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0240",
       "title": "Allow switching to another available CID",
       "source_batches": [
         "2-5"
@@ -4824,7 +4824,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0244",
       "title": "Limit a CID to one local and one destination address",
       "source_batches": [
         "2-5"
@@ -4847,7 +4847,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0245",
       "title": "Retire CIDs when their address pair is no longer active",
       "source_batches": [
         "2-5"
@@ -4916,7 +4916,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0247",
       "title": "Allow closing when indicated CIDs can no longer be processed",
       "source_batches": [
         "2-5"
@@ -4939,7 +4939,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0248",
       "title": "Stop using CIDs after a larger Retire Prior To value",
       "source_batches": [
         "2-5"
@@ -4962,7 +4962,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0249",
       "title": "Limit locally retired but unacknowledged RETIRE_CONNECTION_ID frames",
       "source_batches": [
         "2-5"
@@ -5008,7 +5008,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0251",
       "title": "Never forget a CID without retiring it",
       "source_batches": [
         "2-5"
@@ -5054,7 +5054,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-0253",
       "title": "Avoid premature Retire Prior To updates",
       "source_batches": [
         "2-5"
@@ -5169,7 +5169,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0255",
       "title": "Process zero-length-CID packets by address match",
       "source_batches": [
         "2-5"
@@ -5307,7 +5307,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0258",
       "title": "Allow discarding weakly protected invalid packets",
       "source_batches": [
         "2-5"
@@ -5399,7 +5399,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0261",
       "title": "Allow zero-length CID matching by local address and port",
       "source_batches": [
         "2-5"
@@ -5468,7 +5468,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0264",
       "title": "Discard packets with a different selected version",
       "source_batches": [
         "2-5"
@@ -5514,7 +5514,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0265",
       "title": "Allow limiting Version Negotiation responses",
       "source_batches": [
         "2-5"
@@ -5537,7 +5537,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0267",
       "title": "Drop smaller unsupported-version packets",
       "source_batches": [
         "2-5"
@@ -5606,7 +5606,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0271",
       "title": "Proceed with the handshake on a conforming Initial packet",
       "source_batches": [
         "2-5"
@@ -5629,7 +5629,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0272",
       "title": "Refuse new connections with CONNECTION_REFUSED when appropriate",
       "source_batches": [
         "2-5"
@@ -5652,7 +5652,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0273",
       "title": "Allow limited buffering of 0-RTT packets",
       "source_batches": [
         "2-5"
@@ -5698,7 +5698,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0275",
       "title": "Drop all other incoming packets",
       "source_batches": [
         "2-5"
@@ -5790,7 +5790,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0277",
       "title": "Signal lack of migration support with disable_active_migration",
       "source_batches": [
         "2-5"
@@ -5813,7 +5813,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0278",
       "title": "Do not let disable_active_migration block preferred-address migration",
       "source_batches": [
         "2-5"
@@ -6112,7 +6112,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0281",
       "title": "Size the first datagram for multi-version support",
       "source_batches": [
         "6"
@@ -6158,7 +6158,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0284",
       "title": "Send Version Negotiation with accepted versions",
       "source_batches": [
         "6"
@@ -6183,7 +6183,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0285",
       "title": "Forbid Version Negotiation responses to Version Negotiation",
       "source_batches": [
         "6",
@@ -6210,7 +6210,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0286",
       "title": "Limit Version Negotiation volume",
       "source_batches": [
         "6",
@@ -6287,7 +6287,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-6222",
       "title": "Discard any Version Negotiation packet if it has received and successfully processed any other packet, including an earlier Version Negotiation packet",
       "source_batches": [
         "6-10"
@@ -6310,7 +6310,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-6223",
       "title": "Discard a Version Negotiation packet that lists the QUIC version selected by the client",
       "source_batches": [
         "6-10"
@@ -6333,7 +6333,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-6321",
       "title": "Use reserved versions to test ignoring",
       "source_batches": [
         "6",
@@ -6360,7 +6360,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S6P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-6322",
       "title": "Use reserved versions to test discarding",
       "source_batches": [
         "6",
@@ -6594,7 +6594,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0293",
       "title": "Start CRYPTO frame offsets at zero",
       "source_batches": [
         "6-10"
@@ -6617,7 +6617,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0295",
       "title": "Explicitly negotiate an application protocol",
       "source_batches": [
         "6-10"
@@ -6640,7 +6640,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0305",
       "title": "Use long-header packets to establish connection IDs during the handshake",
       "source_batches": [
         "6-10"
@@ -6686,7 +6686,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0307",
       "title": "Copy the peer Source Connection ID into subsequent packets",
       "source_batches": [
         "6-10"
@@ -6732,7 +6732,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0309",
       "title": "This Destination Connection ID MUST be at least 8 bytes in length",
       "source_batches": [
         "6-10"
@@ -6755,7 +6755,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0310",
       "title": "Until a packet is received from the server, the client MUST use the same Destination Connection ID value on all packets in this connection",
       "source_batches": [
         "6-10"
@@ -6801,7 +6801,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0315",
       "title": "Keep 0-RTT connection IDs aligned with the first Initial packet",
       "source_batches": [
         "6-10"
@@ -6824,7 +6824,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0316",
       "title": "Adopt the server Source Connection ID on first receipt",
       "source_batches": [
         "6-10"
@@ -6847,7 +6847,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0317",
       "title": "Once a client has received a valid Initial packet from the server, it MUST discard any subsequent packet it receives on that connection with a different Source Connection ID",
       "source_batches": [
         "6-10"
@@ -6893,7 +6893,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0319",
       "title": "Set the Destination Connection ID it uses for sending packets based on the first received Initial packet",
       "source_batches": [
         "6-10"
@@ -6985,7 +6985,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0323",
       "title": "Echo the client Source Connection ID in initial_source_connection_id",
       "source_batches": [
         "6-10"
@@ -7077,7 +7077,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0326",
       "title": "Validate that received transport parameters match received connection ID values",
       "source_batches": [
         "6-10"
@@ -7146,7 +7146,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0332",
       "title": "Include zero-length connection IDs as zero-length transport parameters",
       "source_batches": [
         "6-10"
@@ -7169,7 +7169,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0334",
       "title": "Treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR",
       "source_batches": [
         "6-10"
@@ -7192,7 +7192,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0335",
       "title": "Send a parameter more than once in a given transport parameters extension",
       "source_batches": [
         "6-10"
@@ -7215,7 +7215,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0336",
       "title": "Treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR",
       "source_batches": [
         "6-10"
@@ -7284,7 +7284,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0345",
       "title": "Use the server's new values in the handshake instead",
       "source_batches": [
         "6-10"
@@ -7307,7 +7307,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0346",
       "title": "That attempts to send 0-RTT data MUST remember all other transport parameters used by the server that it is able to process",
       "source_batches": [
         "6-10"
@@ -7376,7 +7376,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0348",
       "title": "The applicable subset of transport parameters that permit the sending of application data SHOULD be set to non-zero values for 0-RTT",
       "source_batches": [
         "6-10"
@@ -7399,7 +7399,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0350",
       "title": "Store and recover the previously sent values of the max_idle_timeout, max_udp_payload_size, and disable_active_migration parameters and reject 0-RTT if it selects smaller values",
       "source_batches": [
         "6-10"
@@ -7422,7 +7422,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0351",
       "title": "Reject 0-RTT data if the restored values for transport parameters cannot be supported",
       "source_batches": [
         "6-10"
@@ -7468,7 +7468,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0353",
       "title": "Use remembered 0-RTT values only until the handshake completes",
       "source_batches": [
         "6-10"
@@ -7514,7 +7514,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0356",
       "title": "Let updated transport-parameter values in 0-RTT signal a protocol violation",
       "source_batches": [
         "6-10"
@@ -7537,7 +7537,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0357",
       "title": "Ignore transport parameters that it does not support",
       "source_batches": [
         "6-10"
@@ -7560,7 +7560,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0361",
       "title": "Support buffering at least 4096 bytes of data received in out-of-order CRYPTO frames",
       "source_batches": [
         "6-10"
@@ -7606,7 +7606,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0365",
       "title": "If an endpoint does not expand its buffer, it MUST close the connection with a CRYPTO_BUFFER_EXCEEDED error code",
       "source_batches": [
         "6-10"
@@ -7770,7 +7770,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0375",
       "title": "Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary",
       "source_batches": [
         "6-10",
@@ -7866,7 +7866,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0381",
       "title": "Sent in a NEW_TOKEN frame or a Retry packet MUST be constructed in a way that allows the server to identify how it was provided to a client",
       "source_batches": [
         "6-10"
@@ -8027,7 +8027,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0392",
       "title": "Use the token provided in a Retry for future connections",
       "source_batches": [
         "6-10"
@@ -8050,7 +8050,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0393",
       "title": "Servers MAY discard any Initial packet that does not carry the expected token",
       "source_batches": [
         "6-10"
@@ -8165,7 +8165,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0399",
       "title": "When connecting to a server for which the client retains an applicable and unused token, it SHOULD include that token in the Token field of its Initial packet",
       "source_batches": [
         "6-10"
@@ -8211,7 +8211,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0401",
       "title": "Use a token from any previous connection to that server",
       "source_batches": [
         "6-10"
@@ -8326,7 +8326,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-8135",
       "title": "If the validation succeeds, the server SHOULD then allow the handshake to proceed",
       "source_batches": [
         "6-10"
@@ -8372,7 +8372,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0407",
       "title": "An address validation token MUST be difficult to guess",
       "source_batches": [
         "6-10"
@@ -8418,7 +8418,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0409",
       "title": "Tokens sent in Retry packets SHOULD include information that allows the server to verify that the source IP address and port in client packets remain constant",
       "source_batches": [
         "6-10",
@@ -8445,7 +8445,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0410",
       "title": "Tokens sent in NEW_TOKEN frames MUST include information that allows the server to verify that the client IP address has not changed from when the token was issued",
       "source_batches": [
         "6-10",
@@ -8612,7 +8612,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0412",
       "title": "Preserve anti-amplification if the client address changes",
       "source_batches": [
         "8"
@@ -8658,7 +8658,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0425",
       "title": "Include other frames with the PATH_CHALLENGE and PATH_RESPONSE frames used for path validation",
       "source_batches": [
         "6-10"
@@ -8727,7 +8727,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0435",
       "title": "Probe a new path with packets containing a PATH_CHALLENGE frame more frequently than it would send an Initial packet",
       "source_batches": [
         "6-10"
@@ -8915,7 +8915,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0443",
       "title": "Be sent on the network path where the PATH_CHALLENGE frame was received",
       "source_batches": [
         "6-10"
@@ -9030,7 +9030,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0447",
       "title": "Limit PATH_RESPONSE fan-out",
       "source_batches": [
         "8"
@@ -9076,7 +9076,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0454",
       "title": "Abandon path validation based on a timer",
       "source_batches": [
         "6-10",
@@ -9149,7 +9149,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0460",
       "title": "Initiate connection migration before the handshake is confirmed, as defined in Section 4",
       "source_batches": [
         "6-10"
@@ -9195,7 +9195,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0462",
       "title": "If the peer violates this requirement, the endpoint MUST either drop the incoming packets on that path without generating a Stateless Reset or proceed with path validation and allow the peer to migrate",
       "source_batches": [
         "6-10",
@@ -9221,7 +9221,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0463",
       "title": "Perform path validation (Section 8",
       "source_batches": [
         "6-10"
@@ -9244,7 +9244,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0464",
       "title": "When an endpoint has no validated path on which to send packets, it MAY discard connection state",
       "source_batches": [
         "6-10",
@@ -9270,7 +9270,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0465",
       "title": "Capable of connection migration MAY wait for a new path to become available before discarding connection state",
       "source_batches": [
         "6-10",
@@ -9296,7 +9296,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0468",
       "title": "If a client receives packets from an unknown server address, the client MUST discard these packets",
       "source_batches": [
         "6-10"
@@ -9388,7 +9388,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0467",
       "title": "Restrict Non-Probing Packets Until Peer Reachability Is Established",
       "source_batches": [
         "9"
@@ -9480,7 +9480,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0476",
       "title": "Defer path validation until after a peer sends the next non-probing frame to its new address",
       "source_batches": [
         "6-10",
@@ -9507,7 +9507,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0475",
       "title": "Initiate Path Validation on the New Path",
       "source_batches": [
         "9"
@@ -9724,7 +9724,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0481",
       "title": "Send Subsequent Packets to the Migrated Address",
       "source_batches": [
         "9"
@@ -9770,7 +9770,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0483",
       "title": "Change Sending Address Only on the Highest-Numbered Non-Probing Packet",
       "source_batches": [
         "9"
@@ -9839,7 +9839,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0488",
       "title": "Send New Address Validation Tokens",
       "source_batches": [
         "9"
@@ -9908,7 +9908,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0495",
       "title": "If an endpoint has no state about the last validated peer address, it MUST close the connection silently by discarding all connection state",
       "source_batches": [
         "6-10",
@@ -10004,7 +10004,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3P3-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0499",
       "title": "In response to an apparent migration, endpoints MUST validate the previously active path using a PATH_CHALLENGE frame",
       "source_batches": [
         "6-10",
@@ -10031,7 +10031,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0502",
       "title": "That receives a PATH_CHALLENGE on an active path SHOULD send a non-probing packet in response",
       "source_batches": [
         "6-10",
@@ -10058,7 +10058,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P3P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0498",
       "title": "Return to the Original Path After a New Highest Packet Number",
       "source_batches": [
         "9"
@@ -10229,7 +10229,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0510",
       "title": "ACK All Received Packets Across Paths",
       "source_batches": [
         "9"
@@ -10321,7 +10321,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0513",
       "title": "Set the PATH_CHALLENGE Timer Conservatively",
       "source_batches": [
         "9"
@@ -10394,7 +10394,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0515",
       "title": "Prevent connection-id reuse across local addresses",
       "source_batches": [
         "6-10",
@@ -10586,7 +10586,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0518",
       "title": "Avoid Migration with Zero-Length Connection IDs",
       "source_batches": [
         "9"
@@ -10609,7 +10609,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0519",
       "title": "Change Addresses Infrequently",
       "source_batches": [
         "9"
@@ -10632,7 +10632,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0520",
       "title": "Provide New Connection IDs Before Migration",
       "source_batches": [
         "9"
@@ -10866,7 +10866,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0525",
       "title": "Choose a Preferred Address After Handshake Confirmation",
       "source_batches": [
         "9"
@@ -10958,7 +10958,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0531",
       "title": "Send non-probing packets from its original address until it receives a non-probing packet from the client at its preferred address and until the server has validated the new path",
       "source_batches": [
         "6-10",
@@ -10985,7 +10985,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0532",
       "title": "Probe on the path toward the client from its preferred address",
       "source_batches": [
         "6-10",
@@ -11012,7 +11012,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0534",
       "title": "Drop newer packets for this connection that are received on the old IP address",
       "source_batches": [
         "6-10",
@@ -11039,7 +11039,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0535",
       "title": "Continue to process delayed packets that are received on the old IP address",
       "source_batches": [
         "6-10",
@@ -11112,7 +11112,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0529",
       "title": "Validate the Chosen Preferred Address Before Migrating",
       "source_batches": [
         "9"
@@ -11204,7 +11204,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0538",
       "title": "In this case, the client SHOULD perform path validation to both the original and preferred server address from the client's new address concurrently",
       "source_batches": [
         "6-10",
@@ -11231,7 +11231,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0539",
       "title": "If path validation of the server's preferred address succeeds, the client MUST abandon validation of the original address and migrate to using the server's preferred address",
       "source_batches": [
         "6-10",
@@ -11258,7 +11258,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0540",
       "title": "If path validation of the server's preferred address fails but validation of the server's original address succeeds, the client MAY migrate to its new address and continue sending to the server's original address",
       "source_batches": [
         "6-10",
@@ -11285,7 +11285,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0541",
       "title": "If packets received at the server's preferred address have a different source address than observed from the client during the handshake, the server MUST protect against potential attacks as described in Sections 9",
       "source_batches": [
         "6-10"
@@ -11331,7 +11331,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0543",
       "title": "That migrates to a new address SHOULD use a preferred address from the same address family for the server",
       "source_batches": [
         "6-10",
@@ -11427,7 +11427,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0542",
       "title": "Validate the Client's New Address on Probe Packets",
       "source_batches": [
         "9"
@@ -11450,7 +11450,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0545",
       "title": "Allow the Preferred-Address Connection ID on Any Path",
       "source_batches": [
         "9"
@@ -11588,7 +11588,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0548",
       "title": "Permit discarding unvalidated state",
       "source_batches": [
         "10"
@@ -11703,7 +11703,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0552",
       "title": "Restart idle timer on received traffic",
       "source_batches": [
         "10"
@@ -11749,7 +11749,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0554",
       "title": "Bound idle timeout by PTO",
       "source_batches": [
         "10"
@@ -11795,7 +11795,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P1P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0560",
       "title": "Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate",
       "source_batches": [
         "6-10",
@@ -11896,7 +11896,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0569",
       "title": "Servers that retain an open socket for accepting new connections SHOULD NOT end the closing or draining state early",
       "source_batches": [
         "6-10",
@@ -11922,7 +11922,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0570",
       "title": "Once its closing or draining state ends, an endpoint SHOULD discard all connection state",
       "source_batches": [
         "6-10",
@@ -11948,7 +11948,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0571",
       "title": "Send a Stateless Reset in response to any further incoming packets belonging to this connection",
       "source_batches": [
         "6-10",
@@ -11974,7 +11974,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0562",
       "title": "Send CONNECTION_CLOSE to terminate immediately",
       "source_batches": [
         "10"
@@ -12043,7 +12043,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0564",
       "title": "Enter closing state after sending close",
       "source_batches": [
         "10"
@@ -12135,7 +12135,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0576",
       "title": "Limit the rate at which it generates packets in the closing state",
       "source_batches": [
         "6-10",
@@ -12183,7 +12183,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0579",
       "title": "Retain packet protection keys for incoming packets to allow it to read and process a CONNECTION_CLOSE frame",
       "source_batches": [
         "6-10",
@@ -12207,7 +12207,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0580",
       "title": "Drop packet protection keys when entering the closing state and send a packet containing a CONNECTION_CLOSE frame in response to any UDP datagram that is received",
       "source_batches": [
         "6-10",
@@ -12283,7 +12283,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0583",
       "title": "In the closing state MUST either discard packets received from an unvalidated address or limit the cumulative size of packets it sends to an unvalidated address to three times the size of packets it receives from that address",
       "source_batches": [
         "6-10",
@@ -12309,7 +12309,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0572",
       "title": "Enter closing on immediate close",
       "source_batches": [
         "10"
@@ -12355,7 +12355,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0575",
       "title": "Answer attributed packets with CONNECTION_CLOSE",
       "source_batches": [
         "10"
@@ -12620,7 +12620,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0595",
       "title": "A CONNECTION_CLOSE of type 0x1d MUST be replaced by a CONNECTION_CLOSE of type 0x1c when sending the frame in Initial or Handshake packets",
       "source_batches": [
         "6-10"
@@ -12833,7 +12833,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0604",
       "title": "That wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able",
       "source_batches": [
         "6-10",
@@ -12882,7 +12882,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0607",
       "title": "Bind stateless reset tokens to connection IDs",
       "source_batches": [
         "6-10",
@@ -13057,7 +13057,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0622",
       "title": "Limit Stateless Reset amplification",
       "source_batches": [
         "6-10"
@@ -13080,7 +13080,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0623",
       "title": "Discard too-small packets",
       "source_batches": [
         "6-10",
@@ -13278,7 +13278,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0610",
       "title": "Invalidate reset tokens when IDs retire",
       "source_batches": [
         "10"
@@ -13696,7 +13696,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0629",
       "title": "Detect potential reset with the last 16 bytes",
       "source_batches": [
         "10"
@@ -13744,7 +13744,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0639",
       "title": "Enter draining on token match",
       "source_batches": [
         "10"
@@ -13767,7 +13767,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0640",
       "title": "Stop sending after token match",
       "source_batches": [
         "10"
@@ -13913,7 +13913,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0650",
       "title": "Do not reuse resetted connection IDs across shared static keys",
       "source_batches": [
         "6-10",
@@ -13939,7 +13939,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0651",
       "title": "Use each stateless reset token for only one connection ID",
       "source_batches": [
         "6-10",
@@ -14037,7 +14037,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0644",
       "title": "Reuse the same generation method after state loss",
       "source_batches": [
         "10"
@@ -14181,7 +14181,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0659",
       "title": "Use a generic error code in place of a specific error code",
       "source_batches": [
         "11-15"
@@ -14204,7 +14204,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0658",
       "title": "Use any applicable error code",
       "source_batches": [
         "11-15"
@@ -14227,7 +14227,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0661",
       "title": "A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection",
       "source_batches": [
         "11-15"
@@ -14273,7 +14273,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0663",
       "title": "Use CONNECTION_CLOSE type 0x1d for application-specific protocol errors",
       "source_batches": [
         "11-15"
@@ -14319,7 +14319,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0665",
       "title": "be prepared to retransmit a packet containing a CONNECTION_CLOSE frame if it receives more packets on a terminated connection",
       "source_batches": [
         "11-15"
@@ -14411,7 +14411,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0668",
       "title": "Only discard a packet without processing or after reverting effects",
       "source_batches": [
         "11-15"
@@ -14526,7 +14526,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0674",
       "title": "Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint",
       "source_batches": [
         "11-15"
@@ -14710,7 +14710,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1220006",
       "title": "Initial (Section 17",
       "source_batches": [
         "11-15"
@@ -14779,7 +14779,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0682",
       "title": "Receivers MUST be able to process coalesced packets",
       "source_batches": [
         "11-15"
@@ -14802,7 +14802,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1220010",
       "title": "Place short-header packets last in a UDP datagram",
       "source_batches": [
         "11-15"
@@ -14848,7 +14848,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0684",
       "title": "Receivers MAY route based on the information in the first packet contained in a UDP datagram",
       "source_batches": [
         "11-15"
@@ -14871,7 +14871,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0685",
       "title": "Senders MUST NOT coalesce QUIC packets with different connection IDs into a single UDP datagram",
       "source_batches": [
         "11-15"
@@ -14894,7 +14894,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0686",
       "title": "Receivers SHOULD ignore any subsequent packets with a different Destination Connection ID than the first packet in the datagram",
       "source_batches": [
         "11-15"
@@ -15147,7 +15147,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P3-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0708",
       "title": "Subsequent packets sent in the same packet number space MUST increase the packet number by at least one",
       "source_batches": [
         "11-15"
@@ -15170,7 +15170,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0709",
       "title": "A QUIC endpoint MUST NOT reuse a packet number within the same packet number space in one connection",
       "source_batches": [
         "11-15"
@@ -15216,7 +15216,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P3-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0710",
       "title": "Close on packet-number exhaustion",
       "source_batches": [
         "11-15"
@@ -15239,7 +15239,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P3-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0712",
       "title": "discard a newly unprotected packet unless it is certain that it has not processed another packet with the same packet number from the same packet number space",
       "source_batches": [
         "11-15"
@@ -15285,7 +15285,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0715",
       "title": "Version Negotiation, Stateless Reset, and Retry packets do not contain frames",
       "source_batches": [
         "11-15"
@@ -15308,7 +15308,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0716",
       "title": "Allow multiple frames and frame types in a packet payload",
       "source_batches": [
         "11-15"
@@ -15331,7 +15331,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0717",
       "title": "Require at least one frame in packet payloads",
       "source_batches": [
         "11-15"
@@ -15354,7 +15354,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0718",
       "title": "Treat empty packet payloads as protocol violations",
       "source_batches": [
         "11-15"
@@ -15400,7 +15400,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0720",
       "title": "Prefix each frame with a Frame Type",
       "source_batches": [
         "11-15"
@@ -15469,7 +15469,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0724",
       "title": "Use Frame Type as the frame identifier for other frames",
       "source_batches": [
         "11-15"
@@ -15515,7 +15515,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0726",
       "title": "Allow all frames in 1-RTT packets",
       "source_batches": [
         "11-15"
@@ -15538,7 +15538,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0727",
       "title": "treat receipt of a frame in a packet type that is not permitted as a connection error of type PROTOCOL_VIOLATION",
       "source_batches": [
         "11-15"
@@ -15722,7 +15722,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P4-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0734",
       "title": "Use the shortest possible frame-type encoding",
       "source_batches": [
         "11-15"
@@ -15791,7 +15791,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P5-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0736",
       "title": "Allow PADDING, PING, and CRYPTO in any packet number space",
       "source_batches": [
         "11-15"
@@ -15883,7 +15883,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P5-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0741",
       "title": "Restrict all other frame types to application data",
       "source_batches": [
         "11-15"
@@ -16044,7 +16044,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0749",
       "title": "A packet MUST NOT be acknowledged until packet protection has been successfully removed and all frames contained in the packet have been processed",
       "source_batches": [
         "11-15"
@@ -16113,7 +16113,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0752",
       "title": "treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition",
       "source_batches": [
         "11-15"
@@ -16136,7 +16136,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0753",
       "title": "Acknowledge all received and processed packets",
       "source_batches": [
         "11-15"
@@ -16205,7 +16205,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0756",
       "title": "When sending a packet for any reason, an endpoint SHOULD attempt to include an ACK frame if one has not been sent recently",
       "source_batches": [
         "11-15"
@@ -16251,7 +16251,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0758",
       "title": "Acknowledge every packet at least once",
       "source_batches": [
         "11-15"
@@ -16435,7 +16435,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0763",
       "title": "Send ACK frames with other frames when there is new ack-eliciting data",
       "source_batches": [
         "11-15"
@@ -16458,7 +16458,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0764",
       "title": "Delay ACK frames for non-ack-eliciting packets until needed",
       "source_batches": [
         "11-15"
@@ -16527,7 +16527,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-1322",
       "title": "ACK ECN-CE packets immediately",
       "source_batches": [
         "11-15"
@@ -16573,7 +16573,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1323",
       "title": "Send ACK after at least two ack-eliciting packets",
       "source_batches": [
         "11-15"
@@ -16596,7 +16596,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1324",
       "title": "Allow processing multiple packets before deciding to ACK",
       "source_batches": [
         "11-15"
@@ -16642,7 +16642,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-13230",
       "title": "Acknowledge the most recently received packets",
       "source_batches": [
         "11-15"
@@ -16688,7 +16688,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-13233",
       "title": "Limit remembered ACK ranges",
       "source_batches": [
         "11-15"
@@ -16711,7 +16711,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-13234",
       "title": "Stop tracking acknowledged ACK ranges",
       "source_batches": [
         "11-15"
@@ -16757,7 +16757,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-13235",
       "title": "Allow discarding ACK ranges to limit ACK frame size",
       "source_batches": [
         "11-15"
@@ -16803,7 +16803,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-13236",
       "title": "Limit ACK frame size further when useful",
       "source_batches": [
         "11-15"
@@ -16826,7 +16826,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0768",
       "title": "Retain ACK ranges unless future packets cannot arrive there",
       "source_batches": [
         "11-15"
@@ -16872,7 +16872,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0771",
       "title": "Include the largest received packet number in every ACK frame",
       "source_batches": [
         "11-15"
@@ -16987,7 +16987,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0779",
       "title": "Do not include uncontrolled delays in ACK Delay",
       "source_batches": [
         "11-15"
@@ -17010,7 +17010,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0780",
       "title": "Include buffering delays from missing decryption keys",
       "source_batches": [
         "11-15"
@@ -17286,7 +17286,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0789",
       "title": "Retransmit CRYPTO data until acknowledged",
       "source_batches": [
         "11-15"
@@ -17424,7 +17424,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0795",
       "title": "The content of a RESET_STREAM frame MUST NOT change when it is sent again",
       "source_batches": [
         "11-15"
@@ -17470,7 +17470,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0797",
       "title": "Do not resend connection close signals",
       "source_batches": [
         "11-15"
@@ -17516,7 +17516,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-0799",
       "title": "Send updated MAX_DATA values when the frame is lost or the limit changes",
       "source_batches": [
         "11-15"
@@ -17608,7 +17608,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0804",
       "title": "Send the stream-type limit in MAX_STREAMS frames",
       "source_batches": [
         "11-15"
@@ -17746,7 +17746,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0026",
+      "requirement_id": "REQ-QUIC-RFC9000-0813",
       "title": "Send PATH_CHALLENGE periodically until validation completes or is no longer needed",
       "source_batches": [
         "11-15"
@@ -17769,7 +17769,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0027",
+      "requirement_id": "REQ-QUIC-RFC9000-0814",
       "title": "Use different PATH_CHALLENGE payloads each time",
       "source_batches": [
         "11-15"
@@ -17792,7 +17792,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0028",
+      "requirement_id": "REQ-QUIC-RFC9000-0815",
       "title": "Send PATH_RESPONSE once",
       "source_batches": [
         "11-15"
@@ -17907,7 +17907,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0033",
+      "requirement_id": "REQ-QUIC-RFC9000-1340",
       "title": "The HANDSHAKE_DONE frame MUST be retransmitted until it is acknowledged",
       "source_batches": [
         "11-15"
@@ -17953,7 +17953,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0035",
+      "requirement_id": "REQ-QUIC-RFC9000-1344",
       "title": "accept packets containing an outdated frame, such as a MAX_DATA frame carrying a smaller maximum data value than one found in an older packet",
       "source_batches": [
         "11-15"
@@ -17976,7 +17976,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0036",
+      "requirement_id": "REQ-QUIC-RFC9000-0816",
       "title": "avoid retransmitting information from packets once they are acknowledged",
       "source_batches": [
         "11-15"
@@ -18045,7 +18045,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P3-0039",
+      "requirement_id": "REQ-QUIC-RFC9000-0818",
       "title": "Take congestion control action when loss is detected",
       "source_batches": [
         "11-15"
@@ -18298,7 +18298,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P4P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0828",
       "title": "Increment ECN counts only when received packets are processed",
       "source_batches": [
         "11-15"
@@ -18344,7 +18344,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0831",
       "title": "Mark early packets on a new path with ECT(0)",
       "source_batches": [
         "11-15"
@@ -18574,7 +18574,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0845",
       "title": "Do not fail ECN validation for reordered ACK frames that do not increase the largest acknowledged packet number",
       "source_batches": [
         "11-15"
@@ -18758,7 +18758,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0851",
       "title": "Allow one or more QUIC packets per UDP datagram",
       "source_batches": [
         "11-15"
@@ -18827,7 +18827,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0856",
       "title": "QUIC MUST NOT be used if the network path cannot support a maximum datagram size of at least 1200 bytes",
       "source_batches": [
         "11-15"
@@ -18896,7 +18896,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0857",
       "title": "UDP datagrams MUST NOT be fragmented at the IP layer",
       "source_batches": [
         "11-15"
@@ -19310,7 +19310,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0872",
       "title": "Allow terminating the connection when no alternative path exists",
       "source_batches": [
         "11-15"
@@ -19379,7 +19379,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1421",
       "title": "Ignore ICMP messages that claim PMTU below the minimum",
       "source_batches": [
         "11-15"
@@ -19402,7 +19402,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1422",
       "title": "Validate ICMP messages when using PMTUD",
       "source_batches": [
         "11-15"
@@ -19471,7 +19471,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1426",
       "title": "Ignore ICMP messages that fail validation",
       "source_batches": [
         "11-15"
@@ -19517,7 +19517,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1428",
       "title": "Allow provisional reductions in maximum datagram size",
       "source_batches": [
         "11-15"
@@ -19586,7 +19586,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0877",
       "title": "Set BASE_PLPMTU consistently with QUIC's minimum",
       "source_batches": [
         "11-15"
@@ -19678,7 +19678,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0895",
       "title": "Identify versions with 32-bit unsigned numbers",
       "source_batches": [
         "11-15"
@@ -19701,7 +19701,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0896",
       "title": "Reserve version 0x00000000 for version negotiation",
       "source_batches": [
         "11-15"
@@ -19747,7 +19747,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0897",
       "title": "Use TLS for version 0x00000001",
       "source_batches": [
         "11-15"
@@ -19770,7 +19770,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0898",
       "title": "Reserve versions with the top 16 bits cleared for future IETF consensus",
       "source_batches": [
         "11-15"
@@ -19793,7 +19793,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-0899",
       "title": "Reserve 0x?a?a?a?a versions to force version negotiation",
       "source_batches": [
         "11-15"
@@ -19816,7 +19816,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-0900",
       "title": "or server MAY advertise support for any of these reserved versions",
       "source_batches": [
         "11-15"
@@ -19839,7 +19839,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0901",
       "title": "Allow clients to use reserved versions to elicit version negotiation",
       "source_batches": [
         "11-15"
@@ -19862,7 +19862,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0902",
       "title": "Allow servers to advertise reserved versions and expect clients to ignore them",
       "source_batches": [
         "11-15"
@@ -19885,7 +19885,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S15-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0903",
       "title": "Treat reserved versions as non-real protocols",
       "source_batches": [
         "11-15"
@@ -19908,7 +19908,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S16-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0905",
       "title": "The QUIC variable-length integer encoding MUST reserve the two most significant bits of the f...",
       "source_batches": [
         "16-20"
@@ -19931,7 +19931,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S16-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0906",
       "title": "The integer value MUST be encoded on the remaining bits, in network byte order",
       "source_batches": [
         "16-20"
@@ -19954,7 +19954,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S16-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0907",
       "title": "This means that integers are encoded on 1, 2, 4, or 8 bytes and MAY encode 6-, 14-, 30-, or 6...",
       "source_batches": [
         "16-20"
@@ -19977,7 +19977,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S16-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0913",
       "title": "Values MUST NOT need to be encoded on the minimum number of bytes necessary, with the sole ex...",
       "source_batches": [
         "16-20"
@@ -20000,7 +20000,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S16-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0914",
       "title": "Versions (Section 15), packet numbers sent in the header (Section 17.1), and the length of co...",
       "source_batches": [
         "16-20"
@@ -20115,7 +20115,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0925",
       "title": "An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be...",
       "source_batches": [
         "16-20"
@@ -20571,7 +20571,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0018",
+      "requirement_id": "REQ-QUIC-RFC9000-0939",
       "title": "The byte following the version MUST contain the length in bytes of the Destination Connection...",
       "source_batches": [
         "16-20"
@@ -20729,7 +20729,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2-0024",
+      "requirement_id": "REQ-QUIC-RFC9000-0944",
       "title": "The byte following the Destination Connection ID MUST contain the length in bytes of the Sour...",
       "source_batches": [
         "16-20"
@@ -21211,7 +21211,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0969",
       "title": "Clients MUST ignore the value of this field",
       "source_batches": [
         "16-20"
@@ -21257,7 +21257,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0971",
       "title": "The Version field of a Version Negotiation packet MUST be set to 0x00000000",
       "source_batches": [
         "16-20"
@@ -21280,7 +21280,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0972",
       "title": "The server MUST include the value from the Source Connection ID field of the packet it receiv...",
       "source_batches": [
         "16-20"
@@ -21349,7 +21349,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-0976",
       "title": "A Version Negotiation packet MUST NOT be acknowledged",
       "source_batches": [
         "16-20"
@@ -21418,7 +21418,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0980",
       "title": "A server MUST NOT send more than one Version Negotiation packet in response to a single UDP d...",
       "source_batches": [
         "16-20"
@@ -21890,7 +21890,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "requirement_id": "REQ-QUIC-RFC9000-0985",
       "title": "Reject non-zero Token Length on client receipt",
       "source_batches": [
         "16-20"
@@ -21913,7 +21913,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-0986",
       "title": "Set Token Length to 0 for server Initial packets",
       "source_batches": [
         "16-20"
@@ -22005,7 +22005,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "requirement_id": "REQ-QUIC-RFC9000-0990",
       "title": "A server MAY send multiple Initial packets",
       "source_batches": [
         "16-20"
@@ -22523,7 +22523,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1006",
       "title": "A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet",
       "source_batches": [
         "16-20"
@@ -22569,7 +22569,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-1009",
       "title": "A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server",
       "source_batches": [
         "16-20"
@@ -22638,7 +22638,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-1011",
       "title": "An acknowledgment for a 1-RTT packet MUST be carried in a 1-RTT packet",
       "source_batches": [
         "16-20"
@@ -23087,7 +23087,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-1015",
       "title": "Once a client has received a Handshake packet from a server, it MUST use Handshake packets to...",
       "source_batches": [
         "16-20"
@@ -23179,7 +23179,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1735",
       "title": "Handshake packets MAY contain CONNECTION_CLOSE frames of type 0x1c",
       "source_batches": [
         "16-20"
@@ -23202,7 +23202,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+      "requirement_id": "REQ-QUIC-RFC9000-1018",
       "title": "Endpoints MUST treat receipt of Handshake packets with other frames as a connection error of...",
       "source_batches": [
         "16-20"
@@ -23725,7 +23725,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1033",
       "title": "A server MAY send Retry packets in response to Initial and 0-RTT packets",
       "source_batches": [
         "16-20"
@@ -23771,7 +23771,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1034",
       "title": "A server MAY send multiple Retry packets as it receives Initial or 0-RTT packets",
       "source_batches": [
         "16-20"
@@ -23794,7 +23794,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1035",
       "title": "A server MUST NOT send more than one Retry packet in response to a single UDP datagram",
       "source_batches": [
         "16-20"
@@ -23817,7 +23817,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1036",
       "title": "A client MUST accept and process at most one Retry packet for each connection attempt",
       "source_batches": [
         "16-20"
@@ -23840,7 +23840,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1037",
       "title": "After the client has received and processed an Initial or Retry packet from the server, it MU...",
       "source_batches": [
         "16-20"
@@ -23886,7 +23886,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1039",
       "title": "A client MUST discard a Retry packet with a zero-length Retry Token field",
       "source_batches": [
         "16-20"
@@ -24070,7 +24070,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1050",
       "title": "A client MUST use the same cryptographic handshake message it included in this packet",
       "source_batches": [
         "16-20"
@@ -24093,7 +24093,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1051",
       "title": "A server MAY treat a packet that contains a different cryptographic handshake message as a co...",
       "source_batches": [
         "16-20"
@@ -24116,7 +24116,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1052",
       "title": "A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the con...",
       "source_batches": [
         "16-20"
@@ -24139,7 +24139,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1053",
       "title": "A client MUST NOT reset the packet number for any packet number space after processing a Retr...",
       "source_batches": [
         "16-20"
@@ -24185,7 +24185,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1055",
       "title": "A server MAY abort the connection if it detects that the client reset the packet number",
       "source_batches": [
         "16-20"
@@ -24231,7 +24231,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1059",
       "title": "A 1-RTT packet MUST use a short packet header",
       "source_batches": [
         "16-20"
@@ -24579,7 +24579,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-1071",
       "title": "The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved",
       "source_batches": [
         "16-20"
@@ -24627,7 +24627,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1073",
       "title": "An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after re...",
       "source_batches": [
         "16-20"
@@ -24698,7 +24698,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1075",
       "title": "The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length...",
       "source_batches": [
         "16-20"
@@ -24859,7 +24859,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1088",
       "title": "Implementations MUST allow administrators of clients and servers to disable the spin bit eith...",
       "source_batches": [
         "16-20"
@@ -24905,7 +24905,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1090",
       "title": "Allow any spin value when disabled",
       "source_batches": [
         "16-20"
@@ -24928,7 +24928,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1091",
       "title": "Ignore any incoming spin value when disabled",
       "source_batches": [
         "16-20"
@@ -24997,7 +24997,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1098",
       "title": "When a client receives a 1-RTT packet that increases the highest packet number seen by the cl...",
       "source_batches": [
         "16-20"
@@ -25020,7 +25020,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1100",
       "title": "The extension_data field of the quic_transport_parameters extension defined in [QUIC-TLS] MUS...",
       "source_batches": [
         "16-20"
@@ -25135,7 +25135,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1103",
       "title": "The Transport Parameter Length field MUST contain the length of the Transport Parameter Value...",
       "source_batches": [
         "16-20"
@@ -25678,7 +25678,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1145",
       "title": "Servers MAY choose to only send a preferred address of one address family by sending an all-z...",
       "source_batches": [
         "16-20"
@@ -25701,7 +25701,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0021",
+      "requirement_id": "REQ-QUIC-RFC9000-1146",
       "title": "IP addresses MUST be encoded in network byte order",
       "source_batches": [
         "16-20"
@@ -25724,7 +25724,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-1147",
       "title": "The preferred_address transport parameter MUST contain an address and port for both IPv4 and...",
       "source_batches": [
         "16-20"
@@ -25747,7 +25747,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0023",
+      "requirement_id": "REQ-QUIC-RFC9000-1151",
       "title": "Finally, a 16-byte Stateless Reset Token field MUST include the stateless reset token associa...",
       "source_batches": [
         "16-20"
@@ -25793,7 +25793,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0025",
+      "requirement_id": "REQ-QUIC-RFC9000-1154",
       "title": "A server that chooses a zero-length connection ID MUST NOT provide a preferred address",
       "source_batches": [
         "16-20"
@@ -25839,7 +25839,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0027",
+      "requirement_id": "REQ-QUIC-RFC9000-1156",
       "title": "A client MUST treat a violation of these requirements as a connection error of type TRANSPORT...",
       "source_batches": [
         "16-20"
@@ -26025,7 +26025,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0035",
+      "requirement_id": "REQ-QUIC-RFC9000-1157",
       "title": "The value of the active_connection_id_limit parameter MUST be at least 2",
       "source_batches": [
         "16-20"
@@ -26048,7 +26048,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0036",
+      "requirement_id": "REQ-QUIC-RFC9000-1158",
       "title": "An endpoint that receives a value less than 2 MUST close the connection with an error of type...",
       "source_batches": [
         "16-20"
@@ -26071,7 +26071,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S18P2-0037",
+      "requirement_id": "REQ-QUIC-RFC9000-1162",
       "title": "A client MUST NOT include any server-only transport parameter: original_destination_connectio...",
       "source_batches": [
         "16-20"
@@ -26117,7 +26117,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1910",
       "title": "A PADDING frame (type=0x00) MUST have no semantic value",
       "source_batches": [
         "16-20"
@@ -26487,7 +26487,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1177",
       "title": "An acknowledgment for a packet MUST indicate both a packet number and a packet number space",
       "source_batches": [
         "16-20"
@@ -26510,7 +26510,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1179",
       "title": "Version Negotiation and Retry packets MUST NOT be acknowledged because they do not contain a...",
       "source_batches": [
         "16-20"
@@ -26809,7 +26809,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1192",
       "title": "Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending pack...",
       "source_batches": [
         "16-20"
@@ -26947,7 +26947,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1198",
       "title": "A value of 0 MUST indicate that only the largest packet number is acknowledged",
       "source_batches": [
         "16-20"
@@ -26993,7 +26993,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1203",
       "title": "Each Gap MUST indicate a range of packets that are not being acknowledged",
       "source_batches": [
         "16-20"
@@ -27200,7 +27200,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1205",
       "title": "An endpoint MUST use a RESET_STREAM frame (type=0x04) to abruptly terminate the sending part...",
       "source_batches": [
         "16-20"
@@ -27246,7 +27246,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1208",
       "title": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the conn...",
       "source_batches": [
         "16-20"
@@ -27506,7 +27506,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1216",
       "title": "Receiving a STOP_SENDING frame for a locally initiated stream that has not yet been created M...",
       "source_batches": [
         "16-20"
@@ -27529,7 +27529,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P5-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1217",
       "title": "An endpoint that receives a STOP_SENDING frame for a receive-only stream MUST terminate the c...",
       "source_batches": [
         "16-20"
@@ -27697,7 +27697,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1222",
       "title": "A CRYPTO frame (type=0x06) MUST be used to transmit cryptographic handshake messages",
       "source_batches": [
         "16-20"
@@ -27931,7 +27931,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-1237",
       "title": "Receipt of a frame that exceeds this limit MUST be treated as a connection error of type FRAM...",
       "source_batches": [
         "16-20"
@@ -28117,7 +28117,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1243",
       "title": "The token MUST NOT be empty",
       "source_batches": [
         "16-20"
@@ -28140,7 +28140,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1244",
       "title": "A client MUST treat receipt of a NEW_TOKEN frame with an empty Token field as a connection er...",
       "source_batches": [
         "16-20"
@@ -28186,7 +28186,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1245",
       "title": "Clients MUST NOT send NEW_TOKEN frames",
       "source_batches": [
         "16-20"
@@ -28209,7 +28209,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1246",
       "title": "A server MUST treat receipt of a NEW_TOKEN frame as a connection error of type PROTOCOL_VIOLA...",
       "source_batches": [
         "16-20"
@@ -28370,7 +28370,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1259",
       "title": "An endpoint MUST terminate the connection with error STREAM_STATE_ERROR if it receives a STRE...",
       "source_batches": [
         "16-20"
@@ -28837,7 +28837,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1273",
       "title": "An endpoint MUST terminate a connection with an error of type FLOW_CONTROL_ERROR if it receiv...",
       "source_batches": [
         "16-20"
@@ -28932,7 +28932,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1275",
       "title": "Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been create...",
       "source_batches": [
         "16-20"
@@ -28955,7 +28955,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1276",
       "title": "An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate th...",
       "source_batches": [
         "16-20"
@@ -29146,7 +29146,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-1282",
       "title": "The data sent on a stream MUST NOT exceed the largest maximum stream data value advertised by...",
       "source_batches": [
         "16-20"
@@ -29169,7 +29169,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1283",
       "title": "An endpoint MUST terminate a connection with an error of type FLOW_CONTROL_ERROR if it receiv...",
       "source_batches": [
         "16-20"
@@ -29408,7 +29408,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1291",
       "title": "An endpoint MUST NOT open more streams than permitted by the current stream limit set by its...",
       "source_batches": [
         "16-20"
@@ -29431,7 +29431,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1292",
       "title": "An endpoint MUST terminate a connection with an error of type STREAM_LIMIT_ERROR if a peer op...",
       "source_batches": [
         "16-20"
@@ -29503,7 +29503,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1293",
       "title": "The limit MUST include streams that have been closed as well as those that are open",
       "source_batches": [
         "16-20"
@@ -29666,7 +29666,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P13-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1298",
       "title": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but...",
       "source_batches": [
         "16-20"
@@ -29689,7 +29689,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1299",
       "title": "An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate t...",
       "source_batches": [
         "16-20"
@@ -30371,7 +30371,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-19150001",
       "title": "An endpoint MUST NOT send this frame if it currently requires that its peer send packets with...",
       "source_batches": [
         "16-20"
@@ -30394,7 +30394,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-19150002",
       "title": "An endpoint that is sending packets with a zero-length Destination Connection ID MUST treat r...",
       "source_batches": [
         "16-20"
@@ -30463,7 +30463,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0018",
+      "requirement_id": "REQ-QUIC-RFC9000-19150004",
       "title": "If an endpoint receives a NEW_CONNECTION_ID frame that repeats a previously issued connection...",
       "source_batches": [
         "16-20"
@@ -30486,7 +30486,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-19150005",
       "title": "The value in the Retire Prior To field MUST be less than or equal to the value in the Sequenc...",
       "source_batches": [
         "16-20"
@@ -30509,7 +30509,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-19150006",
       "title": "Receiving a value in the Retire Prior To field that is greater than that in the Sequence Numb...",
       "source_batches": [
         "16-20"
@@ -30555,7 +30555,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-19150007",
       "title": "A receiver MUST ignore any Retire Prior To fields that do not increase the largest received R...",
       "source_batches": [
         "16-20"
@@ -30578,7 +30578,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P15-0023",
+      "requirement_id": "REQ-QUIC-RFC9000-19150008",
       "title": "An endpoint that receives a NEW_CONNECTION_ID frame with a sequence number smaller than the R...",
       "source_batches": [
         "16-20"
@@ -30764,7 +30764,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P16-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1328",
       "title": "The sequence number specified in a RETIRE_CONNECTION_ID frame MUST NOT refer to the Destinati...",
       "source_batches": [
         "16-20"
@@ -30833,7 +30833,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P16-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-1330",
       "title": "An endpoint that provides a zero-length connection ID MUST treat receipt of a RETIRE_CONNECTI...",
       "source_batches": [
         "16-20"
@@ -31251,7 +31251,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P19-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1358",
       "title": "A CONNECTION_CLOSE frame of type 0x1c MUST use codes from the space defined in Section 20.1",
       "source_batches": [
         "16-20"
@@ -31343,7 +31343,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1361",
       "title": "The application-specific variant of CONNECTION_CLOSE (type 0x1d) MUST NOT include this field",
       "source_batches": [
         "16-20"
@@ -31481,7 +31481,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-1366",
       "title": "When an application wishes to abandon a connection during the handshake, an endpoint MAY send...",
       "source_batches": [
         "16-20"
@@ -31596,7 +31596,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P20-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1371",
       "title": "Servers MUST NOT send a HANDSHAKE_DONE frame before completing the handshake",
       "source_batches": [
         "16-20"
@@ -31619,7 +31619,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P20-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1372",
       "title": "A server MUST treat receipt of a HANDSHAKE_DONE frame as a connection error of type PROTOCOL_...",
       "source_batches": [
         "16-20"
@@ -31642,7 +31642,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1373",
       "title": "QUIC frames MUST NOT use a self-describing encoding",
       "source_batches": [
         "16-20"
@@ -31711,7 +31711,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1376",
       "title": "An extension to QUIC that wishes to use a new type of frame MUST first ensure that a peer is...",
       "source_batches": [
         "16-20"
@@ -31734,7 +31734,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1377",
       "title": "An endpoint MAY use a transport parameter to signal its willingness to receive extension fram...",
       "source_batches": [
         "16-20"
@@ -31757,7 +31757,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1378",
       "title": "One transport parameter MAY indicate support for one or more extension frame types",
       "source_batches": [
         "16-20"
@@ -31780,7 +31780,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1379",
       "title": "Such extensions SHOULD define their interaction with previously defined extensions modifying...",
       "source_batches": [
         "16-20"
@@ -31803,7 +31803,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1380",
       "title": "Congestion control extension frames",
       "source_batches": [
         "16-20"
@@ -31826,7 +31826,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1381",
       "title": "Extension frames MUST cause ACK generation",
       "source_batches": [
         "16-20"
@@ -31849,7 +31849,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P21-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1383",
       "title": "Extension frames MUST NOT be included in flow control unless specified in the extension",
       "source_batches": [
         "16-20"
@@ -32286,7 +32286,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1454",
       "title": "Any future extension that allows server migration MUST also define countermeasures for forger...",
       "source_batches": [
         "21-end"
@@ -32332,7 +32332,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1468",
       "title": "Endpoints MAY prevent connection attempts or migration to a loopback address",
       "source_batches": [
         "21-end"
@@ -32355,7 +32355,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1469",
       "title": "Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service...",
       "source_batches": [
         "21-end"
@@ -32378,7 +32378,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1470",
       "title": "Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the n...",
       "source_batches": [
         "21-end"
@@ -32447,7 +32447,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1473",
       "title": "Endpoints MAY retire connection IDs containing patterns known to be problematic without using...",
       "source_batches": [
         "21-end"
@@ -32493,7 +32493,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P7-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1476",
       "title": "QUIC deployments SHOULD provide mitigations for stream fragmentation attacks",
       "source_batches": [
         "21-end"
@@ -32654,7 +32654,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P12-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-21120001",
       "title": "Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is...",
       "source_batches": [
         "21-end"
@@ -32953,7 +32953,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1488",
       "title": "Allow provisional omission of selected registry fields",
       "source_batches": [
         "21-end"
@@ -33022,7 +33022,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1491",
       "title": "Requests for multiple codepoints MAY use a contiguous range",
       "source_batches": [
         "21-end"
@@ -33114,7 +33114,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1494",
       "title": "Applications to register codepoints in QUIC registries MAY include a requested codepoint as p...",
       "source_batches": [
         "21-end"
@@ -33160,7 +33160,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1498",
       "title": "A request to remove a codepoint MUST be reviewed by the designated experts",
       "source_batches": [
         "21-end"
@@ -33183,7 +33183,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1499",
       "title": "The experts MUST attempt to determine whether the codepoint is still in use",
       "source_batches": [
         "21-end"
@@ -33206,7 +33206,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1500",
       "title": "If any use of the codepoints is identified by this search or a request to update the registra...",
       "source_batches": [
         "21-end"
@@ -33229,7 +33229,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1501",
       "title": "If no use of the codepoint was identified and no request was made to update the registration,...",
       "source_batches": [
         "21-end"
@@ -33367,7 +33367,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1507",
       "title": "Make Standards Track registrations permanent",
       "source_batches": [
         "21-end"
@@ -33459,7 +33459,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1514",
       "title": "Reserve codepoint 0x00000000",
       "source_batches": [
         "21-end"
@@ -33895,9 +33895,9 @@
     {
       "draftId": "REQ-RFC9000-S1012-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P1P2-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0560 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P1P2-0001"
+        "REQ-QUIC-RFC9000-0560"
       ]
     },
     {
@@ -33919,25 +33919,25 @@
     {
       "draftId": "REQ-RFC9000-S102-0010",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P2-0003 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0569 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P2-0003"
+        "REQ-QUIC-RFC9000-0569"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S102-0011",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P2-0004 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0570 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P2-0004"
+        "REQ-QUIC-RFC9000-0570"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S102-0012",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P2-0005 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0571 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P2-0005"
+        "REQ-QUIC-RFC9000-0571"
       ]
     },
     {
@@ -33959,9 +33959,9 @@
     {
       "draftId": "REQ-RFC9000-S1021-0010",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P2P1-0007 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0583 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P2P1-0007"
+        "REQ-QUIC-RFC9000-0583"
       ]
     },
     {
@@ -34007,17 +34007,17 @@
     {
       "draftId": "REQ-RFC9000-S103-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0604 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3-0002"
+        "REQ-QUIC-RFC9000-0604"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S103-0004",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3-0004 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0607 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3-0004"
+        "REQ-QUIC-RFC9000-0607"
       ]
     },
     {
@@ -34031,9 +34031,9 @@
     {
       "draftId": "REQ-RFC9000-S103-0018",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3-0012 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0623 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3-0012"
+        "REQ-QUIC-RFC9000-0623"
       ]
     },
     {
@@ -34071,17 +34071,17 @@
     {
       "draftId": "REQ-RFC9000-S1032-0009",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3P2-0006 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0650 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3P2-0006"
+        "REQ-QUIC-RFC9000-0650"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S1032-0010",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3P2-0007 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0651 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3P2-0007"
+        "REQ-QUIC-RFC9000-0651"
       ]
     },
     {
@@ -34173,41 +34173,41 @@
     {
       "draftId": "REQ-RFC9000-S61-0001",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S6P1-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0285 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S6P1-0002"
+        "REQ-QUIC-RFC9000-0285"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S61-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S6P1-0003 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0286 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S6P1-0003"
+        "REQ-QUIC-RFC9000-0286"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S63-0001",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S6P3-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-6321 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S6P3-0001"
+        "REQ-QUIC-RFC9000-6321"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S63-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S6P3-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-6322 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S6P3-0002"
+        "REQ-QUIC-RFC9000-6322"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S8-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S8P1-0004 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0375 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S8P1-0004"
+        "REQ-QUIC-RFC9000-0375"
       ]
     },
     {
@@ -34215,8 +34215,8 @@
       "disposition": "split",
       "reason": "Split during assembly to preserve canonical single-keyword requirement clauses with distinct normative force.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S8P1P4-0003",
-        "REQ-QUIC-RFC9000-S8P1P4-0004"
+        "REQ-QUIC-RFC9000-0409",
+        "REQ-QUIC-RFC9000-0410"
       ]
     },
     {
@@ -34230,41 +34230,41 @@
     {
       "draftId": "REQ-RFC9000-S8-0013",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S8P2P4-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0454 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S8P2P4-0001"
+        "REQ-QUIC-RFC9000-0454"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9-0003",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9-0003 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0462 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9-0003"
+        "REQ-QUIC-RFC9000-0462"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9-0005",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9-0005 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0464 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9-0005"
+        "REQ-QUIC-RFC9000-0464"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9-0006",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9-0006 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0465 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9-0006"
+        "REQ-QUIC-RFC9000-0465"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.2-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P2-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0476 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P2-0001"
+        "REQ-QUIC-RFC9000-0476"
       ]
     },
     {
@@ -34286,25 +34286,25 @@
     {
       "draftId": "REQ-RFC9000-S9.3.2-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P3P2-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0495 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P3P2-0002"
+        "REQ-QUIC-RFC9000-0495"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.3.3-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P3P3-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0499 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P3P3-0001"
+        "REQ-QUIC-RFC9000-0499"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.3.3-0003",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P3P3-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0502 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P3P3-0002"
+        "REQ-QUIC-RFC9000-0502"
       ]
     },
     {
@@ -34334,9 +34334,9 @@
     {
       "draftId": "REQ-RFC9000-S9.5-0003",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P5-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0515 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P5-0002"
+        "REQ-QUIC-RFC9000-0515"
       ]
     },
     {
@@ -34358,65 +34358,65 @@
     {
       "draftId": "REQ-RFC9000-S9.6.2-0003",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P2-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0531 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P2-0002"
+        "REQ-QUIC-RFC9000-0531"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.2-0004",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P2-0003 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0532 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P2-0003"
+        "REQ-QUIC-RFC9000-0532"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.2-0006",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P2-0004 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0534 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P2-0004"
+        "REQ-QUIC-RFC9000-0534"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.2-0007",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P2-0005 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0535 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P2-0005"
+        "REQ-QUIC-RFC9000-0535"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.3-0001",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P3-0001 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0538 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P3-0001"
+        "REQ-QUIC-RFC9000-0538"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.3-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P3-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0539 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P3-0002"
+        "REQ-QUIC-RFC9000-0539"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.3-0003",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P3-0003 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0540 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P3-0003"
+        "REQ-QUIC-RFC9000-0540"
       ]
     },
     {
       "draftId": "REQ-RFC9000-S9.6.3-0006",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P6P3-0006 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into REQ-QUIC-RFC9000-0543 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P6P3-0006"
+        "REQ-QUIC-RFC9000-0543"
       ]
     }
   ]

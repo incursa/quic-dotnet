@@ -191,7 +191,7 @@ $report = [pscustomobject]@{
     advisory             = $true
     source_profile       = 'major-peer-matrix'
     source_requirement   = 'REQ-QUIC-INT-0019'
-    summary              = "Completed major-peer-matrix evidence report for run $SourceRunId."
+    summary              = "Completed major-peer-matrix evidence report ``interop-major-peer-matrix-evidence-$SourceRunId`` for run $SourceRunId."
     source_runs          = @(
         [pscustomobject]@{
             run_id       = $SourceRunId
@@ -212,7 +212,7 @@ $reportJson = $report | ConvertTo-Json -Depth 8
 $markdownLines = [System.Collections.Generic.List[string]]::new()
 $markdownLines.Add("# Interop Major Peer Matrix Evidence - $SourceRunId")
 $markdownLines.Add('')
-$markdownLines.Add('Advisory evidence report. Derived from the completed hosted major-peer-matrix run and intentionally not a support verdict.')
+$markdownLines.Add("Advisory evidence report ``interop-major-peer-matrix-evidence-$SourceRunId``. Derived from the completed hosted major-peer-matrix run and intentionally not a support verdict.")
 $markdownLines.Add('')
 $markdownLines.Add('## Sources')
 $markdownLines.Add('')

@@ -25,6 +25,11 @@ internal static class QuicVersionNegotiation
     internal const int Version1MinimumDatagramPayloadSize = 1200;
 
     /// <summary>
+    /// The maximum connection-id length allowed by RFC 9000 version 1 long-header parsing.
+    /// </summary>
+    private const int Version1MaximumConnectionIdLength = 20;
+
+    /// <summary>
     /// The first byte used when formatting a Version Negotiation packet.
     /// </summary>
     private const byte VersionNegotiationFirstByte = QuicPacketHeaderBits.HeaderFormBitMask | QuicPacketHeaderBits.FixedBitMask;
@@ -48,6 +53,39 @@ internal static class QuicVersionNegotiation
     /// The mask that preserves the template's high nibbles when synthesizing reserved versions.
     /// </summary>
     private const uint ReservedVersionTemplateMask = 0xF0F0F0F0;
+
+    /// <summary>
+    /// Gets whether the supplied version is the reserved Version Negotiation sentinel.
+    /// </summary>
+    internal static bool IsVersionNegotiationVersion(uint version)
+    {
+        return version == VersionNegotiationVersion;
+    }
+
+    /// <summary>
+    /// Gets whether the supplied version is RFC 9000 version 1.
+    /// </summary>
+    internal static bool IsVersion1(uint version)
+    {
+        return version == Version1;
+    }
+
+    /// <summary>
+    /// Gets the maximum connection-id length allowed by the current version policy.
+    /// Version 1 keeps the RFC 9000 limit; later versions remain version-neutral here.
+    /// </summary>
+    internal static int GetLongHeaderConnectionIdLengthLimit(uint version)
+    {
+        return IsVersion1(version) ? Version1MaximumConnectionIdLength : byte.MaxValue;
+    }
+
+    /// <summary>
+    /// Gets the minimum datagram payload floor for an Initial packet under the current version policy.
+    /// </summary>
+    internal static int GetMinimumInitialDatagramPayloadSize(uint version)
+    {
+        return IsVersion1(version) ? Version1MinimumDatagramPayloadSize : 0;
+    }
 
     /// <summary>
     /// Computes the largest known minimum datagram size across the supplied supported versions.
@@ -278,7 +316,7 @@ internal static class QuicVersionNegotiation
 
     private static bool TryGetKnownMinimumDatagramPayloadSize(uint version, out int minimumDatagramPayloadSize)
     {
-        if (version == Version1)
+        if (IsVersion1(version))
         {
             minimumDatagramPayloadSize = Version1MinimumDatagramPayloadSize;
             return true;

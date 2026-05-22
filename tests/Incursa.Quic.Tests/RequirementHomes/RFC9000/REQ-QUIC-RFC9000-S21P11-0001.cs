@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0001
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0001");
 
         Assert.Equal("To defend against this style of denial of service, endpoints that share a static key for stat...", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.11 RFC9000-S21.11-B3-P2-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

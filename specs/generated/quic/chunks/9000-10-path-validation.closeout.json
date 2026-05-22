@@ -26,10 +26,10 @@
   "implementation_summary_file": "./specs/generated/quic/chunks/9000-10-path-validation.implementation-summary.json",
   "implementation_summary_alignment": {
     "spec_requirement_ids": [
-      "REQ-QUIC-RFC9000-S8P2-0001",
+      "REQ-QUIC-RFC9000-0425",
       "REQ-QUIC-RFC9000-S8P2P1-0001",
       "REQ-QUIC-RFC9000-S8P2P1-0002",
-      "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "REQ-QUIC-RFC9000-0435",
       "REQ-QUIC-RFC9000-S8P2P1-0004",
       "REQ-QUIC-RFC9000-S8P2P1-0005",
       "REQ-QUIC-RFC9000-S8P2P1-0006",
@@ -37,14 +37,14 @@
       "REQ-QUIC-RFC9000-S8P2P1-0008",
       "REQ-QUIC-RFC9000-S8P2P2-0001",
       "REQ-QUIC-RFC9000-S8P2P2-0002",
-      "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "REQ-QUIC-RFC9000-0443",
       "REQ-QUIC-RFC9000-S8P2P2-0004",
       "REQ-QUIC-RFC9000-S8P2P2-0005",
       "REQ-QUIC-RFC9000-S8P2P2-0006",
       "REQ-QUIC-RFC9000-S8P2P2-0007",
-      "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "REQ-QUIC-RFC9000-0447",
       "REQ-QUIC-RFC9000-S8P2P3-0001",
-      "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "REQ-QUIC-RFC9000-0454",
       "REQ-QUIC-RFC9000-S8P2P4-0002",
       "REQ-QUIC-RFC9000-S8P2P4-0003"
     ],
@@ -55,19 +55,19 @@
       "REQ-QUIC-RFC9000-S8P2P2-0001",
       "REQ-QUIC-RFC9000-S8P2P2-0005",
       "REQ-QUIC-RFC9000-S8P2P2-0006",
-      "REQ-QUIC-RFC9000-S8P2-0001",
+      "REQ-QUIC-RFC9000-0425",
       "REQ-QUIC-RFC9000-S8P2P1-0001",
       "REQ-QUIC-RFC9000-S8P2P1-0002",
-      "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "REQ-QUIC-RFC9000-0435",
       "REQ-QUIC-RFC9000-S8P2P1-0006",
       "REQ-QUIC-RFC9000-S8P2P1-0007",
       "REQ-QUIC-RFC9000-S8P2P2-0002",
-      "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "REQ-QUIC-RFC9000-0443",
       "REQ-QUIC-RFC9000-S8P2P2-0004",
       "REQ-QUIC-RFC9000-S8P2P2-0007",
-      "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "REQ-QUIC-RFC9000-0447",
       "REQ-QUIC-RFC9000-S8P2P3-0001",
-      "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "REQ-QUIC-RFC9000-0454",
       "REQ-QUIC-RFC9000-S8P2P4-0002",
       "REQ-QUIC-RFC9000-S8P2P4-0003"
     ],
@@ -202,7 +202,7 @@
       "notes": "The padding helper refuses to expand a datagram once the remaining send budget would be exceeded."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0425",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -229,7 +229,7 @@
       "notes": "The packet-level packing policy is not present in this slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0435",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -265,7 +265,7 @@
       "notes": "This needs connection-level send scheduling rather than frame encoding helpers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0443",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -292,7 +292,7 @@
       "notes": "Response tracking is absent, so one-to-one fan-out cannot be enforced yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0447",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -310,7 +310,7 @@
       "notes": "The helper can generate padding, but the MTU probe/retry orchestration is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0454",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -338,19 +338,19 @@
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S8P2-0001",
+    "REQ-QUIC-RFC9000-0425",
     "REQ-QUIC-RFC9000-S8P2P1-0001",
     "REQ-QUIC-RFC9000-S8P2P1-0002",
-    "REQ-QUIC-RFC9000-S8P2P1-0003",
+    "REQ-QUIC-RFC9000-0435",
     "REQ-QUIC-RFC9000-S8P2P1-0006",
     "REQ-QUIC-RFC9000-S8P2P1-0007",
     "REQ-QUIC-RFC9000-S8P2P2-0002",
-    "REQ-QUIC-RFC9000-S8P2P2-0003",
+    "REQ-QUIC-RFC9000-0443",
     "REQ-QUIC-RFC9000-S8P2P2-0004",
     "REQ-QUIC-RFC9000-S8P2P2-0007",
-    "REQ-QUIC-RFC9000-S8P2P2-0008",
+    "REQ-QUIC-RFC9000-0447",
     "REQ-QUIC-RFC9000-S8P2P3-0001",
-    "REQ-QUIC-RFC9000-S8P2P4-0001",
+    "REQ-QUIC-RFC9000-0454",
     "REQ-QUIC-RFC9000-S8P2P4-0002",
     "REQ-QUIC-RFC9000-S8P2P4-0003"
   ],

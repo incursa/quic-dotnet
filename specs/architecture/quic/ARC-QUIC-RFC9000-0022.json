@@ -18,17 +18,17 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-0763",
     "REQ-QUIC-RFC9000-S17P2P5P3-0001",
     "REQ-QUIC-RFC9000-S17P2P5P3-0002",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-1050",
+    "REQ-QUIC-RFC9000-1053",
     "REQ-QUIC-CRT-0122"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs"
@@ -61,7 +61,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs)\n- [`QuicS17P2P5P3TestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs)\n- [`QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`REQ-QUIC-RFC9000-0763.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs)\n- [`QuicS17P2P5P3TestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs)\n- [`QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)"
     }
   ]
 }

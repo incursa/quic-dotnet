@@ -73,6 +73,26 @@ public sealed class QuicHeaderParsingUnitTests
     }
 
     [Fact]
+    public void TryParseLongHeader_ParsesNonVersion1LongHeadersWithoutApplyingVersion1ConnectionIdLimit()
+    {
+        byte[] destinationConnectionId = new byte[21];
+        byte[] sourceConnectionId = new byte[21];
+        byte[] versionSpecificData = [0x11, 0x22, 0x33];
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 0x11223344,
+            destinationConnectionId: destinationConnectionId,
+            sourceConnectionId: sourceConnectionId,
+            versionSpecificData: versionSpecificData);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+        Assert.Equal(0x11223344u, header.Version);
+        Assert.Equal(destinationConnectionId.Length, header.DestinationConnectionIdLength);
+        Assert.Equal(sourceConnectionId.Length, header.SourceConnectionIdLength);
+        Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
+    }
+
+    [Fact]
     public void TryParseShortHeader_ParsesAValidShortHeaderPacket()
     {
         byte[] expectedRemainder = [0xAA, 0xBB, 0xCC];
@@ -182,6 +202,20 @@ public sealed class QuicHeaderParsingUnitTests
 
         Assert.True(QuicPacketParser.TryGetPacketLength(shortHeaderPacket, out int packetLength));
         Assert.Equal(shortHeaderPacket.Length, packetLength);
+    }
+
+    [Fact]
+    public void TryGetPacketLength_ReturnsTheWholeDatagramForNonVersion1LongHeaders()
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 0x11223344,
+            destinationConnectionId: new byte[21],
+            sourceConnectionId: new byte[21],
+            versionSpecificData: [0x11, 0x22, 0x33]);
+
+        Assert.True(QuicPacketParser.TryGetPacketLength(packet, out int packetLength));
+        Assert.Equal(packet.Length, packetLength);
     }
 
     private static byte[] BuildZeroRttLongHeaderPacket(

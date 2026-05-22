@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P2_0001
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P2-0001");
 
         Assert.Equal("New requests for codepoints from QUIC registries SHOULD use a randomly selected codepoint tha...", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "New requests for codepoints from QUIC registries SHOULD use a randomly selected codepoint that excludes both existing allocations and the first unallocated codepoint in the selected space.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("New requests for codepoints from QUIC registries SHOULD use a randomly selected codepoint that excludes both existing allocations and the first unallocated codepoint in the selected space.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.2 RFC9000-S22.1.2-B2-P1-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

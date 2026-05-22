@@ -5,7 +5,29 @@ namespace Incursa.Quic;
 // Active-path state, path validation, migration promotion, and recovery resets.
 internal sealed partial class QuicConnectionRuntime
 {
-    private bool InitializeActivePath(
+    private QuicConnectionActivePathRecord? activePath
+    {
+        get => pathState.ActivePath;
+        set => pathState.ActivePath = value;
+    }
+
+    private Dictionary<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> candidatePaths => pathState.CandidatePaths;
+
+    private Dictionary<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> recentlyValidatedPaths => pathState.RecentlyValidatedPaths;
+
+    private string? lastValidatedRemoteAddress
+    {
+        get => pathState.LastValidatedRemoteAddress;
+        set => pathState.LastValidatedRemoteAddress = value;
+    }
+
+    private QuicConnectionPathIdentity? preferredAddressOldPathIdentity
+    {
+        get => pathState.PreferredAddressOldPathIdentity;
+        set => pathState.PreferredAddressOldPathIdentity = value;
+    }
+
+    internal bool InitializeActivePath(
         QuicConnectionPathIdentity pathIdentity,
         int payloadBytes,
         long nowTicks)
@@ -89,7 +111,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryMarkActivePathValidated(long nowTicks)
+    internal bool TryMarkActivePathValidated(long nowTicks)
     {
         if (activePath is null)
         {
@@ -795,7 +817,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryGetCandidatePath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
     {
-        return candidatePaths.TryGetValue(pathIdentity, out candidatePath);
+        return pathState.TryGetCandidatePath(pathIdentity, out candidatePath);
     }
 
     private bool TryMarkCandidatePathReadyForNonProbingTraffic(
@@ -855,7 +877,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryGetRecentlyValidatedPath(QuicConnectionPathIdentity pathIdentity, out QuicConnectionValidatedPathRecord validatedPath)
     {
-        return recentlyValidatedPaths.TryGetValue(pathIdentity, out validatedPath);
+        return pathState.TryGetRecentlyValidatedPath(pathIdentity, out validatedPath);
     }
 
     private bool TryGetStoredSpinBitForPath(QuicConnectionPathIdentity pathIdentity, out bool spinBit)
@@ -974,46 +996,12 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathAmplificationState amplificationState,
         QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
     {
-        if (MaximumRecentlyValidatedPaths == 0)
-        {
-            return;
-        }
-
-        recentlyValidatedPaths[pathIdentity] = new QuicConnectionValidatedPathRecord(
+        pathState.AppendRecentlyValidatedPath(
             pathIdentity,
-            ValidatedAtTicks: nowTicks,
-            SavedRecoverySnapshot: savedRecoverySnapshot)
-        {
-            LastActivityTicks = nowTicks,
-            AmplificationState = amplificationState.MarkAddressValidated(),
-            MaximumDatagramSizeState = maximumDatagramSizeState,
-        };
-
-        if (recentlyValidatedPaths.Count <= MaximumRecentlyValidatedPaths)
-        {
-            return;
-        }
-
-        QuicConnectionPathIdentity? candidateToRemove = null;
-        long oldestActivityTicks = long.MaxValue;
-        foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionValidatedPathRecord> entry in recentlyValidatedPaths)
-        {
-            if (EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(entry.Key, pathIdentity))
-            {
-                continue;
-            }
-
-            if (entry.Value.LastActivityTicks < oldestActivityTicks)
-            {
-                oldestActivityTicks = entry.Value.LastActivityTicks;
-                candidateToRemove = entry.Key;
-            }
-        }
-
-        if (candidateToRemove.HasValue)
-        {
-            recentlyValidatedPaths.Remove(candidateToRemove.Value);
-        }
+            nowTicks,
+            savedRecoverySnapshot,
+            amplificationState,
+            maximumDatagramSizeState);
     }
 
     private void SyncActivePathMaximumDatagramSize(QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)

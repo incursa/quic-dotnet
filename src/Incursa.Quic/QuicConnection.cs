@@ -24,6 +24,8 @@ public sealed class QuicConnection : IAsyncDisposable
         runtime.SetStreamCapacityObserver(OnRuntimeStreamCapacityIncreased);
     }
 
+    internal QuicConnectionRuntime Runtime => runtime;
+
     /// <summary>
     /// Gets whether the current runtime supports the repository's managed QUIC loopback slice.
     /// </summary>

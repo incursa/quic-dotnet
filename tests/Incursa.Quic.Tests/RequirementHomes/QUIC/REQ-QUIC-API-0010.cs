@@ -264,8 +264,8 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-0047")]
+    [Requirement("REQ-QUIC-RFC9000-0048")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task RuntimeIngressReplay_GapFillingRetransmissionWakesPendingOrderedRead()
@@ -826,11 +826,8 @@ public sealed class REQ_QUIC_API_0010
 
     private static string DescribeStream(QuicStream stream)
     {
-        FieldInfo? bookkeepingField = typeof(QuicStream).GetField("bookkeeping", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(bookkeepingField);
-
-        if (bookkeepingField!.GetValue(stream) is not QuicConnectionStreamState bookkeeping
-            || !bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot))
+        QuicConnectionStreamState bookkeeping = stream.Bookkeeping;
+        if (!bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot))
         {
             return "<snapshot unavailable>";
         }
@@ -856,18 +853,12 @@ public sealed class REQ_QUIC_API_0010
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
-        FieldInfo? runtimeField = typeof(QuicConnection).GetField("runtime", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(runtimeField);
-        Assert.IsType<QuicConnectionRuntime>(runtimeField!.GetValue(connection));
-        return (QuicConnectionRuntime)runtimeField.GetValue(connection)!;
+        return connection.Runtime;
     }
 
     private static QuicHandshakeFlowCoordinator GetHandshakeFlow(QuicConnectionRuntime runtime)
     {
-        FieldInfo? handshakeFlowField = typeof(QuicConnectionRuntime).GetField("handshakeFlowCoordinator", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(handshakeFlowField);
-        Assert.IsType<QuicHandshakeFlowCoordinator>(handshakeFlowField!.GetValue(runtime));
-        return (QuicHandshakeFlowCoordinator)handshakeFlowField.GetValue(runtime)!;
+        return runtime.HandshakeFlowCoordinator;
     }
 
     private static byte[] CreateProtectedMinimalApplicationDataPacket(
@@ -917,6 +908,9 @@ public sealed class REQ_QUIC_API_0010
         }
 
         Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+        // QUIC header protection intentionally uses AES-ECB per RFC 9001.
+
+        // codeql[cs/weak-encryption]
         using (Aes aes = Aes.Create())
         {
             aes.Key = material.HeaderProtectionKey.ToArray();

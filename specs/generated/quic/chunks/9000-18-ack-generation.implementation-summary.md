@@ -2,38 +2,38 @@
 
 ## Requirements Completed
 - `REQ-QUIC-RFC9000-S13P1-0003`
-- `REQ-QUIC-RFC9000-S13P2-0001`
+- `REQ-QUIC-RFC9000-0753`
 - `REQ-QUIC-RFC9000-S13P2-0002`
 - `REQ-QUIC-RFC9000-S13P2-0003`
-- `REQ-QUIC-RFC9000-S13P2-0004`
+- `REQ-QUIC-RFC9000-0756`
 - `REQ-QUIC-RFC9000-S13P2P1-0001`
-- `REQ-QUIC-RFC9000-S13P2P1-0002`
+- `REQ-QUIC-RFC9000-0758`
 - `REQ-QUIC-RFC9000-S13P2P1-0004`
 - `REQ-QUIC-RFC9000-S13P2P1-0005`
 - `REQ-QUIC-RFC9000-S13P2P1-0006`
 - `REQ-QUIC-RFC9000-S13P2P1-0007`
 - `REQ-QUIC-RFC9000-S13P2P1-0008`
-- `REQ-QUIC-RFC9000-S13P2P1-0010`
-- `REQ-QUIC-RFC9000-S13P2P1-0011`
+- `REQ-QUIC-RFC9000-0763`
+- `REQ-QUIC-RFC9000-0764`
 - `REQ-QUIC-RFC9000-S13P2P1-0013`
-- `REQ-QUIC-RFC9000-S13P2P1-0014`
+- `REQ-QUIC-RFC9000-1322`
 - `REQ-QUIC-RFC9000-S13P2P2-0001`
-- `REQ-QUIC-RFC9000-S13P2P2-0002`
-- `REQ-QUIC-RFC9000-S13P2P2-0003`
+- `REQ-QUIC-RFC9000-1323`
+- `REQ-QUIC-RFC9000-1324`
 - `REQ-QUIC-RFC9000-S13P2P3-0001`
-- `REQ-QUIC-RFC9000-S13P2P3-0002`
+- `REQ-QUIC-RFC9000-13230`
 - `REQ-QUIC-RFC9000-S13P2P3-0003`
-- `REQ-QUIC-RFC9000-S13P2P3-0004`
-- `REQ-QUIC-RFC9000-S13P2P3-0007`
+- `REQ-QUIC-RFC9000-13233`
+- `REQ-QUIC-RFC9000-13235`
 - `REQ-QUIC-RFC9000-S13P2P3-0008`
-- `REQ-QUIC-RFC9000-S13P2P3-0009`
-- `REQ-QUIC-RFC9000-S13P2P3-0010`
+- `REQ-QUIC-RFC9000-13236`
+- `REQ-QUIC-RFC9000-0768`
 - `REQ-QUIC-RFC9000-S13P2P3-0011`
-- `REQ-QUIC-RFC9000-S13P2P3-0012`
-- `REQ-QUIC-RFC9000-S13P2P5-0004`
+- `REQ-QUIC-RFC9000-0771`
+- `REQ-QUIC-RFC9000-0780`
 - `REQ-QUIC-RFC9000-S13P2P5-0001`
 - `REQ-QUIC-RFC9000-S13P2P5-0002`
-- `REQ-QUIC-RFC9000-S13P2P5-0003`
+- `REQ-QUIC-RFC9000-0779`
 - `REQ-QUIC-RFC9000-S13P2P5-0005`
 - `REQ-QUIC-RFC9000-S13P2P6-0001`
 - `REQ-QUIC-RFC9000-S13P2P6-0002`
@@ -46,7 +46,7 @@
 - `tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`
 - `tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs`
 
 ## Tests Added or Updated
 - Added or updated `TryBuildAckFrame_RoundsTripProcessedPacketsAndReportsAckDelay`.
@@ -79,17 +79,17 @@
 - `REQ-QUIC-RFC9000-S13-0003` - There is no heuristic-based packet pacing surface that can decide how long to wait before sending.
 - `REQ-QUIC-RFC9000-S13-0004` - There is no packet composer that can pack multiple STREAM frames into one QUIC packet.
 - `REQ-QUIC-RFC9000-S13-0005` - There is no packet packing policy that can prefer fewer active streams while preserving transmission efficiency.
-- `REQ-QUIC-RFC9000-S13P1-0001` - There is no decryption-complete / frame-processing completion hook that can delay ACKing until all packet contents are processed.
+- `REQ-QUIC-RFC9000-0749` - There is no decryption-complete / frame-processing completion hook that can delay ACKing until all packet contents are processed.
 - `REQ-QUIC-RFC9000-S13P1-0002` - There is no STREAM enqueue / delivery lifecycle surface to distinguish application enqueue from app-consumption.
-- `REQ-QUIC-RFC9000-S13P1-0004` - There is no incoming-ACK validation surface that can raise PROTOCOL_VIOLATION for acknowledgments of unsent packets.
+- `REQ-QUIC-RFC9000-0752` - There is no incoming-ACK validation surface that can raise PROTOCOL_VIOLATION for acknowledgments of unsent packets.
 - `REQ-QUIC-RFC9000-S13P2P1-0003` - There is no recovery timer surface that uses the receiver max_ack_delay in PTO or retransmission timeout calculations.
 - `REQ-QUIC-RFC9000-S13P2P1-0009` - There is no peer-side ACK reception model to show that ACK-only traffic will not itself be acknowledged.
 - `REQ-QUIC-RFC9000-S13P2P1-0012` - There is no feedback-loop model for adding ack-eliciting frames to otherwise non-ack-eliciting packets.
-- `REQ-QUIC-RFC9000-S13P2P3-0005` - There is no peer-ACK lifecycle surface to retire ACK ranges after acknowledgments for an ACK frame are received.
+- `REQ-QUIC-RFC9000-13234` - There is no peer-ACK lifecycle surface to retire ACK ranges after acknowledgments for an ACK frame are received.
 - `REQ-QUIC-RFC9000-S13P2P6-0003` - There is no carrier-selection surface that can force client 0-RTT acknowledgments onto 1-RTT packets.
 - `REQ-QUIC-RFC9000-S13P2P7-0001` - There is no periodic non-PADDING probe / send-ack-eliciting-frames scheduler.
 
 ## Risks or Follow-up Notes
 - The implementation is helper-level and does not yet own packet assembly, recovery timers, peer ACK validation, or carrier selection for 0-RTT versus 1-RTT acknowledgment delivery.
 - ACK range trimming is bounded by `maximumRetainedAckRanges`; the peer-ACK lifecycle needed to retire ranges after received acknowledgments is still missing.
-- No reconciliation artifact existed for this chunk when the earlier slice landed, so the work was treated as greenfield and the remaining gaps were left explicit rather than inferred. The follow-on proof for `REQ-QUIC-RFC9000-S13P2P5-0004` now closes the decryption-key buffering-delay gap without changing the explicit blocker set.
+- No reconciliation artifact existed for this chunk when the earlier slice landed, so the work was treated as greenfield and the remaining gaps were left explicit rather than inferred. The follow-on proof for `REQ-QUIC-RFC9000-0780` now closes the decryption-key buffering-delay gap without changing the explicit blocker set.

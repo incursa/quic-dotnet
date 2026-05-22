@@ -20,7 +20,7 @@
 
 ## Evidence
 
-- `REQ-QUIC-RFC9000-S9P4-0004` and `REQ-QUIC-RFC9000-S9P4-0006` are traced in [QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs#L19-L22).
+- `REQ-QUIC-RFC9000-S9P4-0004` and `REQ-QUIC-RFC9000-0510` are traced in [QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs#L19-L22).
 - `REQ-QUIC-RFC9000-S9P6P1-0001` and `REQ-QUIC-RFC9000-S9P6P1-0007` are traced in [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs#L147-L150) and [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs#L49-L52).
 - The scoped test run passed: `36 passed, 0 failed, 0 skipped`.
 

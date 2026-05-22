@@ -178,6 +178,9 @@ public sealed class NetworkSimulatorScenarioScriptTests
         fixture.CreateSimulatorComposeFile();
         fixture.CreateEndpointDirectory("client-impl");
         fixture.CreateEndpointDirectory("server-impl");
+        Directory.CreateDirectory(Path.Combine(fixture.SimulatorRoot, "logs", "sim"));
+        File.WriteAllText(Path.Combine(fixture.SimulatorRoot, "logs", "sim", "trace_node_left.pcap"), "left-pcap");
+        File.WriteAllText(Path.Combine(fixture.SimulatorRoot, "logs", "sim", "trace_node_right.pcap"), "right-pcap");
         fixture.ConfigureDockerStubExitCode(37);
 
         ScriptRunResult result = await fixture.RunAsync(
@@ -201,6 +204,7 @@ public sealed class NetworkSimulatorScenarioScriptTests
         string scenarioSummaryPath = Path.Combine(runRoot, "scenario-summary.json");
         string stdoutPath = Path.Combine(runRoot, "simulator.stdout.log");
         string stderrPath = Path.Combine(runRoot, "simulator.stderr.log");
+        string simulatorLogsRoot = Path.Combine(runRoot, "simulator-logs", "sim");
 
         using JsonDocument summary = JsonDocument.Parse(File.ReadAllText(scenarioSummaryPath));
 
@@ -212,6 +216,10 @@ public sealed class NetworkSimulatorScenarioScriptTests
         Assert.Contains("Docker compose failed", summary.RootElement.GetProperty("observed_result").GetString(), StringComparison.OrdinalIgnoreCase);
         Assert.Contains("fake docker invoked", File.ReadAllText(stdoutPath), StringComparison.OrdinalIgnoreCase);
         Assert.Contains("fake docker stderr", File.ReadAllText(stderrPath), StringComparison.OrdinalIgnoreCase);
+        Assert.True(File.Exists(Path.Combine(simulatorLogsRoot, "trace_node_left.pcap")));
+        Assert.True(File.Exists(Path.Combine(simulatorLogsRoot, "trace_node_right.pcap")));
+        Assert.Equal("left-pcap", File.ReadAllText(Path.Combine(simulatorLogsRoot, "trace_node_left.pcap")));
+        Assert.Equal("right-pcap", File.ReadAllText(Path.Combine(simulatorLogsRoot, "trace_node_right.pcap")));
     }
 
     [Fact]

@@ -13,8 +13,8 @@
   ],
   "verification_method": "Requirement-home execution, protected-packet inspection, existing DATA_BLOCKED frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded active-runtime `DATA_BLOCKED` emission slice.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S4P1-0014",
-    "REQ-QUIC-RFC9000-S4P1-0015",
+    "REQ-QUIC-RFC9000-0176",
+    "REQ-QUIC-RFC9000-0177",
     "REQ-QUIC-RFC9000-S13P3-0022",
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S13P3-0024",
@@ -39,13 +39,13 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0003.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-data-blocked-runtime/focused-rfc9000-data-blocked-runtime-tests.log",
     "artifacts/v/20260425-rfc9000-data-blocked-runtime/quic-connection-stream-state-benchmark-dry.log",
     "artifacts/v/20260425-rfc9000-data-blocked-runtime/bdn/results/css-report-github.md",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0177|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S19P12\"",
     "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicConnectionStreamStateBenchmarks*\" --artifacts artifacts/v/20260425-rfc9000-data-blocked-runtime/bdn"
   ],
   "supplemental_sections": [

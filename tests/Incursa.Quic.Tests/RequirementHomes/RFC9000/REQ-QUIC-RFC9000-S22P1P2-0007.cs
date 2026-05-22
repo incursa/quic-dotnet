@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P2_0007
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P2-0007");
 
         Assert.Equal("IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements...", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.2 RFC9000-S22.1.2-B5-P4-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

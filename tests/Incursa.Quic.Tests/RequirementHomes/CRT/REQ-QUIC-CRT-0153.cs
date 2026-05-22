@@ -473,10 +473,7 @@ public sealed class REQ_QUIC_CRT_0153
         int payloadBytes,
         long observedAtTicks)
     {
-        MethodInfo method = typeof(QuicConnectionRuntime).GetMethod(
-            "InitializeActivePath",
-            BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return (bool)method.Invoke(runtime, [pathIdentity, payloadBytes, observedAtTicks])!;
+        return runtime.InitializeActivePath(pathIdentity, payloadBytes, observedAtTicks);
     }
 
     private static bool TryReadUInt8(ReadOnlySpan<byte> source, ref int index, out int value)

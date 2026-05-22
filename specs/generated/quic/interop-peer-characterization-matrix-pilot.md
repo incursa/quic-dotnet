@@ -1,6 +1,6 @@
 # Interop Peer Characterization Matrix Pilot
 
-Advisory report. Derived from preserved hosted bundles and the completed major-peer evidence, and intentionally not a support verdict.
+Advisory report `interop-peer-characterization-matrix-pilot`. Derived from preserved hosted bundles and the completed major-peer evidence, and intentionally not a support verdict.
 
 ## Sources
 

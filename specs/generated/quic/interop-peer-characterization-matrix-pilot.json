@@ -1,7 +1,7 @@
 {
   "report_id": "interop-peer-characterization-matrix-pilot",
   "advisory": true,
-  "summary": "Refreshed advisory report for mixed connectionmigration and major-peer evidence.",
+  "summary": "Refreshed advisory report `interop-peer-characterization-matrix-pilot` for mixed connectionmigration and major-peer evidence.",
   "source_runs": [
     {
       "run_id": 25891504134,

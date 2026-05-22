@@ -67,11 +67,11 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S4P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-0167")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
-    [Requirement("REQ-QUIC-RFC9000-S4P2-0005")]
+    [Requirement("REQ-QUIC-RFC9000-0180")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0015")]
-    [Requirement("REQ-QUIC-RFC9000-S13P3-0016")]
+    [Requirement("REQ-QUIC-RFC9000-0799")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0017")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -147,7 +147,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S4P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-0167")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0015")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0017")]

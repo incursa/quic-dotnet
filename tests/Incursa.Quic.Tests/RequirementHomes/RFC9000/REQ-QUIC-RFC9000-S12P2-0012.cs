@@ -8,7 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0012
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S14-0001")]
+    [Requirement("REQ-QUIC-RFC9000-0851")]
     [Trait("Category", "Positive")]
     public void RuntimeProcessesTheTrailingHandshakePacketAfterTheLeadingInitialPacket()
     {

@@ -47,6 +47,25 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
     public QuicConnectionRuntimeHost Host => host;
 
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, byte>> RouteIdsByHandle => routeIdsByHandle;
+
+    internal ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionHandle>> RoutesByLength => routesByLength;
+
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, ulong>> StatelessResetConnectionIdsByRouteIdByHandle => statelessResetConnectionIdsByRouteIdByHandle;
+
+    internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<ulong, byte>> StatelessResetTokenIdsByHandle => statelessResetTokenIdsByHandle;
+
+    internal ConcurrentDictionary<QuicConnectionStatelessResetMatchKey, QuicConnectionStatelessResetBinding> StatelessResetBindingsByMatchKey => statelessResetBindingsByMatchKey;
+
+    internal ConcurrentDictionary<ulong, QuicConnectionStatelessResetBinding> StatelessResetBindingsByConnectionId => statelessResetBindingsByConnectionId;
+
+    internal ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionStatelessResetBinding>> RetainedStatelessResetBindingsByRouteLength => retainedStatelessResetBindingsByRouteLength;
+
+    internal void SetVersionProfileForTests(QuicConnectionHandle handle, QuicConnectionVersionProfile versionProfile)
+    {
+        versionProfilesByHandle[handle] = versionProfile;
+    }
+
     public QuicConnectionHandle AllocateConnectionHandle()
     {
         return host.AllocateConnectionHandle();
@@ -495,7 +514,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (longHeader.Version == 1 && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Retry)
+        if (QuicVersionNegotiation.IsVersion1(longHeader.Version)
+            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Retry)
         {
             return new QuicConnectionIngressResult(
                 QuicConnectionIngressDisposition.EndpointHandling,
@@ -503,9 +523,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (longHeader.Version == QuicVersionNegotiation.Version1
-            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Initial
-            && datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+        if (longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Initial
+            && datagram.Length < QuicVersionNegotiation.GetMinimumInitialDatagramPayloadSize(longHeader.Version))
         {
             return new QuicConnectionIngressResult(
                 QuicConnectionIngressDisposition.Malformed,
