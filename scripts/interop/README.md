@@ -125,7 +125,7 @@ Hosted corroboration:
 - The major peer matrix pre-pulls the selected peer image for each cell, including `ghcr.io/microsoft/msquic/qns:main` for `msquic`.
 - Hosted transfer cells pass a narrow runner timeout override because GitHub-hosted Docker startup is slower than the local cached-image path; local helper runs keep the upstream runner's default timeout unless `-RunnerTimeoutSeconds` is supplied.
 - It uploads a distinct per-cell `artifacts/interop-runner/<cell>/` bundle with `if: always()` so success, advisory, and failure outcomes all preserve the runner bundle for audit.
-- The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates.
+- The hosted lane is advisory. It is not part of ordinary push, pull-request, build, test, package, or support-readiness gates. The generated `interop-major-peer-matrix-inventory` report keeps the current cell set explicit, and the generated `interop-major-peer-matrix-evidence-25904716076` report preserves the completed hosted evidence.
 - The helper marks only the explicitly selected runner slots as compliant for the runner's registry compliance preflight so the advisory lane reaches the requested testcase rather than skipping on an unrelated unsupported-testcase precheck.
 - If the runner reaches managed success and then fails only its trace-analysis post-check with `FileNotFoundError`, the helper's advisory downgrade remains testcase-specific: `keyupdate` requires preserved key-update initiation plus managed download or response markers, and `resumption` requires preserved ticket/resumed-connection or first/resumed server-connection markers. Ambiguous, unsupported, blocked, or incomplete cells still fail.
 
