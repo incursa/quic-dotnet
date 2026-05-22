@@ -58,7 +58,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
   ],
-  "status_summary": "Planned. The matrix pilot now combines the seeded connectionmigration rows with the current major-peer evidence so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory pilot report, a generated major-peer inventory report, a generated major-peer evidence report, and a test-side row projector, but broader matrix refresh work is still advisory.",
+  "status_summary": "Planned. The matrix pilot now combines the seeded connectionmigration rows with the current major-peer evidence so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory pilot report `interop-peer-characterization-matrix-pilot`, a generated major-peer inventory report `interop-major-peer-matrix-inventory`, a generated major-peer evidence report `interop-major-peer-matrix-evidence-25904716076`, and a test-side row projector, but broader matrix refresh work is still advisory.",
   "supplemental_sections": [
     {
       "heading": "Scope",
