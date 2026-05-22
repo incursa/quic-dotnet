@@ -1791,10 +1791,10 @@ internal sealed partial class QuicConnectionRuntime
 
         if (processedMaxStreamsFrame)
         {
-            int bidirectionalIncrement = GetPositiveIncrement(
+            int bidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
                 originalBidirectionalLimit,
                 streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
-            int unidirectionalIncrement = GetPositiveIncrement(
+            int unidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
                 originalUnidirectionalLimit,
                 streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
 
@@ -4027,11 +4027,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         _ = ApplyTransportParameters(
-            new QuicConnectionTransportParametersCommittedEvent(
-                ObservedAtTicks: nowTicks,
-                TransportFlags: QuicConnectionTransportState.None,
-                LocalMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
-                    localTransportParameters.MaxIdleTimeout)),
+            QuicTransportParameterCommitHelper.CreateLocalTransportParametersCommittedEvent(
+                nowTicks,
+                localTransportParameters),
             nowTicks,
             ref effects);
 
@@ -4265,18 +4263,10 @@ internal sealed partial class QuicConnectionRuntime
             streamCapacityObserver?.Invoke(bidirectionalIncrement, unidirectionalIncrement);
         }
 
-        QuicConnectionTransportState committedTransportFlags = QuicConnectionTransportState.PeerTransportParametersCommitted;
-        if (peerTransportParameters.DisableActiveMigration)
-        {
-            committedTransportFlags |= QuicConnectionTransportState.DisableActiveMigration;
-        }
-
         stateChanged |= ApplyTransportParameters(
-            new QuicConnectionTransportParametersCommittedEvent(
-                ObservedAtTicks: nowTicks,
-                TransportFlags: committedTransportFlags,
-                PeerMaxIdleTimeoutMicros: QuicTransportParameterTimeUnits.MaxIdleTimeoutMillisecondsToRuntimeMicros(
-                    peerTransportParameters.MaxIdleTimeout)),
+            QuicTransportParameterCommitHelper.CreatePeerTransportParametersCommittedEvent(
+                nowTicks,
+                peerTransportParameters),
             nowTicks,
             ref effects);
         return stateChanged;
@@ -4436,24 +4426,14 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged |= streamRegistry.Bookkeeping.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(false, initialMaxStreamsUni));
         }
 
-        bidirectionalIncrement = GetPositiveIncrement(
+        bidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
             originalBidirectionalLimit,
             streamRegistry.Bookkeeping.PeerBidirectionalStreamLimit);
-        unidirectionalIncrement = GetPositiveIncrement(
+        unidirectionalIncrement = QuicTransportParameterCommitHelper.GetPositiveIncrement(
             originalUnidirectionalLimit,
             streamRegistry.Bookkeeping.PeerUnidirectionalStreamLimit);
 
         return stateChanged;
     }
 
-    private static int GetPositiveIncrement(ulong originalValue, ulong updatedValue)
-    {
-        if (updatedValue <= originalValue)
-        {
-            return 0;
-        }
-
-        ulong increment = updatedValue - originalValue;
-        return increment > int.MaxValue ? int.MaxValue : (int)increment;
-    }
 }
