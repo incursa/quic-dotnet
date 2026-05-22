@@ -636,7 +636,7 @@
         ]
       },
       "notes": [
-        "This profile is an evidence-collection surface, not a broad interop-readiness gate. The completed run `25904716076` now has a dedicated evidence report that preserves its mixed peer-specific pass and failure classes.",
+        "This profile is an evidence-collection surface, not a broad interop-readiness gate. The generated `interop-major-peer-matrix-inventory` report keeps the current cell set explicit, and the completed run `25904716076` now has the dedicated `interop-major-peer-matrix-evidence-25904716076` report that preserves its mixed peer-specific pass and failure classes.",
         "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope.",
         "`v2`, `rebind-port`, and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
