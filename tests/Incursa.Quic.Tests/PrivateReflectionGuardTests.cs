@@ -10,9 +10,9 @@ public sealed class PrivateReflectionGuardTests
 {
     private static readonly string[] AllowlistedFiles =
     [
-        @"RequirementHomes\CRT\REQ-QUIC-CRT-0051.cs",
-        @"RequirementHomes\CRT\REQ-QUIC-CRT-0095.cs",
-        @"RequirementHomes\CRT\REQ-QUIC-CRT-0096.cs",
+        "RequirementHomes/CRT/REQ-QUIC-CRT-0051.cs",
+        "RequirementHomes/CRT/REQ-QUIC-CRT-0095.cs",
+        "RequirementHomes/CRT/REQ-QUIC-CRT-0096.cs",
     ];
 
     [Fact]
@@ -56,10 +56,12 @@ public sealed class PrivateReflectionGuardTests
             return true;
         }
 
-        string relativePath = Path.GetRelativePath(testsRoot, filePath);
+        string relativePath = NormalizePath(Path.GetRelativePath(testsRoot, filePath));
 
         return AllowlistedFiles.Contains(relativePath, StringComparer.OrdinalIgnoreCase);
     }
+
+    private static string NormalizePath(string path) => path.Replace('\\', '/');
 
     private static string GetTestsRoot()
     {
