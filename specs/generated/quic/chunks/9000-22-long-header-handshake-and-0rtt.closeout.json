@@ -30,23 +30,23 @@
     "stale_or_wrong_refs_found_in_scope": []
   },
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S17P2P2-0018",
-    "REQ-QUIC-RFC9000-S17P2P2-0019",
+    "REQ-QUIC-RFC9000-0985",
+    "REQ-QUIC-RFC9000-0986",
     "REQ-QUIC-RFC9000-S17P2P2-0020",
     "REQ-QUIC-RFC9000-S17P2P2-0021",
     "REQ-QUIC-RFC9000-S17P2P2-0022",
-    "REQ-QUIC-RFC9000-S17P2P2-0023",
+    "REQ-QUIC-RFC9000-0990",
     "REQ-QUIC-RFC9000-S17P2P2-0024",
     "REQ-QUIC-RFC9000-S17P2P2-0025",
     "REQ-QUIC-RFC9000-S17P2P2-0026",
     "REQ-QUIC-RFC9000-S17P2P3-0003",
     "REQ-QUIC-RFC9000-S17P2P3-0004",
-    "REQ-QUIC-RFC9000-S17P2P3-0017",
+    "REQ-QUIC-RFC9000-1006",
     "REQ-QUIC-RFC9000-S17P2P3-0018",
-    "REQ-QUIC-RFC9000-S17P2P3-0019",
+    "REQ-QUIC-RFC9000-1009",
     "REQ-QUIC-RFC9000-S17P2P3-0020",
     "REQ-QUIC-RFC9000-S17P2P3-0021",
-    "REQ-QUIC-RFC9000-S17P2P3-0022",
+    "REQ-QUIC-RFC9000-1011",
     "REQ-QUIC-RFC9000-S17P2P3-0023"
   ],
   "counts": {
@@ -270,7 +270,7 @@
       "notes": "The unused-field wire image is covered by the requirement-home tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0969",
       "section": "S17P2P1",
       "title": "Clients MUST ignore the value of this field",
       "status": "covered",
@@ -310,7 +310,7 @@
       "notes": "The most-significant unused bit is covered by the requirement-home tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0971",
       "section": "S17P2P1",
       "title": "The Version field of a Version Negotiation packet MUST be set to 0x00000000",
       "status": "covered",
@@ -333,7 +333,7 @@
       "notes": "Version zero is parsed as a Version Negotiation packet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-0972",
       "section": "S17P2P1",
       "title": "The server MUST include the value from the Source Connection ID field of the packet it re...",
       "status": "covered",
@@ -343,7 +343,7 @@
         "src/Incursa.Quic/QuicVersionNegotiation.cs:131-174"
       ],
       "test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0014.cs:16-35"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0972.cs:16-35"
       ],
       "direct_refs_state": "canonical",
       "remaining_gap": null,
@@ -384,7 +384,7 @@
       "notes": "Version Negotiation send decisions are independent of version-specific connection-ID rules."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-0976",
       "section": "S17P2P1",
       "title": "A Version Negotiation packet MUST NOT be acknowledged",
       "status": "covered",
@@ -396,7 +396,7 @@
         "src/Incursa.Quic/QuicVersionNegotiation.cs:179-208"
       ],
       "test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0017.cs:16-45"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0976.cs:16-45"
       ],
       "direct_refs_state": "canonical",
       "remaining_gap": null,
@@ -443,7 +443,7 @@
       "notes": "Version Negotiation packets are parsed into a dedicated view that exposes the supported versions and preserves the unused bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-0980",
       "section": "S17P2P1",
       "title": "A server MUST NOT send more than one Version Negotiation packet in response to a single U...",
       "status": "covered",
@@ -453,7 +453,7 @@
         "src/Incursa.Quic/QuicVersionNegotiation.cs:79-125"
       ],
       "test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0020.cs:16-49"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0980.cs:16-49"
       ],
       "direct_refs_state": "canonical",
       "remaining_gap": null,
@@ -885,7 +885,7 @@
       "notes": "The parser validates the token length before accepting the Initial packet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0018",
+      "requirement_id": "REQ-QUIC-RFC9000-0985",
       "section": "S17P2P2",
       "title": "Reject non-zero Token Length on client receipt",
       "status": "blocked",
@@ -898,7 +898,7 @@
       "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-0986",
       "section": "S17P2P2",
       "title": "Set Token Length to 0 for server Initial packets",
       "status": "blocked",
@@ -950,7 +950,7 @@
       "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0023",
+      "requirement_id": "REQ-QUIC-RFC9000-0990",
       "section": "S17P2P2",
       "title": "A server MAY send multiple Initial packets",
       "status": "blocked",
@@ -1378,7 +1378,7 @@
       "notes": "The parser validates the packet-number bytes implied by the packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1006",
       "section": "S17P2P3",
       "title": "A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet",
       "status": "blocked",
@@ -1404,7 +1404,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-1009",
       "section": "S17P2P3",
       "title": "A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server",
       "status": "blocked",
@@ -1443,7 +1443,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-1011",
       "section": "S17P2P3",
       "title": "An acknowledgment for a 1-RTT packet MUST be carried in a 1-RTT packet",
       "status": "blocked",

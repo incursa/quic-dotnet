@@ -17,11 +17,11 @@
     "REQ-QUIC-RFC9000-S19P7-0003",
     "REQ-QUIC-RFC9000-S19P7-0004",
     "REQ-QUIC-RFC9000-S19P7-0005",
-    "REQ-QUIC-RFC9000-S19P7-0006",
-    "REQ-QUIC-RFC9000-S19P7-0007",
+    "REQ-QUIC-RFC9000-1243",
+    "REQ-QUIC-RFC9000-1244",
     "REQ-QUIC-RFC9000-S19P7-0008",
-    "REQ-QUIC-RFC9000-S19P7-0009",
-    "REQ-QUIC-RFC9000-S19P7-0010"
+    "REQ-QUIC-RFC9000-1245",
+    "REQ-QUIC-RFC9000-1246"
   ],
   "summary": "Prove the RFC 9000 Section 19.7 NEW_TOKEN frame-field and role-policy trace tail.",
   "planned_changes": "- Add focused NEW_TOKEN requirement-home helpers for exact field encodings, duplicate-token comparisons, protected application-packet injection, and parser assertions.\n- Add focused positive, negative, edge, and fuzz proof where required for S19P7 0001 through 0010.\n- Enforce managed-runtime role policy for client send prohibition, client empty-token FRAME_ENCODING_ERROR, and server receipt PROTOCOL_VIOLATION.\n- Add NEW_TOKEN parse and format coverage to the existing QuicFrameCodec benchmark suite.\n- Link the focused proof to dedicated architecture, work-item, and verification artifacts.",

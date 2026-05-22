@@ -18,9 +18,9 @@
   "preconditions": [
     "The external `quic-interop-runner` checkout includes `quic-go` and `msquic` peer slots.",
     "Hosted dispatch has Docker Engine 28.1 or later, Python 3.12, and Wireshark packet-analysis tools available.",
-    "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture."
+    "The repo-local helper remains responsible for image replacement, runner invocation, inventory output, and per-cell artifact capture that feed the generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports."
   ],
-  "scope": "Verify that the repository exposes a manual advisory profile for role-backed major non-HTTP/3 interop evidence against `quic-go` and `msquic`, without promoting blocked cells or changing ordinary CI gates.",
+  "scope": "Verify that the repository exposes a manual advisory profile for role-backed major non-HTTP/3 interop evidence against `quic-go` and `msquic`, without promoting blocked cells or changing ordinary CI gates, and that the generated inventory/evidence reports stay aligned with that workflow shape.",
   "procedure": [
     "Review `.github/workflows/interop-runner-handshake.yml` and confirm the `major-peer-matrix` profile is `workflow_dispatch` only.",
     "Confirm the profile includes local client and local server matrix cells against `quic-go` and `msquic` for `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`.",
@@ -30,14 +30,19 @@
     "Run helper failure-summary tests that prove `keyupdate` and `resumption` FileNotFound advisory downgrades require testcase-specific preserved-log markers and still fail when those markers are incomplete.",
     "Run the focused requirement-home tests for `REQ-QUIC-INT-0017` and `REQ-QUIC-INT-0019`.",
     "Run representative helper dry-run plans for quic-go and msquic client/server cells.",
+    "Inspect the generated advisory `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports for the same cell set.",
     "Run SpecTrace core validation.",
     "When external evidence is required, dispatch `gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=major-peer-matrix` and inspect each uploaded `runner-report.json` plus selected output logs."
   ],
-  "expected_result": "The repository configuration provides an opt-in major peer matrix that can collect per-cell artifacts for Incursa.Quic as client and server against quic-go and msquic for the currently executable major non-HTTP/3 scenarios, while keeping blocked cells and HTTP/3 out of scope.",
+  "expected_result": "The repository configuration provides an opt-in major peer matrix that can collect per-cell artifacts for Incursa.Quic as client and server against quic-go and msquic for the currently executable major non-HTTP/3 scenarios, while keeping blocked cells and HTTP/3 out of scope, and the generated inventory/evidence reports remain the advisory record of those runs.",
   "evidence": [
     ".github/workflows/interop-runner-handshake.yml",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.json",
+    "specs/generated/quic/interop-major-peer-matrix-inventory.md",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
+    "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
     "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0017.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
@@ -48,11 +53,11 @@
     "artifacts/interop-runner/20260512-103506944-server-nginx/",
     "artifacts/interop-runner/20260512-103744122-server-nginx/"
   ],
-  "status_summary": "Planned for hosted execution. The repository now has the manual major peer matrix profile and local workflow-shape proof. Passing focused tests and representative helper dry-runs prove the configuration shape; hosted per-cell runner artifacts are still required before claiming the major peer matrix itself is green. The latest local server-role msquic reruns still fail with TLS alert 50 and remain explicit blocked evidence rather than green, which keeps the matrix honest until the upstream qns trust/config gap is resolved. Full SpecTrace core validation remains blocked by the current RFC9000 JSON parse/reference cascade and is not claimed as passing by this artifact.",
+  "status_summary": "Planned for hosted execution. The repository now has the manual major peer matrix profile and local workflow-shape proof. Passing focused tests and representative helper dry-runs prove the configuration shape; hosted per-cell runner artifacts are still required before claiming the major peer matrix itself is green. The generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports already preserve the latest advisory evidence. The latest local server-role msquic reruns still fail with TLS alert 50 and remain explicit blocked evidence rather than green, which keeps the matrix honest until the upstream qns trust/config gap is resolved. Full SpecTrace core validation remains blocked by the current RFC9000 JSON parse/reference cascade and is not claimed as passing by this artifact.",
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a dedicated hosted proof lane, but it remains outside this role-backed profile by scope. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a dedicated hosted proof lane, but it remains outside this role-backed profile by scope. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope. The generated major-peer inventory and evidence reports stay advisory and are not support proof."
     }
   ]
 }

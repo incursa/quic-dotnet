@@ -68,7 +68,7 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0004
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S5P1P2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0244")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task PeerAddressRebindingWithoutAnUnusedPeerConnectionIdCanReuseTheCurrentAddressPairConnectionId()
@@ -82,10 +82,10 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0004
             originalPath.LocalPort);
         byte[] originalPairConnectionId = [0x95, 0x96, 0x97, 0x98];
 
-        await REQ_QUIC_RFC9000_S5P1P2_0006.BindPeerConnectionIdToCurrentPath(runtime, originalPairConnectionId);
+        await REQ_QUIC_RFC9000_0244.BindPeerConnectionIdToCurrentPath(runtime, originalPairConnectionId);
 
         QuicConnectionTransitionResult validationResult =
-            REQ_QUIC_RFC9000_S5P1P2_0006.ValidateMigratedPath(runtime, reboundPath);
+            REQ_QUIC_RFC9000_0244.ValidateMigratedPath(runtime, reboundPath);
 
         Assert.True(validationResult.StateChanged);
         Assert.True(runtime.ActivePath.HasValue);

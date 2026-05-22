@@ -58,12 +58,12 @@
     "REQ-QUIC-RFC9000-S17P2P4-0013",
     "REQ-QUIC-RFC9000-S17P2P4-0014",
     "REQ-QUIC-RFC9000-S17P2P4-0015",
-    "REQ-QUIC-RFC9000-S17P2P4-0016",
+    "REQ-QUIC-RFC9000-1015",
     "REQ-QUIC-RFC9000-S17P2P4-0017",
     "REQ-QUIC-RFC9000-S17P2P4-0018",
     "REQ-QUIC-RFC9000-S17P2P4-0019",
-    "REQ-QUIC-RFC9000-S17P2P4-0020",
-    "REQ-QUIC-RFC9000-S17P2P4-0021",
+    "REQ-QUIC-RFC9000-1735",
+    "REQ-QUIC-RFC9000-1018",
     "REQ-QUIC-RFC9000-S17P2P5-0001",
     "REQ-QUIC-RFC9000-S17P2P5-0002",
     "REQ-QUIC-RFC9000-S17P2P5-0003",
@@ -84,14 +84,14 @@
     "REQ-QUIC-RFC9000-S17P2P5P1-0002",
     "REQ-QUIC-RFC9000-S17P2P5P1-0003",
     "REQ-QUIC-RFC9000-S17P2P5P1-0004",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+    "REQ-QUIC-RFC9000-1033",
     "REQ-QUIC-RFC9000-S17P2P5P1-0006",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0007",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0008",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0001",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+    "REQ-QUIC-RFC9000-1034",
+    "REQ-QUIC-RFC9000-1035",
+    "REQ-QUIC-RFC9000-1036",
+    "REQ-QUIC-RFC9000-1037",
     "REQ-QUIC-RFC9000-S17P2P5P2-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+    "REQ-QUIC-RFC9000-1039",
     "REQ-QUIC-RFC9000-S17P2P5P2-0005",
     "REQ-QUIC-RFC9000-S17P2P5P2-0006",
     "REQ-QUIC-RFC9000-S17P2P5P2-0007",
@@ -99,14 +99,14 @@
     "REQ-QUIC-RFC9000-S17P2P5P2-0009",
     "REQ-QUIC-RFC9000-S17P2P5P3-0001",
     "REQ-QUIC-RFC9000-S17P2P5P3-0002",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0004",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0005",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-1050",
+    "REQ-QUIC-RFC9000-1051",
+    "REQ-QUIC-RFC9000-1052",
+    "REQ-QUIC-RFC9000-1053",
     "REQ-QUIC-RFC9000-S17P2P5P3-0007",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+    "REQ-QUIC-RFC9000-1055",
     "REQ-QUIC-RFC9000-S17P3-0001",
-    "REQ-QUIC-RFC9000-S17P3P1-0001",
+    "REQ-QUIC-RFC9000-1059",
     "REQ-QUIC-RFC9000-S17P3P1-0002",
     "REQ-QUIC-RFC9000-S17P3P1-0009",
     "REQ-QUIC-RFC9000-S17P3P1-0010",
@@ -118,13 +118,13 @@
     "REQ-QUIC-RFC9000-S17P4-0001",
     "REQ-QUIC-RFC9000-S17P4-0002",
     "REQ-QUIC-RFC9000-S17P4-0003",
-    "REQ-QUIC-RFC9000-S17P4-0004",
+    "REQ-QUIC-RFC9000-1088",
     "REQ-QUIC-RFC9000-S17P4-0005",
-    "REQ-QUIC-RFC9000-S17P4-0006",
-    "REQ-QUIC-RFC9000-S17P4-0007",
+    "REQ-QUIC-RFC9000-1090",
+    "REQ-QUIC-RFC9000-1091",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
-    "REQ-QUIC-RFC9000-S17P4-0010"
+    "REQ-QUIC-RFC9000-1098"
   ],
   "requirements": [
     {
@@ -590,7 +590,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0016",
+      "requirement_id": "REQ-QUIC-RFC9000-1015",
       "section": "S17P2P4",
       "title": "Once a client has received a Handshake packet from a server, it MUST use Handshake packets to...",
       "status": "blocked",
@@ -646,7 +646,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1735",
       "section": "S17P2P4",
       "title": "Handshake packets MAY contain CONNECTION_CLOSE frames of type 0x1c",
       "status": "blocked",
@@ -660,7 +660,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P4-0021",
+      "requirement_id": "REQ-QUIC-RFC9000-1018",
       "section": "S17P2P4",
       "title": "Endpoints MUST treat receipt of Handshake packets with other frames as a connection error of...",
       "status": "blocked",
@@ -1143,7 +1143,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1033",
       "section": "S17P2P5P1",
       "title": "A server MAY send Retry packets in response to Initial and 0-RTT packets",
       "status": "blocked",
@@ -1171,7 +1171,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1034",
       "section": "S17P2P5P1",
       "title": "A server MAY send multiple Retry packets as it receives Initial or 0-RTT packets",
       "status": "blocked",
@@ -1185,7 +1185,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1035",
       "section": "S17P2P5P1",
       "title": "A server MUST NOT send more than one Retry packet in response to a single UDP datagram",
       "status": "blocked",
@@ -1199,7 +1199,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1036",
       "section": "S17P2P5P2",
       "title": "A client MUST accept and process at most one Retry packet for each connection attempt",
       "status": "blocked",
@@ -1213,7 +1213,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1037",
       "section": "S17P2P5P2",
       "title": "After the client has received and processed an Initial or Retry packet from the server, it MU...",
       "status": "blocked",
@@ -1241,7 +1241,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1039",
       "section": "S17P2P5P2",
       "title": "A client MUST discard a Retry packet with a zero-length Retry Token field",
       "status": "blocked",
@@ -1353,7 +1353,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1050",
       "section": "S17P2P5P3",
       "title": "A client MUST use the same cryptographic handshake message it included in this packet",
       "status": "blocked",
@@ -1367,7 +1367,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1051",
       "section": "S17P2P5P3",
       "title": "A server MAY treat a packet that contains a different cryptographic handshake message as a co...",
       "status": "blocked",
@@ -1381,7 +1381,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-1052",
       "section": "S17P2P5P3",
       "title": "A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the con...",
       "status": "blocked",
@@ -1395,7 +1395,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1053",
       "section": "S17P2P5P3",
       "title": "A client MUST NOT reset the packet number for any packet number space after processing a Retr...",
       "status": "blocked",
@@ -1423,7 +1423,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-1055",
       "section": "S17P2P5P3",
       "title": "A server MAY abort the connection if it detects that the client reset the packet number",
       "status": "blocked",
@@ -1472,7 +1472,7 @@
       "notes": "This requirement is covered only indirectly through the shared long-header parser and envelope tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1059",
       "section": "S17P3P1",
       "title": "A 1-RTT packet MUST use a short packet header",
       "status": "blocked",
@@ -1848,7 +1848,7 @@
       "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-1071",
       "section": "S17P3P1",
       "title": "The next two bits (those with a mask of 0x18) of byte 0 MUST be reserved",
       "status": "covered",
@@ -1916,7 +1916,7 @@
       "notes": "Short-header reserved bits are now normalized in valid inputs and rejected when non-zero."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-1073",
       "section": "S17P3P1",
       "title": "An endpoint MUST treat receipt of a packet that has a non-zero value for these bits, after re...",
       "status": "covered",
@@ -1998,7 +1998,7 @@
       "notes": "Direct test evidence now exists for the short-header form, fixed bit, spin bit, reserved bits, key phase, and packet-number-length bits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P3P1-0020",
+      "requirement_id": "REQ-QUIC-RFC9000-1075",
       "section": "S17P3P1",
       "title": "The least significant two bits (those with a mask of 0x03) of byte 0 MUST contain the length...",
       "status": "covered",
@@ -2116,7 +2116,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1088",
       "section": "S17P4",
       "title": "Implementations MUST allow administrators of clients and servers to disable the spin bit eith...",
       "status": "blocked",
@@ -2144,7 +2144,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1090",
       "section": "S17P4",
       "title": "Allow any spin value when disabled",
       "status": "blocked",
@@ -2158,7 +2158,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1091",
       "section": "S17P4",
       "title": "Ignore any incoming spin value when disabled",
       "status": "blocked",
@@ -2200,7 +2200,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1098",
       "section": "S17P4",
       "title": "When a client receives a 1-RTT packet that increases the highest packet number seen by the cl...",
       "status": "blocked",

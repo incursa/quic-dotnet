@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S9P6P2-0008/0009/0010 requirement-home tests, full Release no-build solution tests, regenerated QUIC coverage triage, Release build, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S9P6P2-0008",
+    "REQ-QUIC-RFC9000-0529",
     "REQ-QUIC-RFC9000-S9P6P2-0009",
     "REQ-QUIC-RFC9000-S9P6P2-0010"
   ],
@@ -33,12 +33,12 @@
     "The PATH_CHALLENGE proof has 1-RTT open packet protection material installed."
   ],
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0529.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0010\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0529|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0010\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "dotnet test Incursa.Quic.slnx -c Release --no-build -m:1",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",

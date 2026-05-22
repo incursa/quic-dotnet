@@ -15,12 +15,12 @@
   "reference_check": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
-      "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-S4-0005",
-      "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-S4P1-0015",
-      "REQ-QUIC-RFC9000-S4P2-0001 through REQ-QUIC-RFC9000-S4P2-0005",
-      "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-S4P4-0004",
+      "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-0159",
+      "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-0177",
+      "REQ-QUIC-RFC9000-S4P2-0001 through REQ-QUIC-RFC9000-0180",
+      "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-0186",
       "REQ-QUIC-RFC9000-S4P5-0001 through REQ-QUIC-RFC9000-S4P5-0008",
-      "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-S4P6-0012"
+      "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-0203"
     ],
     "stale_requirement_refs_found": [],
     "notes": "No requirement tags were found under src/Incursa.Quic; the helper-layer evidence comes from QuicConnectionStreamState, QuicTransportParametersCodec, QuicCryptoBuffer, and the requirement-home tests."
@@ -52,39 +52,39 @@
     "specs/generated/quic/chunks/9000-03-flow-control.closeout.json",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0157.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0158.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0159.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0162.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0163.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0164.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0167.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0168.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0170.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0013.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0014.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0173.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0174.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0176.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0180.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P4-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0185.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0186.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0192.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0193.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0194.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0001.cs",
@@ -94,16 +94,16 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0200.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0201.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0013.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0203.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0204.cs"
   ],
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-S4-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-S4-0001 through REQ-QUIC-RFC9000-0159",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReceiveStreamFrame_EnforcesPerStreamAndConnectionFlowControl",
@@ -116,7 +116,7 @@
       "notes": "The helper layer now proves both stream-scoped and connection-scoped flow control, plus the crypto-buffer carve-out."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-S4P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0001 through REQ-QUIC-RFC9000-0176",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReadStreamData_AdvertisesTotalBytesPreparedToReceive",
@@ -137,7 +137,7 @@
       "notes": "This slice now covers initial flow-control limits, monotonic MAX_* handling, and the helper-layer credit accounting needed for the scoped positive and negative proofs."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P1-0015",
+      "requirement_id": "REQ-QUIC-RFC9000-0177",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
@@ -169,7 +169,7 @@
       "notes": "Requirement-home proof now covers the bounded helper-backed credit publication floor: application consumption is exposed as autotuning input, refreshed credit can be serialized opportunistically, and senders resume when credit is restored without requiring blocked-signal exchange. Broader adaptive credit policy remains a separate follow-on and is not claimed here."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0180",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReadStreamData_SendsCreditWithoutWaitingForBlockedSignals"
@@ -178,7 +178,7 @@
       "notes": "The helper layer can already send refreshed credit immediately after reads."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-S4P4-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-0186",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReceiveResetStreamFrame_TerminatesOnlyTheReceiveDirectionAndPreservesTheSendDirection"
@@ -220,7 +220,7 @@
       "notes": "Wire-level final-size handling is directly proven, including the negative boundary at or beyond the known final size."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-S4P6-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-0203",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReceiveStreamFrame_LimitsTheCumulativeNumberOfIncomingStreams",
@@ -240,7 +240,7 @@
       "notes": "Initial stream limits, monotonic MAX_STREAMS handling, and blocked-stream signaling are now covered at the helper layer."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-0204",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryPeekPeerStreamCapacityRelease_OffersMoreUnidirectionalCreditAfterThePeerStreamCloses",

@@ -37,7 +37,7 @@
   ],
   "tests_run": [
     {
-      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0003|FullyQualifiedName~REQ_QUIC_RFC9002_S6P3_0003\"",
+      "command": "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S17P2P5P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_1050|FullyQualifiedName~REQ_QUIC_RFC9002_S6P3_0003\"",
       "result": "5 passed, 0 failed, 0 skipped"
     },
     {

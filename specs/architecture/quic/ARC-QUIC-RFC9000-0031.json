@@ -16,9 +16,9 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S18P2-0024",
-    "REQ-QUIC-RFC9000-S18P2-0025",
+    "REQ-QUIC-RFC9000-1154",
     "REQ-QUIC-RFC9000-S18P2-0026",
-    "REQ-QUIC-RFC9000-S18P2-0027",
+    "REQ-QUIC-RFC9000-1156",
     "REQ-QUIC-RFC9000-S18P2-0032",
     "REQ-QUIC-RFC9000-S18P2-0034"
   ],
@@ -28,9 +28,9 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPreferredAddressRequirementTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0025.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1154.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0027.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1156.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs"
   ],

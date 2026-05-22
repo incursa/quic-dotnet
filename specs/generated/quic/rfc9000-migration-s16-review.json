@@ -1,0 +1,48 @@
+{
+  "generated_at_utc": "2026-05-22T05:18:39Z",
+  "governing_plan": "C:/src/incursa/spec-trace/quic-rfc-migration-plan.md",
+  "scope": "RFC9000 S16 variable-length integer semantic migration",
+  "summary": {
+    "rename_with_lineage_count": 1,
+    "split_merge_count": 2,
+    "new_canonical_ids": 6
+  },
+  "mappings": [
+    {
+      "classification": "split-merge",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S16-0003",
+      "staged_requirement_ids": [
+        "REQ-QUIC-RFC9000-0907",
+        "REQ-QUIC-RFC9000-0908"
+      ],
+      "derived_from": "REQ-QUIC-RFC9000-S16-0003",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S16-0003"
+      ]
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S16-0004",
+      "staged_requirement_ids": [
+        "REQ-QUIC-RFC9000-0913"
+      ],
+      "derived_from": "REQ-QUIC-RFC9000-S16-0004",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S16-0004"
+      ]
+    },
+    {
+      "classification": "split-merge",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S16-0005",
+      "staged_requirement_ids": [
+        "REQ-QUIC-RFC9000-0914",
+        "REQ-QUIC-RFC9000-0915",
+        "REQ-QUIC-RFC9000-0916"
+      ],
+      "derived_from": "REQ-QUIC-RFC9000-S16-0005",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S16-0005"
+      ]
+    }
+  ]
+}

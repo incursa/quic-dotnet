@@ -16,13 +16,13 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S5P2P2-0001",
-    "REQ-QUIC-RFC9000-S5P2P2-0002",
-    "REQ-QUIC-RFC9000-S5P2P2-0003",
+    "REQ-QUIC-RFC9000-0265",
+    "REQ-QUIC-RFC9000-0267",
     "REQ-QUIC-RFC9000-S5P2P2-0004",
     "REQ-QUIC-RFC9000-S5P2P2-0005",
-    "REQ-QUIC-RFC9000-S5P2P2-0006",
+    "REQ-QUIC-RFC9000-0271",
     "REQ-QUIC-RFC9000-S5P2P2-0009",
-    "REQ-QUIC-RFC9000-S5P2P2-0010"
+    "REQ-QUIC-RFC9000-0275"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicListenerHost.cs",
@@ -31,12 +31,12 @@
     "src/Incursa.Quic/QuicVersionNegotiation.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0265.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0267.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0271.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0010.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0275.cs"
   ],
   "design_summary": "The listener first gives every datagram to the endpoint ingress router so existing connections and endpoint-handled packets remain ahead of server pre-acceptance policy. Unmatched datagrams are screened for retained stateless-reset emission, then classified by a small pre-acceptance policy: large unsupported-version long headers are eligible for Version Negotiation, undersized unsupported-version packets are dropped, supported-version Initial packets at the minimum datagram size are admitted into the server handshake path, premature Handshake packets are ignored, and all remaining unmatched packets are dropped. The endpoint route lookup now treats zero-length connection-ID routes as address-tuple routes by requiring the incoming local address and port to match the registered binding when local tuple data is present.",
   "data_and_state_considerations": "Version Negotiation response limiting is endpoint-local and optional; the listener exposes an internal per-remote-address cap while retaining unlimited behavior by default. The pre-acceptance classifier is stateless so the receive loop can be tested without a socket for drop and classification policy. Actual Initial admission remains in QuicListenerHost and is proven by a protected loopback Initial that produces a server Initial response.",

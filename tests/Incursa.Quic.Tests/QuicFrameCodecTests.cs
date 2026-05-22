@@ -25,15 +25,15 @@ public sealed class QuicFrameCodecTests
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0010">ACK frames MUST carry the most recent set of acknowledgments and the acknowledgment delay from the largest acknowledged packet.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0001">When an ACK frame is sent, one or more ranges of acknowledged packets MUST be included.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P5-0002">The endpoint MUST encode this acknowledgment delay in the ACK Delay field of an ACK frame.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0001">Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1192">Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0002">ACK Ranges MAY be repeated.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0003">The Gap field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0004">The ACK Range Length field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0005">The Gap field MUST be variable-length integer indicating the number of contiguous unacknowledged packets preceding the packet number one lower than the smallest in the preceding ACK Range.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0006">The ACK Range Length field MUST be variable-length integer indicating the number of contiguous acknowledged packets preceding the largest packet number, as determined by the preceding Gap.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0007">A value of 0 MUST indicate that only the largest packet number is acknowledged.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1198">A value of 0 MUST indicate that only the largest packet number is acknowledged.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0008">Larger ACK Range values MUST indicate a larger range, with corresponding lower values for the smallest packet number in the range.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0009">Each Gap MUST indicate a range of packets that are not being acknowledged.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1203">Each Gap MUST indicate a range of packets that are not being acknowledged.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0010">If any computed packet number is negative, an endpoint MUST generate a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P2-0001">The ACK frame MUST use the least significant bit of the type value (that is, type 0x03) to indicate ECN feedback and report receipt of QUIC packets with associated ECN codepoints of ECT(0), ECT(1), or ECN-CE in the packet&apos;s IP header.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P2-0002">The ECT0 Count field MUST be encoded as a variable-length integer.</workbench-requirement>
@@ -63,15 +63,15 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S13P3-0010")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P5-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-1192")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-1198")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-1203")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0002")]
@@ -146,14 +146,14 @@ public sealed class QuicFrameCodecTests
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0018">The ACK Range Count field MUST be variable-length integer specifying the number of ACK Range fields in the frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0019">The First ACK Range field MUST be variable-length integer indicating the number of contiguous packets preceding the Largest Acknowledged that are being acknowledged.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0020">MUST contain additional ranges of packets that are alternately not acknowledged (Gap) and acknowledged (ACK Range); see Section 19.3.1.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0001">Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1192">Each ACK Range MUST consist of alternating Gap and ACK Range Length values in descending packet number order.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0003">The Gap field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0004">The ACK Range Length field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0005">The Gap field MUST be variable-length integer indicating the number of contiguous unacknowledged packets preceding the packet number one lower than the smallest in the preceding ACK Range.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0006">The ACK Range Length field MUST be variable-length integer indicating the number of contiguous acknowledged packets preceding the largest packet number, as determined by the preceding Gap.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0007">A value of 0 MUST indicate that only the largest packet number is acknowledged.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1198">A value of 0 MUST indicate that only the largest packet number is acknowledged.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0008">Larger ACK Range values MUST indicate a larger range, with corresponding lower values for the smallest packet number in the range.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0009">Each Gap MUST indicate a range of packets that are not being acknowledged.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1203">Each Gap MUST indicate a range of packets that are not being acknowledged.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P1-0010">If any computed packet number is negative, an endpoint MUST generate a connection error of type FRAME_ENCODING_ERROR.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P2-0002">The ECT0 Count field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P2-0003">The ECT1 Count field MUST be encoded as a variable-length integer.</workbench-requirement>
@@ -176,14 +176,14 @@ public sealed class QuicFrameCodecTests
     [Requirement("REQ-QUIC-RFC9000-S19P3-0018")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0019")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0020")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-1192")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-1198")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S19P3P1-0009")]
+    [Requirement("REQ-QUIC-RFC9000-1203")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P1-0010")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3P2-0003")]

@@ -32,7 +32,7 @@
     "specs/generated/quic/chunks/9000-02-stream-state.closeout.json",
     "specs/generated/quic/chunks/9000-02-stream-state.closeout.md",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs"
   ],
   "tests_run": [
     {
@@ -50,7 +50,7 @@
       "duration_ms": 37
     },
     {
-      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0012\"",
+      "command": "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0110\"",
       "passed": 2,
       "failed": 0,
       "skipped": 0,
@@ -156,7 +156,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0082",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -165,11 +165,11 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-0083",
       "completion_status": "implemented and tested",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0009.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0083.cs"
       ],
       "direct_refs_added_or_updated": [],
       "remaining_gap": null,
@@ -266,7 +266,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0098",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -275,7 +275,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0097",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -344,32 +344,32 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0109",
       "completion_status": "implemented and tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0011.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
       ],
       "remaining_gap": null,
       "notes": "Focused proof now covers lower-numbered peer stream creation on both MAX_STREAM_DATA and STOP_SENDING paths."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0110",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicConnectionStreamState.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0012.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs"
       ],
       "remaining_gap": null,
       "notes": "Focused proof now covers receive acceptance for STREAM and STREAM_DATA_BLOCKED in Recv, including the locally initiated unidirectional rejection boundary."
@@ -423,16 +423,16 @@
       "notes": "Focused proof now covers the transition into Size Known after FIN arrives."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0017",
+      "requirement_id": "REQ-QUIC-RFC9000-0113",
       "completion_status": "implemented and tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs"
       ],
       "remaining_gap": null,
       "notes": "Focused proof now covers the transition into Data Recvd once all stream data has arrived."
@@ -447,7 +447,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0019",
+      "requirement_id": "REQ-QUIC-RFC9000-0115",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -474,7 +474,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0022",
+      "requirement_id": "REQ-QUIC-RFC9000-0120",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -663,7 +663,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0152",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -713,17 +713,17 @@
     "REQ-QUIC-RFC9000-S3P1-0017",
     "REQ-QUIC-RFC9000-S3P2-0001",
     "REQ-QUIC-RFC9000-S3P2-0002",
-    "REQ-QUIC-RFC9000-S3P2-0003",
-    "REQ-QUIC-RFC9000-S3P2-0004",
+    "REQ-QUIC-RFC9000-0098",
+    "REQ-QUIC-RFC9000-0097",
     "REQ-QUIC-RFC9000-S3P2-0007",
     "REQ-QUIC-RFC9000-S3P2-0009",
     "REQ-QUIC-RFC9000-S3P2-0010",
-    "REQ-QUIC-RFC9000-S3P2-0012",
+    "REQ-QUIC-RFC9000-0110",
     "REQ-QUIC-RFC9000-S3P2-0013",
     "REQ-QUIC-RFC9000-S3P2-0015",
     "REQ-QUIC-RFC9000-S3P2-0018",
     "REQ-QUIC-RFC9000-S3P2-0021",
-    "REQ-QUIC-RFC9000-S3P2-0022",
+    "REQ-QUIC-RFC9000-0120",
     "REQ-QUIC-RFC9000-S3P2-0023",
     "REQ-QUIC-RFC9000-S3P3-0001",
     "REQ-QUIC-RFC9000-S3P3-0002",
@@ -743,7 +743,7 @@
     "REQ-QUIC-RFC9000-S3P5-0007",
     "REQ-QUIC-RFC9000-S3P5-0008",
     "REQ-QUIC-RFC9000-S3P5-0009",
-    "REQ-QUIC-RFC9000-S3P5-0010",
+    "REQ-QUIC-RFC9000-0152",
     "REQ-QUIC-RFC9000-S3P5-0011",
     "REQ-QUIC-RFC9000-S3P5-0012",
     "REQ-QUIC-RFC9000-S3P5-0013"

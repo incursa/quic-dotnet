@@ -25,7 +25,7 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 - `REQ-QUIC-RFC9000-S17P1-0001` - not implemented; no packet-number encoding surface exists.
 - `REQ-QUIC-RFC9000-S17P1-0002` - not implemented; no packet-number-space acknowledgement state exists.
 - `REQ-QUIC-RFC9000-S17P1-0003` - not implemented; no sender-side packet-number sizing policy exists.
-- `REQ-QUIC-RFC9000-S17P1-0004` - not implemented; no packet-number recovery heuristic exists.
+- `REQ-QUIC-RFC9000-0925` - not implemented; no packet-number recovery heuristic exists.
 
 ### S17P2
 
@@ -46,13 +46,13 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 - `REQ-QUIC-RFC9000-S17P2-0015` - partially implemented; zero-fixed-bit packets are not discarded by the parser.
 - `REQ-QUIC-RFC9000-S17P2-0016` - partially implemented; packet-type bits are not parsed into a dedicated field.
 - `REQ-QUIC-RFC9000-S17P2-0017` - implemented and tested; version zero maps to the Version Negotiation parse state.
-- `REQ-QUIC-RFC9000-S17P2-0018` - implemented and tested; the destination CID length byte is followed by the encoded destination CID field.
+- `REQ-QUIC-RFC9000-0939` - implemented and tested; the destination CID length byte is followed by the encoded destination CID field.
 - `REQ-QUIC-RFC9000-S17P2-0019` - implemented and tested; the length is carried as an 8-bit value.
 - `REQ-QUIC-RFC9000-S17P2-0020` - implemented and tested; version 1 long headers with a destination CID up to 20 bytes are accepted.
 - `REQ-QUIC-RFC9000-S17P2-0021` - implemented and tested; version 1 long headers with a destination CID longer than 20 bytes are rejected.
 - `REQ-QUIC-RFC9000-S17P2-0022` - tested but implementation mapping unclear; the parser can read longer non-v1 CIDs, but there is no server-side Version Negotiation formation path in this repo.
 - `REQ-QUIC-RFC9000-S17P2-0023` - implemented and tested; the destination CID field is sliced using the encoded length.
-- `REQ-QUIC-RFC9000-S17P2-0024` - implemented and tested; the source CID length byte is read after the destination CID field.
+- `REQ-QUIC-RFC9000-0944` - implemented and tested; the source CID length byte is read after the destination CID field.
 - `REQ-QUIC-RFC9000-S17P2-0025` - implemented and tested; the source CID field is sliced using the encoded length.
 - `REQ-QUIC-RFC9000-S17P2-0026` - partially implemented; trailing version-specific bytes are preserved, but the later packet-type-specific long-header fields are not parsed in this chunk.
 - `REQ-QUIC-RFC9000-S17P2-0027` - partially implemented; the reserved bits are carried in `HeaderControlBits`, but there is no enforcement or pre-protection normalization.
@@ -122,7 +122,7 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 
 ## Requirements Needing Deeper Implementation Work
 
-- `REQ-QUIC-RFC9000-S17P1-0001` through `REQ-QUIC-RFC9000-S17P1-0004`
+- `REQ-QUIC-RFC9000-S17P1-0001` through `REQ-QUIC-RFC9000-0925`
 - `REQ-QUIC-RFC9000-S17P2-0002` through `REQ-QUIC-RFC9000-S17P2-0004`
 - `REQ-QUIC-RFC9000-S17P2-0014` through `REQ-QUIC-RFC9000-S17P2-0016`
 - `REQ-QUIC-RFC9000-S17P2-0026` through `REQ-QUIC-RFC9000-S17P2-0029`

@@ -264,8 +264,8 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-0047")]
+    [Requirement("REQ-QUIC-RFC9000-0048")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task RuntimeIngressReplay_GapFillingRetransmissionWakesPendingOrderedRead()
@@ -908,6 +908,9 @@ public sealed class REQ_QUIC_API_0010
         }
 
         Span<byte> mask = stackalloc byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+        // QUIC header protection intentionally uses AES-ECB per RFC 9001.
+
+        // codeql[cs/weak-encryption]
         using (Aes aes = Aes.Create())
         {
             aes.Key = material.HeaderProtectionKey.ToArray();

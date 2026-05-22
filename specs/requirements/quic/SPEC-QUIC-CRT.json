@@ -27,7 +27,7 @@
   ],
   "purpose": "Define the architecture and implementation requirements for the connection-owned QUIC runtime that arbitrates packet receive events, timer expirations, path changes, stateless reset handling, handshake packet flow, close and drain transitions, live stream orchestration, structured diagnostics capture, and the trim and Native AOT compatibility posture of the shipped package.",
   "scope": "This specification covers endpoint ingress classification, routing tables, connection ownership, execution profiles, event and effect modeling, timer scheduling, lifecycle phases, migration and path state, handshake packet open/protect coordination, stateless reset handling, stream ownership, structured diagnostics capture, per-connection diagnostics resolution, qlog adapter boundary ownership, host-facing qlog capture and serialization above that boundary, performance posture for high connection density, packaged-library trimming and Native AOT compatibility, and reducer-oriented testability.",
-  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and the landed managed handshake follow-ons through server/client `Finished` proof, peer transport-parameter commit gating, directional 1-RTT publication, retry bootstrap replay, certificate-policy floors, resumption-ticket ownership, dormant early-data prerequisite capture, the first bounded client 0-RTT send attempt, early-data rejection cleanup, and the first client key-phase follow-ons. The missing seams are no longer one monolithic handshake floor; the remaining handshake-adjacent work now splits across RFC 9000 control-frame reliability, broader RFC 9001 key-update behavior, and separate interop widening. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, live-stream, diagnostics, qlog-adapter, qlog-capture, early-data prerequisite capture, dormant early-data attempt readiness, and package-compatibility work can be implemented against one clear architecture, while the library-owned retry bootstrap seam is now implemented and the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.",
+  "context": "The repository already contains helper-backed slices for idle timeout, lifecycle, stateless reset formatting, anti-amplification, path validation, connection stream bookkeeping, a TLS bridge state, handshake packet protection helpers, and the landed managed handshake follow-ons through server/client `Finished` proof, peer transport-parameter commit gating, directional 1-RTT publication, retry bootstrap replay, certificate-policy floors, resumption-ticket ownership, dormant early-data prerequisite capture, the first bounded client 0-RTT send attempt, early-data rejection cleanup, and the first client key-phase follow-ons. The missing seams are no longer one monolithic handshake floor; the remaining handshake-adjacent work now splits across RFC 9000 control-frame reliability, broader RFC 9001 key-update behavior, and separate interop widening. The current diagnostics placeholder exposes a no-op sink, but the next slice needs a typed, connection-scoped diagnostics contract plus a sibling qlog adapter boundary and a narrow host-facing qlog capture helper so transport facts can be mapped and serialized without bringing JSON or serializer concerns into the core. The repository also ships a NuGet package, so trimming and Native AOT compatibility need to hold at the package boundary when downstream consumers reference the library through PackageReference. When this spec references RFC 9000 requirement IDs, reconcile them against the derived RFC9000 crosswalk and retired-ID ledger before renaming any references. This specification turns those seams into explicit implementation requirements so the remaining RFC 9000 migration, idle/close, stateless reset, live-stream, diagnostics, qlog-adapter, qlog-capture, early-data prerequisite capture, dormant early-data attempt readiness, and package-compatibility work can be implemented against one clear architecture, while the library-owned retry bootstrap seam is now implemented and the narrow child-process retry contract is traced separately in `SPEC-QUIC-INT`.",
   "supplemental_sections": [
     {
       "heading": "Decision Summary",
@@ -1230,7 +1230,7 @@
           "src/Incursa.Quic/QuicConnectionRuntime.cs",
           "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
           "src/Incursa.Quic/QuicListenerHost.cs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1033.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs"
         ],
@@ -1243,7 +1243,7 @@
       },
       "notes": [
         "This is a server-side closed-gate receive boundary, not 0-RTT acceptance or buffering.",
-        "Retry bootstrap from 0-RTT datagrams remains owned by REQ-QUIC-RFC9000-S17P2P5P1-0005 and is not broadened here.",
+        "Retry bootstrap from 0-RTT datagrams remains owned by REQ-QUIC-RFC9000-1033 and is not broadened here.",
         "Public early-data support, server anti-replay, and 0-RTT receive/decrypt/deliver behavior remain future work."
       ]
     },
@@ -1764,8 +1764,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::ClientRetryReplayRetainsTheInitialClientHelloAndRetryMetadataExactlyOnce",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::RecoveryProbeAfterRetryRetainsTheRetrySelectedInitialKeysAndToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending"
         ]
       },
       "notes": [

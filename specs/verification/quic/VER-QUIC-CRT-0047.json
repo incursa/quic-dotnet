@@ -9,7 +9,7 @@
   "verification_method": "Focused requirement-home tests with positive, negative, fuzz, and public-surface guard coverage plus SpecTrace JSON validation.",
   "scope": "Verify that the current managed server endpoint/runtime path keeps early-data admission closed for unrouted 0-RTT datagrams without creating connections, streams, application delivery, server-side ZeroRtt open material, or public early-data promises.",
   "preconditions": [
-    "REQ-QUIC-RFC9000-S17P2P5P1-0005 remains the Retry bootstrap owner for 0-RTT-triggered Retry issuance.",
+    "REQ-QUIC-RFC9000-1033 remains the Retry bootstrap owner for 0-RTT-triggered Retry issuance.",
     "REQ-QUIC-RFC9000-S17P2P5P1-0006 remains the RFC 9000 discard-permission owner.",
     "No separate server-side early-data admission or anti-replay owner exists yet."
   ],
@@ -17,7 +17,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1033.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0149.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~REQ_QUIC_CRT_0149\"",

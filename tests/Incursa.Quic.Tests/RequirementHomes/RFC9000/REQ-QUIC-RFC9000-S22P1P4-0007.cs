@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0007
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0007");
 
         Assert.Equal("Assign document registrations permanent status", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "All registrations in this document MUST be assigned a permanent status.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("All registrations in this document MUST be assigned a permanent status.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.4 RFC9000-S22.1.4-B6-P5-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

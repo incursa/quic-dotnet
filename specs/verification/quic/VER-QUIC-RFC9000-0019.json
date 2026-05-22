@@ -14,8 +14,8 @@
   "verification_method": "Requirement-home execution, ACK piggyback policy benchmark dry guard, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded explicit-path 1-RTT NEW_TOKEN ACK piggyback topoff.",
   "verifies": [
     "REQ-QUIC-RFC9000-S9P3-0005",
-    "REQ-QUIC-RFC9000-S9P3-0011",
-    "REQ-QUIC-RFC9000-S13P2P1-0010"
+    "REQ-QUIC-RFC9000-0488",
+    "REQ-QUIC-RFC9000-0763"
   ],
   "scope": "This verification covers server NEW_TOKEN packets emitted through the explicit-path 1-RTT application send helper after client address validation when Application Data ACK-generation state may already contain pending ack-eliciting receipts.",
   "expected_result": "Focused tests prove that pending Application Data ACK state is prepended to a server NEW_TOKEN packet emitted after path validation, the NEW_TOKEN frame remains present after the ACK frame, no ACK frame is invented when no ACK is pending, and the sent ACK frame suppresses duplicate ACK-only triggers for the covered packet receipt. The benchmark dry guard validates the reused ACK piggyback scheduling suite without making public or MSQUIC comparison claims.",
@@ -34,7 +34,7 @@
   ],
   "evidence": [
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/focused-rfc9000-newtoken-ack-piggyback-tests.log",
     "artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/full-rfc9000-s13p2p1-tests.log",

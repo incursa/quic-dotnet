@@ -25,7 +25,7 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs"
   ],
   "tests_run": [
     {
@@ -84,7 +84,7 @@
       "notes": "Requires the same packet-assembly surface as the other S13 opening clauses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0749",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -122,7 +122,7 @@
       "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0752",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -131,7 +131,7 @@
       "notes": "This belongs in inbound ACK processing, which is not present in the chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-0753",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -191,7 +191,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0756",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -231,7 +231,7 @@
       "notes": "Ack-eliciting application-data packets are held to max_ack_delay, which also applies to 0-RTT and 1-RTT application-data traffic in the helper-level model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-0758",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -365,7 +365,7 @@
       "notes": "This is a consequence of peer behavior, not local ACK generation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0763",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -385,7 +385,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-0764",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -435,7 +435,7 @@
       "notes": "Out-of-order/gap-detecting packets and CE-marked packets trigger immediate ACK generation, and CE packets preserve ECN counts."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0014",
+      "requirement_id": "REQ-QUIC-RFC9000-1322",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -476,7 +476,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-1323",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -496,7 +496,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1324",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -540,7 +540,7 @@
       "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0002",
+      "requirement_id": "REQ-QUIC-RFC9000-13230",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -584,7 +584,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-13233",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -604,7 +604,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-13234",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -622,7 +622,7 @@
       "notes": "Deferred intentionally because it is descriptive rather than a distinct code path."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-13235",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -662,7 +662,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-13236",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -682,7 +682,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-0768",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -722,7 +722,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-0771",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -808,7 +808,7 @@
       "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-0779",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -829,19 +829,19 @@
       "notes": "The helper reports ACK Delay directly from measured receive-to-send time, so no uncontrolled delay is introduced."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0780",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckGenerationState.cs",
         "src/Incursa.Quic/QuicCongestionControlState.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs"
       ],
       "tests_covering_requirement": [
         "TryBuildAckFrame_IncludesBufferingDelayFromUnavailableDecryptionKeys",
         "TryBuildAckFrame_DoesNotInventBufferingDelayWhenNoneWasRecorded"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs"
       ],
       "remaining_gap": null,
       "notes": "The helper now adds buffering delay from unavailable decryption keys into ACK Delay without inventing delay when none was recorded."
@@ -940,13 +940,13 @@
     "REQ-QUIC-RFC9000-S13-0003",
     "REQ-QUIC-RFC9000-S13-0004",
     "REQ-QUIC-RFC9000-S13-0005",
-    "REQ-QUIC-RFC9000-S13P1-0001",
+    "REQ-QUIC-RFC9000-0749",
     "REQ-QUIC-RFC9000-S13P1-0002",
-    "REQ-QUIC-RFC9000-S13P1-0004",
+    "REQ-QUIC-RFC9000-0752",
     "REQ-QUIC-RFC9000-S13P2P1-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
-    "REQ-QUIC-RFC9000-S13P2P3-0005",
+    "REQ-QUIC-RFC9000-13234",
     "REQ-QUIC-RFC9000-S13P2P3-0006",
     "REQ-QUIC-RFC9000-S13P2P3-0013",
     "REQ-QUIC-RFC9000-S13P2P4-0001",

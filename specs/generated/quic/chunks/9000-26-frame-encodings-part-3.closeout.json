@@ -130,7 +130,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0003",
+      "requirement_id": "REQ-QUIC-RFC9000-1275",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
@@ -150,7 +150,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-1276",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
@@ -310,7 +310,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0012",
+      "requirement_id": "REQ-QUIC-RFC9000-1282",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
@@ -330,7 +330,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P10-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1283",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
@@ -530,7 +530,7 @@
       "notes": "No stream-limit tracking or open-stream enforcement layer exists."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1291",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
@@ -550,7 +550,7 @@
       "notes": "No stream-limit tracking or open-stream enforcement layer exists."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1292",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
@@ -610,7 +610,7 @@
       "notes": "No stream-limit tracking or open-stream enforcement layer exists."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P11-0013",
+      "requirement_id": "REQ-QUIC-RFC9000-1293",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxStreamsFrame.cs",
@@ -630,7 +630,7 @@
       "notes": "No stream-limit tracking or open-stream enforcement layer exists."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0001",
+      "requirement_id": "REQ-QUIC-RFC9000-1222",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicCryptoFrame.cs",
@@ -830,7 +830,7 @@
       "notes": "Parser rejects oversized offset+length values, but the repo still lacks a connection-error surface for FRAME_ENCODING_ERROR / CRYPTO_BUFFER_EXCEEDED classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P6-0011",
+      "requirement_id": "REQ-QUIC-RFC9000-1237",
       "status": "partially implemented",
       "implementation_refs": [
         "src/Incursa.Quic/QuicCryptoFrame.cs",
@@ -990,7 +990,7 @@
       "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0006",
+      "requirement_id": "REQ-QUIC-RFC9000-1243",
       "status": "implemented and tested",
       "implementation_refs": [
         "src/Incursa.Quic/QuicNewTokenFrame.cs",
@@ -1010,7 +1010,7 @@
       "notes": "NEW_TOKEN frame wire layout, empty-token rejection, and round-trip coverage are in place."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1244",
       "status": "partially implemented",
       "implementation_refs": [
         "src/Incursa.Quic/QuicNewTokenFrame.cs",
@@ -1050,7 +1050,7 @@
       "notes": "No endpoint state or token-store surface exists to enforce NEW_TOKEN send/receive semantics."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0009",
+      "requirement_id": "REQ-QUIC-RFC9000-1245",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicNewTokenFrame.cs",
@@ -1070,7 +1070,7 @@
       "notes": "No endpoint state or token-store surface exists to enforce NEW_TOKEN send/receive semantics."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P7-0010",
+      "requirement_id": "REQ-QUIC-RFC9000-1246",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicNewTokenFrame.cs",
@@ -1210,7 +1210,7 @@
       "notes": "STREAM frame parsing, offset/length presence handling, and round-trip coverage are in place."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P8-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1259",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicStreamParser.cs",
@@ -1610,7 +1610,7 @@
       "notes": "No flow-control manager exists to send, update, or enforce connection-wide data limits."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P9-0007",
+      "requirement_id": "REQ-QUIC-RFC9000-1273",
       "status": "blocked by concrete technical dependency",
       "implementation_refs": [
         "src/Incursa.Quic/QuicMaxDataFrame.cs",

@@ -13,8 +13,8 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S9P3-0005",
-    "REQ-QUIC-RFC9000-S9P3-0011",
-    "REQ-QUIC-RFC9000-S13P2P1-0010"
+    "REQ-QUIC-RFC9000-0488",
+    "REQ-QUIC-RFC9000-0763"
   ],
   "summary": "Extend the bounded 1-RTT ACK piggyback policy to the explicit-path server NEW_TOKEN emission path without broadening Initial, Handshake, public API, or interop claims.",
   "planned_changes": "- Apply the existing Application Data ACK-prefix composition helper to the explicit-path application send helper used by NEW_TOKEN emission.\n- Keep retransmission planning tied to the original NEW_TOKEN plaintext payload rather than the ACK-prefixed packet payload.\n- Keep no-pending-ACK NEW_TOKEN emission unchanged.\n- Add focused positive and negative requirement-home tests for NEW_TOKEN ACK piggyback and no-invented-ACK behavior.\n- Preserve focused verification evidence under `artifacts/v/20260425-rfc9000-newtoken-ack-piggyback/`.",

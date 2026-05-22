@@ -16,7 +16,7 @@
     "VER-QUIC-RFC9000-0045"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S9P6P2-0008",
+    "REQ-QUIC-RFC9000-0529",
     "REQ-QUIC-RFC9000-S9P6P2-0009",
     "REQ-QUIC-RFC9000-S9P6P2-0010"
   ],
@@ -24,7 +24,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0529.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",

@@ -15,15 +15,15 @@
     "VER-QUIC-RFC9000-0025"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S3P1-0008",
-    "REQ-QUIC-RFC9000-S4P1-0014",
-    "REQ-QUIC-RFC9000-S4P1-0015",
+    "REQ-QUIC-RFC9000-0082",
+    "REQ-QUIC-RFC9000-0176",
+    "REQ-QUIC-RFC9000-0177",
     "REQ-QUIC-RFC9000-S4P2-0004",
     "REQ-QUIC-RFC9000-S13P3-0022",
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S13P3-0024",
     "REQ-QUIC-RFC9000-S13P3-0025",
-    "REQ-QUIC-RFC9000-S19P13-0001",
+    "REQ-QUIC-RFC9000-1298",
     "REQ-QUIC-RFC9000-S19P13-0006",
     "REQ-QUIC-RFC9000-S19P13-0007",
     "REQ-QUIC-RFC9000-S19P13-0008"
@@ -32,7 +32,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
   ],
@@ -57,7 +57,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`REQ-QUIC-RFC9000-S4P1-0015.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P1-0015.cs)\n- [`REQ-QUIC-RFC9000-S19P13-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs)\n- [`QuicConnectionStreamStateBenchmarks.cs`](../../../benchmarks/QuicConnectionStreamStateBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`QuicConnectionStreamState.cs`](../../../src/Incursa.Quic/QuicConnectionStreamState.cs)\n- [`REQ-QUIC-RFC9000-0177.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs)\n- [`REQ-QUIC-RFC9000-S19P13-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0003.cs)\n- [`QuicConnectionStreamStateBenchmarks.cs`](../../../benchmarks/QuicConnectionStreamStateBenchmarks.cs)"
     }
   ]
 }

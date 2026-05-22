@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0003
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0003");
 
         Assert.Equal("The creation of a registry MAY specify additional constraints on permanent registrations", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "The creation of a registry MAY specify additional constraints on permanent registrations.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("The creation of a registry MAY specify additional constraints on permanent registrations.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.1.4 RFC9000-S22.1.4-B2-P1-S4", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

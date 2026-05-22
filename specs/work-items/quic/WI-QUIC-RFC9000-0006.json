@@ -14,7 +14,7 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S14P3-0001",
     "REQ-QUIC-RFC9000-S14P3-0002",
-    "REQ-QUIC-RFC9000-S14P3-0003",
+    "REQ-QUIC-RFC9000-0877",
     "REQ-QUIC-RFC9000-S14P3-0004"
   ],
   "summary": "Close the helper-backed RFC 9000 Section 14.3 DPLPMTUD subset by adding internal per-path probe tracking, PADDING probe sizing, BASE_PLPMTU initialization, and per-address-pair MPS isolation.",

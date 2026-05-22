@@ -1,0 +1,158 @@
+{
+  "generated_at_utc": "2026-05-22T04:41:48Z",
+  "governing_plan": "C:/src/incursa/spec-trace/quic-rfc-migration-plan.md",
+  "scope": "RFC9000 section 2 top-level pilot after user clarified incoming staged IDs should become canonical when obligations overlap.",
+  "policy": {
+    "exact_statement_primary_signal": true,
+    "title_and_proposed_id_hint_secondary_only": true,
+    "staged_stable_json_not_published_directly": true,
+    "canonical_staged_id_adopted_for_overlap": true,
+    "conservative_stop_on_unclear_mapping": true
+  },
+  "summary": {
+    "rename_with_lineage_count": 8,
+    "new_only_count": 2,
+    "preserve_count": 0,
+    "split_merge_count": 0,
+    "blocked_or_deferred_count": 1,
+    "downstream_surfaces_updated": [
+      "requirement-home filenames",
+      "requirement-home class names",
+      "Requirement attributes",
+      "SPEC x_test_refs",
+      "ARC satisfies",
+      "WI addresses",
+      "VER verifies and prose evidence references"
+    ]
+  },
+  "mappings": [
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0001",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0019",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0001",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0001"
+      ],
+      "old_statement": "Streams in QUIC MUST provide applications with an ordered byte-stream abstraction.",
+      "staged_statement": "QUIC streams MUST provide an ordered byte-stream abstraction to an application.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged statement and coverage, moved requirement-home file/class and x_test_refs."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0002",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0020",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0002",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0002"
+      ],
+      "old_statement": "Streams in QUIC MAY be created by sending data.",
+      "staged_statement": "QUIC MUST allow streams to be created by sending data.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, moved requirement-home file/class and x_test_refs."
+    },
+    {
+      "classification": "new-only",
+      "live_requirement_id": null,
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0021",
+      "derived_from": null,
+      "supersedes": [],
+      "old_statement": null,
+      "staged_statement": "A single STREAM frame MUST be able to open, carry data for, and close a stream.",
+      "action": "Added as incoming canonical requirement with upstream refs only; no downstream proof assigned in this slice.",
+      "x_transient_branch_id": "REQ-QUIC-RFC9000-S2-0010"
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0005",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0022",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0005",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0005"
+      ],
+      "old_statement": "Streams in QUIC MAY concurrently send data interleaved with other streams.",
+      "staged_statement": "QUIC MUST allow streams to send data concurrently interleaved with other streams.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, retargeted dependent proof refs."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0004",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0023",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0004",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0004"
+      ],
+      "old_statement": "Streams in QUIC MAY be created by either endpoint.",
+      "staged_statement": "QUIC MUST allow either endpoint to create streams.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, moved requirement-home file/class and API xref."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0006",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0024",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0006",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0006"
+      ],
+      "old_statement": "Streams in QUIC MAY be canceled.",
+      "staged_statement": "QUIC MUST allow streams to be canceled.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, moved requirement-home file/class and related frame proof refs."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0007",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0025",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0007",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0007"
+      ],
+      "old_statement": "QUIC MUST NOT provide ordering between bytes on different streams.",
+      "staged_statement": "QUIC MUST NOT provide any means of ensuring ordering between bytes on different streams.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged statement and coverage, moved requirement-home file/class and x_test_refs."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0009",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0026",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0009",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0009"
+      ],
+      "old_statement": "QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.",
+      "staged_statement": "QUIC MUST allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, moved requirement-home file/class and related flow-control proof refs."
+    },
+    {
+      "classification": "rename-with-lineage",
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0008",
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0027",
+      "derived_from": "REQ-QUIC-RFC9000-S2-0008",
+      "supersedes": [
+        "REQ-QUIC-RFC9000-S2-0008"
+      ],
+      "old_statement": "QUIC MAY allow an arbitrary number of streams to operate concurrently.",
+      "staged_statement": "QUIC MUST allow an arbitrary number of streams to operate concurrently, subject to flow control constraints and stream limits.",
+      "action": "Renamed canonical requirement ID to staged ID, adopted staged stronger capability statement and coverage, moved requirement-home file/class and related max-stream proof refs."
+    },
+    {
+      "classification": "new-only",
+      "live_requirement_id": null,
+      "staged_requirement_id": "REQ-QUIC-RFC9000-0028",
+      "derived_from": null,
+      "supersedes": [],
+      "old_statement": null,
+      "staged_statement": "A limited on-path attacker MUST NOT cause an idle connection to close if the client is first to resume activity.",
+      "action": "Added as incoming canonical requirement with upstream refs only; no downstream proof assigned in this slice.",
+      "x_transient_branch_id": "REQ-QUIC-RFC9000-S2-0011"
+    }
+  ],
+  "blocked_or_deferred": [
+    {
+      "live_requirement_id": "REQ-QUIC-RFC9000-S2-0003",
+      "reason": "No clear staged RFC9000 section 2 replacement was found for the long-lived stream MAY statement. Left unchanged for a later explicit withdrawal or replacement decision."
+    }
+  ],
+  "lineage_recording": {
+    "retired_ledger": "specs/generated/quic/rfc9000-migration-retired-requirements.json",
+    "canonical_trace_fields_deferred_reason": "Validate-SpecTraceJson.ps1 currently validates derived_from and supersedes against live requirement IDs only; adding retired IDs there would fail core validation."
+  }
+}

@@ -45,23 +45,23 @@ public sealed class REQ_QUIC_RFC9000_S19P13_0003
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0026">QUIC MUST allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0003">The Type field MUST be encoded as a variable-length integer with value 0x15.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0004">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0005">The Maximum Stream Data field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P1-0014">A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0176">A sender SHOULD send a STREAM_DATA_BLOCKED or DATA_BLOCKED frame to indicate to the receiver that it has data to write but is blocked by flow control limits.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-0026")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0003")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]
-    [Requirement("REQ-QUIC-RFC9000-S4P1-0014")]
+    [Requirement("REQ-QUIC-RFC9000-0176")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamDataBlockedFrame_ParsesAndFormatsTheFrameFields()
     {
@@ -81,14 +81,14 @@ public sealed class REQ_QUIC_RFC9000_S19P13_0003
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0009">QUIC MAY allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0026">QUIC MUST allow an arbitrary amount of data to be sent on any stream, subject to flow control constraints and stream limits.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0004">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0005">The Maximum Stream Data field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0009")]
+    [Requirement("REQ-QUIC-RFC9000-0026")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0004")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]

@@ -16,27 +16,27 @@
     "VER-QUIC-RFC9000-0030"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S19P15-0014",
-    "REQ-QUIC-RFC9000-S19P15-0015",
+    "REQ-QUIC-RFC9000-19150001",
+    "REQ-QUIC-RFC9000-19150002",
     "REQ-QUIC-RFC9000-S19P15-0016",
     "REQ-QUIC-RFC9000-S19P15-0017",
-    "REQ-QUIC-RFC9000-S19P15-0018",
+    "REQ-QUIC-RFC9000-19150004",
     "REQ-QUIC-RFC9000-S19P15-0021",
-    "REQ-QUIC-RFC9000-S19P15-0022",
-    "REQ-QUIC-RFC9000-S19P15-0023"
+    "REQ-QUIC-RFC9000-19150007",
+    "REQ-QUIC-RFC9000-19150008"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0014.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0018.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0022.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0023.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs"
   ],
   "design_summary": "Local connection-ID issuance exits before registering routes, tokens, or NEW_CONNECTION_ID packets when local transport parameters select a zero-length source connection ID. Peer NEW_CONNECTION_ID processing rejects receipt while the endpoint is sending zero-length destination connection IDs, accepts exact duplicates without growing the active set, rejects sequence or connection-ID conflicts, and preserves a historical sequence map after retirement. Retire Prior To state is monotonic: smaller later values do not lower the largest received threshold, and a newly received sequence below that threshold is recorded as retired and reported once for RETIRE_CONNECTION_ID emission instead of closing the connection.",

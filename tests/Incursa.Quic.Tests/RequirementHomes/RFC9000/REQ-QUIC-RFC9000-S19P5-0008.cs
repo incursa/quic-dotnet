@@ -5,7 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0008
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0006">Streams in QUIC MAY be canceled.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0024">QUIC MUST allow streams to be canceled.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0007">An application protocol MAY abort reading a stream and request closure, possibly resulting in a STOP_SENDING frame.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0005">The Type field MUST be encoded as a variable-length integer with value 0x05.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0006">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0008
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0009">The Stream ID field MUST be variable-length integer carrying the stream ID of the stream being ignored.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0010">The Application Protocol Error Code field MUST be variable-length integer containing the application-specified reason the sender is ignoring the stream; see Section 20.2.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0024")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0006")]
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0008
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2-0006">Streams in QUIC MAY be canceled.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0024">QUIC MUST allow streams to be canceled.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0005">The Type field MUST be encoded as a variable-length integer with value 0x05.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0006">The Stream ID field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0007">The Application Protocol Error Code field MUST be encoded as a variable-length integer.</workbench-requirement>
@@ -49,7 +49,7 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0008
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0009">The Stream ID field MUST be variable-length integer carrying the stream ID of the stream being ignored.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P5-0010">The Application Protocol Error Code field MUST be variable-length integer containing the application-specified reason the sender is ignoring the stream; see Section 20.2.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S2-0006")]
+    [Requirement("REQ-QUIC-RFC9000-0024")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P5-0007")]

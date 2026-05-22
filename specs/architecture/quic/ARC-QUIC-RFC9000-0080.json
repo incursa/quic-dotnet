@@ -20,7 +20,7 @@
     "REQ-QUIC-RFC9000-S9P6P1-0002",
     "REQ-QUIC-RFC9000-S9P6P1-0003",
     "REQ-QUIC-RFC9000-S9P6P1-0004",
-    "REQ-QUIC-RFC9000-S9P6P1-0008"
+    "REQ-QUIC-RFC9000-0525"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
@@ -29,7 +29,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0525.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS9P6P1PreferredAddressTestSupport.cs"
   ],
   "design_summary": "Client HANDSHAKE_DONE processing confirms the handshake and starts validation for a usable server preferred_address candidate. The runtime selects the address family matching the active path when possible, falls back to the other usable family when the active family is unused, sends a PATH_CHALLENGE to the selected preferred address, and keeps the original server address active until validation succeeds.",
@@ -48,7 +48,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the S9P6P1 preferred-address handshake-confirmed transition for REQ-QUIC-RFC9000-S9P6P1-0002, REQ-QUIC-RFC9000-S9P6P1-0003, REQ-QUIC-RFC9000-S9P6P1-0004, and REQ-QUIC-RFC9000-S9P6P1-0008 only. It does not claim complete S9P6P1 closure, preferred-address failure-policy proof, server preferred_address emission proof, public API widening, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the S9P6P1 preferred-address handshake-confirmed transition for REQ-QUIC-RFC9000-S9P6P1-0002, REQ-QUIC-RFC9000-S9P6P1-0003, REQ-QUIC-RFC9000-S9P6P1-0004, and REQ-QUIC-RFC9000-0525 only. It does not claim complete S9P6P1 closure, preferred-address failure-policy proof, server preferred_address emission proof, public API widening, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

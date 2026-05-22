@@ -17,14 +17,14 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S7P3-0001",
-    "REQ-QUIC-RFC9000-S7P3-0002",
+    "REQ-QUIC-RFC9000-0323",
     "REQ-QUIC-RFC9000-S7P3-0003",
     "REQ-QUIC-RFC9000-S7P3-0004",
     "REQ-QUIC-RFC9000-S7P3-0005",
-    "REQ-QUIC-RFC9000-S7P3-0006",
+    "REQ-QUIC-RFC9000-0326",
     "REQ-QUIC-RFC9000-S7P3-0007",
     "REQ-QUIC-RFC9000-S7P3-0008",
-    "REQ-QUIC-RFC9000-S7P3-0009"
+    "REQ-QUIC-RFC9000-0332"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -35,14 +35,14 @@
     "src/Incursa.Quic/QuicListenerHost.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P3ConnectionIdBindingTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0323.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0326.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0009.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0332.cs"
   ],
   "design_summary": "The transport-parameter codec preserves the three handshake connection-ID binding parameters as opaque values: original_destination_connection_id, initial_source_connection_id, and retry_source_connection_id. Server-only parameters remain rejected from client emission and from server-side peer parsing. The binding validator compares the peer's committed transport-parameter values against the connection IDs observed or selected during the handshake, with distinct validation errors for omitted parameters, mismatched original destination IDs, mismatched initial source IDs, missing retry IDs, mismatched retry IDs, and unexpected retry IDs. The runtime commit path invokes that validator before peer transport parameters are accepted and converts binding failures into local TRANSPORT_PARAMETER_ERROR closure. Zero-length connection IDs remain real selected values, so the runtime validates an expected empty Initial Source Connection ID instead of skipping the binding check.",
   "data_and_state_considerations": "The codec stores connection ID transport-parameter values as byte arrays without synthesizing values that were not present on the wire. The client runtime passes its first Initial Destination Connection ID, the observed or adopted server Initial Source Connection ID, and any Retry Source Connection ID into validation. The server role validates the peer initial_source_connection_id against the client Initial Source Connection ID used to route the handshake. The zero-length peer-selected path is represented by an empty byte array rather than null; null continues to mean the parameter was absent.",

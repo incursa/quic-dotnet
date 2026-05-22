@@ -16,11 +16,11 @@
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Retry-selected Initial replay ACK piggyback floor.",
   "verifies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0010",
+    "REQ-QUIC-RFC9000-0763",
     "REQ-QUIC-RFC9000-S17P2P5P3-0001",
     "REQ-QUIC-RFC9000-S17P2P5P3-0002",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0003",
-    "REQ-QUIC-RFC9000-S17P2P5P3-0006",
+    "REQ-QUIC-RFC9000-1050",
+    "REQ-QUIC-RFC9000-1053",
     "REQ-QUIC-CRT-0122"
   ],
   "scope": "This verification covers Retry-selected Initial replay packet construction when ACK-generation state already contains pending ack-eliciting Initial receipts.",
@@ -42,7 +42,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",

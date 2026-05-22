@@ -25,8 +25,8 @@
     "REQ-QUIC-RFC9000-S19P15-0011",
     "REQ-QUIC-RFC9000-S19P15-0012",
     "REQ-QUIC-RFC9000-S19P15-0013",
-    "REQ-QUIC-RFC9000-S19P15-0019",
-    "REQ-QUIC-RFC9000-S19P15-0020"
+    "REQ-QUIC-RFC9000-19150005",
+    "REQ-QUIC-RFC9000-19150006"
   ],
   "scope": "This verification covers the supported NEW_CONNECTION_ID frame-codec floor: accepting frame type 0x18, preserving Sequence Number and Retire Prior To variable-length integer values, encoding the one-byte connection ID length, preserving the declared connection ID and 16-byte stateless reset token, rejecting invalid lengths and truncation, and rejecting Retire Prior To values greater than Sequence Number.",
   "expected_result": "Focused tests prove positive, negative, and edge NEW_CONNECTION_ID frame-codec behavior, deterministic fuzz coverage exercises representative valid shapes and truncation rejection, and the BenchmarkDotNet Dry suite executes representative parse and format hot-path cases without treating Dry output as a stable performance baseline.",
@@ -50,7 +50,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0019.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150005.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/focused-rfc9000-new-connection-id-frame-codec-tests.log",
     "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/quic-frame-codec-benchmark-dry.log",
@@ -59,7 +59,7 @@
     "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/render-check.log",
     "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/reciprocal-trace-check.log",
     "artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/git-diff-check.log",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0019\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S19P15_0011|FullyQualifiedName~REQ_QUIC_RFC9000_19150005\"",
     "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicFrameCodecBenchmarks*\" --artifacts artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/bdn"
   ],
   "supplemental_sections": [

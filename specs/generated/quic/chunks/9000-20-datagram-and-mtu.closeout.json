@@ -42,11 +42,11 @@
       "REQ-QUIC-RFC9000-S13P4P1-0006",
       "REQ-QUIC-RFC9000-S13P4P1-0007",
       "REQ-QUIC-RFC9000-S13P4P1-0008",
-      "REQ-QUIC-RFC9000-S13P4P1-0009"
+      "REQ-QUIC-RFC9000-0828"
     ],
     "S13P4P2": [
       "REQ-QUIC-RFC9000-S13P4P2-0001",
-      "REQ-QUIC-RFC9000-S13P4P2-0002",
+      "REQ-QUIC-RFC9000-0831",
       "REQ-QUIC-RFC9000-S13P4P2-0003",
       "REQ-QUIC-RFC9000-S13P4P2-0004",
       "REQ-QUIC-RFC9000-S13P4P2-0005",
@@ -58,7 +58,7 @@
       "REQ-QUIC-RFC9000-S13P4P2P1-0003",
       "REQ-QUIC-RFC9000-S13P4P2P1-0004",
       "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-      "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+      "REQ-QUIC-RFC9000-0845",
       "REQ-QUIC-RFC9000-S13P4P2P1-0007",
       "REQ-QUIC-RFC9000-S13P4P2P1-0008"
     ],
@@ -70,13 +70,13 @@
       "REQ-QUIC-RFC9000-S13P4P2P2-0005"
     ],
     "S14": [
-      "REQ-QUIC-RFC9000-S14-0001",
+      "REQ-QUIC-RFC9000-0851",
       "REQ-QUIC-RFC9000-S14-0002",
       "REQ-QUIC-RFC9000-S14-0003",
-      "REQ-QUIC-RFC9000-S14-0004",
+      "REQ-QUIC-RFC9000-0856",
       "REQ-QUIC-RFC9000-S14-0005",
       "REQ-QUIC-RFC9000-S14-0006",
-      "REQ-QUIC-RFC9000-S14-0007",
+      "REQ-QUIC-RFC9000-0857",
       "REQ-QUIC-RFC9000-S14-0008",
       "REQ-QUIC-RFC9000-S14-0009"
     ],
@@ -98,23 +98,23 @@
       "REQ-QUIC-RFC9000-S14P2-0005",
       "REQ-QUIC-RFC9000-S14P2-0006",
       "REQ-QUIC-RFC9000-S14P2-0007",
-      "REQ-QUIC-RFC9000-S14P2-0008",
+      "REQ-QUIC-RFC9000-0872",
       "REQ-QUIC-RFC9000-S14P2-0009",
       "REQ-QUIC-RFC9000-S14P2-0010"
     ],
     "S14P2P1": [
-      "REQ-QUIC-RFC9000-S14P2P1-0001",
-      "REQ-QUIC-RFC9000-S14P2P1-0002",
+      "REQ-QUIC-RFC9000-1421",
+      "REQ-QUIC-RFC9000-1422",
       "REQ-QUIC-RFC9000-S14P2P1-0003",
       "REQ-QUIC-RFC9000-S14P2P1-0004",
-      "REQ-QUIC-RFC9000-S14P2P1-0005",
+      "REQ-QUIC-RFC9000-1426",
       "REQ-QUIC-RFC9000-S14P2P1-0006",
-      "REQ-QUIC-RFC9000-S14P2P1-0007"
+      "REQ-QUIC-RFC9000-1428"
     ],
     "S14P3": [
       "REQ-QUIC-RFC9000-S14P3-0001",
       "REQ-QUIC-RFC9000-S14P3-0002",
-      "REQ-QUIC-RFC9000-S14P3-0003",
+      "REQ-QUIC-RFC9000-0877",
       "REQ-QUIC-RFC9000-S14P3-0004"
     ],
     "S14P4": [
@@ -170,7 +170,7 @@
           "REQ-QUIC-RFC9000-S13P4P2P1-0003",
           "REQ-QUIC-RFC9000-S13P4P2P1-0004",
           "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-          "REQ-QUIC-RFC9000-S13P4P2P1-0006",
+          "REQ-QUIC-RFC9000-0845",
           "REQ-QUIC-RFC9000-S13P4P2P1-0007",
           "REQ-QUIC-RFC9000-S13P4P2P1-0008"
         ],
@@ -201,7 +201,7 @@
         "section_token": "S14",
         "requirements": [
           "REQ-QUIC-RFC9000-S14-0003",
-          "REQ-QUIC-RFC9000-S14-0004"
+          "REQ-QUIC-RFC9000-0856"
         ],
         "files": [
           "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
@@ -262,14 +262,14 @@
           "REQ-QUIC-RFC9000-S13P4P1-0003",
           "REQ-QUIC-RFC9000-S13P4P1-0007",
           "REQ-QUIC-RFC9000-S13P4P1-0008",
-          "REQ-QUIC-RFC9000-S13P4P1-0009"
+          "REQ-QUIC-RFC9000-0828"
         ],
         "reason": "The helper slice does not yet model the fuller packet/path/ECN negotiation surface."
       },
       {
         "section_token": "S13P4P2",
         "requirements": [
-          "REQ-QUIC-RFC9000-S13P4P2-0002",
+          "REQ-QUIC-RFC9000-0831",
           "REQ-QUIC-RFC9000-S13P4P2-0003",
           "REQ-QUIC-RFC9000-S13P4P2-0004"
         ],
@@ -285,11 +285,11 @@
       {
         "section_token": "S14",
         "requirements": [
-          "REQ-QUIC-RFC9000-S14-0001",
+          "REQ-QUIC-RFC9000-0851",
           "REQ-QUIC-RFC9000-S14-0002",
           "REQ-QUIC-RFC9000-S14-0005",
           "REQ-QUIC-RFC9000-S14-0006",
-          "REQ-QUIC-RFC9000-S14-0007",
+          "REQ-QUIC-RFC9000-0857",
           "REQ-QUIC-RFC9000-S14-0008",
           "REQ-QUIC-RFC9000-S14-0009"
         ],
@@ -316,7 +316,7 @@
           "REQ-QUIC-RFC9000-S14P2-0005",
           "REQ-QUIC-RFC9000-S14P2-0006",
           "REQ-QUIC-RFC9000-S14P2-0007",
-          "REQ-QUIC-RFC9000-S14P2-0008",
+          "REQ-QUIC-RFC9000-0872",
           "REQ-QUIC-RFC9000-S14P2-0009",
           "REQ-QUIC-RFC9000-S14P2-0010"
         ],
@@ -325,13 +325,13 @@
       {
         "section_token": "S14P2P1",
         "requirements": [
-          "REQ-QUIC-RFC9000-S14P2P1-0001",
-          "REQ-QUIC-RFC9000-S14P2P1-0002",
+          "REQ-QUIC-RFC9000-1421",
+          "REQ-QUIC-RFC9000-1422",
           "REQ-QUIC-RFC9000-S14P2P1-0003",
           "REQ-QUIC-RFC9000-S14P2P1-0004",
-          "REQ-QUIC-RFC9000-S14P2P1-0005",
+          "REQ-QUIC-RFC9000-1426",
           "REQ-QUIC-RFC9000-S14P2P1-0006",
-          "REQ-QUIC-RFC9000-S14P2P1-0007"
+          "REQ-QUIC-RFC9000-1428"
         ],
         "reason": "The coalesced datagram encoder and its boundary checks are not implemented."
       },
@@ -340,7 +340,7 @@
         "requirements": [
           "REQ-QUIC-RFC9000-S14P3-0001",
           "REQ-QUIC-RFC9000-S14P3-0002",
-          "REQ-QUIC-RFC9000-S14P3-0003",
+          "REQ-QUIC-RFC9000-0877",
           "REQ-QUIC-RFC9000-S14P3-0004"
         ],
         "reason": "ICMP-based PMTU validation remains blocked by missing probe and path surfaces."
@@ -418,7 +418,7 @@
         "file": "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs",
         "ids": [
           "REQ-QUIC-RFC9000-S14-0003",
-          "REQ-QUIC-RFC9000-S14-0004"
+          "REQ-QUIC-RFC9000-0856"
         ]
       }
     ],

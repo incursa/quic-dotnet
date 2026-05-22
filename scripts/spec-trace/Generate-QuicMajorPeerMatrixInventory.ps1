@@ -65,7 +65,7 @@ $report = [pscustomobject]@{
     advisory       = $true
     source_profile = 'major-peer-matrix'
     source_requirement = 'REQ-QUIC-INT-0019'
-    summary        = 'Advisory inventory for the currently executable non-HTTP/3 major-peer matrix cells.'
+    summary        = 'Advisory inventory `interop-major-peer-matrix-inventory` for the currently executable non-HTTP/3 major-peer matrix cells.'
     cell_count     = $cells.Count
     cells          = @(
         foreach ($cell in $cells)
@@ -89,7 +89,7 @@ $reportJson = $report | ConvertTo-Json -Depth 8
 $markdownLines = [System.Collections.Generic.List[string]]::new()
 $markdownLines.Add('# Interop Major Peer Matrix Inventory')
 $markdownLines.Add('')
-$markdownLines.Add('Advisory inventory only. The cells are the manually dispatched major-peer matrix shape owned by `REQ-QUIC-INT-0019`; this report does not claim execution evidence.')
+$markdownLines.Add('Advisory inventory only. The cells are the manually dispatched major-peer matrix shape owned by `REQ-QUIC-INT-0019`; this report `interop-major-peer-matrix-inventory` does not claim execution evidence.')
 $markdownLines.Add('')
 $markdownLines.Add('## Profile')
 $markdownLines.Add('')

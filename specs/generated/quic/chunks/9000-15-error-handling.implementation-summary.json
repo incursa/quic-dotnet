@@ -3,22 +3,22 @@
   "requirement_id": [
     "REQ-QUIC-RFC9000-S11-0001",
     "REQ-QUIC-RFC9000-S11-0002",
-    "REQ-QUIC-RFC9000-S11-0003",
-    "REQ-QUIC-RFC9000-S11-0004",
-    "REQ-QUIC-RFC9000-S11-0005",
+    "REQ-QUIC-RFC9000-0659",
+    "REQ-QUIC-RFC9000-0658",
+    "REQ-QUIC-RFC9000-0661",
     "REQ-QUIC-RFC9000-S11P1-0001",
-    "REQ-QUIC-RFC9000-S11P1-0002",
+    "REQ-QUIC-RFC9000-0663",
     "REQ-QUIC-RFC9000-S11P1-0003",
-    "REQ-QUIC-RFC9000-S11P1-0004",
+    "REQ-QUIC-RFC9000-0665",
     "REQ-QUIC-RFC9000-S11P1-0005",
     "REQ-QUIC-RFC9000-S11P1-0006",
     "REQ-QUIC-RFC9000-S11P1-0007",
-    "REQ-QUIC-RFC9000-S11P1-0008",
+    "REQ-QUIC-RFC9000-0668",
     "REQ-QUIC-RFC9000-S11P2-0001",
     "REQ-QUIC-RFC9000-S11P2-0002",
     "REQ-QUIC-RFC9000-S11P2-0003",
     "REQ-QUIC-RFC9000-S11P2-0004",
-    "REQ-QUIC-RFC9000-S11P2-0005"
+    "REQ-QUIC-RFC9000-0674"
   ],
   "completion_status": "partial",
   "files_changed": [
@@ -36,23 +36,23 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants",
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes",
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11-0005.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
   ],
   "direct_refs_added_or_updated": [
     "REQ-QUIC-RFC9000-S11-0001",
     "REQ-QUIC-RFC9000-S11-0002",
-    "REQ-QUIC-RFC9000-S11-0003",
-    "REQ-QUIC-RFC9000-S11-0004",
-    "REQ-QUIC-RFC9000-S11-0005",
+    "REQ-QUIC-RFC9000-0659",
+    "REQ-QUIC-RFC9000-0658",
+    "REQ-QUIC-RFC9000-0661",
     "REQ-QUIC-RFC9000-S11P1-0001",
-    "REQ-QUIC-RFC9000-S11P1-0002",
+    "REQ-QUIC-RFC9000-0663",
     "REQ-QUIC-RFC9000-S11P1-0003"
   ],
   "remaining_gap": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0004",
+      "requirement_id": "REQ-QUIC-RFC9000-0665",
       "reason": "Retransmitting a terminal close packet after additional traffic needs a send path."
     },
     {
@@ -68,7 +68,7 @@
       "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
+      "requirement_id": "REQ-QUIC-RFC9000-0668",
       "reason": "Safe discard after reverting side effects needs a reversible receive pipeline."
     },
     {
@@ -88,12 +88,12 @@
       "reason": "STOP_SENDING-driven automatic RESET_STREAM requires an application-protocol callback surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0005",
+      "requirement_id": "REQ-QUIC-RFC9000-0674",
       "reason": "Premature-cancel handling rules are application-specific and remain outside the current implementation."
     }
   ],
   "notes": [
-    "Wire-format CONNECTION_CLOSE support is now present for both transport and application closes, and the requirement-home proof now closes REQ-QUIC-RFC9000-S11-0005 while the classifier no longer treats application close type 0x1d as ack-eliciting.",
+    "Wire-format CONNECTION_CLOSE support is now present for both transport and application closes, and the requirement-home proof now closes REQ-QUIC-RFC9000-0661 while the classifier no longer treats application close type 0x1d as ack-eliciting.",
     "The remaining section 11 clauses are endpoint- and application-lifecycle policies that need connection-state and application-protocol surfaces not present in this repository slice."
   ]
 }

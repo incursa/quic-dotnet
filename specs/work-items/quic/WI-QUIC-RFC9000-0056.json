@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9000-0056"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S5P2P2-0007",
-    "REQ-QUIC-RFC9000-S5P2P2-0008"
+    "REQ-QUIC-RFC9000-0272",
+    "REQ-QUIC-RFC9000-0273"
   ],
   "summary": "Close the remaining RFC 9000 Section 5.2.2 server pre-acceptance tail for deliberate connection refusal and limited 0-RTT buffering before a matching Initial arrives.",
   "planned_changes": "- Emit a protected Initial CONNECTION_CLOSE with CONNECTION_REFUSED when the listener application deliberately refuses an otherwise valid new connection.\n- Unregister provisional endpoint routes when admission fails before the connection is accepted.\n- Add a bounded listener-local 0-RTT pre-Initial buffer keyed by Initial Destination Connection ID.\n- Drain buffered 0-RTT datagrams into endpoint routing after the matching Initial is admitted.\n- Add focused requirement-home tests and canonical trace links for S5P2P2 0007 and 0008.",

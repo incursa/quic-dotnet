@@ -14,7 +14,7 @@
     "VER-QUIC-RFC9000-0047"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S19P6-0001",
+    "REQ-QUIC-RFC9000-1222",
     "REQ-QUIC-RFC9000-S19P6-0002",
     "REQ-QUIC-RFC9000-S19P6-0003",
     "REQ-QUIC-RFC9000-S19P6-0004",
@@ -24,14 +24,14 @@
     "REQ-QUIC-RFC9000-S19P6-0008",
     "REQ-QUIC-RFC9000-S19P6-0009",
     "REQ-QUIC-RFC9000-S19P6-0010",
-    "REQ-QUIC-RFC9000-S19P6-0011",
+    "REQ-QUIC-RFC9000-1237",
     "REQ-QUIC-RFC9000-S19P6-0012",
     "REQ-QUIC-RFC9000-S19P6-0013"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/QuicCryptoBuffer.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1222.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0004.cs",
@@ -41,7 +41,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0010.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0011.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1237.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P6-0013.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P6CryptoFrameTestSupport.cs",

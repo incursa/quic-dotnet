@@ -34,40 +34,40 @@ Section tokens: `S5, S5P1, S5P1P1`
 - `REQ-QUIC-RFC9000-S5P1-0003` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 - `REQ-QUIC-RFC9000-S5P1-0004` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 - `REQ-QUIC-RFC9000-S5P1-0005` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
-- `REQ-QUIC-RFC9000-S5P1-0006` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
-- `REQ-QUIC-RFC9000-S5P1-0007` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
+- `REQ-QUIC-RFC9000-0208` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
+- `REQ-QUIC-RFC9000-0209` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 - `REQ-QUIC-RFC9000-S5P1-0008` - implemented and tested; The wire-format long-header slice is directly implemented: both CID fields are parsed and preserved.
 - `REQ-QUIC-RFC9000-S5P1-0009` - tested but implementation mapping unclear; This is a wire-level remainder-preservation proof, not a full destination-CID parse or length-knowledge proof.
 - `REQ-QUIC-RFC9000-S5P1-0010` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 - `REQ-QUIC-RFC9000-S5P1-0011` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 - `REQ-QUIC-RFC9000-S5P1-0012` - implemented and tested; The Version Negotiation formatter echoes the client's connection IDs and the parser round-trips the packet view.
-- `REQ-QUIC-RFC9000-S5P1-0013` - tested but implementation mapping unclear; The wire-level acceptance is present, but the requirement depends on routing context that this repo does not model.
+- `REQ-QUIC-RFC9000-0215` - tested but implementation mapping unclear; The wire-level acceptance is present, but the requirement depends on routing context that this repo does not model.
 - `REQ-QUIC-RFC9000-S5P1-0014` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
-- `REQ-QUIC-RFC9000-S5P1-0015` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
+- `REQ-QUIC-RFC9000-0217` - not implemented; This section is mostly connection-state semantics; the repo currently only exposes packet parsing and packet views.
 
 ### S5P1P1
 
 - `REQ-QUIC-RFC9000-S5P1P1-0001` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0002` - tested but implementation mapping unclear; The packet parser preserves source CID bytes; the initial-CID ownership rule is still a connection-state concern.
-- `REQ-QUIC-RFC9000-S5P1P1-0003` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0004` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0219` - tested but implementation mapping unclear; The packet parser preserves source CID bytes; the initial-CID ownership rule is still a connection-state concern.
+- `REQ-QUIC-RFC9000-0220` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0221` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0005` - implemented and tested; The NEW_CONNECTION_ID frame codec already parses, formats, and fuzzes the wire representation.
-- `REQ-QUIC-RFC9000-S5P1P1-0006` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0222` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0007` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0008` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0009` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0010` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0011` - implemented and tested; The transport-parameter codec already parses, formats, and fuzzes active_connection_id_limit.
+- `REQ-QUIC-RFC9000-0228` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0229` - implemented and tested; The transport-parameter codec already parses, formats, and fuzzes active_connection_id_limit.
 - `REQ-QUIC-RFC9000-S5P1P1-0012` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0013` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0014` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0015` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0016` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0233` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0234` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0017` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0018` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0019` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0020` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0021` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0238` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `REQ-QUIC-RFC9000-0239` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 
 ## Existing Implementation Evidence
 
@@ -114,29 +114,29 @@ Section tokens: `S5, S5P1, S5P1P1`
 ## Gaps Fixed in This Pass
 
 - Added `REQ-QUIC-RFC9000-S5P1-0012` to the Version Negotiation response formatter positive and fuzz tests.
-- Reclassified the existing `NEW_CONNECTION_ID` and `active_connection_id_limit` coverage as implemented and tested for `REQ-QUIC-RFC9000-S5P1P1-0005` and `REQ-QUIC-RFC9000-S5P1P1-0011`.
+- Reclassified the existing `NEW_CONNECTION_ID` and `active_connection_id_limit` coverage as implemented and tested for `REQ-QUIC-RFC9000-S5P1P1-0005` and `REQ-QUIC-RFC9000-0229`.
 - Kept the pass additive: no legacy requirement IDs were replaced, and no out-of-scope short-header or transport-parameter tags were changed.
 
 ## Remaining Gaps
 
 - `REQ-QUIC-RFC9000-S5-0001` through `REQ-QUIC-RFC9000-S5-0007`: no connection or handshake state machine exists in this chunk.
 - `REQ-QUIC-RFC9000-S5-0008`: long-header CID handling is present, but migration and CID-management behavior are absent.
-- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-S5P1-0007`: no CID lifecycle, routing, or peer-selection manager exists in this chunk.
-- `REQ-QUIC-RFC9000-S5P1-0009`, `REQ-QUIC-RFC9000-S5P1-0013`, and `REQ-QUIC-RFC9000-S5P1P1-0002` have wire-level evidence, but the repo does not model the connection-state semantics that would make them fully proven.
-- `REQ-QUIC-RFC9000-S5P1-0010`, `REQ-QUIC-RFC9000-S5P1-0011`, `REQ-QUIC-RFC9000-S5P1-0014`, and `REQ-QUIC-RFC9000-S5P1-0015`: no CID lifecycle or routing manager exists.
-- `REQ-QUIC-RFC9000-S5P1P1-0001`, `REQ-QUIC-RFC9000-S5P1P1-0003` through `REQ-QUIC-RFC9000-S5P1P1-0004`, `REQ-QUIC-RFC9000-S5P1P1-0006` through `REQ-QUIC-RFC9000-S5P1P1-0010`, and `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-S5P1P1-0021`: no sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.
+- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-0209`: no CID lifecycle, routing, or peer-selection manager exists in this chunk.
+- `REQ-QUIC-RFC9000-S5P1-0009`, `REQ-QUIC-RFC9000-0215`, and `REQ-QUIC-RFC9000-0219` have wire-level evidence, but the repo does not model the connection-state semantics that would make them fully proven.
+- `REQ-QUIC-RFC9000-S5P1-0010`, `REQ-QUIC-RFC9000-S5P1-0011`, `REQ-QUIC-RFC9000-S5P1-0014`, and `REQ-QUIC-RFC9000-0217`: no CID lifecycle or routing manager exists.
+- `REQ-QUIC-RFC9000-S5P1P1-0001`, `REQ-QUIC-RFC9000-0220` through `REQ-QUIC-RFC9000-0221`, `REQ-QUIC-RFC9000-0222` through `REQ-QUIC-RFC9000-0228`, and `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-0239`: no sequence-numbered CID issuance, retirement, or limit-enforcement manager exists in this chunk.
 
 ## Requirements Needing Deeper Implementation Work
 
 - `REQ-QUIC-RFC9000-S5-0001` through `REQ-QUIC-RFC9000-S5-0007`
 - `REQ-QUIC-RFC9000-S5-0008`
-- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-S5P1-0007`
+- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-0209`
 - `REQ-QUIC-RFC9000-S5P1-0010` through `REQ-QUIC-RFC9000-S5P1-0011`
-- `REQ-QUIC-RFC9000-S5P1-0014` through `REQ-QUIC-RFC9000-S5P1-0015`
+- `REQ-QUIC-RFC9000-S5P1-0014` through `REQ-QUIC-RFC9000-0217`
 - `REQ-QUIC-RFC9000-S5P1P1-0001`
-- `REQ-QUIC-RFC9000-S5P1P1-0003` through `REQ-QUIC-RFC9000-S5P1P1-0004`
-- `REQ-QUIC-RFC9000-S5P1P1-0006` through `REQ-QUIC-RFC9000-S5P1P1-0010`
-- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-S5P1P1-0021`
+- `REQ-QUIC-RFC9000-0220` through `REQ-QUIC-RFC9000-0221`
+- `REQ-QUIC-RFC9000-0222` through `REQ-QUIC-RFC9000-0228`
+- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-0239`
 
 ## Tests Run and Results
 

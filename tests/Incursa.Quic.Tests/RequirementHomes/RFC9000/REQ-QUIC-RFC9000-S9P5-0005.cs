@@ -108,7 +108,7 @@ public sealed class REQ_QUIC_RFC9000_S9P5_0005
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-S9P5-0010")]
+    [Requirement("REQ-QUIC-RFC9000-0518")]
     public void ValidatedMigrationIsAllowedWhenThePeerUsesTheSmallestNonZeroConnectionId()
     {
         QuicConnectionPathIdentity activePath = new("203.0.113.124", RemotePort: 443);

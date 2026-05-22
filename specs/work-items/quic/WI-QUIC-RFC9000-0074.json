@@ -12,14 +12,14 @@
     "VER-QUIC-RFC9000-0074"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S5P1P1-0003",
-    "REQ-QUIC-RFC9000-S5P1P1-0004",
-    "REQ-QUIC-RFC9000-S5P1P1-0006",
+    "REQ-QUIC-RFC9000-0220",
+    "REQ-QUIC-RFC9000-0221",
+    "REQ-QUIC-RFC9000-0222",
     "REQ-QUIC-RFC9000-S5P1P1-0008",
     "REQ-QUIC-RFC9000-S5P1P1-0009",
-    "REQ-QUIC-RFC9000-S5P1P1-0011",
+    "REQ-QUIC-RFC9000-0229",
     "REQ-QUIC-RFC9000-S5P1P1-0013",
-    "REQ-QUIC-RFC9000-S5P1P1-0015"
+    "REQ-QUIC-RFC9000-0233"
   ],
   "summary": "Close the bounded S5P1P1 sequence and active-set floor by proving initial and preferred-address implicit sequence numbers, NEW_CONNECTION_ID active-limit retirement handling, issued-CID route lifetime, active-CID routing, active_connection_id_limit advertisement, and replacement CID emission after retirement.",
   "planned_changes": "- Add focused S5P1P1 requirement-home tests for sequence 0, sequence 1, sequence increment, temporary active-limit excess, and retirement replenishment.\n- Add canonical x_test_refs for already-focused issued-CID route lifetime, active-CID routing, and active_connection_id_limit advertisement tests.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",

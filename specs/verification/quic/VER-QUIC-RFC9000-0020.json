@@ -14,7 +14,7 @@
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded live Initial and Handshake ACK piggyback floor.",
   "verifies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0010"
+    "REQ-QUIC-RFC9000-0763"
   ],
   "scope": "This verification covers live Initial and Handshake CRYPTO packet construction when ACK-generation state already contains pending ack-eliciting receipts in the matching packet number space.",
   "expected_result": "Focused tests prove that pending Initial and Handshake ACK state is prepended to live CRYPTO packets, the CRYPTO frame remains present after the ACK frame with its original stream offset and bytes, no ACK frame is invented when no ACK prefix is provided, and deterministic property coverage round-trips representative ACK-prefixed Initial and Handshake packet sizes. BenchmarkDotNet Dry and Short jobs validate the permanent long-header packet-protection benchmark additions without making public or MSQUIC comparison claims.",
@@ -35,7 +35,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-long-header-ack-piggyback/focused-rfc9000-long-header-ack-piggyback-tests.log",

@@ -16,15 +16,15 @@
     "VER-QUIC-RFC9000-0046"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S9P6P3-0006",
+    "REQ-QUIC-RFC9000-0543",
     "REQ-QUIC-RFC9000-S9P6P3-0009",
-    "REQ-QUIC-RFC9000-S9P6P3-0010"
+    "REQ-QUIC-RFC9000-0542"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0543.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0542.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs"
   ],
   "design_summary": "The preferred-address tail reuses the current single-active-path migration runtime. A path that matches the peer preferred_address transport parameter remains a candidate path until validation succeeds. When the client-side path changes, same-family IPv4 or IPv6 preferred-address candidates are validated and promoted only after path-validation success. Preferred-address traffic from a changed source is protected by the same candidate validation and anti-amplification accounting used for migration candidates, and probe packets from a different address trigger a PATH_CHALLENGE without promoting the path first.",

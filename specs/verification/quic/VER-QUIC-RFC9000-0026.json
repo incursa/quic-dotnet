@@ -14,7 +14,7 @@
   "verification_method": "Requirement-home execution, packet-order inspection, benchmark validation for the priority-sorted flush path, SpecTrace render/check, and canonical JSON validation.",
   "verifies": [
     "REQ-QUIC-RFC9000-S2P3-0001",
-    "REQ-QUIC-RFC9000-S2P3-0002",
+    "REQ-QUIC-RFC9000-0057",
     "REQ-QUIC-RFC9000-S2P3-0003"
   ],
   "scope": "This verification covers local-only stream priority storage and priority-aware ordering of queued application sends on the active runtime. It does not cover wire-level prioritization exchange, HTTP/3 priority trees, candidate-path scheduling, or multipath behavior.",
@@ -39,7 +39,7 @@
     "benchmarks/Incursa.Quic.Benchmarks.csproj",
     "benchmarks/QuicApplicationSendPriorityBenchmarks.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0057.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S2P3-0003.cs",
     "artifacts/v/20260503-rfc9000-s2p3-priority/bdn/20260503-085012/asp-report-github.md",
     "artifacts/v/20260503-rfc9000-s2p3-priority/bdn/20260503-085012/asp-report.csv",

@@ -10,14 +10,14 @@ Section tokens: `S5, S5P1, S5P1P1`
 
 - No stale requirement IDs remain in the scoped tests.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
-- Current direct test traits use the imported IDs `REQ-QUIC-RFC9000-S5P1-0008`, `REQ-QUIC-RFC9000-S5P1-0012`, `REQ-QUIC-RFC9000-S5P1-0013`, `REQ-QUIC-RFC9000-S5P1P1-0005`, and `REQ-QUIC-RFC9000-S5P1P1-0011`.
+- Current direct test traits use the imported IDs `REQ-QUIC-RFC9000-S5P1-0008`, `REQ-QUIC-RFC9000-S5P1-0012`, `REQ-QUIC-RFC9000-0215`, `REQ-QUIC-RFC9000-S5P1P1-0005`, and `REQ-QUIC-RFC9000-0229`.
 
 ## Requirements Completed
 
 - `REQ-QUIC-RFC9000-S5P1-0008`: long-header CID fields are parsed and preserved; the trace coverage was already in place from the prior pass and remains valid.
 - `REQ-QUIC-RFC9000-S5P1-0012`: Version Negotiation echoes the client's connection IDs; the formatter test plus parser/property/fuzz coverage now carry the imported ID.
 - `REQ-QUIC-RFC9000-S5P1P1-0005`: additional connection IDs are communicated with `NEW_CONNECTION_ID` frames; the existing frame codec tests and fuzz coverage are now tagged with the imported ID.
-- `REQ-QUIC-RFC9000-S5P1P1-0011`: endpoints advertise `active_connection_id_limit` with transport parameters; the coverage now includes a client-role round-trip test in addition to the existing server-role and fuzz coverage.
+- `REQ-QUIC-RFC9000-0229`: endpoints advertise `active_connection_id_limit` with transport parameters; the coverage now includes a client-role round-trip test in addition to the existing server-role and fuzz coverage.
 
 ## Files Changed
 
@@ -48,7 +48,7 @@ Section tokens: `S5, S5P1, S5P1P1`
   - `QuicHeaderPropertyTests.TryParseVersionNegotiation_RoundTripsSupportedVersions`
   - `QuicHeaderFuzzTests.Fuzz_VersionNegotiationParsing_RoundTripsValidInputsAndRejectsTruncation`
   - `QuicHeaderFuzzTests.Fuzz_VersionNegotiationFormatting_RoundTripsFormattedResponses`
-- `REQ-QUIC-RFC9000-S5P1-0013`
+- `REQ-QUIC-RFC9000-0215`
   - `QuicLongHeaderPacketTests.TryParseLongHeader_AllowsZeroLengthConnectionIds`
   - `QuicHeaderPropertyTests.TryParseLongHeader_RoundTripsHeaderFields`
   - `QuicHeaderFuzzTests.Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation`
@@ -56,7 +56,7 @@ Section tokens: `S5, S5P1, S5P1P1`
   - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields`
   - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths`
   - `QuicFrameCodecPart4FuzzTests.Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation`
-- `REQ-QUIC-RFC9000-S5P1P1-0011`
+- `REQ-QUIC-RFC9000-0229`
   - `QuicTransportParametersTests.TryFormatTransportParameters_WritesExactTupleSequence`
   - `QuicTransportParametersTests.TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient`
   - `QuicTransportParametersTests.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress`
@@ -78,14 +78,14 @@ Section tokens: `S5, S5P1, S5P1P1`
 
 - `REQ-QUIC-RFC9000-S5-0001` through `REQ-QUIC-RFC9000-S5-0007`
 - `REQ-QUIC-RFC9000-S5-0008`
-- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-S5P1-0007`
+- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-0209`
 - `REQ-QUIC-RFC9000-S5P1-0009` through `REQ-QUIC-RFC9000-S5P1-0010`
-- `REQ-QUIC-RFC9000-S5P1-0014` through `REQ-QUIC-RFC9000-S5P1-0015`
-- `REQ-QUIC-RFC9000-S5P1P1-0001` through `REQ-QUIC-RFC9000-S5P1P1-0004`
-- `REQ-QUIC-RFC9000-S5P1P1-0006` through `REQ-QUIC-RFC9000-S5P1P1-0010`
-- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-S5P1P1-0021`
-- `REQ-QUIC-RFC9000-S5P1-0013` remains blocked by the lack of routing-state modeling, even though the zero-length CID case now has an explicit proof test.
-- `REQ-QUIC-RFC9000-S5P1P1-0002` remains wire-level evidence only; the repo still does not model the connection-state semantics that would close the initial-CID ownership rule.
+- `REQ-QUIC-RFC9000-S5P1-0014` through `REQ-QUIC-RFC9000-0217`
+- `REQ-QUIC-RFC9000-S5P1P1-0001` through `REQ-QUIC-RFC9000-0221`
+- `REQ-QUIC-RFC9000-0222` through `REQ-QUIC-RFC9000-0228`
+- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-0239`
+- `REQ-QUIC-RFC9000-0215` remains blocked by the lack of routing-state modeling, even though the zero-length CID case now has an explicit proof test.
+- `REQ-QUIC-RFC9000-0219` remains wire-level evidence only; the repo still does not model the connection-state semantics that would close the initial-CID ownership rule.
 
 ## Risks / Follow-up Notes
 

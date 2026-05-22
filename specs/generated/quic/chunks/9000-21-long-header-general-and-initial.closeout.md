@@ -20,10 +20,10 @@
 | `REQ-QUIC-RFC9000-S17P2-0012` | Packets that use the long header MUST contain the following fields: | implemented and tested | implementation and test evidence | The long-header envelope is parsed and the control bits are preserved. |
 | `REQ-QUIC-RFC9000-S17P2-0013` | The most significant bit (0x80) of byte 0 (the first byte) MUST be set to 1 for long headers | implemented and tested | implementation and test evidence | The first-byte high bit is used to classify long headers. |
 | `REQ-QUIC-RFC9000-S17P2-0017` | This field MUST indicate the version of QUIC that is in use and determines how the rest of th... | implemented and tested | implementation and test evidence | Version zero maps to the Version Negotiation parse state. |
-| `REQ-QUIC-RFC9000-S17P2-0018` | The byte following the version MUST contain the length in bytes of the Destination Connection... | implemented and tested | implementation and test evidence | The destination CID field is sliced using the encoded length. |
+| `REQ-QUIC-RFC9000-0939` | The byte following the version MUST contain the length in bytes of the Destination Connection... | implemented and tested | implementation and test evidence | The destination CID field is sliced using the encoded length. |
 | `REQ-QUIC-RFC9000-S17P2-0019` | This length MUST be encoded as an 8-bit unsigned integer | implemented and tested | implementation and test evidence | The destination CID length remains an 8-bit wire value. |
 | `REQ-QUIC-RFC9000-S17P2-0023` | The Destination Connection ID field follows the Destination Connection ID Length field, which... | implemented and tested | implementation and test evidence | The destination CID field is sliced using the encoded length. |
-| `REQ-QUIC-RFC9000-S17P2-0024` | The byte following the Destination Connection ID MUST contain the length in bytes of the Sour... | implemented and tested | implementation and test evidence | The source CID length byte is read after the destination CID field. |
+| `REQ-QUIC-RFC9000-0944` | The byte following the Destination Connection ID MUST contain the length in bytes of the Sour... | implemented and tested | implementation and test evidence | The source CID length byte is read after the destination CID field. |
 | `REQ-QUIC-RFC9000-S17P2-0025` | The Source Connection ID field follows the Source Connection ID Length field, which MUST indi... | implemented and tested | implementation and test evidence | The source CID field is sliced using the encoded length. |
 | `REQ-QUIC-RFC9000-S17P2-0020` | In QUIC version 1, this value MUST NOT exceed 20 bytes | implemented and tested | implementation and test evidence | Version 1 long headers with a destination CID up to 20 bytes are accepted. |
 | `REQ-QUIC-RFC9000-S17P2-0021` | Endpoints that receive a version 1 long header with a value larger than 20 MUST drop the packet | implemented and tested | implementation and test evidence | Version 1 long headers with a destination CID longer than 20 bytes are rejected. |
@@ -39,7 +39,7 @@
 | `REQ-QUIC-RFC9000-S17P1-0001` | When present in long or short packet headers, they MUST be encoded in 1 to 4 bytes | not implemented | explicit blocker note | No packet-number encoding surface exists. |
 | `REQ-QUIC-RFC9000-S17P1-0002` | Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b... | not implemented | explicit blocker note | No packet-number-space acknowledgement state exists. |
 | `REQ-QUIC-RFC9000-S17P1-0003` | After an acknowledgment is received for a packet number space, the sender MUST use a packet n... | not implemented | explicit blocker note | No sender-side packet-number sizing policy exists. |
-| `REQ-QUIC-RFC9000-S17P1-0004` | An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be... | not implemented | explicit blocker note | No packet-number recovery heuristic exists. |
+| `REQ-QUIC-RFC9000-0925` | An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be... | not implemented | explicit blocker note | No packet-number recovery heuristic exists. |
 | `REQ-QUIC-RFC9000-S17P2-0010` | Long headers MUST be used for packets that are sent prior to the establishment of 1-RTT keys | not implemented | explicit blocker note | No sender-path logic for pre-1-RTT packet selection. |
 | `REQ-QUIC-RFC9000-S17P2-0011` | Once 1-RTT keys are available, a sender MUST switch to sending packets using the short header... | not implemented | explicit blocker note | No sender-path logic for switching to short headers after 1-RTT keys. |
 | `REQ-QUIC-RFC9000-S17P2-0028` | The value included prior to protection MUST be set to 0 | not implemented | explicit blocker note | No encoder or protection stage zeroes the pre-protection value. |
@@ -62,7 +62,7 @@
 - Covered: 24 requirements.
 - Partial: `REQ-QUIC-RFC9000-S17P2-0026`.
 - Needs review: `REQ-QUIC-RFC9000-S17P2-0022`, `REQ-QUIC-RFC9000-S17P2-0030`.
-- Blocked: `REQ-QUIC-RFC9000-S17P1-0001`, `REQ-QUIC-RFC9000-S17P1-0002`, `REQ-QUIC-RFC9000-S17P1-0003`, `REQ-QUIC-RFC9000-S17P1-0004`, `REQ-QUIC-RFC9000-S17P2-0010`, `REQ-QUIC-RFC9000-S17P2-0011`, `REQ-QUIC-RFC9000-S17P2-0028`, `REQ-QUIC-RFC9000-S17P2-0029`, `REQ-QUIC-RFC9000-S17P2-0031`, `REQ-QUIC-RFC9000-S17P2-0032`, `REQ-QUIC-RFC9000-S17P2-0033`.
+- Blocked: `REQ-QUIC-RFC9000-S17P1-0001`, `REQ-QUIC-RFC9000-S17P1-0002`, `REQ-QUIC-RFC9000-S17P1-0003`, `REQ-QUIC-RFC9000-0925`, `REQ-QUIC-RFC9000-S17P2-0010`, `REQ-QUIC-RFC9000-S17P2-0011`, `REQ-QUIC-RFC9000-S17P2-0028`, `REQ-QUIC-RFC9000-S17P2-0029`, `REQ-QUIC-RFC9000-S17P2-0031`, `REQ-QUIC-RFC9000-S17P2-0032`, `REQ-QUIC-RFC9000-S17P2-0033`.
 
 ## Tests Run And Results
 

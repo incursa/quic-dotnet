@@ -15,14 +15,14 @@
     "VER-QUIC-RFC9000-0089"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S13P3-0006"
+    "REQ-QUIC-RFC9000-0789"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0789.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs"
   ],
   "design_summary": "The runtime tracks sent CRYPTO packets in their packet number space with enough protected bytes and CRYPTO metadata to rebuild the retransmittable CRYPTO frame after recovery reports loss. Registering loss removes the original sent-packet record and queues a retransmission plan; receiving an acknowledgment for the same original packet number removes either the sent record or the queued repair plan before it can be flushed. Rebuilt Handshake CRYPTO repairs parse the lost plaintext, skip non-reliable ACK, PING, and PADDING prefixes, preserve the original CRYPTO offset and payload bytes, protect the repair in a fresh packet, and track it under the new packet number.",
@@ -42,7 +42,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the S13.3 CRYPTO retransmission acknowledgment-boundary proof gap for REQ-QUIC-RFC9000-S13P3-0006. It is intentionally limited to local runtime recovery state and requirement-home packet inspection."
+      "content": "This design closes the S13.3 CRYPTO retransmission acknowledgment-boundary proof gap for REQ-QUIC-RFC9000-0789. It is intentionally limited to local runtime recovery state and requirement-home packet inspection."
     }
   ]
 }

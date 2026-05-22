@@ -15,13 +15,13 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0010",
-    "REQ-QUIC-RFC9000-S13P3-0006"
+    "REQ-QUIC-RFC9000-0763",
+    "REQ-QUIC-RFC9000-0789"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs"
   ],
@@ -52,7 +52,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0010.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0010.cs)\n- [`QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)"
+      "content": "- [`QuicHandshakeFlowCoordinator.cs`](../../../src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`REQ-QUIC-RFC9000-0763.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs)\n- [`QuicHandshakePacketProtectionBenchmarks.cs`](../../../benchmarks/QuicHandshakePacketProtectionBenchmarks.cs)"
     }
   ]
 }

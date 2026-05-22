@@ -13,12 +13,12 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S7P4P1-0010",
-    "REQ-QUIC-RFC9000-S7P4P1-0011",
+    "REQ-QUIC-RFC9000-0353",
     "REQ-QUIC-RFC9000-S7P4P1-0012",
-    "REQ-QUIC-RFC9000-S7P4P1-0013"
+    "REQ-QUIC-RFC9000-0356"
   ],
   "summary": "Close the bounded S7P4P1 updated-value packet-use tail by adding an internal policy seam that permits remembered transport parameters in 0-RTT, rejects updated values in 0-RTT, and scopes updated values to 1-RTT packets.",
-  "planned_changes": "- Extend QuicZeroRttTransportParameterPolicy with value-source and packet-use decision types.\n- Allow 0-RTT packet construction only with remembered transport-parameter values.\n- Reject updated handshake and 1-RTT-frame values for 0-RTT use with PROTOCOL_VIOLATION semantics.\n- Allow updated values only for 1-RTT packet construction.\n- Add a server-side helper for optional PROTOCOL_VIOLATION handling when updated values are detected in 0-RTT.\n- Add focused requirement-home tests for REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013.\n- Retarget the four requirements to focused architecture, work-item, verification, and method-level proof links.",
+  "planned_changes": "- Extend QuicZeroRttTransportParameterPolicy with value-source and packet-use decision types.\n- Allow 0-RTT packet construction only with remembered transport-parameter values.\n- Reject updated handshake and 1-RTT-frame values for 0-RTT use with PROTOCOL_VIOLATION semantics.\n- Allow updated values only for 1-RTT packet construction.\n- Add a server-side helper for optional PROTOCOL_VIOLATION handling when updated values are detected in 0-RTT.\n- Add focused requirement-home tests for REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-0356.\n- Retarget the four requirements to focused architecture, work-item, verification, and method-level proof links.",
   "verification_plan": "Run a Release build, run the focused S7P4P1 requirement-home filter, regenerate QUIC requirement coverage triage, validate SpecTrace JSON, run the full Release test suite without rebuilding, and check the resulting diff for whitespace errors.",
   "verification_links": [
     "VER-QUIC-RFC9000-0071"
@@ -33,5 +33,5 @@
     "0-RTT decryption, buffering admission, or application stream delivery.",
     "Hosted interop readiness."
   ],
-  "completion_notes": "Completed as a focused internal packet-use policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-S7P4P1-0013."
+  "completion_notes": "Completed as a focused internal packet-use policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-0356."
 }

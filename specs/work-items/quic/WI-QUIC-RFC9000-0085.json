@@ -12,9 +12,9 @@
     "VER-QUIC-RFC9000-0085"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S8P1P4-0003",
+    "REQ-QUIC-RFC9000-0409",
     "REQ-QUIC-RFC9000-S8P1P4-0007",
-    "REQ-QUIC-RFC9000-S8P1P4-0011"
+    "REQ-QUIC-RFC9000-0412"
   ],
   "summary": "Close the focused S8P1P4 Retry token source endpoint continuity, short lifetime, and anti-amplification proof tail.",
   "planned_changes": "- Add focused requirement-home tests for Retry replay admission from the issuing endpoint and rejection from a fresh UDP source port.\n- Add deterministic source-port mutation fuzz coverage for port-bound token validation.\n- Add focused token lifetime boundary and expiration tests for port-bound Retry tokens.\n- Add positive anti-amplification budget evidence for attributed datagrams on an unvalidated changed address.\n- Bind listener Retry bootstrap tokens to remote address and port and validate token lifetime before replay admission.\n- Link focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",

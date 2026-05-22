@@ -16,7 +16,7 @@
 ## Requirements in Scope
 
 ### S19P1 (6 requirements)
-- `REQ-QUIC-RFC9000-S19P1-0001` - not implemented
+- `REQ-QUIC-RFC9000-1910` - not implemented
 - `REQ-QUIC-RFC9000-S19P1-0002` - not implemented
 - `REQ-QUIC-RFC9000-S19P1-0003` - not implemented
 - `REQ-QUIC-RFC9000-S19P1-0004` - not implemented
@@ -36,8 +36,8 @@
 - `REQ-QUIC-RFC9000-S19P3-0004` - not implemented
 - `REQ-QUIC-RFC9000-S19P3-0005` - not implemented
 - `REQ-QUIC-RFC9000-S19P3-0006` - not implemented
-- `REQ-QUIC-RFC9000-S19P3-0007` - not implemented
-- `REQ-QUIC-RFC9000-S19P3-0008` - not implemented
+- `REQ-QUIC-RFC9000-1177` - not implemented
+- `REQ-QUIC-RFC9000-1179` - not implemented
 - `REQ-QUIC-RFC9000-S19P3-0009` - not implemented
 - `REQ-QUIC-RFC9000-S19P3-0010` - not implemented
 - `REQ-QUIC-RFC9000-S19P3-0011` - not implemented
@@ -52,15 +52,15 @@
 - `REQ-QUIC-RFC9000-S19P3-0020` - not implemented
 
 ### S19P3P1 (10 requirements)
-- `REQ-QUIC-RFC9000-S19P3P1-0001` - not implemented
+- `REQ-QUIC-RFC9000-1192` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0002` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0003` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0004` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0005` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0006` - not implemented
-- `REQ-QUIC-RFC9000-S19P3P1-0007` - not implemented
+- `REQ-QUIC-RFC9000-1198` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0008` - not implemented
-- `REQ-QUIC-RFC9000-S19P3P1-0009` - not implemented
+- `REQ-QUIC-RFC9000-1203` - not implemented
 - `REQ-QUIC-RFC9000-S19P3P1-0010` - not implemented
 
 ### S19P3P2 (7 requirements)
@@ -73,9 +73,9 @@
 - `REQ-QUIC-RFC9000-S19P3P2-0007` - not implemented
 
 ### S19P4 (11 requirements)
-- `REQ-QUIC-RFC9000-S19P4-0001` - not implemented
+- `REQ-QUIC-RFC9000-1205` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0002` - not implemented
-- `REQ-QUIC-RFC9000-S19P4-0003` - not implemented
+- `REQ-QUIC-RFC9000-1208` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0004` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0005` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0006` - not implemented
@@ -88,8 +88,8 @@
 ### S19P5 (10 requirements)
 - `REQ-QUIC-RFC9000-S19P5-0001` - not implemented
 - `REQ-QUIC-RFC9000-S19P5-0002` - not implemented
-- `REQ-QUIC-RFC9000-S19P5-0003` - not implemented
-- `REQ-QUIC-RFC9000-S19P5-0004` - not implemented
+- `REQ-QUIC-RFC9000-1216` - not implemented
+- `REQ-QUIC-RFC9000-1217` - not implemented
 - `REQ-QUIC-RFC9000-S19P5-0005` - not implemented
 - `REQ-QUIC-RFC9000-S19P5-0006` - not implemented
 - `REQ-QUIC-RFC9000-S19P5-0007` - not implemented

@@ -853,7 +853,7 @@ function Invoke-SupervisorSmokeValidation {
         -TriageJson ([pscustomobject]@{
             requirements = @(
                 [pscustomobject]@{
-                    requirement_id = "REQ-QUIC-RFC9000-S5P1P1-0003"
+                    requirement_id = "REQ-QUIC-RFC9000-0220"
                     rfc = "RFC9000"
                     section_prefix = "S5P1P1"
                     title = "Assign sequence number 0 to the initial CID"
@@ -861,7 +861,7 @@ function Invoke-SupervisorSmokeValidation {
                     state = "uncovered_unblocked"
                 }
                 [pscustomobject]@{
-                    requirement_id = "REQ-QUIC-RFC9000-S5P1P1-0004"
+                    requirement_id = "REQ-QUIC-RFC9000-0221"
                     rfc = "RFC9000"
                     section_prefix = "S5P1P1"
                     title = "Assign sequence number 1 to the preferred-address CID"
@@ -1844,10 +1844,10 @@ function Get-LaneTemplateDefinitions {
                 "REQ-QUIC-RFC9001-S6"
             )
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_0488|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0872|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0009|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_0488|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0872|FullyQualifiedName~REQ_QUIC_RFC9000_S14P2_0009"'
             )
             success_gates = @(
                 "one bounded slice from Program A or Program B lands with real runtime, proof, and trace movement",
@@ -2001,12 +2001,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S3P1-0013", "REQ-QUIC-RFC9000-S3P1-0014", "REQ-QUIC-RFC9000-S3P1-0015", "REQ-QUIC-RFC9000-S3P1-0016", "REQ-QUIC-RFC9000-S3P1-0017", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-S13P3-0012")
+            requirement_families = @("REQ-QUIC-RFC9000-S3P1-0013", "REQ-QUIC-RFC9000-S3P1-0014", "REQ-QUIC-RFC9000-S3P1-0015", "REQ-QUIC-RFC9000-S3P1-0016", "REQ-QUIC-RFC9000-S3P1-0017", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-0795")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_0795"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0012"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_0795"'
             )
             success_gates = @(
                 "send-side terminal states become runtime-owned and requirement-home proven",
@@ -2041,12 +2041,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicStream",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0028", "REQ-QUIC-RFC9000-S13P3-0029", "REQ-QUIC-RFC9000-S13P3-0030", "REQ-QUIC-RFC9000-S13P3-0031", "REQ-QUIC-RFC9000-S13P3-0032", "REQ-QUIC-RFC9000-S13P3-0033")
+            requirement_families = @("REQ-QUIC-RFC9000-0815", "REQ-QUIC-RFC9000-S13P3-0029", "REQ-QUIC-RFC9000-S13P3-0030", "REQ-QUIC-RFC9000-S13P3-0031", "REQ-QUIC-RFC9000-S13P3-0032", "REQ-QUIC-RFC9000-1340")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0815|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0815|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0029|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0030|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0031|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0032|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             success_gates = @(
                 "control-frame retransmission and no-repair ownership is runtime-backed and narrowly proven",
@@ -2118,12 +2118,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S3P2-0022", "REQ-QUIC-RFC9000-S3P2-0023")
+            requirement_families = @("REQ-QUIC-RFC9000-0120", "REQ-QUIC-RFC9000-S3P2-0023")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0120|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0120|FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0023"'
             )
             success_gates = @(
                 "RESET_STREAM transitions and acknowledgement handling stay runtime-owned and narrowly proven",
@@ -2230,12 +2230,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S4P5-0002", "REQ-QUIC-RFC9000-S4P5-0004", "REQ-QUIC-RFC9000-S4P5-0005", "REQ-QUIC-RFC9000-S4P5-0006", "REQ-QUIC-RFC9000-S4P5-0007", "REQ-QUIC-RFC9000-S4P5-0008", "REQ-QUIC-RFC9000-S3P5-0003")
+            requirement_families = @("REQ-QUIC-RFC9000-S4P5-0002", "REQ-QUIC-RFC9000-0192", "REQ-QUIC-RFC9000-0193", "REQ-QUIC-RFC9000-0194", "REQ-QUIC-RFC9000-S4P5-0007", "REQ-QUIC-RFC9000-S4P5-0008", "REQ-QUIC-RFC9000-S3P5-0003")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_0192|FullyQualifiedName~REQ_QUIC_RFC9000_0193|FullyQualifiedName~REQ_QUIC_RFC9000_0194|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_0192|FullyQualifiedName~REQ_QUIC_RFC9000_0193|FullyQualifiedName~REQ_QUIC_RFC9000_0194|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
             )
             success_gates = @(
                 "final-size and connection credit accounting rules become trace-clean with positive and negative proof",
@@ -2269,12 +2269,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0015", "REQ-QUIC-RFC9000-S13P3-0016", "REQ-QUIC-RFC9000-S13P3-0017", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0020", "REQ-QUIC-RFC9000-S13P3-0021")
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0015", "REQ-QUIC-RFC9000-0799", "REQ-QUIC-RFC9000-S13P3-0017", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-0804", "REQ-QUIC-RFC9000-S13P3-0021")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_0799|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_0804|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0016|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0020|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_0799|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0017|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_0804|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0021"'
             )
             success_gates = @(
                 "MAX_* readvertisement behavior is runtime-backed and loss-aware",
@@ -2310,12 +2310,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S4P1-0015", "REQ-QUIC-RFC9000-S4P2-0002", "REQ-QUIC-RFC9000-S4P2-0003", "REQ-QUIC-RFC9000-S4P2-0004", "REQ-QUIC-RFC9000-S13P3-0022", "REQ-QUIC-RFC9000-S13P3-0023", "REQ-QUIC-RFC9000-S13P3-0024", "REQ-QUIC-RFC9000-S13P3-0025")
+            requirement_families = @("REQ-QUIC-RFC9000-0177", "REQ-QUIC-RFC9000-S4P2-0002", "REQ-QUIC-RFC9000-S4P2-0003", "REQ-QUIC-RFC9000-S4P2-0004", "REQ-QUIC-RFC9000-S13P3-0022", "REQ-QUIC-RFC9000-S13P3-0023", "REQ-QUIC-RFC9000-S13P3-0024", "REQ-QUIC-RFC9000-S13P3-0025")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0177|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0177|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S4P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0022|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0023|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0025"'
             )
             success_gates = @(
                 "blocked-frame cadence and no-forced-packet behavior are proven narrowly",
@@ -2389,12 +2389,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S4P1-0015", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0024")
+            requirement_families = @("REQ-QUIC-RFC9000-0177", "REQ-QUIC-RFC9000-S13P3-0018", "REQ-QUIC-RFC9000-S13P3-0019", "REQ-QUIC-RFC9000-S13P3-0024")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0177|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P1_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_0177|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0024"'
             )
             success_gates = @(
                 "loss of the most recent credit or blocked frame produces a replacement only while the endpoint is still blocked",
@@ -2428,12 +2428,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0001", "REQ-QUIC-RFC9000-S13P3-0002", "REQ-QUIC-RFC9000-S13P3-0003", "REQ-QUIC-RFC9000-S13P3-0004", "REQ-QUIC-RFC9000-S13P3-0005", "REQ-QUIC-RFC9000-S13P3-0006", "REQ-QUIC-RFC9000-S13P3-0007", "REQ-QUIC-RFC9000-S13P3-0008", "REQ-QUIC-RFC9000-S13P3-0009", "REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-S13P3-0014", "REQ-QUIC-RFC9000-S13P3-0026", "REQ-QUIC-RFC9000-S13P3-0033")
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0001", "REQ-QUIC-RFC9000-S13P3-0002", "REQ-QUIC-RFC9000-S13P3-0003", "REQ-QUIC-RFC9000-S13P3-0004", "REQ-QUIC-RFC9000-S13P3-0005", "REQ-QUIC-RFC9000-0789", "REQ-QUIC-RFC9000-S13P3-0007", "REQ-QUIC-RFC9000-S13P3-0008", "REQ-QUIC-RFC9000-S13P3-0009", "REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-0797", "REQ-QUIC-RFC9000-0813", "REQ-QUIC-RFC9000-1340")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_0789|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_0797|FullyQualifiedName~REQ_QUIC_RFC9000_0813|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0005|FullyQualifiedName~REQ_QUIC_RFC9000_0789|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_0797|FullyQualifiedName~REQ_QUIC_RFC9000_0813|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             success_gates = @(
                 "lost STREAM and CRYPTO material is re-sent through the runtime scheduler instead of being retried only in helpers",
@@ -2467,12 +2467,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-S13P3-0013", "REQ-QUIC-RFC9000-S13P3-0026", "REQ-QUIC-RFC9000-S13P3-0033")
+            requirement_families = @("REQ-QUIC-RFC9000-S13P3-0010", "REQ-QUIC-RFC9000-S13P3-0011", "REQ-QUIC-RFC9000-S13P3-0013", "REQ-QUIC-RFC9000-0813", "REQ-QUIC-RFC9000-1340")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_0813|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0026|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0033"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0011|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0013|FullyQualifiedName~REQ_QUIC_RFC9000_0813|FullyQualifiedName~REQ_QUIC_RFC9000_1340"'
             )
             success_gates = @(
                 "the remaining retransmission tail becomes proof-backed without widening into migration or interop harness work",
@@ -2582,12 +2582,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0004", "REQ-QUIC-RFC9000-S9P4-0006")
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0004", "REQ-QUIC-RFC9000-0510")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0006"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_0510"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0006"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0004|FullyQualifiedName~REQ_QUIC_RFC9000_0510"'
             )
             success_gates = @(
                 "ACK frames continue to cover packets received on multiple paths",
@@ -2621,12 +2621,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "REQ-QUIC-RFC9000-S9P4-0010", "REQ-QUIC-RFC9000-S9P4-0011")
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "REQ-QUIC-RFC9000-0513", "REQ-QUIC-RFC9000-S9P4-0011")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0513|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0513|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
             )
             success_gates = @(
                 "PATH_CHALLENGE timers remain conservative and retry cleanly when PATH_RESPONSE is missing",
@@ -2815,15 +2815,15 @@ function Get-LaneTemplateDefinitions {
             )
             requirement_families = @(
                 "REQ-QUIC-RFC9000-S9P3-0001",
-                "REQ-QUIC-RFC9000-S9P3-0006",
+                "REQ-QUIC-RFC9000-0481",
                 "REQ-QUIC-RFC9000-S9P3-0007",
-                "REQ-QUIC-RFC9000-S9P3-0008"
+                "REQ-QUIC-RFC9000-0483"
             )
             verification_commands = @(
-                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0008"""
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_0481|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0483"""
             )
             merge_check_commands = @(
-                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0006|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0008"""
+                "dotnet test Incursa.Quic.slnx --filter ""FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_0481|FullyQualifiedName~REQ_QUIC_RFC9000_S9P3_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0483"""
             )
             success_gates = @(
                 "migration routing and path validation initiation become requirement-home proven on the existing runtime seam",

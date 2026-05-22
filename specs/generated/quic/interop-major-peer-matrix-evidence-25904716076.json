@@ -3,7 +3,7 @@
   "advisory": true,
   "source_profile": "major-peer-matrix",
   "source_requirement": "REQ-QUIC-INT-0019",
-  "summary": "Completed major-peer-matrix evidence report for run 25904716076.",
+  "summary": "Completed major-peer-matrix evidence report `interop-major-peer-matrix-evidence-25904716076` for run 25904716076.",
   "source_runs": [
     {
       "run_id": 25904716076,

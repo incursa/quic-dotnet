@@ -351,7 +351,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Close and draining lifecycle requirements remain blocked without connection close orchestration.'
             RequirementPrefixes = @('S10', 'S10P2', 'S10P2P1', 'S10P2P2', 'S10P2P3')
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S10P1P2-0001'
+                'REQ-QUIC-RFC9000-0560'
             )
         },
         [pscustomobject]@{
@@ -365,7 +365,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Stream-creation by sending data remains blocked without a faithful data-first proof path.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S2-0002'
+                'REQ-QUIC-RFC9000-0020'
             )
         },
         [pscustomobject]@{
@@ -390,7 +390,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Path-validation abandonment and NO_VIABLE_PATH signaling remain blocked without terminal path-validation state and runtime error emission.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S8P2P4-0001',
+                'REQ-QUIC-RFC9000-0454',
                 'REQ-QUIC-RFC9000-S8P2P4-0002',
                 'REQ-QUIC-RFC9000-S8P2P4-0003'
             )
@@ -409,7 +409,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Delayed old-address packet processing remains blocked without source-address tracking and path-probe orchestration.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S9P6P2-0005'
+                'REQ-QUIC-RFC9000-0535'
             )
         },
         [pscustomobject]@{
@@ -428,7 +428,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Optional server abort behavior for detected packet-number reset remains blocked without a source-level packet-number reset detection seam.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S17P2P5P3-0008'
+                'REQ-QUIC-RFC9000-1055'
             )
         },
         [pscustomobject]@{
@@ -436,13 +436,13 @@ function Get-RequirementGapMappings {
             Summary            = 'Section 19.21 extension-frame, negotiation, congestion-control, and registry-policy requirements remain deferred without a local extension-frame surface.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S19P21-0004',
-                'REQ-QUIC-RFC9000-S19P21-0005',
-                'REQ-QUIC-RFC9000-S19P21-0006',
-                'REQ-QUIC-RFC9000-S19P21-0007',
-                'REQ-QUIC-RFC9000-S19P21-0008',
-                'REQ-QUIC-RFC9000-S19P21-0009',
-                'REQ-QUIC-RFC9000-S19P21-0010',
+                'REQ-QUIC-RFC9000-1376',
+                'REQ-QUIC-RFC9000-1377',
+                'REQ-QUIC-RFC9000-1378',
+                'REQ-QUIC-RFC9000-1379',
+                'REQ-QUIC-RFC9000-1380',
+                'REQ-QUIC-RFC9000-1381',
+                'REQ-QUIC-RFC9000-1383',
                 'REQ-QUIC-RFC9000-S19P21-0011'
             )
         },
@@ -460,13 +460,13 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-S21P4-0001',
                 'REQ-QUIC-RFC9000-S21P5-0001',
                 'REQ-QUIC-RFC9000-S21P5-0002',
-                'REQ-QUIC-RFC9000-S21P5-0003',
-                'REQ-QUIC-RFC9000-S21P5P6-0002',
-                'REQ-QUIC-RFC9000-S21P5P6-0003',
+                'REQ-QUIC-RFC9000-1454',
+                'REQ-QUIC-RFC9000-1469',
+                'REQ-QUIC-RFC9000-1470',
                 'REQ-QUIC-RFC9000-S21P5P6-0005',
-                'REQ-QUIC-RFC9000-S21P5P6-0006',
+                'REQ-QUIC-RFC9000-1473',
                 'REQ-QUIC-RFC9000-S21P6-0001',
-                'REQ-QUIC-RFC9000-S21P7-0001',
+                'REQ-QUIC-RFC9000-1476',
                 'REQ-QUIC-RFC9000-S21P9-0001',
                 'REQ-QUIC-RFC9000-S21P9-0002',
                 'REQ-QUIC-RFC9000-S21P11-0001',
@@ -479,11 +479,11 @@ function Get-RequirementGapMappings {
             RequirementPrefixes = @()
             RequirementIds     = @(
                 'REQ-QUIC-RFC9000-S22P1P2-0001',
-                'REQ-QUIC-RFC9000-S22P1P2-0002',
+                'REQ-QUIC-RFC9000-1491',
                 'REQ-QUIC-RFC9000-S22P1P2-0003',
                 'REQ-QUIC-RFC9000-S22P1P2-0004',
                 'REQ-QUIC-RFC9000-S22P1P2-0005',
-                'REQ-QUIC-RFC9000-S22P1P2-0006',
+                'REQ-QUIC-RFC9000-1494',
                 'REQ-QUIC-RFC9000-S22P1P2-0007'
             )
         },
@@ -492,10 +492,10 @@ function Get-RequirementGapMappings {
             Summary            = 'Section 22.1.3 codepoint-review requirements remain blocked without a codepoint maintenance workflow surface.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S22P1P3-0001',
-                'REQ-QUIC-RFC9000-S22P1P3-0002',
-                'REQ-QUIC-RFC9000-S22P1P3-0003',
-                'REQ-QUIC-RFC9000-S22P1P3-0004'
+                'REQ-QUIC-RFC9000-1498',
+                'REQ-QUIC-RFC9000-1499',
+                'REQ-QUIC-RFC9000-1500',
+                'REQ-QUIC-RFC9000-1501'
             )
         },
         [pscustomobject]@{
@@ -508,7 +508,7 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-S22P1P4-0003',
                 'REQ-QUIC-RFC9000-S22P1P4-0004',
                 'REQ-QUIC-RFC9000-S22P1P4-0005',
-                'REQ-QUIC-RFC9000-S22P1P4-0006',
+                'REQ-QUIC-RFC9000-1507',
                 'REQ-QUIC-RFC9000-S22P1P4-0007',
                 'REQ-QUIC-RFC9000-S22P1P4-0008'
             )

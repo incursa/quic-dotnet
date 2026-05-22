@@ -15,12 +15,12 @@
     "VER-QUIC-RFC9000-0053"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S19P13-0002"
+    "REQ-QUIC-RFC9000-1299"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P13-0002.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1299.cs"
   ],
   "design_summary": "The protected Application Data frame loop delegates STREAM_DATA_BLOCKED receive-policy validation to QuicConnectionStreamState.TryReceiveStreamDataBlockedFrame. That seam accepts receive-capable peer streams and returns STREAM_STATE_ERROR for send-only local unidirectional stream IDs. The runtime now preserves that transport error by converting the failed STREAM_DATA_BLOCKED receive-policy check into a local CONNECTION_CLOSE transition with triggering frame type 0x15.",
   "data_and_state_considerations": "This slice does not change STREAM_DATA_BLOCKED parsing, formatting, sender-side advisory emission, or stream flow-control credit accounting. It only ensures the existing receive-capability check is surfaced as a connection close when the offending frame arrives on a protected runtime packet path.",
@@ -43,7 +43,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design covers only REQ-QUIC-RFC9000-S19P13-0002 receiver-side termination for STREAM_DATA_BLOCKED frames that target send-only streams."
+      "content": "This design covers only REQ-QUIC-RFC9000-1299 receiver-side termination for STREAM_DATA_BLOCKED frames that target send-only streams."
     }
   ]
 }

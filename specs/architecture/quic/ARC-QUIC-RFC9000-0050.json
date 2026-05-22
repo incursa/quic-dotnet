@@ -21,11 +21,11 @@
     "REQ-QUIC-RFC9000-S19P7-0003",
     "REQ-QUIC-RFC9000-S19P7-0004",
     "REQ-QUIC-RFC9000-S19P7-0005",
-    "REQ-QUIC-RFC9000-S19P7-0006",
-    "REQ-QUIC-RFC9000-S19P7-0007",
+    "REQ-QUIC-RFC9000-1243",
+    "REQ-QUIC-RFC9000-1244",
     "REQ-QUIC-RFC9000-S19P7-0008",
-    "REQ-QUIC-RFC9000-S19P7-0009",
-    "REQ-QUIC-RFC9000-S19P7-0010"
+    "REQ-QUIC-RFC9000-1245",
+    "REQ-QUIC-RFC9000-1246"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicFrameCodec.cs",
@@ -38,11 +38,11 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1243.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1244.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P7-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1245.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1246.cs",
     "benchmarks/QuicFrameCodecBenchmarks.cs"
   ],
   "design_summary": "The NEW_TOKEN frame stays centered on the span-backed frame codec and immutable frame view. The parser accepts only the fixed one-byte frame type 0x07, parses Token Length as a QUIC variable-length integer, rejects empty tokens, rejects declared lengths beyond the remaining payload, and consumes exactly the token bytes. The application packet runtime treats malformed client-side receipt as FRAME_ENCODING_ERROR, treats all server-side NEW_TOKEN receipt as PROTOCOL_VIOLATION, and refuses to construct outbound NEW_TOKEN payloads from client-role runtimes.",

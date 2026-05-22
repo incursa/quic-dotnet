@@ -40,8 +40,8 @@
           "count": 1443,
           "message": "Current validation compares the exact requirement namespace to SPEC-QUIC-RFC9000 and rejects valid extra section grouping segments such as S...",
           "representative_examples": [
-            "REQ-QUIC-RFC9000-S2-0001",
-            "REQ-QUIC-RFC9000-S2-0002",
+            "REQ-QUIC-RFC9000-0019",
+            "REQ-QUIC-RFC9000-0020",
             "REQ-QUIC-RFC9000-S2-0003"
           ]
         }

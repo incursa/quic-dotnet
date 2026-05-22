@@ -200,7 +200,7 @@
     "notes": "Updated CONNECTION_CLOSE encoding helpers and added positive/negative/fuzz coverage for transport and application variants."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0009",
+    "requirement_id": "REQ-QUIC-RFC9000-1358",
     "completion_status": "implemented and tested",
     "files_changed": [
       "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
@@ -292,7 +292,7 @@
     "notes": "The frame codec carries the triggering frame type as supplied by the caller; it does not infer an unknown frame type and substitute the zero code on behalf of higher-level endpoint policy."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0013",
+    "requirement_id": "REQ-QUIC-RFC9000-1361",
     "completion_status": "implemented and tested",
     "files_changed": [
       "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
@@ -426,7 +426,7 @@
     "notes": "The helper layer does not yet expose the connection-state and epoch tracking needed to enforce when the application-specific CONNECTION_CLOSE variant may be sent."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P19-0019",
+    "requirement_id": "REQ-QUIC-RFC9000-1366",
     "completion_status": "blocked by technical dependency",
     "files_changed": [
       "src/Incursa.Quic/QuicConnectionCloseFrame.cs",
@@ -535,7 +535,7 @@
     "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0005",
+    "requirement_id": "REQ-QUIC-RFC9000-1371",
     "completion_status": "blocked by technical dependency",
     "files_changed": [
       "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
@@ -552,7 +552,7 @@
     "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P20-0006",
+    "requirement_id": "REQ-QUIC-RFC9000-1372",
     "completion_status": "blocked by technical dependency",
     "files_changed": [
       "src/Incursa.Quic/QuicHandshakeDoneFrame.cs",
@@ -569,7 +569,7 @@
     "notes": "The current repository has the frame codec, but not the endpoint state machine needed to enforce who may send HANDSHAKE_DONE, when it may be sent, and how the peer reacts on receipt."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0001",
+    "requirement_id": "REQ-QUIC-RFC9000-1373",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -596,7 +596,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0004",
+    "requirement_id": "REQ-QUIC-RFC9000-1376",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -605,7 +605,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0005",
+    "requirement_id": "REQ-QUIC-RFC9000-1377",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -614,7 +614,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0006",
+    "requirement_id": "REQ-QUIC-RFC9000-1378",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -623,7 +623,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0007",
+    "requirement_id": "REQ-QUIC-RFC9000-1379",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -632,7 +632,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0008",
+    "requirement_id": "REQ-QUIC-RFC9000-1380",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -641,7 +641,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0009",
+    "requirement_id": "REQ-QUIC-RFC9000-1381",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -650,7 +650,7 @@
     "notes": "These are protocol-policy and extension-negotiation requirements; the current helper-only frame slice does not have an extension registry or capability negotiation surface to close them independently."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P21-0010",
+    "requirement_id": "REQ-QUIC-RFC9000-1383",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -876,7 +876,7 @@
     "notes": "Version-negotiation helpers already keep downgrade-prevention mechanisms out of the packet format and are now tagged with direct requirement refs."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P12-0002",
+    "requirement_id": "REQ-QUIC-RFC9000-21120001",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -975,7 +975,7 @@
     "notes": "These are guidance requirements for deployment posture and future extension design; the repository currently has no policy surface to enforce them."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P5-0003",
+    "requirement_id": "REQ-QUIC-RFC9000-1454",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -993,7 +993,7 @@
     "notes": "The helper layer does not yet have the connection migration state needed to distinguish probing from non-probing traffic to a preferred address."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0001",
+    "requirement_id": "REQ-QUIC-RFC9000-1468",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -1002,7 +1002,7 @@
     "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0002",
+    "requirement_id": "REQ-QUIC-RFC9000-1469",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -1011,7 +1011,7 @@
     "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0003",
+    "requirement_id": "REQ-QUIC-RFC9000-1470",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -1038,7 +1038,7 @@
     "notes": "The current repository does not carry endpoint deployment rules for loopback handling, NAT port avoidance, or problematic connection-ID pattern selection."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
+    "requirement_id": "REQ-QUIC-RFC9000-1473",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],
@@ -1056,7 +1056,7 @@
     "notes": "The repo does not yet implement the connection-accept or request-admission surface needed to enforce slowloris countermeasures."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S21P7-0001",
+    "requirement_id": "REQ-QUIC-RFC9000-1476",
     "completion_status": "intentionally deferred",
     "files_changed": [],
     "tests_covering_requirement": [],

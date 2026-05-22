@@ -5,7 +5,7 @@ public sealed class REQ_QUIC_RFC9000_S19P16_0009
 {
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0008">The sequence number specified in a RETIRE_CONNECTION_ID frame MUST NOT refer to the Destination Connection ID field of the packet in which the frame is contained.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1328">The sequence number specified in a RETIRE_CONNECTION_ID frame MUST NOT refer to the Destination Connection ID field of the packet in which the frame is contained.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P16-0009">The peer MAY treat this as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S19P16-0009")]

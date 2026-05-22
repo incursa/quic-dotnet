@@ -26,7 +26,7 @@
     "REQ-QUIC-RFC9000-S22P1P1-0010",
     "REQ-QUIC-RFC9000-S22P1P1-0011",
     "REQ-QUIC-RFC9000-S22P1P1-0012",
-    "REQ-QUIC-RFC9000-S22P1P1-0013",
+    "REQ-QUIC-RFC9000-1488",
     "REQ-QUIC-RFC9000-S22P1P1-0014"
   ],
   "key_components": [
@@ -43,7 +43,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1488.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0014.cs"
   ],
   "design_summary": "The Section 22.1.1 requirements describe IANA registry administration rather than QUIC wire, transport-parameter, frame, packet, or connection-runtime behavior. The implementation therefore keeps the proof surface as a narrow internal policy model that records the common QUIC registry fields, the provisional-request required fields, the provisional-entry required fields, the provisional omission rules, the Expert Review policy reference, the date-update review exception, and the allowed status values. Requirement-home tests prove each policy fact directly against that model so these clauses are traceable without expanding runtime protocol responsibilities.",

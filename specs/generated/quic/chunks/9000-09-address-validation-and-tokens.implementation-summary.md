@@ -5,7 +5,7 @@
 - `REQ-QUIC-RFC9000-S8P1-0001`
 - `REQ-QUIC-RFC9000-S8P1-0002`
 - `REQ-QUIC-RFC9000-S8P1-0003`
-- `REQ-QUIC-RFC9000-S8P1-0004`
+- `REQ-QUIC-RFC9000-0375`
 
 ## Files Changed
 - `src/Incursa.Quic/QuicAddressValidation.cs`
@@ -32,10 +32,10 @@
 - `REQ-QUIC-RFC9000-S8P1-0005`
 - `REQ-QUIC-RFC9000-S8P1-0006`
 - `REQ-QUIC-RFC9000-S8P1-0007`
-- `REQ-QUIC-RFC9000-S8P1P1-0001`
+- `REQ-QUIC-RFC9000-0381`
 - `REQ-QUIC-RFC9000-S8P1P2-0001` through `REQ-QUIC-RFC9000-S8P1P2-0004`
 - `REQ-QUIC-RFC9000-S8P1P3-0001` through `REQ-QUIC-RFC9000-S8P1P3-0017`
-- `REQ-QUIC-RFC9000-S8P1P4-0001` through `REQ-QUIC-RFC9000-S8P1P4-0012`
+- `REQ-QUIC-RFC9000-0407` through `REQ-QUIC-RFC9000-S8P1P4-0012`
 
 ## Risks / Follow-up Notes
 - `QuicAddressValidation` is a structural helper for the 64-bit entropy MAY-clause; the repo does not yet model entropy assessment beyond connection-ID length plus endpoint choice.

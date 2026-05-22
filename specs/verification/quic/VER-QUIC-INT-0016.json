@@ -20,9 +20,9 @@
     "The major-peer-matrix and connectionmigration workflow profiles remain advisory and available.",
     "Captured connectionmigration and comparison bundles remain available for inspection.",
     "The repo-local helper can run in dry-run mode and enumerate per-cell rows.",
-    "The generated peer-characterization pilot report is present in the repository.",
-    "The generated major-peer matrix inventory report is present in the repository.",
-    "The generated major-peer matrix evidence report is present in the repository."
+    "The generated peer-characterization pilot report `interop-peer-characterization-matrix-pilot` is present in the repository.",
+    "The generated major-peer matrix inventory report `interop-major-peer-matrix-inventory` is present in the repository.",
+    "The generated major-peer matrix evidence report `interop-major-peer-matrix-evidence-25904716076` is present in the repository."
   ],
   "scope": "Verify that the repository can characterize mixed peer outcomes by peer, role, testcase, outcome class, failure class, and artifact root without collapsing them into a single green/red verdict, using the current major-peer matrix and connectionmigration lanes as the pilot surfaces.",
   "procedure": [
@@ -58,7 +58,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
   ],
-  "status_summary": "Planned. The matrix pilot now combines the seeded connectionmigration rows with the current major-peer evidence so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory pilot report, a generated major-peer inventory report, a generated major-peer evidence report, and a test-side row projector, but broader matrix refresh work is still advisory.",
+  "status_summary": "Planned. The matrix pilot now combines the seeded connectionmigration rows with the current major-peer evidence so mixed comparison results can be classified by peer, role, testcase, failure class, and artifact root instead of being flattened to green/red. Hosted comparison evidence now includes completed major-peer run `25904716076`, which produced mixed peer-specific results rather than one Incursa regression vector, and the repository now has a generated advisory pilot report `interop-peer-characterization-matrix-pilot`, a generated major-peer inventory report `interop-major-peer-matrix-inventory`, a generated major-peer evidence report `interop-major-peer-matrix-evidence-25904716076`, and a test-side row projector, but broader matrix refresh work is still advisory.",
   "supplemental_sections": [
     {
       "heading": "Scope",

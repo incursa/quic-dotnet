@@ -24,8 +24,8 @@
     "REQ-QUIC-RFC9000-S19P15-0011",
     "REQ-QUIC-RFC9000-S19P15-0012",
     "REQ-QUIC-RFC9000-S19P15-0013",
-    "REQ-QUIC-RFC9000-S19P15-0019",
-    "REQ-QUIC-RFC9000-S19P15-0020"
+    "REQ-QUIC-RFC9000-19150005",
+    "REQ-QUIC-RFC9000-19150006"
   ],
   "summary": "Carve direct positive, negative, edge, deterministic fuzz, and BenchmarkDotNet Dry proof for NEW_CONNECTION_ID frame parsing and formatting without claiming broader connection-ID lifecycle behavior.",
   "planned_changes": "- Add focused architecture, work-item, and verification artifacts for the NEW_CONNECTION_ID frame-codec proof.\n- Link the involved RFC 9000 Section 19.15 codec requirements to the focused artifact set while preserving the broad RFC9000-0001 trace.\n- Replace stale broad test references with active requirement-home tests for valid field layout, length boundaries, truncation rejection, and Retire Prior To ordering.\n- Link deterministic fuzz coverage for representative valid frame shapes and truncation rejection.\n- Add permanent BenchmarkDotNet coverage for NEW_CONNECTION_ID parsing and formatting in the existing frame-codec benchmark suite.\n- Preserve focused verification evidence under `artifacts/v/20260425-rfc9000-new-connection-id-frame-codec/`.",

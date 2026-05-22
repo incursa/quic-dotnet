@@ -23,9 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P4_0002
             .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P4-0002");
 
         Assert.Equal("Use stricter policy for low frame-type codepoints", requirement.GetProperty("title").GetString());
-        Assert.Equal(
-            "Values between 0x00 and 0x3f inclusive MUST be assigned using Standards Action or IESG Approval.",
-            requirement.GetProperty("statement").GetString());
+        Assert.Equal("Values between 0x00 and 0x3f inclusive MUST be assigned using Standards Action or IESG Approval.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §22.4 RFC9000-S22.4-B3-P2-S3", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 

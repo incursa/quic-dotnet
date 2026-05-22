@@ -17,7 +17,7 @@
     "REQ-QUIC-RFC9000-S10P2P3-0003",
     "REQ-QUIC-RFC9000-S10P2P3-0004",
     "REQ-QUIC-RFC9000-S10P2P3-0005",
-    "REQ-QUIC-RFC9000-S10P2P3-0006",
+    "REQ-QUIC-RFC9000-0595",
     "REQ-QUIC-RFC9000-S10P2P3-0008",
     "REQ-QUIC-RFC9000-S10P2P3-0010",
     "REQ-QUIC-RFC9000-S10P2P3-0011",
@@ -44,7 +44,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs",
     "dotnet build Incursa.Quic.slnx -c Release",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P3_0011\"",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P3_|FullyQualifiedName~REQ_QUIC_RFC9000_S19P19_0018|FullyQualifiedName~REQ_QUIC_RFC9000_S19P19_0019|FullyQualifiedName~REQ_QUIC_RFC9000_S12P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S12P4_0012|FullyQualifiedName~REQ_QUIC_RFC9000_S13P3_0014\"",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S10P2P3_|FullyQualifiedName~REQ_QUIC_RFC9000_S19P19_0018|FullyQualifiedName~REQ_QUIC_RFC9000_1366|FullyQualifiedName~REQ_QUIC_RFC9000_S12P4_0010|FullyQualifiedName~REQ_QUIC_RFC9000_0727|FullyQualifiedName~REQ_QUIC_RFC9000_0797\"",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
   ],
