@@ -143,7 +143,7 @@ Example:
 pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun
 ```
 
-Dispatch the major peer matrix after the branch containing the workflow change is on GitHub:
+Dispatch the major peer matrix after the branch containing the workflow change is on GitHub to refresh the generated `interop-major-peer-matrix-inventory` and `interop-major-peer-matrix-evidence-25904716076` reports:
 
 ```powershell
 gh workflow run interop-runner-handshake.yml --repo incursa/quic-dotnet --ref main -f coverage_profile=major-peer-matrix
