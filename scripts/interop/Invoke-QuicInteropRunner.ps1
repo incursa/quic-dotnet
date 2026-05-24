@@ -1697,10 +1697,6 @@ function Get-InteropRunnerFailureDiagnosticClassification {
         }
 
         $ackMatches = [regex]::Matches($serverText, 'frame_largest_ack:(?<ack>\d+)')
-        if ($ackMatches.Count -eq 0) {
-            continue
-        }
-
         $largestLoggedAck = -1
         foreach ($ackMatch in $ackMatches) {
             $ackValue = 0
@@ -1769,10 +1765,6 @@ function Get-InteropRunnerFailureDiagnosticClassification {
         $hasApplicationDataBurst =
             ($serverText.IndexOf('frame:STREAM', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
             ($serverText.IndexOf('PNS: 2, unacked:', [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
-        if (-not $hasApplicationDataBurst) {
-            continue
-        }
-
         $outputFiles = @(Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue)
         foreach ($outputFile in $outputFiles) {
             $outputPath = $outputFile.FullName.Replace('\', '/')
@@ -1787,6 +1779,13 @@ function Get-InteropRunnerFailureDiagnosticClassification {
             $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
             if (($outputText.IndexOf('timed out waiting for response-stream FIN', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
                 ($outputText.IndexOf('timed out', [System.StringComparison]::OrdinalIgnoreCase) -ge 0)) {
+                if (-not $hasApplicationDataBurst -and
+                    $outputText.IndexOf('after reading 15355 bytes', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                    return [pscustomobject]@{
+                        Summary = "Diagnostic: preserved packet/key material confirms the shared xquic non-handshake ceiling at 15,355 bytes while the managed client timed out waiting for response-stream FIN. Inspect preserved packet/key material for post-send drain, pacing wakeup, peer delivery, and xquic event-loop packet processing before changing ACK generation, packet protection, or local credit publication."
+                    }
+                }
+
                 return [pscustomobject]@{
                     Summary = "Diagnostic: preserved packet/key material confirms the managed client emitted valid post-burst ACKs while the xquic server log shows only early Application Data ACK processing (largest logged ACK $largestLoggedAck) while the managed client timed out mid-response after xquic sent application data.$processedPacketSummary$responseBurstSummary$pacingBlockedSummary Inspect preserved packet/key material for post-burst ACK consumption, peer delivery, pacing wakeup, and xquic event-loop packet processing before changing ACK generation, packet protection, or local credit publication."
                 }

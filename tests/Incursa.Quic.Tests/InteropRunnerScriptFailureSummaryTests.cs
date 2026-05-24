@@ -145,6 +145,52 @@ public sealed class InteropRunnerScriptFailureSummaryTests
         Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "xquic_chrome", "transfer", "server", "server.log")));
     }
 
+    [Theory]
+    [InlineData("keyupdate")]
+    [InlineData("chacha20")]
+    public async Task RunnerExitNonZeroWithXquicSharedCeilingCandidateReportsSharedCeilingWhenServerMarkersAreAbsent(string testCase)
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-xquic-shared-ceiling-candidate");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "chrome": { "role": "client" },
+              "xquic": { "role": "server" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "xquic",
+            "-TestCases",
+            testCase);
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("shared xquic non-handshake ceiling at 15,355 bytes", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "xquic_chrome", testCase, "output.txt")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "xquic_chrome", testCase, "server", "server.log")));
+    }
+
     [Fact]
     public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedInventoryCellsAndRecordsThem()
     {
@@ -1360,6 +1406,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
 
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
                 findstr /c:"# fake-runner: non-zero-xquic-ack-consumption-candidate" run.py >nul && set "mode=non-zero-xquic-ack-consumption-candidate"
+                findstr /c:"# fake-runner: non-zero-xquic-shared-ceiling-candidate" run.py >nul && set "mode=non-zero-xquic-shared-ceiling-candidate"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-success" run.py >nul && set "mode=file-not-found-handshake-server-success"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-incomplete" run.py >nul && set "mode=file-not-found-handshake-server-incomplete"
                 findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
@@ -1430,6 +1477,23 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     echo xqc_send_packet_pacer_allows^|pacing blocked^|stream_offset:16536^|
                   )
                   echo transfer timeout 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="non-zero-xquic-shared-ceiling-candidate" (
+                  echo fake-runner sentinel non-zero-xquic-shared-ceiling-candidate
+                  if not defined jsonPath exit /b 2
+                  > "%jsonPath%" echo {"mode":"non-zero-xquic-shared-ceiling-candidate"}
+                  for %%T in (keyupdate chacha20) do (
+                    if not exist "%logsDir%\xquic_chrome\%%T\server" md "%logsDir%\xquic_chrome\%%T\server" >nul 2>&1
+                    > "%logsDir%\xquic_chrome\%%T\output.txt" (
+                      echo client ^| interop harness: role=client, testcase=%%T, requestCount=1 timed out waiting for response-stream FIN after reading 15355 bytes.
+                    )
+                    > "%logsDir%\xquic_chrome\%%T\server\server.log" (
+                      echo xqc_hq_parse_req^|259^|^|hq recv CR LF^|
+                    )
+                  )
+                  echo shared ceiling timeout 1>&2
                   exit /b 7
                 )
 
@@ -1655,6 +1719,8 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 mode=non-zero-valid-outputs
             elif grep -q '# fake-runner: non-zero-xquic-ack-consumption-candidate' run.py; then
                 mode=non-zero-xquic-ack-consumption-candidate
+            elif grep -q '# fake-runner: non-zero-xquic-shared-ceiling-candidate' run.py; then
+                mode=non-zero-xquic-shared-ceiling-candidate
             elif grep -q '# fake-runner: file-not-found-handshake-server-success' run.py; then
                 mode=file-not-found-handshake-server-success
             elif grep -q '# fake-runner: file-not-found-handshake-server-incomplete' run.py; then
@@ -1739,6 +1805,21 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     printf '%s\n' 'xqc_send_packet_pacer_allows|pacing blocked|stream_offset:16536|'
                 } > "$logs_dir/xquic_chrome/transfer/server/server.log"
                 printf '%s\n' 'transfer timeout' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "non-zero-xquic-shared-ceiling-candidate" ]; then
+                printf '%s\n' 'fake-runner sentinel non-zero-xquic-shared-ceiling-candidate'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                printf '%s\n' '{"mode":"non-zero-xquic-shared-ceiling-candidate"}' > "$json_path"
+                for testcase in keyupdate chacha20; do
+                    mkdir -p "$logs_dir/xquic_chrome/$testcase/server"
+                    printf '%s\n' "client | interop harness: role=client, testcase=$testcase, requestCount=1 timed out waiting for response-stream FIN after reading 15355 bytes." > "$logs_dir/xquic_chrome/$testcase/output.txt"
+                    printf '%s\n' 'xqc_hq_parse_req|259||hq recv CR LF|' > "$logs_dir/xquic_chrome/$testcase/server/server.log"
+                done
+                printf '%s\n' 'shared ceiling timeout' >&2
                 exit 7
             fi
 
