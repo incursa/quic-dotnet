@@ -29,11 +29,14 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         ulong? localMaxAckDelayMicros = null,
         ulong? peerActiveConnectionIdLimit = null,
         ulong maximumLocallyIssuedConnectionIds = ulong.MaxValue,
-        ulong? peerInitialMaxData = null)
+        ulong? peerInitialMaxData = null,
+        ulong? localMaxDatagramFrameSize = null,
+        ulong? peerMaxDatagramFrameSize = null)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
         localTransportParameters.MaxAckDelay = localMaxAckDelayMicros;
+        localTransportParameters.MaxDatagramFrameSize = localMaxDatagramFrameSize;
         QuicTransportParameters peerTransportParameters = new()
         {
             MaxIdleTimeout = 21,
@@ -44,6 +47,7 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             InitialMaxStreamDataBidiRemote = Math.Max(localBidirectionalSendLimit, 64UL),
             InitialMaxStreamDataUni = Math.Max(localBidirectionalSendLimit, 64UL),
             ActiveConnectionIdLimit = peerActiveConnectionIdLimit,
+            MaxDatagramFrameSize = peerMaxDatagramFrameSize,
         };
 
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);

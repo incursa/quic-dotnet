@@ -38,6 +38,17 @@ internal static class QuicFrameCodecFuzzSupport
         }
     }
 
+    public static void FuzzDatagramFrame()
+    {
+        Random random = new(0x5150_9221);
+
+        for (int iteration = 0; iteration < 128; iteration++)
+        {
+            RoundTripDatagramFrame(random, includeLength: false);
+            RoundTripDatagramFrame(random, includeLength: true);
+        }
+    }
+
     public static void FuzzAckFrame()
     {
         Random random = new(0x5150_2032);
@@ -147,6 +158,32 @@ internal static class QuicFrameCodecFuzzSupport
         Assert.Equal(packet.Length, bytesWritten);
         Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
         Assert.False(QuicFrameCodec.TryParseAckFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+    }
+
+    private static void RoundTripDatagramFrame(Random random, bool includeLength)
+    {
+        byte[] datagramData = RandomBytes(random, random.Next(0, 32));
+        QuicDatagramFrame frame = new()
+        {
+            FrameType = includeLength ? (byte)0x31 : (byte)0x30,
+            DatagramData = datagramData,
+        };
+
+        byte[] packet = QuicFrameTestData.BuildDatagramFrame(frame);
+        Assert.True(QuicFrameCodec.TryParseDatagramFrame(packet, out QuicDatagramFrame parsed, out int bytesConsumed));
+        Assert.Equal(frame.FrameType, parsed.FrameType);
+        Assert.True(datagramData.AsSpan().SequenceEqual(parsed.DatagramData));
+        Assert.Equal(packet.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatDatagramFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(packet.Length, bytesWritten);
+        Assert.True(packet.AsSpan().SequenceEqual(destination[..bytesWritten]));
+
+        if (includeLength)
+        {
+            Assert.False(QuicFrameCodec.TryParseDatagramFrame(packet[..Math.Max(0, packet.Length - 1)], out _, out _));
+        }
     }
 
     private static QuicAckFrame BuildRandomAckFrame(Random random, bool includeEcnCounts)

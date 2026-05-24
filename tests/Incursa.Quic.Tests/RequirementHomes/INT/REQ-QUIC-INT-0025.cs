@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_INT_0025
         Assert.DoesNotContain("interop-connectionmigration-source-address-blocker", gapLedger, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## Closed Gaps", gapLedger, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0025", currentStatus, StringComparison.Ordinal);
-        Assert.Contains("connectionmigration hosted corroboration is now green", currentStatus, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connectionmigration hosted corroboration is green for the bounded `connectionmigration` profile", currentStatus, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("26174181713", currentStatus, StringComparison.Ordinal);
         Assert.Contains("preferred_lft 0", setupScript, StringComparison.Ordinal);
         Assert.Contains("preferred migration address", readme, StringComparison.OrdinalIgnoreCase);

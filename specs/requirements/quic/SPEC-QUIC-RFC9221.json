@@ -1,0 +1,961 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9221",
+  "artifact_type": "specification",
+  "title": "QUIC DATAGRAM (RFC 9221)",
+  "domain": "quic",
+  "capability": "datagram",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "purpose": "Capture the QUIC DATAGRAM requirements defined by RFC 9221 as canonical spec-trace clauses.",
+  "scope": "This specification covers the RFC 9221 transport parameter, DATAGRAM frame encoding, behavior, ACK, congestion, flow-control, and security rules for QUIC DATAGRAM support.",
+  "context": "RFC 9221 extends QUIC transport with unreliable application datagrams. These requirements intentionally separate RFC 9221 application DATAGRAM frames from the existing runtime effect named QuicConnectionSendDatagramEffect, which sends UDP datagrams containing QUIC packets.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9221-0001",
+    "WI-QUIC-RFC9221-0001",
+    "VER-QUIC-RFC9221-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0001",
+      "title": "Advertise DATAGRAM receive support",
+      "statement": "An endpoint that supports receiving DATAGRAM frames MUST advertise the max_datagram_frame_size transport parameter.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0002",
+      "title": "Interpret DATAGRAM transport parameter size",
+      "statement": "The max_datagram_frame_size transport parameter value MUST represent the maximum complete DATAGRAM frame size, including frame type, length, and payload.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0003",
+      "title": "Default missing DATAGRAM parameter to unsupported",
+      "statement": "The absence of the max_datagram_frame_size transport parameter MUST indicate that DATAGRAM frames are unsupported.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0004",
+      "title": "Require peer DATAGRAM support before sending",
+      "statement": "An endpoint MUST NOT send DATAGRAM frames until it has received a non-zero max_datagram_frame_size transport parameter from its peer during the handshake or from a previous handshake when 0-RTT is used.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs::SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0005",
+      "title": "Bound sent DATAGRAM frames by peer limit",
+      "statement": "An endpoint MUST NOT send a DATAGRAM frame larger than the max_datagram_frame_size value it received from its peer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs::SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0006",
+      "title": "Reject DATAGRAM without local support",
+      "statement": "An endpoint that receives a DATAGRAM frame when it has not indicated support with max_datagram_frame_size MUST terminate the connection with PROTOCOL_VIOLATION.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0007",
+      "title": "Reject DATAGRAM larger than local limit",
+      "statement": "An endpoint that receives a DATAGRAM frame larger than the max_datagram_frame_size value it sent MUST terminate the connection with PROTOCOL_VIOLATION.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0008",
+      "title": "Treat DATAGRAM size as unidirectional",
+      "statement": "The max_datagram_frame_size transport parameter MUST be treated as a unidirectional limit and indication of support.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0009",
+      "title": "Store DATAGRAM size with 0-RTT state",
+      "statement": "A client that stores server DATAGRAM 0-RTT state MAY store the server's max_datagram_frame_size transport parameter value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0010",
+      "title": "Reject reduced 0-RTT DATAGRAM size",
+      "statement": "If a client stores max_datagram_frame_size with 0-RTT state, the client MUST reject a server value that is lower than the stored value with PROTOCOL_VIOLATION.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S3-0011",
+      "title": "Define application reaction to missing DATAGRAM support",
+      "statement": "Application protocols that use DATAGRAM frames MUST define how they react to the absence of the max_datagram_frame_size transport parameter.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0001",
+      "title": "Handle DATAGRAM frame types",
+      "statement": "DATAGRAM frame types MUST use values 0x30 and 0x31.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0002",
+      "title": "Interpret DATAGRAM LEN bit",
+      "statement": "The least significant bit of the DATAGRAM frame type MUST indicate whether a Length field is present.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0003",
+      "title": "Parse DATAGRAM without length to packet end",
+      "statement": "A DATAGRAM frame with frame type 0x30 MUST treat Datagram Data as extending to the end of the QUIC packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0004",
+      "title": "Parse DATAGRAM explicit length",
+      "statement": "A DATAGRAM frame with frame type 0x31 MUST contain a variable-length integer Length field before Datagram Data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0005",
+      "title": "Allow empty DATAGRAM payload",
+      "statement": "DATAGRAM frame parsing and formatting MUST allow zero-length Datagram Data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S4-0006",
+      "title": "Reject malformed DATAGRAM length",
+      "statement": "The DATAGRAM frame codec MUST reject truncated Length fields and Length values that exceed the remaining packet payload.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0001",
+      "title": "Deliver received DATAGRAM promptly",
+      "statement": "A valid received DATAGRAM frame SHOULD be delivered to the application immediately when the endpoint can process and store it.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0002",
+      "title": "Keep DATAGRAM connection scoped",
+      "statement": "DATAGRAM frames MUST be treated as connection-scoped application data rather than stream-associated data at the QUIC layer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.1",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0003",
+      "title": "Leave DATAGRAM multiplexing to application protocol",
+      "statement": "The QUIC transport implementation MUST leave DATAGRAM payload multiplexing semantics to the application protocol.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.1",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0004",
+      "title": "Allow receiver DATAGRAM drop under pressure",
+      "statement": "A receiver that cannot process or store a DATAGRAM frame MAY drop the frame.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0005",
+      "title": "Send application DATAGRAM promptly",
+      "statement": "When an application sends a datagram over a QUIC connection, QUIC SHOULD send the DATAGRAM frame as soon as congestion control and packet assembly permit.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs::SendDatagramAsync_EmitsProtectedOneRttDatagramFrame"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0006",
+      "title": "Allow DATAGRAM coalescing",
+      "statement": "DATAGRAM frames MAY be coalesced with other QUIC frames.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "optional",
+        "edge": "deferred",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5-0007",
+      "title": "Forbid DATAGRAM fragmentation",
+      "statement": "DATAGRAM frames MUST NOT be fragmented across QUIC packets.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs::SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P2-0001",
+      "title": "Treat DATAGRAM frames as ack-eliciting",
+      "statement": "DATAGRAM frames MUST be treated as ack-eliciting.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.2",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0001.cs::IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P2-0002",
+      "title": "Do not retransmit DATAGRAM frames",
+      "statement": "DATAGRAM frames MUST NOT be retransmitted by transport loss recovery.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.2",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs::SentDatagramPacket_IsTrackedAsNonRetransmittable"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P2-0003",
+      "title": "Delay ACKs for DATAGRAM-only packets within max_ack_delay",
+      "statement": "A receiver SHOULD support delaying ACK frames within max_ack_delay in response to packets that only contain DATAGRAM frames.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.2",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P2-0004",
+      "title": "Treat DATAGRAM ACK notification as transport-only",
+      "statement": "Any DATAGRAM acknowledgment notification MUST NOT be treated as proof that the receiver application processed the payload.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "required",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.2",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P3-0001",
+      "title": "Exclude DATAGRAM from flow-control limits",
+      "statement": "DATAGRAM frames MUST NOT contribute to stream-level or connection-wide flow-control limits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.3",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs::SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P4-0001",
+      "title": "Subject DATAGRAM to congestion control",
+      "statement": "DATAGRAM frames MUST be subject to QUIC congestion control.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0001.cs::SendDatagramAsync_AccountsProtectedPacketInCongestionState"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S5P4-0002",
+      "title": "Delay or drop DATAGRAM when congestion blocked",
+      "statement": "When congestion control does not allow sending a DATAGRAM frame, the sender MUST delay sending it until congestion control allows it or drop it without sending.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §5.4",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs::SendDatagramAsync_DropsWhenCongestionWindowIsExhausted"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S6-0001",
+      "title": "Protect DATAGRAM application data",
+      "statement": "All application data transmitted with DATAGRAM frames MUST be protected by 0-RTT or 1-RTT keys.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §6",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs::DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9221-S6-0002",
+      "title": "Require 0-RTT DATAGRAM application profile",
+      "statement": "Application protocols that allow DATAGRAM frames to be sent in 0-RTT MUST define an acceptable 0-RTT use profile before enabling that behavior.",
+      "coverage": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9221-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9221-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9221-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9221 §6",
+          "https://www.rfc-editor.org/rfc/rfc9221.html#section-6"
+        ]
+      }
+    }
+  ]
+}

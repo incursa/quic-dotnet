@@ -89,6 +89,7 @@ internal static class QuicZeroRttTransportParameterPolicy
     internal const ulong ActiveConnectionIdLimitId = 0x0E;
     internal const ulong InitialSourceConnectionIdId = 0x0F;
     internal const ulong RetrySourceConnectionIdId = 0x10;
+    internal const ulong MaxDatagramFrameSizeId = 0x20;
 
     internal static readonly QuicZeroRttTransportParameterDefinition[] KnownDefinitions =
     [
@@ -109,6 +110,7 @@ internal static class QuicZeroRttTransportParameterPolicy
         new(ActiveConnectionIdLimitId, "active_connection_id_limit", QuicZeroRttTransportParameterMemoryRequirement.Mandatory),
         new(InitialSourceConnectionIdId, "initial_source_connection_id", QuicZeroRttTransportParameterMemoryRequirement.Prohibited),
         new(RetrySourceConnectionIdId, "retry_source_connection_id", QuicZeroRttTransportParameterMemoryRequirement.Prohibited),
+        new(MaxDatagramFrameSizeId, "max_datagram_frame_size", QuicZeroRttTransportParameterMemoryRequirement.Optional),
     ];
 
     internal static bool TryGetKnownDefinition(
@@ -140,6 +142,7 @@ internal static class QuicZeroRttTransportParameterPolicy
         {
             MaxIdleTimeout = peerTransportParameters.MaxIdleTimeout,
             MaxUdpPayloadSize = peerTransportParameters.MaxUdpPayloadSize,
+            MaxDatagramFrameSize = peerTransportParameters.MaxDatagramFrameSize,
             InitialMaxData = peerTransportParameters.InitialMaxData,
             InitialMaxStreamDataBidiLocal = peerTransportParameters.InitialMaxStreamDataBidiLocal,
             InitialMaxStreamDataBidiRemote = peerTransportParameters.InitialMaxStreamDataBidiRemote,
@@ -254,6 +257,15 @@ internal static class QuicZeroRttTransportParameterPolicy
             return optionalDecision;
         }
 
+        optionalDecision = RejectIfRememberedOptionalValueReduced(
+            "max_datagram_frame_size",
+            rememberedTransportParameters.MaxDatagramFrameSize,
+            currentServerTransportParameters.MaxDatagramFrameSize ?? 0);
+        if (!optionalDecision.CanAccept)
+        {
+            return optionalDecision;
+        }
+
         if (rememberedTransportParameters.DisableActiveMigration
             && !currentServerTransportParameters.DisableActiveMigration)
         {
@@ -340,6 +352,7 @@ internal static class QuicZeroRttTransportParameterPolicy
     {
         return parameters.MaxIdleTimeout.HasValue
             || parameters.MaxUdpPayloadSize.HasValue
+            || parameters.MaxDatagramFrameSize.HasValue
             || parameters.InitialMaxData.HasValue
             || parameters.InitialMaxStreamDataBidiLocal.HasValue
             || parameters.InitialMaxStreamDataBidiRemote.HasValue

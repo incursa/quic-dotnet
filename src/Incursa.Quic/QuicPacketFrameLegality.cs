@@ -22,6 +22,8 @@ internal static class QuicPacketFrameLegality
     internal const ulong HandshakePacketPathChallengeFrameType = 0x1AUL;
     internal const ulong HandshakePacketPathResponseFrameType = 0x1BUL;
     internal const ulong HandshakePacketHandshakeDoneFrameType = 0x1EUL;
+    internal const ulong DatagramWithoutLengthFrameType = 0x30UL;
+    internal const ulong DatagramWithLengthFrameType = 0x31UL;
     internal const ulong ApplicationPacketAckFrameType = 0x02UL;
     internal const ulong ApplicationPacketCryptoFrameType = 0x06UL;
 
@@ -131,7 +133,8 @@ internal static class QuicPacketFrameLegality
             || frameType is HandshakePacketRetireConnectionIdFrameType
             || frameType is HandshakePacketPathChallengeFrameType
             || frameType is HandshakePacketPathResponseFrameType
-            || frameType is HandshakePacketHandshakeDoneFrameType;
+            || frameType is HandshakePacketHandshakeDoneFrameType
+            || IsDatagramFrameType(frameType);
     }
 
     internal static bool TryReadApplicationFrameType(ReadOnlySpan<byte> payload, out ulong frameType)
@@ -150,6 +153,11 @@ internal static class QuicPacketFrameLegality
     {
         return frameType is HandshakePacketStreamsBlockedBidirectionalFrameType
             or HandshakePacketStreamsBlockedUnidirectionalFrameType;
+    }
+
+    internal static bool IsDatagramFrameType(ulong frameType)
+    {
+        return frameType is DatagramWithoutLengthFrameType or DatagramWithLengthFrameType;
     }
 }
 

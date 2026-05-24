@@ -14,6 +14,19 @@ internal static class QuicFrameTestData
         return [0x01];
     }
 
+    public static byte[] BuildDatagramFrame(QuicDatagramFrame frame)
+    {
+        List<byte> bytes = [];
+        bytes.AddRange(EncodeVarint(frame.FrameType));
+        if (frame.HasLength)
+        {
+            bytes.AddRange(EncodeVarint((ulong)frame.DatagramData.Length));
+        }
+
+        bytes.AddRange(frame.DatagramData);
+        return bytes.ToArray();
+    }
+
     public static byte[] BuildAckFrame(QuicAckFrame frame)
     {
         if (frame is null)

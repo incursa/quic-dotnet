@@ -35,6 +35,8 @@ internal static class QuicFrameCodec
     private const ulong RetireConnectionIdFrameType = 0x19;
     private const ulong PathChallengeFrameType = 0x1A;
     private const ulong PathResponseFrameType = 0x1B;
+    internal const byte DatagramWithoutLengthFrameType = 0x30;
+    internal const byte DatagramWithLengthFrameType = 0x31;
 
     /// <summary>
     /// Varint values reserve the top two bits, leaving 60 payload bits for stream limits.
@@ -98,6 +100,85 @@ internal static class QuicFrameCodec
     internal static bool TryFormatPingFrame(Span<byte> destination, out int bytesWritten)
     {
         return TryWriteFixedType(PingFrameType, destination, out bytesWritten);
+    }
+
+    /// <summary>
+    /// Parses an RFC 9221 DATAGRAM frame from the start of a packet payload slice.
+    /// </summary>
+    internal static bool TryParseDatagramFrame(
+        ReadOnlySpan<byte> packetPayload,
+        out QuicDatagramFrame frame,
+        out int bytesConsumed)
+    {
+        frame = new QuicDatagramFrame();
+        bytesConsumed = default;
+
+        if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index)
+            || index != 1
+            || (frameTypeValue != DatagramWithoutLengthFrameType && frameTypeValue != DatagramWithLengthFrameType))
+        {
+            return false;
+        }
+
+        int datagramDataLength;
+        if (frameTypeValue == DatagramWithLengthFrameType)
+        {
+            if (!TryParseVarint(packetPayload, ref index, out ulong length)
+                || length > (ulong)(packetPayload.Length - index)
+                || length > int.MaxValue)
+            {
+                return false;
+            }
+
+            datagramDataLength = (int)length;
+        }
+        else
+        {
+            datagramDataLength = packetPayload.Length - index;
+        }
+
+        frame = new QuicDatagramFrame
+        {
+            FrameType = (byte)frameTypeValue,
+            DatagramData = packetPayload.Slice(index, datagramDataLength).ToArray(),
+        };
+        bytesConsumed = index + datagramDataLength;
+        return true;
+    }
+
+    /// <summary>
+    /// Formats an RFC 9221 DATAGRAM frame.
+    /// </summary>
+    internal static bool TryFormatDatagramFrame(QuicDatagramFrame frame, Span<byte> destination, out int bytesWritten)
+    {
+        bytesWritten = default;
+        if (frame is null
+            || (frame.FrameType != DatagramWithoutLengthFrameType && frame.FrameType != DatagramWithLengthFrameType))
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> datagramData = frame.DatagramData;
+        int index = 0;
+        if (!TryWriteVarint(frame.FrameType, destination, ref index))
+        {
+            return false;
+        }
+
+        if (frame.FrameType == DatagramWithLengthFrameType
+            && !TryWriteVarint((ulong)datagramData.Length, destination, ref index))
+        {
+            return false;
+        }
+
+        if (destination.Length - index < datagramData.Length)
+        {
+            return false;
+        }
+
+        datagramData.CopyTo(destination[index..]);
+        bytesWritten = index + datagramData.Length;
+        return true;
     }
 
     /// <summary>

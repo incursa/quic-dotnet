@@ -33,7 +33,8 @@ internal static class QuicTransportParametersCodec
     // 0x06 initial_max_stream_data_bidi_remote, 0x07 initial_max_stream_data_uni,
     // 0x08 initial_max_streams_bidi, 0x09 initial_max_streams_uni, 0x0B max_ack_delay,
     // 0x0C disable_active_migration, 0x0D preferred_address, 0x0E active_connection_id_limit,
-    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id.
+    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id,
+    // 0x20 max_datagram_frame_size.
     private const ulong OriginalDestinationConnectionIdId = 0x00;
     private const ulong MaxIdleTimeoutId = 0x01;
     private const ulong StatelessResetTokenId = 0x02;
@@ -50,6 +51,7 @@ internal static class QuicTransportParametersCodec
     private const ulong ActiveConnectionIdLimitId = 0x0E;
     private const ulong InitialSourceConnectionIdId = 0x0F;
     private const ulong RetrySourceConnectionIdId = 0x10;
+    private const ulong MaxDatagramFrameSizeId = 0x20;
 
     /// <summary>
     /// Varint stream-count parameters can only use the low 60 bits.
@@ -266,6 +268,12 @@ internal static class QuicTransportParametersCodec
             return false;
         }
 
+        if (parameters.MaxDatagramFrameSize is ulong maxDatagramFrameSize
+            && !TryWriteVarintParameter(MaxDatagramFrameSizeId, maxDatagramFrameSize, destination, ref index))
+        {
+            return false;
+        }
+
         bytesWritten = index;
         return true;
     }
@@ -419,6 +427,15 @@ internal static class QuicTransportParametersCodec
                 }
 
                 parameters.MaxUdpPayloadSize = maxUdpPayloadSize;
+                return true;
+
+            case MaxDatagramFrameSizeId:
+                if (!TryParseVarintValue(value, out ulong maxDatagramFrameSize))
+                {
+                    return false;
+                }
+
+                parameters.MaxDatagramFrameSize = maxDatagramFrameSize;
                 return true;
 
             case InitialMaxDataId:

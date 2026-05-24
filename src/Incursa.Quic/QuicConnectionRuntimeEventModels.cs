@@ -22,6 +22,7 @@ internal enum QuicConnectionEventKind
     VersionNegotiationReceived = 17,
     FlowControlCreditUpdated = 18,
     IcmpMaximumDatagramSizeReduction = 19,
+    DatagramSendRequested = 20,
 }
 
 internal enum QuicConnectionEffectKind
@@ -39,6 +40,7 @@ internal enum QuicConnectionEffectKind
     RegisterConnectionIdRoute = 10,
     RetireConnectionIdRoute = 11,
     UpdateMaxUdpPayloadSize = 12,
+    DeliverDatagram = 13,
 }
 
 internal enum QuicConnectionStreamActionKind
@@ -139,6 +141,12 @@ internal sealed record QuicConnectionStreamActionEvent(
     ulong? ApplicationErrorCode = null)
     : QuicConnectionEvent(QuicConnectionEventKind.StreamAction, ObservedAtTicks);
 
+internal sealed record QuicConnectionDatagramSendRequestedEvent(
+    long ObservedAtTicks,
+    long RequestId,
+    ReadOnlyMemory<byte> DatagramData)
+    : QuicConnectionEvent(QuicConnectionEventKind.DatagramSendRequested, ObservedAtTicks);
+
 internal sealed record QuicConnectionTransportParametersCommittedEvent(
     long ObservedAtTicks,
     QuicConnectionTransportState TransportFlags,
@@ -183,6 +191,12 @@ internal sealed record QuicConnectionSendDatagramEffect(
     ReadOnlyMemory<byte> Datagram,
     QuicEcnMarking EcnMarking = QuicEcnMarking.NotEct)
     : QuicConnectionEffect(QuicConnectionEffectKind.SendDatagram);
+
+internal sealed record QuicConnectionDeliverDatagramEffect(
+    QuicConnectionPathIdentity PathIdentity,
+    ReadOnlyMemory<byte> Datagram,
+    byte FrameType)
+    : QuicConnectionEffect(QuicConnectionEffectKind.DeliverDatagram);
 
 internal sealed record QuicConnectionArmTimerEffect(
     QuicConnectionTimerKind TimerKind,

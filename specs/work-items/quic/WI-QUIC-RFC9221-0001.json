@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9221-0001",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "QUIC RFC 9221 DATAGRAM Foundation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9221",
+    "ARC-QUIC-RFC9221-0001",
+    "VER-QUIC-RFC9221-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9221-S3-0001",
+    "REQ-QUIC-RFC9221-S3-0002",
+    "REQ-QUIC-RFC9221-S3-0003",
+    "REQ-QUIC-RFC9221-S3-0004",
+    "REQ-QUIC-RFC9221-S3-0005",
+    "REQ-QUIC-RFC9221-S3-0006",
+    "REQ-QUIC-RFC9221-S3-0007",
+    "REQ-QUIC-RFC9221-S3-0008",
+    "REQ-QUIC-RFC9221-S3-0009",
+    "REQ-QUIC-RFC9221-S3-0010",
+    "REQ-QUIC-RFC9221-S3-0011",
+    "REQ-QUIC-RFC9221-S4-0001",
+    "REQ-QUIC-RFC9221-S4-0002",
+    "REQ-QUIC-RFC9221-S4-0003",
+    "REQ-QUIC-RFC9221-S4-0004",
+    "REQ-QUIC-RFC9221-S4-0005",
+    "REQ-QUIC-RFC9221-S4-0006",
+    "REQ-QUIC-RFC9221-S5-0001",
+    "REQ-QUIC-RFC9221-S5-0002",
+    "REQ-QUIC-RFC9221-S5-0003",
+    "REQ-QUIC-RFC9221-S5-0004",
+    "REQ-QUIC-RFC9221-S5-0005",
+    "REQ-QUIC-RFC9221-S5-0006",
+    "REQ-QUIC-RFC9221-S5-0007",
+    "REQ-QUIC-RFC9221-S5P2-0001",
+    "REQ-QUIC-RFC9221-S5P2-0002",
+    "REQ-QUIC-RFC9221-S5P2-0003",
+    "REQ-QUIC-RFC9221-S5P2-0004",
+    "REQ-QUIC-RFC9221-S5P3-0001",
+    "REQ-QUIC-RFC9221-S5P4-0001",
+    "REQ-QUIC-RFC9221-S5P4-0002",
+    "REQ-QUIC-RFC9221-S6-0001",
+    "REQ-QUIC-RFC9221-S6-0002"
+  ],
+  "summary": "Implement the RFC 9221 DATAGRAM foundation, receive floor, and core outbound send floor: canonical requirement coverage, transport-parameter codec support, DATAGRAM frame codec support, 0-RTT parameter-memory validation, protected 1-RTT receive delivery/rejection, and peer-gated application DATAGRAM send support with congestion/drop and non-retransmission proof.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9221.json`, `ARC-QUIC-RFC9221-0001.json`, `WI-QUIC-RFC9221-0001.json`, and `VER-QUIC-RFC9221-0001.json`.\n- Add `MaxDatagramFrameSize` to `QuicTransportParameters` and parse/format transport parameter `0x20`.\n- Preserve and validate `MaxDatagramFrameSize` in 0-RTT transport-parameter memory.\n- Add `QuicDatagramFrame` and DATAGRAM frame parse/format helpers for frame types `0x30` and `0x31`.\n- Deliver valid protected 1-RTT DATAGRAM frames through a distinct application DATAGRAM receive effect.\n- Reject received DATAGRAM frames when local receive support was not advertised, when the complete frame exceeds the advertised limit, or when DATAGRAM appears in weakly protected packet contexts.\n- Add `QuicConnection.SendDatagramAsync` and a runtime DATAGRAM send event path that rejects missing peer support, rejects peer-limit overflow, emits protected 1-RTT DATAGRAM frames when permitted, accounts congestion, drops congestion-blocked sends without a transport error, avoids stream association, and marks sent DATAGRAM packets non-retransmittable.\n- Add focused requirement-home tests for transport-parameter round-trip/defaults, 0-RTT remembered DATAGRAM size validation, DATAGRAM frame codec behavior, receive delivery/rejection, weak-context rejection, ack-eliciting classification, outbound send support gating, peer limit enforcement, non-fragmentation, congestion accounting/drop behavior, non-retransmission, and flow-control exclusion.",
+  "verification_plan": "Run focused RFC9221 requirement-home tests, run transport-parameter and DATAGRAM frame codec filters, run core SpecTrace JSON validation, refresh generated requirement coverage triage, and run `git diff --check`. Defer HTTP Datagrams adapter behavior, optional DATAGRAM ACK/loss notifications, 0-RTT DATAGRAM transmission, and benchmark closure to follow-up slices.",
+  "verification_links": [
+    "VER-QUIC-RFC9221-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9221-0001"
+  ],
+  "out_of_scope": [
+    "Public application DATAGRAM receive callback/API beyond the internal delivery effect.",
+    "Optional DATAGRAM ACK/loss application notifications.",
+    "HTTP/3 datagrams, capsules, CONNECT-UDP, and MASQUE behavior.",
+    "0-RTT DATAGRAM transmission while the repo's early-data application profile remains unset."
+  ],
+  "completion_notes": "The work item remains in progress after the core send floor until HTTP/3 adapter integration, optional ACK/loss notifications, public receive API shape, benchmark evidence, and 0-RTT DATAGRAM send policy are implemented or explicitly deferred."
+}

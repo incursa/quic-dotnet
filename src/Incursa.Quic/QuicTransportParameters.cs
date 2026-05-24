@@ -36,6 +36,11 @@ internal sealed class QuicTransportParameters
     internal ulong? MaxUdpPayloadSize { get; set; }
 
     /// <summary>
+    /// Gets or sets the max_datagram_frame_size transport parameter value.
+    /// </summary>
+    internal ulong? MaxDatagramFrameSize { get; set; }
+
+    /// <summary>
     /// Gets or sets the initial_max_data transport parameter value.
     /// </summary>
     internal ulong? InitialMaxData { get; set; }

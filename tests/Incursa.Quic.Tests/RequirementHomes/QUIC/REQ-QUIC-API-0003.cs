@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0003">The QuicConnection type MUST represent a connected QUIC session and expose the local endpoint, remote endpoint, target host name, negotiated application protocol, negotiated cipher suite, negotiated TLS protocol, remote certificate, AcceptInboundStreamAsync, OpenOutboundStreamAsync, CloseAsync, DisposeAsync, and ToString, while keeping handshake details, packet state, runtime state, and transport-helper state out of the public surface.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0003">The QuicConnection type MUST represent a connected QUIC session and expose the local endpoint, remote endpoint, target host name, negotiated application protocol, negotiated cipher suite, negotiated TLS protocol, remote certificate, AcceptInboundStreamAsync, OpenOutboundStreamAsync, SendDatagramAsync, CloseAsync, DisposeAsync, and ToString, while keeping handshake details, packet state, runtime state, and transport-helper state out of the public surface.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0003")]
 public sealed class REQ_QUIC_API_0003
@@ -27,6 +27,7 @@ public sealed class REQ_QUIC_API_0003
             "ConnectAsync",
             "DisposeAsync",
             "OpenOutboundStreamAsync",
+            "SendDatagramAsync",
         }, methodNames);
 
         MethodInfo? acceptMethod = typeof(QuicConnection).GetMethod(
@@ -42,6 +43,13 @@ public sealed class REQ_QUIC_API_0003
             [typeof(QuicStreamType), typeof(CancellationToken)]);
         Assert.NotNull(openMethod);
         Assert.Equal(typeof(ValueTask<QuicStream>), openMethod.ReturnType);
+
+        MethodInfo? sendDatagramMethod = typeof(QuicConnection).GetMethod(
+            nameof(QuicConnection.SendDatagramAsync),
+            BindingFlags.Public | BindingFlags.Instance,
+            [typeof(ReadOnlyMemory<byte>), typeof(CancellationToken)]);
+        Assert.NotNull(sendDatagramMethod);
+        Assert.Equal(typeof(ValueTask), sendDatagramMethod.ReturnType);
     }
 
     [Fact]

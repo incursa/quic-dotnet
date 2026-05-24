@@ -1,0 +1,87 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9221-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9221 DATAGRAM Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the implementation boundary for RFC 9221 DATAGRAM support, including transport-parameter state, DATAGRAM frame codec behavior, receive-side runtime integration, and core runtime send integration.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9221",
+    "WI-QUIC-RFC9221-0001",
+    "VER-QUIC-RFC9221-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9221-S3-0001",
+    "REQ-QUIC-RFC9221-S3-0002",
+    "REQ-QUIC-RFC9221-S3-0003",
+    "REQ-QUIC-RFC9221-S3-0004",
+    "REQ-QUIC-RFC9221-S3-0005",
+    "REQ-QUIC-RFC9221-S3-0006",
+    "REQ-QUIC-RFC9221-S3-0007",
+    "REQ-QUIC-RFC9221-S3-0008",
+    "REQ-QUIC-RFC9221-S3-0009",
+    "REQ-QUIC-RFC9221-S3-0010",
+    "REQ-QUIC-RFC9221-S3-0011",
+    "REQ-QUIC-RFC9221-S4-0001",
+    "REQ-QUIC-RFC9221-S4-0002",
+    "REQ-QUIC-RFC9221-S4-0003",
+    "REQ-QUIC-RFC9221-S4-0004",
+    "REQ-QUIC-RFC9221-S4-0005",
+    "REQ-QUIC-RFC9221-S4-0006",
+    "REQ-QUIC-RFC9221-S5-0001",
+    "REQ-QUIC-RFC9221-S5-0002",
+    "REQ-QUIC-RFC9221-S5-0003",
+    "REQ-QUIC-RFC9221-S5-0004",
+    "REQ-QUIC-RFC9221-S5-0005",
+    "REQ-QUIC-RFC9221-S5-0006",
+    "REQ-QUIC-RFC9221-S5-0007",
+    "REQ-QUIC-RFC9221-S5P2-0001",
+    "REQ-QUIC-RFC9221-S5P2-0002",
+    "REQ-QUIC-RFC9221-S5P2-0003",
+    "REQ-QUIC-RFC9221-S5P2-0004",
+    "REQ-QUIC-RFC9221-S5P3-0001",
+    "REQ-QUIC-RFC9221-S5P4-0001",
+    "REQ-QUIC-RFC9221-S5P4-0002",
+    "REQ-QUIC-RFC9221-S6-0001",
+    "REQ-QUIC-RFC9221-S6-0002"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicDatagramFrame.cs",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicFrameCodec.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicPacketFrameLegality.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221"
+  ],
+  "design_summary": "The first implementation slices add the RFC 9221 wire, negotiation, receive, and core send foundation. `QuicTransportParameters` carries `MaxDatagramFrameSize`, the transport-parameter codec parses and formats parameter `0x20`, 0-RTT remembered transport-parameter state can preserve and validate the DATAGRAM size limit, and `QuicFrameCodec` parses and formats DATAGRAM frame types `0x30` and `0x31`. The application packet ingress path delivers valid protected 1-RTT DATAGRAM frames through a distinct `QuicConnectionDeliverDatagramEffect`, rejects unadvertised or oversized DATAGRAM frames, and treats DATAGRAM as forbidden in weakly protected packet contexts. The outbound path exposes `QuicConnection.SendDatagramAsync`, builds length-carrying DATAGRAM frames, rejects missing peer support and oversized frames, accounts protected packets through congestion state, drops congestion-blocked DATAGRAM sends without a transport error, and tracks sent DATAGRAM packets as ack-eliciting but non-retransmittable with no stream association. HTTP Datagrams adapter behavior and application ACK/loss notification APIs remain explicit follow-up work.",
+  "data_and_state_considerations": "The `MaxDatagramFrameSize` value is stored as a nullable transport-parameter field so absence remains distinguishable from an advertised zero value while the effective unsupported default remains zero. `QuicDatagramFrame` owns a copied payload byte array to keep parser output independent of attacker-controlled input buffers. `QuicConnectionDeliverDatagramEffect` is the receive-side application DATAGRAM signal. The existing `QuicConnectionSendDatagramEffect` remains UDP-packet emission and is not reused as an RFC 9221 application DATAGRAM signal.",
+  "edge_cases_and_constraints": [
+    "DATAGRAM frame type `0x30` consumes the rest of the packet payload and is only safe as the final frame in a QUIC packet.",
+    "DATAGRAM frame type `0x31` carries an explicit varint Length field and can be parsed before later coalesced frames.",
+    "Empty DATAGRAM payloads are valid.",
+    "Receive-side runtime handling rejects local unsupported DATAGRAM use before delivery.",
+    "Outbound runtime send handling rejects peer unsupported DATAGRAM use before packet assembly.",
+    "Outbound DATAGRAM frames use type `0x31` so padding or future coalesced frames cannot be mistaken for DATAGRAM payload bytes.",
+    "Congestion-blocked outbound DATAGRAM sends are dropped by this slice instead of queued.",
+    "0-RTT DATAGRAM sending remains blocked until the application profile and early-data gate are explicitly implemented."
+  ],
+  "risks": [
+    "The core runtime send floor can be mistaken for HTTP Datagrams, CONNECT-UDP, or MASQUE support, which remains out of scope.",
+    "The existing runtime effect name `QuicConnectionSendDatagramEffect` can confuse UDP datagram emission with RFC 9221 application DATAGRAM frames.",
+    "Transport-parameter 0-RTT memory is implemented, but actual 0-RTT DATAGRAM transmission remains out of scope for this slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This artifact currently covers canonical requirements plus transport-parameter, frame-codec, receive-side 1-RTT DATAGRAM handling, and core runtime send support for peer-gated application DATAGRAM payloads. HTTP Datagrams adapter behavior, optional ACK/loss application notifications, 0-RTT DATAGRAM transmission, benchmarks, and higher-level adapter policy remain follow-up work."
+    }
+  ]
+}

@@ -12,6 +12,7 @@ internal sealed partial class QuicConnectionRuntime
             StringComparison.Ordinal);
     private const string StreamWriteSendBlockedMessage = "The connection cannot send the stream write packet.";
     private const string QueuedStreamWriteSendBlockedMessage = "The connection cannot send the queued stream write packet.";
+    private const string DatagramSendBlockedMessage = "The connection cannot send the DATAGRAM packet.";
 
     private bool HandleStreamAction(
         QuicConnectionStreamActionEvent streamActionEvent,
@@ -62,6 +63,87 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects),
             _ => false,
         };
+    }
+
+    private bool HandleDatagramSendRequested(
+        QuicConnectionDatagramSendRequestedEvent datagramSendRequestedEvent,
+        ref List<QuicConnectionEffect>? effects)
+    {
+        if (!pendingDatagramSendRequests.TryRemove(
+                datagramSendRequestedEvent.RequestId,
+                out TaskCompletionSource<object?>? completion))
+        {
+            return false;
+        }
+
+        if (!TryValidateDatagramSendBoundary(out Exception? exception))
+        {
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        ulong? peerMaxDatagramFrameSize = tlsState.PeerTransportParameters?.MaxDatagramFrameSize;
+        if (!peerMaxDatagramFrameSize.HasValue || peerMaxDatagramFrameSize.Value == 0)
+        {
+            completion.TrySetException(new InvalidOperationException(
+                "The peer did not advertise QUIC DATAGRAM support."));
+            return false;
+        }
+
+        if (!TryBuildOutboundDatagramPayload(
+                datagramSendRequestedEvent.DatagramData,
+                out byte[] datagramPayload))
+        {
+            completion.TrySetException(new InvalidOperationException(
+                "The connection runtime could not build the DATAGRAM payload."));
+            return false;
+        }
+
+        if ((ulong)datagramPayload.Length > peerMaxDatagramFrameSize.Value)
+        {
+            completion.TrySetException(new InvalidOperationException(
+                "The DATAGRAM frame exceeds the peer max_datagram_frame_size."));
+            return false;
+        }
+
+        byte[] packetPayload = PadApplicationPayloadForProtection(datagramPayload);
+        QuicConnectionPathIdentity selectedPathIdentity = activePath!.Value.Identity;
+        if (TryGetPermittedPeerMigrationSendPath(out QuicConnectionPathIdentity peerMigrationPathIdentity))
+        {
+            selectedPathIdentity = peerMigrationPathIdentity;
+        }
+
+        if (!TryProtectAndAccountApplicationPayloadOnPath(
+                selectedPathIdentity,
+                packetPayload,
+                "The connection runtime could not protect the DATAGRAM packet.",
+                DatagramSendBlockedMessage,
+                ref effects,
+                out QuicConnectionPathIdentity sendPathIdentity,
+                out byte[] protectedPacket,
+                out exception,
+                retransmittable: false,
+                probePacket: false,
+                includeAckFrame: true,
+                streamIds: null,
+                enforcePathMaximumDatagramSize: true))
+        {
+            if (IsTransientApplicationSendPathBlocked(exception))
+            {
+                completion.TrySetResult(null);
+                return false;
+            }
+
+            completion.TrySetException(exception!);
+            return false;
+        }
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            sendPathIdentity,
+            protectedPacket));
+        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        completion.TrySetResult(null);
+        return true;
     }
 
     private bool HandleOpenStreamAction(
@@ -1183,6 +1265,26 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private bool TryValidateDatagramSendBoundary(out Exception? exception)
+    {
+        if (!TryValidateStreamSendBoundary(out exception))
+        {
+            if (exception is InvalidOperationException invalidOperationException
+                && string.Equals(
+                    invalidOperationException.Message,
+                    "The connection is not ready to send application stream data.",
+                    StringComparison.Ordinal))
+            {
+                exception = new InvalidOperationException(
+                    "The connection is not ready to send application DATAGRAM data.");
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     private bool TryReleasePeerStreamCapacity(ulong streamId, ref List<QuicConnectionEffect>? effects)
     {
         if (!TryValidateStreamSendBoundary(out Exception? exception))
@@ -1445,7 +1547,8 @@ internal sealed partial class QuicConnectionRuntime
         bool retransmittable = true,
         bool probePacket = false,
         bool includeAckFrame = true,
-        ulong[]? streamIds = null)
+        ulong[]? streamIds = null,
+        bool enforcePathMaximumDatagramSize = false)
     {
         sendPathIdentity = default;
         protectedPacket = [];
@@ -1466,6 +1569,17 @@ internal sealed partial class QuicConnectionRuntime
 
         if (!TryPrepareOneRttProtectionForAeadLimit(protectFailureMessage, ref effects, out exception))
         {
+            return false;
+        }
+
+        QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = default;
+        if (enforcePathMaximumDatagramSize
+            && (!TryGetPathMaximumDatagramSizeState(
+                    pathIdentity,
+                    out maximumDatagramSizeState)
+                || !maximumDatagramSizeState.CanSendOrdinaryPackets))
+        {
+            exception = new InvalidOperationException("The requested path cannot send ordinary packets.");
             return false;
         }
 
@@ -1538,6 +1652,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (enforcePathMaximumDatagramSize
+            && !maximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
+        {
+            exception = new InvalidOperationException("The requested path cannot send an ordinary packet.");
+            return false;
+        }
+
         if (activePath is not null
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
         {
@@ -1596,6 +1717,27 @@ internal sealed partial class QuicConnectionRuntime
         sendPathIdentity = pathIdentity;
         exception = null;
         return true;
+    }
+
+    private bool TryGetPathMaximumDatagramSizeState(
+        QuicConnectionPathIdentity pathIdentity,
+        out QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState)
+    {
+        if (activePath is not null
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+        {
+            maximumDatagramSizeState = activePath.Value.MaximumDatagramSizeState;
+            return true;
+        }
+
+        if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            maximumDatagramSizeState = candidatePath.MaximumDatagramSizeState;
+            return true;
+        }
+
+        maximumDatagramSizeState = default;
+        return false;
     }
 
     private bool TryPreflightApplicationDataCongestionBudget(
@@ -3547,6 +3689,45 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private static bool TryBuildOutboundDatagramPayload(
+        ReadOnlyMemory<byte> datagramData,
+        out byte[] payload)
+    {
+        payload = [];
+
+        byte[] buffer = new byte[
+            1
+            + QuicVariableLengthInteger.MaxEncodedLength
+            + datagramData.Length];
+        QuicDatagramFrame frame = new()
+        {
+            FrameType = QuicFrameCodec.DatagramWithLengthFrameType,
+            DatagramData = datagramData.ToArray(),
+        };
+
+        if (!QuicFrameCodec.TryFormatDatagramFrame(frame, buffer, out int bytesWritten))
+        {
+            return false;
+        }
+
+        payload = bytesWritten == buffer.Length
+            ? buffer
+            : buffer[..bytesWritten];
+        return true;
+    }
+
+    private static byte[] PadApplicationPayloadForProtection(byte[] payload)
+    {
+        if (payload.Length >= ApplicationMinimumProtectedPayloadLength)
+        {
+            return payload;
+        }
+
+        byte[] paddedPayload = new byte[ApplicationMinimumProtectedPayloadLength];
+        payload.CopyTo(paddedPayload, 0);
+        return paddedPayload;
+    }
+
     private bool TryBuildOutboundResetPayload(
         ulong streamId,
         ulong applicationErrorCode,
@@ -3940,6 +4121,7 @@ internal sealed partial class QuicConnectionRuntime
         CompleteInboundStreamQueue(completionException);
         CompletePendingStreamOpenRequests(completionException);
         CompletePendingStreamActionRequests(completionException);
+        CompletePendingDatagramSendRequests(completionException);
         applicationSendQueue.Clear();
         pendingApplicationSendDelayDueTicks = null;
     }
@@ -3994,6 +4176,22 @@ internal sealed partial class QuicConnectionRuntime
         foreach (KeyValuePair<long, TaskCompletionSource<object?>> entry in pendingStreamActionRequests.ToArray())
         {
             if (pendingStreamActionRequests.TryRemove(entry.Key, out TaskCompletionSource<object?>? completion))
+            {
+                completion.TrySetException(completionException);
+            }
+        }
+    }
+
+    private void CompletePendingDatagramSendRequests(Exception completionException)
+    {
+        if (pendingDatagramSendRequests.IsEmpty)
+        {
+            return;
+        }
+
+        foreach (KeyValuePair<long, TaskCompletionSource<object?>> entry in pendingDatagramSendRequests.ToArray())
+        {
+            if (pendingDatagramSendRequests.TryRemove(entry.Key, out TaskCompletionSource<object?>? completion))
             {
                 completion.TrySetException(completionException);
             }

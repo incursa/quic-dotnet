@@ -1,12 +1,13 @@
 {
-  "generated_at": "2026-05-23T11:47:55.6281894-06:00",
+  "generated_at": "2026-05-23T23:24:58.1099116-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
       "specs/requirements/quic/SPEC-QUIC-RFC8999.json",
       "specs/requirements/quic/SPEC-QUIC-RFC9000.json",
       "specs/requirements/quic/SPEC-QUIC-RFC9001.json",
-      "specs/requirements/quic/SPEC-QUIC-RFC9002.json"
+      "specs/requirements/quic/SPEC-QUIC-RFC9002.json",
+      "specs/requirements/quic/SPEC-QUIC-RFC9221.json"
     ],
     "requirement_gaps": "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "tests_root": "tests/Incursa.Quic.Tests",
@@ -18,13 +19,18 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-23T11:47:55.6245361-06:00",
-    "total_requirements": 1779,
+    "generated_at": "2026-05-23T23:24:58.1066303-06:00",
+    "total_requirements": 1812,
     "by_state": {
-      "trace_clean": 1779
+      "covered_but_proof_too_broad": 6,
+      "partially_covered": 14,
+      "trace_clean": 1785,
+      "uncovered_unblocked": 7
     },
     "by_work_queue_tag": {
-      "clean": 1779
+      "clean": 1785,
+      "new_tests_needed": 27,
+      "restructure_needed": 12
     },
     "by_rfc": [
       {
@@ -53,6 +59,16 @@
         "total": 224,
         "by_state": {
           "trace_clean": 224
+        }
+      },
+      {
+        "rfc": "RFC9221",
+        "total": 33,
+        "by_state": {
+          "covered_but_proof_too_broad": 6,
+          "partially_covered": 14,
+          "trace_clean": 6,
+          "uncovered_unblocked": 7
         }
       }
     ]
@@ -309899,6 +309915,3533 @@
           "class_level_only": true
         }
       ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Advertise DATAGRAM receive support",
+      "statement": "An endpoint that supports receiving DATAGRAM frames MUST advertise the max_datagram_frame_size transport parameter.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 2,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "method": "TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "line": 41,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Interpret DATAGRAM transport parameter size",
+      "statement": "The max_datagram_frame_size transport parameter value MUST represent the maximum complete DATAGRAM frame size, including frame type, length, and payload.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 2,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "method": "TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "line": 41,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0003",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Default missing DATAGRAM parameter to unsupported",
+      "statement": "The absence of the max_datagram_frame_size transport parameter MUST indicate that DATAGRAM frames are unsupported.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 1,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "negative"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "method": "TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "line": 41,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "method": "TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "line": 41,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0004",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Require peer DATAGRAM support before sending",
+      "statement": "An endpoint MUST NOT send DATAGRAM frames until it has received a non-zero max_datagram_frame_size transport parameter from its peer during the handshake or from a previous handshake when 0-RTT is used.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs::SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 3,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 3,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0004",
+          "member": "REQ_QUIC_RFC9221_S3_0004.SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "method": "SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs::SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0004",
+          "member": "REQ_QUIC_RFC9221_S3_0004.SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "method": "SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0006",
+          "member": "REQ_QUIC_RFC9221_S3_0006.ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "method": "ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "line": 10,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0006"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0005",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Bound sent DATAGRAM frames by peer limit",
+      "statement": "An endpoint MUST NOT send a DATAGRAM frame larger than the max_datagram_frame_size value it received from its peer.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs::SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 3,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 3,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0005",
+          "member": "REQ_QUIC_RFC9221_S3_0005.SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "method": "SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs::SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0005",
+          "member": "REQ_QUIC_RFC9221_S3_0005.SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "method": "SendDatagramAsync_RejectsFramesLargerThanPeerLimit",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0007",
+          "member": "REQ_QUIC_RFC9221_S3_0007.ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "method": "ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "line": 10,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0007"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0006",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Reject DATAGRAM without local support",
+      "statement": "An endpoint that receives a DATAGRAM frame when it has not indicated support with max_datagram_frame_size MUST terminate the connection with PROTOCOL_VIOLATION.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 1,
+        "focused": 1,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0006",
+          "member": "REQ_QUIC_RFC9221_S3_0006.ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "method": "ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "line": 10,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0007",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Reject DATAGRAM larger than local limit",
+      "statement": "An endpoint that receives a DATAGRAM frame larger than the max_datagram_frame_size value it sent MUST terminate the connection with PROTOCOL_VIOLATION.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 1,
+        "focused": 1,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0007",
+          "member": "REQ_QUIC_RFC9221_S3_0007.ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "method": "ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "line": 10,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0008",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Treat DATAGRAM size as unidirectional",
+      "statement": "The max_datagram_frame_size transport parameter MUST be treated as a unidirectional limit and indication of support.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 2,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs::TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "method": "TryFormatTransportParameters_RoundTripsMaxDatagramFrameSize",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0001",
+          "member": "REQ_QUIC_RFC9221_S3_0001.TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "method": "TryParseTransportParameters_DefaultsMissingMaxDatagramFrameSizeToUnsupported",
+          "line": 41,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0001",
+            "REQ-QUIC-RFC9221-S3-0002",
+            "REQ-QUIC-RFC9221-S3-0003",
+            "REQ-QUIC-RFC9221-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0009",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Store DATAGRAM size with 0-RTT state",
+      "statement": "A client that stores server DATAGRAM 0-RTT state MAY store the server's max_datagram_frame_size transport parameter value.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 2,
+          "negative": 1,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "method": "CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "method": "CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "method": "EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0010",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Reject reduced 0-RTT DATAGRAM size",
+      "statement": "If a client stores max_datagram_frame_size with 0-RTT state, the client MUST reject a server value that is lower than the stored value with PROTOCOL_VIOLATION.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "covered_but_proof_too_broad",
+      "primary_issue": "test_structure",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 0,
+        "broad": 3,
+        "by_kind": {
+          "positive": 1,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "negative",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "method": "CreateRememberedTransportParametersForClientZeroRtt_RemembersMaxDatagramFrameSize",
+          "line": 10,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "method": "EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S3-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs::EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+          "class": "REQ_QUIC_RFC9221_S3_0009",
+          "member": "REQ_QUIC_RFC9221_S3_0009.EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "method": "EvaluateServerZeroRttAcceptance_RejectsReducedRememberedMaxDatagramFrameSize",
+          "line": 25,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S3-0009",
+            "REQ-QUIC-RFC9221-S3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S3-0011",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S3",
+      "title": "Define application reaction to missing DATAGRAM support",
+      "statement": "Application protocols that use DATAGRAM frames MUST define how they react to the absence of the max_datagram_frame_size transport parameter.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Handle DATAGRAM frame types",
+      "statement": "DATAGRAM frame types MUST use values 0x30 and 0x31.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 7,
+        "focused": 1,
+        "broad": 6,
+        "by_kind": {
+          "positive": 2,
+          "negative": 3,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Interpret DATAGRAM LEN bit",
+      "statement": "The least significant bit of the DATAGRAM frame type MUST indicate whether a Length field is present.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 6,
+        "focused": 1,
+        "broad": 5,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Parse DATAGRAM without length to packet end",
+      "statement": "A DATAGRAM frame with frame type 0x30 MUST treat Datagram Data as extending to the end of the QUIC packet.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 6,
+        "focused": 1,
+        "broad": 5,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Parse DATAGRAM explicit length",
+      "statement": "A DATAGRAM frame with frame type 0x31 MUST contain a variable-length integer Length field before Datagram Data.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 7,
+        "focused": 1,
+        "broad": 6,
+        "by_kind": {
+          "positive": 2,
+          "negative": 3,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Allow empty DATAGRAM payload",
+      "statement": "DATAGRAM frame parsing and formatting MUST allow zero-length Datagram Data.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 6,
+        "focused": 1,
+        "broad": 5,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S4",
+      "title": "Reject malformed DATAGRAM length",
+      "statement": "The DATAGRAM frame codec MUST reject truncated Length fields and Length values that exceed the remaining packet payload.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed",
+        "restructure_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 7,
+        "focused": 2,
+        "broad": 5,
+        "by_kind": {
+          "positive": 1,
+          "negative": 4,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "positive",
+          "edge",
+          "fuzz"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "method": "FuzzDatagramFrame_RoundTripsRepresentativeShapes",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "method": "ProtectedOneRttDatagramFrame_ClosesOnMalformedLength",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "method": "TryParseDatagramFrame_And_TryFormatDatagramFrame_RoundTrip",
+          "line": 17,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S4-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs::TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S4_0001",
+          "member": "REQ_QUIC_RFC9221_S4_0001.TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "method": "TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S4-0001",
+            "REQ-QUIC-RFC9221-S4-0002",
+            "REQ-QUIC-RFC9221-S4-0003",
+            "REQ-QUIC-RFC9221-S4-0004",
+            "REQ-QUIC-RFC9221-S4-0005",
+            "REQ-QUIC-RFC9221-S4-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Deliver received DATAGRAM promptly",
+      "statement": "A valid received DATAGRAM frame SHOULD be delivered to the application immediately when the endpoint can process and store it.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0001",
+          "member": "REQ_QUIC_RFC9221_S5_0001.ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "method": "ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0001",
+            "REQ-QUIC-RFC9221-S5-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0001",
+          "member": "REQ_QUIC_RFC9221_S5_0001.ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "method": "ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0001",
+            "REQ-QUIC-RFC9221-S5-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Keep DATAGRAM connection scoped",
+      "statement": "DATAGRAM frames MUST be treated as connection-scoped application data rather than stream-associated data at the QUIC layer.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0001",
+          "member": "REQ_QUIC_RFC9221_S5_0001.ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "method": "ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0001",
+            "REQ-QUIC-RFC9221-S5-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs::ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0001",
+          "member": "REQ_QUIC_RFC9221_S5_0001.ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "method": "ProtectedOneRttDatagramFrame_DeliversConnectionScopedApplicationDatagram",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0001",
+            "REQ-QUIC-RFC9221-S5-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0003",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Leave DATAGRAM multiplexing to application protocol",
+      "statement": "The QUIC transport implementation MUST leave DATAGRAM payload multiplexing semantics to the application protocol.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0004",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Allow receiver DATAGRAM drop under pressure",
+      "statement": "A receiver that cannot process or store a DATAGRAM frame MAY drop the frame.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "deferred"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0005",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Send application DATAGRAM promptly",
+      "statement": "When an application sends a datagram over a QUIC connection, QUIC SHOULD send the DATAGRAM frame as soon as congestion control and packet assembly permit.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs::SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0005",
+          "member": "REQ_QUIC_RFC9221_S5_0005.SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+          "method": "SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs::SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0005",
+          "member": "REQ_QUIC_RFC9221_S5_0005.SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+          "method": "SendDatagramAsync_EmitsProtectedOneRttDatagramFrame",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0006",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Allow DATAGRAM coalescing",
+      "statement": "DATAGRAM frames MAY be coalesced with other QUIC frames.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "optional",
+        "edge": "deferred",
+        "fuzz": "deferred"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5-0007",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5",
+      "title": "Forbid DATAGRAM fragmentation",
+      "statement": "DATAGRAM frames MUST NOT be fragmented across QUIC packets.",
+      "coverage_expectations": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs::SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0007",
+          "member": "REQ_QUIC_RFC9221_S5_0007.SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+          "method": "SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs::SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs",
+          "class": "REQ_QUIC_RFC9221_S5_0007",
+          "member": "REQ_QUIC_RFC9221_S5_0007.SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+          "method": "SendDatagramAsync_RejectsInsteadOfFragmentingOversizedFrame",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P2-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P2",
+      "title": "Treat DATAGRAM frames as ack-eliciting",
+      "statement": "DATAGRAM frames MUST be treated as ack-eliciting.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0001.cs::IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P2_0001",
+          "member": "REQ_QUIC_RFC9221_S5P2_0001.IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+          "method": "IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P2-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0001.cs::IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P2_0001",
+          "member": "REQ_QUIC_RFC9221_S5P2_0001.IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+          "method": "IsAckElicitingFrameType_TreatsDatagramFramesAsAckEliciting",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P2-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P2",
+      "title": "Do not retransmit DATAGRAM frames",
+      "statement": "DATAGRAM frames MUST NOT be retransmitted by transport loss recovery.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs::SentDatagramPacket_IsTrackedAsNonRetransmittable",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "negative",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs",
+          "class": "REQ_QUIC_RFC9221_S5P2_0002",
+          "member": "REQ_QUIC_RFC9221_S5P2_0002.SentDatagramPacket_IsTrackedAsNonRetransmittable",
+          "method": "SentDatagramPacket_IsTrackedAsNonRetransmittable",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P2-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs::SentDatagramPacket_IsTrackedAsNonRetransmittable",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs",
+          "class": "REQ_QUIC_RFC9221_S5P2_0002",
+          "member": "REQ_QUIC_RFC9221_S5P2_0002.SentDatagramPacket_IsTrackedAsNonRetransmittable",
+          "method": "SentDatagramPacket_IsTrackedAsNonRetransmittable",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P2-0003",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P2",
+      "title": "Delay ACKs for DATAGRAM-only packets within max_ack_delay",
+      "statement": "A receiver SHOULD support delaying ACK frames within max_ack_delay in response to packets that only contain DATAGRAM frames.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P2-0004",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P2",
+      "title": "Treat DATAGRAM ACK notification as transport-only",
+      "statement": "Any DATAGRAM acknowledgment notification MUST NOT be treated as proof that the receiver application processed the payload.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "required",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "negative"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": []
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P3-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P3",
+      "title": "Exclude DATAGRAM from flow-control limits",
+      "statement": "DATAGRAM frames MUST NOT contribute to stream-level or connection-wide flow-control limits.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs::SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "negative",
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P3_0001",
+          "member": "REQ_QUIC_RFC9221_S5P3_0001.SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+          "method": "SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs::SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P3_0001",
+          "member": "REQ_QUIC_RFC9221_S5P3_0001.SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+          "method": "SendDatagramAsync_DoesNotAssociatePacketWithStreamFlowControl",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P4-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P4",
+      "title": "Subject DATAGRAM to congestion control",
+      "statement": "DATAGRAM frames MUST be subject to QUIC congestion control.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "not_applicable"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0001.cs::SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P4_0001",
+          "member": "REQ_QUIC_RFC9221_S5P4_0001.SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+          "method": "SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P4-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0001.cs::SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S5P4_0001",
+          "member": "REQ_QUIC_RFC9221_S5P4_0001.SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+          "method": "SendDatagramAsync_AccountsProtectedPacketInCongestionState",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S5P4-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S5P4",
+      "title": "Delay or drop DATAGRAM when congestion blocked",
+      "statement": "When congestion control does not allow sending a DATAGRAM frame, the sender MUST delay sending it until congestion control allows it or drop it without sending.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "required",
+        "fuzz": "not_applicable"
+      },
+      "state": "partially_covered",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs::SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": [
+          "edge"
+        ]
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs",
+          "class": "REQ_QUIC_RFC9221_S5P4_0002",
+          "member": "REQ_QUIC_RFC9221_S5P4_0002.SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+          "method": "SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S5P4-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs::SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs",
+          "class": "REQ_QUIC_RFC9221_S5P4_0002",
+          "member": "REQ_QUIC_RFC9221_S5P4_0002.SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+          "method": "SendDatagramAsync_DropsWhenCongestionWindowIsExhausted",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S5P4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S6-0001",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S6",
+      "title": "Protect DATAGRAM application data",
+      "statement": "All application data transmitted with DATAGRAM frames MUST be protected by 0-RTT or 1-RTT keys.",
+      "coverage_expectations": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs::DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 2,
+        "focused": 2,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S6_0001",
+          "member": "REQ_QUIC_RFC9221_S6_0001.DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+          "method": "DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9221-S6-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs::DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs",
+          "class": "REQ_QUIC_RFC9221_S6_0001",
+          "member": "REQ_QUIC_RFC9221_S6_0001.DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+          "method": "DatagramFrameTypes_AreForbiddenInWeaklyProtectedPackets",
+          "line": 12,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9221-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9221-S6-0002",
+      "artifact_id": "SPEC-QUIC-RFC9221",
+      "rfc": "RFC9221",
+      "section_prefix": "S6",
+      "title": "Require 0-RTT DATAGRAM application profile",
+      "statement": "Application protocols that allow DATAGRAM frames to be sent in 0-RTT MUST define an acceptable 0-RTT use profile before enabling that behavior.",
+      "coverage_expectations": {
+        "positive": "deferred",
+        "negative": "deferred",
+        "edge": "deferred",
+        "fuzz": "not_applicable"
+      },
+      "state": "uncovered_unblocked",
+      "primary_issue": "missing_proof",
+      "work_queue_tags": [
+        "new_tests_needed"
+      ],
+      "rationale": "No credible source-level proof path was found for this requirement.",
+      "spec_test_ref_count": 0,
+      "spec_test_refs": null,
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 0,
+        "focused": 0,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": []
     }
   ]
 }

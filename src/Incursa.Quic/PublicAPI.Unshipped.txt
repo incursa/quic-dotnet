@@ -8,6 +8,7 @@ Incursa.Quic.QuicConnection.IsSupported.get -> bool
 Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
 Incursa.Quic.QuicConnection.AcceptInboundStreamAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.OpenOutboundStreamAsync(Incursa.Quic.QuicStreamType streamType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
+Incursa.Quic.QuicConnection.SendDatagramAsync(System.ReadOnlyMemory<byte> datagram, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicConnection.CloseAsync(long errorCode, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicClientConnectionOptions

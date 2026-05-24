@@ -55,6 +55,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
+    private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingDatagramSendRequests = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
@@ -115,6 +116,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private ulong lowestObservedCurrentOneRttKeyPhasePacketNumber;
     private ulong observedCurrentOneRttKeyPhase;
     private long nextStreamActionRequestId;
+    private long nextDatagramSendRequestId;
     private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
@@ -815,6 +817,53 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         await completion.Task.ConfigureAwait(false);
     }
 
+    internal async ValueTask SendDatagramAsync(
+        ReadOnlyMemory<byte> datagram,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is not null)
+        {
+            throw CreateTerminalException(terminalState.Value);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        long requestId = Interlocked.Increment(ref nextDatagramSendRequestId);
+        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!pendingDatagramSendRequests.TryAdd(requestId, completion))
+        {
+            throw new InvalidOperationException("The connection runtime could not queue the DATAGRAM send request.");
+        }
+
+        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.Register(static state =>
+            {
+                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
+                    ((QuicConnectionRuntime, long, CancellationToken))state!;
+
+                if (runtime.pendingDatagramSendRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                {
+                    pendingCompletion.TrySetCanceled(token);
+                }
+            }, (this, requestId, cancellationToken))
+            : default;
+
+        if (!TryPostLocalApiEvent(new QuicConnectionDatagramSendRequestedEvent(
+            clock.Ticks,
+            requestId,
+            datagram)))
+        {
+            pendingDatagramSendRequests.TryRemove(requestId, out _);
+            throw IsDisposed
+                ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
+                : new InvalidOperationException("The connection runtime could not queue the DATAGRAM send request.");
+        }
+
+        await completion.Task.ConfigureAwait(false);
+    }
+
     internal async ValueTask CompleteStreamWritesAsync(
         ulong streamId,
         CancellationToken cancellationToken = default)
@@ -1014,6 +1063,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 => HandleCryptoFrameReceived(cryptoFrameReceivedEvent, nowTicks, ref effects),
             QuicConnectionStreamActionEvent streamActionEvent
                 => HandleStreamAction(streamActionEvent, nowTicks, ref effects),
+            QuicConnectionDatagramSendRequestedEvent datagramSendRequestedEvent
+                => HandleDatagramSendRequested(datagramSendRequestedEvent, ref effects),
             QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent
                 => HandleFlowControlCreditUpdated(flowControlCreditUpdatedEvent, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent

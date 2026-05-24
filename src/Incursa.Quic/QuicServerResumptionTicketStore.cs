@@ -172,6 +172,7 @@ internal sealed class QuicServerResumptionTicketStore
         {
             MaxIdleTimeout = parameters.MaxIdleTimeout,
             MaxUdpPayloadSize = parameters.MaxUdpPayloadSize,
+            MaxDatagramFrameSize = parameters.MaxDatagramFrameSize,
             InitialMaxData = parameters.InitialMaxData,
             InitialMaxStreamDataBidiLocal = parameters.InitialMaxStreamDataBidiLocal,
             InitialMaxStreamDataBidiRemote = parameters.InitialMaxStreamDataBidiRemote,

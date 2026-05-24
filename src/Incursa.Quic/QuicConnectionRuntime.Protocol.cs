@@ -1710,6 +1710,57 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
+            if (QuicFrameCodec.TryParseDatagramFrame(remaining, out QuicDatagramFrame datagramFrame, out int datagramBytesConsumed))
+            {
+                if (datagramBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                if (tlsState.LocalTransportParameters?.MaxDatagramFrameSize is not ulong localMaxDatagramFrameSize
+                    || localMaxDatagramFrameSize == 0)
+                {
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        datagramFrame.FrameType,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a DATAGRAM frame when local DATAGRAM receive support was not advertised.",
+                        ref effects);
+                }
+
+                if ((ulong)datagramBytesConsumed > localMaxDatagramFrameSize)
+                {
+                    return TryHandleApplicationDataFrameError(
+                        nowTicks,
+                        datagramFrame.FrameType,
+                        QuicTransportErrorCode.ProtocolViolation,
+                        "The peer sent a DATAGRAM frame larger than the advertised max_datagram_frame_size.",
+                        ref effects);
+                }
+
+                AppendEffect(
+                    ref effects,
+                    new QuicConnectionDeliverDatagramEffect(
+                        packetReceivedEvent.PathIdentity,
+                        datagramFrame.DatagramData,
+                        datagramFrame.FrameType));
+                stateChanged = true;
+                offset += datagramBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedDatagramFrameType)
+                && QuicPacketFrameLegality.IsDatagramFrameType(malformedDatagramFrameType))
+            {
+                return TryHandleApplicationDataFrameError(
+                    nowTicks,
+                    malformedDatagramFrameType,
+                    QuicTransportErrorCode.FrameEncodingError,
+                    "The peer sent an invalid DATAGRAM frame.",
+                    ref effects);
+            }
+
             if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
                 if (ApplicationReceiveDebugEnabled)
