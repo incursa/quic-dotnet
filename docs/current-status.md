@@ -101,7 +101,10 @@ The run reports green `transfer` and `keyupdate` cells for 15 of 16 upstream
 server-capable peers, green `chacha20` cells for 14 of 16 peers, and
 `chacha20` as unknown/unsupported for `mvfst` and `go-x-net`. The only failed
 peer cluster is `xquic`, where all three cells time out before the first
-generated response body completes. A focused rerun after the ACK-threshold
+generated response body completes. The preserved May 19 all-upstream
+streamdata/keyupdate local run shows `transfer`, `keyupdate`, and `chacha20`
+all timing out after 35,400 bytes at the response-stream FIN boundary. A
+focused rerun after the ACK-threshold
 topoff timed out after 35,400 bytes under
 `.artifacts/interop-runner/debug-client-transfer-xquic-after-ack-threshold/20260519-140609871-client-chrome`.
 A fresh May 22 rerun under
@@ -131,6 +134,10 @@ wakeup, peer delivery, xquic event-loop packet consumption, and stream-drain
 behavior before changing ACK generation, packet protection, or local credit
 publication. This remains an xquic-specific liveness edge rather than the
 generic stream-read wake-up bug or a generic local ACK-cadence silence.
+The fresh May 23 keyupdate/chacha20 rerun under
+`.artifacts/interop-runner/debug-client-keyupdate-chacha20-xquic-live-refresh/20260523-192303830-client-chrome`
+also failed after the client read 15,355 bytes, keeping the newest runtime
+evidence aligned across transfer, keyupdate, and chacha20.
 
 The generic stream-data failure was local and is now covered by focused tests:
 out-of-order STREAM data can be buffered without waking ordered readers, and a

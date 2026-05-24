@@ -92,6 +92,8 @@ public sealed class REQ_QUIC_INT_0029
         Assert.Contains("VER-QUIC-INT-0023", spec, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0029", gapLedger, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0029", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("debug-client-keyupdate-chacha20-xquic-live-refresh", currentStatus, StringComparison.Ordinal);
+        Assert.Contains("15,355 bytes", currentStatus, StringComparison.Ordinal);
         Assert.Contains("debug-client-transfer-xquic-current-after-docker-cleanup", spec, StringComparison.Ordinal);
         Assert.Contains("debug-client-transfer-xquic-current-after-docker-cleanup", gapLedger, StringComparison.Ordinal);
         Assert.Contains("all-upstream-streamdata-keyupdate-local", architecture, StringComparison.Ordinal);
@@ -100,6 +102,10 @@ public sealed class REQ_QUIC_INT_0029
         Assert.Contains("REQ-QUIC-INT-0029", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-INT-0029", verification, StringComparison.Ordinal);
         Assert.Contains("debug-client-transfer-xquic-live-refresh", verification, StringComparison.Ordinal);
+        Assert.Contains("debug-client-keyupdate-chacha20-xquic-live-refresh", verification, StringComparison.Ordinal);
+        Assert.Contains("all-upstream-streamdata-keyupdate-local", verification, StringComparison.Ordinal);
+        Assert.Contains("35,400 bytes at the response-stream FIN boundary", verification, StringComparison.Ordinal);
+        Assert.Contains("15,355 bytes", verification, StringComparison.Ordinal);
         Assert.Contains("stream_read_notify", verification, StringComparison.Ordinal);
         Assert.Contains("response burst running through packet 22", verification, StringComparison.Ordinal);
         Assert.Contains("pacing blocked", verification, StringComparison.Ordinal);
