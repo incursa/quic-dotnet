@@ -1,20 +1,20 @@
 # RFC 9221 QUIC DATAGRAM SpecTrace Plan
 
-This plan describes the trace-first path for adding RFC 9221 QUIC DATAGRAM support.
-It is an implementation planning artifact, not a canonical requirement source.
+This plan describes the trace-first path used to add RFC 9221 QUIC DATAGRAM support.
+It is a historical implementation planning artifact, not a canonical requirement source.
 Canonical behavior must land in JSON artifacts under `specs/requirements/quic`,
 `specs/architecture/quic`, `specs/work-items/quic`, and
 `specs/verification/quic` before protocol code is implemented.
 
 ## Current State
 
-- `specs/requirements/quic/REQUIREMENT-GAPS.md` no longer carries an RFC 9221 transport-floor gap once the requirement family is trace-clean; higher-level HTTP Datagram and MASQUE work stays in separate gap-ledger entries.
-- No `SPEC-QUIC-RFC9221.json` artifact exists yet.
+- `specs/requirements/quic/REQUIREMENT-GAPS.md` no longer carries an RFC 9221 transport-floor gap; higher-level HTTP Datagram and MASQUE work stays in separate gap-ledger entries.
+- `SPEC-QUIC-RFC9221.json`, `ARC-QUIC-RFC9221-0001.json`, `WI-QUIC-RFC9221-0001.json`, and `VER-QUIC-RFC9221-0001.json` now carry the closed RFC 9221 transport-floor trace.
 - No RFC 9221 local corpus file exists in this checkout, even though `specs/requirements/quic/README.md` mentions a future RFC corpus.
-- `QuicTransportParameters` and `QuicTransportParametersCodec` currently model RFC 9000 transport parameters only.
-- `QuicFrameCodec` currently handles RFC 9000 frame types and does not parse or format RFC 9221 DATAGRAM frame types `0x30` and `0x31`.
+- `QuicTransportParameters` and `QuicTransportParametersCodec` model the RFC 9221 `max_datagram_frame_size` transport parameter.
+- `QuicFrameCodec` parses and formats RFC 9221 DATAGRAM frame types `0x30` and `0x31`.
 - `QuicConnectionSendDatagramEffect` means "send a UDP datagram containing a QUIC packet"; it is not an RFC 9221 application DATAGRAM frame.
-- `QuicApplicationSendQueue` is stream-oriented and needs either a separate datagram send queue or a widened application-send model.
+- `QuicConnection.SendDatagramAsync` and `QuicConnection.ReceiveDatagramAsync` expose the bounded 1-RTT QUIC DATAGRAM public surface. HTTP Datagrams, CONNECT-UDP, MASQUE, application-facing ACK/loss callbacks, and 0-RTT DATAGRAM transmission remain separate future work.
 
 ## Source Inputs
 
@@ -22,11 +22,11 @@ Canonical behavior must land in JSON artifacts under `specs/requirements/quic`,
 - RFC 9000 transport parameter and frame processing: `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - RFC 9001 0-RTT and 1-RTT protection: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - RFC 9002 ACK and congestion behavior: `specs/requirements/quic/SPEC-QUIC-RFC9002.json`
-- Gap ledger: close the RFC 9221 transport-floor entry when the canonical artifacts, focused proof, generated coverage, and benchmark evidence are all present
+- Gap ledger: the RFC 9221 transport-floor entry is closed now that the canonical artifacts, focused proof, generated coverage, and benchmark evidence are present
 
 ## Artifact Plan
 
-Create these canonical JSON artifacts before code changes:
+Canonical JSON artifacts for the closed trace:
 
 - `specs/requirements/quic/SPEC-QUIC-RFC9221.json`
 - `specs/architecture/quic/ARC-QUIC-RFC9221-0001.json`
