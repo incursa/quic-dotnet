@@ -137,7 +137,9 @@ generic stream-read wake-up bug or a generic local ACK-cadence silence.
 The fresh May 23 keyupdate/chacha20 rerun under
 `.artifacts/interop-runner/debug-client-keyupdate-chacha20-xquic-live-refresh/20260523-192303830-client-chrome`
 also failed after the client read 15,355 bytes, keeping the newest runtime
-evidence aligned across transfer, keyupdate, and chacha20.
+evidence aligned across transfer, keyupdate, and chacha20. The helper now also
+has a shared-ceiling fallback for `keyupdate` and `chacha20` when the server
+log does not expose the deeper packet markers.
 
 The generic stream-data failure was local and is now covered by focused tests:
 out-of-order STREAM data can be buffered without waking ordered readers, and a
