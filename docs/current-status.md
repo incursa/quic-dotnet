@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-22 local `SIM-QUIC-LOSS-0001` droplist rerun `20260522T060348Z`, plus the 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713` and the May 19 local QUIC-protocol audit and local all-upstream client-role QUIC testcase refresh. HTTP/3 is intentionally out of scope. The repo-local SpecTrace JSON validator still reports existing unresolved-reference debt in legacy generated artifacts, generated QUIC requirement coverage reports 1,771/1,771 RFC 8999/9000/9001/9002 requirements as `trace_clean`, Release build passed with 0 warnings and 0 errors, the full test suite passed 5,311/5,311, and the current focused ACK/stream/key-update/interoperability tests passed. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is now green for the bounded `connectionmigration` profile, `SIM-QUIC-LOSS-0001` deterministic simulator loss now has a completed local evidence-preserved run under `.artifacts/network-simulator-live/SIM-QUIC-LOSS-0001/20260522T060348Z` with `--drops_to_server=41`, xquic remains the only failed local client-role all-upstream `transfer`/`keyupdate`/`chacha20` peer cluster, and broader non-HTTP/3 server-role all-upstream testcase coverage remains advisory outside the currently green handshake plus dedicated connectionmigration proof lanes. RFC9000 reference reconciliation should use the derived crosswalk and retired-ID ledger in `specs/generated/quic` before changing live requirement references. A repo-wide scan of non-generated RFC9000-related requirement, docs, architecture, work-item, verification, and requirement-home surfaces in this pass found zero retired RFC9000 IDs, so the remaining section-style IDs in those files are live canonical IDs rather than stale migration leftovers. I also checked RFC 8999 and RFC 9002 next; `REQUIREMENT-GAPS.md` currently has no open RFC 8999 or RFC 9002 gap families, and both remain fully trace-clean at 8/8 and 224/224. The latest `SIM-QUIC-LOSS-0001` rerun preserved a fresh `simulator-logs/` bundle and the client completed the 10,250-byte transfer, so the loss lane now has evidence but still awaits linked promotion review rather than a runtime fix.
+Last verified: 2026-05-23 RFC9000 repeated MAX_STREAM_DATA/MAX_DATA runtime proof, xquic captured-packet and credit-burst proof, non-promoting xquic runner diagnostic proof, 2026-05-22 local simulator promotion review, regenerated RFC requirement coverage triage, advisory peer-characterization report closeout, the 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713`, the May 22 focused xquic transfer rerun, and the May 22 `rebind-addr` server-trace-shim rerun. HTTP/3 is intentionally out of scope. Core SpecTrace JSON validation passes for 572 artifacts, and generated QUIC requirement coverage reports 1,779/1,779 RFC 8999/9000/9001/9002 requirements as `trace_clean`: RFC 8999 is 8/8, RFC 9000 is 1,451/1,451, RFC 9001 is 96/96, and RFC 9002 is 224/224. The latest focused RFC9000 MAX credit publication filter passed 7/7, the focused xquic/runner diagnostic proof set passed 27/27, the focused simulator-accounting verification passed 9/9, and the earlier Release/full-suite floor remains documented below but was not rerun in this status refresh. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is green for the bounded `connectionmigration` profile, `VER-QUIC-INT-0020` now accepts the preserved baseline and deterministic-loss simulator evidence as bounded proof for the mapped requirements, `VER-QUIC-INT-0016` closes the advisory peer-characterization reporting surface as non-promoting evidence, `REQ-QUIC-INT-0029` now owns the remaining xquic client-role all-upstream `transfer`/`keyupdate`/`chacha20` residual, proves the managed client emitted a decryptable ACK through xquic response packet 17 plus repeated increasing MAX_DATA/MAX_STREAM_DATA updates through client packet 28, and adds a non-promoting runner diagnostic for the preserved timeout shape plus xquic's server-log packet-processing ceiling through packets 0..3; the rebind cells remain prerequisite-blocked by live runner evidence rather than missing RFC requirement trace. RFC9000 reference reconciliation should use the derived crosswalk and retired-ID ledger in `specs/generated/quic` before changing live requirement references.
 
 ## 2026-05-19 QUIC Protocol Audit
 
@@ -36,7 +36,7 @@ proof no longer needs to be treated as support evidence for this cell.
 
 ## 2026-05-18 INT Network Simulator Baseline
 
-`REQ-QUIC-INT-0026` now owns the simulator-backed scenario accounting surface. The first live local `SIM-QUIC-BASE-0001` simple-p2p run passed under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`: staged Incursa.Quic client/server endpoints ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, the server served `/www/10000.txt`, and the client downloaded 10,250 bytes to `/downloads/10000.txt`. The helper now mounts `/www` into both staged endpoints because the client-side transfer completion boundary checks the known source length, simulator `-Execute` runs use `--force-recreate` to avoid stale QNS containers, and the latest deterministic-loss rerun under `.artifacts/network-simulator-live/SIM-QUIC-LOSS-0001/20260522T060348Z` preserved the fresh current-run qlog/pcap bundle under `simulator-logs/` after a successful transfer with `--drops_to_server=41`. This is now baseline-plus-loss simulator evidence; qlog/pcap proof promotion, hosted simulator workflow coverage, and broad simulator-matrix claims remain open until the preserved evidence is reviewed.
+`REQ-QUIC-INT-0026` now owns the simulator-backed scenario accounting surface. The first live local `SIM-QUIC-BASE-0001` simple-p2p run passed under `.artifacts/network-simulator-live/SIM-QUIC-BASE-0001/current-baseline-clean-compose-20260519`: staged Incursa.Quic client/server endpoints ran `simple-p2p --delay=15ms --bandwidth=10Mbps --queue=25`, the server served `/www/10000.txt`, and the client downloaded 10,250 bytes to `/downloads/10000.txt`. The helper now mounts `/www` into both staged endpoints because the client-side transfer completion boundary checks the known source length, simulator `-Execute` runs use `--force-recreate` to avoid stale QNS containers, and the latest deterministic-loss rerun under `.artifacts/network-simulator-live/SIM-QUIC-LOSS-0001/20260522T060348Z` preserved the fresh current-run qlog/pcap bundle under `simulator-logs/` after a successful transfer with `--drops_to_server=41`. `VER-QUIC-INT-0020` accepts the preserved baseline and deterministic-loss evidence as bounded proof for the mapped requirements and closes the `interop-network-simulator-backed-test-surface` gap; hosted simulator workflow coverage, rebind/migration simulator scenarios, cross-traffic performance results, and broad simulator-matrix claims remain out of scope.
 
 ## 2026-05-14 RFC9000 S19P21 and S5 Trace Closure
 
@@ -93,21 +93,44 @@ EncryptedExtensions while still rejecting malformed or unknown extensions.
 ## 2026-05-19 INT All-Upstream Client Non-HTTP/3 Refresh
 
 The local client-role non-HTTP/3 sweep for `transfer`, `keyupdate`, and
-`chacha20` now has current all-upstream evidence under
+`chacha20` has current all-upstream evidence under
 `.artifacts/interop-runner/all-upstream-streamdata-keyupdate-local/client/20260519-121832639-client-chrome`.
+`REQ-QUIC-INT-0029` now owns the remaining xquic residual trace set before
+any runtime transport change is promoted.
 The run reports green `transfer` and `keyupdate` cells for 15 of 16 upstream
 server-capable peers, green `chacha20` cells for 14 of 16 peers, and
 `chacha20` as unknown/unsupported for `mvfst` and `go-x-net`. The only failed
-peer cluster is `xquic`, where all three cells time out after the local client
-reads 35,400 bytes. A focused rerun after the ACK-threshold topoff still times
-out under
+peer cluster is `xquic`, where all three cells time out before the first
+generated response body completes. A focused rerun after the ACK-threshold
+topoff timed out after 35,400 bytes under
 `.artifacts/interop-runner/debug-client-transfer-xquic-after-ack-threshold/20260519-140609871-client-chrome`.
-Preserved xquic server logs show the peer sends STREAM data until its
-congestion window fills around 45 KB while recording only early client ACKs,
-but the paired packet capture shows the simulator captured later
-client-to-server datagrams with zero interface drops. The residual candidate is
-therefore an xquic-specific ingress or packet-opening liveness edge rather than
-the generic stream-read wake-up bug or a generic local ACK-cadence silence.
+A fresh May 22 rerun under
+`.artifacts/interop-runner/debug-client-transfer-xquic-current-after-docker-cleanup/20260522-221632093-client-chrome`
+also failed: the first generated response body was 2,097,152 bytes, the local
+client timed out waiting for response-stream FIN after 14,174 bytes, and the
+simulator captured both packet paths with zero interface drops. A fresh May 23
+live rerun under
+`.artifacts/interop-runner/debug-client-transfer-xquic-live-refresh/20260523-161053951-client-chrome`
+failed after the client read 15,355 bytes, and the xquic server log still only
+decrypts/processes client short-header packets `0..3`. The residual candidate
+now has captured-packet proof that the managed client emitted a decryptable
+client-to-xquic 1-RTT ACK through xquic response packet 17 plus a MAX_DATA
+frame, then emitted repeated increasing MAX_DATA/MAX_STREAM_DATA updates
+through client packet 28. The local runner helper now reports that the
+preserved packet/key material confirms valid post-burst ACK traffic while
+xquic's server-log packet-processing ceiling through packets 0..3 remains a non-promoting failure
+diagnostic. A bounded artifact comparison found both simulator pcaps contain
+decryptable client short-header packets `0..40`, while xquic's own server log
+only decrypts/processes client short-header packets `0..3`. The fresh live
+rerun also reaches `xqc_process_read_streams|stream_read_notify|flag:66` after
+the request stream is fully received, and the server-side response burst runs
+through packet 22 before `xqc_send_packet_pacer_allows|pacing blocked` at
+`stream_offset:16536` prevents the transfer from draining to FIN. The next
+runtime investigation should therefore prioritize post-send drain, pacing
+wakeup, peer delivery, xquic event-loop packet consumption, and stream-drain
+behavior before changing ACK generation, packet protection, or local credit
+publication. This remains an xquic-specific liveness edge rather than the
+generic stream-read wake-up bug or a generic local ACK-cadence silence.
 
 The generic stream-data failure was local and is now covered by focused tests:
 out-of-order STREAM data can be buffered without waking ordered readers, and a
@@ -392,6 +415,13 @@ corroboration and inventory promotion. `connectionmigration` now has hosted run
 `26174181713` as its green proof using the local `nginx` replacement slot
 against `neqo`; none of these cells are blocked on missing internal path-state
 promotion logic or socket rebinding support.
+
+The May 22 `rebind-addr` rerun under
+`.artifacts/interop-runner/rebind-addr-server-trace-shim/20260522-223326878-server-nginx`
+kept the inventory blocked. The helper shim now validates server path changes
+from the server trace instead of the client trace, but this run failed before
+analyzer post-check: the client timed out after the second rebound address
+while the simulator dropped packets to the previous binding.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`

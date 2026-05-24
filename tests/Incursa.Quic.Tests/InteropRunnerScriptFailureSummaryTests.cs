@@ -77,6 +77,75 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroWithXquicAckConsumptionCandidateReportsDiagnosticButRemainsFailed()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-xquic-ack-consumption-candidate");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "chrome": { "role": "client" },
+              "xquic": { "role": "server" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "xquic",
+            "-TestCases",
+            "transfer");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "Reason: the runner exited non-zero after producing the expected outputs.",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "xquic server log shows only early Application Data ACK processing",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "response burst reaching packet 22",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "pacing blocked at stream_offset:16536",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "managed client emitted valid post-burst ACKs",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "only records client short-header packet processing through packets 0..3",
+            output,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("post-burst ACK consumption", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("xquic event-loop packet processing", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "xquic_chrome", "transfer", "output.txt")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "xquic_chrome", "transfer", "server", "server.log")));
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedInventoryCellsAndRecordsThem()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -1290,6 +1359,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 set "mode=success"
 
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
+                findstr /c:"# fake-runner: non-zero-xquic-ack-consumption-candidate" run.py >nul && set "mode=non-zero-xquic-ack-consumption-candidate"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-success" run.py >nul && set "mode=file-not-found-handshake-server-success"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-incomplete" run.py >nul && set "mode=file-not-found-handshake-server-incomplete"
                 findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
@@ -1339,6 +1409,27 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                   > "%jsonPath%" echo {"mode":"non-zero-valid-outputs"}
                   > "%logsDir%\fake-runner.log" echo fake-runner mode=non-zero-valid-outputs
                   echo Unable to create certificates 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="non-zero-xquic-ack-consumption-candidate" (
+                  echo fake-runner sentinel non-zero-xquic-ack-consumption-candidate
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\xquic_chrome\transfer\server" md "%logsDir%\xquic_chrome\transfer\server" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"non-zero-xquic-ack-consumption-candidate"}
+                  > "%logsDir%\xquic_chrome\transfer\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=transfer, requestCount=3 timed out waiting for response-stream FIN after 15355 bytes.
+                  )
+                  > "%logsDir%\xquic_chrome\transfer\server\server.log" (
+                    echo xqc_send_ctl_on_ack_received^|now:0^|pns:2^|frame_largest_ack:1^|path_largest_ack:1^|
+                    echo xqc_send_packet_with_pn^|pkt_num:17^|pkt_type:SHORT_HEADER^|frame:STREAM ^|stream_offset:14174^|
+                    echo xqc_send_packet_with_pn^|pkt_num:22^|pkt_type:SHORT_HEADER^|frame:STREAM ^|stream_offset:15355^|
+                    echo xqc_conn_on_pkt_processed^|size:65^|pkt_type:SHORT_HEADER^|pkt_num:2^|frame:PADDING STREAM ^|
+                    echo xqc_conn_on_pkt_processed^|size:53^|pkt_type:SHORT_HEADER^|pkt_num:3^|frame:PADDING ACK ^|
+                    echo xqc_send_ctl_get_pto_time_and_space^|PNS: 2, unacked: 15000^|
+                    echo xqc_send_packet_pacer_allows^|pacing blocked^|stream_offset:16536^|
+                  )
+                  echo transfer timeout 1>&2
                   exit /b 7
                 )
 
@@ -1562,6 +1653,8 @@ public sealed class InteropRunnerScriptFailureSummaryTests
             mode=success
             if grep -q '# fake-runner: non-zero-valid-outputs' run.py; then
                 mode=non-zero-valid-outputs
+            elif grep -q '# fake-runner: non-zero-xquic-ack-consumption-candidate' run.py; then
+                mode=non-zero-xquic-ack-consumption-candidate
             elif grep -q '# fake-runner: file-not-found-handshake-server-success' run.py; then
                 mode=file-not-found-handshake-server-success
             elif grep -q '# fake-runner: file-not-found-handshake-server-incomplete' run.py; then
@@ -1625,6 +1718,27 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 printf '%s\n' '{"mode":"non-zero-valid-outputs"}' > "$json_path"
                 printf '%s\n' 'fake-runner mode=non-zero-valid-outputs' > "$logs_dir/fake-runner.log"
                 printf '%s\n' 'Unable to create certificates' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "non-zero-xquic-ack-consumption-candidate" ]; then
+                printf '%s\n' 'fake-runner sentinel non-zero-xquic-ack-consumption-candidate'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/xquic_chrome/transfer/server"
+                printf '%s\n' '{"mode":"non-zero-xquic-ack-consumption-candidate"}' > "$json_path"
+                printf '%s\n' 'client | interop harness: role=client, testcase=transfer, requestCount=3 timed out waiting for response-stream FIN after 15355 bytes.' > "$logs_dir/xquic_chrome/transfer/output.txt"
+                {
+                    printf '%s\n' 'xqc_send_ctl_on_ack_received|now:0|pns:2|frame_largest_ack:1|path_largest_ack:1|'
+                    printf '%s\n' 'xqc_send_packet_with_pn|pkt_num:17|pkt_type:SHORT_HEADER|frame:STREAM |stream_offset:14174|'
+                    printf '%s\n' 'xqc_send_packet_with_pn|pkt_num:22|pkt_type:SHORT_HEADER|frame:STREAM |stream_offset:15355|'
+                    printf '%s\n' 'xqc_conn_on_pkt_processed|size:65|pkt_type:SHORT_HEADER|pkt_num:2|frame:PADDING STREAM |'
+                    printf '%s\n' 'xqc_conn_on_pkt_processed|size:53|pkt_type:SHORT_HEADER|pkt_num:3|frame:PADDING ACK |'
+                    printf '%s\n' 'xqc_send_ctl_get_pto_time_and_space|PNS: 2, unacked: 15000|'
+                    printf '%s\n' 'xqc_send_packet_pacer_allows|pacing blocked|stream_offset:16536|'
+                } > "$logs_dir/xquic_chrome/transfer/server/server.log"
+                printf '%s\n' 'transfer timeout' >&2
                 exit 7
             fi
 

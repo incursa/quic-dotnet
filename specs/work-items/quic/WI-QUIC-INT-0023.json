@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0023",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC xquic Non-Handshake Residual Trace Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Create a dedicated trace and proof plan for the remaining xquic client-role all-upstream transfer/keyupdate/chacha20 residual before runtime changes are promoted.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0023",
+    "VER-QUIC-INT-0023"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0023"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0023"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0029"
+  ],
+  "planned_changes": "- Preserve the current xquic residual evidence paths in the requirement, architecture, verification, current-status, and gap ledger surfaces.\n- Add requirement-home tests that prove the residual is trace-owned and that the advisory boundary is not weakened.\n- Add captured-packet proof that the managed client emits a decryptable post-burst ACK for xquic response packet 17 without promoting xquic support.\n- Add multi-packet captured proof that client packets 13 through 28 carry repeated MAX_DATA/MAX_STREAM_DATA updates with increasing limits after the packet 17 ACK.\n- Add a local runner failure diagnostic that recognizes the preserved xquic early-ACK-only timeout shape and reports the xquic server-log short-header packet-processing ceiling through packets 0..3 while keeping the run failed.\n- Use the fresh May 23 live rerun to distinguish the post-send drain stall from request completion by checking whether the server reaches `stream_read_notify`, emits the response burst, and then hits `pacing blocked` at `stream_offset:16536` before the timeout.\n- Keep runtime transport behavior unchanged in this trace-ownership slice.\n- Use the next runtime slice to inspect post-send drain, pacing wakeup, peer delivery, xquic event-loop packet consumption, and stream-drain behavior only after the trace set is stable.",
+  "out_of_scope": [
+    "runtime transport changes in this trace-ownership slice",
+    "support-readiness promotion",
+    "HTTP/3 behavior",
+    "rebind-port or rebind-addr inventory promotion",
+    "rewriting the all-upstream matrix scope"
+  ],
+  "verification_plan": "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_INT_0029|FullyQualifiedName~InteropRunnerScriptFailureSummaryTests\"` plus `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`. Later runtime work must add focused positive and negative proof before the xquic residual can close."
+}

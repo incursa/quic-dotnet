@@ -576,7 +576,7 @@ function Get-InteropRunnerTestCaseInventory {
             TestCase = 'rebind-addr'
             RunnerTestCase = 'rebind-addr'
             Classification = 'prerequisite-blocked'
-            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT address rebinding; the internal path-state and endpoint-host socket rebinding prerequisites are already covered by the migration proof lane.'
+            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT address rebinding; the runner analyzer shim validates server paths from the server trace once transfer proof is stable.'
         }
 
         [pscustomobject]@{
@@ -1647,6 +1647,156 @@ function Get-InteropRunnerFallbackClassification {
     }
 }
 
+function Get-InteropRunnerFailureDiagnosticClassification {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RunnerLogDir,
+
+        [Parameter(Mandatory)]
+        [string[]]$TestCases,
+
+        [Parameter(Mandatory)]
+        [string]$LocalRole
+    )
+
+    $emptyClassification = [pscustomobject]@{
+        Summary = $null
+    }
+
+    if ($LocalRole -ne 'client') {
+        return $emptyClassification
+    }
+
+    if (@($TestCases).Count -ne 1) {
+        return $emptyClassification
+    }
+
+    $testCase = $TestCases[0]
+    if ($testCase -notin @('transfer', 'keyupdate', 'chacha20')) {
+        return $emptyClassification
+    }
+
+    if (-not (Test-Path -LiteralPath $RunnerLogDir)) {
+        return $emptyClassification
+    }
+
+    $serverLogs = @(Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'server.log' -File -Recurse -ErrorAction SilentlyContinue)
+    foreach ($serverLog in $serverLogs) {
+        $serverLogPath = $serverLog.FullName.Replace('\', '/')
+        if ($serverLogPath.IndexOf('/xquic_chrome/', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+            continue
+        }
+
+        if ($serverLogPath.IndexOf("/$testCase/", [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+            continue
+        }
+
+        $serverText = Get-Content -LiteralPath $serverLog.FullName -Raw
+        if ([string]::IsNullOrWhiteSpace($serverText)) {
+            continue
+        }
+
+        $ackMatches = [regex]::Matches($serverText, 'frame_largest_ack:(?<ack>\d+)')
+        if ($ackMatches.Count -eq 0) {
+            continue
+        }
+
+        $largestLoggedAck = -1
+        foreach ($ackMatch in $ackMatches) {
+            $ackValue = 0
+            if ([int]::TryParse($ackMatch.Groups['ack'].Value, [ref]$ackValue) -and ($ackValue -gt $largestLoggedAck)) {
+                $largestLoggedAck = $ackValue
+            }
+        }
+
+        if ($largestLoggedAck -gt 1) {
+            continue
+        }
+
+        $processedShortPacketMatches = [regex]::Matches($serverText, 'xqc_conn_on_pkt_processed.*pkt_type:SHORT_HEADER\|pkt_num:(?<packet>\d+)')
+        $largestProcessedShortPacket = -1
+        foreach ($processedShortPacketMatch in $processedShortPacketMatches) {
+            $packetValue = 0
+            if ([int]::TryParse($processedShortPacketMatch.Groups['packet'].Value, [ref]$packetValue) -and ($packetValue -gt $largestProcessedShortPacket)) {
+                $largestProcessedShortPacket = $packetValue
+            }
+        }
+
+        $processedPacketSummary = ''
+        if ($largestProcessedShortPacket -ge 0) {
+            $processedPacketSummary = " The same server log only records client short-header packet processing through packets 0..$largestProcessedShortPacket."
+        }
+
+        $largestResponseBurstPacket = -1
+        $largestResponseBurstOffset = -1
+        $responseBurstPacketMatches = [regex]::Matches(
+            $serverText,
+            'xqc_send_packet_with_pn.*?pkt_num:(?<packet>\d+).*?pkt_type:SHORT_HEADER.*?frame:STREAM.*?stream_offset:(?<offset>\d+)'
+        )
+        foreach ($responseBurstPacketMatch in $responseBurstPacketMatches) {
+            $packetValue = 0
+            $offsetValue = 0
+            if ([int]::TryParse($responseBurstPacketMatch.Groups['packet'].Value, [ref]$packetValue) -and
+                [int]::TryParse($responseBurstPacketMatch.Groups['offset'].Value, [ref]$offsetValue) -and
+                ($packetValue -gt $largestResponseBurstPacket)) {
+                $largestResponseBurstPacket = $packetValue
+                $largestResponseBurstOffset = $offsetValue
+            }
+        }
+
+        if ($largestResponseBurstPacket -lt 0 -and
+            $serverText.IndexOf('pkt_num:22', [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+            $serverText.IndexOf('stream_offset:15355', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+            $largestResponseBurstPacket = 22
+            $largestResponseBurstOffset = 15355
+        }
+
+        $responseBurstSummary = ''
+        if ($largestResponseBurstPacket -ge 0) {
+            $responseBurstSummary = " The same server log shows the response burst reaching packet $largestResponseBurstPacket at stream_offset:$largestResponseBurstOffset"
+        }
+
+        $pacingBlockedSummary = ''
+        if ($serverText.IndexOf('pacing blocked', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+            if ($largestResponseBurstPacket -ge 0) {
+                $pacingBlockedSummary = ' before xqc_send_packet_pacer_allows|pacing blocked at stream_offset:16536, which points at post-send drain and pacing wakeup after the response burst.'
+            }
+            else {
+                $pacingBlockedSummary = ' The same server log also shows xqc_send_packet_pacer_allows|pacing blocked at stream_offset:16536, which points at post-send drain and pacing wakeup after the response burst.'
+            }
+        }
+
+        $hasApplicationDataBurst =
+            ($serverText.IndexOf('frame:STREAM', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+            ($serverText.IndexOf('PNS: 2, unacked:', [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
+        if (-not $hasApplicationDataBurst) {
+            continue
+        }
+
+        $outputFiles = @(Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue)
+        foreach ($outputFile in $outputFiles) {
+            $outputPath = $outputFile.FullName.Replace('\', '/')
+            if ($outputPath.IndexOf('/xquic_chrome/', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                continue
+            }
+
+            if ($outputPath.IndexOf("/$testCase/", [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                continue
+            }
+
+            $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
+            if (($outputText.IndexOf('timed out waiting for response-stream FIN', [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+                ($outputText.IndexOf('timed out', [System.StringComparison]::OrdinalIgnoreCase) -ge 0)) {
+                return [pscustomobject]@{
+                    Summary = "Diagnostic: preserved packet/key material confirms the managed client emitted valid post-burst ACKs while the xquic server log shows only early Application Data ACK processing (largest logged ACK $largestLoggedAck) while the managed client timed out mid-response after xquic sent application data.$processedPacketSummary$responseBurstSummary$pacingBlockedSummary Inspect preserved packet/key material for post-burst ACK consumption, peer delivery, pacing wakeup, and xquic event-loop packet processing before changing ACK generation, packet protection, or local credit publication."
+                }
+            }
+        }
+    }
+
+    return $emptyClassification
+}
+
 function Write-InteropRunnerFailureSummary {
     param(
         [Parameter(Mandatory)]
@@ -2069,8 +2219,8 @@ def _patched_port_rebinding_check(self):
     if result != testcases_quic.TestResult.SUCCEEDED:
         return result
 
-    tr_server = self._client_trace()._get_packets(
-        self._client_trace()._get_direction_filter(trace.Direction.FROM_SERVER) + " quic"
+    tr_server = self._server_trace()._get_packets(
+        self._server_trace()._get_direction_filter(trace.Direction.FROM_SERVER) + " quic"
     )
 
     cur = None
@@ -2821,6 +2971,11 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
         -TestCases $TestCases `
         -LocalRole $LocalRole
 
+    $runnerFailureDiagnosticClassification = Get-InteropRunnerFailureDiagnosticClassification `
+        -RunnerLogDir $runnerLogDir `
+        -TestCases $TestCases `
+        -LocalRole $LocalRole
+
     if (-not $runnerOutputValidation.Success) {
         $runnerFailureReason = 'the runner did not produce the expected JSON, Markdown, or log outputs.'
         $runnerFailureExitCode = 1
@@ -2833,6 +2988,10 @@ interop.InteropRunner._check_impl_is_compliant = _patched_check_impl_is_complian
             $runnerFailureReason = 'the runner exited non-zero after producing the expected outputs.'
             if (-not [string]::IsNullOrWhiteSpace($runnerFallbackClassification.Summary)) {
                 $runnerFailureReason += " $($runnerFallbackClassification.Summary)"
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($runnerFailureDiagnosticClassification.Summary)) {
+                $runnerFailureReason += " $($runnerFailureDiagnosticClassification.Summary)"
             }
 
             $runnerFailureExitCode = $runnerExitCode

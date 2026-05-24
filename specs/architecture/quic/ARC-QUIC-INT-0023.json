@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0023",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC xquic Non-Handshake Residual Trace Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the trace boundary for the remaining xquic client-role non-handshake liveness residual before transport changes are promoted.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0011",
+    "ARC-QUIC-INT-0017",
+    "ARC-QUIC-INT-0021",
+    "WI-QUIC-INT-0023",
+    "VER-QUIC-INT-0023"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0029"
+  ],
+  "key_components": [
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "docs/current-status.md",
+    "scripts/interop/Invoke-QuicInteropRunner.ps1",
+    "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs",
+    ".artifacts/interop-runner/all-upstream-streamdata-keyupdate-local/client/20260519-121832639-client-chrome",
+    ".artifacts/interop-runner/debug-client-transfer-xquic-after-ack-threshold/20260519-140609871-client-chrome",
+    ".artifacts/interop-runner/debug-client-transfer-xquic-current-after-docker-cleanup/20260522-221632093-client-chrome",
+    ".artifacts/interop-runner/debug-client-transfer-xquic-live-refresh/20260523-161053951-client-chrome"
+  ],
+  "design_summary": "The remaining all-upstream client-role non-handshake gap is narrowed to xquic after the generic ordered-read wake-up, delayed-ACK threshold re-arm, quic-go transfer, quic-go chacha20, and quic-go keyupdate evidence were closed separately. This architecture keeps that residual as an evidence-owned investigation surface until focused packet, ingress, path, or stream proof identifies a concrete runtime change. The May 23 captured-packet proofs show the managed client emitted a decryptable post-burst ACK for xquic response packet 17 and then emitted repeated MAX_DATA/MAX_STREAM_DATA updates with increasing limits through packet 28, while the fresh May 23 live rerun reached `xqc_process_read_streams|stream_read_notify|flag:66` after the request stream was fully received and the response burst ran through packet 22 before `xqc_send_packet_pacer_allows|pacing blocked` at `stream_offset:16536` prevented the transfer from draining to FIN, so the next runtime investigation should prioritize post-send drain, pacing wakeup, peer delivery, xquic event-loop packet consumption, and stream-drain behavior before changing ACK generation, packet protection, or local credit publication. The local interop-runner helper now appends that narrowed shape and the xquic server-log short-header packet-processing ceiling through packets 0..3 as a non-promoting failure diagnostic when preserved xquic logs show only early ACK processing plus a managed client timeout. The trace boundary deliberately separates the mostly green all-upstream matrix from support readiness, does not imply HTTP/3 or broader API support, and avoids changing the inventory classifier until a dedicated xquic proof slice passes.",
+  "edge_cases_and_constraints": [
+    "The xquic residual must stay separate from `REQ-QUIC-INT-0023`, which owns the already-closed quic-go download-liveness slice.",
+    "The all-upstream handshake profile under `REQ-QUIC-INT-0027` remains handshake-only and advisory.",
+    "The helper inventory under `REQ-QUIC-INT-0018` must not classify xquic-specific non-handshake residuals as support-readiness proof.",
+    "A later runtime fix needs focused positive and negative proof before the gap ledger can close this residual.",
+    "The captured ACK and credit-burst proofs narrow the current evidence away from missing client ACK emission or missing local credit publication but do not prove the xquic server consumed those later packets.",
+    "The runner diagnostic is classification-only: it keeps the run failed, may report the largest client short-header packet processed by xquic, and must not promote xquic support or suppress the need for later runtime proof."
+  ],
+  "risks": [
+    "Treating xquic as a generic stream-read or ACK-cadence failure would reopen already-closed work and obscure the current narrowed evidence.",
+    "Promoting support from a mostly green all-upstream sweep would overstate the current implementation boundary."
+  ]
+}

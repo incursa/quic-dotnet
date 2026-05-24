@@ -71,7 +71,10 @@
     "VER-QUIC-INT-0021",
     "ARC-QUIC-INT-0022",
     "WI-QUIC-INT-0022",
-    "VER-QUIC-INT-0022"
+    "VER-QUIC-INT-0022",
+    "ARC-QUIC-INT-0023",
+    "WI-QUIC-INT-0023",
+    "VER-QUIC-INT-0023"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
   "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios and the generated inventory/evidence reports, the documented non-HTTP/3 testcase inventory/profile, and CI participation.",
@@ -606,13 +609,16 @@
       "statement": "The repository MUST provide an explicit manually dispatched hosted-CI major peer matrix profile that exercises Incursa.Quic as the local client and as the local server against the `quic-go` and `msquic` peer implementation slots for the currently executable non-HTTP/3 external-runner cells `handshake`, `retry`, `transfer`, `keyupdate`, and `resumption`, uploads a distinct artifact bundle for every attempted role, peer, and testcase cell, keeps `http3` and prerequisite-blocked inventory cells out of this profile, and remains advisory, opt-in, outside ordinary push, pull-request, build, test, package, and support-readiness gates.",
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-INT-0012"
+          "ARC-QUIC-INT-0012",
+          "ARC-QUIC-INT-0016"
         ],
         "implemented_by": [
-          "WI-QUIC-INT-0012"
+          "WI-QUIC-INT-0012",
+          "WI-QUIC-INT-0016"
         ],
         "verified_by": [
-          "VER-QUIC-INT-0012"
+          "VER-QUIC-INT-0012",
+          "VER-QUIC-INT-0016"
         ],
         "related": [
           "REQ-QUIC-INT-0017",
@@ -627,11 +633,15 @@
           "scripts/interop/README.md",
           "scripts/spec-trace/Generate-QuicMajorPeerMatrixInventory.ps1",
           "scripts/spec-trace/Generate-QuicMajorPeerMatrixEvidence.ps1",
+          "scripts/spec-trace/Generate-QuicPeerCharacterizationMatrix.ps1",
+          "specs/generated/quic/interop-peer-characterization-matrix-pilot.json",
+          "specs/generated/quic/interop-peer-characterization-matrix-pilot.md",
           "specs/generated/quic/interop-major-peer-matrix-inventory.json",
           "specs/generated/quic/interop-major-peer-matrix-inventory.md",
           "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json",
           "specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.md",
           "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0016.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0019.cs"
         ]
       },
@@ -725,13 +735,16 @@
       "statement": "The interop harness MUST provide manual advisory hosted Linux `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles. The `connectionmigration-server-proof` profile exercises the server role against `neqo` by replacing a distinct local server slot, preserving `neqo-peer` as the reported peer alias, normalizing the actual runner peer slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image for `connectionmigration`; the blocked companion profile keeps `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` visible for comparison. Both profiles upload distinct artifact bundles for each cell and stay outside ordinary push, pull-request, build, test, package, and support-readiness gates. The proof profile preserves live corroboration for the already classified connectionmigration inventory cell and is not intended to be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
       "trace": {
         "satisfied_by": [
-          "ARC-QUIC-INT-0015"
+          "ARC-QUIC-INT-0015",
+          "ARC-QUIC-INT-0016"
         ],
         "implemented_by": [
-          "WI-QUIC-INT-0015"
+          "WI-QUIC-INT-0015",
+          "WI-QUIC-INT-0016"
         ],
         "verified_by": [
-          "VER-QUIC-INT-0015"
+          "VER-QUIC-INT-0015",
+          "VER-QUIC-INT-0016"
         ],
         "related": [
           "REQ-QUIC-INT-0018",
@@ -746,6 +759,9 @@
           "src/Incursa.Quic.InteropHarness/README.md",
           "docs/current-status.md",
           "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "specs/generated/quic/interop-peer-characterization-matrix-pilot.json",
+          "specs/generated/quic/interop-peer-characterization-matrix-pilot.md",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0016.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0022.cs"
         ]
       },
@@ -988,6 +1004,54 @@
       "notes": [
         "The representative packet is the ngtcp2 server response from local run `.artifacts/interop-runner/ngtcp2-app-rx-debug3/20260519-002720755-client-chrome`, where server packet number 399463276 was truncated to one byte on the wire.",
         "The proof remains bounded to packet opening and response liveness for the representative ngtcp2 handshake cell."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0029",
+      "title": "Trace the xquic client-role non-handshake liveness residual",
+      "statement": "The repository MUST keep the remaining xquic client-role all-upstream `transfer`, `keyupdate`, and `chacha20` residual trace-owned before any transport change is promoted by preserving the broad May 19 all-upstream sweep plus focused May 19 and May 22 xquic rerun evidence, distinguishing the residual from the already-closed generic ordered-read wake-up and ACK-threshold issues, classifying it as an xquic-specific ingress, packet-opening, or path-liveness investigation until narrowed by new proof, and avoiding converting mostly-green all-upstream evidence into broad support-readiness claims.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0023"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0023"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0023"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0018",
+          "REQ-QUIC-INT-0023",
+          "REQ-QUIC-INT-0027",
+          "SPEC-QUIC-RFC9000",
+          "SPEC-QUIC-RFC9002"
+        ],
+        "x_code_refs": [
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "docs/current-status.md",
+          "specs/architecture/quic/ARC-QUIC-INT-0023.json",
+          "specs/work-items/quic/WI-QUIC-INT-0023.json",
+          "specs/verification/quic/VER-QUIC-INT-0023.json",
+          "scripts/interop/Invoke-QuicInteropRunner.ps1",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs::XquicResidualIsTraceOwnedBeforeRuntimePromotion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs::CapturedXquicPostBurstAckPacketOpensAndAcknowledgesResponsePacket17",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs::CapturedXquicPostBurstCreditBurstPublishesRepeatedMaxDataAndMaxStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0029.cs::XquicResidualDoesNotWeakenTheAdvisoryBoundary",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs::RunnerExitNonZeroWithXquicAckConsumptionCandidateReportsDiagnosticButRemainsFailed"
+        ]
+      },
+      "notes": [
+        "The current preserved evidence includes `.artifacts/interop-runner/all-upstream-streamdata-keyupdate-local/client/20260519-121832639-client-chrome`, `.artifacts/interop-runner/debug-client-transfer-xquic-after-ack-threshold/20260519-140609871-client-chrome`, `.artifacts/interop-runner/debug-client-transfer-xquic-current-after-docker-cleanup/20260522-221632093-client-chrome`, and `.artifacts/interop-runner/debug-client-transfer-xquic-live-refresh/20260523-161053951-client-chrome`.",
+        "The May 23 captured-packet proof opens a client-to-xquic 1-RTT packet from the May 22 rerun and verifies that it carries an ACK for xquic response packet 17 plus a MAX_DATA frame; this narrows the next investigation toward peer delivery and xquic event-loop packet processing rather than missing client ACK emission.",
+        "The multi-packet May 23 proof opens client packet numbers 13 through 28 from the same rerun and verifies an alternating post-burst MAX_DATA/MAX_STREAM_DATA credit sequence with strictly increasing advertised limits, so missing local credit emission is no longer the leading hypothesis.",
+        "The local interop-runner helper now reports that preserved packet/key material confirms valid post-burst ACK traffic while the xquic server-log short-header packet-processing ceiling through packets 0..3 remains a non-promoting failure diagnostic so a failed run points maintainers at post-burst ACK consumption, peer delivery, and xquic event-loop packet processing without treating the cell as passed.",
+        "The fresh May 23 live rerun under `.artifacts/interop-runner/debug-client-transfer-xquic-live-refresh/20260523-161053951-client-chrome` reaches `xqc_process_read_streams|stream_read_notify|flag:66` after the request stream is fully received, and the response burst runs through packet 22 before `xqc_send_packet_pacer_allows|pacing blocked` at `stream_offset:16536` prevents the transfer from draining to FIN, so the remaining runtime suspicion is post-send drain, pacing wakeup, peer delivery, and stream-drain behavior rather than packet opening or local ACK emission.",
+        "This is a trace ownership requirement for the residual investigation; it does not claim xquic interop support or authorize broad transport changes without a later focused proof slice."
       ]
     }
   ]
