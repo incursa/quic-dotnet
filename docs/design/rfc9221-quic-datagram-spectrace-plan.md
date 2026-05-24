@@ -8,7 +8,7 @@ Canonical behavior must land in JSON artifacts under `specs/requirements/quic`,
 
 ## Current State
 
-- `specs/requirements/quic/REQUIREMENT-GAPS.md` already tracks `quic-datagram-ownership` for `rfc9221.txt` sections 3 through 5.
+- `specs/requirements/quic/REQUIREMENT-GAPS.md` no longer carries an RFC 9221 transport-floor gap once the requirement family is trace-clean; higher-level HTTP Datagram and MASQUE work stays in separate gap-ledger entries.
 - No `SPEC-QUIC-RFC9221.json` artifact exists yet.
 - No RFC 9221 local corpus file exists in this checkout, even though `specs/requirements/quic/README.md` mentions a future RFC corpus.
 - `QuicTransportParameters` and `QuicTransportParametersCodec` currently model RFC 9000 transport parameters only.
@@ -22,7 +22,7 @@ Canonical behavior must land in JSON artifacts under `specs/requirements/quic`,
 - RFC 9000 transport parameter and frame processing: `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - RFC 9001 0-RTT and 1-RTT protection: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - RFC 9002 ACK and congestion behavior: `specs/requirements/quic/SPEC-QUIC-RFC9002.json`
-- Existing gap: `specs/requirements/quic/REQUIREMENT-GAPS.md` entry `quic-datagram-ownership`
+- Gap ledger: close the RFC 9221 transport-floor entry when the canonical artifacts, focused proof, generated coverage, and benchmark evidence are all present
 
 ## Artifact Plan
 
@@ -200,7 +200,7 @@ Proof:
 
 1. Add `SPEC-QUIC-RFC9221.json` with requirements for RFC 9221 sections 3 through 6 and upstream refs to the official RFC URLs.
 2. Add `ARC-QUIC-RFC9221-0001.json` defining the DATAGRAM frame model, transport-parameter state, send queue, receive delivery, congestion interaction, and 0-RTT boundary.
-3. Add `WI-QUIC-RFC9221-0001.json` that explicitly addresses only the initial 1-RTT DATAGRAM floor and marks optional ack/loss notifications and 0-RTT behavior as deferred unless implemented.
+3. Add `WI-QUIC-RFC9221-0001.json` for the RFC 9221 transport floor, with optional application ack/loss callbacks, HTTP Datagram adapter behavior, and 0-RTT transmission kept outside the initial closure unless explicitly implemented.
 4. Add `VER-QUIC-RFC9221-0001.json` with positive, negative, fuzz, and benchmark evidence requirements before touching runtime code.
 5. Implement transport-parameter parse/format support.
 6. Implement DATAGRAM frame parse/format support.
@@ -208,7 +208,7 @@ Proof:
 8. Implement send-side queueing, sizing, and packet assembly.
 9. Integrate ACK, recovery, and congestion metadata without retransmitting DATAGRAM payloads.
 10. Add public or internal API surfaces only after the runtime contract is proven.
-11. Regenerate coverage/trace outputs and close or narrow `quic-datagram-ownership` only after linked requirements, architecture, work item, verification, tests, fuzzing, and benchmarks exist.
+11. Regenerate coverage/trace outputs and close the RFC 9221 gap only after linked requirements, architecture, work item, verification, tests, fuzzing, and benchmarks exist.
 
 ## Verification Commands
 
@@ -223,19 +223,19 @@ dotnet run --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --filter "*Dat
 
 If `dotnet test --project` fails with `MSB1001`, use the project path as the positional argument as shown above.
 
-## Out Of Scope For The First Slice
+## Out Of Scope For The RFC 9221 Transport Floor
 
 - HTTP/3 datagrams, capsules, CONNECT-UDP, and MASQUE behavior.
-- Public support claims beyond the specific traced 1-RTT QUIC DATAGRAM floor.
+- Public support claims beyond the traced 1-RTT QUIC DATAGRAM transport floor.
 - Application-level DATAGRAM payload multiplexing semantics.
-- Optional DATAGRAM ack/loss notification API unless explicitly accepted in architecture.
+- Optional application-facing DATAGRAM ack/loss notification callbacks unless explicitly accepted in later architecture.
 - 0-RTT DATAGRAM support while the repo's early-data gate remains closed.
 
 ## Closeout Criteria
 
 - `SPEC-QUIC-RFC9221.json` exists and all requirements have stable upstream refs.
 - `ARC-QUIC-RFC9221-0001.json`, `WI-QUIC-RFC9221-0001.json`, and `VER-QUIC-RFC9221-0001.json` reciprocally link the requirement set.
-- `quic-datagram-ownership` is either closed with evidence or narrowed to a named remaining blocker.
+- The RFC 9221 gap is closed with evidence; HTTP Datagrams, CONNECT-UDP, MASQUE, application ACK/loss callbacks, and 0-RTT DATAGRAM transmission stay separate future work.
 - Requirement-home tests exist under `tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/`.
 - Wire-facing codec fuzz tests and benchmarks exist for DATAGRAM frame handling.
 - Core SpecTrace validation passes.

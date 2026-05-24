@@ -186,6 +186,11 @@
         "upstream_refs": [
           "RFC 9221 §3",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttDatagramFrame_IsAcceptedWhenLocalSupportWasAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttDatagramFrame_ClosesWhenLocalReceiveSupportWasNotAdvertised",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs::ProtectedOneRttEmptyDatagramFrame_IsAcceptedWhenLocalSupportAllowsFrameOverhead"
         ]
       }
     },
@@ -212,6 +217,11 @@
         "upstream_refs": [
           "RFC 9221 §3",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_AcceptsFrameBelowAdvertisedLocalLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_ClosesWhenFrameExceedsAdvertisedLocalLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs::ProtectedOneRttDatagramFrame_AcceptsFrameExactlyAtAdvertisedLocalLimit"
         ]
       }
     },
@@ -325,6 +335,9 @@
         "upstream_refs": [
           "RFC 9221 §3",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::PublicSendApiReportsMissingPeerDatagramSupportToApplicationProtocol"
         ]
       }
     },
@@ -592,6 +605,9 @@
         "upstream_refs": [
           "RFC 9221 §5.1",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::RuntimePreservesDatagramPayloadBytesWithoutInterpretingApplicationMultiplexing"
         ]
       }
     },
@@ -618,6 +634,9 @@
         "upstream_refs": [
           "RFC 9221 §5.3",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::ReceiverDropsDatagramWhenInboundQueueIsFullWithoutClosingConnection"
         ]
       }
     },
@@ -673,6 +692,9 @@
         "upstream_refs": [
           "RFC 9221 §5",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::SendDatagramAsync_CanCoalesceDatagramFrameWithPendingAck"
         ]
       }
     },
@@ -786,6 +808,9 @@
         "upstream_refs": [
           "RFC 9221 §5.2",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::DatagramOnlyPacket_ArmsDelayedAckInsteadOfImmediateAckWhenWithinMaxAckDelay"
         ]
       }
     },
@@ -812,6 +837,9 @@
         "upstream_refs": [
           "RFC 9221 §5.2",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::DatagramAckNotification_DoesNotReportApplicationProcessing"
         ]
       }
     },
@@ -954,6 +982,9 @@
         "upstream_refs": [
           "RFC 9221 §6",
           "https://www.rfc-editor.org/rfc/rfc9221.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs::SendDatagramAsync_UsesOneRttPathAndDoesNotEnableZeroRttDatagramWithoutApplicationProfile"
         ]
       }
     }

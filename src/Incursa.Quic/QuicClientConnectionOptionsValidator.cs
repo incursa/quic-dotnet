@@ -148,6 +148,8 @@ internal static class QuicClientConnectionOptionsValidator
             HandshakeTimeout = source.HandshakeTimeout,
             IdleTimeout = source.IdleTimeout,
             KeepAliveInterval = source.KeepAliveInterval,
+            MaxDatagramFrameSize = source.MaxDatagramFrameSize,
+            MaxInboundDatagramQueueSize = source.MaxInboundDatagramQueueSize,
             MaxInboundBidirectionalStreams = source.MaxInboundBidirectionalStreams,
             MaxInboundUnidirectionalStreams = source.MaxInboundUnidirectionalStreams,
             StreamCapacityCallback = source.StreamCapacityCallback,

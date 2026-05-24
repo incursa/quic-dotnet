@@ -9,9 +9,12 @@ public abstract class QuicConnectionOptions
 {
     private const int DefaultConnectionReceiveWindow = 16 * 1024 * 1024;
     private const int DefaultStreamReceiveWindow = 64 * 1024;
+    private const int DefaultMaxInboundDatagramQueueSize = 1024;
     private static readonly TimeSpan DefaultHandshakeTimeout = TimeSpan.FromSeconds(10);
 
     private QuicReceiveWindowSizes initialReceiveWindowSizes = new();
+    private int maxDatagramFrameSize;
+    private int maxInboundDatagramQueueSize;
 
     /// <summary>
     /// Prevents external derivation outside of the assembly.
@@ -23,6 +26,8 @@ public abstract class QuicConnectionOptions
         HandshakeTimeout = DefaultHandshakeTimeout;
         IdleTimeout = TimeSpan.Zero;
         KeepAliveInterval = Timeout.InfiniteTimeSpan;
+        maxDatagramFrameSize = 0;
+        maxInboundDatagramQueueSize = DefaultMaxInboundDatagramQueueSize;
         MaxInboundBidirectionalStreams = 0;
         MaxInboundUnidirectionalStreams = 0;
         initialReceiveWindowSizes = new QuicReceiveWindowSizes
@@ -67,6 +72,43 @@ public abstract class QuicConnectionOptions
     /// Gets or sets the callback invoked when the supported peer stream-capacity delta becomes available.
     /// </summary>
     public Action<QuicConnection, QuicStreamCapacityChangedArgs>? StreamCapacityCallback { get; set; }
+
+    /// <summary>
+    /// Gets or sets the complete DATAGRAM frame size this endpoint advertises for receiving DATAGRAM frames.
+    /// </summary>
+    /// <remarks>
+    /// A value of 0 disables local DATAGRAM receive support and omits the max_datagram_frame_size transport parameter.
+    /// </remarks>
+    public int MaxDatagramFrameSize
+    {
+        get => maxDatagramFrameSize;
+        set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            maxDatagramFrameSize = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum number of received DATAGRAM payloads buffered for application receive.
+    /// </summary>
+    public int MaxInboundDatagramQueueSize
+    {
+        get => maxInboundDatagramQueueSize;
+        set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            maxInboundDatagramQueueSize = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the keep-alive interval.

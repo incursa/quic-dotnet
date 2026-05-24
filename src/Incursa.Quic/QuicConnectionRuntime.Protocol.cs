@@ -1738,12 +1738,16 @@ internal sealed partial class QuicConnectionRuntime
                         ref effects);
                 }
 
-                AppendEffect(
-                    ref effects,
-                    new QuicConnectionDeliverDatagramEffect(
-                        packetReceivedEvent.PathIdentity,
-                        datagramFrame.DatagramData,
-                        datagramFrame.FrameType));
+                if (TryQueueInboundDatagram(datagramFrame.DatagramData))
+                {
+                    AppendEffect(
+                        ref effects,
+                        new QuicConnectionDeliverDatagramEffect(
+                            packetReceivedEvent.PathIdentity,
+                            datagramFrame.DatagramData,
+                            datagramFrame.FrameType));
+                }
+
                 stateChanged = true;
                 offset += datagramBytesConsumed;
                 packetAckEliciting = true;

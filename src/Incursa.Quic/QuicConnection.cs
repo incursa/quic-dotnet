@@ -98,6 +98,15 @@ public sealed class QuicConnection : IAsyncDisposable
         return runtime.SendDatagramAsync(datagram, cancellationToken);
     }
 
+    /// <summary>
+    /// Receives one unreliable QUIC DATAGRAM payload from the supported active connection path.
+    /// </summary>
+    public ValueTask<ReadOnlyMemory<byte>> ReceiveDatagramAsync(CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        return runtime.ReceiveDatagramAsync(cancellationToken);
+    }
+
     internal bool TryInitiateOneRttKeyUpdate()
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);

@@ -31,4 +31,46 @@ public sealed class REQ_QUIC_RFC9221_S5P2_0002
         Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task LostDatagramPacket_IsNotQueuedForTransportRetransmission()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1 });
+
+        Assert.NotNull(result.TrackedPacket);
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            result.TrackedPacket.Value.PacketNumberSpace,
+            result.TrackedPacket.Value.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task AcknowledgedDatagramPacket_IsRemovedWithoutAnyRetransmissionPayload()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1 });
+
+        Assert.NotNull(result.TrackedPacket);
+        Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+            result.TrackedPacket.Value.PacketNumberSpace,
+            result.TrackedPacket.Value.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+    }
 }

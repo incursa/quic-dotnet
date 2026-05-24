@@ -1546,6 +1546,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             OriginalDestinationConnectionId = originalDestinationConnectionId.IsEmpty ? null : originalDestinationConnectionId.ToArray(),
             InitialSourceConnectionId = sourceConnectionId.ToArray(),
             RetrySourceConnectionId = retrySourceConnectionId.IsEmpty ? null : retrySourceConnectionId.ToArray(),
+            MaxDatagramFrameSize = options.MaxDatagramFrameSize > 0
+                ? (ulong)options.MaxDatagramFrameSize
+                : null,
         };
     }
 
@@ -1668,7 +1671,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             selectedCipherSuite: options.SelectedCipherSuite,
             enableServerEarlyData: options.EnableEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore,
-            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
+            maximumInboundDatagramQueueSize: options.MaxInboundDatagramQueueSize);
     }
 
     private sealed class PendingConnectionState

@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0003">The QuicConnection type MUST represent a connected QUIC session and expose the local endpoint, remote endpoint, target host name, negotiated application protocol, negotiated cipher suite, negotiated TLS protocol, remote certificate, AcceptInboundStreamAsync, OpenOutboundStreamAsync, SendDatagramAsync, CloseAsync, DisposeAsync, and ToString, while keeping handshake details, packet state, runtime state, and transport-helper state out of the public surface.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0003">The QuicConnection type MUST represent a connected QUIC session and expose the local endpoint, remote endpoint, target host name, negotiated application protocol, negotiated cipher suite, negotiated TLS protocol, remote certificate, AcceptInboundStreamAsync, OpenOutboundStreamAsync, SendDatagramAsync, ReceiveDatagramAsync, CloseAsync, DisposeAsync, and ToString, while keeping handshake details, packet state, runtime state, and transport-helper state out of the public surface.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0003")]
 public sealed class REQ_QUIC_API_0003
@@ -27,6 +27,7 @@ public sealed class REQ_QUIC_API_0003
             "ConnectAsync",
             "DisposeAsync",
             "OpenOutboundStreamAsync",
+            "ReceiveDatagramAsync",
             "SendDatagramAsync",
         }, methodNames);
 
@@ -50,6 +51,13 @@ public sealed class REQ_QUIC_API_0003
             [typeof(ReadOnlyMemory<byte>), typeof(CancellationToken)]);
         Assert.NotNull(sendDatagramMethod);
         Assert.Equal(typeof(ValueTask), sendDatagramMethod.ReturnType);
+
+        MethodInfo? receiveDatagramMethod = typeof(QuicConnection).GetMethod(
+            nameof(QuicConnection.ReceiveDatagramAsync),
+            BindingFlags.Public | BindingFlags.Instance,
+            [typeof(CancellationToken)]);
+        Assert.NotNull(receiveDatagramMethod);
+        Assert.Equal(typeof(ValueTask<ReadOnlyMemory<byte>>), receiveDatagramMethod.ReturnType);
     }
 
     [Fact]
@@ -63,6 +71,7 @@ public sealed class REQ_QUIC_API_0003
         {
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await connection.AcceptInboundStreamAsync());
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await connection.ReceiveDatagramAsync());
         }
         finally
         {
@@ -88,6 +97,10 @@ public sealed class REQ_QUIC_API_0003
             QuicException openException = await Assert.ThrowsAsync<QuicException>(async () => await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional));
             Assert.Equal(QuicError.ConnectionAborted, openException.QuicError);
             Assert.Equal(42, openException.ApplicationErrorCode);
+
+            QuicException receiveException = await Assert.ThrowsAsync<QuicException>(async () => await connection.ReceiveDatagramAsync());
+            Assert.Equal(QuicError.ConnectionAborted, receiveException.QuicError);
+            Assert.Equal(42, receiveException.ApplicationErrorCode);
         }
         finally
         {
@@ -106,6 +119,7 @@ public sealed class REQ_QUIC_API_0003
 
         await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.AcceptInboundStreamAsync());
         await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional));
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.ReceiveDatagramAsync());
     }
 
     private sealed class TestQuicConnectionOptions : QuicConnectionOptions

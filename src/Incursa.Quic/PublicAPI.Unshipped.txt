@@ -9,6 +9,7 @@ Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOption
 Incursa.Quic.QuicConnection.AcceptInboundStreamAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.OpenOutboundStreamAsync(Incursa.Quic.QuicStreamType streamType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.SendDatagramAsync(System.ReadOnlyMemory<byte> datagram, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+Incursa.Quic.QuicConnection.ReceiveDatagramAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<System.ReadOnlyMemory<byte>>
 Incursa.Quic.QuicConnection.CloseAsync(long errorCode, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicConnection.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Incursa.Quic.QuicClientConnectionOptions
@@ -34,6 +35,10 @@ Incursa.Quic.QuicConnectionOptions.InitialReceiveWindowSizes.get -> Incursa.Quic
 Incursa.Quic.QuicConnectionOptions.InitialReceiveWindowSizes.set -> void
 Incursa.Quic.QuicConnectionOptions.KeepAliveInterval.get -> System.TimeSpan
 Incursa.Quic.QuicConnectionOptions.KeepAliveInterval.set -> void
+Incursa.Quic.QuicConnectionOptions.MaxDatagramFrameSize.get -> int
+Incursa.Quic.QuicConnectionOptions.MaxDatagramFrameSize.set -> void
+Incursa.Quic.QuicConnectionOptions.MaxInboundDatagramQueueSize.get -> int
+Incursa.Quic.QuicConnectionOptions.MaxInboundDatagramQueueSize.set -> void
 Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.get -> int
 Incursa.Quic.QuicConnectionOptions.MaxInboundBidirectionalStreams.set -> void
 Incursa.Quic.QuicConnectionOptions.MaxInboundUnidirectionalStreams.get -> int

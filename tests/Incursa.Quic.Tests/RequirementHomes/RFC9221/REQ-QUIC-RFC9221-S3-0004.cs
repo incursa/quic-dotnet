@@ -7,6 +7,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9221_S3_0004
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task SendDatagramAsync_SucceedsAfterPeerAdvertisesSupport()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1 });
+
+        Assert.NotNull(result.SendEffect);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task SendDatagramAsync_RejectsWhenPeerDidNotAdvertiseSupport()
@@ -22,5 +38,20 @@ public sealed class REQ_QUIC_RFC9221_S3_0004
 
         Assert.Contains("did not advertise QUIC DATAGRAM support", exception.Message, StringComparison.Ordinal);
         Assert.Equal(sentPacketCount, runtime.SendRuntime.SentPackets.Count);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task SendDatagramAsync_TreatsZeroPeerParameterAsUnsupported()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 0);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+                runtime,
+                new byte[] { 0xD1 }));
     }
 }

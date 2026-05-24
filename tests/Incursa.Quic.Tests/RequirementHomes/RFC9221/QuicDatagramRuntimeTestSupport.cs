@@ -3,14 +3,20 @@ namespace Incursa.Quic.Tests;
 internal static class QuicDatagramRuntimeTestSupport
 {
     internal static QuicConnectionRuntime CreateFinishedRuntime(
+        IMonotonicClock? clock = null,
         ulong? localMaxDatagramFrameSize = null,
         ulong? peerMaxDatagramFrameSize = null,
-        ulong connectionSendLimit = 64)
+        ulong connectionSendLimit = 64,
+        ulong localBidirectionalSendLimit = 32,
+        int maximumInboundDatagramQueueSize = 1024)
     {
         return QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            clock: clock,
             connectionSendLimit: connectionSendLimit,
+            localBidirectionalSendLimit: localBidirectionalSendLimit,
             localMaxDatagramFrameSize: localMaxDatagramFrameSize,
-            peerMaxDatagramFrameSize: peerMaxDatagramFrameSize);
+            peerMaxDatagramFrameSize: peerMaxDatagramFrameSize,
+            maximumInboundDatagramQueueSize: maximumInboundDatagramQueueSize);
     }
 
     internal static async Task<QuicDatagramSendResult> SendDatagramAsync(
@@ -54,6 +60,11 @@ internal static class QuicDatagramRuntimeTestSupport
             out int bytesConsumed));
         Assert.True(bytesConsumed > 0);
         return frame;
+    }
+
+    internal static ReadOnlySpan<byte> SkipAckAndPaddingFromPayload(ReadOnlySpan<byte> payload)
+    {
+        return SkipAckAndPadding(payload);
     }
 
     internal static QuicConnectionTransitionResult ReceiveProtectedDatagramFrame(

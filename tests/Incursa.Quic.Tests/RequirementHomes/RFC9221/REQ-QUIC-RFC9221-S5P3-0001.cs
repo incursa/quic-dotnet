@@ -28,4 +28,40 @@ public sealed class REQ_QUIC_RFC9221_S5P3_0001
             result.SendEffect);
         Assert.Equal([0xD1, 0xD2, 0xD3], frame.DatagramData);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task SendDatagramAsync_DoesNotConsumeConnectionFlowControlCredit()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200,
+            connectionSendLimit: 1);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1, 0xD2, 0xD3 });
+
+        Assert.NotNull(result.SendEffect);
+        Assert.Null(runtime.TerminalState);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task SendDatagramAsync_DoesNotConsumeAnyStreamSendCredit()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200,
+            localBidirectionalSendLimit: 0);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1 });
+
+        Assert.NotNull(result.SendEffect);
+        Assert.Null(result.TrackedPacket!.Value.StreamIds);
+    }
 }

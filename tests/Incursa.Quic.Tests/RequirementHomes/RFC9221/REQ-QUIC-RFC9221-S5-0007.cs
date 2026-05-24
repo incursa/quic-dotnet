@@ -23,4 +23,23 @@ public sealed class REQ_QUIC_RFC9221_S5_0007
 
         Assert.Equal(sentPacketCount, runtime.SendRuntime.SentPackets.Count);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task SendDatagramAsync_RejectsFrameThatWouldOnlyFitByFragmentingAcrossPackets()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200);
+        byte[] oversizedDatagram = Enumerable.Repeat((byte)0xD1, 1199).ToArray();
+        int sentPacketCount = runtime.SendRuntime.SentPackets.Count;
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+                runtime,
+                oversizedDatagram));
+
+        Assert.Equal(sentPacketCount, runtime.SendRuntime.SentPackets.Count);
+    }
 }

@@ -6,7 +6,7 @@
   "title": "QUIC RFC 9221 DATAGRAM Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Define the implementation boundary for RFC 9221 DATAGRAM support, including transport-parameter state, DATAGRAM frame codec behavior, receive-side runtime integration, and core runtime send integration.",
+  "purpose": "Define the implementation boundary for RFC 9221 DATAGRAM support, including transport-parameter state, DATAGRAM frame codec behavior, public receive-side runtime integration, and core runtime send integration.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9221",
     "WI-QUIC-RFC9221-0001",
@@ -61,13 +61,14 @@
     "src/Incursa.Quic/QuicPacketFrameLegality.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221"
   ],
-  "design_summary": "The first implementation slices add the RFC 9221 wire, negotiation, receive, and core send foundation. `QuicTransportParameters` carries `MaxDatagramFrameSize`, the transport-parameter codec parses and formats parameter `0x20`, 0-RTT remembered transport-parameter state can preserve and validate the DATAGRAM size limit, and `QuicFrameCodec` parses and formats DATAGRAM frame types `0x30` and `0x31`. The application packet ingress path delivers valid protected 1-RTT DATAGRAM frames through a distinct `QuicConnectionDeliverDatagramEffect`, rejects unadvertised or oversized DATAGRAM frames, and treats DATAGRAM as forbidden in weakly protected packet contexts. The outbound path exposes `QuicConnection.SendDatagramAsync`, builds length-carrying DATAGRAM frames, rejects missing peer support and oversized frames, accounts protected packets through congestion state, drops congestion-blocked DATAGRAM sends without a transport error, and tracks sent DATAGRAM packets as ack-eliciting but non-retransmittable with no stream association. HTTP Datagrams adapter behavior and application ACK/loss notification APIs remain explicit follow-up work.",
-  "data_and_state_considerations": "The `MaxDatagramFrameSize` value is stored as a nullable transport-parameter field so absence remains distinguishable from an advertised zero value while the effective unsupported default remains zero. `QuicDatagramFrame` owns a copied payload byte array to keep parser output independent of attacker-controlled input buffers. `QuicConnectionDeliverDatagramEffect` is the receive-side application DATAGRAM signal. The existing `QuicConnectionSendDatagramEffect` remains UDP-packet emission and is not reused as an RFC 9221 application DATAGRAM signal.",
+  "design_summary": "The implementation slices add the RFC 9221 wire, negotiation, public receive, and core send foundation. `QuicTransportParameters` carries `MaxDatagramFrameSize`, the transport-parameter codec parses and formats parameter `0x20`, 0-RTT remembered transport-parameter state can preserve and validate the DATAGRAM size limit, and `QuicFrameCodec` parses and formats DATAGRAM frame types `0x30` and `0x31`. The application packet ingress path delivers valid protected 1-RTT DATAGRAM frames through a distinct `QuicConnectionDeliverDatagramEffect`, rejects unadvertised or oversized DATAGRAM frames, treats DATAGRAM as forbidden in weakly protected packet contexts, queues accepted DATAGRAM payloads for `QuicConnection.ReceiveDatagramAsync`, and drops accepted payloads when the bounded receive queue cannot store them. The outbound path exposes `QuicConnection.SendDatagramAsync`, builds length-carrying DATAGRAM frames, rejects missing peer support and oversized frames, accounts protected packets through congestion state, drops congestion-blocked DATAGRAM sends without a transport error, and tracks sent DATAGRAM packets as ack-eliciting but non-retransmittable with no stream association. DATAGRAM parse/format hot paths have a benchmark suite. HTTP Datagrams adapter behavior and application ACK/loss notification APIs remain explicit non-RFC9221 follow-up work.",
+  "data_and_state_considerations": "The `MaxDatagramFrameSize` value is stored as a nullable transport-parameter field so absence remains distinguishable from an advertised zero value while the effective unsupported default remains zero. `QuicConnectionOptions.MaxDatagramFrameSize` controls whether local receive support is advertised and what complete-frame size is accepted. `QuicConnectionOptions.MaxInboundDatagramQueueSize` bounds the public receive queue; a zero queue disables public receive storage while still allowing the runtime to drop accepted DATAGRAM payloads without closing the connection. `QuicDatagramFrame` owns a copied payload byte array to keep parser output independent of attacker-controlled input buffers. `QuicConnectionDeliverDatagramEffect` is the receive-side application DATAGRAM signal used by internal runtime tests, and `QuicConnection.ReceiveDatagramAsync` is the public delivery API. The existing `QuicConnectionSendDatagramEffect` remains UDP-packet emission and is not reused as an RFC 9221 application DATAGRAM signal.",
   "edge_cases_and_constraints": [
     "DATAGRAM frame type `0x30` consumes the rest of the packet payload and is only safe as the final frame in a QUIC packet.",
     "DATAGRAM frame type `0x31` carries an explicit varint Length field and can be parsed before later coalesced frames.",
     "Empty DATAGRAM payloads are valid.",
     "Receive-side runtime handling rejects local unsupported DATAGRAM use before delivery.",
+    "Receive-side runtime handling drops accepted DATAGRAM payloads when the bounded public receive queue is full.",
     "Outbound runtime send handling rejects peer unsupported DATAGRAM use before packet assembly.",
     "Outbound DATAGRAM frames use type `0x31` so padding or future coalesced frames cannot be mistaken for DATAGRAM payload bytes.",
     "Congestion-blocked outbound DATAGRAM sends are dropped by this slice instead of queued.",
@@ -76,12 +77,13 @@
   "risks": [
     "The core runtime send floor can be mistaken for HTTP Datagrams, CONNECT-UDP, or MASQUE support, which remains out of scope.",
     "The existing runtime effect name `QuicConnectionSendDatagramEffect` can confuse UDP datagram emission with RFC 9221 application DATAGRAM frames.",
+    "The public RFC 9221 receive API is connection-scoped only and does not define HTTP Datagram, CONNECT-UDP, MASQUE, or application-level multiplexing semantics.",
     "Transport-parameter 0-RTT memory is implemented, but actual 0-RTT DATAGRAM transmission remains out of scope for this slice."
   ],
   "supplemental_sections": [
     {
       "heading": "Implementation Boundary",
-      "content": "This artifact currently covers canonical requirements plus transport-parameter, frame-codec, receive-side 1-RTT DATAGRAM handling, and core runtime send support for peer-gated application DATAGRAM payloads. HTTP Datagrams adapter behavior, optional ACK/loss application notifications, 0-RTT DATAGRAM transmission, benchmarks, and higher-level adapter policy remain follow-up work."
+      "content": "This artifact covers canonical requirements plus transport-parameter, frame-codec, bounded public receive-side 1-RTT DATAGRAM handling, and core runtime send support for peer-gated application DATAGRAM payloads. HTTP Datagrams adapter behavior, optional application ACK/loss notification callbacks, 0-RTT DATAGRAM transmission, and higher-level adapter policy remain separate future work outside the RFC 9221 transport-floor closure."
     }
   ]
 }

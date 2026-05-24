@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9221-0001",
     "WI-QUIC-RFC9221-0001"
   ],
-  "verification_method": "Focused requirement-home tests, codec unit tests, codec fuzz support, runtime send/receive tests, SpecTrace JSON validation, and diff hygiene for the RFC 9221 DATAGRAM foundation and core send slice.",
+  "verification_method": "Focused requirement-home tests, codec unit tests, codec fuzz support, runtime send/receive tests, public API tests, DATAGRAM frame benchmark dry run, SpecTrace JSON validation, generated coverage triage, and diff hygiene for the RFC 9221 DATAGRAM transport-floor closure.",
   "verifies": [
     "REQ-QUIC-RFC9221-S3-0001",
     "REQ-QUIC-RFC9221-S3-0002",
@@ -47,19 +47,23 @@
     "REQ-QUIC-RFC9221-S6-0001",
     "REQ-QUIC-RFC9221-S6-0002"
   ],
-  "scope": "This verification covers canonical requirement presence plus executable proof for transport parameter `0x20`, DATAGRAM frame types `0x30` and `0x31`, 0-RTT parameter-memory validation, ack-eliciting classification, receive-side 1-RTT DATAGRAM delivery/rejection, and core outbound 1-RTT DATAGRAM send behavior. It does not yet verify HTTP Datagrams adapter behavior, optional application ACK/loss notifications, 0-RTT DATAGRAM transmission, or benchmark evidence.",
+  "scope": "This verification covers canonical requirement presence plus executable proof for transport parameter `0x20`, DATAGRAM frame types `0x30` and `0x31`, 0-RTT parameter-memory validation, ack-eliciting classification, bounded public receive-side 1-RTT DATAGRAM delivery/rejection/drop behavior, core outbound 1-RTT DATAGRAM send behavior, transport-only ACK/loss semantics, flow-control exclusion, congestion behavior, coalescing, 1-RTT protection, and DATAGRAM frame benchmark evidence. It does not verify HTTP Datagrams adapter behavior, application-facing per-DATAGRAM ACK/loss callback APIs, or 0-RTT DATAGRAM transmission.",
   "preconditions": [
     "The repo remains in the JSON-only SpecTrace workflow.",
     "The local RFC 9221 source text is represented by upstream references until a repo-local RFC corpus file is added.",
-    "Runtime application DATAGRAM send support is limited to peer-gated 1-RTT DATAGRAM frames over the active connection path."
+    "Runtime application DATAGRAM send support is limited to peer-gated 1-RTT DATAGRAM frames over the active connection path.",
+    "Runtime application DATAGRAM receive support requires a non-zero local `MaxDatagramFrameSize` advertisement and uses a bounded receive queue."
   ],
   "procedure": [
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~RFC9221\"`.",
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~QuicTransportParametersCodecUnitTests|FullyQualifiedName~REQ_QUIC_RFC9221\"`.",
+    "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~RFC9221\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~QuicTransportParametersCodecUnitTests|FullyQualifiedName~REQ_QUIC_RFC9221|FullyQualifiedName~REQ_QUIC_API_0001|FullyQualifiedName~REQ_QUIC_API_0003|FullyQualifiedName~REQ_QUIC_API_0005\"`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicDatagramFrameBenchmarks*\" --inProcess`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
     "Run `git diff --check`."
   ],
-  "expected_result": "Focused RFC9221 requirement-home tests pass, transport-parameter, DATAGRAM frame codec, receive-side delivery/rejection, weak-packet-context, ack-eliciting, outbound peer-support gating, peer-limit enforcement, non-fragmentation, congestion/drop, non-retransmission, and flow-control exclusion behavior are proven for the covered positive, negative, edge, and fuzz-shaped inputs, core SpecTrace validation accepts the JSON artifacts, and no whitespace hygiene issues are introduced.",
+  "expected_result": "Focused RFC9221 requirement-home tests pass, API tests recognize the promoted public DATAGRAM receive/options surface, transport-parameter, DATAGRAM frame codec, receive-side delivery/rejection/drop, weak-packet-context, ack-eliciting, outbound peer-support gating, peer-limit enforcement, non-fragmentation, coalescing, congestion/drop, non-retransmission, 1-RTT protection, and flow-control exclusion behavior are proven for the covered positive, negative, edge, and fuzz-shaped inputs, the DATAGRAM benchmark dry run completes, core SpecTrace validation accepts the JSON artifacts, generated coverage reports all RFC9221 requirements trace-clean, and no whitespace hygiene issues are introduced.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs",
@@ -67,7 +71,9 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S4-FocusedClosure.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs",
@@ -78,6 +84,10 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P4-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/QuicDatagramRuntimeTestSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs",
+    "benchmarks/QuicDatagramFrameBenchmarks.cs",
     "src/Incursa.Quic/QuicTransportParameters.cs",
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "src/Incursa.Quic/QuicDatagramFrame.cs",
@@ -90,5 +100,5 @@
     "src/Incursa.Quic/QuicPacketFrameLegality.cs",
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs"
   ],
-  "status_summary": "Focused RFC 9221 verification now covers the transport-parameter, codec, 0-RTT parameter-memory, ack-eliciting, weak-context rejection, receive-side 1-RTT delivery/rejection, and core outbound 1-RTT DATAGRAM send floor. HTTP Datagrams adapter behavior, public receive API shape, optional DATAGRAM ACK/loss notifications, 0-RTT DATAGRAM transmission, and benchmarks remain deferred."
+  "status_summary": "Focused RFC 9221 verification covers the transport-parameter, codec, 0-RTT parameter-memory, ack-eliciting, weak-context rejection, bounded public receive-side 1-RTT delivery/rejection/drop behavior, and core outbound 1-RTT DATAGRAM send floor. Generated coverage reports all 33 RFC9221 requirements trace-clean. HTTP Datagrams adapter behavior, application-facing ACK/loss callbacks, and 0-RTT DATAGRAM transmission remain separate future work outside this transport-floor closure."
 }

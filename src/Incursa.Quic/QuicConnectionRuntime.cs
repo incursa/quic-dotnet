@@ -51,6 +51,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicRecoveryController recoveryController;
     private readonly QuicConnectionStreamRegistry streamRegistry;
     private readonly Channel<ulong> inboundStreamIds;
+    private readonly Channel<ReadOnlyMemory<byte>>? inboundDatagrams;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
@@ -119,6 +120,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long nextDatagramSendRequestId;
     private long nextStreamObserverId;
     private Exception? inboundStreamQueueCompletionException;
+    private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private long? pendingApplicationSendDelayDueTicks;
@@ -161,7 +163,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool enableServerResumptionTickets = false,
         bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
-        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
+        int maximumInboundDatagramQueueSize = 1024)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -212,6 +215,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             SingleWriter = false,
             AllowSynchronousContinuations = false,
         });
+        if (maximumInboundDatagramQueueSize < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumInboundDatagramQueueSize));
+        }
+
+        inboundDatagrams = maximumInboundDatagramQueueSize == 0
+            ? null
+            : Channel.CreateBounded<ReadOnlyMemory<byte>>(new BoundedChannelOptions(maximumInboundDatagramQueueSize)
+            {
+                SingleReader = false,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait,
+                AllowSynchronousContinuations = false,
+            });
 
         if (maximumCandidatePaths < 0)
         {
@@ -862,6 +879,54 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         await completion.Task.ConfigureAwait(false);
+    }
+
+    internal async ValueTask<ReadOnlyMemory<byte>> ReceiveDatagramAsync(CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+
+        if (terminalState is QuicConnectionTerminalState terminalStateValue)
+        {
+            throw CreateTerminalException(terminalStateValue);
+        }
+
+        if (phase != QuicConnectionPhase.Active)
+        {
+            throw new InvalidOperationException("The connection is not established.");
+        }
+
+        if (tlsState.LocalTransportParameters?.MaxDatagramFrameSize is not > 0)
+        {
+            throw new InvalidOperationException("Local QUIC DATAGRAM receive support was not advertised.");
+        }
+
+        if (inboundDatagrams is null)
+        {
+            throw new InvalidOperationException("The inbound DATAGRAM receive queue is disabled.");
+        }
+
+        try
+        {
+            ReadOnlyMemory<byte> datagram = await inboundDatagrams.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (terminalState is QuicConnectionTerminalState completedTerminalState)
+            {
+                throw CreateTerminalException(completedTerminalState);
+            }
+
+            return datagram;
+        }
+        catch (ChannelClosedException) when (inboundDatagramQueueCompletionException is not null)
+        {
+            throw inboundDatagramQueueCompletionException;
+        }
+        catch (ChannelClosedException) when (terminalState is QuicConnectionTerminalState completedTerminalState)
+        {
+            throw CreateTerminalException(completedTerminalState);
+        }
+        catch (ChannelClosedException ex) when (IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(QuicConnectionRuntime), ex);
+        }
     }
 
     internal async ValueTask CompleteStreamWritesAsync(

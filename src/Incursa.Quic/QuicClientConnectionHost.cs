@@ -380,7 +380,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             supportedVersions: settings.SupportedVersions,
             allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
             selectedCipherSuite: settings.SelectedCipherSuite,
-            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
+            maximumInboundDatagramQueueSize: options.MaxInboundDatagramQueueSize);
     }
 
     private static QuicTransportParameters CreateLocalTransportParameters(
@@ -400,6 +401,9 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
             InitialSourceConnectionId = routeConnectionId.ToArray(),
+            MaxDatagramFrameSize = options.MaxDatagramFrameSize > 0
+                ? (ulong)options.MaxDatagramFrameSize
+                : null,
         };
     }
 

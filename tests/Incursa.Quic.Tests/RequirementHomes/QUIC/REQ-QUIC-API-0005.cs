@@ -9,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, standard-shaped on the mainstream path, reject-first for still-unsupported knobs, and honest about the supported stream-capacity callback subset rather than implied.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, standard-shaped on the mainstream path, reject-first for still-unsupported knobs, and honest about the supported stream-capacity callback and RFC 9221 DATAGRAM receive knobs rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
 public sealed class REQ_QUIC_API_0005
@@ -23,6 +23,34 @@ public sealed class REQ_QUIC_API_0005
 
         Assert.NotNull(callbackProperty);
         Assert.Equal(typeof(Action<QuicConnection, QuicStreamCapacityChangedArgs>), callbackProperty!.PropertyType);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void QuicConnectionOptions_ExposeTheSupportedDatagramReceiveKnobs()
+    {
+        QuicConnectionOptions options = new QuicClientConnectionOptions();
+
+        Assert.Equal(0, options.MaxDatagramFrameSize);
+        Assert.Equal(1024, options.MaxInboundDatagramQueueSize);
+
+        options.MaxDatagramFrameSize = 1200;
+        options.MaxInboundDatagramQueueSize = 8;
+
+        Assert.Equal(1200, options.MaxDatagramFrameSize);
+        Assert.Equal(8, options.MaxInboundDatagramQueueSize);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void QuicConnectionOptions_RejectInvalidDatagramReceiveKnobs()
+    {
+        QuicConnectionOptions options = new QuicClientConnectionOptions();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => options.MaxDatagramFrameSize = -1);
+        Assert.Throws<ArgumentOutOfRangeException>(() => options.MaxInboundDatagramQueueSize = -1);
     }
 
     [Fact]

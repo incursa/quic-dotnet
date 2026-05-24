@@ -7,6 +7,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9221_S3_0005
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task SendDatagramAsync_SendsFrameWithinPeerLimit()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1, 0xD2 });
+
+        Assert.NotNull(result.SendEffect);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task SendDatagramAsync_RejectsFramesLargerThanPeerLimit()
@@ -23,5 +39,25 @@ public sealed class REQ_QUIC_RFC9221_S3_0005
 
         Assert.Contains("exceeds the peer max_datagram_frame_size", exception.Message, StringComparison.Ordinal);
         Assert.Equal(sentPacketCount, runtime.SendRuntime.SentPackets.Count);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task SendDatagramAsync_SendsFrameExactlyAtPeerLimit()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 4);
+
+        QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+            runtime,
+            new byte[] { 0xD1, 0xD2 });
+
+        Assert.NotNull(result.SendEffect);
+        QuicDatagramFrame frame = QuicDatagramRuntimeTestSupport.ParseFirstOutgoingDatagramFrame(
+            runtime,
+            result.SendEffect);
+        Assert.Equal([0xD1, 0xD2], frame.DatagramData);
     }
 }

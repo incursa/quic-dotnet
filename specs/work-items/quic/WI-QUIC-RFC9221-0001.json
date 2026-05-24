@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-RFC9221-0001",
   "artifact_type": "work_item",
-  "status": "in_progress",
+  "status": "complete",
   "title": "QUIC RFC 9221 DATAGRAM Foundation Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -46,9 +46,9 @@
     "REQ-QUIC-RFC9221-S6-0001",
     "REQ-QUIC-RFC9221-S6-0002"
   ],
-  "summary": "Implement the RFC 9221 DATAGRAM foundation, receive floor, and core outbound send floor: canonical requirement coverage, transport-parameter codec support, DATAGRAM frame codec support, 0-RTT parameter-memory validation, protected 1-RTT receive delivery/rejection, and peer-gated application DATAGRAM send support with congestion/drop and non-retransmission proof.",
-  "planned_changes": "- Add `SPEC-QUIC-RFC9221.json`, `ARC-QUIC-RFC9221-0001.json`, `WI-QUIC-RFC9221-0001.json`, and `VER-QUIC-RFC9221-0001.json`.\n- Add `MaxDatagramFrameSize` to `QuicTransportParameters` and parse/format transport parameter `0x20`.\n- Preserve and validate `MaxDatagramFrameSize` in 0-RTT transport-parameter memory.\n- Add `QuicDatagramFrame` and DATAGRAM frame parse/format helpers for frame types `0x30` and `0x31`.\n- Deliver valid protected 1-RTT DATAGRAM frames through a distinct application DATAGRAM receive effect.\n- Reject received DATAGRAM frames when local receive support was not advertised, when the complete frame exceeds the advertised limit, or when DATAGRAM appears in weakly protected packet contexts.\n- Add `QuicConnection.SendDatagramAsync` and a runtime DATAGRAM send event path that rejects missing peer support, rejects peer-limit overflow, emits protected 1-RTT DATAGRAM frames when permitted, accounts congestion, drops congestion-blocked sends without a transport error, avoids stream association, and marks sent DATAGRAM packets non-retransmittable.\n- Add focused requirement-home tests for transport-parameter round-trip/defaults, 0-RTT remembered DATAGRAM size validation, DATAGRAM frame codec behavior, receive delivery/rejection, weak-context rejection, ack-eliciting classification, outbound send support gating, peer limit enforcement, non-fragmentation, congestion accounting/drop behavior, non-retransmission, and flow-control exclusion.",
-  "verification_plan": "Run focused RFC9221 requirement-home tests, run transport-parameter and DATAGRAM frame codec filters, run core SpecTrace JSON validation, refresh generated requirement coverage triage, and run `git diff --check`. Defer HTTP Datagrams adapter behavior, optional DATAGRAM ACK/loss notifications, 0-RTT DATAGRAM transmission, and benchmark closure to follow-up slices.",
+  "summary": "Implement the RFC 9221 DATAGRAM foundation: canonical requirement coverage, transport-parameter codec support, DATAGRAM frame codec support, 0-RTT parameter-memory validation, protected 1-RTT receive delivery/rejection through a bounded public receive API, peer-gated application DATAGRAM send support with congestion/drop and non-retransmission proof, and DATAGRAM frame benchmark coverage.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9221.json`, `ARC-QUIC-RFC9221-0001.json`, `WI-QUIC-RFC9221-0001.json`, and `VER-QUIC-RFC9221-0001.json`.\n- Add `MaxDatagramFrameSize` to `QuicTransportParameters` and parse/format transport parameter `0x20`.\n- Preserve and validate `MaxDatagramFrameSize` in 0-RTT transport-parameter memory.\n- Add `QuicDatagramFrame` and DATAGRAM frame parse/format helpers for frame types `0x30` and `0x31`.\n- Deliver valid protected 1-RTT DATAGRAM frames through a distinct application DATAGRAM receive effect and the public `QuicConnection.ReceiveDatagramAsync` bounded receive queue.\n- Reject received DATAGRAM frames when local receive support was not advertised, when the complete frame exceeds the advertised limit, or when DATAGRAM appears in weakly protected packet contexts.\n- Drop accepted received DATAGRAM payloads when the bounded public receive queue cannot store them.\n- Add `QuicConnection.SendDatagramAsync` and a runtime DATAGRAM send event path that rejects missing peer support, rejects peer-limit overflow, emits protected 1-RTT DATAGRAM frames when permitted, accounts congestion, drops congestion-blocked sends without a transport error, avoids stream association, and marks sent DATAGRAM packets non-retransmittable.\n- Add focused requirement-home tests for transport-parameter round-trip/defaults, 0-RTT remembered DATAGRAM size validation, DATAGRAM frame codec behavior, public receive delivery/rejection/drop behavior, weak-context rejection, ack-eliciting classification, outbound send support gating, peer limit enforcement, non-fragmentation, coalescing, congestion accounting/drop behavior, non-retransmission, flow-control exclusion, and 1-RTT protection.\n- Add a DATAGRAM frame parse/format benchmark suite.",
+  "verification_plan": "Run focused RFC9221 requirement-home tests, run API requirement-home tests for the promoted public DATAGRAM surface, run transport-parameter and DATAGRAM frame codec filters, run the DATAGRAM frame benchmark dry run, run core SpecTrace JSON validation, refresh generated requirement coverage triage, and run `git diff --check`. HTTP Datagrams adapter behavior, application ACK/loss notification callbacks, and 0-RTT DATAGRAM transmission remain separate future work outside this RFC 9221 transport-floor closure.",
   "verification_links": [
     "VER-QUIC-RFC9221-0001"
   ],
@@ -56,10 +56,9 @@
     "ARC-QUIC-RFC9221-0001"
   ],
   "out_of_scope": [
-    "Public application DATAGRAM receive callback/API beyond the internal delivery effect.",
-    "Optional DATAGRAM ACK/loss application notifications.",
+    "Application-facing per-DATAGRAM ACK/loss callback APIs beyond the transport-only ACK/loss policy.",
     "HTTP/3 datagrams, capsules, CONNECT-UDP, and MASQUE behavior.",
     "0-RTT DATAGRAM transmission while the repo's early-data application profile remains unset."
   ],
-  "completion_notes": "The work item remains in progress after the core send floor until HTTP/3 adapter integration, optional ACK/loss notifications, public receive API shape, benchmark evidence, and 0-RTT DATAGRAM send policy are implemented or explicitly deferred."
+  "completion_notes": "Completed for the RFC 9221 transport floor: all 33 RFC9221 requirements are linked to focused evidence, bounded public receive is implemented, benchmark evidence exists for DATAGRAM frame parse/format hot paths, and generated requirement coverage reports the family trace-clean. HTTP Datagrams, CONNECT-UDP, MASQUE, application ACK/loss callbacks, and 0-RTT DATAGRAM transmission remain separate future work rather than RFC9221 blockers."
 }

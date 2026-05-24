@@ -3,7 +3,7 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType. The client entry point is now public, while broader middleware-style surface remains deferred.</workbench-requirement>
+///   <workbench-requirement requirementId="REQ-QUIC-API-0001">The approved public facade now includes QuicConnection, QuicStream, QuicConnectionOptions, QuicReceiveWindowSizes, QuicAbortDirection, QuicError, QuicException, QuicListener, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, QuicServerConnectionOptions, QuicStreamCapacityChangedArgs, and the corrected QuicStreamType. The client entry point and RFC 9221 DATAGRAM send/receive entries are now public, while broader middleware-style surface remains deferred.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0001")]
 public sealed class REQ_QUIC_API_0001
@@ -119,6 +119,8 @@ public sealed class REQ_QUIC_API_0001
         Assert.Equal(TimeSpan.FromSeconds(10), options.HandshakeTimeout);
         Assert.Equal(TimeSpan.Zero, options.IdleTimeout);
         Assert.Equal(Timeout.InfiniteTimeSpan, options.KeepAliveInterval);
+        Assert.Equal(0, options.MaxDatagramFrameSize);
+        Assert.Equal(1024, options.MaxInboundDatagramQueueSize);
         Assert.Equal(0, options.MaxInboundBidirectionalStreams);
         Assert.Equal(0, options.MaxInboundUnidirectionalStreams);
         Assert.Null(options.StreamCapacityCallback);
@@ -142,7 +144,9 @@ public sealed class REQ_QUIC_API_0001
             "IdleTimeout",
             "InitialReceiveWindowSizes",
             "KeepAliveInterval",
+            "MaxDatagramFrameSize",
             "MaxInboundBidirectionalStreams",
+            "MaxInboundDatagramQueueSize",
             "MaxInboundUnidirectionalStreams",
             "StreamCapacityCallback",
         ];

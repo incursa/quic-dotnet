@@ -4116,9 +4116,20 @@ internal sealed partial class QuicConnectionRuntime
         _ = inboundStreamIds.Writer.TryWrite(streamId);
     }
 
+    private bool TryQueueInboundDatagram(ReadOnlyMemory<byte> datagram)
+    {
+        if (inboundDatagrams is null)
+        {
+            return false;
+        }
+
+        return inboundDatagrams.Writer.TryWrite(datagram.ToArray());
+    }
+
     private void CompletePendingStreamOperations(Exception completionException)
     {
         CompleteInboundStreamQueue(completionException);
+        CompleteInboundDatagramQueue(completionException);
         CompletePendingStreamOpenRequests(completionException);
         CompletePendingStreamActionRequests(completionException);
         CompletePendingDatagramSendRequests(completionException);
@@ -4136,6 +4147,23 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         inboundStreamIds.Writer.TryComplete(completionException);
+    }
+
+    private void CompleteInboundDatagramQueue(Exception completionException)
+    {
+        if (inboundDatagrams is null)
+        {
+            return;
+        }
+
+        inboundDatagramQueueCompletionException ??= completionException;
+
+        while (inboundDatagrams.Reader.TryRead(out _))
+        {
+            // Drain queued DATAGRAM payloads so pending receives observe terminal completion.
+        }
+
+        inboundDatagrams.Writer.TryComplete(completionException);
     }
 
     private void CompletePendingStreamOpenRequests(Exception completionException)

@@ -38,4 +38,31 @@ public sealed class REQ_QUIC_RFC9221_S5P4_0002
 
         Assert.Fail("Expected congestion control to drop a DATAGRAM before the bounded send loop completed.");
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task SendDatagramAsync_CompletesWithoutTransportErrorWhenCongestionBlocksDatagram()
+    {
+        QuicConnectionRuntime runtime = QuicDatagramRuntimeTestSupport.CreateFinishedRuntime(
+            localMaxDatagramFrameSize: 1200,
+            peerMaxDatagramFrameSize: 1200,
+            connectionSendLimit: 64 * 1024);
+        byte[] datagramData = Enumerable.Repeat((byte)0xD1, 1000).ToArray();
+
+        for (int attempt = 0; attempt < 64; attempt++)
+        {
+            QuicDatagramSendResult result = await QuicDatagramRuntimeTestSupport.SendDatagramAsync(
+                runtime,
+                datagramData);
+
+            if (result.SendEffect is null)
+            {
+                Assert.Null(runtime.TerminalState);
+                return;
+            }
+        }
+
+        Assert.Fail("Expected congestion blocking to drop the DATAGRAM without a terminal transport error.");
+    }
 }
