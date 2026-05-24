@@ -51,6 +51,28 @@ public sealed class REQ_QUIC_RFC9000_0109
         AssertHigherNumberedPeerStreamIsNotOpened(state, streamOrdinal);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0109")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingBidirectionalStreamLimit: 2,
+            peerBidirectionalReceiveLimit: 32,
+            peerBidirectionalSendLimit: 8);
+        ulong overLimitPeerStreamId = (2UL << 2) | 1UL;
+
+        Assert.False(state.TryApplyMaxStreamDataFrame(
+            new QuicMaxStreamDataFrame(overLimitPeerStreamId, 16),
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
+        Assert.False(state.TryGetStreamSnapshot(1, out _));
+        Assert.False(state.TryGetStreamSnapshot(5, out _));
+        Assert.False(state.TryGetStreamSnapshot(overLimitPeerStreamId, out _));
+    }
+
     private static QuicConnectionStreamState CreatePeerStreamState()
     {
         return QuicConnectionStreamStateTestHelpers.CreateState(

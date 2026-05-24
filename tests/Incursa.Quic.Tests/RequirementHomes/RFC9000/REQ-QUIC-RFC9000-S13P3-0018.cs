@@ -146,6 +146,66 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0018")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_EmitsUpdatedMaxStreamDataAndMaxDataAfterRepeatedReads()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime);
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, (ulong)stream.Id, [0x11, 0x22], offset: 0),
+            out QuicStreamFrame firstStreamFrame));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(firstStreamFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] firstReadBuffer = new byte[2];
+        int firstBytesRead = await stream.ReadAsync(firstReadBuffer, 0, firstReadBuffer.Length);
+
+        Assert.Equal(2, firstBytesRead);
+        Assert.True(firstReadBuffer.AsSpan().SequenceEqual(new byte[] { 0x11, 0x22 }));
+        AssertFlowControlCreditEffects(
+            outboundEffects,
+            runtime,
+            stream.Id,
+            expectedMaxData: 66,
+            expectedMaxStreamData: 10);
+
+        outboundEffects.Clear();
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, (ulong)stream.Id, [0x33, 0x44, 0x55], offset: 2),
+            out QuicStreamFrame secondStreamFrame));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(secondStreamFrame, out errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] secondReadBuffer = new byte[3];
+        int secondBytesRead = await stream.ReadAsync(secondReadBuffer, 0, secondReadBuffer.Length);
+
+        Assert.Equal(3, secondBytesRead);
+        Assert.True(secondReadBuffer.AsSpan().SequenceEqual(new byte[] { 0x33, 0x44, 0x55 }));
+        AssertFlowControlCreditEffects(
+            outboundEffects,
+            runtime,
+            stream.Id,
+            expectedMaxData: 69,
+            expectedMaxStreamData: 13);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0006")]
     [Requirement("REQ-QUIC-RFC9000-0167")]
     [Requirement("REQ-QUIC-RFC9000-S4P1-0009")]
@@ -303,6 +363,63 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
                 sentPacket.Key.PacketNumberSpace,
                 sentPacket.Key.PacketNumber,
                 handshakeConfirmed: true));
+        }
+    }
+
+    private static void AssertFlowControlCreditEffects(
+        IReadOnlyCollection<QuicConnectionEffect> outboundEffects,
+        QuicConnectionRuntime runtime,
+        long streamId,
+        ulong expectedMaxData,
+        ulong expectedMaxStreamData)
+    {
+        Assert.Equal(2, outboundEffects.Count);
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        bool sawMaxData = false;
+        bool sawMaxStreamData = false;
+
+        foreach (QuicConnectionEffect effect in outboundEffects)
+        {
+            QuicConnectionSendDatagramEffect sendEffect = Assert.IsType<QuicConnectionSendDatagramEffect>(effect);
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                sendEffect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+
+            ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
+            if (QuicFrameCodec.TryParseMaxDataFrame(payload, out QuicMaxDataFrame maxDataFrame, out int maxDataBytesConsumed))
+            {
+                sawMaxData = true;
+                Assert.Equal(expectedMaxData, maxDataFrame.MaximumData);
+                AssertOnlyPadding(payload[maxDataBytesConsumed..]);
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxStreamDataFrame(payload, out QuicMaxStreamDataFrame maxStreamDataFrame, out int maxStreamDataBytesConsumed))
+            {
+                sawMaxStreamData = true;
+                Assert.Equal((ulong)streamId, maxStreamDataFrame.StreamId);
+                Assert.Equal(expectedMaxStreamData, maxStreamDataFrame.MaximumStreamData);
+                AssertOnlyPadding(payload[maxStreamDataBytesConsumed..]);
+                continue;
+            }
+
+            Assert.Fail("Unexpected flow-control datagram.");
+        }
+
+        Assert.True(sawMaxData);
+        Assert.True(sawMaxStreamData);
+    }
+
+    private static void AssertOnlyPadding(ReadOnlySpan<byte> payload)
+    {
+        while (!payload.IsEmpty)
+        {
+            Assert.True(QuicFrameCodec.TryParsePaddingFrame(payload, out int paddingBytesConsumed));
+            payload = payload[paddingBytesConsumed..];
         }
     }
 }

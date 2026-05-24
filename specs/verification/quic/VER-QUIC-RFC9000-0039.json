@@ -13,6 +13,7 @@
   ],
   "verification_method": "Focused S19P8 requirement-home tests, supporting stream parser/fuzz tests, Release build, regenerated QUIC coverage triage, and SpecTrace JSON validation.",
   "verifies": [
+    "REQ-QUIC-RFC9000-0021",
     "REQ-QUIC-RFC9000-S19P8-0001",
     "REQ-QUIC-RFC9000-S19P8-0002",
     "REQ-QUIC-RFC9000-S19P8-0003",
@@ -48,6 +49,7 @@
     "Existing connection stream state remains the canonical receive-state policy seam."
   ],
   "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0021.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-*.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P8StreamFrameTestSupport.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S19P8_\"",
@@ -62,5 +64,5 @@
       "content": "This verification does not claim closure of other S19 frame families, public stream APIs, or packet-level close emission behavior for every parser failure."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-04. The focused S19P8 filter passed 79/79 before canonical xref cleanup; final generated triage, Release build, and SpecTrace JSON validation are recorded by this verification run."
+  "status_summary": "Passed locally on 2026-05-04. The focused S19P8 filter passed 79/79 before canonical xref cleanup; final generated triage, Release build, and SpecTrace JSON validation are recorded by this verification run. On 2026-05-22, the RFC9000 topoff filter for REQ-QUIC-RFC9000-0021, 0028, 0280, and 0282 passed 8/8; REQ-QUIC-RFC9000-0021 is bounded to single STREAM-frame open/data/close receive-state proof."
 }

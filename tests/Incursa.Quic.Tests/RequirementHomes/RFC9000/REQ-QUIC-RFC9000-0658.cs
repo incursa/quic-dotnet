@@ -7,6 +7,42 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0658
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FlowControlErrorCanBeCarriedAsTheSelectedApplicableTransportErrorCode()
+    {
+        byte[] reasonPhrase = [0x66, 0x6C, 0x6F, 0x77];
+        QuicConnectionCloseFrame frame = new(
+            QuicTransportErrorCode.FlowControlError,
+            triggeringFrameType: 0x08,
+            reasonPhrase);
+
+        Assert.False(frame.IsApplicationError);
+        Assert.Equal((byte)0x1C, frame.FrameType);
+        Assert.Equal((ulong)QuicTransportErrorCode.FlowControlError, frame.ErrorCode);
+
+        byte[] encoded = QuicFrameTestData.BuildConnectionCloseFrame(frame);
+
+        Assert.True(
+            QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+        Assert.False(parsed.IsApplicationError);
+        Assert.Equal((byte)0x1C, parsed.FrameType);
+        Assert.Equal((ulong)QuicTransportErrorCode.FlowControlError, parsed.ErrorCode);
+        Assert.True(parsed.HasTriggeringFrameType);
+        Assert.Equal(0x08UL, parsed.TriggeringFrameType);
+        Assert.True(reasonPhrase.AsSpan().SequenceEqual(parsed.ReasonPhrase));
+        Assert.Equal(encoded.Length, bytesConsumed);
+
+        Span<byte> destination = stackalloc byte[32];
+        Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
+        Assert.Equal(encoded.Length, bytesWritten);
+        Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void InternalErrorCanStandInForAnApplicableTransportErrorCode()

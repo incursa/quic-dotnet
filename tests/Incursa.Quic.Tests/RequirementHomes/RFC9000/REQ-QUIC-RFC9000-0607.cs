@@ -7,6 +7,27 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0607
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-0607")]
+    public void MatchesAnyStatelessResetToken_DoesNotAcceptTokenGeneratedForADifferentConnectionId()
+    {
+        byte[] secretKey = QuicStatelessResetRequirementTestData.CreateSecret();
+        byte[] connectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(0x10);
+        byte[] otherConnectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(0x20);
+
+        Span<byte> token = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
+        Span<byte> otherToken = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength];
+        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, token, out _));
+        Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(otherConnectionId, secretKey, otherToken, out _));
+        Assert.False(token.SequenceEqual(otherToken));
+
+        byte[] datagram = QuicStatelessResetRequirementTestData.FormatDatagram(otherToken);
+
+        Assert.False(QuicStatelessReset.MatchesAnyStatelessResetToken(datagram, token));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGenerateStatelessResetToken_BindsEachConnectionIdToItsOwnToken()
     {

@@ -7,6 +7,28 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0663
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TransportErrorsDoNotUseApplicationConnectionCloseTypeOneD()
+    {
+        byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildTransportClose(
+            errorCode: (ulong)QuicTransportErrorCode.ProtocolViolation,
+            triggeringFrameType: 0x02,
+            reasonPhrase: [0x74, 0x72, 0x6E]);
+
+        Assert.True(
+            QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+        Assert.False(parsed.IsApplicationError);
+        Assert.Equal((byte)0x1C, parsed.FrameType);
+        Assert.True(parsed.HasTriggeringFrameType);
+        Assert.Equal((ulong)QuicTransportErrorCode.ProtocolViolation, parsed.ErrorCode);
+        Assert.Equal(encoded.Length, bytesConsumed);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ApplicationErrorsUseConnectionCloseTypeOneD()

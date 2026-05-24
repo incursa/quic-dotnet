@@ -4,6 +4,18 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1051
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RequirementStatement_AllowsDiscardingDifferentHandshakeMessages()
+    {
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1051");
+
+        Assert.True(statement.Contains("MAY", StringComparison.Ordinal));
+        Assert.True(statement.Contains("different cryptographic handshake message", StringComparison.Ordinal));
+        Assert.True(statement.Contains("discard it", StringComparison.Ordinal));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ServerRuntimeDiscardsARetryReplayThatCarriesADifferentClientHello()

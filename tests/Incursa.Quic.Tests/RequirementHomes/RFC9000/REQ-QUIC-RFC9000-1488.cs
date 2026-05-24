@@ -7,6 +7,26 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1488
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1488")]
+    public void ProvisionalRegistrations_DoNotOmitValueOrContactFields()
+    {
+        Assert.Contains(
+            QuicIanaRegistrationFieldKind.Value,
+            QuicIanaRegistrationPolicy.ProvisionalRequestRequiredFields);
+        Assert.Contains(
+            QuicIanaRegistrationFieldKind.Contact,
+            QuicIanaRegistrationPolicy.ProvisionalRequestRequiredFields);
+        Assert.DoesNotContain(
+            QuicIanaRegistrationFieldKind.Value,
+            QuicIanaRegistrationPolicy.ProvisionalOmissibleFields);
+        Assert.DoesNotContain(
+            QuicIanaRegistrationFieldKind.Contact,
+            QuicIanaRegistrationPolicy.ProvisionalOmissibleFields);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ProvisionalRegistrations_MayOmitSpecificationAndNotesFields()
     {

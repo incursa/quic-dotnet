@@ -89,4 +89,50 @@ public sealed class REQ_QUIC_RFC9000_0539
         Assert.False(originalCandidatePath.Validation.IsValidated);
         Assert.Null(originalCandidatePath.Validation.ValidationDeadlineTicks);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OriginalAddressValidationDoesNotAbandonThePreferredAddressCandidate()
+    {
+        byte[] initialSourceConnectionId = [0x10, 0x11, 0x12, 0x13];
+        byte[] preferredConnectionId = [0x20, 0x21, 0x22, 0x23];
+        byte[] statelessResetToken = [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F];
+        QuicTransportParameters transportParameters = new()
+        {
+            InitialSourceConnectionId = initialSourceConnectionId,
+            PreferredAddress = new QuicPreferredAddress
+            {
+                IPv4Address = [198, 51, 100, 41],
+                IPv4Port = 9449,
+                IPv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x29],
+                IPv6Port = 9559,
+                ConnectionId = preferredConnectionId,
+                StatelessResetToken = statelessResetToken,
+            },
+        };
+        QuicConnectionPathIdentity activePath = new("203.0.113.41", "192.0.2.110", 443, 61244);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+        QuicPathMigrationRecoveryTestSupport.CommitPeerTransportParameters(runtime, transportParameters);
+        QuicConnectionPathIdentity originalValidationPath = new("203.0.113.41", "192.0.2.111", 443, 61245);
+        QuicConnectionPathIdentity preferredValidationPath = new("198.51.100.41", "192.0.2.111", 9449, 61245);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(20, originalValidationPath, datagram), nowTicks: 20).StateChanged);
+        Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(21, preferredValidationPath, datagram), nowTicks: 21).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            originalValidationPath,
+            observedAtTicks: 30);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == preferredValidationPath);
+        Assert.True(runtime.CandidatePaths.TryGetValue(preferredValidationPath, out QuicConnectionCandidatePathRecord preferredCandidatePath));
+        Assert.False(preferredCandidatePath.Validation.IsValidated);
+        Assert.False(preferredCandidatePath.Validation.IsAbandoned);
+    }
 }

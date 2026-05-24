@@ -39,4 +39,35 @@ public sealed class REQ_QUIC_RFC9000_0499
             runtime: runtime);
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0499")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PacketFromTheActiveAddressDoesNotStartPathValidation()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.70", RemotePort: 443);
+        QuicConnectionRuntime runtime =
+            QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                activePath,
+                datagram),
+            nowTicks: 20);
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.Empty(runtime.CandidatePaths);
+        Assert.DoesNotContain(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+                runtime,
+                effect.Datagram.Span,
+                out _,
+                out _,
+                out _));
+    }
 }

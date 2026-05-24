@@ -56,4 +56,26 @@ public sealed class REQ_QUIC_RFC9000_0969
             [QuicVersionNegotiation.Version1],
             hasSuccessfullyProcessedAnotherPacket: false));
     }
+
+    [Theory]
+    [InlineData(0x40)]
+    [InlineData(0x7F)]
+    [Requirement("REQ-QUIC-RFC9000-0969")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_DoesNotUseTheUnusedFieldToBypassDiscardRules(byte headerControlBits)
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits,
+            destinationConnectionId: [0x11, 0x12],
+            sourceConnectionId: [0x21],
+            supportedVersions: [QuicVersionNegotiation.Version1]);
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket header));
+        Assert.Equal(headerControlBits, header.HeaderControlBits);
+        Assert.True(QuicVersionNegotiation.ShouldDiscardVersionNegotiation(
+            header,
+            QuicVersionNegotiation.Version1,
+            hasSuccessfullyProcessedAnotherPacket: false));
+    }
 }

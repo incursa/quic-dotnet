@@ -61,6 +61,28 @@ public sealed class REQ_QUIC_RFC9000_0543
         AssertMigratesToSameFamilyPreferredAddress(activeIpv6Path, preferredIpv6Path, preferredIpv4Path, parsedTransportParameters);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientDoesNotChooseDifferentFamilyPreferredAddressWhenSameFamilyAddressExists()
+    {
+        using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+
+        QuicConnectionTransitionResult result = QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(
+            runtime,
+            observedAtTicks: 20);
+
+        QuicConnectionPathIdentity sameFamilyPreferredPath = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath();
+        QuicConnectionPathIdentity otherFamilyPreferredPath = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(useIpv6: true);
+        QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, sameFamilyPreferredPath);
+        Assert.False(runtime.CandidatePaths.ContainsKey(otherFamilyPreferredPath));
+        Assert.DoesNotContain(result.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && send.PathIdentity == otherFamilyPreferredPath);
+    }
+
     private static void AssertMigratesToSameFamilyPreferredAddress(
         QuicConnectionPathIdentity activePath,
         QuicConnectionPathIdentity sameFamilyPreferredPath,

@@ -4,6 +4,35 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_6322
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-6322")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryBuildProtectedInitialPacket_CanCarryAReservedVersionForDiscardTesting()
+    {
+        uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection protection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            QuicS17P2P2TestSupport.InitialSourceConnectionId,
+            initialPacketVersion: reservedVersion);
+
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            QuicS12P3TestSupport.CreateSequentialBytes(0x30, 8),
+            cryptoPayloadOffset: 0,
+            protection,
+            out byte[] protectedPacket));
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(protectedPacket, out QuicLongHeaderPacket header));
+        Assert.Equal(reservedVersion, header.Version);
+        Assert.True(QuicVersionNegotiation.IsReservedVersion(header.Version));
+        Assert.False(header.IsVersionNegotiation);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6322">Endpoints MAY send packets with a reserved version to test that a peer correctly discards the packet.</workbench-requirement>
     /// </workbench-requirements>

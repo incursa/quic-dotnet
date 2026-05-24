@@ -20,4 +20,17 @@ public sealed class REQ_QUIC_RFC9000_13230
             new QuicAckRange(1, 1, 5, 6),
             new QuicAckRange(1, 1, 1, 2));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryBuildAckFrame_DoesNotDropNewestRangeWhenOlderRangesAreTrimmed()
+    {
+        QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(1, 1, 2, 5, 6, 9, 10);
+
+        QuicS13P2P3AckFrameProofSupport.AssertBuildsAckFrame(
+            tracker,
+            expectedLargestAcknowledged: 10,
+            expectedFirstAckRange: 1);
+    }
 }

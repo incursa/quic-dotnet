@@ -44,4 +44,24 @@ public sealed class REQ_QUIC_RFC9000_0097
         Assert.True(snapshot.HasSendAbortErrorCode);
         Assert.Equal(0x99UL, snapshot.SendAbortErrorCode);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0097")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStopSendingFrame_DoesNotCreateReceivingPartForPeerUnidirectionalStream()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingUnidirectionalStreamLimit: 1024);
+        ulong peerUnidirectionalStreamId = 3;
+
+        Assert.False(state.TryReceiveStopSendingFrame(
+            new QuicStopSendingFrame(peerUnidirectionalStreamId, 0x99),
+            out QuicResetStreamFrame resetStreamFrame,
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        Assert.Equal(default, resetStreamFrame);
+        Assert.False(state.TryGetStreamSnapshot(peerUnidirectionalStreamId, out _));
+    }
 }

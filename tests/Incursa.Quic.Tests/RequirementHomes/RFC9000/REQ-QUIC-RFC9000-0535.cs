@@ -45,4 +45,41 @@ public sealed class REQ_QUIC_RFC9000_0535
         Assert.DoesNotContain(delayedResult.Effects, effect =>
             effect is QuicConnectionPromoteActivePathEffect);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0535")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath()
+    {
+        QuicConnectionPathIdentity preferredPath = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath();
+
+        using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+            QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path,
+            QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+
+        QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 20);
+        QuicS9P6P1PreferredAddressTestSupport.ValidatePreferredPath(
+            runtime,
+            preferredPath,
+            observedAtTicks: 40);
+
+        QuicConnectionTransitionResult delayedResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+            runtime,
+            QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path,
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            QuicStreamTestData.BuildStreamFrame(0x0A, streamId: 1, [0x11]),
+            observedAtTicks: 50);
+
+        Assert.True(delayedResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(preferredPath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path));
+        Assert.DoesNotContain(delayedResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect send
+            && send.PathIdentity == QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path
+            && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+        Assert.DoesNotContain(delayedResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect);
+    }
 }

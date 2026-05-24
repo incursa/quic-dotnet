@@ -7,6 +7,38 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0229
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryFormatTransportParameters_DoesNotEmitActiveConnectionIdLimitWhenUnset()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            InitialSourceConnectionId = [0xA0, 0xA1],
+        };
+
+        Span<byte> destination = stackalloc byte[32];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            destination,
+            out int bytesWritten));
+
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x0F, [0xA0, 0xA1]));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            destination[..bytesWritten],
+            QuicTransportParameterRole.Server,
+            out QuicTransportParameters parsed));
+
+        Assert.Null(parsed.ActiveConnectionIdLimit);
+        Assert.True(new byte[] { 0xA0, 0xA1 }.AsSpan().SequenceEqual(parsed.InitialSourceConnectionId));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients()
     {

@@ -4,6 +4,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0305
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ShortHeaderPacketsCannotEstablishHandshakeConnectionIds()
+    {
+        byte[] shortHeader = QuicHeaderTestData.BuildShortHeader(
+            headerControlBits: 0x01,
+            remainder: [0xA0, 0xA1, 0xA2, 0xA3]);
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(shortHeader, out QuicShortHeaderPacket parsedShortHeader));
+        Assert.Equal(QuicHeaderForm.Short, parsedShortHeader.HeaderForm);
+        Assert.False(QuicPacketParser.TryParseLongHeader(shortHeader, out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Requirement("REQ-QUIC-RFC9000-S7-0001")]
     [Requirement("REQ-QUIC-RFC9000-S7-0004")]

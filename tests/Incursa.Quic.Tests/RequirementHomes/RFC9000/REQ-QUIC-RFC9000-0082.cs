@@ -57,4 +57,37 @@ public sealed class REQ_QUIC_RFC9000_0082
         Assert.True(dataSentSnapshot.HasFinalSize);
         Assert.Equal(3UL, dataSentSnapshot.FinalSize);
     }
+
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0082">An endpoint in the Send state MUST generate STREAM_DATA_BLOCKED frames if it is blocked from sending by stream flow control limits.</workbench-requirement>
+    /// </workbench-requirements>
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0082")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            localBidirectionalSendLimit: 16,
+            connectionSendLimit: 1);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.False(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(1UL, dataBlockedFrame.MaximumData);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+    }
 }

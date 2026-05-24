@@ -32,4 +32,29 @@ public sealed class REQ_QUIC_RFC9000_0972
             out QuicVersionNegotiationPacket packet));
         Assert.True(clientSourceConnectionId.AsSpan().SequenceEqual(packet.DestinationConnectionId));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0972")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryFormatVersionNegotiationResponse_DoesNotEchoTheClientDestinationConnectionIdIntoTheDestinationField()
+    {
+        byte[] destination = new byte[64];
+        byte[] clientDestinationConnectionId = [0x01, 0x02];
+        byte[] clientSourceConnectionId = [0x03, 0x04, 0x05];
+
+        Assert.True(QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+            0xAABBCCDD,
+            clientDestinationConnectionId,
+            clientSourceConnectionId,
+            [QuicVersionNegotiation.Version1],
+            destination,
+            out int bytesWritten));
+
+        Assert.True(QuicPacketParser.TryParseVersionNegotiation(
+            destination[..bytesWritten],
+            out QuicVersionNegotiationPacket packet));
+        Assert.False(clientDestinationConnectionId.AsSpan().SequenceEqual(packet.DestinationConnectionId));
+        Assert.True(clientDestinationConnectionId.AsSpan().SequenceEqual(packet.SourceConnectionId));
+    }
 }

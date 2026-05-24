@@ -262,7 +262,7 @@ internal static class QuicCapturedInteropTransferEvidence
             out material);
     }
 
-    private static bool TryCreateOneRttPacketProtectionMaterial(
+    internal static bool TryCreateOneRttPacketProtectionMaterial(
         ReadOnlySpan<byte> trafficSecret,
         out QuicTlsPacketProtectionMaterial material)
     {

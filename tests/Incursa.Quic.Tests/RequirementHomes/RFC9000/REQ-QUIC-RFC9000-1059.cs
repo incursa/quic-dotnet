@@ -4,6 +4,22 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1059
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1059")]
+    public void TryBuildProtectedApplicationDataPacket_RejectsNonOneRttPacketProtection()
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreatePacketCoordinator();
+        QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake);
+
+        Assert.False(coordinator.TryBuildProtectedApplicationDataPacket(
+            QuicS12P3TestSupport.CreatePingPayload(),
+            material,
+            out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryBuildProtectedApplicationDataPacket_EmitsAShortHeaderOnceOneRttKeysAreAvailable()

@@ -48,6 +48,49 @@ public sealed class REQ_QUIC_RFC9000_0476
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ValidatedPathCanBePromotedAfterTheNextNonProbingFrameArrives()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.32", RemotePort: 443);
+        using QuicConnectionRuntime runtime =
+            QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicConnectionPathIdentity migratedPath = activePath with
+        {
+            RemotePort = activePath.RemotePort + 1,
+        };
+        byte[] streamFrame = QuicStreamTestData.BuildStreamFrame(
+            0x0E,
+            streamId: 0,
+            streamData: [0x41],
+            offset: 0);
+
+        QuicConnectionTransitionResult receiveResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+            runtime,
+            migratedPath,
+            runtime.CurrentPeerDestinationConnectionId.Span,
+            streamFrame,
+            observedAtTicks: 20);
+
+        Assert.True(receiveResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.True(candidatePath.HasHighestNonProbingPacketNumber);
+
+        QuicConnectionTransitionResult promotionResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            migratedPath,
+            observedAtTicks: 30);
+
+        Assert.True(promotionResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.Contains(promotionResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void RecentlyValidatedPathDefersPromotionWhenItReceivesApplicationData()

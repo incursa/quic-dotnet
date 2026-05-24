@@ -61,4 +61,21 @@ public sealed class REQ_QUIC_RFC9000_0057
             new[] { checked((ulong)higherPriorityStream.Id), checked((ulong)lowerPriorityStream.Id) },
             QuicS2P3PriorityTestSupport.ReadStreamFrameIds(openedPayload.Span));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0057")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void QueuedPrioritySelection_DoesNotLetLowerPriorityOvertakeHigherPriority()
+    {
+        QuicApplicationSendQueue sendQueue = new();
+
+        sendQueue.Enqueue(streamId: 1, priority: 0, streamPayload: [0x11]);
+        sendQueue.Enqueue(streamId: 5, priority: 10, streamPayload: [0x22]);
+
+        PendingApplicationSendRequest[] sortedWrites = sendQueue.GetSortedQueuedWrites();
+
+        Assert.Equal(5UL, sortedWrites[0].StreamId);
+        Assert.NotEqual(1UL, sortedWrites[0].StreamId);
+    }
 }

@@ -29,4 +29,14 @@ public sealed class REQ_QUIC_RFC9000_0720
         Assert.Equal(0x1234UL, parsedMaxData.MaximumData);
         Assert.Equal(maxDataBytesWritten, maxDataBytesConsumed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseMaxDataFrame_RejectsTypeDependentFieldsBeforeTheFrameType()
+    {
+        byte[] encoded = QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(0x1234));
+
+        Assert.False(QuicFrameCodec.TryParseMaxDataFrame(encoded[1..], out _, out _));
+    }
 }

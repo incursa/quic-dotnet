@@ -4,6 +4,27 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0258
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryParseLongHeader_AcceptsValidInitialPacketWithPacketNumberSpace()
+    {
+        byte[] initialPacket = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: 1,
+            destinationConnectionId: [0x10],
+            sourceConnectionId: [0x20],
+            versionSpecificData: QuicHeaderTestData.BuildInitialVersionSpecificData(
+                token: [0x01],
+                packetNumber: [0x02],
+                protectedPayload: [0xAA, 0xBB]));
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(initialPacket, out QuicLongHeaderPacket header));
+        Assert.Equal((byte)0x00, header.LongPacketTypeBits);
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(initialPacket, out QuicPacketNumberSpace packetNumberSpace));
+        Assert.Equal(QuicPacketNumberSpace.Initial, packetNumberSpace);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets()

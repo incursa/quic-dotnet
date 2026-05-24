@@ -9,6 +9,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1507
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1507")]
+    public void RequirementStatement_DoesNotAllowProvisionalStandardsTrackRegistrations()
+    {
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1507");
+
+        Assert.Contains("Standards Track", statement);
+        Assert.Contains("MUST be permanent", statement);
+        Assert.DoesNotContain("MAY be provisional", statement, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SHOULD be provisional", statement, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RequirementStatement_MakesStandardsTrackRegistrationsPermanent()

@@ -25,14 +25,34 @@ function Get-RelativeRepoPath {
 }
 
 function Get-RequirementSectionPrefix {
-    param([string]$RequirementId)
+    param(
+        [string]$RequirementId,
+        $Requirement
+    )
 
     if ($RequirementId -match '^REQ-QUIC-RFC\d+-(?<prefix>S[A-Z0-9P]+)-\d{4}$')
     {
         return $Matches.prefix
     }
 
-    throw "Unable to derive section prefix from requirement id '$RequirementId'."
+    $upstreamRefs = @()
+    if ($null -ne $Requirement -and
+        $Requirement.PSObject.Properties.Name -contains 'trace' -and
+        $null -ne $Requirement.trace -and
+        $Requirement.trace.PSObject.Properties.Name -contains 'upstream_refs')
+    {
+        $upstreamRefs = @($Requirement.trace.upstream_refs)
+    }
+
+    foreach ($upstreamRef in $upstreamRefs)
+    {
+        if ($upstreamRef -match 'RFC\d+-S(?<section>[A-Z0-9.]+)')
+        {
+            return "S$($Matches.section.Replace('.', 'P'))"
+        }
+    }
+
+    return 'unsectioned'
 }
 
 function ConvertTo-RequirementEvidenceKind {
@@ -168,7 +188,7 @@ function Get-RequirementsFromAttributes {
             continue
         }
 
-        foreach ($match in [regex]::Matches($attribute.Text, 'REQ-QUIC-RFC\d+-S[A-Z0-9P]+-\d{4}'))
+        foreach ($match in [regex]::Matches($attribute.Text, 'REQ-QUIC-RFC\d+-(?:S[A-Z0-9P]+-)?\d{4,}'))
         {
             $ids.Add($match.Value)
         }
@@ -787,7 +807,7 @@ foreach ($specFile in $specFiles)
     foreach ($requirement in $spec.requirements)
     {
         $requirementId = $requirement.id
-        $sectionPrefix = Get-RequirementSectionPrefix -RequirementId $requirementId
+        $sectionPrefix = Get-RequirementSectionPrefix -RequirementId $requirementId -Requirement $requirement
         $specXrefs = if ($requirement.trace.PSObject.Properties.Name -contains 'x_test_refs') { @($requirement.trace.x_test_refs) } else { @() }
         $evidenceList = [System.Collections.Generic.List[object]]::new()
 

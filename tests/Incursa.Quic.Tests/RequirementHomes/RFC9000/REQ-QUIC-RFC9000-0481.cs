@@ -48,6 +48,35 @@ public sealed class REQ_QUIC_RFC9000_0481
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PermittedMigrationDoesNotRouteSubsequentStreamPacketsToTheOldPeerAddress()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.82", RemotePort: 443);
+        using QuicConnectionRuntime runtime =
+            QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicConnectionPathIdentity migratedPath = activePath with
+        {
+            RemotePort = activePath.RemotePort + 1,
+        };
+
+        QuicConnectionTransitionResult receiveResult = ReceiveNonProbingStreamPacket(
+            runtime,
+            migratedPath,
+            observedAtTicks: 20);
+
+        Assert.True(receiveResult.StateChanged);
+        Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.True(candidatePath.HasHighestNonProbingPacketNumber);
+
+        QuicConnectionSendDatagramEffect send =
+            await QuicPeerConnectionIdSelectionTestSupport.OpenOutboundStreamAndCaptureSingleSendAsync(runtime);
+
+        Assert.Equal(migratedPath, send.PathIdentity);
+        Assert.NotEqual(activePath, send.PathIdentity);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S9P3-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

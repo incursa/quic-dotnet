@@ -50,4 +50,34 @@ public sealed class REQ_QUIC_RFC9000_0176
         Assert.Equal(streamBlockedStreamId.Value, streamDataBlockedFrame.StreamId);
         Assert.Equal(1UL, streamDataBlockedFrame.MaximumStreamData);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0176")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReserveSendCapacity_DoesNotGenerateBlockedFramesWhenFlowControlAllowsTheWrite()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionSendLimit: 8,
+            localBidirectionalSendLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+
+        Assert.True(state.TryReserveSendCapacity(
+            streamId.Value,
+            offset: 0,
+            length: 2,
+            fin: false,
+            out QuicDataBlockedFrame dataBlockedFrame,
+            out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+            out QuicTransportErrorCode errorCode));
+
+        Assert.Equal(default, dataBlockedFrame);
+        Assert.Equal(default, streamDataBlockedFrame);
+        Assert.Equal(default, errorCode);
+    }
 }

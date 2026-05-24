@@ -30,6 +30,32 @@ public sealed class REQ_QUIC_RFC9000_0734
         AssertSingleByteFrameTypePrefix(connectionClose, 0x1C);
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(4)]
+    [InlineData(8)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParsePingFrame_RejectsOverlongFrameTypeEncodings(int encodedLength)
+    {
+        byte[] encoded = QuicVarintTestData.EncodeWithLength(0x01, encodedLength);
+
+        Assert.False(QuicFrameCodec.TryParsePingFrame(encoded, out _));
+    }
+
+    [Theory]
+    [InlineData(2)]
+    [InlineData(4)]
+    [InlineData(8)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseMaxDataFrame_RejectsOverlongFrameTypeEncodings(int encodedLength)
+    {
+        byte[] encoded = [.. QuicVarintTestData.EncodeWithLength(0x10, encodedLength), 0x01];
+
+        Assert.False(QuicFrameCodec.TryParseMaxDataFrame(encoded, out _, out _));
+    }
+
     private static void AssertSingleByteFrameTypePrefix(byte[] encodedFrame, ulong expectedFrameType)
     {
         Assert.True(QuicVariableLengthInteger.TryParse(encodedFrame, out ulong frameType, out int bytesConsumed));

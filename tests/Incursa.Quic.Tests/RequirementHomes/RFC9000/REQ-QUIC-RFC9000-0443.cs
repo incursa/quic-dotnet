@@ -33,4 +33,40 @@ public sealed class REQ_QUIC_RFC9000_0443
 
         Assert.Equal(activePath, response.PathIdentity);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0443")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PathResponseIsNotSentOnTheOldPathWhenPathChallengeArrivesOnANewPath()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+
+        QuicConnectionPathIdentity activePath = runtime.ActivePath!.Value.Identity;
+        QuicConnectionPathIdentity newPath = activePath with
+        {
+            RemotePort = activePath.RemotePort + 1,
+        };
+        byte[] challengeData = QuicS8P2PathValidationTestSupport.CreateChallengeData(0x60);
+
+        QuicConnectionTransitionResult result =
+            QuicS8P2PathValidationTestSupport.ReceiveProtectedPathChallenge(
+                runtime,
+                newPath,
+                challengeData,
+                packetNumber: 0x60,
+                observedAtTicks: 30);
+
+        QuicConnectionSendDatagramEffect response =
+            QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                runtime,
+                result,
+                newPath,
+                challengeData,
+                expectMinimumSize: false);
+
+        Assert.NotEqual(activePath, response.PathIdentity);
+    }
 }

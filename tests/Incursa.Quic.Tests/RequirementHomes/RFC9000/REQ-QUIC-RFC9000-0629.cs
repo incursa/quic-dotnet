@@ -7,6 +7,25 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0629
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-0629")]
+    public void MatchesAnyStatelessResetToken_DoesNotUseEarlierSixteenBytesAsTheToken()
+    {
+        byte[] earlierToken = QuicStatelessResetRequirementTestData.CreateToken(0x40);
+        byte[] trailingToken = QuicStatelessResetRequirementTestData.CreateToken(0x80);
+        byte[] datagram = QuicStatelessResetRequirementTestData.FormatDatagram(
+            trailingToken,
+            datagramLength: QuicStatelessReset.MinimumDatagramLength + earlierToken.Length);
+
+        earlierToken.CopyTo(datagram.AsSpan(1));
+
+        Assert.True(QuicStatelessReset.TryGetTrailingStatelessResetToken(datagram, out ReadOnlySpan<byte> parsedTrailingToken));
+        Assert.True(trailingToken.AsSpan().SequenceEqual(parsedTrailingToken));
+        Assert.False(QuicStatelessReset.MatchesAnyStatelessResetToken(datagram, earlierToken));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryGetTrailingStatelessResetToken_DetectsPotentialResetUsingTheTrailingSixteenBytes()
     {

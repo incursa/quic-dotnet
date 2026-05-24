@@ -33,6 +33,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-INT-0016.json`](VER-QUIC-INT-0016.json): canonical advisory peer-characterization matrix pilot and major-peer evidence verification source for the generated pilot, inventory, and evidence reports
 - [`VER-QUIC-INT-0020.json`](VER-QUIC-INT-0020.json): canonical simulator-backed correctness scenario verification source
 - [`VER-QUIC-INT-0021.json`](VER-QUIC-INT-0021.json): canonical all-upstream implementation handshake matrix verification source
+- [`VER-QUIC-INT-0023.json`](VER-QUIC-INT-0023.json): canonical xquic non-handshake residual trace verification source
 - [`VER-QUIC-RFC8999-0001.json`](VER-QUIC-RFC8999-0001.json): canonical RFC 8999 verification source
 - [`VER-QUIC-RFC9000-0001.json`](VER-QUIC-RFC9000-0001.json): canonical RFC 9000 verification source
 - [`VER-QUIC-RFC9000-0002.json`](VER-QUIC-RFC9000-0002.json): canonical RFC 9000 migration address-validation token emission verification source

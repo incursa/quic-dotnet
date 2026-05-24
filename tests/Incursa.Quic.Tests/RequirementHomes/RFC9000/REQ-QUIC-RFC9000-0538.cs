@@ -104,4 +104,35 @@ public sealed class REQ_QUIC_RFC9000_0538
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientDoesNotStartPreferredAddressValidationWhenNoPreferredAddressWasProvided()
+    {
+        QuicTransportParameters transportParameters = new()
+        {
+            InitialSourceConnectionId = [0x10, 0x11, 0x12, 0x13],
+        };
+        QuicConnectionPathIdentity activePath = new("203.0.113.40", "192.0.2.100", 443, 61234);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
+            activePath,
+            transportParameters);
+        QuicConnectionPathIdentity originalValidationPath = new("203.0.113.40", "192.0.2.101", 443, 61235);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                originalValidationPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.CandidatePaths.TryGetValue(originalValidationPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.False(candidatePath.Validation.IsAbandoned);
+        Assert.Single(runtime.CandidatePaths);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+    }
 }

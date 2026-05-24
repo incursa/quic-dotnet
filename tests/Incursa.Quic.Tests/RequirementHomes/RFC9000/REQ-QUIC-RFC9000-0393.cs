@@ -9,6 +9,25 @@ public sealed class REQ_QUIC_RFC9000_0393
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0393")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task RetryReplayCandidateWithExpectedToken_IsAdmittedInsteadOfDiscarded()
+    {
+        await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+            await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync();
+        QuicRetryBootstrapMetadata retryMetadata = await scenario.IssueRetryAsync();
+
+        scenario.SendRetryReplay(retryMetadata.RetryToken);
+
+        await scenario.WaitForCallbackAsync();
+        await scenario.WaitForReplayAdmittedAsync();
+        Assert.True(scenario.ListenerHost.RetryBootstrapReplayValidated);
+        Assert.True(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
+        Assert.Equal(0, scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0393")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RetryReplayCandidateWithWrongExpectedToken_IsDiscardedWithoutAdmission()

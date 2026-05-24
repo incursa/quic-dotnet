@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("dedicated live runner proof and inventory promotion for NAT port rebinding", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("dedicated live runner proof and inventory promotion for NAT address rebinding", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("runner analyzer shim validates server paths from the server trace", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Requires client-host socket rebinding lifecycle support before inventory promotion", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("hosted Linux proof success", output, StringComparison.OrdinalIgnoreCase);

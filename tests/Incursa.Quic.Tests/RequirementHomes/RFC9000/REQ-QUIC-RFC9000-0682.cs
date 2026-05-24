@@ -61,4 +61,64 @@ public sealed class REQ_QUIC_RFC9000_0682
         Assert.Equal((byte)0x02, secondHeader.LongPacketTypeBits);
         Assert.True(secondVersionSpecificData.AsSpan().SequenceEqual(secondHeader.VersionSpecificData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryGetPacketLength_RejectsCoalescedDatagramWhenLeadingLengthExceedsAvailableBytes()
+    {
+        byte[] firstVersionSpecificData = BuildInitialVersionSpecificDataWithDeclaredPayloadLength(
+            token: [0xA0],
+            packetNumber: [0x01, 0x02],
+            protectedPayload: [0xB0],
+            declaredPayloadLength: 64);
+        byte[] firstPacket = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x42,
+            version: 1,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            firstVersionSpecificData);
+        byte[] secondVersionSpecificData = QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+            packetNumber: [0x03, 0x04],
+            protectedPayload: [0xC0]);
+        byte[] secondPacket = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x62,
+            version: 1,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            secondVersionSpecificData);
+        byte[] datagram = [.. firstPacket, .. secondPacket];
+
+        Assert.False(QuicPacketParser.TryGetPacketLength(datagram, out int packetLength));
+        Assert.Equal(0, packetLength);
+    }
+
+    private static byte[] BuildInitialVersionSpecificDataWithDeclaredPayloadLength(
+        ReadOnlySpan<byte> token,
+        ReadOnlySpan<byte> packetNumber,
+        ReadOnlySpan<byte> protectedPayload,
+        ulong declaredPayloadLength)
+    {
+        byte[] tokenLengthBytes = QuicVarintTestData.EncodeMinimal((ulong)token.Length);
+        byte[] payloadLengthBytes = QuicVarintTestData.EncodeMinimal(declaredPayloadLength);
+        byte[] versionSpecificData = new byte[
+            tokenLengthBytes.Length
+            + token.Length
+            + payloadLengthBytes.Length
+            + packetNumber.Length
+            + protectedPayload.Length];
+
+        int offset = 0;
+        tokenLengthBytes.CopyTo(versionSpecificData, offset);
+        offset += tokenLengthBytes.Length;
+        token.CopyTo(versionSpecificData.AsSpan(offset));
+        offset += token.Length;
+        payloadLengthBytes.CopyTo(versionSpecificData, offset);
+        offset += payloadLengthBytes.Length;
+        packetNumber.CopyTo(versionSpecificData.AsSpan(offset));
+        offset += packetNumber.Length;
+        protectedPayload.CopyTo(versionSpecificData.AsSpan(offset));
+
+        return versionSpecificData;
+    }
 }

@@ -34,11 +34,12 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs",
     "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
   ],
-  "design_summary": "The receive-side stream bookkeeping raises the connection and stream receive limits only after application bytes are actually consumed. `QuicStream` converts those non-default credit updates into an internal flow-control-credit event, and the active connection runtime protects each resulting MAX_DATA or MAX_STREAM_DATA payload as an application-data packet through the existing sender/recovery path. Empty reads and post-terminal read attempts do not publish new credit, while the most recent protected MAX_* packets remain ordinary retransmittable application-data packets for the sender/recovery ledger.",
+  "design_summary": "The receive-side stream bookkeeping raises the connection and stream receive limits only after application bytes are actually consumed. `QuicStream` converts those non-default credit updates into an internal flow-control-credit event, and the active connection runtime protects each resulting MAX_DATA or MAX_STREAM_DATA payload as an application-data packet through the existing sender/recovery path. Repeated reads repeat that event-to-protected-packet path with the updated absolute limits. Empty reads and post-terminal read attempts do not publish new credit, while the most recent protected MAX_* packets remain ordinary retransmittable application-data packets for the sender/recovery ledger.",
   "data_and_state_considerations": "Credit ownership remains split between `QuicConnectionStreamState`, which computes the absolute connection and stream limits, and `QuicConnectionRuntime`, which serializes and protects those frame payloads. The slice does not add a dynamic RTT-based autotuning policy, a batching scheduler, public flow-control APIs, or broad sender/recovery rewrites.",
   "edge_cases_and_constraints": [
     "MAX_DATA must carry the current connection maximum data value computed after bytes are consumed.",
     "MAX_STREAM_DATA must carry the current absolute stream offset and matching stream ID.",
+    "Later reads that consume more bytes must publish the updated connection and stream credit values rather than reusing the prior advertised limits.",
     "No protected MAX_DATA or MAX_STREAM_DATA packet may be emitted when no bytes were consumed.",
     "Inbound blocked signals must not create receiver credit without application consumption or alter the advertised credit values computed after bytes are consumed.",
     "After a stream reaches a terminal receive state, the runtime must not emit additional MAX_STREAM_DATA frames for that stream.",

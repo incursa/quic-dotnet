@@ -27,6 +27,19 @@ public sealed class REQ_QUIC_RFC9000_1491
         Assert.Equal("RFC9000-S22P1P2-B1-P1-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RequirementStatement_DoesNotRequireContiguousRangesForEveryMultiCodepointRequest()
+    {
+        JsonElement requirement = LoadRequirement();
+        string statement = requirement.GetProperty("statement").GetString()!;
+
+        Assert.Contains("MAY use a contiguous range", statement);
+        Assert.DoesNotContain("MUST use a contiguous range", statement);
+        Assert.DoesNotContain("MUST NOT request non-contiguous", statement);
+    }
+
     private static string GetRepoRoot()
     {
         DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -42,5 +55,18 @@ public sealed class REQ_QUIC_RFC9000_1491
         }
 
         throw new InvalidOperationException("Unable to locate the repository root from the test output directory.");
+    }
+
+    private static JsonElement LoadRequirement()
+    {
+        string repoRoot = GetRepoRoot();
+        string specPath = Path.Combine(repoRoot, "specs", "requirements", "quic", "SPEC-QUIC-RFC9000.json");
+
+        using JsonDocument document = JsonDocument.Parse(File.ReadAllText(specPath));
+        return document.RootElement
+            .GetProperty("requirements")
+            .EnumerateArray()
+            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1491")
+            .Clone();
     }
 }

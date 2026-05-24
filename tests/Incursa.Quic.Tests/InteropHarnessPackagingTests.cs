@@ -40,6 +40,8 @@ public sealed class InteropHarnessPackagingTests
         Assert.Contains("fd00:cafe:cafe:100::110", helper, StringComparison.Ordinal);
         Assert.Contains("trace.TraceAnalyzer._get_direction_filter = _patched_trace_direction_filter", helper, StringComparison.Ordinal);
         Assert.Contains("testcases_quic.TestCasePortRebinding.check = _patched_port_rebinding_check", helper, StringComparison.Ordinal);
+        Assert.Contains("tr_server = self._server_trace()._get_packets(", helper, StringComparison.Ordinal);
+        Assert.DoesNotContain("tr_server = self._client_trace()._get_packets(", helper, StringComparison.Ordinal);
         Assert.Contains("is_new_path = cur not in paths", helper, StringComparison.Ordinal);
     }
 

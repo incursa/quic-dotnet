@@ -7,6 +7,44 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1735
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1735")]
+    public void HandshakePacketsDoNotClassifyApplicationCloseAsTransportConnectionCloseType()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake,
+            out QuicTlsPacketProtectionMaterial material));
+
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateHandshakeCoordinator();
+        byte[] prefixFramePayload = QuicFrameTestData.BuildConnectionCloseFrame(new QuicConnectionCloseFrame(
+            errorCode: 0x1122,
+            reasonPhrase: []));
+
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            [0xBA],
+            cryptoPayloadOffset: 0,
+            prefixFramePayload,
+            material,
+            out byte[] protectedPacket));
+
+        Assert.True(coordinator.TryOpenHandshakePacket(
+            protectedPacket,
+            material,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicConnectionCloseFrame parsedFrame,
+            out _));
+        Assert.Equal(0x1D, parsedFrame.FrameType);
+        Assert.NotEqual(0x1C, parsedFrame.FrameType);
+        Assert.True(parsedFrame.IsApplicationError);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void HandshakePacketsCanCarryTransportConnectionCloseFrames()

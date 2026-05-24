@@ -14,4 +14,12 @@ public sealed class REQ_QUIC_RFC9000_0159
         Assert.Equal(4096, minimumBuffer.Capacity);
         Assert.Equal(8192, configuredBuffer.Capacity);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void Constructor_RejectsBufferCapacityBelowTheMinimumInterfaceLimit()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new QuicCryptoBuffer(4095));
+    }
 }

@@ -7,7 +7,6 @@ public sealed class REQ_QUIC_RFC9000_0200
     [InlineData(true, 0UL, 4UL)]
     [InlineData(false, 2UL, 6UL)]
     [Requirement("REQ-QUIC-RFC9000-0200")]
-    [Requirement("REQ-QUIC-RFC9000-0031")]
     [Requirement("REQ-QUIC-RFC9000-0034")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

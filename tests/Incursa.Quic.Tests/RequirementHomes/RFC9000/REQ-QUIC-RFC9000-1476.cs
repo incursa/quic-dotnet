@@ -27,6 +27,18 @@ public sealed class REQ_QUIC_RFC9000_1476
         Assert.Equal("RFC9000 21.7 RFC9000-S21P7-B4-P4-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RequirementStatement_DoesNotDowngradeStreamFragmentationMitigationGuidance()
+    {
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1476");
+
+        Assert.True(statement.Contains("SHOULD provide mitigations", StringComparison.Ordinal));
+        Assert.False(statement.Contains("MAY provide mitigations", StringComparison.OrdinalIgnoreCase));
+        Assert.False(statement.Contains("without mitigations", StringComparison.OrdinalIgnoreCase));
+    }
+
     private static string GetRepoRoot()
     {
         DirectoryInfo? directory = new(AppContext.BaseDirectory);

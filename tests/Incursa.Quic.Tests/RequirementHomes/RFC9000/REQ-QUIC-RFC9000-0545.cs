@@ -67,4 +67,30 @@ public sealed class REQ_QUIC_RFC9000_0545
         Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, migratedPathResult.Disposition);
         Assert.Equal(handle, migratedPathResult.Handle);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EndpointDoesNotRouteThePreferredAddressConnectionIdAfterTheRouteIsRetired()
+    {
+        byte[] preferredConnectionId = [0x20, 0x21, 0x22, 0x23];
+        using QuicConnectionRuntimeEndpoint endpoint = new(2);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity activePath = new("203.0.113.34", "198.51.100.34", 443, 61234);
+        QuicConnectionPathIdentity migratedPath = new("203.0.113.35", "198.51.100.35", 443, 61235);
+
+        Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+        Assert.True(endpoint.TryUpdateEndpointBinding(handle, activePath));
+        Assert.True(endpoint.TryRegisterConnectionId(handle, preferredConnectionId));
+        Assert.True(endpoint.TryRetireConnectionId(handle, preferredConnectionId));
+        Assert.True(endpoint.TryUpdateEndpointBinding(handle, migratedPath));
+
+        QuicConnectionIngressResult migratedPathResult = endpoint.ReceiveDatagram(
+            QuicHeaderTestData.BuildShortHeader(0x00, [0x20, 0x21, 0x22, 0x23, 0xBB]),
+            migratedPath);
+
+        Assert.Equal(QuicConnectionIngressDisposition.Unroutable, migratedPathResult.Disposition);
+        Assert.Null(migratedPathResult.Handle);
+    }
 }

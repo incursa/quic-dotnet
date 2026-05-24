@@ -4,6 +4,37 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0277
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryFormatTransportParameters_DoesNotEmitDisableActiveMigrationWhenServerAllowsMigration()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            MaxIdleTimeout = 30,
+        };
+
+        Span<byte> destination = stackalloc byte[8];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Server,
+            destination,
+            out int bytesWritten));
+
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterTuple(
+            0x01,
+            QuicVarintTestData.EncodeMinimal(30));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            destination[..bytesWritten],
+            QuicTransportParameterRole.Client,
+            out QuicTransportParameters parsed));
+        Assert.False(parsed.DisableActiveMigration);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">

@@ -4,8 +4,8 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0265
 {
     [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ShouldSendVersionNegotiation_AllowsSuppressingRepeatedResponses()
     {
         Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
@@ -13,6 +13,18 @@ public sealed class REQ_QUIC_RFC9000_0265
             QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
             QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
             hasAlreadySentVersionNegotiation: true));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ShouldSendVersionNegotiation_DoesNotSuppressTheFirstEligibleResponse()
+    {
+        Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+            QuicS5P2P2ServerPreAcceptanceTestSupport.UnsupportedVersion,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+            hasAlreadySentVersionNegotiation: false));
     }
 
     [Fact]

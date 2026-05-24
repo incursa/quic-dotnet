@@ -8,6 +8,37 @@ public sealed class REQ_QUIC_RFC9000_0052
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0052")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryReceiveStreamFrame_PreservesOriginalPayloadWhenConflictingDuplicateDataIsPermitted()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 16,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(1, [0x11, 0x22], offset: 0), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(1, [0xAA, 0xBB], offset: 0), out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Span<byte> destination = stackalloc byte[2];
+        Assert.True(state.TryReadStreamData(
+            1,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out errorCode));
+
+        Assert.Equal(default, errorCode);
+        Assert.Equal(2, bytesWritten);
+        Assert.False(completed);
+        Assert.True(new byte[] { 0x11, 0x22 }.AsSpan().SequenceEqual(destination));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0052")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_DoesNotTreatConflictingRetransmissionsAtTheSameOffsetAsAProtocolViolation()

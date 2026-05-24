@@ -7,6 +7,29 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0990
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-0990")]
+    public void TryBuildProtectedInitialPacketForHandshakeDestination_RejectsServerInitialsWithoutASourceConnectionId()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId);
+        Assert.True(coordinator.TrySetHandshakeDestinationConnectionId(QuicS17P2P2TestSupport.InitialSourceConnectionId));
+
+        Assert.False(coordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+            QuicS12P3TestSupport.CreateSequentialBytes(0xA0, 20),
+            cryptoPayloadOffset: 0,
+            serverProtection,
+            out _,
+            out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">

@@ -7,6 +7,32 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1011
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1011")]
+    public void AckResponsePayloadIsNotOpenedWithHandshakePacketProtection()
+    {
+        byte[] ackResponsePayload = QuicS17P2P3TestSupport.CreateAckResponsePayload();
+        QuicTlsPacketProtectionMaterial oneRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt);
+        QuicTlsPacketProtectionMaterial handshakeMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake);
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreatePacketCoordinator();
+
+        byte[] oneRttPacket = QuicS17P2P3TestSupport.BuildExpectedOneRttPacket(
+            ackResponsePayload,
+            oneRttMaterial,
+            keyPhase: false);
+
+        Assert.False(coordinator.TryOpenProtectedApplicationDataPacket(
+            oneRttPacket,
+            handshakeMaterial,
+            out _,
+            out _,
+            out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void AckResponsePayloadIsBuiltAsAOneRttPacket()

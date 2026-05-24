@@ -34,4 +34,26 @@ public sealed class REQ_QUIC_RFC9000_0851
         Assert.True(scenario.ClientRuntime.TlsState.PeerTransportParametersCommitted);
         Assert.NotNull(scenario.ClientRuntime.TlsState.PeerTransportParameters);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Requirement("REQ-QUIC-RFC9000-0851")]
+    [Trait("Category", "Negative")]
+    public void PacketLengthParsing_DoesNotAcceptAnIncompleteTrailingCoalescedPacket()
+    {
+        QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+            QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+        byte[] truncatedCoalescedDatagram =
+        [
+            .. scenario.InitialPacket,
+            .. scenario.HandshakePacket.AsSpan(0, scenario.HandshakePacket.Length - 1),
+        ];
+
+        Assert.True(QuicPacketParser.TryGetPacketLength(truncatedCoalescedDatagram, out int firstPacketLength));
+        Assert.Equal(scenario.InitialPacket.Length, firstPacketLength);
+
+        Assert.False(QuicPacketParser.TryGetPacketLength(
+            truncatedCoalescedDatagram.AsSpan(firstPacketLength),
+            out _));
+    }
 }

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-INT-0016",
   "artifact_type": "work_item",
-  "status": "planned",
+  "status": "complete",
   "title": "QUIC Advisory Peer Characterization Matrix Pilot Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -27,6 +27,7 @@
     "REQ-QUIC-INT-0022"
   ],
   "planned_changes": "- Add a matrix interpretation layer that captures each interop cell's peer slot, local role, testcase, outcome class, failure class, and artifact root instead of flattening mixed outcomes to green/red.\n- Seed the first rows from the current connectionmigration proof and blocked comparison bundles, then reuse the same classification shape for the currently executable non-HTTP/3 major-peer matrix cells.\n- Emit a generated advisory seed report under `specs/generated/quic/interop-peer-characterization-matrix-pilot.json` and `.md` so the pilot has a repo-native overlay surface.\n- Emit a generated advisory major-peer inventory report under `specs/generated/quic/interop-major-peer-matrix-inventory.json` and `.md` so the current `REQ-QUIC-INT-0019` cell set is explicit and reviewable.\n- Emit a generated advisory major-peer evidence report under `specs/generated/quic/interop-major-peer-matrix-evidence-25904716076.json` and `.md` so the completed hosted run is preserved with per-cell failure classes.\n- Keep the current helper dispatch shapes, peer aliases, and ordinary CI gates unchanged.\n- Update current-status and gap notes so the pilot is recorded as advisory analysis rather than support promotion.\n- Add or adjust focused tests around `InteropRunnerScriptFailureSummaryTests.cs` and the existing requirement-home tests so the matrix rows remain traceable to `REQ-QUIC-INT-0019` and `REQ-QUIC-INT-0022`.\n- Keep the external runner repository untouched for the pilot; the matrix should be derived from repo-local helper output and preserved artifact bundles.",
+  "completion_notes": "Completed the advisory peer-characterization reporting slice without runtime transport or helper dispatch changes. The generated `interop-peer-characterization-matrix-pilot` report combines connectionmigration proof/comparison rows with the completed major-peer evidence run `25904716076`; the generated `interop-major-peer-matrix-inventory` report preserves the 20 planned major-peer cells; and the generated `interop-major-peer-matrix-evidence-25904716076` report preserves 11 passed and 9 failed rows with peer-specific failure classes. Focused requirement-home tests cover the advisory matrix shape, missing-field rejection, major-peer inventory rows, and major-peer evidence rows. This closes the advisory reporting gap while keeping the reports non-promoting and outside ordinary CI gates.",
   "out_of_scope": [
     "changing QUIC transport semantics",
     "changing helper execution semantics",

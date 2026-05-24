@@ -27,12 +27,13 @@ public sealed class REQ_QUIC_INT_0026
         Assert.Contains("performance-only", plan, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("sim/scenarios/simple-p2p/README.md", plan, StringComparison.Ordinal);
         Assert.Contains("sim/scenarios/droplist/README.md", plan, StringComparison.Ordinal);
-        Assert.Contains("REQ-QUIC-INT-0026", gapLedger, StringComparison.Ordinal);
-        Assert.Contains("simulator settings stay evidence inputs", gapLedger, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("interop-network-simulator-backed-test-surface", gapLedger, StringComparison.Ordinal);
         Assert.Contains("scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1", architecture, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-BASE-0001", workItem, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-LOSS-0001", workItem, StringComparison.Ordinal);
         Assert.Contains("NetworkSimulatorScenarioScriptTests", verification, StringComparison.Ordinal);
+        Assert.Contains("accepts those preserved baseline and deterministic-loss execution bundles", verification, StringComparison.Ordinal);
+        Assert.Contains("closes the `interop-network-simulator-backed-test-surface` gap", verification, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-BASE-0001", helper, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-LOSS-0001", helper, StringComparison.Ordinal);
         Assert.Contains("Copy-SimulatorLogs", helper, StringComparison.Ordinal);

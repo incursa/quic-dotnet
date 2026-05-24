@@ -25,11 +25,32 @@ public sealed class REQ_QUIC_RFC9000_0170
         Assert.True(state.TryReceiveStreamFrame(secondFrame, out QuicTransportErrorCode secondErrorCode));
         Assert.Equal(default, secondErrorCode);
         Assert.Equal(4UL, state.ConnectionAccountedBytesReceived);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0170")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamFrame_RejectsBytesThatExceedTheConnectionReceiveLimitAcrossStreams()
+    {
+        QuicConnectionStreamState state = CreateState(connectionReceiveLimit: 4, peerBidirectionalReceiveLimit: 8);
+
+        byte[] firstPacket = QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 1, [0xAA, 0xBB], offset: 0);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(firstPacket, out QuicStreamFrame firstFrame));
+        Assert.True(state.TryReceiveStreamFrame(firstFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] secondPacket = QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 5, [0xCC, 0xDD], offset: 0);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(secondPacket, out QuicStreamFrame secondFrame));
+        Assert.True(state.TryReceiveStreamFrame(secondFrame, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(4UL, state.ConnectionAccountedBytesReceived);
 
         byte[] excessPacket = QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 1, [0xEE], offset: 2);
         Assert.True(QuicStreamParser.TryParseStreamFrame(excessPacket, out QuicStreamFrame excessFrame));
         Assert.False(state.TryReceiveStreamFrame(excessFrame, out QuicTransportErrorCode excessErrorCode));
         Assert.Equal(QuicTransportErrorCode.FlowControlError, excessErrorCode);
+        Assert.Equal(4UL, state.ConnectionAccountedBytesReceived);
     }
 
     [Fact]

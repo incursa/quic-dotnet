@@ -105,4 +105,45 @@ public sealed class REQ_QUIC_RFC9000_0540
         Assert.False(runtime.CandidatePaths.ContainsKey(originalValidationPath));
         Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(originalValidationPath));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0540")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds()
+    {
+        QuicPreferredAddress preferredAddress = new()
+        {
+            IPv4Address = [198, 51, 100, 42],
+            IPv4Port = 9450,
+            IPv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x2A],
+            IPv6Port = 9560,
+            ConnectionId = [0x20, 0x21, 0x22, 0x23],
+            StatelessResetToken = [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F],
+        };
+        QuicConnectionPathIdentity activePath = new("203.0.113.42", "192.0.2.120", 443, 61254);
+        QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(activePath, preferredAddress);
+        QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 19);
+        QuicConnectionPathIdentity originalValidationPath = new("203.0.113.42", "192.0.2.121", 443, 61255);
+        QuicConnectionPathIdentity preferredValidationPath = new("198.51.100.42", "192.0.2.121", 9450, 61255);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(20, originalValidationPath, datagram), nowTicks: 20).StateChanged);
+        Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(21, preferredValidationPath, datagram), nowTicks: 21).StateChanged);
+
+        QuicConnectionTransitionResult failureResult = runtime.Transition(
+            new QuicConnectionPathValidationFailedEvent(
+                ObservedAtTicks: 30,
+                preferredValidationPath,
+                IsAbandoned: true),
+            nowTicks: 30);
+
+        Assert.True(failureResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(originalValidationPath, out QuicConnectionCandidatePathRecord originalCandidatePath));
+        Assert.False(originalCandidatePath.Validation.IsValidated);
+        Assert.False(originalCandidatePath.Validation.IsAbandoned);
+        Assert.False(runtime.RecentlyValidatedPaths.ContainsKey(originalValidationPath));
+    }
 }

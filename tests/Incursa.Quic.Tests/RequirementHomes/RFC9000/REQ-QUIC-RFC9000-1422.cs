@@ -21,4 +21,25 @@ public sealed class REQ_QUIC_RFC9000_1422
         Assert.Equal(1_300UL, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
         Assert.Equal(1_300UL, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RejectsMismatchedQuotedPackets()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
+
+        byte[] quotedPacket = QuicS14P2P1TestSupport.BuildQuotedInitialPacket(
+            runtime,
+            destinationConnectionId: [0x99]);
+
+        Assert.False(runtime.TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+            runtime.ActivePath!.Value.Identity,
+            quotedPacket,
+            1_300));
+        Assert.Equal(1_400UL, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        Assert.Equal(1_400UL, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+    }
 }

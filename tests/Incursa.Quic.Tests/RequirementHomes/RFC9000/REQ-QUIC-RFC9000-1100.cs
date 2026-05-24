@@ -77,4 +77,17 @@ public sealed class REQ_QUIC_RFC9000_1100
         Assert.True(parameters.InitialSourceConnectionId!.AsSpan().SequenceEqual(parsed.InitialSourceConnectionId!));
         Assert.True(parameters.RetrySourceConnectionId!.AsSpan().SequenceEqual(parsed.RetrySourceConnectionId!));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseTransportParameters_RejectsMalformedExtensionData()
+    {
+        byte[] malformedExtensionData = [0x01, 0x02, 0x1E];
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            malformedExtensionData,
+            QuicTransportParameterRole.Client,
+            out _));
+    }
 }

@@ -41,6 +41,39 @@ public sealed class REQ_QUIC_RFC9000_0027
         AssertPeerStreamsRemainOpen(state, unidirectionalStreamIds, QuicStreamSendState.None);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0027")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void StreamState_EnforcesConfiguredConcurrentStreamLimits()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            connectionReceiveLimit: 64,
+            incomingBidirectionalStreamLimit: 1,
+            peerBidirectionalStreamLimit: 1,
+            peerBidirectionalReceiveLimit: 8);
+
+        Assert.True(state.TryOpenLocalStream(
+            bidirectional: true,
+            out _,
+            out QuicStreamsBlockedFrame blockedFrame));
+        Assert.Equal(default, blockedFrame);
+        Assert.False(state.TryOpenLocalStream(
+            bidirectional: true,
+            out _,
+            out blockedFrame));
+        Assert.NotEqual(default, blockedFrame);
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(1, [0x31]),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.False(state.TryReceiveStreamFrame(
+            ParseStreamFrame(5, [0x51]),
+            out errorCode));
+        Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
+    }
+
     private static ulong[] OpenLocalStreams(QuicConnectionStreamState state, bool bidirectional, int count)
     {
         ulong[] streamIds = new ulong[count];

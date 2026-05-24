@@ -34,4 +34,25 @@ public sealed class REQ_QUIC_RFC9000_1293
         Assert.False(state.TryReceiveStreamFrame(thirdStreamFrame, out errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryReceiveStreamFrame_DoesNotFreeClosedStreamCapacityWithoutMaxStreamsIncrease()
+    {
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            incomingUnidirectionalStreamLimit: 1);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 3, streamData: []),
+            out QuicStreamFrame closedStreamFrame));
+        Assert.True(state.TryReceiveStreamFrame(closedStreamFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x08, streamId: 7, streamData: [0x51]),
+            out QuicStreamFrame nextStreamFrame));
+        Assert.False(state.TryReceiveStreamFrame(nextStreamFrame, out errorCode));
+        Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
+    }
 }

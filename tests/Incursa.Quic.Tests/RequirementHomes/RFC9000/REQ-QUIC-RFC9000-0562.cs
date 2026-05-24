@@ -54,6 +54,38 @@ public sealed class REQ_QUIC_RFC9000_0562
         Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm && arm.TimerKind == QuicConnectionTimerKind.CloseLifetime);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void LocalCloseRequested_DoesNotLeaveOrdinarySendingOrIdleTimeoutEnabled()
+    {
+        QuicConnectionRuntime runtime = CreateRuntime();
+        QuicConnectionPathIdentity path = new("203.0.113.60", RemotePort: 443);
+
+        runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 0,
+                path,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 0);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionLocalCloseRequestedEvent(
+                ObservedAtTicks: 1,
+                new QuicConnectionCloseMetadata(
+                    TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                    ApplicationErrorCode: null,
+                    TriggeringFrameType: 0x1c,
+                    ReasonPhrase: null)),
+            nowTicks: 1);
+
+        Assert.Contains(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+        Assert.False(runtime.CanSendOrdinaryPackets);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout));
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);

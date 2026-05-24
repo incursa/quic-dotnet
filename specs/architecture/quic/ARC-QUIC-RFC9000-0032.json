@@ -16,6 +16,7 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-0392",
     "REQ-QUIC-RFC9000-0399",
+    "REQ-QUIC-RFC9000-0401",
     "REQ-QUIC-RFC9000-S8P1P3-0010",
     "REQ-QUIC-RFC9000-S8P1P3-0012",
     "REQ-QUIC-RFC9000-S8P1P3-0013",
@@ -30,6 +31,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3TokenLifecycleTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0392.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0399.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0401.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0012.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0013.cs",
@@ -38,6 +40,7 @@
   "design_summary": "The client token model accepts only non-empty NEW_TOKEN-derived values, binds them to a remote IPEndPoint and QUIC version, and allows exactly one matching consume operation for a connection attempt. Internal client option capture consumes an applicable retained token and stores the copied bytes in connection settings. Client bootstrap forwards that token into the handshake bootstrap event, and the runtime encodes it in the Token field of outgoing Initial packets for the attempt. Retry processing clears any retained Initial token and uses the Retry token only for the immediate replay Initial packets.",
   "data_and_state_considerations": "The retained-token object copies input bytes at creation and returns copied token bytes on successful consumption. Consumption is guarded by Interlocked.CompareExchange so concurrent attempts cannot reuse the same token object. Endpoint matching currently uses address and port equality, and version matching is scoped to QUIC version 1.",
   "edge_cases_and_constraints": [
+    "A NEW_TOKEN-derived token retained from a previous connection to the same server can be consumed for a later Initial.",
     "Retry tokens are rejected as future-connection token sources.",
     "Empty NEW_TOKEN values are not retained.",
     "A token for a different server endpoint is not consumed and therefore leaves the Initial Token field empty.",

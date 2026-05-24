@@ -57,6 +57,34 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0013
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void RuntimeSendsImmediateAckWhenPostAckBurstSkipsApplicationPacketNumbers()
+    {
+        using QuicConnectionRuntime runtime = QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath();
+
+        QuicConnectionTransitionResult first = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1);
+        Assert.Empty(first.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicConnectionTransitionResult second = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 20,
+            packetNumber: 2);
+        AssertAckLargest(runtime, second, expectedLargestAcknowledged: 2);
+
+        QuicConnectionTransitionResult gapped = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 30,
+            packetNumber: 5);
+
+        AssertAckLargest(runtime, gapped, expectedLargestAcknowledged: 5);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RecordIncomingPacket_ContiguousAckElicitingPacketKeepsNormalDelayedAckScheduling()
@@ -145,5 +173,19 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0013
                 }
             }
         }
+    }
+
+    private static void AssertAckLargest(
+        QuicConnectionRuntime runtime,
+        QuicConnectionTransitionResult result,
+        ulong expectedLargestAcknowledged)
+    {
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payloadBytes, out QuicAckFrame ackFrame, out int ackBytesConsumed));
+        Assert.Equal(expectedLargestAcknowledged, ackFrame.LargestAcknowledged);
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(payloadBytes.AsSpan(ackBytesConsumed)).IsEmpty);
     }
 }

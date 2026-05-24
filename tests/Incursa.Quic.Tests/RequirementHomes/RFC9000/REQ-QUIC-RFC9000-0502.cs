@@ -54,6 +54,54 @@ public sealed class REQ_QUIC_RFC9000_0502
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0502")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PathChallengeFramesOnCandidatePathsRemainProbingUntilValidationCompletes()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        Assert.True(runtime.ActivePath.HasValue);
+        QuicConnectionPathIdentity activePath = runtime.ActivePath!.Value.Identity;
+        QuicConnectionPathIdentity candidatePath = new("203.0.113.86", RemotePort: 443);
+        byte[] challengeData =
+        [
+            0x20, 0x21, 0x22, 0x23,
+            0x24, 0x25, 0x26, 0x27,
+        ];
+
+        _ = QuicS8P2PathValidationTestSupport.StartCandidatePath(
+            runtime,
+            candidatePath,
+            observedAtTicks: 20);
+        Assert.True(runtime.CandidatePaths.TryGetValue(candidatePath, out _));
+
+        QuicConnectionTransitionResult result = QuicS8P2PathValidationTestSupport.ReceiveProtectedPathChallenge(
+            runtime,
+            candidatePath,
+            challengeData,
+            packetNumber: 2,
+            observedAtTicks: 21);
+
+        QuicConnectionSendDatagramEffect send = Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(candidatePath, send.PathIdentity);
+        Assert.True(QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+            runtime,
+            send.Datagram.Span,
+            out _,
+            out _,
+            out _));
+        Assert.True(QuicS8P2PathValidationTestSupport.TryOpenPathResponsePayload(
+            runtime,
+            send.Datagram.Span,
+            out QuicPathResponseFrame parsedResponse,
+            out _,
+            out _));
+        Assert.True(challengeData.AsSpan().SequenceEqual(parsedResponse.Data));
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0502")]
     [Requirement("REQ-QUIC-RFC9000-0815")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
     [CoverageType(RequirementCoverageType.Fuzz)]

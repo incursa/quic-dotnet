@@ -66,6 +66,31 @@ public sealed class REQ_QUIC_RFC9000_1091
         Assert.True(followupOpenedPacket.AsSpan(followupPayloadOffset, payload.Length).SequenceEqual(payload));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1091">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-1091")]
+    public void RuntimeWithSpinBitEnabled_DoesNotIgnoreTheIncomingSpinBitForThePath()
+    {
+        using QuicConnectionRuntime runtime = QuicS17P4SpinBitTestSupport.CreateActiveOneRttRuntime(
+            QuicTlsRole.Client);
+
+        QuicConnectionTransitionResult receiveResult = QuicS17P4SpinBitTestSupport.ReceivePeerPingPacket(
+            runtime,
+            spinBit: true,
+            packetNumber: 0,
+            observedAtTicks: 10);
+
+        Assert.True(receiveResult.StateChanged);
+        QuicS17P4SpinBitTestSupport.AssertLocalOneRttCloseSpinBit(
+            runtime,
+            expectedSpinBit: false,
+            observedAtTicks: 11);
+    }
+
     private static byte[] BuildProtectedApplicationDataPacket(
         bool incomingSpinBit,
         QuicTlsPacketProtectionMaterial material,

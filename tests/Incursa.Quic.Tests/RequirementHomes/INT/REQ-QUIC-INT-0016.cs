@@ -270,6 +270,28 @@ public sealed class REQ_QUIC_INT_0016
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AdvisoryPeerCharacterizationMatrixClosureIsRecordedInTraceArtifacts()
+    {
+        string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-INT.json");
+        string gaps = ReadRepositoryFile("specs/requirements/quic/REQUIREMENT-GAPS.md");
+        using JsonDocument architecture = JsonDocument.Parse(ReadRepositoryFile("specs/architecture/quic/ARC-QUIC-INT-0016.json"));
+        using JsonDocument workItem = JsonDocument.Parse(ReadRepositoryFile("specs/work-items/quic/WI-QUIC-INT-0016.json"));
+        using JsonDocument verification = JsonDocument.Parse(ReadRepositoryFile("specs/verification/quic/VER-QUIC-INT-0016.json"));
+
+        Assert.Equal("implemented", architecture.RootElement.GetProperty("status").GetString());
+        Assert.Equal("complete", workItem.RootElement.GetProperty("status").GetString());
+        Assert.Equal("passed", verification.RootElement.GetProperty("status").GetString());
+        Assert.Contains("ARC-QUIC-INT-0016", spec, StringComparison.Ordinal);
+        Assert.Contains("WI-QUIC-INT-0016", spec, StringComparison.Ordinal);
+        Assert.Contains("VER-QUIC-INT-0016", spec, StringComparison.Ordinal);
+        Assert.DoesNotContain("interop-major-peer-matrix-inventory` remains open", gaps, StringComparison.Ordinal);
+        Assert.DoesNotContain("interop-peer-characterization-matrix-pilot` remains open", gaps, StringComparison.Ordinal);
+        Assert.Contains("closes the advisory reporting gap", verification.RootElement.GetProperty("status_summary").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void AdvisoryPeerCharacterizationMatrixRejectsMissingEvidenceFields()

@@ -168,4 +168,21 @@ public sealed class REQ_QUIC_RFC9000_0971
         Assert.Equal(0u, header.Version);
         Assert.True(header.IsVersionNegotiation);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0971")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsNonZeroVersionField()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            supportedVersions: [0x11223344]);
+
+        packet[4] = 0x01;
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
+    }
 }

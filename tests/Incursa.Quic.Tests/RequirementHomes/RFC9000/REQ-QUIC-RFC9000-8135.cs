@@ -45,6 +45,29 @@ public sealed class REQ_QUIC_RFC9000_8135
         Assert.True(scenario.CallbackEntered.IsCompleted);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-8135")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task InvalidRetryToken_DoesNotAllowTheServerHandshakeToProceed()
+    {
+        await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+            await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync();
+        QuicRetryBootstrapMetadata retryMetadata = await scenario.IssueRetryAsync();
+
+        byte[] wrongToken = retryMetadata.RetryToken.ToArray();
+        wrongToken[^1] ^= 0x01;
+        scenario.SendRetryReplay(wrongToken);
+
+        await scenario.WaitForNoCallbackAsync();
+        Assert.False(scenario.ListenerHost.RetryBootstrapReplayValidated);
+        Assert.False(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
+        Assert.False(scenario.CallbackEntered.IsCompleted);
+        Assert.Equal(
+            QuicS8P1P3ServerTokenValidationTestSupport.TokenMismatchFailureCode,
+            scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));

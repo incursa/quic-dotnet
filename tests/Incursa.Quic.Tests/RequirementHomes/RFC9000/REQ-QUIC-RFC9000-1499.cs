@@ -27,6 +27,20 @@ public sealed class REQ_QUIC_RFC9000_1499
         Assert.Equal("RFC 9000 section 22.1.3 RFC9000-S22P1P3-B2-P2-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1499")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RequirementStatement_DoesNotEquateReviewAttemptWithReclaimingTheCodepoint()
+    {
+        JsonElement requirement = LoadRequirement();
+        string statement = requirement.GetProperty("statement").GetString()!;
+
+        Assert.Contains("MUST attempt to determine", statement);
+        Assert.DoesNotContain("MAY be removed", statement);
+        Assert.DoesNotContain("MUST NOT be reclaimed", statement);
+    }
+
     private static string GetRepoRoot()
     {
         DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -42,5 +56,18 @@ public sealed class REQ_QUIC_RFC9000_1499
         }
 
         throw new InvalidOperationException("Unable to locate the repository root from the test output directory.");
+    }
+
+    private static JsonElement LoadRequirement()
+    {
+        string repoRoot = GetRepoRoot();
+        string specPath = Path.Combine(repoRoot, "specs", "requirements", "quic", "SPEC-QUIC-RFC9000.json");
+
+        using JsonDocument document = JsonDocument.Parse(File.ReadAllText(specPath));
+        return document.RootElement
+            .GetProperty("requirements")
+            .EnumerateArray()
+            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1499")
+            .Clone();
     }
 }

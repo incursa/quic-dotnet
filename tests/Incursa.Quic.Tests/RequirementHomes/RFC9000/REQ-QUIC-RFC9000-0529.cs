@@ -68,6 +68,34 @@ public sealed class REQ_QUIC_RFC9000_0529
             && promote.PathIdentity == PreferredPath);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0529")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientDoesNotMigrateToTheChosenPreferredAddressBeforeValidationCompletes()
+    {
+        using QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult discoveryResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                PreferredPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 20);
+
+        Assert.True(discoveryResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(OriginalPath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(PreferredPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.DoesNotContain(discoveryResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            discoveryResult,
+            PreferredPath,
+            runtime: runtime);
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         return QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(

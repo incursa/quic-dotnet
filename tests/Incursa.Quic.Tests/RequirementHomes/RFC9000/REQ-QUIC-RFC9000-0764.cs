@@ -7,6 +7,41 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0764
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0764")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ShouldIncludeAckFrameWithOutgoingPacket_AllowsAckAfterAckElicitingPacketArrives()
+    {
+        QuicSenderFlowController sender = new();
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4,
+            ackEliciting: false,
+            receivedAtMicros: 1_000);
+
+        Assert.False(sender.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 101_000,
+            maxAckDelayMicros: 25_000));
+
+        sender.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 5,
+            ackEliciting: true,
+            receivedAtMicros: 101_100);
+
+        Assert.True(sender.CanSendAckOnlyPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 101_200,
+            maxAckDelayMicros: 25_000));
+        Assert.True(sender.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 126_100,
+            maxAckDelayMicros: 25_000));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

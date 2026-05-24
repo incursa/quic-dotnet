@@ -14,6 +14,7 @@
     "VER-QUIC-RFC9000-0039"
   ],
   "satisfies": [
+    "REQ-QUIC-RFC9000-0021",
     "REQ-QUIC-RFC9000-S19P8-0001",
     "REQ-QUIC-RFC9000-S19P8-0002",
     "REQ-QUIC-RFC9000-S19P8-0003",
@@ -40,6 +41,7 @@
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/QuicStreamFrameBits.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0021.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P8-*.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS19P8StreamFrameTestSupport.cs"
   ],

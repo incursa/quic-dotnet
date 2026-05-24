@@ -49,6 +49,27 @@ public sealed class REQ_QUIC_RFC9000_0345
         Assert.Null(resolved.RetrySourceConnectionId);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientDoesNotRetainRememberedProhibitedValuesWhenServerOmitsNewHandshakeValues()
+    {
+        QuicTransportParameters remembered = CreateProhibitedValues(prefix: 0x10);
+
+        QuicTransportParameters resolved =
+            QuicZeroRttTransportParameterPolicy.ResolveClientHandshakeValuesForProhibitedZeroRttParameters(
+                remembered,
+                handshakeTransportParameters: new QuicTransportParameters());
+
+        Assert.Null(resolved.OriginalDestinationConnectionId);
+        Assert.Null(resolved.StatelessResetToken);
+        Assert.NotEqual(remembered.MaxAckDelay, resolved.MaxAckDelay);
+        Assert.Equal(QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros, resolved.MaxAckDelay);
+        Assert.Null(resolved.PreferredAddress);
+        Assert.Null(resolved.InitialSourceConnectionId);
+        Assert.Null(resolved.RetrySourceConnectionId);
+    }
+
     private static QuicTransportParameters CreateProhibitedValues(byte prefix)
     {
         return new QuicTransportParameters

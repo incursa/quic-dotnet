@@ -27,4 +27,20 @@ public sealed class REQ_QUIC_RFC9000_0895
         Assert.Equal(secondVersion, header.GetSupportedVersion(2));
         Assert.True(header.ContainsSupportedVersion(highBitVersion));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParseVersionNegotiation_RejectsSupportedVersionListsThatAreNotWholeUInt32Values()
+    {
+        byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+            headerControlBits: 0x4C,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            supportedVersions: [0x00000001]);
+
+        byte[] nonWholeVersionList = [.. packet, 0xFF];
+
+        Assert.False(QuicPacketParser.TryParseVersionNegotiation(nonWholeVersionList, out _));
+    }
 }

@@ -18,4 +18,21 @@ public sealed class REQ_QUIC_RFC9000_0275
 
         Assert.Equal(QuicListenerPreAcceptanceDatagramAction.Drop, action);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets()
+    {
+        byte[] datagram = QuicS5P2P2ServerPreAcceptanceTestSupport.BuildUnsupportedVersionDatagram(
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize);
+
+        QuicListenerPreAcceptanceDatagramAction action =
+            QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
+                datagram,
+                QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+                retryBootstrapEnabled: false);
+
+        Assert.Equal(QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation, action);
+    }
 }

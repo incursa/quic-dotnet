@@ -42,4 +42,38 @@ public sealed class REQ_QUIC_RFC9000_0475
             migratedPath,
             runtime: runtime);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TheRuntimeDoesNotPromoteTheNewLocalAddressBeforeValidationCompletes()
+    {
+        QuicConnectionPathIdentity activePath = new(
+            RemoteAddress: "203.0.113.42",
+            LocalAddress: "198.51.100.42",
+            RemotePort: 443,
+            LocalPort: 61266);
+        QuicConnectionPathIdentity migratedPath = new(
+            RemoteAddress: "203.0.113.42",
+            LocalAddress: "198.51.100.43",
+            RemotePort: 443,
+            LocalPort: 61267);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicPathMigrationRecoveryTestSupport.AddUnusedPeerConnectionId(runtime);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        QuicConnectionTransitionResult receiveResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                migratedPath,
+                datagram),
+            nowTicks: 20);
+
+        Assert.True(receiveResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.DoesNotContain(receiveResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+    }
 }

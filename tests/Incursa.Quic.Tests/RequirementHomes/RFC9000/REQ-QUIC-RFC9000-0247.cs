@@ -4,6 +4,34 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0247
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NewConnectionIdFrame_ClosesWhenTheIndicatedConnectionIdsExceedProcessingCapacity()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+
+        Assert.True(QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
+            runtime,
+            sequenceNumber: 1UL,
+            retirePriorTo: 0UL,
+            connectionId: [0x50, 0x51, 0x52],
+            observedAtTicks: 9,
+            statelessResetTokenStart: 0x50).StateChanged);
+
+        QuicConnectionTransitionResult result = QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
+            runtime,
+            sequenceNumber: 2UL,
+            retirePriorTo: 0UL,
+            connectionId: [0x60, 0x61, 0x62],
+            observedAtTicks: 10,
+            statelessResetTokenStart: 0x60);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+        Assert.Equal(QuicTransportErrorCode.ConnectionIdLimitError, runtime.TerminalState!.Value.Close.TransportErrorCode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void NewConnectionIdFrame_WithinRetirementCapacityDoesNotCloseTheConnection()

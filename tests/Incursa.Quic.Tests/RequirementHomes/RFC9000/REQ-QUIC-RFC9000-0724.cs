@@ -28,4 +28,21 @@ public sealed class REQ_QUIC_RFC9000_0724
         Assert.Equal(pathChallenge.Length, pathChallengeBytesConsumed);
         Assert.True(pathChallengeData.AsSpan().SequenceEqual(parsedPathChallenge.Data));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void FixedTypeFrames_DoNotIgnoreTheFrameTypeWhenPayloadShapeMatchesAnotherFrame()
+    {
+        byte[] pathData = [1, 2, 3, 4, 5, 6, 7, 8];
+        byte[] pathResponsePayload = [0x1B, .. pathData];
+
+        Assert.False(QuicFrameCodec.TryParsePathChallengeFrame(pathResponsePayload, out _, out _));
+        Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
+            pathResponsePayload,
+            out QuicPathResponseFrame parsedPathResponse,
+            out int bytesConsumed));
+        Assert.Equal(pathResponsePayload.Length, bytesConsumed);
+        Assert.True(pathData.AsSpan().SequenceEqual(parsedPathResponse.Data));
+    }
 }

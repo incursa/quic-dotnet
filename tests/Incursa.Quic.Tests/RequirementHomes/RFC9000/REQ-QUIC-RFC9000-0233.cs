@@ -4,6 +4,46 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_0233
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RetireConnectionIdFrame_DoesNotSupplyAReplacementAfterTheLocalIssuanceCap()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            peerActiveConnectionIdLimit: 3,
+            maximumLocallyIssuedConnectionIds: 1);
+        byte[] retiredConnectionId = [0xC0, 0xC1, 0xC2, 0xC3];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionConnectionIdIssuedEvent(
+                ObservedAtTicks: 0,
+                ConnectionId: 1UL,
+                StatelessResetToken: QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken(0xC0),
+                ConnectionIdBytes: retiredConnectionId),
+            nowTicks: 0).StateChanged);
+
+        QuicConnectionTransitionResult result = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+            runtime,
+            runtime.ActivePath!.Value.Identity,
+            retiredConnectionId,
+            QuicFrameTestData.BuildRetireConnectionIdFrame(new QuicRetireConnectionIdFrame(1UL)),
+            observedAtTicks: 1);
+
+        Assert.True(result.StateChanged);
+        Assert.Contains(
+            result.Effects,
+            effect => effect is QuicConnectionRetireConnectionIdRouteEffect retire
+                && retire.ConnectionId == 1UL
+                && retire.ConnectionIdBytes.Span.SequenceEqual(retiredConnectionId));
+        Assert.DoesNotContain(
+            result.Effects,
+            effect => effect is QuicConnectionRegisterConnectionIdRouteEffect);
+        Assert.DoesNotContain(
+            result.Effects,
+            effect => effect is QuicConnectionRegisterStatelessResetTokenEffect);
+        Assert.Empty(QuicConnectionIdLifecycleTestSupport.GetNewConnectionIdFrames(runtime, result));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RetireConnectionIdFrameSuppliesAReplacementConnectionId()

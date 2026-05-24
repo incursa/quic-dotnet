@@ -34,6 +34,13 @@ public sealed class REQ_QUIC_RFC9000_0906
         { QuicVariableLengthInteger.MaxValue, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF } },
     };
 
+    public static TheoryData<byte[], ulong> LengthPrefixMaskingCases => new()
+    {
+        { new byte[] { 0x40, 0x00 }, 0x4000UL },
+        { new byte[] { 0x80, 0x00, 0x00, 0x00 }, 0x8000_0000UL },
+        { new byte[] { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0xC000_0000_0000_0000UL },
+    };
+
     [Theory]
     [MemberData(nameof(ExactParseCases))]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -43,6 +50,19 @@ public sealed class REQ_QUIC_RFC9000_0906
         Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out int bytesConsumed));
         Assert.Equal(expectedValue, parsed);
         Assert.Equal(expectedLength, bytesConsumed);
+    }
+
+    [Theory]
+    [MemberData(nameof(LengthPrefixMaskingCases))]
+    [Requirement("REQ-QUIC-RFC9000-0906")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryParse_DoesNotIncludeLengthPrefixBitsInDecodedIntegerValue(byte[] encoded, ulong unmaskedValue)
+    {
+        Assert.True(QuicVariableLengthInteger.TryParse(encoded, out ulong parsed, out _));
+
+        Assert.Equal(0UL, parsed);
+        Assert.NotEqual(unmaskedValue, parsed);
     }
 
     [Theory]

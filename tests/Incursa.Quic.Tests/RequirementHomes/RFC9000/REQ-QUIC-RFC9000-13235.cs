@@ -7,6 +7,20 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_13235
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryBuildAckFrame_DiscardsOlderUnacknowledgedRangesWhenTheLimitRequiresIt()
+    {
+        QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(2, 1, 2, 5, 6, 9);
+
+        QuicS13P2P3AckFrameProofSupport.AssertBuildsAckFrame(
+            tracker,
+            expectedLargestAcknowledged: 9,
+            expectedFirstAckRange: 0,
+            new QuicAckRange(1, 1, 5, 6));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryBuildAckFrame_KeepsAllRangesWhenTheConfiguredLimitIsSufficient()

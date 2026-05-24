@@ -50,4 +50,16 @@ public sealed class REQ_QUIC_RFC9000_0519
         Assert.Equal(secondMigratedPath, runtime.ActivePath!.Value.Identity);
         Assert.Equal(secondMigratedPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RequirementStatement_DoesNotPermitFrequentAddressChanges()
+    {
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-0519");
+
+        Assert.True(statement.Contains("infrequently", StringComparison.OrdinalIgnoreCase));
+        Assert.False(statement.Contains("SHOULD be changed frequently", StringComparison.OrdinalIgnoreCase));
+        Assert.False(statement.Contains("MAY be changed frequently", StringComparison.OrdinalIgnoreCase));
+    }
 }

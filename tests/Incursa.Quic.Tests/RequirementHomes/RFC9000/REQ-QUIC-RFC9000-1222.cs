@@ -4,6 +4,21 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9000_1222
 {
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9000-1222")]
+    public void TryParseCryptoFrame_RejectsNonCryptoFrameTypesForHandshakeMessages()
+    {
+        byte[] frameWithStreamType = QuicS19P6CryptoFrameTestSupport.BuildCryptoFrameWithFields(
+            [0x08],
+            QuicVarintTestData.EncodeMinimal(0),
+            QuicVarintTestData.EncodeMinimal(4),
+            [0x01, 0x00, 0x00, 0x20]);
+
+        QuicS19P6CryptoFrameTestSupport.AssertRejects(frameWithStreamType);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryFormatCryptoFrame_UsesType06ForHandshakeMessages()

@@ -30,8 +30,8 @@ public sealed class REQ_QUIC_RFC9000_1098
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-1098")]
-    [CoverageType(RequirementCoverageType.Edge)]
-    [Trait("Category", "Edge")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates()
     {
         using QuicConnectionRuntime runtime = QuicS17P4SpinBitTestSupport.CreateActiveOneRttRuntime(

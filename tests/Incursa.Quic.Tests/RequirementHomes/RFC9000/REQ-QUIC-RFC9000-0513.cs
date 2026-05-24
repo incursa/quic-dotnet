@@ -35,6 +35,31 @@ public sealed class REQ_QUIC_RFC9000_0513
         Assert.Equal(candidate.Validation.ValidationDeadlineTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.32", RemotePort: 443);
+        QuicConnectionPathIdentity candidatePath = new("203.0.113.33", RemotePort: 443);
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 20,
+                candidatePath,
+                datagram),
+            nowTicks: 20).StateChanged);
+
+        Assert.True(runtime.CandidatePaths.TryGetValue(candidatePath, out QuicConnectionCandidatePathRecord candidate));
+        Assert.True(candidate.Validation.ChallengeSentAtTicks.HasValue);
+        Assert.True(candidate.Validation.ValidationDeadlineTicks.HasValue);
+        Assert.True(candidate.Validation.ValidationDeadlineTicks.Value > candidate.Validation.ChallengeSentAtTicks.Value);
+        Assert.NotEqual(candidate.Validation.ChallengeSentAtTicks, candidate.Validation.ValidationDeadlineTicks);
+        Assert.Equal(candidate.Validation.ValidationDeadlineTicks, runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation));
+    }
+
     private static long MicrosecondsToTicks(ulong micros)
     {
         if (micros == 0)

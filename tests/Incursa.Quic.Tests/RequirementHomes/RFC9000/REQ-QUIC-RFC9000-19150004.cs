@@ -5,6 +5,33 @@ public sealed class REQ_QUIC_RFC9000_19150004
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-19150004")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryAcceptNewConnectionId_AllowsConsistentDuplicateState()
+    {
+        QuicConnectionPeerConnectionIdState state = new();
+        byte[] connectionId = [0x10, 0x11, 0x12, 0x13];
+        byte[] statelessResetToken = CreateStatelessResetToken(0x30);
+        QuicNewConnectionIdFrame frame = new(0x01, 0x00, connectionId, statelessResetToken);
+
+        Assert.True(state.TryAcceptNewConnectionId(
+            frame,
+            requiresZeroLengthDestinationConnectionId: false,
+            out QuicTransportErrorCode errorCode,
+            out bool destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.True(destinationConnectionIdChanged);
+
+        Assert.True(state.TryAcceptNewConnectionId(
+            frame,
+            requiresZeroLengthDestinationConnectionId: false,
+            out errorCode,
+            out destinationConnectionIdChanged));
+        Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+        Assert.False(destinationConnectionIdChanged);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-19150004")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryAcceptNewConnectionId_RejectsTheSameSequenceNumberForDifferentConnectionIds()
     {
