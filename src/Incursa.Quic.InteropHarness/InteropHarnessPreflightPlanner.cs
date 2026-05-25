@@ -14,6 +14,7 @@ namespace Incursa.Quic.InteropHarness;
     {
         private const int DefaultHandshakePort = 443;
         private const int InteropHarnessReceiveWindowBytes = 16 * 1024 * 1024;
+        private const int RequiredHttp3PeerUnidirectionalStreams = 3;
         private const int ConnectionMigrationPreferredAddressPort = 443;
         private static readonly IPAddress ConnectionMigrationPreferredAddressIpv4 = IPAddress.Parse("193.167.100.110");
         private static readonly IPAddress ConnectionMigrationPreferredAddressIpv6 = IPAddress.Parse("fd00:cafe:cafe:100::110");
@@ -106,6 +107,18 @@ namespace Incursa.Quic.InteropHarness;
         };
     }
 
+    internal QuicClientConnectionOptions CreateSupportedHttp3ClientOptions(
+        IPEndPoint remoteEndPoint,
+        string? targetHost = null)
+    {
+        QuicClientConnectionOptions options = CreateSupportedClientOptions(remoteEndPoint, targetHost);
+        options.MaxInboundUnidirectionalStreams = Math.Max(
+            options.MaxInboundUnidirectionalStreams,
+            RequiredHttp3PeerUnidirectionalStreams);
+        options.ClientAuthenticationOptions.ApplicationProtocols = [SslApplicationProtocol.Http3];
+        return options;
+    }
+
     private static QuicReceiveWindowSizes CreateInteropReceiveWindowSizes()
     {
         return new QuicReceiveWindowSizes
@@ -138,6 +151,13 @@ namespace Incursa.Quic.InteropHarness;
             options.PreferredAddress = CreateConnectionMigrationPreferredAddress();
         }
 
+        return options;
+    }
+
+    internal QuicServerConnectionOptions CreateSupportedHttp3ServerOptions(X509Certificate2 serverCertificate)
+    {
+        QuicServerConnectionOptions options = CreateSupportedServerOptions(serverCertificate);
+        options.ServerAuthenticationOptions.ApplicationProtocols = [SslApplicationProtocol.Http3];
         return options;
     }
 

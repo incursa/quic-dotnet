@@ -28,7 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Incursa.Qpack\Incursa.Qpack.csproj" />
     <ProjectReference Include="..\..\src\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\..\src\Incursa.Quic.Http3\Incursa.Quic.Http3.csproj" />
     <ProjectReference Include="..\..\src\Incursa.Quic.Qlog\Incursa.Quic.Qlog.csproj" />
     <ProjectReference Include="..\..\src\Incursa.Quic.InteropHarness\Incursa.Quic.InteropHarness.csproj" />
   </ItemGroup>

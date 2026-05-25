@@ -263,7 +263,10 @@ public sealed class QuicStream : Stream
         runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
     }
 
-    internal async ValueTask CompleteWritesAsync(CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Completes the writable side of the stream without closing the readable side.
+    /// </summary>
+    public async ValueTask CompleteWritesAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 

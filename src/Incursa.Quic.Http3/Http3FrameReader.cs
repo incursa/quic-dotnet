@@ -1,0 +1,180 @@
+namespace Incursa.Quic.Http3;
+
+/// <summary>
+/// Incrementally parses HTTP/3 frames from stream bytes.
+/// </summary>
+public sealed class Http3FrameReader
+{
+    private byte[] pending = [];
+
+    /// <summary>
+    /// Gets the number of buffered bytes that have not yet formed a complete frame.
+    /// </summary>
+    public int PendingByteCount => pending.Length;
+
+    /// <summary>
+    /// Parses all complete frames available in <paramref name="source" />.
+    /// </summary>
+    public Http3Frame[] Read(ReadOnlySpan<byte> source, bool endOfStream = false)
+    {
+        pending = Append(pending, source);
+        int index = 0;
+        List<Http3Frame> frames = [];
+
+        while (index < pending.Length)
+        {
+            int frameStart = index;
+            if (!TryReadVariableLengthInteger(pending, ref index, out ulong frameType))
+            {
+                index = frameStart;
+                break;
+            }
+
+            if (!TryReadVariableLengthInteger(pending, ref index, out ulong payloadLength))
+            {
+                index = frameStart;
+                break;
+            }
+
+            if (payloadLength > int.MaxValue)
+            {
+                throw new Http3Exception(Http3ErrorCode.ExcessiveLoad, "The HTTP/3 frame payload is too large for this parser.");
+            }
+
+            if (pending.Length - index < (int)payloadLength)
+            {
+                index = frameStart;
+                break;
+            }
+
+            byte[] payload = pending.AsSpan(index, (int)payloadLength).ToArray();
+            index += (int)payloadLength;
+            frames.Add(ParseFrame(frameType, payload));
+        }
+
+        pending = SlicePending(pending, index);
+        if (endOfStream && pending.Length != 0)
+        {
+            throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");
+        }
+
+        return [.. frames];
+    }
+
+    /// <summary>
+    /// Signals stream completion and fails if a partial frame remains buffered.
+    /// </summary>
+    public Http3Frame[] Complete()
+    {
+        return Read([], endOfStream: true);
+    }
+
+    private static Http3Frame ParseFrame(ulong frameType, byte[] payload)
+    {
+        return frameType switch
+        {
+            (ulong)Http3FrameType.Data => new Http3DataFrame(payload),
+            (ulong)Http3FrameType.Headers => new Http3HeadersFrame(payload),
+            (ulong)Http3FrameType.CancelPush => ParseCancelPush(payload),
+            (ulong)Http3FrameType.Settings => ParseSettings(payload),
+            (ulong)Http3FrameType.PushPromise => ParsePushPromise(payload),
+            (ulong)Http3FrameType.GoAway => ParseGoAway(payload),
+            (ulong)Http3FrameType.MaxPushId => ParseMaxPushId(payload),
+            _ => new Http3UnknownFrame(frameType, payload),
+        };
+    }
+
+    private static Http3CancelPushFrame ParseCancelPush(byte[] payload)
+    {
+        ulong value = ParseSingleVariableLengthIntegerPayload(payload);
+        return new Http3CancelPushFrame(value, payload);
+    }
+
+    private static Http3GoAwayFrame ParseGoAway(byte[] payload)
+    {
+        ulong value = ParseSingleVariableLengthIntegerPayload(payload);
+        return new Http3GoAwayFrame(value, payload);
+    }
+
+    private static Http3MaxPushIdFrame ParseMaxPushId(byte[] payload)
+    {
+        ulong value = ParseSingleVariableLengthIntegerPayload(payload);
+        return new Http3MaxPushIdFrame(value, payload);
+    }
+
+    private static Http3PushPromiseFrame ParsePushPromise(byte[] payload)
+    {
+        int index = 0;
+        if (!TryReadVariableLengthInteger(payload, ref index, out ulong pushId))
+        {
+            throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 PUSH_PROMISE frame payload is truncated.");
+        }
+
+        byte[] encodedFieldSection = payload.AsSpan(index).ToArray();
+        return new Http3PushPromiseFrame(pushId, encodedFieldSection, payload);
+    }
+
+    private static Http3SettingsFrame ParseSettings(byte[] payload)
+    {
+        int index = 0;
+        List<Http3Setting> settings = [];
+        while (index < payload.Length)
+        {
+            if (!TryReadVariableLengthInteger(payload, ref index, out ulong identifier)
+                || !TryReadVariableLengthInteger(payload, ref index, out ulong value))
+            {
+                throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 SETTINGS frame payload is truncated.");
+            }
+
+            settings.Add(new Http3Setting(identifier, value));
+        }
+
+        return new Http3SettingsFrame(settings, payload, Http3SettingsParser.Parse(settings));
+    }
+
+    private static ulong ParseSingleVariableLengthIntegerPayload(byte[] payload)
+    {
+        int index = 0;
+        if (!TryReadVariableLengthInteger(payload, ref index, out ulong value) || index != payload.Length)
+        {
+            throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 frame payload length is invalid.");
+        }
+
+        return value;
+    }
+
+    private static bool TryReadVariableLengthInteger(ReadOnlySpan<byte> source, ref int index, out ulong value)
+    {
+        value = default;
+        if (index >= source.Length)
+        {
+            return false;
+        }
+
+        if (Http3VariableLengthInteger.TryParse(source[index..], out value, out int bytesConsumed))
+        {
+            index += bytesConsumed;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static byte[] Append(byte[] pendingBytes, ReadOnlySpan<byte> source)
+    {
+        if (source.IsEmpty)
+        {
+            return pendingBytes;
+        }
+
+        byte[] combined = new byte[pendingBytes.Length + source.Length];
+        pendingBytes.CopyTo(combined, 0);
+        source.CopyTo(combined.AsSpan(pendingBytes.Length));
+        return combined;
+    }
+
+    private static byte[] SlicePending(byte[] pendingBytes, int consumed)
+    {
+        return consumed == 0 ? pendingBytes : pendingBytes.AsSpan(consumed).ToArray();
+    }
+}

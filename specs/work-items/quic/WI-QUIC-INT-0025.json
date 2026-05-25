@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0025",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "External HTTP/3 Peer Harness Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a repo-local advisory HTTP/3 peer harness with Docker Compose targets, Windows/POSIX scripts, JSONL result capture, and Markdown report generation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0025",
+    "VER-QUIC-INT-0025"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0025"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0025"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0031"
+  ],
+  "planned_changes": "- Add a minimal Incursa HTTP/3 CLI client sample for compose-driven downloads.\n- Make the sample HTTP/3 file server bind to a container-reachable address.\n- Add Dockerfiles for Incursa client/server and an aioquic utility image.\n- Add Docker Compose targets for Incursa, curl, aioquic, quiche/h3i, and ngtcp2/nghttp3 cells.\n- Add PowerShell and Bash runner scripts that create fixtures, generate certificates, run wired cells, and record skip rows for unwired cells.\n- Add a Python JSONL-to-Markdown result parser.\n- Add checked-in documentation and a report template.",
+  "out_of_scope": [
+    "claiming live pass status for every peer cell",
+    "does not promote broad HTTP/3 peer support",
+    "pinning every third-party HTTP/3 tool command in this first slice",
+    "changing HTTP/3 protocol behavior to make the matrix pass",
+    "upstream QUIC interop-runner integration"
+  ],
+  "verification_plan": "Run solution build, run the requirement-home tests for REQ-QUIC-INT-0031, run the harness in plan-only mode, run the parser against the generated JSONL, and run core SpecTrace validation."
+}

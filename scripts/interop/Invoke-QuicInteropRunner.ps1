@@ -468,6 +468,13 @@ function Get-InteropRunnerTestCaseInventory {
         }
 
         [pscustomobject]@{
+            TestCase = 'http3'
+            RunnerTestCase = 'http3'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed HTTP/3 runner cell routed through the Incursa.Quic.Http3 and QPACK adapter over the existing managed QUIC endpoint image.'
+        }
+
+        [pscustomobject]@{
             TestCase = 'longrtt'
             RunnerTestCase = 'longrtt'
             Classification = 'supported-executed'
@@ -736,7 +743,7 @@ function Get-InteropRunnerExecutionPlan {
     foreach ($testCase in $TestCases) {
         $inventoryEntry = Get-InteropRunnerTestCaseInventoryEntry -TestCase $testCase
         if ($null -eq $inventoryEntry) {
-            throw "Requested testcase '$testCase' is not part of the documented non-HTTP/3 inventory."
+            throw "Requested testcase '$testCase' is not part of the documented QUIC interop inventory."
         }
 
         $requestedTestCaseInventory.Add($inventoryEntry)

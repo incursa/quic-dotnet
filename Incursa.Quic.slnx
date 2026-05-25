@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Incursa.Qpack/Incursa.Qpack.csproj" />
     <Project Path="src/Incursa.Quic/Incursa.Quic.csproj" />
+    <Project Path="src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj" />
     <Project Path="src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj" />
     <Project Path="src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj" />
   </Folder>
@@ -9,6 +11,10 @@
   </Folder>
   <Folder Name="/fuzz/">
     <Project Path="fuzz/Incursa.Quic.Fuzz.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Incursa.Quic.Http3.Client/Incursa.Quic.Http3.Client.csproj" />
+    <Project Path="samples/Incursa.Quic.Http3.FileServer/Incursa.Quic.Http3.FileServer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj" />

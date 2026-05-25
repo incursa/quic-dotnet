@@ -1,4 +1,5 @@
 using Incursa.Quic;
+using Incursa.Quic.Http3;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -17,6 +18,7 @@ internal static class InteropHarnessRunner
     private const int QuicStreamBodyWriteChunkSize = 1024;
     // The upstream keyupdate cell expects a key update during the first MB transferred.
     private const long KeyUpdateTriggerBytes = 1_000_000;
+    private const int HttpStatusOk = 200;
     private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
     private const string FlowControlCreditExhaustedMessage = "Writes that wait for additional flow-control credit are not supported by this slice.";
     private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
@@ -132,6 +134,7 @@ internal static class InteropHarnessRunner
             "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "connectionmigration" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "http3" => RunHttp3ClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "resumption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "transfer" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -163,6 +166,7 @@ internal static class InteropHarnessRunner
             "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "connectionmigration" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "http3" => RunHttp3ServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "keyupdate" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "resumption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "transfer" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -1213,6 +1217,179 @@ internal static class InteropHarnessRunner
         return settings.TestCase == "v2"
             ? [QuicVersionNegotiation.Version2]
             : null;
+    }
+
+    private static async Task<int> RunHttp3ClientAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicConnection.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC HTTP/3 client bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            SequentialTransferPlanBuildResult transferPlanResult = await TryCreateSequentialTransferPlans(settings).ConfigureAwait(false);
+            if (!transferPlanResult.Success)
+            {
+                WriteLineAndFlush(stderr, transferPlanResult.ErrorMessage ?? string.Empty);
+                return 1;
+            }
+
+            ArgumentNullException.ThrowIfNull(transferPlanResult.TransferPlans);
+            IReadOnlyList<SequentialTransferPlan> transferPlans = transferPlanResult.TransferPlans;
+            SequentialTransferPlan firstPlan = transferPlans[0];
+            IPEndPoint remoteEndPoint = firstPlan.RemoteEndPoint;
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=http3, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, targetCount={transferPlans.Count}.");
+
+            QuicClientConnectionOptions clientOptions = planner.CreateSupportedHttp3ClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
+            using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+            if (qlogScope is not null)
+            {
+                WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+            }
+
+            WriteDeterministicClientKeySelection(settings, stdout);
+            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+            await using Http3Client client = await Http3Client.AttachAsync(
+                connection,
+                new Http3ClientOptions
+                {
+                    UserAgent = "incursa-quic-interop-http3",
+                    CompleteResponseOnContentLength = true,
+                }).ConfigureAwait(false);
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=http3, requestCount={settings.Requests.Count} completed managed HTTP/3 client bootstrap.");
+
+            long totalBytesDownloaded = 0;
+            for (int index = 0; index < transferPlans.Count; index++)
+            {
+                totalBytesDownloaded += await DownloadHttp3ResponseAsync(
+                    client,
+                    transferPlans[index],
+                    stdout,
+                    index,
+                    transferPlans.Count).ConfigureAwait(false);
+            }
+
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=client, testcase=http3, requestCount={settings.Requests.Count} completed managed HTTP/3 downloads, bytes={totalBytesDownloaded}, streamCount={transferPlans.Count}.");
+
+            await connection.CloseAsync(0).ConfigureAwait(false);
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteFailureDetails(stderr, "client", settings.TestCase, ex);
+            return 1;
+        }
+    }
+
+    private static async Task<long> DownloadHttp3ResponseAsync(
+        Http3Client client,
+        SequentialTransferPlan transferPlan,
+        TextWriter stdout,
+        int requestIndex,
+        int requestCount)
+    {
+        Http3Response response = await client.GetAsync(transferPlan.RequestUri).ConfigureAwait(false);
+        if (response.StatusCode != HttpStatusOk)
+        {
+            throw new InvalidOperationException($"HTTP/3 GET {transferPlan.RequestUri.PathAndQuery} returned status {response.StatusCode}.");
+        }
+
+        string? destinationDirectory = Path.GetDirectoryName(transferPlan.DestinationPath);
+        if (!string.IsNullOrEmpty(destinationDirectory))
+        {
+            Directory.CreateDirectory(destinationDirectory);
+        }
+
+        await File.WriteAllBytesAsync(transferPlan.DestinationPath, response.Body).ConfigureAwait(false);
+        WriteLineAndFlush(
+            stdout,
+            $"interop harness: role=client, testcase=http3 completed managed HTTP/3 download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={response.Body.Length}, stream {requestIndex + 1}/{requestCount}.");
+        return response.Body.Length;
+    }
+
+    private static async Task<int> RunHttp3ServerAsync(
+        InteropHarnessEnvironment settings,
+        TextWriter stdout,
+        TextWriter stderr,
+        string certificatePath,
+        string privateKeyPath)
+    {
+        try
+        {
+            InteropHarnessPreflightPlanner planner = CreatePlanner(settings, stdout);
+
+            if (!QuicListener.IsSupported)
+            {
+                WriteLineAndFlush(stderr, "interop harness: managed QUIC HTTP/3 listener bootstrap is not supported in this runtime.");
+                return 1;
+            }
+
+            string? errorMessage;
+            if (!InteropTlsMaterials.TryLoad(certificatePath, privateKeyPath, out InteropTlsMaterials? materials, out errorMessage) ||
+                materials is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            if (!materials.TryCreateServerCertificate(out X509Certificate2? serverCertificate, out errorMessage) ||
+                serverCertificate is null)
+            {
+                WriteLineAndFlush(stderr, errorMessage ?? string.Empty);
+                return 1;
+            }
+
+            using (serverCertificate)
+            using (CancellationTokenSource completionSignal = new())
+            {
+                int expectedRequestCount = settings.Requests.Count;
+                QuicListenerOptions listenerOptions = new()
+                {
+                    ListenEndPoint = new IPEndPoint(IPAddress.IPv6Any, 443),
+                    ApplicationProtocols = [SslApplicationProtocol.Http3],
+                    ListenBacklog = Math.Max(1, expectedRequestCount),
+                    ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(planner.CreateSupportedHttp3ServerOptions(serverCertificate)),
+                };
+
+                using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
+                if (qlogScope is not null)
+                {
+                    WriteQlogCaptureEnabled(stdout, settings, qlogScope);
+                }
+
+                await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
+                InteropHttp3FileHandler handler = new(settings, stdout, expectedRequestCount, completionSignal);
+                await using Http3Server server = Http3Server.Attach(listener, handler);
+                WriteLineAndFlush(
+                    stdout,
+                    $"interop harness: role=server, testcase=http3, requestCount={settings.Requests.Count} listening on {listenerOptions.ListenEndPoint}.");
+
+                await server.ServeAsync(completionSignal.Token).ConfigureAwait(false);
+                return 0;
+            }
+        }
+        catch (OperationCanceledException) when (settings.Requests.Count > 0)
+        {
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            WriteFailureDetails(stderr, "server", settings.TestCase, ex);
+            return 1;
+        }
     }
 
     private static async Task<int> RunMulticonnectServerAsync(
@@ -2499,6 +2676,7 @@ internal static class InteropHarnessRunner
             "rebind-port" or
             "rebind-addr" or
             "connectionmigration" or
+            "http3" or
             "keyupdate" or
             "resumption" or
             "transfer")

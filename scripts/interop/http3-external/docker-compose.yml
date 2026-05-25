@@ -1,0 +1,73 @@
+name: incursa-http3-external-interop
+
+services:
+  incursa-server:
+    build:
+      context: ../../..
+      dockerfile: scripts/interop/http3-external/docker/incursa-server.Dockerfile
+    command:
+      - /www
+      - /certs/cert.pem
+      - /certs/priv.key
+      - "4433"
+    ports:
+      - "4433:4433/udp"
+    volumes:
+      - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/incursa-server:/logs
+
+  incursa-client:
+    build:
+      context: ../../..
+      dockerfile: scripts/interop/http3-external/docker/incursa-client.Dockerfile
+    volumes:
+      - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/incursa-client:/logs
+    profiles:
+      - clients
+
+  curl:
+    image: ${HTTP3_CURL_IMAGE:-curlimages/curl:latest}
+    volumes:
+      - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/curl:/logs
+    profiles:
+      - clients
+
+  aioquic:
+    build:
+      context: ../../..
+      dockerfile: scripts/interop/http3-external/docker/aioquic.Dockerfile
+    volumes:
+      - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
+      - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/aioquic:/logs
+    profiles:
+      - clients
+      - peers
+
+  quiche:
+    image: ${HTTP3_QUICHE_IMAGE:-cloudflare/quiche:latest}
+    volumes:
+      - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
+      - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/quiche:/logs
+    profiles:
+      - clients
+      - peers
+
+  ngtcp2:
+    image: ${HTTP3_NGTCP2_IMAGE:-ghcr.io/ngtcp2/nghttp3:latest}
+    volumes:
+      - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
+      - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/ngtcp2:/logs
+    profiles:
+      - clients
+      - peers

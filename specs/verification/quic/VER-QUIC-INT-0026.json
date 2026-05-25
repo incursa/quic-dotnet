@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0026",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "h3spec HTTP/3 Server Conformance Pipeline Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Build, requirement-home tests, plan-only h3spec runner execution, parser smoke test, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0026",
+    "WI-QUIC-INT-0026"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0032"
+  ],
+  "scope": "Verify that the repository exposes an advisory h3spec HTTP/3 server conformance pipeline that captures raw output, normalizes results, maps RFC 9114/RFC 9204 failures, and keeps failures as TODO/triage evidence until protocol-owned requirements close them.",
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0032\"`.",
+    "Run `pwsh -NoProfile -File scripts/interop/http3-h3spec/Run-H3Spec.ps1 -PlanOnly -ArtifactsRoot .artifacts/http3-h3spec-plan`.",
+    "Run `python scripts/interop/http3-h3spec/parse-h3spec-results.py --stdout <sample-stdout> --stderr <sample-stderr> --json-output <results.json> --markdown-output <report.md>`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`."
+  ],
+  "expected_result": "The build and requirement-home tests pass, the plan-only runner emits raw-log placeholders and parsed report artifacts, the parser maps sample HTTP/3 and QPACK failures to RFC 9114 and RFC 9204 TODO rows, and SpecTrace validation accepts the new artifacts.",
+  "evidence": [
+    "2026-05-25: `dotnet build Incursa.Quic.slnx -c Release --no-restore` passed with 0 warnings and 0 errors.",
+    "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0032\"` passed 3/3.",
+    "2026-05-25: `pwsh -NoProfile -File scripts/interop/http3-h3spec/Run-H3Spec.ps1 -PlanOnly -ArtifactsRoot .artifacts/http3-h3spec-plan` produced `.artifacts/http3-h3spec-plan/20260525T213648Z/h3spec-results.json` and `.artifacts/http3-h3spec-plan/20260525T213648Z/h3spec-report.md`.",
+    "2026-05-25: parser smoke under `.artifacts/http3-h3spec-parser-smoke` mapped sample h3spec failures to `RFC 9114 Section 4.1` / `http3-adapter-boundary` and `RFC 9204 Section 3.1` / `qpack-stream-state-boundary` TODO rows.",
+    "scripts/interop/http3-h3spec/Start-H3SpecServer.ps1",
+    "scripts/interop/http3-h3spec/Stop-H3SpecServer.ps1",
+    "scripts/interop/http3-h3spec/Run-H3Spec.ps1",
+    "scripts/interop/http3-h3spec/parse-h3spec-results.py",
+    "scripts/interop/http3-h3spec/README.md",
+    "docs/h3spec-failure-triage-report.md",
+    ".github/workflows/http3-h3spec.yml",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0032.cs"
+  ],
+  "status_summary": "Passed for the advisory h3spec harness, parser, report, and CI-dispatch surfaces. The preserved plan-only evidence proves artifact generation only; live h3spec conformance remains opt-in and failures must be promoted into protocol-owned RFC 9114 or RFC 9204 work before support claims change."
+}

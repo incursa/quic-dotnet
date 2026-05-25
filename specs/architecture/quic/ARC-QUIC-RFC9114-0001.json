@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9114-0001",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "HTTP/3 Low-Level Malformed Sequence Test Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define deterministic low-level HTTP/3 malformed sequence tests for RFC 9114 frame placement, control-stream sequencing, and message validation behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "WI-QUIC-RFC9114-0001",
+    "VER-QUIC-RFC9114-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9114-S4-0001"
+  ],
+  "key_components": [
+    "docs/testing/http3-low-level-protocol-tests.md",
+    "tests/Incursa.Quic.Tests/Http3LowLevelProtocolTests.cs"
+  ],
+  "design_summary": "The low-level malformed sequence tests use a small custom test client inside the test project. The client drives the HTTP/3 frame reader, stream dispatcher, request message validator, and header validator directly so illegal stream and frame sequences can be generated without a normal HTTP client. Documentation records h3i-style examples for future live reproduction, while automated checks stay in-process and deterministic.",
+  "edge_cases_and_constraints": [
+    "Unknown frame types are expected to be ignored by the HTTP/3 layer when permitted on the stream.",
+    "Reserved frame types are treated as unknown/grease and are expected to be ignored rather than rejected.",
+    "Malformed request sequencing and header validation failures map to the RFC 9114 application error codes exposed by the HTTP/3 layer.",
+    "The first slice does not require a live h3i installation or QUIC network scheduling."
+  ],
+  "risks": [
+    "In-process malformed sequence tests do not prove full wire-level transport close behavior.",
+    "h3i command syntax and packaging can drift, so examples remain documentation until a future live h3i runner is pinned.",
+    "These tests are negative conformance checks and must not be converted into broad RFC 9114/RFC 9204 support claims."
+  ]
+}

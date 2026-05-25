@@ -88,10 +88,12 @@ public sealed class InteropHarnessRunnerTests
     [InlineData("server", "post-handshake-stream", true, null)]
     [InlineData("server", "retry", true, null)]
     [InlineData("server", "transfer", true, null)]
+    [InlineData("server", "http3", true, null)]
     [InlineData("client", "handshake", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
     [InlineData("client", "post-handshake-stream", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
     [InlineData("client", "retry", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
     [InlineData("client", "transfer", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
+    [InlineData("client", "http3", false, "REQUESTS must contain at least one URL for testcase dispatch.")]
     public void SupportedServerPathsAllowEmptyRequestsWhileClientPathsRejectThem(
         string role,
         string testcase,
@@ -224,6 +226,62 @@ public sealed class InteropHarnessRunnerTests
         Assert.Equal(1, exitCode);
         Assert.Contains(
             $"interop harness: role=server, testcase=chacha20, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            $"TLS certificate not found at '{certificatePath}'.{Environment.NewLine}",
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    public void Http3ClientDispatchUsesTheSupportedHarnessPathBeforeTransferValidationFailures()
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, "sslkeylog-http3-client.txt");
+        IDictionary environment = CreateEnvironment(
+            "client",
+            "http3",
+            "https://localhost:443/",
+            qlogDirectory,
+            sslKeyLogFile);
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=client, testcase=http3, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            "REQUESTS entry 'https://localhost/' must include a non-root path for transfer dispatch." + Environment.NewLine,
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Fact]
+    public void Http3ServerDispatchUsesTheSupportedHarnessPathBeforeTlsMaterialFailures()
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, "sslkeylog-http3-server.txt");
+        IDictionary environment = CreateEnvironment("server", "http3", qlogDir: qlogDirectory, sslKeyLogFile: sslKeyLogFile);
+
+        string certificatePath = Path.Combine(fixture.RootDirectory, $"missing-cert-{Guid.NewGuid():N}.pem");
+        string privateKeyPath = fixture.CreateFile("priv.key", "unused");
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr, certificatePath, privateKeyPath);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=server, testcase=http3, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
             stdout.ToString(),
             StringComparison.Ordinal);
         Assert.Equal(

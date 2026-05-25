@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0025",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "External HTTP/3 Peer Harness Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define an advisory Docker Compose based HTTP/3 peer harness outside the upstream QUIC interop runner.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0025",
+    "VER-QUIC-INT-0025"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0031"
+  ],
+  "key_components": [
+    "scripts/interop/http3-external/docker-compose.yml",
+    "scripts/interop/http3-external/Run-Http3ExternalInterop.ps1",
+    "scripts/interop/http3-external/run-http3-external-interop.sh",
+    "scripts/interop/http3-external/parse-http3-results.py",
+    "scripts/interop/http3-external/docker/incursa-server.Dockerfile",
+    "scripts/interop/http3-external/docker/incursa-client.Dockerfile",
+    "scripts/interop/http3-external/docker/aioquic.Dockerfile",
+    "samples/Incursa.Quic.Http3.Client",
+    "samples/Incursa.Quic.Http3.FileServer"
+  ],
+  "design_summary": "The harness uses Docker Compose as the target inventory and small runner scripts as the execution surface. The scripts create deterministic fixture files, generate short-lived TLS materials, start the Incursa HTTP/3 server, execute wired client/server cells, and emit one JSONL row per target/scenario. The parser converts JSONL into a Markdown matrix. Peer cells that require unpinned external command syntax or specialized scenario endpoints are reported as `skip` until wired, keeping evidence honest while still showing the full desired matrix. A skipped row is not support evidence.",
+  "edge_cases_and_constraints": [
+    "The harness must work from Windows PowerShell and POSIX shells.",
+    "The harness must keep generated artifacts under `.artifacts/http3-external` by default.",
+    "The checked-in Compose file must list optional peer images without requiring all of them to run for a plan or partial matrix.",
+    "The report parser must preserve pass, fail, and skip states distinctly.",
+    "The harness must not mutate upstream quic-interop-runner behavior."
+  ],
+  "risks": [
+    "External images change over time; the first slice therefore keeps image names configurable through environment variables.",
+    "Different peer tools expose different HTTP/3 client/server command lines; skipped rows avoid pretending command wiring is complete before it is proven."
+  ]
+}

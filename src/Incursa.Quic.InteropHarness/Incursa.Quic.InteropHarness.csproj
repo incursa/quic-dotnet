@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Incursa.Qpack\Incursa.Qpack.csproj" />
     <ProjectReference Include="..\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\Incursa.Quic.Http3\Incursa.Quic.Http3.csproj" />
     <ProjectReference Include="..\Incursa.Quic.Qlog\Incursa.Quic.Qlog.csproj" />
   </ItemGroup>
 

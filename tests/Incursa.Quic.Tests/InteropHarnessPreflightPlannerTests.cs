@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
 
@@ -311,6 +313,32 @@ public sealed class InteropHarnessPreflightPlannerTests
 
         Assert.Equal(IPAddress.IPv6Any, listenEndPoint.Address);
         Assert.Equal(443, listenEndPoint.Port);
+    }
+
+    [Fact]
+    public void CreateSupportedHttp3ClientOptionsUsesHttp3AlpnAndUnidirectionalStreamCredit()
+    {
+        InteropHarnessPreflightPlanner planner = CreatePlanner("client", "http3", "https://127.0.0.1:443/index.html");
+
+        QuicClientConnectionOptions options = planner.CreateSupportedHttp3ClientOptions(new IPEndPoint(IPAddress.Loopback, 443), "localhost");
+
+        Assert.NotNull(options.ClientAuthenticationOptions.ApplicationProtocols);
+        Assert.Contains(SslApplicationProtocol.Http3, options.ClientAuthenticationOptions.ApplicationProtocols);
+        Assert.Equal("localhost", options.ClientAuthenticationOptions.TargetHost);
+        Assert.True(options.MaxInboundUnidirectionalStreams >= 3);
+    }
+
+    [Fact]
+    public void CreateSupportedHttp3ServerOptionsUsesHttp3Alpn()
+    {
+        InteropHarnessPreflightPlanner planner = CreatePlanner("server", "http3");
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+
+        QuicServerConnectionOptions options = planner.CreateSupportedHttp3ServerOptions(serverCertificate);
+
+        Assert.NotNull(options.ServerAuthenticationOptions.ApplicationProtocols);
+        Assert.Contains(SslApplicationProtocol.Http3, options.ServerAuthenticationOptions.ApplicationProtocols);
+        Assert.Same(serverCertificate, options.ServerAuthenticationOptions.ServerCertificate);
     }
 
     private static InteropHarnessPreflightPlanner CreatePlanner(

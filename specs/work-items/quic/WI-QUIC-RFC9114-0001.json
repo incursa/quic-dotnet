@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9114-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 Low-Level Malformed Sequence Test Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add deterministic low-level HTTP/3 malformed sequence tests with h3i examples, expected error mapping, and automated pass/fail checks.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0001",
+    "VER-QUIC-RFC9114-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9114-0001"
+  ],
+  "verification_links": [
+    "VER-QUIC-RFC9114-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9114-S4-0001"
+  ],
+  "planned_changes": "- Add documentation with h3i-style examples and expected outcomes.\n- Add a custom low-level HTTP/3 test client in the test project.\n- Add automated tests for malformed frame order, invalid frame length, invalid headers, duplicate control streams, server-initiated bidirectional streams, and unknown/reserved frame behavior.\n- Add requirement-home trace proof for the new RFC 9114 protocol-owned test lane.",
+  "out_of_scope": [
+    "pinning and running live h3i in CI",
+    "proving transport-level CONNECTION_CLOSE packet emission",
+    "fixing protocol gaps discovered by these tests",
+    "claiming complete RFC 9114 or RFC 9204 support"
+  ],
+  "verification_plan": "Run solution build, run the low-level HTTP/3 malformed sequence tests, run the requirement-home tests for REQ-QUIC-RFC9114-S4-0001, and run core SpecTrace validation."
+}

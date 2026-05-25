@@ -1,0 +1,96 @@
+name: HTTP/3 h3spec
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode"
+        type: choice
+        required: true
+        default: plan-only
+        options:
+          - plan-only
+          - live
+      fail_on_h3spec_failures:
+        description: "Fail the workflow when h3spec reports failures"
+        type: boolean
+        required: true
+        default: false
+  pull_request:
+    paths:
+      - ".github/workflows/http3-h3spec.yml"
+      - "docs/h3spec-failure-triage-report.md"
+      - "samples/Incursa.Quic.Http3.FileServer/**"
+      - "scripts/interop/http3-h3spec/**"
+      - "src/Incursa.Qpack/**"
+      - "src/Incursa.Quic/**"
+      - "src/Incursa.Quic.Http3/**"
+
+jobs:
+  h3spec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install local prerequisites
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openssl
+
+      - name: Build solution
+        shell: pwsh
+        run: dotnet build Incursa.Quic.slnx -c Release
+
+      - name: Install h3spec
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'live'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends cabal-install ghc
+          cabal update
+          cabal install h3spec-0.1.12 --installdir "$HOME/.local/bin" --overwrite-policy=always
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Run h3spec harness
+        shell: pwsh
+        run: |
+          $mode = "${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'plan-only' }}"
+          $failOnFailures = "${{ github.event_name == 'workflow_dispatch' && inputs.fail_on_h3spec_failures || false }}"
+          $args = @(
+            "-ArtifactsRoot", "artifacts/http3-h3spec",
+            "-Configuration", "Release",
+            "-NoBuild",
+            "-NoValidateCertificate"
+          )
+          if ($mode -eq "plan-only") {
+            $args += "-PlanOnly"
+          }
+          if ($failOnFailures -eq "true") {
+            $args += "-FailOnH3SpecFailures"
+          }
+
+          pwsh -NoProfile -File scripts/interop/http3-h3spec/Run-H3Spec.ps1 @args
+
+      - name: Upload h3spec artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: http3-h3spec-${{ github.run_id }}
+          path: artifacts/http3-h3spec/
+          if-no-files-found: warn

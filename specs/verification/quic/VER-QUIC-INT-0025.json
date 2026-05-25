@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0025",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "External HTTP/3 Peer Harness Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Build, requirement-home tests, plan-only harness run, parser smoke test, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0025",
+    "WI-QUIC-INT-0025"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0031"
+  ],
+  "scope": "Verify that the external HTTP/3 harness surfaces the requested peer/scenario matrix and produces explicit pass/fail/skip results without claiming broad HTTP/3 support.",
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0031\"`.",
+    "Run `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -PlanOnly`.",
+    "Run `python scripts/interop/http3-external/parse-http3-results.py <run-root>/results.jsonl --output <run-root>/report.md` if re-parsing is needed.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`."
+  ],
+  "expected_result": "The build and requirement-home tests pass, plan-only execution emits rows for every requested target/scenario pair, the parser emits a Markdown matrix, and skipped rows stay visible. Status \"skip\" is a first-class result and must not be converted into support claims.",
+  "evidence": [
+    "2026-05-25: `dotnet build Incursa.Quic.slnx -c Release --no-restore` passed with 0 warnings and 0 errors after restore generated assets for the new sample client.",
+    "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0031\"` passed 2/2.",
+    "2026-05-25: `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -PlanOnly -ArtifactsRoot .artifacts/http3-external-plan` produced `.artifacts/http3-external-plan/20260525T212334Z/results.jsonl` and `.artifacts/http3-external-plan/20260525T212334Z/report.md` with 80 explicit `skip` rows.",
+    "2026-05-25: `bash -n scripts/interop/http3-external/run-http3-external-interop.sh` passed.",
+    "scripts/interop/http3-external/docker-compose.yml",
+    "scripts/interop/http3-external/Run-Http3ExternalInterop.ps1",
+    "scripts/interop/http3-external/run-http3-external-interop.sh",
+    "scripts/interop/http3-external/parse-http3-results.py",
+    "docs/http3-external-interop-report.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0031.cs"
+  ],
+  "status_summary": "Complete for the advisory harness/reporting slice. The generated plan-only evidence proves the matrix and parser surface only; live peer interoperability remains a separate execution and protocol-claim concern."
+}

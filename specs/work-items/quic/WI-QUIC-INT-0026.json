@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0026",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "h3spec HTTP/3 Server Conformance Pipeline Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add an advisory h3spec pipeline for the local HTTP/3 server with lifecycle scripts, stdout/stderr capture, parsed JSON results, Markdown triage, CI dispatch, and RFC 9114/RFC 9204 failure mapping.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0026",
+    "VER-QUIC-INT-0026"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0026"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0026"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0032"
+  ],
+  "planned_changes": "- Add a server lifecycle script for the local HTTP/3 sample server.\n- Add an h3spec runner script that captures stdout, stderr, metadata, parsed JSON, and Markdown.\n- Add a parser that maps h3spec HTTP/3 failures to RFC 9114 and QPACK failures to RFC 9204.\n- Add an opt-in CI workflow that runs plan-only by default and supports manual live h3spec execution.\n- Add a checked-in triage report template and requirement-home proof.",
+  "out_of_scope": [
+    "fixing protocol failures discovered by h3spec",
+    "making h3spec a required pull-request gate",
+    "claiming complete RFC 9114 or RFC 9204 support from h3spec output alone",
+    "owning protocol requirements inside the INT harness lane"
+  ],
+  "verification_plan": "Run solution build, run the requirement-home tests for REQ-QUIC-INT-0032, run the h3spec runner in plan-only mode, run the parser against a sample failing h3spec stdout file, run PowerShell parser checks where available, and run core SpecTrace validation."
+}

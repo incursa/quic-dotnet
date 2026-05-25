@@ -1,0 +1,86 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9114",
+  "artifact_type": "specification",
+  "title": "HTTP/3 (RFC 9114)",
+  "domain": "quic",
+  "capability": "http3",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9114-0001",
+    "WI-QUIC-RFC9114-0001",
+    "VER-QUIC-RFC9114-0001",
+    "SPEC-QUIC-INT"
+  ],
+  "purpose": "Define protocol-owned HTTP/3 requirements above the existing QUIC transport.",
+  "scope": "This first RFC 9114 slice covers malformed frame placement, control-stream sequencing, request/message validation, unknown/reserved frame handling, h3i reproduction examples, and deterministic low-level custom-client tests. Broader production HTTP/3 adapter behavior, server push, trailers, CONNECT, HTTP Datagrams, MASQUE, and ASP.NET hosting remain outside this slice.",
+  "context": "The INT harness family owns external process and interop adapter surfaces only. Protocol behavior discovered by h3spec, h3i, external peers, or custom malformed clients is owned here or by future RFC 9114/RFC 9204 requirements before support claims change.",
+  "supplemental_sections": [
+    {
+      "heading": "Low-Level Malformed Sequence Tests",
+      "content": "The low-level HTTP/3 malformed sequence tests use a custom test client over the HTTP/3 frame reader, stream dispatcher, request validator, and header validation surfaces to exercise invalid sequences that normal clients do not generate. h3i examples are documented where practical, but automated pass/fail checks remain repo-local and deterministic."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9114-S4-0001",
+      "title": "Reject or ignore low-level malformed HTTP/3 sequences according to RFC 9114",
+      "statement": "The HTTP/3 layer MUST provide deterministic low-level protocol checks for malformed sequences normal clients do not generate, with each covered case recording the expected RFC 9114 error code or no-error ignore behavior and automated pass/fail evidence.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0001"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0032",
+          "SPEC-QUIC-INT"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §4",
+          "RFC 9114 §6.1",
+          "RFC 9114 §6.2.1",
+          "RFC 9114 §7.1",
+          "RFC 9114 §7.2.2",
+          "RFC 9114 §7.2.4",
+          "RFC 9114 §9",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-4",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-6.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-6.2.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-7.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-7.2.2",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-7.2.4",
+          "https://www.rfc-editor.org/rfc/rfc9114.html#section-9"
+        ],
+        "x_code_refs": [
+          "docs/testing/http3-low-level-protocol-tests.md",
+          "tests/Incursa.Quic.Tests/Http3LowLevelProtocolTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3LowLevelProtocolTests.cs::LowLevelMalformedSequencesProduceExpectedOutcomes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs::LowLevelMalformedSequenceTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs::LowLevelMalformedSequenceTestsKeepUnknownAndReservedFramesNonFatal",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs::LowLevelMalformedSequenceTestsDocumentH3iExamples"
+        ]
+      },
+      "notes": [
+        "Case identifiers are `DATA before HEADERS`, `Two SETTINGS frames`, `SETTINGS on request stream`, `HEADERS on control stream`, `Invalid frame length`, `Unknown frame type`, `Reserved frame type`, `Malformed pseudo-header order`, `Uppercase header field name`, `Invalid content-length`, `Server-initiated bidirectional stream`, and `Duplicate control streams`.",
+        "Unknown and reserved frame types are expected to be ignored by this layer when permitted on the stream.",
+        "This requirement verifies layer-local HTTP/3 error classification and does not by itself prove transport-level CONNECTION_CLOSE packet emission.",
+        "h3i live examples remain documentation for future wire-level reproduction because h3i command/library packaging can drift."
+      ]
+    }
+  ]
+}

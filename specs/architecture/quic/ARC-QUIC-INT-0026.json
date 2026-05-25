@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0026",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "h3spec HTTP/3 Server Conformance Pipeline Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define an advisory h3spec pipeline that tests the local Incursa HTTP/3 server and converts failures into RFC 9114/RFC 9204 triage artifacts.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0026",
+    "VER-QUIC-INT-0026"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0032"
+  ],
+  "key_components": [
+    "scripts/interop/http3-h3spec/Start-H3SpecServer.ps1",
+    "scripts/interop/http3-h3spec/Stop-H3SpecServer.ps1",
+    "scripts/interop/http3-h3spec/Run-H3Spec.ps1",
+    "scripts/interop/http3-h3spec/parse-h3spec-results.py",
+    "scripts/interop/http3-h3spec/README.md",
+    "docs/h3spec-failure-triage-report.md",
+    ".github/workflows/http3-h3spec.yml"
+  ],
+  "design_summary": "The h3spec pipeline is split into server lifecycle, tool invocation, result normalization, and CI dispatch. The server script creates temporary content and TLS materials, starts the local HTTP/3 file server, and writes a server context. The runner invokes a configured h3spec command, captures stdout and stderr, writes metadata, and calls the parser. The parser extracts cases, failures, summary counts, RFC 9114/RFC 9204 section references, and TODO rows. CI runs plan-only by default on pull requests and supports opt-in live execution through workflow dispatch.",
+  "edge_cases_and_constraints": [
+    "The h3spec executable and wrapper arguments must remain configurable because local and hosted environments may install the tool differently.",
+    "Parser output must keep raw stdout and stderr as artifacts so parser drift can be diagnosed.",
+    "HTTP/3 failures map to RFC 9114 and the `http3-adapter-boundary` gap until narrower protocol-owned requirements exist.",
+    "QPACK failures map to RFC 9204 and the `qpack-stream-state-boundary` gap until narrower protocol-owned requirements exist.",
+    "Plan-only CI evidence proves the harness shape, not live h3spec conformance."
+  ],
+  "risks": [
+    "h3spec output format can drift, so raw logs remain the source of truth.",
+    "A passing subset must not be treated as complete RFC 9114 or RFC 9204 support.",
+    "Live h3spec installation can be slow or platform-sensitive, so the default pull-request path remains plan-only."
+  ]
+}

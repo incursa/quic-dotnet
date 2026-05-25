@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0024",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Interop Runner HTTP/3 Endpoint Adapter Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Route the upstream QUIC interop-runner `http3` testcase through the existing harness image using the managed QUIC transport plus the standalone HTTP/3 and QPACK modules.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0024",
+    "VER-QUIC-INT-0024"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0024"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0024"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0030"
+  ],
+  "planned_changes": "- Add the HTTP/3 and QPACK project references needed by the interop harness.\n- Add HTTP/3 attach seams so the harness can reuse qlog/keylog-aware managed QUIC connections and listeners.\n- Add a server file handler that serves GET request paths from `/www` with HTTP/3 HEADERS and DATA.\n- Add a client dispatch path that reads `REQUESTS`, downloads each URL over HTTP/3, and writes response bodies to `/downloads`.\n- Configure HTTP/3 client and server transport options with ALPN `h3` and enough peer unidirectional stream credit for control and QPACK streams.\n- Register `http3` as a supported/executed local runner cell while keeping existing non-HTTP/3 dispatch paths unchanged.\n- Document the exact local quic-interop-runner command and add an advisory CI workflow for the local `http3` cell.\n- Add focused packaging, dispatch, preflight, and requirement-home tests.",
+  "out_of_scope": [
+    "dynamic QPACK usage for the interop cell",
+    "server push",
+    "trailers",
+    "CONNECT",
+    "HTTP Datagrams or MASQUE",
+    "ASP.NET hosting integration",
+    "broad all-upstream HTTP/3 peer matrix promotion"
+  ],
+  "verification_plan": "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`, the focused harness/HTTP3 test filter, the `REQ_QUIC_INT_0030` requirement-home filter, dry-run the local interop helper with `-TestCases http3`, and run core SpecTrace validation."
+}

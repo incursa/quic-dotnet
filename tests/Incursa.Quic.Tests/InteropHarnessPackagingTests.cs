@@ -32,6 +32,37 @@ public sealed class InteropHarnessPackagingTests
     }
 
     [Fact]
+    public void InteropHelperRegistersHttp3AsASupportedExecutedRunnerCell()
+    {
+        string helper = ReadNormalizedText("scripts/interop/Invoke-QuicInteropRunner.ps1");
+
+        Assert.Contains("TestCase = 'http3'", helper, StringComparison.Ordinal);
+        Assert.Contains("RunnerTestCase = 'http3'", helper, StringComparison.Ordinal);
+        Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Http3InteropRunnerDocumentationContainsTheExactLocalCommand()
+    {
+        string docs = ReadNormalizedText("docs/interop-http3-runner.md");
+        string interopReadme = ReadNormalizedText("scripts/interop/README.md");
+
+        Assert.Contains("-TestCases http3", docs, StringComparison.Ordinal);
+        Assert.Contains("-RunnerRoot C:\\src\\quic-interop\\quic-interop-runner", docs, StringComparison.Ordinal);
+        Assert.Contains("-TestCases http3", interopReadme, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Http3InteropRunnerWorkflowRunsTheLocalHttp3Cell()
+    {
+        string workflow = ReadNormalizedText(".github/workflows/interop-runner-http3.yml");
+
+        Assert.Contains("Invoke-QuicInteropRunner.ps1", workflow, StringComparison.Ordinal);
+        Assert.Contains("-TestCases http3", workflow, StringComparison.Ordinal);
+        Assert.Contains("quic-interop-runner", workflow, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void InteropHelperShimPatchesPreferredAddressPathAnalysis()
     {
         string helper = ReadNormalizedText("scripts/interop/Invoke-QuicInteropRunner.ps1");

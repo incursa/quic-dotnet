@@ -75,7 +75,7 @@ Default behavior:
 - Testcases: `handshake,retry,transfer`
 - The helper also accepts `multiconnect` when you want the sequential managed transfer path.
 - The helper translates local `multiconnect` into the runner's CLI testcase name `handshakeloss`, because the upstream runner uses `multiconnect` only for the container-facing `TESTCASE_*` values.
-- The helper also recognizes the documented non-HTTP/3 upstream inventory, classifies each cell explicitly, and writes `testcase-inventory.json` beside the runner outputs so blocked cells stay visible instead of collapsing into a generic unsupported bucket.
+- The helper also recognizes the documented upstream inventory, classifies each cell explicitly, and writes `testcase-inventory.json` beside the runner outputs so blocked cells stay visible instead of collapsing into a generic unsupported bucket.
 - The smaller `post-handshake-stream` proof remains available through the local harness requirement-home lane; this helper does not expose that testcase yet.
 - Artifact root: `artifacts/interop-runner/<timestamp>-<slot>/`
 - Non-`DryRun` execution now preflights Docker, Python, `tshark`, and `editcap` before the image build starts, because the upstream runner needs packet-analysis tools for its post-checks.
@@ -102,7 +102,20 @@ The helper defaults to a mode-appropriate local slot so the same checkout can ru
 
 Use `-ImplementationSlot` to override the local-side slot and `-PeerImplementationSlots` to choose the established peer slots. In split-role mode, `-PeerImplementationSlots all` expands from the runner's `implementations_quic.json`: local client mode selects every server-capable peer, and local server mode selects every client-capable peer.
 The helper stays on runner-supported QUIC testcases so it can produce the runner's JSON and Markdown execution reports without needing any registry changes in the runner repo.
-The current supported/executed cells are `handshake`, `transfer`, `longrtt`, `multiplexing`, `retry`, `multiconnect`, `versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, `zerortt`, `amplificationlimit`, `blackhole`, `transferloss`, `ipv6`, `v2`, and `connectionmigration`; the remaining documented non-HTTP/3 cells are surfaced as explicit inventory entries that are still red or blocked. `versionnegotiation` is now backed by explicit reserved-version dispatch in the harness. `longrtt`, `multiplexing`, `amplificationlimit`, `blackhole`, `transferloss`, and `ipv6` are transfer-backed runner cells that reuse the existing HTTP/0.9 transfer path until live proof says otherwise. `chacha20` is now supported/executed after a local quic-go/quic-go runner run completed successfully, and the harness routes it through the runnable transfer-backed dispatch path. `zerortt` is now supported/executed after the hosted Linux `zerortt-server-proof` run completed successfully with buffered request-line reads and packet-analysis proof; `resumption` is green only for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof. These cells do not imply HTTP/3, anti-replay, port or address rebinding, corruption-test, ECN, or broader API support.
+The current supported/executed cells are `handshake`, `transfer`, `http3`, `longrtt`, `multiplexing`, `retry`, `multiconnect`, `versionnegotiation`, `chacha20`, `keyupdate`, `resumption`, `zerortt`, `amplificationlimit`, `blackhole`, `transferloss`, `ipv6`, `v2`, and `connectionmigration`; the remaining documented cells are surfaced as explicit inventory entries that are still red or blocked. `http3` uses ALPN `h3`, serves GET responses from `/www`, and stores client downloads in `/downloads` through the minimal HTTP/3/QPACK layer. `versionnegotiation` is now backed by explicit reserved-version dispatch in the harness. `longrtt`, `multiplexing`, `amplificationlimit`, `blackhole`, `transferloss`, and `ipv6` are transfer-backed runner cells that reuse the existing HTTP/0.9 transfer path until live proof says otherwise. `chacha20` is now supported/executed after a local quic-go/quic-go runner run completed successfully, and the harness routes it through the runnable transfer-backed dispatch path. `zerortt` is now supported/executed after the hosted Linux `zerortt-server-proof` run completed successfully with buffered request-line reads and packet-analysis proof; `resumption` is green only for the runner's TLS session-resumption cell with managed SSLKEYLOGFILE export proof. These cells do not imply anti-replay, port or address rebinding, corruption-test, ECN, or broader API support.
+
+Run the local Incursa image against itself for the QUIC interop runner HTTP/3 testcase:
+
+```powershell
+pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
+  -RunnerRoot C:\src\quic-interop\quic-interop-runner `
+  -LocalRole both `
+  -ImplementationSlot quic-go `
+  -PeerImplementationSlots quic-go `
+  -TestCases http3 `
+  -RunnerTimeoutSeconds 240 `
+  -ArtifactsRoot .artifacts\interop-runner\http3-local
+```
 
 Hosted corroboration:
 

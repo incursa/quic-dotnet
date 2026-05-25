@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9114-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 Low-Level Malformed Sequence Test Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Build, focused low-level HTTP/3 tests, requirement-home tests, and SpecTrace validation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0001",
+    "WI-QUIC-RFC9114-0001"
+  ],
+  "verifies": [
+    "REQ-QUIC-RFC9114-S4-0001"
+  ],
+  "scope": "Verify that malformed HTTP/3 sequences normal clients do not generate are documented, mapped to expected RFC 9114 error outcomes, and covered by automated custom-client tests.",
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~Http3LowLevelProtocolTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9114_S4_0001\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`."
+  ],
+  "expected_result": "The build passes, every malformed sequence produces the expected HTTP/3 error code or explicit no-error ignored outcome, the requirement-home proof passes, and SpecTrace validation accepts the new artifacts.",
+  "evidence": [
+    "2026-05-25: `dotnet build Incursa.Quic.slnx -c Release --no-restore` passed with 0 warnings and 0 errors.",
+    "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~Http3LowLevelProtocolTests\"` passed 12/12.",
+    "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9114_S4_0001\"` passed 3/3.",
+    "2026-05-25: `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core` validated 604 SpecTrace JSON artifacts.",
+    "docs/testing/http3-low-level-protocol-tests.md",
+    "tests/Incursa.Quic.Tests/Http3LowLevelProtocolTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs"
+  ],
+  "status_summary": "Passed for deterministic low-level RFC 9114 malformed sequence classification and documentation. The proof is layer-local and does not claim live h3i wire behavior or complete RFC 9114/RFC 9204 support."
+}
